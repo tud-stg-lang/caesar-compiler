@@ -56,22 +56,23 @@ public class CjUnqualifiedInstanceCreation extends JExpression {
         // new C() -> (C)(new C_Impl(null)) if not a nested class (owner == null)
         // new C() -> this.$newC() if a nested class (owner != null)
         if((typeClass.isMixinInterface() || typeClass.isMixin()) && params.length == 0) {
-            CClass implClass = context.getClassReader().loadClass(
-                factory,
-                type.getCClass().convertToImplQn()
-            );
-            
-            CReferenceType newType = implClass.getAbstractType();
-            
-            if(implClass.getOwner() != null) {
-                expr = new JMethodCallExpression(
+                        
+            if( type.getCClass().isNested() ) {
+                expr = new CjMethodCallExpression(
                     getTokenReference(),
-                    new JThisExpression(getTokenReference()),
+                    null,
                     "$new"+type.getCClass().getIdent(),
                     params
                 );
             }
-            else {            
+            else {      
+                CClass implClass = context.getClassReader().loadClass(
+                    factory,
+                    type.getCClass().convertToImplQn()
+                );
+                
+                CReferenceType newType = implClass.getAbstractType();
+                
 	            params = new JExpression[]{new JNullLiteral(getTokenReference())};            
 	            expr = new JUnqualifiedInstanceCreation(getTokenReference(), newType, params);
 	            expr = new JCastExpression(getTokenReference(), expr, type);
