@@ -5,12 +5,11 @@ import java.util.*;
 import org.caesarj.util.InconsistencyException;
 
 /**
- * This is bidirectional inheritance graph 
- * for JTypeDeclaration 
+ * Caesar Type Graph.  
  * 
  * @author Ivica Aracic 
  */
-public class CaesarTypeGraph {
+public abstract class CaesarTypeGraph {
 
     /** root of inner and inheritance hierarchy */
     private Set topClassRoot    = new HashSet();
@@ -18,10 +17,6 @@ public class CaesarTypeGraph {
     private HashMap typeMap = new HashMap();
     
     public CaesarTypeGraph() {
-    }
-    
-    public Iterator iterator() {
-        return typeMap.values().iterator();
     }
     
     public boolean hasType(String qualifiedName) {
@@ -42,60 +37,6 @@ public class CaesarTypeGraph {
     public CaesarTypeNode getType(JavaQualifiedName qualifiedName) {
         CaesarTypeNode res = (CaesarTypeNode)typeMap.get(qualifiedName);
         return res;
-    }
-    
-    public void checkFurtherbindings(CaesarTypeGraph completeGraph) {
-        for (Iterator it = typeMap.entrySet().iterator(); it.hasNext();) {
-            CaesarTypeNode t = (CaesarTypeNode)((Map.Entry)it.next()).getValue();
-            
-            t.setFurtherbinding(false);
-            
-            CaesarTypeNode tInCompleteGraph =
-                completeGraph.getType(t.getQualifiedName());
-            
-            if(tInCompleteGraph == null)
-                throw new InconsistencyException("explicit graph should be subgraph of complete graph");
-            
-            CaesarTypeNode tInCompleteGraphOuter =
-                tInCompleteGraph.getOuter();
-            
-            if(tInCompleteGraphOuter != null) {
-                for (Iterator it2 = tInCompleteGraphOuter.getParents().iterator(); it2.hasNext();) {
-                    CaesarTypeNode outerSuper = (CaesarTypeNode) it2.next();
-                    if(outerSuper.lookupInner(t.getQualifiedName().getIdent()) != null) {                     
-                        t.setFurtherbinding(true);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    
-    public void generateMixinLists(CaesarTypeGraph explicitTypeGraph) {
-        for (Iterator it = typeMap.entrySet().iterator(); it.hasNext();) {
-            CaesarTypeNode type = (CaesarTypeNode)((Map.Entry)it.next()).getValue();
-            
-            type.createMixinList(explicitTypeGraph);
-        }
-    }
-    
-    /**
-     * adds all implicit relations and types
-     */
-    public void addImplicitTypesAndRelations() {
-        Set visited = new HashSet();
-        Set added = new HashSet();
-        
-        for (Iterator it = typeMap.keySet().iterator(); it.hasNext();) {
-            ((CaesarTypeNode)typeMap.get(it.next())).addImplicitTypesAndRelations(visited, added);
-        }
-        
-        visited.clear();
-        
-        for (Iterator it = added.iterator(); it.hasNext();) {
-            CaesarTypeNode item = (CaesarTypeNode) it.next();
-            typeMap.put(item.getQualifiedName(), item);
-        }
     }
     
     public void debug() {

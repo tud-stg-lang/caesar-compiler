@@ -362,12 +362,12 @@ public class CClassPreparation implements CaesarConstants {
                                     );
                                 }
                                 
+                                    
+                                CaesarTypeNode topMost = inner.getMixin().getTopmostNode();
                                 CClass returnType = classReader.loadClass(
                                     typeFactory, 
-                                    inner.getMixin().getQualifiedName().toString()
+                                    topMost.getQualifiedName().toString()    
                                 );
-                                
-                                returnType = returnType.getTopmostHierarchyInterface();
                                 
                                 JMethodDeclaration facMethodDecl = new JMethodDeclaration(
                                         decl.getTokenReference(),

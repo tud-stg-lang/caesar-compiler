@@ -25,8 +25,7 @@ public class CaesarTypeNode {
     private HashMap inners = new HashMap();
     private HashMap subTypes = new HashMap();
    
-    private boolean furtherBindingChecked = false;
-    private boolean furtherbinding = false;
+    private List furtherboundList = new LinkedList();
     
     private boolean mixinListCreated = false;
     private List mixinList = new LinkedList(); // of CaesarTypeNode    
@@ -76,6 +75,43 @@ public class CaesarTypeNode {
             inner.outer = null;
         }
     }   
+    
+    // returns the topmost node inheriting from object in the inheritance hierarchy
+    public CaesarTypeNode getTopmostNode() {
+        if(!isFurtherbinding()) {
+            return this;
+        }
+        else {
+            LinkedList topMostList = new LinkedList();
+
+            for(Iterator it=furtherboundList.iterator(); it.hasNext();) {
+                CaesarTypeNode item = (CaesarTypeNode) it.next();
+                topMostList.add(item.getTopmostNode());
+            }
+                        
+            // check that they are all same
+            if(topMostList.size() > 1) {
+                boolean first = true;
+                CaesarTypeNode ref = null;
+                for (Iterator it = topMostList.iterator(); it.hasNext();) {
+                    CaesarTypeNode item = (CaesarTypeNode) it.next();
+                    
+                    if(first) {
+                        // get ref
+                        first = false;
+                        ref = item;
+                    }
+                    else {
+                        // compare with ref
+                        if(!ref.equals(item))
+                            return null;
+                    }
+                }                               
+            }
+            
+            return (CaesarTypeNode)topMostList.get(0);
+        }
+    }
     
     public void createMixinList(CaesarTypeGraph explicitGraph) {
         if(mixinListCreated) return;
@@ -283,15 +319,9 @@ public class CaesarTypeNode {
      * NOTE: this will only work in a complete type graph
      */
     public boolean isFurtherbinding() {
-        if(!furtherBindingChecked) throw new InconsistencyException("furtherbinding not checked yet");
-        return furtherbinding;
+        return furtherboundList.size() > 0;
     }
     
-    public void setFurtherbinding(boolean furtherbinding) {
-        this.furtherBindingChecked = true;
-        this.furtherbinding = furtherbinding;
-    }
-        
     public String toString() {
         StringBuffer res = new StringBuffer();
         res.append(qualifiedName);
@@ -354,5 +384,13 @@ public class CaesarTypeNode {
 
     public JavaQualifiedName getQualifiedImplName() {
         return qualifiedImplName;
+    }
+
+    public void addFurtherbinding(CaesarTypeNode furtherbound) {
+        furtherboundList.add(furtherbound);
+    }
+
+    public List getFurtherboundList() {
+        return furtherboundList;
     }
 }
