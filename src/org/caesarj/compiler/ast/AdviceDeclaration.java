@@ -1,8 +1,8 @@
 package org.caesarj.compiler.ast;
 
-import org.aspectj.weaver.Advice;
-import org.aspectj.weaver.AdviceKind;
-import org.aspectj.weaver.patterns.Pointcut;
+import org.caesarj.compiler.aspectj.CaesarAdviceKind;
+import org.caesarj.compiler.aspectj.CaesarPointcut;
+
 import org.caesarj.compiler.CaesarConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
@@ -33,10 +33,10 @@ public class AdviceDeclaration
 	public static final AdviceDeclaration[] EMPTY = new AdviceDeclaration[0];
 
 	/** Pointcut */
-	private Pointcut pointcut;
+	private CaesarPointcut pointcut;
 
 	/** Kind of Advice (Before,After,AfterReturning,AfterThrowing,Around).*/
-	private AdviceKind kind;
+	private CaesarAdviceKind kind;
 
 	/** The proceed method for around advices.*/
 	private ProceedDeclaration proceedMethodDeclaration;
@@ -70,8 +70,8 @@ public class AdviceDeclaration
 		JBlock body,
 		JavadocComment javadoc,
 		JavaStyleComment[] comments,
-		Pointcut pointcut,
-		AdviceKind kind,
+		CaesarPointcut pointcut,
+		CaesarAdviceKind kind,
 		boolean hasExtraParameter) {
 		super(
 			where,
@@ -88,12 +88,12 @@ public class AdviceDeclaration
 		this.pointcut = pointcut;
 		this.kind = kind;
 
-		if (kind == AdviceKind.Around) {
+		if (kind == CaesarAdviceKind.Around) {
 			addAroundClosureParameter();
 		}
 
 		if (hasExtraParameter) {
-			extraArgumentFlags |= Advice.ExtraArgument;
+			extraArgumentFlags |= CaesarConstants.ExtraArgument;
 		}
 	}
 
@@ -196,7 +196,7 @@ public class AdviceDeclaration
 	 * Returns whether this is an around advice.
 	 */
 	public boolean isAroundAdvice() {
-		return kind.equals(AdviceKind.Around);
+		return kind.equals(CaesarAdviceKind.Around);
 	}
 
 	/**
@@ -228,8 +228,8 @@ public class AdviceDeclaration
 	 * 
 	 * @return AdviceKind
 	 */
-	public AdviceKind getKind() {
-		return kind;
+	public CaesarAdviceKind getKind() {
+		return kind;	
 	}
 
 	/**
@@ -262,7 +262,7 @@ public class AdviceDeclaration
 	 * 
 	 * @return Pointcut
 	 */
-	public Pointcut getPointcut() {
+	public CaesarPointcut getPointcut() {
 		return pointcut;
 	}
 

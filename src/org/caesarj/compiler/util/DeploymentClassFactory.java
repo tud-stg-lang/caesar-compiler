@@ -3,11 +3,10 @@ package org.caesarj.compiler.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aspectj.weaver.NameMangler;
-import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.patterns.PerSingleton;
 import org.caesarj.compiler.CaesarConstants;
 import org.caesarj.compiler.TokenReference;
+import org.caesarj.compiler.aspectj.CaesarNameMangler;
+import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.ast.AdviceDeclaration;
 import org.caesarj.compiler.ast.DeploymentSupportClassDeclaration;
 import org.caesarj.compiler.ast.FjAssignmentExpression;
@@ -2519,7 +2518,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 					aspectClass,
 					REGISTRY_EXTENSION);
 
-			singletonAspect.setPerClause(new PerSingleton());
+			singletonAspect.setPerClause(
+				CaesarPointcut.createPerSingleton());
 
 			
 			//aspectClass.setPointcuts(new PointcutDeclaration[0]);
@@ -2548,7 +2548,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 					aspectClass,
 					REGISTRY_EXTENSION);
 
-			singletonAspect.setPerClause(new PerSingleton());
+			singletonAspect.setPerClause(
+				CaesarPointcut.createPerSingleton());
 
 			
 			aspectClass.setPointcuts(new PointcutDeclaration[0]);
@@ -3222,8 +3223,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 		*/
 	private void createAdviceMethodName(AdviceDeclaration adviceDeclaration) {
 		String ident =
-			NameMangler.adviceName(
-				TypeX.forName(aspectClass.getCClass().getQualifiedName()),
+			CaesarNameMangler.adviceName(
+				aspectClass.getCClass().getQualifiedName(),
 				adviceDeclaration.getKind(),
 				adviceDeclaration.getTokenReference().getLine());
 		adviceDeclaration.setIdent(ident);

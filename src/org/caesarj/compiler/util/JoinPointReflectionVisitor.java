@@ -3,7 +3,6 @@ package org.caesarj.compiler.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aspectj.weaver.Advice;
 import org.caesarj.classfile.Constants;
 import org.caesarj.compiler.CaesarConstants;
 import org.caesarj.compiler.TokenReference;
@@ -132,7 +131,7 @@ public class JoinPointReflectionVisitor
 				if (needsThisJoinPointStaticPart) {
 
 					adviceDec.setExtraArgumentFlag(
-						Advice.ThisJoinPointStaticPart);
+						CaesarConstants.ThisJoinPointStaticPart);
 					FjFormalParameter extraParameter =
 						new FjFormalParameter(
 							TokenReference.NO_REF,
@@ -145,7 +144,7 @@ public class JoinPointReflectionVisitor
 
 				if (needsThisJoinPoint) {
 
-					adviceDec.setExtraArgumentFlag(Advice.ThisJoinPoint);
+					adviceDec.setExtraArgumentFlag(CaesarConstants.ThisJoinPoint);
 					FjFormalParameter extraParameter =
 						new FjFormalParameter(
 							TokenReference.NO_REF,
@@ -159,7 +158,7 @@ public class JoinPointReflectionVisitor
 				if (needsThisEnclosingJoinPointStaticPart) {
 
 					adviceDec.setExtraArgumentFlag(
-						Advice.ThisEnclosingJoinPointStaticPart);
+						CaesarConstants.ThisEnclosingJoinPointStaticPart);
 					FjFormalParameter extraParameter =
 						new FjFormalParameter(
 							TokenReference.NO_REF,

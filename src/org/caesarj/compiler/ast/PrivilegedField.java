@@ -1,10 +1,5 @@
 package org.caesarj.compiler.ast;
 
-import org.aspectj.weaver.AjcMemberMaker;
-import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.TypeX;
-
 import org.caesarj.kjc.CField;
 import org.caesarj.kjc.CMethod;
 import org.caesarj.kjc.CReferenceType;
@@ -12,6 +7,7 @@ import org.caesarj.kjc.CType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.CVoidType;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
+import org.caesarj.compiler.aspectj.CaesarMember;
 
 /**
  * A privileged field encapsulates a non-visible field and 
@@ -31,10 +27,10 @@ public class PrivilegedField extends FjSourceField {
 	private CMethod writer;
 
 	/** the resolved-member for attribute creation*/
-	private ResolvedMember resolvedMember;
-
+	private CaesarMember	resolvedMember;
+	
 	/** the declaring type*/
-	private TypeX declaringType;
+	private String declaringType;
 
 	/**
 	 * Constructor for PrivilegedField.
@@ -56,20 +52,20 @@ public class PrivilegedField extends FjSourceField {
 
 		this.baseField = baseField;
 
-		this.declaringType = CaesarBcelWorld.getInstance().resolve(owner);
+		this.declaringType = CaesarBcelWorld.getInstance().resolve(owner).getSignature();
 
-		TypeX aspectType = CaesarBcelWorld.getInstance().resolve(aspect);
+ 		String aspectType = CaesarBcelWorld.getInstance().resolve(aspect).getSignature();
 
-		Member field =
-			new Member(
-				Member.FIELD,
+		CaesarMember field =
+			CaesarMember.Member(
+				CaesarMember.FIELD,
 				declaringType,
 				getModifiers(),
 				getIdent(),
 				getType().getSignature());
 
-		ResolvedMember readerMember =
-			AjcMemberMaker.privilegedAccessMethodForFieldGet(aspectType, field);
+		CaesarMember	readerMember =
+			CaesarMember.privilegedAccessMethodForFieldGet(aspectType,field);
 
 		CType[] readerParameterTypes = { getOwnerType()};
 		FjFamily[] parameterFamilies = { getFamily()};
@@ -88,8 +84,9 @@ public class PrivilegedField extends FjSourceField {
 				null,
 				parameterFamilies);
 
-		ResolvedMember writerMember =
-			AjcMemberMaker.privilegedAccessMethodForFieldSet(aspectType, field);
+
+		CaesarMember	writerMember = 
+			CaesarMember.privilegedAccessMethodForFieldSet(aspectType, field);
 
 		CType[] writerParameterTypes = { getOwnerType(), getType()};
 		writer =
@@ -126,11 +123,12 @@ public class PrivilegedField extends FjSourceField {
 	 * 
 	 * @return ResolvedMember
 	 */
-	public ResolvedMember getResolvedMember() {
+//	public ResolvedMember getResolvedMember() {
+	public CaesarMember getResolvedMember() {
 		if (resolvedMember == null) {
 			resolvedMember =
-				new ResolvedMember(
-					Member.FIELD,
+				CaesarMember.ResolvedMember(
+					CaesarMember.FIELD,
 					declaringType,
 					getModifiers(),
 					getIdent(),

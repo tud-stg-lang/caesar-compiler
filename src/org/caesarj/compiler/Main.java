@@ -4,20 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import org.aspectj.bridge.AbortException;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.weaver.bcel.BcelWeaver;
-import org.aspectj.weaver.bcel.BcelWorld;
-import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
+import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.FjCompilationUnit;
 import org.caesarj.compiler.ast.FjSourceClass;
 import org.caesarj.compiler.tools.antlr.extra.InputBuffer;
@@ -41,7 +35,6 @@ import org.caesarj.kjc.JCompilationUnit;
 import org.caesarj.kjc.KjcEnvironment;
 import org.caesarj.kjc.KjcMessages;
 import org.caesarj.kjc.TypeFactory;
-import org.caesarj.util.Message;
 import org.caesarj.util.Utils;
 
 /**
@@ -52,12 +45,15 @@ import org.caesarj.util.Utils;
  */
 public class Main extends org.caesarj.kjc.Main implements Constants {
 
-	private IMessageHandler messageHandler;
+	private CaesarMessageHandler messageHandler;
 	protected Vector compilationUnits;
 	private Set errorMessages;
 	private CollectClassesFjVisitor inherritConstructors;
 	protected boolean joined;
 
+	// The used weaver. An instance ist created when it's needed in generateAndWeaveCode
+	CaesarWeaver weaver; 
+	
 	/**
 	 * @param workingDirectory the working directory
 	 * @param diagnosticOutput where to put stderr
@@ -445,12 +441,12 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 	public void generateAndWeaveCode(TypeFactory factory) {
 		CSourceClass[] classes = getClasses();
 		BytecodeOptimizer optimizer = new BytecodeOptimizer(options.optimize);
-		List unwovenClassFiles = new ArrayList();
 		byte[] classBuffer;
 		String filename;
 
 		this.classes.setSize(0);
 
+		weaver = new CaesarWeaver();
 		try {
 			for (int count = 0; count < classes.length; count++) {
 				long lastTime = System.currentTimeMillis();
@@ -461,10 +457,9 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 						options.destination,
 						factory);
 
-				unwovenClassFiles.add(
-					new UnwovenClassFile(
-						getFileName(classes[count]),
-						classBuffer));
+				weaver.addUnwovenClassFile(
+					getFileName(classes[count]), classBuffer);
+				
 				if (verboseMode() && !classes[count].isNested()) {
 					inform(
 						CompilerMessages.CLASSFILE_GENERATED,
@@ -475,9 +470,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 				classes[count] = null;
 			}
 
-			weaveClasses(
-				(UnwovenClassFile[]) unwovenClassFiles.toArray(
-					new UnwovenClassFile[0]));
+			weaveClasses();
 
 		} catch (PositionedError e) {
 			reportTrouble(e);
@@ -502,17 +495,12 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 	 * 
 	 * @param unwovenClassFiles
 	 */
-	protected void weaveClasses(UnwovenClassFile[] unwovenClassFiles) {
-		BcelWorld bcelWorld = CaesarBcelWorld.getInstance();
+	protected void weaveClasses() {
+		CaesarBcelWorld bcelWorld = CaesarBcelWorld.getInstance();
 
 		//tells the weaver whether it should inline the around advices in the calling code,
 		//leads to better performance
 		bcelWorld.setXnoInline(true);
-		BcelWeaver weaver = new BcelWeaver(bcelWorld);
-
-		for (int i = 0; i < unwovenClassFiles.length; i++) {
-			weaver.addClassFile(unwovenClassFiles[i]);
-		}
 
 		if (verboseMode()) {
 			inform(CaesarMessages.WEAVING_STARTED);
@@ -521,32 +509,22 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 		try {
 
 			//perform weaving
-			weaver.weave();
+			weaver.performWeaving(bcelWorld);
 
 			if (verboseMode()) {
-				for (int i = 0; i < unwovenClassFiles.length; i++) {
+				for (int i = 0; i < weaver.fileCount(); i++) {
 					inform(
 						CaesarMessages.WROTE_CLASS_FILE,
-						unwovenClassFiles[i].getFilename());
+						weaver.getFileName(i));
 				}
 				inform(CaesarMessages.WEAVING_ENDED);
 			}
 
 		} catch (IOException e) {
 			reportTrouble(new UnpositionedError(CaesarMessages.WEAVING_FAILED));
-		} catch (AbortException e) {
-			reportTrouble(
-				new PositionedError(
-					new TokenReference(
-						e
-							.getIMessage()
-							.getISourceLocation()
-							.getSourceFile()
-							.getName(),
-						e.getIMessage().getISourceLocation().getLine()),
-					new Message(CaesarMessages.WEAVER_ERROR, e.getMessage())));
+		} catch( CaesarWeaver.WeavingException we ) {
+			reportTrouble( we.getError() );
 		}
-
 	}
 
 	protected String getFileName(CSourceClass sourceClass) {

@@ -1,0 +1,29 @@
+/*
+ * Created on 12.12.2003
+ */
+package org.caesarj.compiler.aspectj;
+
+import org.aspectj.weaver.patterns.Declare;
+
+/**
+ * @author Karl Klose
+ * 	Wrapper for AspectJ-Declares
+ */
+public class CaesarDeclare {
+// attributes
+	private Declare declare;
+// construction
+	public CaesarDeclare( Declare declare )
+	{
+		this.declare = declare; 		
+	}
+// interface
+	public void resolve( CaesarScope scope )
+	{
+		declare.resolve(scope);
+	}
+	public Declare	wrappee() 
+	{ 
+		return declare; 
+	}
+}

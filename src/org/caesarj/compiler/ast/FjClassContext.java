@@ -3,7 +3,7 @@ package org.caesarj.compiler.ast;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
-import org.aspectj.weaver.patterns.FormalBinding;
+import org.caesarj.compiler.aspectj.CaesarFormalBinding;
 import org.caesarj.kjc.CClassContext;
 import org.caesarj.kjc.CCompilationUnitContext;
 import org.caesarj.kjc.CContext;
@@ -15,7 +15,7 @@ public class FjClassContext
 	extends CClassContext
 	implements FjAdditionalContext {
 
-	protected FormalBinding[] bindings;
+	protected CaesarFormalBinding[] bindings;
 
 	public FjClassContext(
 		CContext parent,
@@ -57,15 +57,15 @@ public class FjClassContext
 		}
 	}
 
-	public FormalBinding[] getBindings() {
+	public CaesarFormalBinding[] getBindings() {
 		if (bindings == null) {
-			bindings = new FormalBinding[0];
+			bindings = new CaesarFormalBinding[0];
 		}
 
 		return bindings;
 	}
 
-	public void setBindings(FormalBinding[] formals) {
+	public void setBindings(CaesarFormalBinding[] formals) {
 		this.bindings = formals;
 	}
 

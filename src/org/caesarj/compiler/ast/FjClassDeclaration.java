@@ -7,11 +7,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
-import org.aspectj.weaver.NameMangler;
-import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.patterns.Declare;
-import org.aspectj.weaver.patterns.PerClause;
-import org.aspectj.weaver.patterns.PerSingleton;
 import org.caesarj.compiler.CaesarConstants;
 import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.JavaStyleComment;
@@ -20,6 +15,9 @@ import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
+import org.caesarj.compiler.aspectj.CaesarDeclare;
+import org.caesarj.compiler.aspectj.CaesarNameMangler;
+import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.aspectj.CaesarScope;
 import org.caesarj.compiler.util.DeploymentClassFactory;
 import org.caesarj.kjc.CBodyContext;
@@ -62,10 +60,10 @@ public class FjClassDeclaration
 	private AdviceDeclaration[] advices;
 
 	/** e.g. declare precedence */
-	private Declare[] declares;
+	private CaesarDeclare[] declares;
 
 	/** e.g. perSingleton, perCflow,..*/
-	private PerClause perClause;
+	private CaesarPointcut perClause;
 
 	/** The declared pointcuts */
 	protected PointcutDeclaration[] pointcuts;
@@ -126,7 +124,7 @@ public class FjClassDeclaration
 		JavaStyleComment[] comment,
 		PointcutDeclaration[] pointcuts,
 		AdviceDeclaration[] advices,
-		Declare[] declares)
+		CaesarDeclare[] declares)
 	{
 		super(
 			where,
@@ -419,7 +417,9 @@ public class FjClassDeclaration
 
 		if (isPrivileged() || isStaticallyDeployed())
 		{
-			getFjSourceClass().setPerClause(new PerSingleton());
+			getFjSourceClass().setPerClause(
+				CaesarPointcut.createPerSingleton()
+				);
 		}
 
 		if (!(isCrosscutting() || isStaticallyDeployed())
@@ -675,7 +675,7 @@ public class FjClassDeclaration
 	 * Returns the precedenceDeclaration.
 	 * @return Declare
 	 */
-	public Declare[] getDeclares()
+	public CaesarDeclare[] getDeclares()
 	{
 		return declares;
 	}
@@ -684,7 +684,7 @@ public class FjClassDeclaration
 	 * Sets the precedenceDeclaration.
 	 * @param precedenceDeclaration The precedenceDeclaration to set
 	 */
-	public void setDeclares(Declare[] declares)
+	public void setDeclares(CaesarDeclare[] declares)
 	{
 		this.declares = declares;
 	}
@@ -693,7 +693,7 @@ public class FjClassDeclaration
 	 * Sets the perClause.
 	 * @param perClause The perClause to set
 	 */
-	public void setPerClause(PerClause perClause)
+	public void setPerClause(CaesarPointcut perClause)
 	{
 		this.perClause = perClause;
 	}
@@ -817,8 +817,8 @@ public class FjClassDeclaration
 	protected void createAdviceMethodName(AdviceDeclaration adviceDeclaration)
 	{
 		String ident =
-			NameMangler.adviceName(
-				TypeX.forName(getCClass().getQualifiedName()),
+			CaesarNameMangler.adviceName(
+				getCClass().getQualifiedName(),
 				adviceDeclaration.getKind(),
 				adviceDeclaration.getTokenReference().getLine());
 		adviceDeclaration.setIdent(ident);

@@ -3,12 +3,11 @@ package org.caesarj.compiler.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aspectj.weaver.AdviceKind;
-import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.patterns.FormalBinding;
-import org.aspectj.weaver.patterns.Pointcut;
+import org.caesarj.compiler.aspectj.AttributeAdapter;
+import org.caesarj.compiler.aspectj.CaesarAdviceKind;
+import org.caesarj.compiler.aspectj.CaesarPointcut;
+
+import org.caesarj.compiler.aspectj.CaesarFormalBinding;
 
 import org.caesarj.classfile.Attribute;
 import org.caesarj.classfile.ClassFileFormatException;
@@ -33,10 +32,10 @@ import org.caesarj.compiler.aspectj.CaesarScope;
 public class CaesarAdvice extends FjSourceMethod {
 
 	/** The advice pointcut.*/
-	private Pointcut pointcut;
+	private CaesarPointcut pointcut;
 
 	/** The advice kind.*/
-	private AdviceKind kind;
+	private CaesarAdviceKind kind;
 
 	/** Generated attributes for advice method.*/
 	private Attribute adviceAttribute;
@@ -68,8 +67,8 @@ public class CaesarAdvice extends FjSourceMethod {
 		CTypeVariable[] typeVariables,
 		JBlock body,
 		FjFamily[] families,
-		Pointcut pointcut,
-		AdviceKind kind,
+		CaesarPointcut pointcut,
+		CaesarAdviceKind kind,
 		int extraArgumentFlags) {
 		super(
 			owner,
@@ -119,60 +118,33 @@ public class CaesarAdvice extends FjSourceMethod {
 
 		//bind parameters
 		for (int i = 0; i < parameters.length; i++) {
-
-			if (!formalParameters[i].isGenerated()) {
-
 				formalBindings.add(
-					new FormalBinding(
-						TypeX.forSignature(parameters[i].getSignature()),
+					new CaesarFormalBinding(
+						parameters[i].getSignature(),
 						formalParameters[i].getIdent(),
 						i,
 						tokenReference.getLine(),
 						tokenReference.getLine(),
 						tokenReference.getFile()));
 			}
-		}
+		
 
 		//set formal bindings
 		FjClassContext classContext = (FjClassContext) context;
 		classContext.setBindings(
-			(FormalBinding[]) formalBindings.toArray(new FormalBinding[0]));
+			(CaesarFormalBinding[]) formalBindings.toArray(new CaesarFormalBinding[0]));
 
 		//resolve the pointcut
 		pointcut.resolve(new CaesarScope(classContext, caller));
 
 		//create the advice attribute
-		AjAttribute ajAttribute;
-		if (kind == AdviceKind.Around) {
-
-			ajAttribute =
-				new AjAttribute.AdviceAttribute(
-					kind,
-					pointcut,
-					extraArgumentFlags,
-					0,
-					0,
-					null,
-					false,
-					new ResolvedMember[0],
-					new boolean[0],
-					new TypeX[0]);
-
+		if (kind == CaesarAdviceKind.Around) {
+			adviceAttribute = AttributeAdapter.createAroundAdviceAttribute(
+				kind, pointcut, extraArgumentFlags);
 		} else {
-
-			ajAttribute =
-				new AjAttribute.AdviceAttribute(
-					kind,
-					pointcut,
-					extraArgumentFlags,
-					0,
-					0,
-					null);
-
+			adviceAttribute = AttributeAdapter.createAdviceAttribute(
+				kind, pointcut, extraArgumentFlags);
 		}
-
-		//wrap the attribute
-		adviceAttribute = new AttributeAdapter(ajAttribute);
 	}
 
 	/**
@@ -180,7 +152,7 @@ public class CaesarAdvice extends FjSourceMethod {
 	 * 
 	 * @return AdviceKind
 	 */
-	public AdviceKind getKind() {
+	public CaesarAdviceKind getKind() {
 		return kind;
 	}
 
@@ -190,7 +162,7 @@ public class CaesarAdvice extends FjSourceMethod {
 	 * @return boolean
 	 */
 	public boolean isAroundAdvice() {
-		return kind.equals(AdviceKind.Around);
+		return kind.equals(CaesarAdviceKind.Around);
 	}
 
 	/**

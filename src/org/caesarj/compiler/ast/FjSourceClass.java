@@ -6,11 +6,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.ResolvedPointcutDefinition;
-import org.aspectj.weaver.patterns.Declare;
-import org.aspectj.weaver.patterns.PerClause;
-import org.aspectj.weaver.patterns.PerSingleton;
 import org.caesarj.classfile.Attribute;
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.ConstantPoolOverflowException;
@@ -20,6 +15,10 @@ import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
+import org.caesarj.compiler.aspectj.AttributeAdapter;
+import org.caesarj.compiler.aspectj.CaesarDeclare;
+import org.caesarj.compiler.aspectj.CaesarMember;
+import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.util.PrivilegedAccessHandler;
 import org.caesarj.kjc.BytecodeOptimizer;
 import org.caesarj.kjc.CClass;
@@ -39,8 +38,8 @@ import org.caesarj.util.Utils;
 public class FjSourceClass extends CSourceClass
 {
 
-	protected PerClause perClause;
-	protected Declare[] declares = new Declare[0];
+	protected CaesarPointcut perClause;
+	protected CaesarDeclare[] declares = new CaesarDeclare[0];
 
 	/**handles the access to non visible members if this class is privileged*/
 	protected PrivilegedAccessHandler privilegedAccessHandler;
@@ -83,7 +82,7 @@ public class FjSourceClass extends CSourceClass
 		boolean deprecated,
 		boolean synthetic,
 		JTypeDeclaration decl,
-		PerClause perClause)
+		CaesarPointcut perClause)
 	{
 		super(
 			owner,
@@ -269,12 +268,16 @@ public class FjSourceClass extends CSourceClass
 
 	/**
 	 * Returns the resolvedPointcuts.
-	 * @return List
+	 * @return List (of ResolvedPointcut)
 	 */
 	public List getResolvedPointcuts()
 	{
 		List ret = new ArrayList();
-		ret.addAll(resolvedPointcuts);
+		for (Iterator it = resolvedPointcuts.iterator(); it.hasNext();)
+		{
+			CaesarMember	resolvedPointcutDef = ((CaesarMember)it.next()); 		
+			ret.add( resolvedPointcutDef.wrappee() );
+		}
 
 		if (getSuperClass() != null
 			&& CModifier.contains(
@@ -294,12 +297,12 @@ public class FjSourceClass extends CSourceClass
 		return CModifier.contains(getModifiers(), ACC_PRIVILEGED);
 	}
 
-	public void setDeclares(Declare[] declares)
+	public void setDeclares(CaesarDeclare[] declares)
 	{
 		this.declares = declares;
 	}
 
-	public Declare[] getDeclares()
+	public CaesarDeclare[] getDeclares()
 	{
 		return declares;
 	}
@@ -308,7 +311,7 @@ public class FjSourceClass extends CSourceClass
 	 * Sets the perClause.
 	 * @param perClause The perClause to set
 	 */
-	public void setPerClause(PerClause perClause)
+	public void setPerClause(CaesarPointcut perClause)
 	{
 		this.perClause = perClause;
 	}
@@ -332,42 +335,37 @@ public class FjSourceClass extends CSourceClass
 
 		if (perClause != null)
 		{
-			attributeList.add(
-				new AttributeAdapter(new AjAttribute.Aspect(perClause)));
+			attributeList.add( AttributeAdapter.createAspect(perClause) );
 		}
 		else if (declares.length > 0)
 		{
 			attributeList.add(
-				new AttributeAdapter(
-					new AjAttribute.Aspect(new PerSingleton())));
+				AttributeAdapter.createAspect(CaesarPointcut.createPerSingleton())
+			);
 		}
 
 		for (int i = 0; i < declares.length; i++)
 		{
 			attributeList.add(
-				new AttributeAdapter(
-					new AjAttribute.DeclareAttribute(declares[i])));
+				AttributeAdapter.createDeclareAttribute( declares[i] ) );
 		}
 
 		if (isPrivileged())
 		{
 			attributeList.add(
-				new AttributeAdapter(
-					new AjAttribute.PrivilegedAttribute(
-						privilegedAccessHandler.getAccessedMembers())));
-
+				AttributeAdapter.createPrivilegedAttribute(
+						privilegedAccessHandler.getAccessedMembers()
+					) );
 		}
 
 		Iterator iterator = resolvedPointcuts.iterator();
 		while (iterator.hasNext())
 		{
-			ResolvedPointcutDefinition rpd =
-				(ResolvedPointcutDefinition) iterator.next();
+			CaesarMember rpd =	(CaesarMember)iterator.next();
 
 			attributeList.add(
-				new AttributeAdapter(
-					new AjAttribute.PointcutDeclarationAttribute(rpd)));
-
+				AttributeAdapter.createPointcutDeclarationAttribute(rpd)
+				);
 		}
 
 		return (Attribute[]) attributeList.toArray(new Attribute[0]);
@@ -617,7 +615,7 @@ public class FjSourceClass extends CSourceClass
 		}
 	}
 
-	public void addResolvedPointcut(ResolvedPointcutDefinition rpd)
+	public void addResolvedPointcut(CaesarMember rpd)
 	{
 		resolvedPointcuts.add(rpd);
 	}

@@ -2,13 +2,11 @@
  package org.caesarj.compiler; 
 import java.util.ArrayList;
 
-import org.aspectj.weaver.AdviceKind;
-import org.aspectj.weaver.patterns.ITokenSource;
-import org.aspectj.weaver.patterns.ParserException;
-import org.aspectj.weaver.patterns.PatternParser;
-import org.aspectj.weaver.patterns.Pointcut;
+import org.caesarj.compiler.aspectj.CaesarAdviceKind;
+import org.caesarj.compiler.aspectj.CaesarPatternParser;
+import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.aspectj.CaesarSourceContext;
-import org.caesarj.compiler.aspectj.CaesarTokenSource;
+
 import org.caesarj.compiler.ast.AdviceDeclaration;
 import org.caesarj.compiler.ast.CciInterfaceDeclaration;
 import org.caesarj.compiler.ast.CciWeaveletClassDeclaration;
@@ -1793,7 +1791,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		KopiInvariantDeclaration   invariant = null;
 		JFormalParameter[] parameters;
 		JFormalParameter extraParam = null;  
-		AdviceKind kind = null;
+		CaesarAdviceKind kind = null;
 		TypeFactory factory = environment.getTypeFactory();
 		CReferenceType[]		throwsList = CReferenceType.EMPTY;  
 		PointcutDeclaration pointcutDecl;
@@ -1916,23 +1914,15 @@ private static final int MAX_LOOKAHEAD = 2;
 					pattern = LT(1);
 					match(TYPE_PATTERN);
 					if ( inputState.guessing==0 ) {
-						
-								
-										try {
-						
-											ITokenSource tokenSource = CaesarTokenSource.createTokenSource(
-																					"declare "+pattern.getText(),
-																					new CaesarSourceContext(sourceRef));				
-						
-							    			PatternParser patternParser = new PatternParser(tokenSource);				
-											context.addDeclare(patternParser.parseDeclare());		
-											
-										} catch(ParserException e) {
-									  		reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));			
-										} catch(RuntimeException e) {
-									  		reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));							
-										}  			
-									
+						try{
+							CaesarPatternParser patternParser = new CaesarPatternParser(
+																	"declare "+pattern.getText(),
+																	new CaesarSourceContext(sourceRef) );
+							context.addDeclare(patternParser.parseDeclare());			
+						}
+						catch(RuntimeException e) {
+							reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));
+						}							
 					}
 					break;
 				}
@@ -1942,7 +1932,7 @@ private static final int MAX_LOOKAHEAD = 2;
 					match(LPAREN);
 					parameters=jParameterDeclarationList(JLocalVariable.DES_PARAMETER);
 					match(RPAREN);
-					adviceDecl=jAdviceDeclaration(AdviceKind.Before, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, null);
+					adviceDecl=jAdviceDeclaration(CaesarAdviceKind.Before, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, null);
 					if ( inputState.guessing==0 ) {
 							
 										context.addAdviceDeclaration(adviceDecl);
@@ -1954,7 +1944,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				{
 					match(LITERAL_after);
 					if ( inputState.guessing==0 ) {
-						kind = AdviceKind.After;
+						kind = CaesarAdviceKind.After;
 					}
 					match(LPAREN);
 					parameters=jParameterDeclarationList(JLocalVariable.DES_PARAMETER);
@@ -1984,7 +1974,7 @@ private static final int MAX_LOOKAHEAD = 2;
 						}
 						}
 						if ( inputState.guessing==0 ) {
-							kind = AdviceKind.AfterReturning;
+							kind = CaesarAdviceKind.AfterReturning;
 						}
 						break;
 					}
@@ -2011,7 +2001,7 @@ private static final int MAX_LOOKAHEAD = 2;
 						}
 						}
 						if ( inputState.guessing==0 ) {
-							kind = AdviceKind.AfterThrowing;
+							kind = CaesarAdviceKind.AfterThrowing;
 						}
 						break;
 					}
@@ -2065,7 +2055,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							}
 							}
 							}
-							adviceDecl=jAdviceDeclaration(AdviceKind.Around, modifiers, parameters, type, throwsList, extraParam);
+							adviceDecl=jAdviceDeclaration(CaesarAdviceKind.Around, modifiers, parameters, type, throwsList, extraParam);
 							if ( inputState.guessing==0 ) {
 								
 									  			context.addAdviceDeclaration(adviceDecl);	  			
@@ -2812,7 +2802,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		JavadocComment	javadoc = getJavadocComment();
 		JavaStyleComment[]	comments = getStatementComment();
 		TypeFactory factory = environment.getTypeFactory();  
-		Pointcut pointcut = null;
+		CaesarPointcut pointcut = null;
 		
 		
 		name = LT(1);
@@ -2899,7 +2889,7 @@ private static final int MAX_LOOKAHEAD = 2;
 	}
 	
 	private final AdviceDeclaration  jAdviceDeclaration(
-		AdviceKind kind, int modifiers, JFormalParameter[] parameters, CType type, CReferenceType[] throwsList, JFormalParameter extraParam
+		CaesarAdviceKind kind, int modifiers, JFormalParameter[] parameters, CType type, CReferenceType[] throwsList, JFormalParameter extraParam
 	) throws RecognitionException, TokenStreamException {
 		AdviceDeclaration self = null;
 		
@@ -2923,14 +2913,11 @@ private static final int MAX_LOOKAHEAD = 2;
 				
 			
 					try {
-						ITokenSource tokenSource = CaesarTokenSource.createTokenSource(
-																		pattern.getText(),
-																		new CaesarSourceContext(sourceRef));
-																		
-						PatternParser patternParser = new PatternParser(tokenSource);			
-						Pointcut pointcut = patternParser.parsePointcut();
-			
-						
+						CaesarPointcut pointcut = null;
+							CaesarPatternParser patternParser = new CaesarPatternParser(
+																	pattern.getText(),
+																	new CaesarSourceContext(sourceRef) );
+						pointcut = patternParser.parsePointcut();
 						//handle throwing parameter
 						if (extraParam != null) {
 							JFormalParameter[] newParameters = new JFormalParameter[parameters.length + 1];
@@ -2952,9 +2939,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			kind,
 			extraParam != null);
 						
-					} catch(ParserException e) {
-						reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));			
-					} catch(RuntimeException e) {
+					}catch(RuntimeException e) {
 						reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));							
 					}  			
 			
@@ -6781,10 +6766,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		return self;
 	}
 	
-	private final Pointcut  jPointcut(
+	private final CaesarPointcut  jPointcut(
 		
 	) throws RecognitionException, TokenStreamException {
-		Pointcut self = null;
+		CaesarPointcut self = null;
 		
 		Token  pattern = null;
 		
@@ -6815,14 +6800,10 @@ private static final int MAX_LOOKAHEAD = 2;
 					if (pattern != null) {
 					
 						try {
-							ITokenSource tokenSource = CaesarTokenSource.createTokenSource(
-																			pattern.getText(),
-																			new CaesarSourceContext(sourceRef));
-						
-							PatternParser patternParser = new PatternParser(tokenSource);			
+							CaesarPatternParser patternParser = new CaesarPatternParser(
+																	pattern.getText(),
+																	new CaesarSourceContext(sourceRef) );
 							self = patternParser.parsePointcut();
-						} catch(ParserException e) {
-							reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));			
 						} catch(RuntimeException e) {
 						  	reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));							
 						}  			
@@ -6830,7 +6811,7 @@ private static final int MAX_LOOKAHEAD = 2;
 						
 					} else {
 					
-						self = Pointcut.makeMatchesNothing(Pointcut.SYMBOLIC);
+						self = CaesarPointcut.makeMathesNothing();
 						
 					}
 				

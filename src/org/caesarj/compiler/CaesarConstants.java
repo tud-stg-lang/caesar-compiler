@@ -101,5 +101,13 @@ public interface CaesarConstants extends Constants {
 	public static final String THREAD_MAPPER_EXTENSION = "$ThreadMapper";
 
 	public static final String REGISTRY_EXTENSION = "$Registry";
+	
+	// Constants for Advice-Attributes taken from ...aspectj.advice
+	public static final int ExtraArgument = 1;
+	public static final int ThisJoinPoint = 2;
+	public static final int ThisJoinPointStaticPart = 4;
+	public static final int ThisEnclosingJoinPointStaticPart = 8;
+	public static final int ParameterMask = 0xf;
+
 
 }

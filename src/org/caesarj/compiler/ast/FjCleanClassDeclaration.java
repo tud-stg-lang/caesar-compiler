@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Vector;
 
-import org.aspectj.weaver.patterns.Declare;
+
 import org.caesarj.classfile.Constants;
 import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.CciConstants;
@@ -14,6 +14,7 @@ import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
+import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CContext;
@@ -90,7 +91,7 @@ public class FjCleanClassDeclaration
 		JavaStyleComment[] comment,
 		PointcutDeclaration[] pointcuts,
 		AdviceDeclaration[] advices,
-		Declare[] declares) {
+		CaesarDeclare[] declares) {
 			super(
 				where,
 				modifiers,

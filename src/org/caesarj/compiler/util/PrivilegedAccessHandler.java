@@ -4,11 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.aspectj.weaver.AjcMemberMaker;
-import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.TypeX;
-
 import org.caesarj.kjc.CField;
 import org.caesarj.kjc.CMethod;
 import org.caesarj.compiler.ast.FjSourceClass;
@@ -16,6 +11,7 @@ import org.caesarj.compiler.ast.FjSourceField;
 import org.caesarj.compiler.ast.PrivilegedField;
 import org.caesarj.compiler.ast.PrivilegedMethod;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
+import org.caesarj.compiler.aspectj.CaesarMember;
 
 /**
  * Handles the privileged access to invisible (private, protected, package-access) fields and methods.
@@ -77,20 +73,18 @@ public class PrivilegedAccessHandler {
 			privilegedMethods.put(method, privilegedMethod);
 		}
 
-		TypeX aspectType = CaesarBcelWorld.getInstance().resolve(aspect);
-		TypeX declaringType =
-			CaesarBcelWorld.getInstance().resolve(method.getOwner());
-
-		ResolvedMember member =
-			new ResolvedMember(
-				Member.METHOD,
-				declaringType,
-				method.getModifiers(),
-				method.getIdent(),
-				method.getSignature());
-
-		ResolvedMember resolvedMethod =
-			AjcMemberMaker.privilegedAccessMethodForMethod(aspectType, member);
+		String  aspectSig = CaesarBcelWorld.getInstance().resolve(aspect).getSignature(),
+				declaringSig = 	CaesarBcelWorld.getInstance().resolve(method.getOwner()).getSignature();
+		
+		CaesarMember	member = CaesarMember.Member(
+									CaesarMember.METHOD,
+									declaringSig,
+									method.getModifiers(),
+									method.getIdent(),
+									method.getSignature()),
+						resolvedMethod = 
+							CaesarMember.privilegedAccessMethodForMethod(
+											aspectSig, member);
 
 		privilegedMethod.setIdent(resolvedMethod.getName());
 		privilegedMethod.setModifiers(resolvedMethod.getModifiers());
@@ -99,15 +93,15 @@ public class PrivilegedAccessHandler {
 	}
 
 	/**
-	 * Gets the accessed fields and methods as ResolvedMembers.
+	 * Gets the accessed fields and methods as CaesarMembers.
 	 * Needed for Attribute creation.
 	 * 
-	 * @return ResolvedMember[]
+	 * @return CaesarMember[]
 	 */
-	public ResolvedMember[] getAccessedMembers() {
+	public CaesarMember[] getAccessedMembers() {
 
-		ResolvedMember[] accessedMembers =
-			new ResolvedMember[privilegedFields.size()
+		CaesarMember[] accessedMembers =
+			new CaesarMember[privilegedFields.size()
 				+ privilegedMethods.size()];
 
 		Iterator iterator = privilegedFields.values().iterator();

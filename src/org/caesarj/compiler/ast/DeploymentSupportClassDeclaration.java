@@ -1,7 +1,5 @@
 package org.caesarj.compiler.ast;
 
-import org.aspectj.weaver.patterns.Declare;
-
 import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CContext;
 import org.caesarj.kjc.CModifier;
@@ -22,6 +20,7 @@ import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
+import org.caesarj.compiler.aspectj.CaesarDeclare;
 
 /**
  * This class declaration is only for the generated deployment support classes.
@@ -84,7 +83,7 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
 		JavaStyleComment[] comment,
 		PointcutDeclaration[] pointcuts,
 		AdviceDeclaration[] advices,
-		Declare[] declares,
+		CaesarDeclare[] declares,
 		FjClassDeclaration crosscuttingClass,
 		String postfix) {
 		super(

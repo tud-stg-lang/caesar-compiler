@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: ParseClassContext.java,v 1.2 2003-07-30 09:24:55 werner Exp $
+ * $Id: ParseClassContext.java,v 1.3 2003-12-19 11:51:56 klose Exp $
  */
 
 package org.caesarj.compiler;
@@ -23,8 +23,8 @@ package org.caesarj.compiler;
 import java.util.ArrayList;
 import java.util.Stack;
 
-import org.aspectj.weaver.patterns.Declare;
 
+import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.ast.AdviceDeclaration;
 import org.caesarj.compiler.ast.PointcutDeclaration;
 
@@ -100,7 +100,7 @@ public class ParseClassContext {
 		advices.add(advice);
 	}
 
-	public void addDeclare(Declare declare) {
+	public void addDeclare(CaesarDeclare declare) {
 		declares.add(declare);
 	}
 
@@ -142,8 +142,8 @@ public class ParseClassContext {
 			new AdviceDeclaration[0]);
 	}
 
-	public Declare[] getDeclares() {
-		return (Declare[]) declares.toArray(new Declare[0]);
+	public CaesarDeclare[] getDeclares() {
+		return (CaesarDeclare[]) declares.toArray(new CaesarDeclare[0]);
 	}
 
 	// ----------------------------------------------------------------------

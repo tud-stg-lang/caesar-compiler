@@ -1,9 +1,5 @@
 package org.caesarj.compiler.ast;
 
-import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.TypeX;
-
 import org.caesarj.kjc.CMethod;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CTypeVariable;
@@ -11,6 +7,7 @@ import org.caesarj.kjc.JBlock;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
+import org.caesarj.compiler.aspectj.CaesarMember;
 
 /**
  * Type comment.
@@ -19,7 +16,7 @@ import org.caesarj.compiler.aspectj.CaesarBcelWorld;
  */
 public class PrivilegedMethod extends FjSourceMethod {
 
-	private ResolvedMember resolvedMember;
+	private CaesarMember	resolvedMember;
 
 	private CMethod baseMethod;
 
@@ -57,14 +54,13 @@ public class PrivilegedMethod extends FjSourceMethod {
 		this.baseMethod = baseMethod;
 	}
 
-	public ResolvedMember getResolvedMember() {
+	public CaesarMember		getResolvedMember() {
 		if (resolvedMember == null) {
-			TypeX declaringType =
-				CaesarBcelWorld.getInstance().resolve(getOwner());
-
+			String	declaringType =
+			CaesarBcelWorld.getInstance().resolve(getOwner()).getSignature();
 			resolvedMember =
-				new ResolvedMember(
-					Member.METHOD,
+				CaesarMember.Member(
+					CaesarMember.METHOD,
 					declaringType,
 					getModifiers(),
 					baseMethod.getIdent(),
