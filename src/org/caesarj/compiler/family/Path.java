@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Path.java,v 1.11 2005-01-26 16:10:22 aracic Exp $
+ * $Id: Path.java,v 1.12 2005-02-04 17:13:55 klose Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -59,7 +59,7 @@ import org.caesarj.util.UnpositionedError;
  * @author Karl Klose
  */
 public abstract class Path {       
-    
+
     private static final String ANONYMOUS_FIELD_ACCESS = "$".intern();
     Path prefix;
     CReferenceType type;
@@ -86,7 +86,30 @@ public abstract class Path {
         Path p = createFrom(context, expr);
         return ((ContextExpression)p.getHead()).getK(); 
     }
-    
+
+    public Path substitute(String ident, Path path){
+        Path p = null;
+        
+        Path head = getHead(),
+        	 pred = getHeadPred();
+        
+        if (head instanceof ContextExpression){
+            ContextExpression ce = (ContextExpression) head;
+            if (ce.getK()==0){
+                if (pred instanceof FieldAccess){
+                    FieldAccess fa = (FieldAccess)pred;
+                    if (fa.getName().equals(ident)){
+                        Path ppath = clonePath();
+                        Path third = ppath.getPredOf(getHeadPred());
+                        third.prefix = path.clonePath();
+                        return ppath;
+                    }
+                }
+            }
+        }
+        
+        return p;
+    }
     
     /**
      * Create a path from an expression.
@@ -275,10 +298,19 @@ public abstract class Path {
         else 
             return this;
     }
+
+    Path getPredOf(Path p){
+        if (prefix == null) return null;
+        if (prefix == p) return this;
+        return prefix.getPredOf(p);
+    }
+
+    
     
     public abstract Path normalize() throws UnpositionedError;
     
     protected abstract Path _normalize(Path pred, Path tail) throws UnpositionedError;
     
-    protected abstract Path clonePath();    
+    protected abstract Path clonePath();
+
 }
