@@ -5,9 +5,9 @@
 package org.caesarj.compiler.classmixer.test.example1;
 
 /**
- * @author Diana
- *
- * class for demonstrating method combination algorithm 
+ * @version $Revision: 1.2 $ $Date: 2004-03-05 20:25:05 $
+ * @author Diana Kapsa
+ * 
  */
 public class Person {
 	

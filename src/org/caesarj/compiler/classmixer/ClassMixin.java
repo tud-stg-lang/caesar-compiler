@@ -1,16 +1,11 @@
 package org.caesarj.compiler.classmixer;
-
-/*
- * Created on 02.03.2004
- *
- * representation of class based mixin
- */
-
 /**
- * @version $Revision: 1.1 $ $Date: 2004-03-05 20:18:03 $
+ * @version $Revision: 1.2 $ $Date: 2004-03-05 20:25:05 $
  * @author Diana Kapsa
  * 
+ * Representation of a class based mixin
  */
+
 import java.io.*;
 import java.util.Vector;
 

@@ -5,6 +5,12 @@ package org.caesarj.compiler.classmixer;
  * Diana Kapsa
  * teststub for running merge algorithm
  */
+ 
+/**
+ * @version $Revision: 1.2 $ $Date: 2004-03-05 20:25:05 $
+ * @author Diana Kapsa
+ * 
+ */
 import java.util.*; 
  
 import org.apache.bcel.classfile.*;

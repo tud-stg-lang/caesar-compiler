@@ -7,8 +7,9 @@ package org.caesarj.compiler.classmixer;
  */
 
 /**
- * @author Diana
- *
+ * @version $Revision: 1.2 $ $Date: 2004-03-05 20:25:05 $
+ * @author Diana Kapsa
+ * 
  */
 import java.util.Vector;
 

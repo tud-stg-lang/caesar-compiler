@@ -8,10 +8,9 @@ package org.caesarj.compiler.classmixer;
  */
 
 /**
- * @author Diana
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * @version $Revision: 1.2 $ $Date: 2004-03-05 20:25:05 $
+ * @author Diana Kapsa
+ * 
  */
 public abstract class Mixin {
 
