@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JPhylum.java,v 1.3 2004-09-06 13:31:36 aracic Exp $
+ * $Id: JPhylum.java,v 1.4 2004-09-08 17:08:00 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -152,9 +152,9 @@ public abstract class JPhylum extends Utils implements Constants {
  
  public void accept(IVisitor visitor) {
      if(visitor.start(this)) {
-         recurse(visitor);
-         visitor.end();
+         recurse(visitor);    
      }
+     visitor.end();
  }
  
  public void recurse(IVisitor p) {
