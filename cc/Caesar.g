@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.15 2004-02-05 20:07:49 ostermann Exp $
+ * $Id: Caesar.g,v 1.16 2004-02-06 16:44:04 ostermann Exp $
  */
 
 /*
@@ -167,11 +167,6 @@ jTypeDefinition [CParseCompilationUnitContext context]
     decl = jClassDefinition[mods]
   |
     decl = jInterfaceDefinition[mods]
-    {
-		if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-         context.addTypeDeclaration(environment.getClassReader(), ((JInterfaceDeclaration)decl).getAssertionClass());
-       }
-    }
   )
     {
        context.addTypeDeclaration(environment.getClassReader(), decl);
@@ -380,8 +375,6 @@ jModifier []
 |
 	"privileged" { self = org.caesarj.kjc.Constants.ACC_PRIVILEGED; }
 |
-	"crosscutting" { self = org.caesarj.kjc.Constants.ACC_CROSSCUTTING; }
-|
 	"deployed" { self = org.caesarj.kjc.Constants.ACC_DEPLOYED; }
 
 // Walter start
@@ -426,17 +419,7 @@ jClassDefinition [int modifiers]
   {
       JMethodDeclaration[]      methods;
 
-      if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-        JMethodDeclaration[]    assertions = context.getAssertions();
-        JMethodDeclaration[]    decMethods = context.getMethods();
-
-        methods = new JMethodDeclaration[assertions.length+decMethods.length];
-        // assertions first!
-        System.arraycopy(assertions, 0, methods, 0, assertions.length);
-        System.arraycopy(decMethods, 0, methods, assertions.length, decMethods.length);
-      } else {
-        methods = context.getMethods();
-      }
+      methods = context.getMethods();
       if (superClass instanceof CciWeaveletReferenceType)
       	self = new CciWeaveletClassDeclaration(sourceRef,
 				   modifiers,
@@ -637,22 +620,6 @@ jInterfaceDefinition [int modifiers]
                                            context.getBody(),
                                            getJavadocComment(),
                                            getStatementComment());
-
-
-      if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-        KopiAssertionClassDeclaration assertionClass =
-          new KopiAssertionClassDeclaration(sourceRef,
-                                            modifiers,
-                                            ident.getText(),
-                                            CTypeVariable.cloneArray(typeVariables),
-                                            context.getAssertions(),
-                                            null,
-                                            null,
-                                            environment.getTypeFactory());
-		if (self instanceof JInterfaceDeclaration)
-        	((JInterfaceDeclaration)self).setAssertionClass(assertionClass);
-      }
-
       context.release();
     }
 ;
@@ -725,9 +692,6 @@ jMember [ParseClassContext context]
     		decl = jInterfaceDefinition[modifiers]          // inner interface
       		{
         		context.addInnerDeclaration(decl);
-        		if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-           			context.addInnerDeclaration(((JInterfaceDeclaration)decl).getAssertionClass());
-        		}
       	}
   		|
     		method = jConstructorDefinition[context, modifiers]
@@ -772,7 +736,7 @@ jMember [ParseClassContext context]
 			}  	 		  		 	 
 	  	|
   			//after advice declaration
-  			"after" {kind = CaesarAdviceKind.After;}
+  			 "after" {kind = CaesarAdviceKind.After;}
 	  		LPAREN  parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN
 			(
 				"returning"
@@ -1320,11 +1284,7 @@ jReturnStatement []
 :
   "return" ( expr = jExpression[] )? SEMI
     {
-      if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-        self = new KopiReturnStatement(sourceRef, expr, getStatementComment());
-      } else {
         self = new FjReturnStatement(sourceRef, expr, getStatementComment());
-      }
     }
 ;
 
@@ -2091,17 +2051,7 @@ jUnqualifiedNewExpression []
           {
             JMethodDeclaration[]      methods;
 
-            if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-              JMethodDeclaration[]    assertions = context.getAssertions();
-              JMethodDeclaration[]    decMethods = context.getMethods();
-
-              methods = new JMethodDeclaration[assertions.length+decMethods.length];
-              // assertions first!
-              System.arraycopy(assertions, 0, methods, 0, assertions.length);
-              System.arraycopy(decMethods, 0, methods, assertions.length, decMethods.length);
-            } else {
               methods = context.getMethods();
-            }
 
 	    decl = new FjClassDeclaration(sourceRef,
 					 org.caesarj.kjc.Constants.ACC_FINAL, // JLS 15.9.5
@@ -2148,17 +2098,7 @@ jQualifiedNewExpression [JExpression prefix]
       {
         JMethodDeclaration[]      methods;
 
-        if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-          JMethodDeclaration[]    assertions = context.getAssertions();
-          JMethodDeclaration[]    decMethods = context.getMethods();
-
-          methods = new JMethodDeclaration[assertions.length+decMethods.length];
-          // assertions first!
-          System.arraycopy(assertions, 0, methods, 0, assertions.length);
-          System.arraycopy(decMethods, 0, methods, assertions.length, decMethods.length);
-        } else {
           methods = context.getMethods();
-        }
 
 	decl = new FjClassDeclaration(sourceRef,
 				     org.caesarj.kjc.Constants.ACC_FINAL, // JLS 15.9.5
