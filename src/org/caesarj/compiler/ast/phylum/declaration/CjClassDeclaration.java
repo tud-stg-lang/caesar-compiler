@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjClassDeclaration.java,v 1.32 2005-03-30 14:21:44 gasiunas Exp $
+ * $Id: CjClassDeclaration.java,v 1.33 2005-04-04 09:46:50 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -684,5 +684,17 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
             declares[i].traverse(visitorSet);
         } 
         */      
+    }
+    
+    public void sortAdvicesByOrderNr() {
+    	for (int i1 = 0; i1 < advices.length; i1++) {
+    		for (int i2 = i1+1; i2 < advices.length; i2++) {
+    			if (advices[i2].getOrderNr() < advices[i1].getOrderNr()) {
+    				CjAdviceDeclaration decl = advices[i2];
+    				advices[i2] = advices[i1];
+    				advices[i1] = decl;
+    			}
+    		}
+    	}    	
     }
 }
