@@ -1,3 +1,10 @@
+VC_M16 - 10.03.2005
+- Merge of the features from version VC_M15C to the HEAD
+- Unittests
+	- Framework for unit tests has been added
+- Type checks implemented
+	- first version of type checks
+
 VC_M15C - 15.02.2005
 - Virtual class can be defined in a separate file outside its enclosing collaboration. 
   The file contains cclass declaration instead of package declaration at the beginning.

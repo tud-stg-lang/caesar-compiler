@@ -2,7 +2,9 @@
 
 	<common-code-base>		
 		public cclass G {
-			public cclass N {}
+			public cclass N {
+				public N x() {return null;}
+			}
 		}
 	</common-code-base>
 
@@ -71,6 +73,21 @@
 			}
         </code>
     </compile-check-error>    	
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="wildcard006" description="Check wildcards">
+        <code>
+			public class A {
+				final G g = new G();
+				g.N n = g.new N();
+				public Object getSomething() {return n;}
+				public void foo() {
+					G.N nn = (G.N)this.getSomething();
+					nn = ((G.N)this.getSomething()).x();
+				}
+			}
+        </code>
+    </compile>    	
 	
 
 </testsuite>
