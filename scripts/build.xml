@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="compile" name="Pricing">
+	<property name="caesardir" location=".."/>
+	<property name="javart" value="${java.home}\lib\rt.jar"/>
+	
+	<property name="srcdir" value="${caesardir}/examples/pricing"/>
+	<property name="destdir" location="bin"/>
+	
+	<path id="caesar.classpath">		
+		<fileset dir="${caesardir}">
+		     <include name="**/*.jar"/>
+	    </fileset>
+	</path>
+	
+	<path id="project.classpath">		
+		<fileset dir="${caesardir}">
+		    <include name="**/caesar-runtime.jar"/>
+			<include name="**/aspectjrt.jar"/>
+	    </fileset>
+	</path>
+	
+	<target name="paths">
+		<pathconvert refid="caesar.classpath" targetOS="windows" property="caesarclasspath"/>
+		<pathconvert refid="project.classpath" targetOS="windows" property="projclasspath"/>
+		<echo message="Caesar CLASSPATH: ${caesarclasspath}"/>
+		<echo message="Project CLASSPATH: ${projclasspath}"/>
+	</target>
+	
+	<target name="props" depends="paths">
+		<echo message="dir: ${basedir}"/>
+		<echo message="classpath: ${java.class.path}"/>
+		<echo message="javahome: ${java.home}"/>
+		<echo message="caesarpath: ${caesarc.paths}"/>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${destdir}"/>
+		<mkdir dir="${destdir}"/>
+	</target>
+	
+	<target name="compile" depends="clean, paths">
+		<apply executable="java" parallel="true">
+			<env key="CLASSPATH" value="${caesardir}/bin;${caesarclasspath}"/>
+			<arg value="org.caesarj.compiler.Main"/>
+			<arg value="-d${destdir}"/>
+			<arg value="-C"/>
+			<arg value="${projclasspath}"/>
+			<fileset dir="${srcdir}" includes="**/*.java"/>			
+		</apply>
+	</target>		
+</project>
