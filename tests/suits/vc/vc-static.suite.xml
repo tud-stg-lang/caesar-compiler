@@ -1,0 +1,18 @@
+<testsuite name="Test relationships between Caesar classes" package="suits.vc.vcstatic">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcstatic001" description="Test static method access">
+		<test>			
+			assertEquals(OuterA.getA(), 5);
+		</test>
+        <code>
+        	public cclass OuterA {
+        		static private int a = 5;
+        		static public int getA() {
+        		   return a;
+        		}
+			}
+        </code>
+    </compile-run>	
+	    
+</testsuite>
