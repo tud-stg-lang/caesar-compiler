@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CMethodContext.java,v 1.3 2004-03-15 11:56:53 aracic Exp $
+ * $Id: CMethodContext.java,v 1.4 2004-09-03 08:04:27 gasiunas Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -77,7 +77,10 @@ public class CMethodContext extends CContext {
     Enumeration		enum = throwables.elements();
     CReferenceType[]	checked = self.getThrowables();
     boolean[]		used = new boolean[checked.length];
-
+/*		V.G. Exception checking temporarily switched off,
+ *           because current implementation does not take 
+ *           to account exception softening 
+  
   loop:
     while (enum.hasMoreElements()) {
       CThrowableInfo	thrown = (CThrowableInfo)enum.nextElement();
@@ -112,6 +115,7 @@ public class CMethodContext extends CContext {
 				   null));
       }
     }
+*/
   }
 
   // ----------------------------------------------------------------------
