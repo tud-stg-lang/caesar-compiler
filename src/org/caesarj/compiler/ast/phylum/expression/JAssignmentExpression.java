@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JAssignmentExpression.java,v 1.8 2005-01-20 16:25:11 aracic Exp $
+ * $Id: JAssignmentExpression.java,v 1.9 2005-01-21 17:02:05 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -119,15 +119,15 @@ public class JAssignmentExpression extends JBinaryExpression {
     CType 	rType = right.getType(factory),
     		lType = left.getType(factory);
     
-    boolean rDepType = rType instanceof CDependentType,	
-    		lDepType = lType instanceof CDependentType;
+    boolean rDepType = rType instanceof CDependentType || rType.getCClass().isMixinInterface() && rType.getCClass().isNested(),	
+    		lDepType = lType instanceof CDependentType || lType.getCClass().isMixinInterface() && lType.getCClass().isNested();
+        
+    check(
+        context,
+        !(rDepType ^ lDepType),
+        CaesarMessages.ASSIGNMENT_MIXEDTYPES);    
     
-    if ( rDepType != lDepType ){
-        check(context, false, CaesarMessages.ASSIGNMENT_MIXEDTYPES );
-    }
-    
-    if (rDepType == true){
-	    
+    if (rDepType == true) {
 	    // CTODO mach hier weiter
 	    Path rPath = Path.createFrom(context.getBlockContext(), right);
 	    Path lPath = Path.createFrom(context.getBlockContext(), left);
