@@ -10,17 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.aspectj.CaesarNameMangler;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
-import org.caesarj.compiler.ast.phylum.declaration.*;
-import org.caesarj.compiler.ast.phylum.expression.*;
-import org.caesarj.compiler.ast.phylum.statement.*;
-import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
-import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
+import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.constants.CaesarConstants;
-import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.types.*;
-import org.caesarj.util.TokenReference;
 
 /**
  * ...

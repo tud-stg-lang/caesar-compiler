@@ -1,24 +1,15 @@
 package org.caesarj.compiler.cclass;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.aspectj.CaesarNameMangler;
-import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.declaration.*;
-import org.caesarj.compiler.ast.phylum.expression.*;
-import org.caesarj.compiler.ast.phylum.expression.literal.JIntLiteral;
-import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
-import org.caesarj.compiler.ast.phylum.expression.literal.JStringLiteral;
-import org.caesarj.compiler.ast.phylum.statement.*;
-import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
-import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarConstants;
-import org.caesarj.compiler.export.CBinaryClass;
-import org.caesarj.compiler.export.CModifier;
-import org.caesarj.compiler.types.*;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
 
 /**
@@ -139,9 +130,8 @@ public class CClassFactory implements CaesarConstants {
 			new CClassNameType(interfaceName));
             
         CReferenceType superType = caesarClass.getSuperClass();
-        
-        // hack
-        if(superType instanceof CClassNameType) {
+         
+        if(superType != null) {
             CClassNameType newSuperType = new CClassNameType(superType.getQualifiedName()+"_Impl");
             caesarClass.setSuperClass(newSuperType);
         }
