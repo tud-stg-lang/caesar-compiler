@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.21 2005-02-14 16:28:56 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.22 2005-02-16 17:54:04 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -34,7 +34,9 @@ import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.AdditionalGenerationContext;
+import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CConstructorContext;
+import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.export.CClass;
@@ -107,7 +109,7 @@ public class JMethodCallExpression extends JExpression
 		this.ident = method.getIdent();
 		this.args = args;
 		this.type = method.getReturnType();
-		this.analysed = true;
+		this.analysed = false; // IVICA: reanalyse, this is relevant for recalculating the family
 	}
 
 	// ----------------------------------------------------------------------
@@ -353,6 +355,40 @@ public class JMethodCallExpression extends JExpression
 		// IVICA: calculate the family of this epxression
 		if( type.isCaesarReference() ) {
 		    calcExpressionFamily();
+		}
+		else if(		    
+		    type.isClassType() 
+		    //&& type.getCClass() == context.getClassContext().getCClass() 
+		    && getIdent().startsWith(JAV_ACCESSOR)
+		    && method.isSynthetic()
+	    ) {
+		    // CRITICAL: this is not nice at all -> tide it up
+		    // we have an outer accessor method (and it has never a prefix?)  
+	        int k = 0;		        
+            CClass clazz = type.getCClass();
+            
+            CContext ctx = context.getBlockContext();
+            
+            // ... find first class context ... 
+            while (!(ctx instanceof CClassContext)){
+                ctx = ctx.getParentContext();
+                k++;
+            }
+            // ... and search for the correct outer class.
+            while ( ((CClassContext)ctx).getCClass() != clazz ){
+                ctx = ctx.getParentContext();
+                k++;
+                
+                check(
+                    context,
+                    !(context == null || !(ctx instanceof CClassContext) ),                        
+                    CaesarMessages.ILLEGAL_PATH_ELEMENT, 
+                    "accessor method not returning a outer reference"
+                );
+            }                		       
+	        
+	        family = new ContextExpression(null, k+1, null);
+		    thisAsFamily = new ContextExpression(null, k, null);
 		}
 		
 		
