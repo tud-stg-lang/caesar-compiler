@@ -28,7 +28,10 @@ public class StructureModelDump {
 
 		printNodeHeader(this.out, node);
 
-		if (node instanceof ProgramElementNode) {
+		if(node instanceof CaesarProgramElementNode){
+			this.out.print(node.toString());
+			this.out.println();
+		}else if (node instanceof ProgramElementNode) {
 			ProgramElementNode peNode = (ProgramElementNode) node;
 			this.out.print(
 				" '" + peNode.getBytecodeName() + "' '" + peNode.getBytecodeSignature() + peNode.getAccessibility()+"'");   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$

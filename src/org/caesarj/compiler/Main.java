@@ -12,6 +12,8 @@ import java.util.Set;
 
 import org.aspectj.asm.ProgramElementNode;
 import org.aspectj.asm.StructureModelManager;
+import org.caesarj.compiler.asm.CaesarAsmBuilder;
+import org.caesarj.compiler.asm.StructureModelDump;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
@@ -50,6 +52,9 @@ public class Main extends MainSuper implements Constants {
     // The used weaver. An instance ist created when it's needed in generateAndWeaveCode
     private CaesarWeaver weaver;
 
+    protected static boolean buildAsm = false;
+    protected static boolean printAsm = false;
+    
     /**
      * @param workingDirectory the working directory
      * @param diagnosticOutput where to put stderr
@@ -82,7 +87,13 @@ public class Main extends MainSuper implements Constants {
      * compiler control flow.
      */
     public boolean run(String[] args) {
-        errorFound = false;
+    	if(Main.buildAsm){
+    		// starting to build CaesarAsm........
+    		CaesarAsmBuilder.preBuild(StructureModelManager.INSTANCE.getStructureModel());
+    		//System.out.println("after preBuid");
+    	}
+    	
+    	errorFound = false;
 
         if (!parseArguments(args)) {
             return false;
@@ -169,20 +180,6 @@ public class Main extends MainSuper implements Constants {
         if(errorFound) return false;
                
         
-        /*
-        AsmBuilder builder = new AsmBuilder(CaesarBcelWorld.getInstance().getWorld().getModel());
-        for (int i = 0; i < tree.length; i++) {
-            tree[i].accept(builder);
-        }
-                
-        {
-        StructureModelDump dump = new StructureModelDump(System.out);
-        System.out.println("== model before weaving ==============");
-        dump.print("", CaesarBcelWorld.getInstance().getWorld().getModel().getRoot());
-        System.out.println("======================================");
-    	}
-    	*/
-        
         preWeaveProcessing(tree);
         
         tree = null;
@@ -192,15 +189,16 @@ public class Main extends MainSuper implements Constants {
                
         CodeSequence.endSession();
         
-        /*
-        {
-        StructureModelDump dump = new StructureModelDump(System.out);
-        System.out.println("== model after weaving ===============");
-        dump.print("", CaesarBcelWorld.getInstance().getWorld().getModel().getRoot());
-        System.out.println("======================================");
+        if(Main.buildAsm){
+        	CaesarAsmBuilder.postBuild(StructureModelManager.INSTANCE.getStructureModel());
+        	if(Main.printAsm){
+        		StructureModelDump dump = new StructureModelDump(System.out);
+                System.out.println("== model after weaving ===============");
+                dump.print("", StructureModelManager.INSTANCE.getStructureModel().getRoot());
+                System.out.println("======================================");
+        	}
         }
-        */
-
+        
         Log.verbose("compilation ended");
         
         return true;
@@ -221,6 +219,16 @@ public class Main extends MainSuper implements Constants {
 
     protected void preWeaveProcessing(JCompilationUnit[] cu) {
         // redefine in subclass
+    	if(Main.buildAsm){
+	        for (int i = 0; i < cu.length; i++) {
+	        	// note: AsmBuilder.build() starts the Visitor-part of AsmBuilder
+	        	// iterating over the compilationunits and adding appropriate Nodes to 
+	        	// the StructureModel.
+	        	//System.out.println("before AsmBuilder.build");
+	        	CaesarAsmBuilder.build(cu[i], StructureModelManager.INSTANCE.getStructureModel());
+	        	//System.out.println("after AsmBuilder.build");
+	        }
+		}
     }
 
     // checks that the plain method redefinition mechanism still works with VCs 
