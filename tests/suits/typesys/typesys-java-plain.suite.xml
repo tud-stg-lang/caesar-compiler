@@ -1,0 +1,67 @@
+<testsuite name="Test plain java type checker" package="suits.typesystem.plainjava">
+
+	<common-code-base>		
+		public cclass G {
+			public cclass N {}
+		}
+	</common-code-base>
+
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="binary001" description="Test type checks on binary types.">
+        <code>
+			public cclass A {
+				private String s[] = new String[1];
+				public void foo() {
+					s[0] = "x";
+				}
+			}
+		</code>
+    </compile>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="binary002" description="Test type checks on binary types.">
+        <code>
+			public cclass A {
+				private String s;
+				public void foo() {
+					s = "x";
+				}
+			}
+		</code>
+    </compile>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="binary003" description="Test type checks on method calls defined in super.">
+        <code>
+			import javax.swing.*;
+
+			public class A extends JPanel {
+				public void foo() {
+					this.getWidth();
+				}
+			}
+		</code>
+    </compile>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="static001" description="Check initializer of static fields.">
+        <code>
+			public cclass A {
+			}
+			public class B {
+				static A a = new A();
+			}
+		</code>
+    </compile>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="static002" description="Check initializer of static fields.">
+        <code>
+			public cclass A {
+				public static A a = new A();
+			}
+		</code>
+    </compile>
+
+</testsuite>

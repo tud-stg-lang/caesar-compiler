@@ -38,16 +38,10 @@
     <compile id="implicit002b" description="Check dependent types with implicit family paths.">
         <code>
 			public cclass G {
-				public N n = null;
-				public void foo() {
-					//M m = n.x().y();
-					
-					final G g = new G();
-					//g.M mm = g.n.x().y();
-
-					g.N v1 = g.n;		// ctx(0).g.N = ctx(0).g.n;
-					g.M v2 = v1.x();	// ctx(0).g.M = ctx(0).v1.x();
-					g.N v3 = v2.y();	// ctx(0).g.N = ctx(0).v2.y();				
+				public N n = new N();
+				public final G g = new G();
+				public void foo() {					
+					g.N nn = g.n.x().y();
 				}
 				public cclass N {
 					public M x() { return null; }
@@ -65,13 +59,11 @@
 			public cclass GL {
 				public cclass G {
 					public N createN() {
-						final N n = new N();
-						n.X x = n.init().new X();
+						return new N().init();
 					}
 				}
 				public cclass N {
-					public N init() {return new N();}
-					public cclass X {}
+					public N init() {return this;}
 				}
 			}
         </code>

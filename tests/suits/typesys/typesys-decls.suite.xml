@@ -2,6 +2,7 @@
 
 	<common-code-base>
 		public cclass G {
+			public N n = null;
 			public cclass N {}
         }
 	</common-code-base>
@@ -158,5 +159,46 @@
 			}
         </code>     
     </compile-check-error>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+	<compile id="params001" description="Check parameter as dependent types.">
+        <code>
+			public class A {
+			    final G g = new G(); 			    
+			    
+			    public void foo(g.N n) {
+			        g.N nn = n;
+					n = nn;
+			    }   
+			}
+        </code>     
+    </compile>	
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+	<compile id="mostspecific001" description="Check access to variables defined in the supercollaboration.">
+        <code>
+			public cclass GG extends G {
+			    public void foo(N nn) {
+					n = nn;
+			    }   
+			}
+        </code>     
+    </compile>	
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+	<compile id="mostspecific002" description="Check access to variables defined in the supercollaboration.">
+        <code>
+			public cclass GG extends G {
+			    public void foo(N nn) {
+					n = nn;
+			    }   
+			}
+			public cclass GGG extends GG {
+			    public void foo(N nn) {
+					super.foo(nn);
+			    }   
+			}
+        </code>     
+    </compile>	
 
 </testsuite>

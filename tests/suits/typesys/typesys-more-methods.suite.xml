@@ -1,0 +1,30 @@
+<testsuite name="Test plain java type checker" package="suits.typesystem.methods">
+
+	<common-code-base>		
+		public cclass G {
+			public cclass N {}
+		}
+	</common-code-base>
+
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="mmethods001" description="Test method calls.">
+        <code>
+			public cclass A {				
+				public cclass B {
+					public static final G allG = new G();
+					public allG.N n = allG.new N();
+
+					public allG.N getN() { return allG.new N(); }
+
+					public void foo() {
+						B b = new B();
+						allG.N n = b.getN();
+					}
+				}								
+			}			
+		</code>
+    </compile>	
+	
+
+</testsuite>

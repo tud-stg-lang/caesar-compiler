@@ -119,7 +119,7 @@
 					m7(b.g2, b.x2, b.n2);
 				}	
 				
-				void 	m7(final G g, g.X x, x.N n) {}
+				void m7(final G g, final g.X x, x.N n) {}
 			}			
         </code>
     </compile>
@@ -134,7 +134,7 @@
 				    b.g1.X v5 = m8(b.g1, b.x1, b.n1);
 				}	
 				
-				g.X		m8(final G g, g.X x, x.N n) {return x;}
+				g.X	m8(final G g, final g.X x, x.N n) {return x;}
 			}			
         </code>
     </compile>

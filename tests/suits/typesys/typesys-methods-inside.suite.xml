@@ -32,10 +32,10 @@
     </compile-check-error>    	
 
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="ILLEGAL_PATH" id="methods003" description="Check simple method call.">
+    <compile-check-error error="ASSIGNMENT_BADTYPE" id="methods003" description="Check simple method call.">
         <code>
 			public cclass G {
-                public G g = new G();
+                public final G g = new G();
 				public void foo() {
 					N n = new N();
 					n.m( n );
