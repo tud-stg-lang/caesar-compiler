@@ -5,6 +5,7 @@ import java.io.File;
 import junit.framework.TestCase;
 
 import java.io.PrintWriter;
+import java.io.FilenameFilter;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -71,8 +72,16 @@ public class FjTestCase extends TestCase
 			}
 		);
 		
+		// Retrieve input files
+		File workingDir = new File( getWorkingDirectory() + File.separator + pckgName);
+		String[] args = workingDir.list(new JavaExtFilter());
+		
+		for (int i1 = 0; i1 < args.length; i1++)
+		{
+			args[i1] = pckgName + File.separator + args[i1];
+		}
+		
 		// Compile test
-		String[] args = {pckgName + File.separator + testCaseName + ".java"};
 		compiler.run(args);
 		
 		// Execute test
@@ -205,3 +214,10 @@ class ClassReaderMock extends KjcClassReader
 	}
 }
 
+class JavaExtFilter implements FilenameFilter
+{
+	public boolean accept(File dir, String name) 
+	{
+		return name.endsWith(".java") ; 
+	}
+}
