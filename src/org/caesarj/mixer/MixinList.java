@@ -16,7 +16,7 @@ import org.eclipse.jdt.internal.core.util.ToStringSorter;
 public class MixinList {
     
 	/* DEBUG */
-	private static boolean appendHashcode = true;
+	private static boolean appendHashcode = false;
 	public static void appendHashcode( boolean set ){
 		appendHashcode = set;
 	}
@@ -160,7 +160,12 @@ public class MixinList {
         private String packageName;
         private String prefix;
         private String mixinListIdentToken;  
-        private String fullQualifiedName;       
+        private String fullQualifiedName;      
+        private String fullName;
+        
+        public String getFullName(){
+        	return fullName;
+        }
         
         public Element(String fullQualifiedName) {
             String packageName = "";
@@ -182,11 +187,14 @@ public class MixinList {
         
         private void init(String packageName, String className) {
             this.packageName = packageName;
+
+            fullName = className;
             
             int i;
             
             this.prefix = "";
             this.className = className;
+            this.mixinListIdentToken = this.className;
             i = className.lastIndexOf('$');
             if(i >= 0) {
                 prefix = className.substring(0, i+1);
@@ -195,9 +203,11 @@ public class MixinList {
             
             this.fullQualifiedName = packageName+'/'+className;
             
-            this.mixinListIdentToken = this.className;
+            
+            
             if(mixinListIdentToken.endsWith("_Impl")) {
-                mixinListIdentToken = mixinListIdentToken.substring(0, mixinListIdentToken.lastIndexOf("_Impl"));
+            	mixinListIdentToken = Mixer.interfaceName(mixinListIdentToken);
+            	//mixinListIdentToken = mixinListIdentToken.substring(0, mixinListIdentToken.lastIndexOf("_Impl"));
             }
         }
 
