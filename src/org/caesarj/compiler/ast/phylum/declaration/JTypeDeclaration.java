@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.21 2004-09-28 15:13:59 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.22 2004-10-10 19:30:21 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -31,6 +31,7 @@ import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
@@ -308,12 +309,19 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     }
 
         
+    // IVICA: additional passes added
     public void createImplicitCaesarTypes(CContext context) throws PositionedError {
     }
     
     public void adjustSuperType(CContext context) throws PositionedError {
     }
     
+    public void checkVirtualClassMethodSignatures(CCompilationUnitContext context) throws PositionedError {
+    } 
+    
+    public void completeCClassInterfaces(CCompilationUnitContext context) throws PositionedError {
+    }
+
 
     /**
      * Second pass (quick), check interface looks good
