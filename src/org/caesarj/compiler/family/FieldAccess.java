@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: FieldAccess.java,v 1.9 2005-01-26 16:09:25 aracic Exp $
+ * $Id: FieldAccess.java,v 1.10 2005-02-04 19:08:54 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -36,13 +36,23 @@ import org.caesarj.util.UnpositionedError;
  */
 public class FieldAccess extends Path {
 
+    int paramPos;
     private String name;
     
     public FieldAccess(Path prefix, String field, CReferenceType type) {
-        super(prefix, type);
-        this.name = field;
+        this(prefix, field, type, -1);
     }
 
+    public FieldAccess(Path prefix, String field, CReferenceType type, int paramPos) {
+        super(prefix, type);
+        this.name = field;
+        this.paramPos = paramPos;
+    }
+
+    public int getParamPos() {
+        return paramPos;
+    }
+    
     public String getName() {
         return name;
     }
