@@ -16,8 +16,8 @@ public class VCTestCase extends TestCase
 		super("test");
 	}
 
-	public static final String expectedResult = "A.A, A.C, A.B, B.B, B.C";
-												
+	public static final String expectedResult = "A.A, A.B, B.B, A.C, B.C";
+
 
 	public void test() {
 
@@ -45,7 +45,7 @@ public cclass OuterA
 		}
 	}
 
-	public cclass InnerB extends InnerA 
+	public cclass InnerB extends InnerA
 	{
 		public String queryA()
 		{
@@ -63,9 +63,9 @@ public cclass OuterA
 }
 
 public cclass OuterB extends OuterA
-{	
+{
 	// scoping workaround
-	public cclass InnerB 
+	public cclass InnerB
 	{
 		public String queryA()
 		{

@@ -17,7 +17,7 @@ public class VCTestCase extends TestCase
 	}
 
 	public static final String expectedResult =
-		"A.A.A, A.C.A, A.B.A, B.D.A, B.B.A, B.C.A; " +	// C.A
+		"A.A.A, B.D.A, A.B.A, B.B.A, A.C.A, B.C.A; " +	// C.A
 		"A.B.B, B.B.B, B.C.B; " +						// C.B
 		"A.C.C; " +										// C.C
 		"B.D.D, B.B.D, B.C.D; " +						// C.D

@@ -16,16 +16,17 @@ public class VCTestCase extends TestCase
 		super("test");
 	}
 
-	public static final String expectedResult = "A.C1, C.C2, B.L1, A.L1";
+	public static final String expectedResult = "B.C2, C.C2, B.L1, A.L1";
 
 	public void test() {
 
 		System.out.println("-------> VCTest 14b: Test Super Calls and extends for furtherbindings: start");
 
 		OuterC oc = new OuterC_Impl(null);
-		
+
 		String result = ((OuterC.Leaf1)oc.$newLeaf1()).queryA();
-		
+
+		System.out.println(result);
 		assertEquals(expectedResult, result);
 
         System.out.println("-------> VCTest 14: end");
@@ -39,18 +40,18 @@ public cclass _synth {
 }
 
 // [A, 0]
-public cclass OuterA extends _synth 
-{	
+public cclass OuterA extends _synth
+{
 	// [A.C1, 0.C1]
-	public cclass Cat1 
+	public cclass Cat1
 	{
 		public String queryA() {
 			return "A.C1";
 		}
 	}
-	
+
 //	 [A.L1, O.L1, A.C1, 0.C1]
-	public cclass Leaf1 extends Cat1 
+	public cclass Leaf1 extends Cat1
 	{
 		public String queryA() {
 			return super.queryA() + ", A.L1";
@@ -59,18 +60,18 @@ public cclass OuterA extends _synth
 }
 
 // [B, A, 0]
-public cclass OuterB extends _synth 
-{	
+public cclass OuterB extends _synth
+{
 	// [B.C2, O.C2]
-	public cclass Cat2 
+	public cclass Cat2
 	{
 		public String queryA() {
-			return ", B.C2";
+			return "B.C2";
 		}
 	}
-	
+
 	// [B.L1, B.C2, O.C2]
-	public cclass Leaf1 extends Cat2 
+	public cclass Leaf1 extends Cat2
 	{
 		public String queryA() {
 			return super.queryA() + ", B.L1";
@@ -83,13 +84,13 @@ public cclass OuterC extends OuterA & OuterB
 {
 	// [C.C1, A.C1, B.C1, O.C1]
 	public cclass Cat1 {}
-	
-	// [C.C2, C.C1, A.C1, O.C1, B.C1, O.C2]
+
+	// [C.C2, O.C2, C.C1, A.C1, B.C1, O.C1]
 	public cclass Cat2 extends Cat1 {
 		public String queryA() {
 			return super.queryA() + ", C.C2";
 		}
 	}
-		
-	// Leaf1 : [A.L1, B.L1, C.C2, C.C1, A.C1, O.C1, B.C2, O.C2, O.L1]
+
+	// Leaf1 : [A.L1, B.L1, C.C2, O.C2, C.C1, A.C1, B.C1, O.C1]
 }

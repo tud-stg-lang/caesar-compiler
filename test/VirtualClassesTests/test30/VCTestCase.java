@@ -18,20 +18,20 @@ public class VCTestCase extends TestCase
 
 	public static final String expectedResult =
 		// InnerB < A: InnerA( < B: InnerM ), B: InnerN ( < B: InnerA )
-		"A.A.A, A.B.A, B.N.A; " +
+		"A.A.A, B.N.A, A.B.A; " +
 		"C.B.B; " +
 		"B.M.M, B.A.M; " +
 		"B.N.N, B.B.N; " +
 
 		// InnerC < A: InnerA( < B: InnerM ), B: InnerN ( < B: InnerA ), C: InnerB
-		"A.A.A, A.C.A, A.B.A, B.N.A; " +
+		"A.A.A, B.N.A, A.B.A, A.C.A; " +
 		"C.B.B, C.C.B; " +
 		"B.M.M, B.A.M; " +
 		"B.N.N, B.B.N, B.C.N; " +
 
 		// InnerD < A: InnerA( < B: InnerM ), C: InnerB, InnerO
 
-		"A.A.A, A.C.A, A.B.A, B.N.A; " +
+		"A.A.A, B.N.A, A.B.A, A.D.A; " +
 		"C.B.B, C.D.B; " +
 		"B.M.M, B.A.M; " +
 		"C.O.O, C.D.O; " +
@@ -46,13 +46,13 @@ public class VCTestCase extends TestCase
 
 		"A.E.E, A.G.E; " +
 		"B.M.M, B.G.M; " +
-		"C.O.O, C.E.O, C.P.O, C.G.O; " +
+		"C.O.O, C.P.O, C.E.O, C.G.O; " +
 		"C.P.P, C.G.P; " +
 
 		// InnerH < A: InnerE( < C: InnerO ), C: InnerP( < C: InnerO ), InnerA( < B: InnerM )
 
 		"A.E.E, A.H.E; " +
-		"C.O.O, C.E.O, C.P.O, C.H.O; " +
+		"C.O.O, C.P.O, C.E.O, C.H.O; " +
 		"C.P.P, C.H.P; " +
 		"A.A.A, C.H.A";
 
@@ -144,7 +144,7 @@ public cclass OuterA
 	{
 		public String queryA()
 		{
-			return super.queryA() + ", A.C.A";
+			return super.queryA() + ", A.D.A";
 		}
 	}
 

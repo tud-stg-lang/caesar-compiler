@@ -16,7 +16,7 @@ public class VCTestCase extends TestCase
 		super("test");
 	}
 
-	public static final String expectedResult =	"A.A.A, A.C.A; B.B.B, B.C.B; A.C.C; A.A.D; B.B.E; A.A.F; A.C.G";
+	public static final String expectedResult =	"A.A.A, A.C.A; B.B.B, B.C.B; A.C.C; A.A.D; B.B.E; B.C.F; A.C.G";
 
 
 	public void test()
