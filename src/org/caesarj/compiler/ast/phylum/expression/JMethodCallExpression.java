@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.29 2005-03-04 18:16:47 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.30 2005-03-06 13:46:56 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -28,6 +28,7 @@ package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.Log;
 import org.caesarj.compiler.ast.CMethodNotFoundError;
+import org.caesarj.compiler.ast.phylum.declaration.JAccessorMethod;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
@@ -39,13 +40,17 @@ import org.caesarj.compiler.context.CConstructorContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.export.CCjSourceAccessorMethod;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CField;
+import org.caesarj.compiler.export.CMember;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.family.ArgumentAccess;
 import org.caesarj.compiler.family.ContextExpression;
 import org.caesarj.compiler.family.Dummy;
+import org.caesarj.compiler.family.FieldAccess;
 import org.caesarj.compiler.family.MethodAccess;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CArrayType;
@@ -354,19 +359,18 @@ public class JMethodCallExpression extends JExpression
 
 		
 		// IVICA: calculate the family of this epxression
-		if( type.isCaesarReference() ) {
-		    calcExpressionFamily();
-		}
-		else if(		    
+		if(		    
 		    type.isClassType() 
 		    //&& type.getCClass() == context.getClassContext().getCClass() 
 		    && getIdent().startsWith(JAV_ACCESSOR)
 		    && method.isSynthetic()
-	    ) {
-		    // CRITICAL: this is not nice at all -> tide it up
-		    // we have an outer accessor method (and it has never a prefix?)  
-	        int k = 0;		        
-            CClass clazz = type.getCClass();
+	    ) { 
+	        int k = 0;		      
+            
+            CCjSourceAccessorMethod accessorMethod = (CCjSourceAccessorMethod)method;
+            JAccessorMethod accessorMethodDecl = accessorMethod.getDecl();
+            
+            CClass clazz = accessorMethod.getOwner();
 	        //CClass clazz = argTypes[0].getCClass();
             
             CContext ctx = context.getBlockContext();
@@ -395,10 +399,30 @@ public class JMethodCallExpression extends JExpression
                     k++;
                 }
             }                		       
-	        
-	        family = new ContextExpression(null, k+1, null);
-		    thisAsFamily = new ContextExpression(null, k, null);
+	                    
+            CMember accessedMember = accessorMethodDecl.getMember();
+            if(accessedMember instanceof CField) {
+                CField accessedField = (CField)accessedMember;
+                if(accessedField.getIdent().equals(JAV_OUTER_THIS)) {
+                    family = new ContextExpression(null, k+2, null);
+                    thisAsFamily = new ContextExpression(null, k+1, null);        
+                }
+                else {
+                    family = new ContextExpression(null, k, null);
+                    thisAsFamily = 
+                        new FieldAccess(
+                            accessedField.isFinal(),
+                            new ContextExpression(null, k, null),
+                            accessedField.getIdent(),
+                            (CReferenceType)accessedField.getType()
+                        );
+                }
+            }
 		}
+        else if( type.isCaesarReference() ) {
+            calcExpressionFamily();
+        }
+
 		
 		
 		// fixed lackner 18.03.2002 commment out because sometimes it is necessary to evaluate it twice.
@@ -785,6 +809,10 @@ public class JMethodCallExpression extends JExpression
 	public String getIdent(){
 	    return ident;
 	}
+    
+    public CMethod getMethod() {
+        return method;
+    }
 
 	public String toString() {
 	    return "JMethodCallExpression["+ident+"] "+super.toString();
