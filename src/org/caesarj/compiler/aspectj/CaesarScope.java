@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarScope.java,v 1.14 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CaesarScope.java,v 1.15 2005-04-05 16:51:26 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -55,13 +55,13 @@ import org.caesarj.util.UnpositionedError;
  */
 public class CaesarScope implements IScope, CaesarConstants {
 
-	private FjClassContext context;
+	protected FjClassContext context;
 
-	private CClass caller;
+	protected CClass caller;
 
-	private CaesarBcelWorld world;
+	protected CaesarBcelWorld world;
 
-	private IMessageHandler messageHandler;
+	protected IMessageHandler messageHandler;
 
 	public CaesarScope(FjClassContext context, CClass caller) {
 		super();
@@ -87,21 +87,12 @@ public class CaesarScope implements IScope, CaesarConstants {
 
 		CClass cclass = lookupClass(typeName);
 
-		//If the lookup retrieves a crosscutting class, then its
-		//aspect registry should be returned instead.
-		// Hence do a lookup for the registry.
-		if ((cclass != null) 
-			&& (cclass.isCrosscutting())) {
-			cclass =
-				lookupClass((typeName + REGISTRY_EXTENSION).intern());
-		}
-
 		if (cclass == null) {
 			return ResolvedTypeX.MISSING;
-		} else {
+		}
+		else {
 			return world.resolve(cclass);
 		}
-
 	}
 
 	/**
