@@ -1,4 +1,4 @@
-VC_15 - 17.11.2004
+VC_M15 - 17.11.2004
 - Legacy code removed
 	- Invariants
 	- Generics
@@ -27,7 +27,7 @@ VC_15 - 17.11.2004
 - For list of bugfixes see mantis
 
 
-VC_14 - ?.10.2004
+VC_M14 - ?.10.2004
 - Virtual Class scoping
 	- lookup has been changed
 		- if looking up in a mixin class, first we lookup in the direct mixin interface class
@@ -44,10 +44,10 @@ VC_14 - ?.10.2004
   otherwise the modifier is set automatically to public and a compiler warning is thrown  
 - log4j added for debug logging  
 
-VC_13 - 22.09.2004
+VC_M13 - 22.09.2004
 - Passing Caesar CLASSPATH to aspect weaver
 	
-VC_12 - 17.09.2004
+VC_M12 - 17.09.2004
 - Caesar Attribut generation
 	we use GenericAttribute to store serialized Objects containing the information
 	Currently there are two kinds of stored structures:
@@ -126,7 +126,7 @@ VC_12 - 17.09.2004
       Now the proceed() arguments of one around advice call are passed as arguments
       to the call of the around advice of the next aspect instance. 
 
-VC_11 - 13.08.2004
+VC_M11 - 13.08.2004
 - Aspect deployment
     - Old "deploy" block translation restored. DeploySupport class used again. 
       "deploy" blocks ignore null pointers as well as non-Caesar objects.
@@ -137,7 +137,7 @@ VC_11 - 13.08.2004
     - Pricing example ported to 0.3.0
     - Observer example porter to 0.3.0
 
-VC_10 - 10.08.2004
+VC_M10 - 10.08.2004
 - Mixin generator
 	- Hardcoded output path for generated mixins is replaced by compiler destination path
     - Removed dependency of mixin generator on CLASSPATH variable. The input class files are now 
@@ -169,7 +169,7 @@ VC_10 - 10.08.2004
 	  origin classes.
 - BCEL World singleton instance is reset before compilation
 
-VC_9 - 23.07.2004
+VC_M9 - 23.07.2004
 - ACC_MIXIN modifier added for cclass
 - CaesarObject as root for all cclass types has been introduced
 - Unit tests has been extended and reorganized 
@@ -187,13 +187,13 @@ VC_9 - 23.07.2004
 	Consequences for: aspectj pointcuts, mixin copies and method calls
 
 
-VC_8 - 08.07.2004
+VC_M8 - 08.07.2004
 - inner cclass always static ->
 	* outer passed as extra ctor parameter
 	* outer accessed via interface
 
 
-VC_7 - ??.07.2004
+VC_M7 - ??.07.2004
 - added extra AST Elements for virtual class and cclass interface
 - added caesar specific compiler messages
 - interface generation changed ->
@@ -205,7 +205,7 @@ VC_7 - ??.07.2004
 	features: copy class, replace outer, replace super
 
 
-VC_6 - 28.06.2004
+VC_M6 - 28.06.2004
 - type graphs ->
  	* explicit (as declared in caesar code), 
 	* complete (including implicit types), 
@@ -219,10 +219,10 @@ VC_6 - 28.06.2004
 - class generator still not integrated
 
 
-VC_5 
+VC_M5 
 no info
 
 ...
 
-VC_1 
+VC_M1 
 no info
