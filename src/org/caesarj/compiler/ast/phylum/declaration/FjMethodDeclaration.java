@@ -13,7 +13,6 @@ import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.export.CSourceMethod;
-import org.caesarj.compiler.export.FjSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
@@ -349,7 +348,7 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 					(CReferenceType) exceptions[i].checkType(typeContext);
 			}
 
-			setInterface(new FjSourceMethod(
+			setInterface(new CSourceMethod(
 				context.getCClass(),
 				modifiers,
 				ident,

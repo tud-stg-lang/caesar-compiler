@@ -23,7 +23,7 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Jürgen Hallpap
  */
-public class CaesarAdvice extends FjSourceMethod {
+public class CaesarAdvice extends CSourceMethod {
 
 	/** The advice pointcut.*/
 	private CaesarPointcut pointcut;

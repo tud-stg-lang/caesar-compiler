@@ -13,7 +13,7 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Jürgen Hallpap
  */
-public class PrivilegedMethod extends FjSourceMethod {
+public class PrivilegedMethod extends CSourceMethod {
 
 	private CaesarMember resolvedMember;
 

@@ -248,7 +248,7 @@ public class DeploymentPreparation implements CaesarConstants {
 				TokenReference.NO_REF,
 				PER_SINGLETON_INSTANCE_FIELD);
 		JExpression right =
-			new CciInternalUnqualifiedInstanceCreation(
+			new FjUnqualifiedInstanceCreation(
 				TokenReference.NO_REF,
 				new CClassNameType(cd.getIdent()),
 				JExpression.EMPTY);

@@ -128,7 +128,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 						parameters[i].getIdent());
 			}
 			arguments[0] =
-				new CciInternalUnqualifiedInstanceCreation(
+				new FjUnqualifiedInstanceCreation(
 					getTokenReference(),
 					superType,
 					superArguments);
@@ -223,7 +223,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 					FjConstants.PARENT_NAME);
 					
 			arguments[0] =
-				new CciInternalUnqualifiedInstanceCreation(
+				new FjUnqualifiedInstanceCreation(
 					getTokenReference(),
 					superType,
 					newSuperArguments);
@@ -292,7 +292,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			
 			//Creates the expression: new <ProvidingType>(new <CiType>)
 			newSuperArguments[0] =
-				new CciInternalUnqualifiedInstanceCreation(
+				new FjUnqualifiedInstanceCreation(
 					getTokenReference(),
 					new CClassNameType(
 						collaborationInterface.getProvidingQualifiedName()),
@@ -309,7 +309,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			//Creates the expression: new <BindingType>(newSuperArguments)
 			arguments = new JExpression[]
 			{
-				new CciInternalUnqualifiedInstanceCreation(
+				new FjUnqualifiedInstanceCreation(
 					getTokenReference(),
 					new CClassNameType(
 						collaborationInterface.getBindingQualifiedName()),
@@ -714,7 +714,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 								new JNameExpression(
 									ref, 
 									CciConstants.WRAPPER_LOCAL_VAR), 
-								new CciInternalUnqualifiedInstanceCreation(
+								new FjUnqualifiedInstanceCreation(
 									ref, 
 									new CClassNameType(
 										FjConstants.toIfcName(ident)), 

@@ -12,7 +12,7 @@ import org.caesarj.util.InconsistencyException;
  * 
  * @author Jürgen Hallpap
  */
-public class Proceed extends FjSourceMethod implements CaesarConstants {
+public class Proceed extends CSourceMethod implements CaesarConstants {
 
 	private String adviceName;
 

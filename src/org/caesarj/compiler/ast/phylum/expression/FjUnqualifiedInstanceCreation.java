@@ -6,7 +6,6 @@ import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.family.FjTypeSystem;
-import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;

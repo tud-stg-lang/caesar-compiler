@@ -68,7 +68,7 @@ public class PrivilegedField extends CSourceField {
 
 
 		reader =
-			new FjSourceMethod(
+			new CSourceMethod(
 				owner,
 				readerMember.getModifiers(),
 				readerMember.getName(),
@@ -89,7 +89,7 @@ public class PrivilegedField extends CSourceField {
 */
 		CType[] writerParameterTypes = { getOwnerType(), getType()};
 		writer =
-			new FjSourceMethod(
+			new CSourceMethod(
 				owner,
 				writerMember.getModifiers(),
 				writerMember.getName(),
