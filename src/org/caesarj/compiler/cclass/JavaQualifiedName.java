@@ -60,7 +60,7 @@ public class JavaQualifiedName {
         return prefix;
     }
 
-    public String asString() {
+    public String toString() {
         return qualifiedName;
     }
 

@@ -66,7 +66,7 @@ public class CClassPreparation implements CaesarConstants {
                 // create class interface                           
                 newTypeDeclarations.add(factory.createCaesarClassInterface());
         
-                // rename the class, add implements cclass interface and rename supertype  
+                // add implements cclass interface and rename supertype to *_Impl  
                 factory.modifyCaesarClass();
 
                 if (caesarClass.getInners().length > 0) {

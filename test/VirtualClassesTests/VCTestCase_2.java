@@ -18,35 +18,32 @@ public class VCTestCase_2 extends TestCase {
 	public StringBuffer result = new StringBuffer();
 
 	public void test() {
-        X x = new Y()
-        X.B = (X.B)x.$newB();
+//        X x = new Y()
 	}       
 }
 
 public cclass X {
-	public X() {
-	}
 
 	public cclass A {
-		public A() {			
+		public cclass U {
 		}
 	}
 	
-	public cclass B {
-		public B() {
-			super();
+	public cclass B extends A {
+		public cclass U {
 		}
+		
+		public cclass V extends U {
+		}		
 	}	
 }
 
 public cclass Y extends X {
-	public Y() {
-		super();
-	}	
-	
+
 	public cclass A {
-		public A() {
-			super();
+		public cclass U {
 		}
 	}
+	
+	
 }

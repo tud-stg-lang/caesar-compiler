@@ -4,15 +4,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
-import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.cclass.CClassPreparation;
-import org.caesarj.compiler.cclass.Node;
+import org.caesarj.compiler.cclass.GraphGenerator;
+import org.caesarj.compiler.cclass.TypeGraph;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
@@ -20,11 +23,7 @@ import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
-import org.caesarj.compiler.optimize.BytecodeOptimizer;
-import org.caesarj.compiler.types.CCompositeType;
 import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.mixer.Mixer;
-import org.caesarj.mixer.MixinList;
 import org.caesarj.tools.antlr.extra.InputBuffer;
 import org.caesarj.tools.antlr.runtime.ParserException;
 import org.caesarj.util.Messages;
@@ -35,7 +34,7 @@ import org.caesarj.util.Utils;
 /**
  * The entry point of the Caesar compiler.
  * 
- * @author Jürgen Hallpap
+ * @author Jürgen Hallpap, Ivica Aracic
  */
 public class Main extends MainSuper implements Constants {
 
@@ -43,7 +42,10 @@ public class Main extends MainSuper implements Constants {
     private Set errorMessages;
 
     // The used weaver. An instance ist created when it's needed in generateAndWeaveCode
-    private CaesarWeaver weaver;         
+    private CaesarWeaver weaver;
+    
+    private TypeGraph explicitTypeGraph = new TypeGraph();
+    private TypeGraph completeTypeGraph = new TypeGraph();
 
     /**
      * @param workingDirectory the working directory
@@ -113,11 +115,16 @@ public class Main extends MainSuper implements Constants {
         joinAll(tree);                  
         if(errorFound) return false;
         
-        prepareVirtualClasses(environment, tree);
+        //prepareVirtualClasses(environment, tree);
         
-        checkAllConstructorInterfaces(tree);
+        //checkAllConstructorInterfaces(tree);
         
-        generateSourceDependencyGraph(tree);        
+        generateSourceDependencyGraph(tree);
+        explicitTypeGraph.debug();
+        System.out.println("----------------------------------");
+        completeTypeGraph.addImplicitTypesAndRelations();
+        completeTypeGraph.generateMixinLists(explicitTypeGraph);
+        completeTypeGraph.debug();
 
         CompilerPass compilerPass = generateCompilerPassInfo();
             
@@ -212,7 +219,8 @@ public class Main extends MainSuper implements Constants {
     protected void generateSourceDependencyGraph(JCompilationUnit[] tree) {
         System.out.println("generateDependencyGraph");        
         for (int i=0; i<tree.length; i++) {
-            // ...
+            GraphGenerator.instance().generateGraph(explicitTypeGraph, tree[i]);
+            GraphGenerator.instance().generateGraph(completeTypeGraph, tree[i]);
         }
     }
 

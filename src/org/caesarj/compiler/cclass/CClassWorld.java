@@ -25,12 +25,12 @@ public class CClassWorld {
      */
     HashMap typeMap = new HashMap();
     
-    public CaesarSourceType getType(String qualifiedName) {
-        return (CaesarSourceType)typeMap.get(qualifiedName);
+    public CaesarType getType(String qualifiedName) {
+        return (CaesarType)typeMap.get(qualifiedName);
     }
     
-    public CaesarSourceType createCaesarType(String qualifiedName) {
-        CaesarSourceType type = new CaesarSourceType(qualifiedName);
+    public CaesarType createCaesarType(String qualifiedName) {
+        CaesarType type = new CaesarType(qualifiedName);
         typeMap.put(qualifiedName, type);
         return type;
     }
