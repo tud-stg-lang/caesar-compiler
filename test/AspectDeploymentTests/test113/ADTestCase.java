@@ -169,6 +169,9 @@ public cclass OuterB extends OuterA
 			ADTestCase.result.append(":B.B.A");
 		}
 	}
+	
+	// scoping workaround
+	public cclass InnerC {}
 
 	public cclass InnerD extends InnerC
 	{
@@ -181,6 +184,9 @@ public cclass OuterB extends OuterA
 
 public cclass OuterC extends OuterB
 {
+    // scoping workaround
+    public cclass InnerA {}
+    
 	public cclass InnerB
 	{
 		public void doA()
