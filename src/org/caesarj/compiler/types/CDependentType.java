@@ -20,12 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentType.java,v 1.18 2005-02-21 15:17:00 aracic Exp $
+ * $Id: CDependentType.java,v 1.19 2005-02-25 13:44:44 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
 
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
@@ -47,6 +48,8 @@ public class CDependentType extends CReferenceType {
     private JExpression family; /** family expression */
     
     private Path path = null;
+    
+    private boolean checked = false;
     
     public CDependentType(CContext ctx, JExpression family, CType staticType) {
         setDeclContext(ctx);      
@@ -74,6 +77,30 @@ public class CDependentType extends CReferenceType {
 
     public CClass getCClass() {
         return plainType.getCClass();
+    }
+    
+    public CType checkType(CTypeContext context) throws UnpositionedError {
+                
+        if(checked) return this;
+        
+        if(!plainType.getCClass().isMixinInterface()) {
+            throw new UnpositionedError(CaesarMessages.PLAINTYPE_WITH_PATH);
+        }                               
+        
+        if(family.getThisAsFamily() == null) {
+            throw new UnpositionedError(CaesarMessages.ILLEGAL_PATH);
+        }
+        
+        // it is forbidden for type paths to contain java elements
+        /* CRITICAL: check removed, did not think about it but I guess this check doesn't make sense
+        if(dt.getPath().containsJavaElements()) {
+            throw new UnpositionedError(CaesarMessages.INNER_PLAIN_JAVA_OBJECTS_IN_PATH);
+        }
+        */
+        
+        checked = true;
+        
+        return this;
     }
     
     /**
