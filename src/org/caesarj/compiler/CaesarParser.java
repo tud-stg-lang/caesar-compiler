@@ -635,7 +635,10 @@ private static final int MAX_LOOKAHEAD = 2;
 							   context.getInnerClasses(),
 							   context.getBody(),
 							   javadoc,
-							   comments);
+							   comments,
+							   context.getPointcuts(),
+							   context.getAdvices(),
+							   context.getDeclares());
 			} else {
 			self = new FjClassDeclaration(sourceRef,
 							   modifiers,
