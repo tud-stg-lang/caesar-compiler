@@ -12,30 +12,25 @@ public class TypeSysTestCase {
 }
 
 class X {
+    
     final GraphLib gl = new GraphLib();
+    
     class Y {
-//     Z getZ(){ return z; }
-     
-        final Z z = new Z(); 
-        class Z {
-//            gl.Node getN(){ return n; }
+        class Z {            
             gl.Node n; // ctx(2).gl, Node
         }
     }
     
-    
-    
     void doSomething() {
-        final Y y = this.new Y(); // ctx(1), X$Y
-        gl.Node n; // ctx(1).gl, Node
-        
-        {
-	        final y.Z $ = createZ();
-	        $.f.X x1
-	        $.f.X x2
-	        x1 = x2
-	        n = $.n; // ctx(0).$.n -> ctx(0).$.ctx(1).gl -> ctx(0).ctx(2).gl
-        }
+        final Y y = this.new Y(); 
+	    final X.Y.Z z = y.new Z();	    
+	    
+	    gl.Node n;
+	    n = z.n;
+	    
+	    Y y2 = this.new Y(); 
+	    y2.Z z2 = y2.new Z();
+	    z = z2; // ?
     }
 }
 

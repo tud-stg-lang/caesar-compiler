@@ -16,7 +16,7 @@ public class TypeSysTestCase {
 	class X {
 	    Z z = new Z();
 	    class Z {
-	    	Y y = new Y();
+	        TypeSysTestCase.X.Z.Y y = new Y();
 	        class Y {
 	            public g.N n;
 			    

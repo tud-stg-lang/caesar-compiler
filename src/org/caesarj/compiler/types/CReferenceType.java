@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CReferenceType.java,v 1.13 2005-01-25 16:15:32 klose Exp $
+ * $Id: CReferenceType.java,v 1.14 2005-01-26 16:12:17 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -68,10 +68,10 @@ public class CReferenceType extends CType {
         if(parent.isMixin())
             parent = parent.getMixinInterface();
         
-        while( ctx != parent ){
-            if (ctx == null){
-                throw new InconsistencyException( ""+myType+" cannot be found in "+in);
-            }
+        while( ctx != parent && ctx != null){
+//            if (ctx == null){
+//                throw new InconsistencyException( ""+myType+" cannot be found in "+in);
+//            }
             ctx = ctx.getOwner();
             k++;
         }
@@ -83,17 +83,20 @@ public class CReferenceType extends CType {
         return k;
     }
     
-    protected CContext defCtx; /** the context in which this type was defined */
+    protected CContext declContext; /** the context in which this type was defined */
     
-    /**
-     * Sets the context in which this type was defined
-     */
-    public void setDefCtx(CContext defCtx) {
-        this.defCtx = defCtx;
+    public void setDeclContext(CContext declContext) {
+        this.declContext = declContext;
     }
     
-    public Path getPath() {
-        return new ContextExpression(null, getDefDepth(defCtx), null);
+    public CContext  getDeclContext() {
+        return declContext;
+    }
+    
+    
+    
+    public Path getPath() throws UnpositionedError {
+        return new ContextExpression(null, getDefDepth(declContext), null);
     }
     
 	// ----------------------------------------------------------------------

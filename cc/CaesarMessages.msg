@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.24 2005-01-21 16:56:56 aracic Exp $
+ * $Id: CaesarMessages.msg,v 1.25 2005-01-26 16:12:43 aracic Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -111,3 +111,12 @@ error	READ_ONLY_ACCESS_TO_CCLASS_FIELDS
 // dependent types
 error	ASSIGNMENT_MIXEDTYPES
 		"Can not mix dependent and plain types."
+		
+error	PLAINTYPE_WITH_PATH
+		"Path not allowed for plain Java types."
+		
+error	INNER_PLAIN_JAVA_OBJECTS_IN_PATH
+		"References to inner Java classes not allowed in the path."
+
+error	ILLEGAL_PATH_ELEMENT
+		"{0} is an illegal path element."

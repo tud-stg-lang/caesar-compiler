@@ -5,8 +5,8 @@ package generated.typesystest51;
  * 
  * @author Ivica Aracic
  */
-public cclass X {
-    public final G g = new G();	
+public cclass X {    
+    public final G g = new G();    
 	
 	public void foo() {
 	    {
@@ -20,7 +20,7 @@ public cclass X {
 	    {
 	        g.someOtherG.N n1 = g.someOtherG.new N();
 	        g.someOtherG.N n2 = g.someOtherG.new N();
-	        n1 = n2;
+	        n1 = n2;	        
 	    }
 	}
 }
@@ -31,7 +31,6 @@ public cclass G {
     
     public someOtherG.N getOtherN() {return someOtherG.new N();}
     
-    public G getSelf() {return this;}
     public N getThisN() {return new N();}
     
     public cclass N {}

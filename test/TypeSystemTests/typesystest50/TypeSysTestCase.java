@@ -7,11 +7,15 @@ package generated.typesystest50;
  */
 public cclass X {
     public final G g = new G();	
-	
+
+    public cclass Y {
+        public g.N n = g.new N();
+    }
+    
 	public void foo() {
-	    g.N n1 = null;
-	    g.N n2 = null;
-	    n1 = n2;
+	    final Y y = new Y();	    
+	    g.N n = g.new N();	    
+	    n = y.n;
 	}
 }
 
