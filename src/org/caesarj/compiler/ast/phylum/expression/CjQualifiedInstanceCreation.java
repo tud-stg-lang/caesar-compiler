@@ -78,6 +78,10 @@ public class CjQualifiedInstanceCreation extends JExpression {
         return expr.analyse(context);
     }
     
+    public boolean isStatementExpression() {
+        return true;
+    }
+    
     public void genCode(GenerationContext context, boolean discardValue) {
         throw new InconsistencyException();
     }
