@@ -53,13 +53,13 @@ public class FieldAccess extends Path {
 	            typeDecl = new TypeDecl(memDefPath, dependType.getIdent());
 	        }
 	        else {
-	            // CHEATER ;)
-	            if(f.getIdent().equals("g")) {	                
-	                typeDecl = new TypeDecl(new ContextExpression(2), "G");
-	            }
-	            else if(f.getIdent().equals("x")) {	                
-	                typeDecl = new TypeDecl(new ContextExpression(0), "X");
-	            }
+	            // IVICA: you can do it better ;)
+	            CClass contextClass = f.getOwner();
+	            CClass clazz = fType.getCClass();
+	            
+	            int k = contextClass.getDepth() - clazz.getDepth() + 1;
+
+	            typeDecl = new TypeDecl(new ContextExpression(k), clazz.getIdent());	            
 	        }
 	        
             
