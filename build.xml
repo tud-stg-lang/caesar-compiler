@@ -56,8 +56,7 @@
  	<jar basedir="${bin}" jarfile="${dist}/caesar-runtime.jar">
  		<include name="org/caesarj/runtime/**/*"/>
  	</jar>
- 	 	
- 	<unjar src="${libs}/log4j-1.2.8.jar" dest="${tmpbin}"/>
+
  	<unjar src="${libs}/java-getopt-1.0.9.jar" dest="${tmpbin}"/>    
  	<unjar src="${libs}/cjbuildtools.jar" dest="${tmpbin}"/>
  	
@@ -82,7 +81,6 @@
   <javac srcdir="src"
   		 classpath="${packageBase};
   				${libs}/aspectjtools.jar;
-				${libs}/log4j-1.2.8.jar;
   				${libs}/java-getopt-1.0.9.jar;
   				${libs}/bcel.jar;
   				${libs}/aspectjrt.jar;
