@@ -28,27 +28,16 @@ public class VCTestCase_2 extends TestCase {
 	}       
 }
 
-/*
- * NOTE:
- * all methods starting with $ will be generated later
- */
-
+//=========================================================
 public cclass G {
     public G() {}
-    
-    public Object $ctor() {return this;}
-    
-    public G.N $newN() {return new N_Impl();}
-    public G.E $newE() {return new E_Impl();}
-    public G.UE $newUE() {return new UE_Impl();}
-    
+        
 	public cclass E {
         G.N n1, n2;
 	    
-        public Object $ctor(G.N n1, G.N n2) {
+        public E(G.N n1, G.N n2) {
             this.n1 = n1;
             this.n2 = n2;
-            return this;
         }
         
 		public boolean isConnecting(G.N n1, G.N n2) {return false;}
@@ -56,43 +45,31 @@ public cclass G {
 	}
 	
 	public cclass UE extends E {  
-        public UE() {}
-        
 	    public boolean isConnecting(G.N n1, G.N n2) {return false;}
 		private void somePrivateUEMethod() {}
 	}		
 	
 	public cclass N {
         public N() {}
-        
-        public Object $ctor() {return this;}
 	}
 }
 
+//=========================================================
 public cclass CG extends G {
-    public CG() {}
-    
-    public G.N $newN() {return new N_Impl();}
-    public G.E $newE() {return new E_Impl();}
-    public G.UE $newUE() {return new UE_Impl();}
-    
 	public cclass E {
-        public E() {}
-        
 	    Color col;
 	    
 	    public Color getColor() {return col;}
 	    public void setColor(Color col) {this.col = col;}
+        
+        public void someSpecialAlg() {
+            G.N n = this.n1;
+        }
 	}	
 }
 
+//=========================================================
 public cclass WG extends G {
-    public WG() {}
-    
-    public G.N $newN() {return new N_Impl();}
-    public G.E $newE() {return new E_Impl();}
-    public G.UE $newUE() {return new UE_Impl();}
-
 	public cclass E {
 	    float w;
 	    
@@ -101,11 +78,16 @@ public cclass WG extends G {
 	}	
 }
 
-
+//=========================================================
 public cclass CWG extends CG & WG {
-    public CWG() {}
-    
-    public G.N $newN() {return new N_Impl();}
-    public G.E $newE() {return new E_Impl();}
-    public G.UE $newUE() {return new UE_Impl();}
+    public cclass E {
+        public void nowWeHaveItAll() {
+            float w = this.w;
+            Color col = this.col;
+            G.N n1 = this.n1;
+            G.N n2 = this.n2;
+        }
+    }
 }
+
+//=========================================================
