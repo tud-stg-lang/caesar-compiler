@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JCastExpression.java,v 1.9 2005-03-01 13:01:30 aracic Exp $
+ * $Id: JCastExpression.java,v 1.10 2005-03-04 18:17:00 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -31,6 +31,7 @@ import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.family.Dummy;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CDependentNameType;
 import org.caesarj.compiler.types.CDependentType;
@@ -137,8 +138,8 @@ public class JCastExpression extends JExpression {
             }
                 
             family = famExpr.getThisAsFamily();
-            
-                                   
+            thisAsFamily = family.clonePath();
+            thisAsFamily = new Dummy(thisAsFamily);
             
             // put the expr into a cast call
             JMethodCallExpression castCall = new JMethodCallExpression(
