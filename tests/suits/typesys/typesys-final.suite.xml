@@ -1,0 +1,20 @@
+<testsuite name="TypeSystem Test Final" package="suits.typesystem.final">
+
+	<common-code-base>
+		public cclass G {
+			public cclass N {}
+        }
+	</common-code-base>
+
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ASSIGNMENT_BADTYPE" id="final001" description="Check that family path is final.">
+        <code>
+			public class A {
+			    public G g1 = new G(); 
+			    public g1.N an1 = g1.new N(); 
+			}
+        </code>
+    </compile-check-error>    	
+
+</testsuite>

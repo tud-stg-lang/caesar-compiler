@@ -1,0 +1,50 @@
+<testsuite name="TypeSystem" package="suits.typesystem.methods.inside">	
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="methods001" description="Check simple method call.">
+        <code>
+			public cclass G {
+				public void foo() {
+					N n = new N();
+					n.m( n );
+				}
+				public cclass N {
+					public void m(N n) {}
+				}
+			}			
+        </code>
+    </compile>    	
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ASSIGNMENT_BADTYPE" id="methods002" description="Check simple method call.">
+        <code>
+			public cclass G {
+                public final G g = new G();
+				public void foo() {
+					N n = new N();
+					n.m( n );
+				}
+				public cclass N {
+					public void m(g.N n) {}
+				}
+			}			
+        </code>
+    </compile-check-error>    	
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ASSIGNMENT_BADTYPE" id="methods003" description="Check simple method call.">
+        <code>
+			public cclass G {
+                public G g = new G();
+				public void foo() {
+					N n = new N();
+					n.m( n );
+				}
+				public cclass N {
+					public void m(g.N n) {}
+				}
+			}			
+        </code>
+    </compile-check-error>    	
+
+</testsuite>

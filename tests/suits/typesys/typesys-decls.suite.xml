@@ -1,0 +1,142 @@
+<testsuite name="TypeSystem" package="suits.typesystem.decls">
+
+	<common-code-base>
+		public cclass G {
+			public cclass N {}
+        }
+	</common-code-base>
+
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="nesting001" description="Check nesting of fields in plain Java classes.">
+        <code>
+			public class A {
+			    public final G g1 = new G(); 
+			    public g1.N an1 = g1.new N(); 
+			    
+			    public class U {
+			        public final G g2 = new G();        
+			        
+			        public g1.N un1 = an1;
+			        public g2.N un2 = g2.new N();           
+			        
+			        public class X {
+			            public final G g3 = new G();        
+			            
+			            public g1.N xn1 = an1;
+			            public g2.N xn2 = un2;
+			            public g3.N xn3 = g3.new N();
+			        }
+			    }   
+			}
+        </code>
+    </compile>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+	<compile id="nesting002" description="Check nesting of fields in cclass-es.">
+        <code>
+			public cclass A {
+			    public final G g1 = new G(); 
+			    public g1.N an1 = g1.new N(); 
+			    
+			    public cclass U {
+			        public final G g2 = new G();        
+			        
+			        public g1.N un1 = an1;
+			        public g2.N un2 = g2.new N();           
+			        
+			        public cclass X {
+			            public final G g3 = new G();        
+			            
+			            public g1.N xn1 = an1;
+			            public g2.N xn2 = un2;
+			            public g3.N xn3 = g3.new N();
+			        }
+			    }   
+			}
+        </code>     
+    </compile>
+    
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+	<compile id="ctrlstructs001" description="Check dependent type declarations in control structures.">
+        <code>
+			public class A {
+			    final G g = null; 
+			    g.N n;
+			    
+			    public void foo() {
+			        boolean stop = true; 
+			        
+			        g.N local1 = n;
+			        
+			        { g.N local2 = n; }
+			        
+			        if(g == null) {
+			            g.N local3 = n;
+			        }
+			        else {
+			            g.N local4 = n;
+			        }
+			        
+			        while(!stop) {
+			            g.N local5 = n;
+			        }
+			        
+			        do {
+			            g.N local6 = n;
+			        } while(!stop);
+			        
+			        for(g.N local7 = n; !stop; ) {
+			            g.N local8 = n;
+			        }
+			    }   
+			}
+        </code>     
+    </compile>
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+	<compile id="ctrlstructs002" description="Check dependent type declarations in a switch structure without brackets.">
+        <code>
+			public class A {
+			    final G g = null; 
+			    g.N n;
+			    
+			    public void foo() {
+			        int i = 0;
+			        switch(i) {
+			        	case 0: 
+			        	    g.N local9 = n;
+			        	    break;
+			        	default:
+			        	    g.N local11 = n;
+			        }
+			    }   
+			}
+        </code>     
+    </compile>
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+	<compile id="ctrlstructs002" description="Check dependent type declarations in a switch structure with brackets.">
+        <code>
+			public class A {
+			    final G g = null; 
+			    g.N n;
+			    
+			    public void foo() {
+			        int i = 0;
+			        switch(i) {
+			        	case 0: { 
+			        	    g.N local9 = n;
+			        	    break;
+			        	}
+			        	default: {
+			        	    g.N local11 = n;
+			        	}
+			        }
+			    }   
+			}
+        </code>     
+    </compile>
+
+</testsuite>

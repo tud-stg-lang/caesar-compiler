@@ -1,0 +1,142 @@
+<testsuite name="TypeSystem" package="suits.typesystem.methods.outside">
+
+	<common-code-base>
+		public cclass B {
+		    public final G g1 = null;
+		    public final G g2 = null;
+		    
+		    public final g1.X x1 = null;
+		    public final g2.X x2 = null;
+		    
+		    public x1.N n1 = null;
+		    public x2.N n2 = null;
+		}
+		
+		public cclass G {
+			public cclass X {
+				public cclass N {}
+            }
+        }
+	</common-code-base>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="methods001" description="Dependent type in method signatures.">
+        <code>
+			public class A {
+				final B b = new B();
+						
+				void foo() {
+					m1(b.x1);
+				}	
+				
+				void m1(b.g1.X x) { }
+			}			
+        </code>
+    </compile>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="methods002" description="Dependent type in method signature with dependency to a parameter.">
+        <code>
+			public class A {
+				final B b = new B();
+						
+				void foo() {
+					m2(b.g1, b.x1);
+				}	
+				
+				void 	m2(final G g, g.X x) 	{ }	
+			}			
+        </code>
+    </compile>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="methods003" description="Check nested return statement with an absolute dependent type.">
+        <code>
+			public class A {
+				final B b = new B();
+						
+				void foo() {
+				    b.g1.X v1 = m3();
+				}	
+				
+				b.g1.X 	m3() { {{return b.g1.new X();}} }
+			}			
+        </code>
+    </compile>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="methods004" description="Check a nested return statement with argument as family.">
+        <code>
+			public class A {
+				final B b = new B();
+						
+				void foo() {
+					b.g2.X v2 = m4(b.g2);
+				}	
+				
+				g.X 	m4(final G g) 			{ {return g.new X();} }
+			}			
+        </code>
+    </compile>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="methods005" description="Check non-nested return statement with an argument as family.">
+        <code>
+			public class A {
+				final B b = new B();
+						
+				void foo() {
+				    b.g2.X v3 = m5(b.g2, b.x2);
+				}	
+				
+				g.X 	m5(final G g, g.X x) 	{ return g.new X(); }
+			}			
+        </code>
+    </compile>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="methods006" description="Check returning null.">
+        <code>
+			public class A {
+				final B b = new B();
+						
+				void foo() {
+				    b.g1.X v4 = m6(b.g2, b.x2);
+				}	
+				
+				b.g1.X 	m6(final G g, g.X x) 	{ return null; }
+			}			
+        </code>
+    </compile>
+
+<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="methods007" description="Check multiple dependencies in a method signature.">
+        <code>
+			public class A {
+				final B b = new B();
+						
+				void foo() {
+					m7(b.g2, b.x2, b.n2);
+				}	
+				
+				void 	m7(final G g, g.X x, x.N n) {}
+			}			
+        </code>
+    </compile>
+
+<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="methods008" description="Check return statement and multiple dependencies in a method signature.">
+        <code>
+			public class A {
+				final B b = new B();
+						
+				void foo() {				   
+				    b.g1.X v5 = m8(b.g1, b.x1, b.n1);
+				}	
+				
+				g.X		m8(final G g, g.X x, x.N n) {return x;}
+			}			
+        </code>
+    </compile>
+
+</testsuite>
