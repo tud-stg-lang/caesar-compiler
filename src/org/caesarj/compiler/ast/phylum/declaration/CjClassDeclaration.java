@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.6 2004-04-09 15:55:54 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.7 2004-04-15 15:06:40 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -507,7 +507,7 @@ public class CjClassDeclaration
     public void checkInterface(CContext context) throws PositionedError {
         
         // IVICA don't check interface if not enabled;
-        if(!isEnabled()) return;
+        if(!checkEnabled(context)) return;
         
         // IVICA supertype could be composite, check it here
         try {
@@ -729,7 +729,7 @@ public class CjClassDeclaration
     public void checkTypeBody(CContext context) throws PositionedError {
         
         // IVICA
-        if(!isEnabled()) return;
+        if(!checkEnabled(context)) return;
 
         if (advices != null) {
             for (int i = 0; i < advices.length; i++) {

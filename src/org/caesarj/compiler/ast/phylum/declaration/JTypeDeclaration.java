@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.3 2004-04-08 15:56:23 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.4 2004-04-15 15:06:40 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -409,7 +409,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     public void checkInitializers(CContext context) throws PositionedError {
         
         // IVICA 
-        if(!isEnabled()) return;
+        if(!checkEnabled(context)) return;
         
         if (getCClass().getSuperClass() != null) {
             check(
@@ -502,7 +502,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     public void checkTypeBody(CContext context) throws PositionedError {
         
         // IVICA
-        if(!isEnabled()) return;
+        if(!checkEnabled(context)) return;
         
         context.addSourceClass(sourceClass);
 
@@ -558,12 +558,17 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         System.out.print(ident);
     }
     
-    public boolean isEnabled() {
-        return enabled;
+
+    public boolean checkEnabled(CContext context) {
+        return context.getCompilerPass() == getEnabledInPass();
     }
     
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public int getEnabledInPass() {
+        return enabledInPass;
+    }
+    
+    public void setEnabledInPass(int enabledInPass) {
+        this.enabledInPass = enabledInPass;
     }
 
     // ----------------------------------------------------------------------
@@ -571,7 +576,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     // ----------------------------------------------------------------------
 
     // IVICA
-    private boolean enabled = false; // with this flag type nodes in AST can be disabled or enabled
+    private int enabledInPass = 0; // with this flag type nodes in AST can be disabled or enabled
 
     protected int modifiers;
     protected String ident;
