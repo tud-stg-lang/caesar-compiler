@@ -9,9 +9,11 @@ import junit.framework.TestCase;
 /**
  * thread safity of deployment
  */
-public class CaesarTestCase_10 extends TestCase {
+public class CaesarTestCase_10 extends TestCase
+{
 
-	public CaesarTestCase_10() {
+	public CaesarTestCase_10()
+	{
 		super("test");
 	}
 
@@ -19,23 +21,26 @@ public class CaesarTestCase_10 extends TestCase {
 
 	public String expectedResult = ":around foo:foo:around foo";
 
-	public void test() {
-		foo();		
+	public void test()
+	{
+		foo();
 	}
 
-	public static void foo() {
+	public static void foo()
+	{
 		result.append(":foo");
 	}
-
 }
 
-deployed cclass Aspect_10 {
+deployed cclass Aspect_10
+{
 	pointcut execFoo() : execution(* CaesarTestCase_10.foo());
-	
-	void around() : execFoo() {
+
+	void around() : execFoo()
+	{
 		CaesarTestCase_10.result.append(":around foo");
 		proceed();
-		CaesarTestCase_10.result.append(":around foo");		
+		CaesarTestCase_10.result.append(":around foo");
 	}
 }
 

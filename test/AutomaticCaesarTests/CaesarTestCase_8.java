@@ -7,9 +7,10 @@ import junit.framework.TestCase;
 /**
  * TODO privleged access
  */
-privileged public cclass CaesarTestCase_8 extends TestCase {
-
-	public CaesarTestCase_8() {
+public class CaesarTestCase_8 extends TestCase
+{
+	public CaesarTestCase_8()
+	{
 		super("test");
 	}
 
@@ -18,30 +19,39 @@ privileged public cclass CaesarTestCase_8 extends TestCase {
 	public String expectedResult =
 		":private:public:foo";
 
-	public void test() {
-		
-		PrivateAccessClass_8 privObj = new PrivateAccessClass_8();
-		
-		result.append(privObj.secret);
-		
-		privObj.secret = ":public";
-		
-		result.append(privObj.secret);
-		
-		privObj.foo();
-	
+	public void test()
+	{
+		new TestCase_8_Impl(null).test();
+
+        assertEquals(expectedResult, result.toString());
 
 		assertEquals(expectedResult, result.toString());
 	}
-
-
 }
 
-cclass PrivateAccessClass_8 {
-	
+privileged public cclass TestCase_8
+{
+	public void test()
+	{
+		PrivateAccessClass_8 privObj = new PrivateAccessClass_8_Impl(null);
+
+		CaesarTestCase_8.result.append(privObj.secret);
+
+		privObj.secret = ":public";
+
+		CaesarTestCase_8.result.append(privObj.secret);
+
+		privObj.foo();
+	}
+}
+
+
+cclass PrivateAccessClass_8
+{
 	private String secret = ":private";
-	
-	private void foo() {
+
+	private void foo()
+	{
 		CaesarTestCase_8.result.append(":foo");
 	}
 }

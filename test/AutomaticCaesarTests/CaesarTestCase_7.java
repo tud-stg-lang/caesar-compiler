@@ -7,9 +7,11 @@ import junit.framework.TestCase;
 /**
  * thread safity of deployment
  */
-public class CaesarTestCase_7 extends TestCase {
+public class CaesarTestCase_7 extends TestCase
+{
 
-	public CaesarTestCase_7() {
+	public CaesarTestCase_7()
+	{
 		super("test");
 	}
 
@@ -18,28 +20,32 @@ public class CaesarTestCase_7 extends TestCase {
 	public String expectedResult =
 		":before foo:before foo:before foo:foo:foo:after foo:after foo:after foo";
 
-	public void test() {
-	    new TestCase_7().test();
-        
+	public void test()
+	{
+	    new TestCase_7_Impl(null).test();
+
         assertEquals(expectedResult, result.toString());
 	}
 
-    public static void foo() {
-        Barrier.getInstance().check(); //Checkpoint 1, both threads
+    public static void foo()
+    {
+        Barrier.getInstance().check(); // Checkpoint 1, both threads
 
         CaesarTestCase_7.result.append(":foo");
 
-        Barrier.getInstance().check(); //Checkpoint 2, both threads
+        Barrier.getInstance().check(); // Checkpoint 2, both threads
     }
 }
 
-cclass TestCase_7 {
-
-    public void test() {
-        Runnable anotherThread = new AnotherThread_7();
+cclass TestCase_7
+{
+    public void test()
+    {
+        Runnable anotherThread = new AnotherThread_7_Impl(null);
         new Thread(anotherThread).start();
 
-        deploy(new Aspect_7()) {
+        deploy(new Aspect_7_Impl(null))
+        {
             CaesarTestCase_7.foo();
         }
 
@@ -47,32 +53,35 @@ cclass TestCase_7 {
         //the other thread has written its result to the StringBuffer
         Barrier.getInstance().check(); //Checkpoint 3, thread main
     }
-
 }
 
-cclass AnotherThread_7 implements Runnable {
-	public void run() {
-		deploy(new Aspect_7()) {
-			deploy(new Aspect_7()) {
+cclass AnotherThread_7 implements Runnable
+{
+	public void run()
+	{
+		deploy(new Aspect_7_Impl(null))
+		{
+			deploy(new Aspect_7_Impl(null))
+			{
                 CaesarTestCase_7.foo();
 			}
 		}
 
 		Barrier.getInstance().check(); //Checkpoint 3, child thread
-
 	}
 }
 
-cclass Aspect_7 {
-
+cclass Aspect_7
+{
 	pointcut callFoo() : call(* CaesarTestCase_7.foo());
 
-	before() : callFoo() {
+	before() : callFoo()
+	{
 		CaesarTestCase_7.result.append(":before foo");
 	}
 
-	after() : callFoo() {
+	after() : callFoo()
+	{
 		CaesarTestCase_7.result.append(":after foo");
 	}
-
 }

@@ -3,14 +3,16 @@ package generated;
 /**
  * A barrier for two threads.
  */
-public class Barrier {
-
+public class Barrier
+{
 	private static final int NO_OF_THREADS = 2;
 
 	private static Barrier theInstance;
 
-	public static synchronized Barrier getInstance() {
-		if (theInstance == null) {
+	public static synchronized Barrier getInstance()
+	{
+		if (theInstance == null)
+		{
 			theInstance = new Barrier();
 		}
 
@@ -19,22 +21,28 @@ public class Barrier {
 
 	private static int b=0;
 
-	private Barrier() {
+	private Barrier()
+	{
 		b = 0;
 	}
 
-	public synchronized void check() {
+	public synchronized void check()
+	{
 		b++;
-		if (b < NO_OF_THREADS) {
-			try {
+		if (b < NO_OF_THREADS)
+		{
+			try
+			{
 				this.wait();
-			} catch (InterruptedException e) {
 			}
-		} else {
+			catch (InterruptedException e)
+			{ }
+		}
+		else
+		{
 			b = 0;
-			
+
 			this.notifyAll();
 		}
 	}
-
 }

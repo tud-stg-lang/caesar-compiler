@@ -7,7 +7,8 @@ import junit.framework.TestCase;
  */
 public class CaesarTestCase_3 extends TestCase {
 
-	public CaesarTestCase_3() {
+	public CaesarTestCase_3()
+	{
 		super("test");
 	}
 
@@ -15,27 +16,33 @@ public class CaesarTestCase_3 extends TestCase {
 
 	public String expectedResult = ":before foo:foo";
 
-	public void test() {
-		deploy(new ConcreteAspect_3()) {
+	public void test()
+	{
+		deploy(new ConcreteAspect_3_Impl(null))
+		{
 			foo();
 		}
 
 		assertEquals(expectedResult, result.toString());
 	}
 
-	public void foo() {
+	public void foo()
+	{
 		result.append(":foo");
 	}
 }
 
-abstract cclass AbstractAspect_3 {
+abstract cclass AbstractAspect_3
+{
 	abstract pointcut callFoo();
-	
-	before() : callFoo() {
+
+	before() : callFoo()
+	{
 		CaesarTestCase_3.result.append(":before foo");
 	}
 }
 
-cclass ConcreteAspect_3 extends AbstractAspect_3 {
+cclass ConcreteAspect_3 extends AbstractAspect_3
+{
 	pointcut callFoo() : call(* CaesarTestCase_3.foo());
 }

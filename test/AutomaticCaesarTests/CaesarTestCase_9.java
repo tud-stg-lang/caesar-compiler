@@ -9,9 +9,11 @@ import junit.framework.TestCase;
 /**
  * thread safity of deployment
  */
-public class CaesarTestCase_9 extends TestCase {
+public class CaesarTestCase_9 extends TestCase
+{
 
-    public CaesarTestCase_9() {
+    public CaesarTestCase_9()
+    {
         super("test");
     }
 
@@ -19,55 +21,61 @@ public class CaesarTestCase_9 extends TestCase {
 
     public String expectedResult = ":before foo:foo:after foo:before foo:foo:after foo:foo";
 
-    public void test() {
-        new TestCase_9().test();  
+    public void test()
+    {
+        new TestCase_9_Impl(null).test();
         assertEquals(expectedResult, result.toString());
     }
-    
-    public static void foo() {
+
+    public static void foo()
+    {
         result.append(":foo");
     }
 }
 
-public cclass TestCase_9 {
-
-    public void test() {
-        deploy(new Aspect_9()) {
+public cclass TestCase_9
+{
+    public void test()
+    {
+        deploy(new Aspect_9_Impl(null))
+        {
             Thread anotherThread = new AnotherThread_9();
             anotherThread.start();
         }
-        
-        Barrier.getInstance().check(); //1  
-        
-        Barrier.getInstance().check();  //2
-        
+
+        Barrier.getInstance().check(); // 1
+
+        Barrier.getInstance().check(); // 2
+
         CaesarTestCase_9.foo();
     }
 }
 
-class AnotherThread_9 extends CaesarThread {
-	public void run() {
+class AnotherThread_9 extends CaesarThread
+{
+	public void run()
+	{
 		CaesarTestCase_9.foo();
-		
-		Barrier.getInstance().check();	//1
 
-		CaesarTestCase_9.foo();		
-		
-		Barrier.getInstance().check(); //2
+		Barrier.getInstance().check(); // 1
 
+		CaesarTestCase_9.foo();
+
+		Barrier.getInstance().check(); // 2
 	}
 }
 
-cclass Aspect_9 {
-
+cclass Aspect_9
+{
 	pointcut callFoo() : call(* generated.CaesarTestCase_9.foo());
 
-	before() : callFoo() {
+	before() : callFoo()
+	{
 		CaesarTestCase_9.result.append(":before foo");
 	}
 
-	after() : callFoo() {
+	after() : callFoo()
+	{
 		CaesarTestCase_9.result.append(":after foo");
 	}
-
 }
