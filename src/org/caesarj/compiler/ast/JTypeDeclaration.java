@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.4 2004-03-10 15:10:40 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.5 2004-03-14 11:03:25 aracic Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -82,12 +82,6 @@ public abstract class JTypeDeclaration extends JMemberDeclaration
 		this.ident = ident.intern();
 		this.typeVariables = typeVariables;
 		this.interfaces = interfaces;
-		
-		if(interfaces==null) {
-			int x=100;
-			x+=10;
-		}
-		
 		this.fields = fields;
 		this.methods = methods;
 		this.inners = inners;
@@ -104,7 +98,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration
 		String prefix)
 	{
 		sourceClass =
-			new FjSourceClass(
+			new CSourceClass(
 				owner,
 				getTokenReference(),
 				modifiers,
@@ -604,6 +598,13 @@ public abstract class JTypeDeclaration extends JMemberDeclaration
 		return getCClass().getOwner();
 	}
 
+	/**
+		* DEBUG - WALTER
+		*/
+	public void print()
+	{
+		System.out.print(ident);
+	}
 
 	// ----------------------------------------------------------------------
 	// PRIVATE DATA MEMBER

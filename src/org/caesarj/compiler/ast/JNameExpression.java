@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JNameExpression.java,v 1.3 2004-02-29 21:37:24 ostermann Exp $
+ * $Id: JNameExpression.java,v 1.4 2004-03-14 11:03:26 aracic Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -194,7 +194,11 @@ public class JNameExpression extends JExpression
 					{
 						// andreas start
 						// return new JLocalVariableExpression(getTokenReference(), var).analyse(context);
-						return new JLocalVariableExpression(getTokenReference(), var)
+						return new org
+							.caesarj
+							.compiler
+							.ast
+							.FjLocalVariableExpression(getTokenReference(), var)
 							.analyse(context);
 						// andreas end
 					}

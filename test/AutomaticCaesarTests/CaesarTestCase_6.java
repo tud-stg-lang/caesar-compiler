@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 /**
  * around
  */
-public cclass CaesarTestCase_6 extends TestCase {
+public class CaesarTestCase_6 extends TestCase {
 
 	public CaesarTestCase_6() {
 		super("test");
@@ -46,7 +46,7 @@ public cclass CaesarTestCase_6 extends TestCase {
 
 }
 
-cclass Aspect_6 {
+class Aspect_6 {
 
 	pointcut callFoo() : call(* CaesarTestCase_6.foo());
 

@@ -11,27 +11,28 @@ import java.util.List;
 
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.aspectj.CaesarNameMangler;
-import org.caesarj.compiler.ast.JAdviceDeclaration;
-import org.caesarj.compiler.ast.JAssignmentExpression;
-import org.caesarj.compiler.ast.JCaesarClassDeclaration;
+import org.caesarj.compiler.ast.AdviceDeclaration;
+import org.caesarj.compiler.ast.CciInternalUnqualifiedInstanceCreation;
+import org.caesarj.compiler.ast.FjAssignmentExpression;
+import org.caesarj.compiler.ast.JClassDeclaration;
+import org.caesarj.compiler.ast.FjFieldAccessExpression;
+import org.caesarj.compiler.ast.FjFieldDeclaration;
+import org.caesarj.compiler.ast.FjFormalParameter;
+import org.caesarj.compiler.ast.FjMethodCallExpression;
+import org.caesarj.compiler.ast.FjMethodDeclaration;
+import org.caesarj.compiler.ast.FjNameExpression;
+import org.caesarj.compiler.ast.FjVariableDefinition;
 import org.caesarj.compiler.ast.JBlock;
 import org.caesarj.compiler.ast.JClassBlock;
-import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.JCompilationUnit;
 import org.caesarj.compiler.ast.JExpression;
 import org.caesarj.compiler.ast.JExpressionStatement;
-import org.caesarj.compiler.ast.JFieldAccessExpression;
-import org.caesarj.compiler.ast.JFieldDeclaration;
 import org.caesarj.compiler.ast.JFormalParameter;
-import org.caesarj.compiler.ast.JMethodCallExpression;
 import org.caesarj.compiler.ast.JMethodDeclaration;
-import org.caesarj.compiler.ast.JNameExpression;
 import org.caesarj.compiler.ast.JReturnStatement;
 import org.caesarj.compiler.ast.JStatement;
 import org.caesarj.compiler.ast.JTypeDeclaration;
 import org.caesarj.compiler.ast.JTypeNameExpression;
-import org.caesarj.compiler.ast.JUnqualifiedInstanceCreation;
-import org.caesarj.compiler.ast.JVariableDefinition;
 import org.caesarj.compiler.ast.ProceedDeclaration;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CContext;
@@ -49,10 +50,10 @@ import org.caesarj.util.TokenReference;
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class DeploymentPreparation implements CaesarConstants {
-	private DeploymentPreparation(JCaesarClassDeclaration cd) {
+	private DeploymentPreparation(JClassDeclaration cd) {
 		this.cd = cd;
 	}
-	private JCaesarClassDeclaration cd;
+	private JClassDeclaration cd;
 	/**
 	 * Generates for every nested crosscutting class the corresponding deployment support classes.
 	 */
@@ -63,10 +64,10 @@ public class DeploymentPreparation implements CaesarConstants {
 			
 			newTypeDeclarations.add(typeDeclarations[i]);
 
-			if (typeDeclarations[i] instanceof JCaesarClassDeclaration) {
+			if (typeDeclarations[i] instanceof JClassDeclaration) {
 
-				JCaesarClassDeclaration caesarClass =
-					(JCaesarClassDeclaration) typeDeclarations[i];
+				JClassDeclaration caesarClass =
+					(JClassDeclaration) typeDeclarations[i];
 
 				if (caesarClass.isCrosscutting() && (!caesarClass.isStaticallyDeployed()) ) {
 
@@ -103,12 +104,12 @@ public class DeploymentPreparation implements CaesarConstants {
 
 			newInners.add(cd.getInners()[i]);
 
-			if (cd.getInners()[i] instanceof JCaesarClassDeclaration)
+			if (cd.getInners()[i] instanceof JClassDeclaration)
 			{
 
 				//create support classes for each crosscutting inner class
-				JCaesarClassDeclaration innerCaesarClass =
-					(JCaesarClassDeclaration) cd.getInners()[i];
+				JClassDeclaration innerCaesarClass =
+					(JClassDeclaration) cd.getInners()[i];
 				if (innerCaesarClass.isCrosscutting())
 				{
 
@@ -133,8 +134,8 @@ public class DeploymentPreparation implements CaesarConstants {
 				{
 					if (innersInners[j] instanceof JClassDeclaration)
 					{
-						JCaesarClassDeclaration currentInnerInner =
-							(JCaesarClassDeclaration) innersInners[j];
+						JClassDeclaration currentInnerInner =
+							(JClassDeclaration) innersInners[j];
 						new DeploymentPreparation(currentInnerInner).prepareForDynamicDeployment(environment);
 					}
 				}
@@ -150,10 +151,9 @@ public class DeploymentPreparation implements CaesarConstants {
 		cd.generateInterface(environment.getClassReader(), cd.getOwner(), prefix);
 	}
 
-	public static void prepareForStaticDeployment(CContext context, JCaesarClassDeclaration cd) {
+	public static void prepareForStaticDeployment(CContext context, JClassDeclaration cd) {
 		new DeploymentPreparation(cd).prepareForStaticDeployment(context);
 	}
-	
 	private void prepareForStaticDeployment(CContext context)
 	{
 		for (int i = 0; i < cd.getAdvices().length; i++)
@@ -168,20 +168,21 @@ public class DeploymentPreparation implements CaesarConstants {
 		}
 
 		CType singletonType = new CClassNameType(cd.getIdent());
-		JVariableDefinition aspectInstanceVar =
-			new JVariableDefinition(
+		FjVariableDefinition aspectInstanceVar =
+			new FjVariableDefinition(
 				TokenReference.NO_REF,
 				ACC_PUBLIC | ACC_FINAL | ACC_STATIC,
 				singletonType,
 				PER_SINGLETON_INSTANCE_FIELD,
 				null);
-		cd.addField(
-			new JFieldDeclaration(
-				cd.getTokenReference(),
-				aspectInstanceVar,
-				true,
-				null,
-				null));
+		FjFieldDeclaration field = new FjFieldDeclaration(
+										cd.getTokenReference(),
+										aspectInstanceVar,
+										true,
+										null,
+										null);
+		field.setGenerated();
+		cd.addField(field);
 		cd.addMethod(createSingletonAjcClinitMethod(context.getTypeFactory()));
 
 		cd.addMethod(createAspectOfMethod());
@@ -191,7 +192,7 @@ public class DeploymentPreparation implements CaesarConstants {
 	/**
 	 * Creates the proceed method for around advices.
 	 * */
-	private JMethodDeclaration createProceedMethod(JAdviceDeclaration advice)
+	private JMethodDeclaration createProceedMethod(AdviceDeclaration advice)
 	{
 		ProceedDeclaration proceedMethodDeclaration =
 			new ProceedDeclaration(
@@ -209,7 +210,7 @@ public class DeploymentPreparation implements CaesarConstants {
 	/**
 	 * Changes the name of the given advice.
 	 */
-	protected void createAdviceMethodName(JAdviceDeclaration adviceDeclaration)
+	protected void createAdviceMethodName(AdviceDeclaration adviceDeclaration)
 	{
 		String ident =
 			CaesarNameMangler.adviceName(
@@ -219,10 +220,10 @@ public class DeploymentPreparation implements CaesarConstants {
 		adviceDeclaration.setIdent(ident);
 	}
 	
-	protected JMethodDeclaration createSingletonAjcClinitMethod(TypeFactory typeFactory)
+	protected FjMethodDeclaration createSingletonAjcClinitMethod(TypeFactory typeFactory)
 	{
 		JStatement[] body = { createSingletonClinitMethodStatement_1()};
-		return new JMethodDeclaration(
+		return new FjMethodDeclaration(
 			TokenReference.NO_REF,
 			ACC_PRIVATE | ACC_STATIC,
 			CTypeVariable.EMPTY,
@@ -234,22 +235,22 @@ public class DeploymentPreparation implements CaesarConstants {
 			null,
 			null);
 	}
-	private JMethodDeclaration createAspectOfMethod() {
+	private FjMethodDeclaration createAspectOfMethod() {
 
 		CType singletonType = new CClassNameType(cd.getFjSourceClass().getQualifiedName());
 		JExpression expr =
-			new JFieldAccessExpression(
+			new FjFieldAccessExpression(
 				TokenReference.NO_REF,
 				null,
 				PER_SINGLETON_INSTANCE_FIELD);
 		JStatement[] body = { new JReturnStatement(TokenReference.NO_REF, expr, null)};
-		return new JMethodDeclaration(
+		return new FjMethodDeclaration(
 			TokenReference.NO_REF,
 			ACC_PUBLIC | ACC_STATIC,
 			CTypeVariable.EMPTY,
 			singletonType,
 			ASPECT_OF_METHOD,
-			JFormalParameter.EMPTY,
+			FjFormalParameter.EMPTY,
 			CReferenceType.EMPTY,
 			new JBlock(TokenReference.NO_REF, body, null),
 			null,
@@ -264,17 +265,17 @@ public class DeploymentPreparation implements CaesarConstants {
 	protected JStatement createSingletonClinitMethodStatement_1()
 	{
 		JExpression left =
-			new JNameExpression(
+			new FjNameExpression(
 				TokenReference.NO_REF,
 				PER_SINGLETON_INSTANCE_FIELD);
 		JExpression right =
-			new JUnqualifiedInstanceCreation(
+			new CciInternalUnqualifiedInstanceCreation(
 				TokenReference.NO_REF,
 				new CClassNameType(cd.getIdent()),
 				JExpression.EMPTY);
 		return new JExpressionStatement(
 			TokenReference.NO_REF,
-			new JAssignmentExpression(TokenReference.NO_REF, left, right),
+			new FjAssignmentExpression(TokenReference.NO_REF, left, right),
 			null);
 	}
 
@@ -286,7 +287,7 @@ public class DeploymentPreparation implements CaesarConstants {
 		JExpression prefix = new JTypeNameExpression(cd.getTokenReference(), type);
 
 		JExpression expr =
-			new JMethodCallExpression(
+			new FjMethodCallExpression(
 				cd.getTokenReference(),
 				prefix,
 				AJC_CLINIT_METHOD,

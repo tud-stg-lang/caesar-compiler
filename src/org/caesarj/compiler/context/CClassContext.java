@@ -15,16 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassContext.java,v 1.3 2004-03-03 17:08:19 aracic Exp $
+ * $Id: CClassContext.java,v 1.4 2004-03-14 11:03:26 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
 
-import java.util.EmptyStackException;
-import java.util.Stack;
-
 import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.aspectj.CaesarFormalBinding;
 import org.caesarj.compiler.ast.JExpression;
 import org.caesarj.compiler.ast.JFieldDeclaration;
 import org.caesarj.compiler.ast.JLocalVariable;
@@ -72,8 +68,6 @@ public class CClassContext extends CContext {
     this.self = clazz;
     this.decl = decl;
     this.fieldInfo = new CVariableInfo(null);
-    
-    fjAdditionalContextStack = new Stack();
   }
 
   /**
@@ -424,62 +418,6 @@ public class CClassContext extends CContext {
   public JTypeDeclaration getTypeDeclaration() {
     return decl;
   }
-
-
-
-
-  protected CaesarFormalBinding[] bindings;     
-
-  public CClassContext getParent() {
-      return this;
-  }
-
-  protected Stack fjAdditionalContextStack;
-  public void pushContextInfo(Object o) {
-      fjAdditionalContextStack.push(o);
-  }
-  public Object popContextInfo() {
-      try {
-          return fjAdditionalContextStack.pop();
-      } catch (EmptyStackException e) {
-          return null;
-      }
-  }
-  public Object peekContextInfo() {
-      try {
-          return peekContextInfo(0);
-      } catch (Exception e) {
-          return null;
-      }
-  }
-  public Object peekContextInfo(int howDeep) {
-      try {
-          return fjAdditionalContextStack.elementAt(
-              fjAdditionalContextStack.size() - howDeep - 1);
-      } catch (Exception e) {
-          return null;
-      }
-  }
-
-  public CaesarFormalBinding[] getBindings() {
-      if (bindings == null) {
-          bindings = new CaesarFormalBinding[0];
-      }
-
-      return bindings;
-  }
-
-  public void setBindings(CaesarFormalBinding[] formals) {
-      bindings =  formals ;
-  }
-
-  public CCompilationUnitContext getParentCompilationUnitContext() {
-      CContext p = parent;
-      while (!(p instanceof CCompilationUnitContext)) p = p.getParentContext(); 
-      return (CCompilationUnitContext) p;
-  }
-
-
 
   // ----------------------------------------------------------------------
   // DATA MEMBERS

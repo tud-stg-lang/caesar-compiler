@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcPrettyPrinter.java,v 1.8 2004-03-03 17:08:19 aracic Exp $
+ * $Id: KjcPrettyPrinter.java,v 1.9 2004-03-14 11:03:25 aracic Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -1811,21 +1811,70 @@ public class KjcPrettyPrinter extends org.caesarj.util.Utils implements Constant
 
   protected final TypeFactory           factory;
 	
+	/* (non-Javadoc)
+	 * @see org.caesarj.compiler.ast.KjcVisitor#visitFjOverrideClassDeclaration(org.caesarj.compiler.ast.FjOverrideClassDeclaration, int, java.lang.String, org.caesarj.compiler.types.CTypeVariable[], java.lang.String, org.caesarj.compiler.types.CReferenceType[], org.caesarj.compiler.ast.JPhylum[], org.caesarj.compiler.ast.JMethodDeclaration[], org.caesarj.compiler.ast.JTypeDeclaration[])
+	 */
+	public void visitFjOverrideClassDeclaration(FjOverrideClassDeclaration self, int modifiers, String ident, CTypeVariable[] typeVariables, String superClass, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods, JTypeDeclaration[] decls) {
+		visitClassDeclaration(self, modifiers, ident, typeVariables, superClass, interfaces, body, methods, decls);
+	}
 	
 	/* (non-Javadoc)
 	 * @see org.caesarj.compiler.ast.KjcVisitor#visitFjVirtualClassDeclaration(org.caesarj.compiler.ast.FjVirtualClassDeclaration, int, java.lang.String, org.caesarj.compiler.types.CTypeVariable[], java.lang.String, org.caesarj.compiler.types.CReferenceType[], org.caesarj.compiler.ast.JPhylum[], org.caesarj.compiler.ast.JMethodDeclaration[], org.caesarj.compiler.ast.JTypeDeclaration[])
 	 */
-	public void visitFjVirtualClassDeclaration(JVirtualClassDeclaration self, int modifiers, String ident, CTypeVariable[] typeVariables, String superClass, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods, JTypeDeclaration[] decls) {
+	public void visitFjVirtualClassDeclaration(FjVirtualClassDeclaration self, int modifiers, String ident, CTypeVariable[] typeVariables, String superClass, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods, JTypeDeclaration[] decls) {
 		visitClassDeclaration(self, modifiers, ident, typeVariables, superClass, interfaces, body, methods, decls);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.caesarj.compiler.ast.KjcVisitor#visitCciWeaveletClassDeclaration(org.caesarj.compiler.ast.CciWeaveletClassDeclaration, int, java.lang.String, org.caesarj.compiler.types.CTypeVariable[], java.lang.String, org.caesarj.compiler.types.CReferenceType[], org.caesarj.compiler.ast.JPhylum[], org.caesarj.compiler.ast.JMethodDeclaration[], org.caesarj.compiler.ast.JTypeDeclaration[])
+	 */
+	public void visitCciWeaveletClassDeclaration(CciWeaveletClassDeclaration self, int modifiers, String ident, CTypeVariable[] typeVariables, String superClass, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods, JTypeDeclaration[] decls) {
+		newLine();
+		print(CModifier.toString(modifiers));
+		print("class " + ident);
 
+		if (typeVariables !=null && typeVariables.length > 0) {
+		  print("<");
+		  for (int i=0; i < typeVariables.length; i++) {
+			if (i > 0) {
+			  print(", ");
+			}
+			print(typeVariables[i].getIdent());
+		  }
+		  print(">");
+		}
+
+		if (superClass != null) {
+		  print(" extends " + superClass.replace('/', '.'));
+		  print("(" + self.getProvidingTypeName());
+		  
+		}
+
+		if (interfaces.length != 0) {
+		  print(" implements ");
+		  for (int i = 0; i < interfaces.length; i++) {
+		if (i != 0) {
+		  print(", ");
+		}
+		print(interfaces[i]);
+		  }
+		}
+
+		print(" ");
+		visitClassBody(decls, methods, body);
+	}
 	
 	/* (non-Javadoc)
 	 * @see org.caesarj.compiler.ast.KjcVisitor#visitFjCleanClassDeclaration(org.caesarj.compiler.ast.FjCleanClassDeclaration, int, java.lang.String, org.caesarj.compiler.types.CTypeVariable[], java.lang.String, org.caesarj.compiler.types.CReferenceType[], org.caesarj.compiler.ast.JPhylum[], org.caesarj.compiler.ast.JMethodDeclaration[], org.caesarj.compiler.ast.JTypeDeclaration[])
 	 */
-	public void visitFjCleanClassDeclaration(JCaesarClassDeclaration self, int modifiers, String ident, CTypeVariable[] typeVariables, String superClass, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods, JTypeDeclaration[] decls) {
+	public void visitFjCleanClassDeclaration(FjCleanClassDeclaration self, int modifiers, String ident, CTypeVariable[] typeVariables, String superClass, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods, JTypeDeclaration[] decls) {
 		visitClassDeclaration(self, modifiers, ident, typeVariables, superClass, interfaces, body, methods, decls);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.caesarj.compiler.ast.KjcVisitor#visitCciInterfaceDeclaration(org.caesarj.compiler.ast.JInterfaceDeclaration, int, java.lang.String, org.caesarj.compiler.types.CReferenceType[], org.caesarj.compiler.ast.JPhylum[], org.caesarj.compiler.ast.JMethodDeclaration[])
+	 */
+	public void visitCciInterfaceDeclaration(CciInterfaceDeclaration self, int modifiers, String ident, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods) {
+		visitInterfaceDeclaration(self, modifiers, ident, interfaces, body, methods);
+	}
 }

@@ -117,7 +117,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		case LITERAL_synchronized:
 		case LITERAL_transient:
 		case LITERAL_volatile:
-		case LITERAL_cclass:
+		case LITERAL_virtual:
+		case LITERAL_override:
+		case LITERAL_clean:
+		case LITERAL_collaboration:
 		case LITERAL_provided:
 		case LITERAL_expected:
 		case LITERAL_deployed:
@@ -179,7 +182,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		case LITERAL_synchronized:
 		case LITERAL_transient:
 		case LITERAL_volatile:
-		case LITERAL_cclass:
+		case LITERAL_virtual:
+		case LITERAL_override:
+		case LITERAL_clean:
+		case LITERAL_collaboration:
 		case LITERAL_provided:
 		case LITERAL_expected:
 		case LITERAL_deployed:
@@ -196,11 +202,6 @@ private static final int MAX_LOOKAHEAD = 2;
 			case LITERAL_interface:
 			{
 				decl=jInterfaceDefinition(mods);
-				break;
-			}
-			case LITERAL_cclass:
-			{
-				decl=jCaesarClassDefinition(mods);
 				break;
 			}
 			default:
@@ -413,6 +414,9 @@ private static final int MAX_LOOKAHEAD = 2;
 		CTypeVariable[]       	typeVariables = CTypeVariable.EMPTY;
 		CReferenceType			superClass = null;
 		CReferenceType[]			interfaces = CReferenceType.EMPTY;
+		CReferenceType			binding = null;
+		CReferenceType			providing = null;
+		CReferenceType			wrappee = null;  
 		ParseClassContext	context = ParseClassContext.getInstance();
 		TokenReference	sourceRef = buildTokenReference();
 		JavadocComment	javadoc = getJavadocComment();
@@ -431,6 +435,9 @@ private static final int MAX_LOOKAHEAD = 2;
 		}
 		case LITERAL_extends:
 		case LITERAL_implements:
+		case LITERAL_binds:
+		case LITERAL_provides:
+		case LITERAL_wraps:
 		case LCURLY:
 		{
 			break;
@@ -448,162 +455,14 @@ private static final int MAX_LOOKAHEAD = 2;
 			superClass=jSuperClassClause();
 			break;
 		}
-		case LITERAL_implements:
-		case LCURLY:
+		case LITERAL_binds:
 		{
+			binding=jBindsClause();
 			break;
 		}
-		default:
+		case LITERAL_provides:
 		{
-			throw new NoViableAltException(LT(1), getFilename());
-		}
-		}
-		}
-		{
-		switch ( LA(1)) {
-		case LITERAL_implements:
-		{
-			interfaces=jImplementsClause();
-			break;
-		}
-		case LCURLY:
-		{
-			break;
-		}
-		default:
-		{
-			throw new NoViableAltException(LT(1), getFilename());
-		}
-		}
-		}
-		jClassBlock(context);
-		if ( inputState.guessing==0 ) {
-			
-			JMethodDeclaration[]      methods;
-			
-			methods = context.getMethods();
-			
-			self = new JClassDeclaration(sourceRef,
-						   modifiers,
-						   ident.getText(),
-			typeVariables,
-						   superClass,
-						   interfaces,
-						   context.getFields(),
-						   methods,
-						   context.getInnerClasses(),
-						   context.getBody(),
-						   javadoc,
-						   comments
-						   );
-					
-			context.release();
-			
-		}
-		return self;
-	}
-	
-	private final JTypeDeclaration  jInterfaceDefinition(
-		int modifiers
-	) throws RecognitionException, TokenStreamException {
-		JTypeDeclaration self = null;
-		
-		Token  ident = null;
-		
-		CTypeVariable[]       typeVariables = CTypeVariable.EMPTY;
-		CReferenceType[]		interfaces =  CReferenceType.EMPTY;
-		ParseClassContext	context = ParseClassContext.getInstance();
-		TokenReference	sourceRef = buildTokenReference();
-		
-		
-		match(LITERAL_interface);
-		ident = LT(1);
-		match(IDENT);
-		{
-		switch ( LA(1)) {
-		case LT:
-		{
-			typeVariables=kTypeVariableDeclarationList();
-			break;
-		}
-		case LITERAL_extends:
-		case LCURLY:
-		{
-			break;
-		}
-		default:
-		{
-			throw new NoViableAltException(LT(1), getFilename());
-		}
-		}
-		}
-		interfaces=jInterfaceExtends();
-		jClassBlock(context);
-		if ( inputState.guessing==0 ) {
-			
-			
-			self = new JInterfaceDeclaration(sourceRef,
-			modifiers,
-			ident.getText(),
-			typeVariables,
-			interfaces,
-			context.getFields(),
-			context.getMethods(),
-			context.getInnerClasses(),
-			context.getBody(),
-			getJavadocComment(),
-			getStatementComment());
-			context.release();
-			
-		}
-		return self;
-	}
-	
-	private final JCaesarClassDeclaration  jCaesarClassDefinition(
-		int modifiers
-	) throws RecognitionException, TokenStreamException {
-		JCaesarClassDeclaration self = null;
-		
-		Token  ident = null;
-		
-		CTypeVariable[]       	typeVariables = CTypeVariable.EMPTY;
-		CReferenceType			superClass = null;
-		CReferenceType[]			interfaces = CReferenceType.EMPTY;
-		CReferenceType			wrappee = null;  
-		ParseClassContext	context = ParseClassContext.getInstance();
-		TokenReference	sourceRef = buildTokenReference();
-		JavadocComment	javadoc = getJavadocComment();
-		JavaStyleComment[]	comments = getStatementComment();
-		
-		
-		match(LITERAL_cclass);
-		ident = LT(1);
-		match(IDENT);
-		{
-		switch ( LA(1)) {
-		case LT:
-		{
-			typeVariables=kTypeVariableDeclarationList();
-			break;
-		}
-		case LITERAL_extends:
-		case LITERAL_implements:
-		case LITERAL_wraps:
-		case LCURLY:
-		{
-			break;
-		}
-		default:
-		{
-			throw new NoViableAltException(LT(1), getFilename());
-		}
-		}
-		}
-		{
-		switch ( LA(1)) {
-		case LITERAL_extends:
-		{
-			superClass=jCompositeTypeClause();
+			providing=jProvidesClause();
 			break;
 		}
 		case LITERAL_implements:
@@ -653,32 +512,192 @@ private static final int MAX_LOOKAHEAD = 2;
 		}
 		}
 		}
-		jCaesarClassBlock(context);
+		jClassBlock(context);
 		if ( inputState.guessing==0 ) {
 			
-				JMethodDeclaration[]      methods;
+			JMethodDeclaration[]      methods;
 			
-				methods = context.getMethods();
+			methods = context.getMethods();
+			if (superClass instanceof CciWeaveletReferenceType)
+				self = new CciWeaveletClassDeclaration(sourceRef,
+							   modifiers,
+							   ident.getText(),
+							   typeVariables,
+							   (CciWeaveletReferenceType)superClass,
+							   wrappee,
+							   interfaces,
+							   context.getFields(),
+							   methods,
+							   context.getInnerClasses(),
+							   context.getBody(),
+							   javadoc,
+							   comments);
+				  else if (providing != null || binding != null)
+				  {
+				  	if (CModifier.contains(modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL))
+			self = new FjVirtualClassDeclaration(sourceRef,
+							   modifiers,
+							   ident.getText(),
+							   typeVariables,
+							   superClass,
+							   binding,
+							   providing,
+							   wrappee,				   
+							   interfaces,
+							   context.getFields(),
+							   methods,
+							   context.getInnerClasses(),
+							   context.getBody(),
+							   javadoc,
+							   comments);
+				  	 else
+			self = new FjCleanClassDeclaration(sourceRef,
+							   modifiers | org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN,
+							   ident.getText(),
+							   typeVariables,
+							   superClass,
+							   binding,
+							   providing,
+							   wrappee,
+							   interfaces,
+							   context.getFields(),
+							   methods,
+							   context.getInnerClasses(),
+							   context.getBody(),
+							   javadoc,
+							   comments,
+							   context.getPointcuts(),
+							   context.getAdvices(),
+							   context.getDeclares()				   
+							   );
+				 }
+			else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_OVERRIDE ) ) {
+			self = new FjOverrideClassDeclaration(sourceRef,
+							   modifiers,
+							   ident.getText(),
+							   typeVariables,
+							   superClass,
+							   binding,
+							   providing,
+							   wrappee,
+							   interfaces,
+							   context.getFields(),
+							   methods,
+							   context.getInnerClasses(),
+							   context.getBody(),
+							   javadoc,
+							   comments);
+			} else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL ) ) {
+			self = new FjVirtualClassDeclaration(sourceRef,
+							   modifiers,
+							   ident.getText(),
+							   typeVariables,
+							   superClass,
+							   binding,
+							   providing,
+							   wrappee,			   
+							   interfaces,
+							   context.getFields(),
+							   methods,
+							   context.getInnerClasses(),
+							   context.getBody(),
+							   javadoc,
+							   comments);
+			} else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN ) ) {
+			self = new FjCleanClassDeclaration(sourceRef,
+							   modifiers,
+							   ident.getText(),
+							   typeVariables,
+							   superClass,
+							   binding,
+							   providing,
+							   wrappee,			   
+							   interfaces,
+							   context.getFields(),
+							   methods,
+							   context.getInnerClasses(),
+							   context.getBody(),
+							   javadoc,
+							   comments,
+							   context.getPointcuts(),
+							   context.getAdvices(),
+							   context.getDeclares());
+			} else {
+			self = new JClassDeclaration(sourceRef,
+							   modifiers,
+							   ident.getText(),
+			typeVariables,
+							   superClass,
+							   binding,
+							   providing,
+							   wrappee,			   
+							   interfaces,
+							   context.getFields(),
+							   methods,
+							   context.getInnerClasses(),
+							   context.getBody(),
+							   javadoc,
+							   comments,				   
+							   context.getPointcuts(),
+							   context.getAdvices(),
+							   context.getDeclares());
+						}
+			context.release();
 			
-					self = new JCaesarClassDeclaration(
-						sourceRef,
-					   	modifiers,
-					   	ident.getText(),
-					   	typeVariables,
-					   	superClass,
-					   	wrappee,
-					   	interfaces,
-					   	context.getFields(),
-					   	methods,
-					   	context.getInnerClasses(),
-					   	context.getBody(),
-					   	javadoc,
-					   	comments,
-					   	context.getPointcuts(),
-					   	context.getAdvices(),
-					   	context.getDeclares()				   
-					);
-				 
+		}
+		return self;
+	}
+	
+	private final JTypeDeclaration  jInterfaceDefinition(
+		int modifiers
+	) throws RecognitionException, TokenStreamException {
+		JTypeDeclaration self = null;
+		
+		Token  ident = null;
+		
+		CTypeVariable[]       typeVariables = CTypeVariable.EMPTY;
+		CReferenceType[]		interfaces =  CReferenceType.EMPTY;
+		ParseClassContext	context = ParseClassContext.getInstance();
+		TokenReference	sourceRef = buildTokenReference();
+		
+		
+		match(LITERAL_interface);
+		ident = LT(1);
+		match(IDENT);
+		{
+		switch ( LA(1)) {
+		case LT:
+		{
+			typeVariables=kTypeVariableDeclarationList();
+			break;
+		}
+		case LITERAL_extends:
+		case LCURLY:
+		{
+			break;
+		}
+		default:
+		{
+			throw new NoViableAltException(LT(1), getFilename());
+		}
+		}
+		}
+		interfaces=jInterfaceExtends();
+		jClassBlock(context);
+		if ( inputState.guessing==0 ) {
+			
+			
+			self = new CciInterfaceDeclaration(sourceRef,
+			modifiers,
+			ident.getText(),
+			typeVariables,
+			interfaces,
+			context.getFields(),
+			context.getMethods(),
+			context.getInnerClasses(),
+			context.getBody(),
+			getJavadocComment(),
+			getStatementComment());
 			context.release();
 			
 		}
@@ -756,7 +775,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			vars.add(decl);
 		}
 		{
-		_loop105:
+		_loop91:
 		do {
 			if ((LA(1)==COMMA)) {
 				match(COMMA);
@@ -766,13 +785,13 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop105;
+				break _loop91;
 			}
 			
 		} while (true);
 		}
 		if ( inputState.guessing==0 ) {
-			self = (JVariableDefinition[]) vars.toArray(new JVariableDefinition[vars.size()]);
+			self = (JVariableDefinition[]) vars.toArray(new FjVariableDefinition[vars.size()]);
 		}
 		return self;
 	}
@@ -872,6 +891,30 @@ private static final int MAX_LOOKAHEAD = 2;
 			}
 			break;
 		}
+		case LITERAL_virtual:
+		{
+			match(LITERAL_virtual);
+			if ( inputState.guessing==0 ) {
+				self = org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL;
+			}
+			break;
+		}
+		case LITERAL_override:
+		{
+			match(LITERAL_override);
+			if ( inputState.guessing==0 ) {
+				self = org.caesarj.classfile.ClassfileConstants2.FJC_OVERRIDE;
+			}
+			break;
+		}
+		case LITERAL_clean:
+		{
+			match(LITERAL_clean);
+			if ( inputState.guessing==0 ) {
+				self = org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN;
+			}
+			break;
+		}
 		case LITERAL_privileged:
 		{
 			match(LITERAL_privileged);
@@ -885,6 +928,14 @@ private static final int MAX_LOOKAHEAD = 2;
 			match(LITERAL_deployed);
 			if ( inputState.guessing==0 ) {
 				self = org.caesarj.classfile.ClassfileConstants2.ACC_DEPLOYED;
+			}
+			break;
+		}
+		case LITERAL_collaboration:
+		{
+			match(LITERAL_collaboration);
+			if ( inputState.guessing==0 ) {
+				self = org.caesarj.classfile.ClassfileConstants2.CCI_COLLABORATION;
 			}
 			break;
 		}
@@ -1010,6 +1061,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		}
 		case EOF:
 		case LITERAL_implements:
+		case FJEQUAL:
 		case LITERAL_wraps:
 		case LITERAL_around:
 		case ASSIGN:
@@ -1061,7 +1113,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			
 		}
 		{
-		_loop258:
+		_loop244:
 		do {
 			if ((LA(1)==DOT)) {
 				match(DOT);
@@ -1076,6 +1128,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 				case EOF:
 				case LITERAL_implements:
+				case FJEQUAL:
 				case LITERAL_wraps:
 				case LITERAL_around:
 				case ASSIGN:
@@ -1129,7 +1182,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop258;
+				break _loop244;
 			}
 			
 		} while (true);
@@ -1284,7 +1337,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			container.add(tv);
 		}
 		{
-		_loop264:
+		_loop250:
 		do {
 			if ((LA(1)==COMMA)) {
 				match(COMMA);
@@ -1294,7 +1347,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop264;
+				break _loop250;
 			}
 			
 		} while (true);
@@ -1318,23 +1371,41 @@ private static final int MAX_LOOKAHEAD = 2;
 		return self;
 	}
 	
-	private final CReferenceType  jCompositeTypeClause(
+	private final CReferenceType  jSuperClassClause(
 		
 	) throws RecognitionException, TokenStreamException {
 		CReferenceType self = null;
 		
 		
-			CReferenceType[] compositeList = null;
+		{
+		match(LITERAL_extends);
+		self=jSuperTypeName();
+		}
+		return self;
+	}
+	
+	private final CReferenceType  jBindsClause(
+		
+	) throws RecognitionException, TokenStreamException {
+		CReferenceType self = null;
 		
 		
 		{
-		match(LITERAL_extends);
-		compositeList=jCompositeTypeList();
+		match(LITERAL_binds);
+		self=jTypeName();
 		}
-		if ( inputState.guessing==0 ) {
-			
-				self = new CCompositeType(compositeList);
-			
+		return self;
+	}
+	
+	private final CReferenceType  jProvidesClause(
+		
+	) throws RecognitionException, TokenStreamException {
+		CReferenceType self = null;
+		
+		
+		{
+		match(LITERAL_provides);
+		self=jTypeName();
 		}
 		return self;
 	}
@@ -1365,209 +1436,6 @@ private static final int MAX_LOOKAHEAD = 2;
 		return self;
 	}
 	
-	private final void jCaesarClassBlock(
-		ParseClassContext context
-	) throws RecognitionException, TokenStreamException {
-		
-		
-		match(LCURLY);
-		{
-		_loop58:
-		do {
-			switch ( LA(1)) {
-			case LITERAL_abstract:
-			case LITERAL_boolean:
-			case LITERAL_byte:
-			case LITERAL_char:
-			case LITERAL_class:
-			case LITERAL_double:
-			case LITERAL_final:
-			case LITERAL_float:
-			case LITERAL_int:
-			case LITERAL_long:
-			case LITERAL_native:
-			case LITERAL_private:
-			case LITERAL_protected:
-			case LITERAL_public:
-			case LITERAL_short:
-			case LITERAL_static:
-			case LITERAL_strictfp:
-			case LITERAL_synchronized:
-			case LITERAL_transient:
-			case LITERAL_void:
-			case LITERAL_volatile:
-			case LITERAL_provided:
-			case LITERAL_expected:
-			case LITERAL_after:
-			case LITERAL_before:
-			case LITERAL_declare:
-			case LITERAL_deployed:
-			case LITERAL_pointcut:
-			case LITERAL_privileged:
-			case LCURLY:
-			case LT:
-			case IDENT:
-			{
-				jCaesarMember(context);
-				break;
-			}
-			case SEMI:
-			{
-				match(SEMI);
-				if ( inputState.guessing==0 ) {
-					reportTrouble(new CWarning(buildTokenReference(), KjcMessages.STRAY_SEMICOLON, null));
-				}
-				break;
-			}
-			default:
-			{
-				break _loop58;
-			}
-			}
-		} while (true);
-		}
-		match(RCURLY);
-	}
-	
-	private final JVirtualClassDeclaration  jVirtualClassDefinition(
-		int modifiers
-	) throws RecognitionException, TokenStreamException {
-		JVirtualClassDeclaration self = null;
-		
-		Token  ident = null;
-		
-		CTypeVariable[]       	typeVariables = CTypeVariable.EMPTY;
-		CReferenceType			superClass = null;
-		CReferenceType[]			interfaces = CReferenceType.EMPTY;
-		CReferenceType			wrappee = null;  
-		ParseClassContext	context = ParseClassContext.getInstance();
-		TokenReference	sourceRef = buildTokenReference();
-		JavadocComment	javadoc = getJavadocComment();
-		JavaStyleComment[]	comments = getStatementComment();
-		
-		
-		match(LITERAL_class);
-		ident = LT(1);
-		match(IDENT);
-		{
-		switch ( LA(1)) {
-		case LT:
-		{
-			typeVariables=kTypeVariableDeclarationList();
-			break;
-		}
-		case LITERAL_extends:
-		case LITERAL_implements:
-		case LITERAL_wraps:
-		case LCURLY:
-		{
-			break;
-		}
-		default:
-		{
-			throw new NoViableAltException(LT(1), getFilename());
-		}
-		}
-		}
-		{
-		switch ( LA(1)) {
-		case LITERAL_extends:
-		{
-			superClass=jCompositeTypeClause();
-			break;
-		}
-		case LITERAL_implements:
-		case LITERAL_wraps:
-		case LCURLY:
-		{
-			break;
-		}
-		default:
-		{
-			throw new NoViableAltException(LT(1), getFilename());
-		}
-		}
-		}
-		{
-		switch ( LA(1)) {
-		case LITERAL_implements:
-		{
-			interfaces=jImplementsClause();
-			break;
-		}
-		case LITERAL_wraps:
-		case LCURLY:
-		{
-			break;
-		}
-		default:
-		{
-			throw new NoViableAltException(LT(1), getFilename());
-		}
-		}
-		}
-		{
-		switch ( LA(1)) {
-		case LITERAL_wraps:
-		{
-			wrappee=jWrapsClause();
-			break;
-		}
-		case LCURLY:
-		{
-			break;
-		}
-		default:
-		{
-			throw new NoViableAltException(LT(1), getFilename());
-		}
-		}
-		}
-		jCaesarClassBlock(context);
-		if ( inputState.guessing==0 ) {
-			
-				JMethodDeclaration[]      methods;
-			
-				methods = context.getMethods();
-			
-					self = new JVirtualClassDeclaration(
-						sourceRef,
-					   	modifiers,
-					   	ident.getText(),
-					   	typeVariables,
-					   	superClass,
-					   	wrappee,
-					   	interfaces,
-					   	context.getFields(),
-					   	methods,
-					   	context.getInnerClasses(),
-					   	context.getBody(),
-					   	javadoc,
-					   	comments,
-					   	context.getPointcuts(),
-					   	context.getAdvices(),
-					   	context.getDeclares()				   
-					);
-				 
-			context.release();
-			
-		}
-		return self;
-	}
-	
-	private final CReferenceType  jSuperClassClause(
-		
-	) throws RecognitionException, TokenStreamException {
-		CReferenceType self = null;
-		
-		
-		{
-		match(LITERAL_extends);
-		self=jTypeName();
-		}
-		return self;
-	}
-	
 	private final void jClassBlock(
 		ParseClassContext context
 	) throws RecognitionException, TokenStreamException {
@@ -1575,7 +1443,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		match(LCURLY);
 		{
-		_loop61:
+		_loop51:
 		do {
 			switch ( LA(1)) {
 			case LITERAL_abstract:
@@ -1600,9 +1468,17 @@ private static final int MAX_LOOKAHEAD = 2;
 			case LITERAL_transient:
 			case LITERAL_void:
 			case LITERAL_volatile:
+			case LITERAL_virtual:
+			case LITERAL_override:
+			case LITERAL_clean:
+			case LITERAL_collaboration:
 			case LITERAL_provided:
 			case LITERAL_expected:
+			case LITERAL_after:
+			case LITERAL_before:
+			case LITERAL_declare:
 			case LITERAL_deployed:
+			case LITERAL_pointcut:
 			case LITERAL_privileged:
 			case LCURLY:
 			case LT:
@@ -1621,7 +1497,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			}
 			default:
 			{
-				break _loop61;
+				break _loop51;
 			}
 			}
 		} while (true);
@@ -1629,38 +1505,70 @@ private static final int MAX_LOOKAHEAD = 2;
 		match(RCURLY);
 	}
 	
-	private final CReferenceType[]  jCompositeTypeList(
+	private final CReferenceType  jSuperTypeName(
 		
 	) throws RecognitionException, TokenStreamException {
-		CReferenceType[] self = null;
+		CReferenceType self = null;
 		
 		
-		CReferenceType	name;
-		ArrayList	container = new ArrayList();
+			CReferenceType collaborationInterface = null;
+			CReferenceType implementation = null;
+			CReferenceType binding = null;
 		
 		
-		name=jTypeName();
-		if ( inputState.guessing==0 ) {
-			container.add(name);
+		{
+		switch ( LA(1)) {
+		case IDENT:
+		{
+			collaborationInterface=jTypeName();
+			break;
+		}
+		case LITERAL_implements:
+		case LITERAL_wraps:
+		case LCURLY:
+		case LPAREN:
+		{
+			break;
+		}
+		default:
+		{
+			throw new NoViableAltException(LT(1), getFilename());
+		}
+		}
 		}
 		{
-		_loop51:
-		do {
-			if ((LA(1)==BAND)) {
-				match(BAND);
-				name=jTypeName();
-				if ( inputState.guessing==0 ) {
-					container.add(name);
-				}
-			}
-			else {
-				break _loop51;
-			}
-			
-		} while (true);
+		switch ( LA(1)) {
+		case LPAREN:
+		{
+			match(LPAREN);
+			implementation=jTypeName();
+			match(COMMA);
+			binding=jTypeName();
+			match(RPAREN);
+			break;
+		}
+		case LITERAL_implements:
+		case LITERAL_wraps:
+		case LCURLY:
+		{
+			break;
+		}
+		default:
+		{
+			throw new NoViableAltException(LT(1), getFilename());
+		}
+		}
 		}
 		if ( inputState.guessing==0 ) {
-			self = (CReferenceType[])container.toArray(new CReferenceType[container.size()]);
+			
+				if (collaborationInterface != null && implementation != null && binding != null)
+				  	self = new CciWeaveletReferenceType(collaborationInterface,
+								implementation,
+								binding);
+				else
+					self = collaborationInterface;
+			
+			
 		}
 		return self;
 	}
@@ -1692,7 +1600,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		return self;
 	}
 	
-	private final void jCaesarMember(
+	private final void jMember(
 		ParseClassContext context
 	) throws RecognitionException, TokenStreamException {
 		
@@ -1711,20 +1619,30 @@ private static final int MAX_LOOKAHEAD = 2;
 		CaesarAdviceKind kind = null;
 		TypeFactory factory = environment.getTypeFactory();
 		CReferenceType[]		throwsList = CReferenceType.EMPTY;  
-		JPointcutDeclaration pointcutDecl;
-		JAdviceDeclaration adviceDecl;
+		PointcutDeclaration pointcutDecl;
+		AdviceDeclaration adviceDecl;
 		
 		
+		{
 		if ((_tokenSet_2.member(LA(1))) && (_tokenSet_3.member(LA(2)))) {
-			{
 			modifiers=jModifiers();
 			{
 			switch ( LA(1)) {
 			case LITERAL_class:
 			{
-				decl=jVirtualClassDefinition(modifiers);
+				decl=jClassDefinition(modifiers);
 				if ( inputState.guessing==0 ) {
 					context.addInnerDeclaration(decl);
+				}
+				break;
+			}
+			case LITERAL_interface:
+			{
+				decl=jInterfaceDefinition(modifiers);
+				if ( inputState.guessing==0 ) {
+					
+							context.addInnerDeclaration(decl);
+						
 				}
 				break;
 			}
@@ -1743,7 +1661,9 @@ private static final int MAX_LOOKAHEAD = 2;
 				match(LITERAL_pointcut);
 				pointcutDecl=jPointcutDefinition(modifiers, CTypeVariable.EMPTY);
 				if ( inputState.guessing==0 ) {
-					context.addPointcutDeclaration(pointcutDecl);	
+					
+									context.addPointcutDeclaration(pointcutDecl);	
+								
 				}
 				break;
 			}
@@ -1753,17 +1673,19 @@ private static final int MAX_LOOKAHEAD = 2;
 				pattern = LT(1);
 				match(TYPE_PATTERN);
 				if ( inputState.guessing==0 ) {
+					
 							
 									try {
+					
 										CaesarPatternParser patternParser = new CaesarPatternParser(
 																				"declare "+pattern.getText(),
 																				new CaesarSourceContext(sourceRef) );
 										context.addDeclare(patternParser.parseDeclare());		
 										
 									} catch(CaesarPatternParser.CaesarParserException e) {
-										reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));
+										reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));			
 									} catch(RuntimeException e) {
-								  		reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));
+								  		reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));							
 									}  			
 								
 				}
@@ -1777,7 +1699,9 @@ private static final int MAX_LOOKAHEAD = 2;
 				match(RPAREN);
 				adviceDecl=jAdviceDeclaration(CaesarAdviceKind.Before, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, null);
 				if ( inputState.guessing==0 ) {
-					context.addAdviceDeclaration(adviceDecl);
+						
+									context.addAdviceDeclaration(adviceDecl);
+								
 				}
 				break;
 			}
@@ -1858,7 +1782,9 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 				adviceDecl=jAdviceDeclaration(kind, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, extraParam);
 				if ( inputState.guessing==0 ) {
-					context.addAdviceDeclaration(adviceDecl);
+					
+									context.addAdviceDeclaration(adviceDecl);			
+								
 				}
 				break;
 			}
@@ -1897,8 +1823,8 @@ private static final int MAX_LOOKAHEAD = 2;
 						adviceDecl=jAdviceDeclaration(CaesarAdviceKind.Around, modifiers, parameters, type, throwsList, extraParam);
 						if ( inputState.guessing==0 ) {
 							
-									  			context.addAdviceDeclaration(adviceDecl);	  			
-									  		
+								  			context.addAdviceDeclaration(adviceDecl);	  			
+								  		
 						}
 					}
 					else if ((LA(1)==IDENT) && (LA(2)==LPAREN)) {
@@ -1912,17 +1838,13 @@ private static final int MAX_LOOKAHEAD = 2;
 						match(SEMI);
 						if ( inputState.guessing==0 ) {
 							
-									  			for (int i = 0; i < vars.length; i++) {
-										    		context.addFieldDeclaration(
-										    			new JFieldDeclaration(
-										    				sourceRef,
-															vars[i],
-															getJavadocComment(),
-															getStatementComment()
-														)
-													);
-										  		}
-											
+								  			for (int i = 0; i < vars.length; i++) {
+									    		context.addFieldDeclaration(new FjFieldDeclaration(sourceRef,
+																									vars[i],
+																									getJavadocComment(),
+																									getStatementComment()));
+									  		}
+										
 						}
 					}
 					else {
@@ -1933,7 +1855,6 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			else {
 				throw new NoViableAltException(LT(1), getFilename());
-			}
 			}
 			}
 			}
@@ -1955,125 +1876,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			throw new NoViableAltException(LT(1), getFilename());
 		}
 		
-	}
-	
-	private final void jMember(
-		ParseClassContext context
-	) throws RecognitionException, TokenStreamException {
-		
-		
-		int				modifiers = 0;
-		CType				type = null;
-		JMethodDeclaration		method;
-		CTypeVariable[]               typeVariables;
-		JTypeDeclaration		decl;
-		JVariableDefinition[]		vars;
-		JStatement[]			body = null;
-		TokenReference		sourceRef = buildTokenReference();
-		JFormalParameter[] parameters;
-		JFormalParameter extraParam = null;  
-		CaesarAdviceKind kind = null;
-		TypeFactory factory = environment.getTypeFactory();
-		CReferenceType[]		throwsList = CReferenceType.EMPTY;  
-		JPointcutDeclaration pointcutDecl;
-		JAdviceDeclaration adviceDecl;
-		
-		
-		if ((_tokenSet_7.member(LA(1))) && (_tokenSet_8.member(LA(2)))) {
-			{
-			modifiers=jModifiers();
-			{
-			switch ( LA(1)) {
-			case LITERAL_class:
-			{
-				decl=jClassDefinition(modifiers);
-				if ( inputState.guessing==0 ) {
-					context.addInnerDeclaration(decl);
-				}
-				break;
-			}
-			case LITERAL_interface:
-			{
-				decl=jInterfaceDefinition(modifiers);
-				if ( inputState.guessing==0 ) {
-					context.addInnerDeclaration(decl);
-				}
-				break;
-			}
-			case LT:
-			{
-				typeVariables=kTypeVariableDeclarationList();
-				type=jTypeSpec();
-				method=jMethodDefinition(context, modifiers, type, typeVariables);
-				if ( inputState.guessing==0 ) {
-					context.addMethodDeclaration(method);
-				}
-				break;
-			}
-			default:
-				if ((LA(1)==IDENT) && (LA(2)==LPAREN)) {
-					method=jConstructorDefinition(context, modifiers);
-					if ( inputState.guessing==0 ) {
-						context.addMethodDeclaration(method);
-					}
-				}
-				else if ((_tokenSet_4.member(LA(1))) && (_tokenSet_9.member(LA(2)))) {
-					type=jTypeSpec();
-					{
-					if ((LA(1)==IDENT) && (LA(2)==LPAREN)) {
-						method=jMethodDefinition(context, modifiers, type, CTypeVariable.EMPTY);
-						if ( inputState.guessing==0 ) {
-							context.addMethodDeclaration(method);
-						}
-					}
-					else if ((LA(1)==IDENT) && (_tokenSet_6.member(LA(2)))) {
-						vars=jVariableDefinitions(modifiers, type);
-						match(SEMI);
-						if ( inputState.guessing==0 ) {
-							
-									  			for (int i = 0; i < vars.length; i++) {
-										    		context.addFieldDeclaration(
-										    			new JFieldDeclaration(
-										    				sourceRef,
-															vars[i],
-															getJavadocComment(),
-															getStatementComment()
-														)
-													);
-										  		}
-											
-						}
-					}
-					else {
-						throw new NoViableAltException(LT(1), getFilename());
-					}
-					
-					}
-				}
-			else {
-				throw new NoViableAltException(LT(1), getFilename());
-			}
-			}
-			}
-			}
 		}
-		else if ((LA(1)==LITERAL_static) && (LA(2)==LCURLY)) {
-			match(LITERAL_static);
-			body=jCompoundStatement();
-			if ( inputState.guessing==0 ) {
-				context.addBlockInitializer(new JClassBlock(sourceRef, true, body));
-			}
-		}
-		else if ((LA(1)==LCURLY)) {
-			body=jCompoundStatement();
-			if ( inputState.guessing==0 ) {
-				context.addBlockInitializer(new JClassBlock(sourceRef, false, body));
-			}
-		}
-		else {
-			throw new NoViableAltException(LT(1), getFilename());
-		}
-		
 	}
 	
 	private final CReferenceType[]  jNameList(
@@ -2091,7 +1894,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			container.add(name);
 		}
 		{
-		_loop253:
+		_loop239:
 		do {
 			if ((LA(1)==COMMA)) {
 				match(COMMA);
@@ -2101,7 +1904,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop253;
+				break _loop239;
 			}
 			
 		} while (true);
@@ -2153,10 +1956,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		}
 		match(LCURLY);
 		{
-		boolean synPredMatched85 = false;
-		if (((_tokenSet_10.member(LA(1))) && (_tokenSet_11.member(LA(2))))) {
-			int _m85 = mark();
-			synPredMatched85 = true;
+		boolean synPredMatched71 = false;
+		if (((_tokenSet_7.member(LA(1))) && (_tokenSet_8.member(LA(2))))) {
+			int _m71 = mark();
+			synPredMatched71 = true;
 			inputState.guessing++;
 			try {
 				{
@@ -2182,19 +1985,19 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			catch (RecognitionException pe) {
-				synPredMatched85 = false;
+				synPredMatched71 = false;
 			}
-			rewind(_m85);
+			rewind(_m71);
 			inputState.guessing--;
 		}
-		if ( synPredMatched85 ) {
+		if ( synPredMatched71 ) {
 			constructorCall=jExplicitConstructorInvocation();
 		}
 		else {
-			boolean synPredMatched87 = false;
-			if (((_tokenSet_10.member(LA(1))) && (_tokenSet_11.member(LA(2))))) {
-				int _m87 = mark();
-				synPredMatched87 = true;
+			boolean synPredMatched73 = false;
+			if (((_tokenSet_7.member(LA(1))) && (_tokenSet_8.member(LA(2))))) {
+				int _m73 = mark();
+				synPredMatched73 = true;
 				inputState.guessing++;
 				try {
 					{
@@ -2205,15 +2008,15 @@ private static final int MAX_LOOKAHEAD = 2;
 					}
 				}
 				catch (RecognitionException pe) {
-					synPredMatched87 = false;
+					synPredMatched73 = false;
 				}
-				rewind(_m87);
+				rewind(_m73);
 				inputState.guessing--;
 			}
-			if ( synPredMatched87 ) {
+			if ( synPredMatched73 ) {
 				constructorCall=jExplicitConstructorInvocation();
 			}
-			else if ((_tokenSet_12.member(LA(1))) && (_tokenSet_13.member(LA(2)))) {
+			else if ((_tokenSet_9.member(LA(1))) && (_tokenSet_10.member(LA(2)))) {
 			}
 			else {
 				throw new NoViableAltException(LT(1), getFilename());
@@ -2221,9 +2024,9 @@ private static final int MAX_LOOKAHEAD = 2;
 			}
 			}
 			{
-			_loop89:
+			_loop75:
 			do {
-				if ((_tokenSet_14.member(LA(1)))) {
+				if ((_tokenSet_11.member(LA(1)))) {
 					stmt=jBlockStatement();
 					if ( inputState.guessing==0 ) {
 						
@@ -2235,7 +2038,7 @@ private static final int MAX_LOOKAHEAD = 2;
 					}
 				}
 				else {
-					break _loop89;
+					break _loop75;
 				}
 				
 			} while (true);
@@ -2243,12 +2046,12 @@ private static final int MAX_LOOKAHEAD = 2;
 			match(RCURLY);
 			if ( inputState.guessing==0 ) {
 				
-				self = new JConstructorDeclaration(sourceRef,
+				self = new FjConstructorDeclaration(sourceRef,
 				modifiers,
 				name.getText(),
 				parameters,
 				throwsList,
-				new JConstructorBlock(sourceRef,
+				new FjConstructorBlock(sourceRef,
 				constructorCall,
 				(JStatement[]) body.toArray(new JStatement[body.size()])),
 				javadoc,
@@ -2281,7 +2084,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		parameters=jParameterDeclarationList(JLocalVariable.DES_PARAMETER);
 		match(RPAREN);
 		{
-		_loop99:
+		_loop85:
 		do {
 			if ((LA(1)==LBRACK)) {
 				match(LBRACK);
@@ -2291,7 +2094,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop99;
+				break _loop85;
 			}
 			
 		} while (true);
@@ -2344,7 +2147,38 @@ private static final int MAX_LOOKAHEAD = 2;
 		}
 		if ( inputState.guessing==0 ) {
 			
-			self = new JMethodDeclaration(sourceRef,
+			// check if we have a clean method, i.e. a method that
+			// could be taken into a clean class's interface
+			if( (modifiers & Constants.ACC_PUBLIC) != 0
+			&& (modifiers & Constants.ACC_STATIC) == 0 )
+			self = new FjCleanMethodDeclaration(sourceRef,
+			modifiers,
+			typeVariables,
+			type,
+			name.getText(),
+			parameters,
+			throwsList,
+			body == null ? null : new JBlock(sourceRef, body, null),
+			javadoc,
+			comments);
+					 // check if we have private methods that might
+					 // need to receive a self parameter later
+			else if( (modifiers & Constants.ACC_PRIVATE) != 0 
+			&& (modifiers & Constants.ACC_STATIC) == 0 )
+			self = new FjPrivateMethodDeclaration(sourceRef,
+			modifiers,
+			typeVariables,
+			type,
+			name.getText(),
+			parameters,
+			throwsList,
+			body == null ? null : new JBlock(sourceRef, body, null),
+			javadoc,
+			comments);
+			// if this is not the case, instantiate
+			// a regular method
+			else
+			self = new FjMethodDeclaration(sourceRef,
 			modifiers, typeVariables, type,
 			name.getText(), parameters, throwsList,
 			body == null 
@@ -2358,48 +2192,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		return self;
 	}
 	
-	private final JStatement[]  jCompoundStatement(
-		
-	) throws RecognitionException, TokenStreamException {
-		JStatement[] self = null;
-		
-		
-		ArrayList		body = new ArrayList();
-		JStatement		stmt;
-		
-		
-		match(LCURLY);
-		{
-		_loop127:
-		do {
-			if ((_tokenSet_14.member(LA(1)))) {
-				stmt=jBlockStatement();
-				if ( inputState.guessing==0 ) {
-					
-						if (stmt instanceof JEmptyStatement) {
-						  reportTrouble(new CWarning(stmt.getTokenReference(), KjcMessages.STRAY_SEMICOLON, null));
-						}
-						body.add(stmt);
-					
-				}
-			}
-			else {
-				break _loop127;
-			}
-			
-		} while (true);
-		}
-		match(RCURLY);
-		if ( inputState.guessing==0 ) {
-			self = (JStatement[]) body.toArray(new JStatement[body.size()]);
-		}
-		return self;
-	}
-	
-	private final JPointcutDeclaration  jPointcutDefinition(
+	private final PointcutDeclaration  jPointcutDefinition(
 		int modifiers, CTypeVariable[] typeVariables
 	) throws RecognitionException, TokenStreamException {
-		JPointcutDeclaration self = null;
+		PointcutDeclaration self = null;
 		
 		Token  name = null;
 		
@@ -2420,7 +2216,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		pointcut=jPointcut();
 		match(SEMI);
 		if ( inputState.guessing==0 ) {
-			self = new JPointcutDeclaration(sourceRef,
+			self = new PointcutDeclaration(sourceRef,
 			modifiers,
 			typeVariables,
 			factory.getVoidType(),
@@ -2462,7 +2258,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				vect.add(elem);
 			}
 			{
-			_loop120:
+			_loop106:
 			do {
 				if ((LA(1)==COMMA)) {
 					match(COMMA);
@@ -2472,7 +2268,7 @@ private static final int MAX_LOOKAHEAD = 2;
 					}
 				}
 				else {
-					break _loop120;
+					break _loop106;
 				}
 				
 			} while (true);
@@ -2495,10 +2291,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		return self;
 	}
 	
-	private final JAdviceDeclaration  jAdviceDeclaration(
+	private final AdviceDeclaration  jAdviceDeclaration(
 		CaesarAdviceKind kind, int modifiers, JFormalParameter[] parameters, CType type, CReferenceType[] throwsList, JFormalParameter extraParam
 	) throws RecognitionException, TokenStreamException {
-		JAdviceDeclaration self = null;
+		AdviceDeclaration self = null;
 		
 		Token  pattern = null;
 		
@@ -2532,7 +2328,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							parameters = newParameters;			
 						}
 					
-						self = new JAdviceDeclaration(sourceRef,
+						self = new AdviceDeclaration(sourceRef,
 			modifiers,
 			CTypeVariable.EMPTY,
 			type,
@@ -2603,7 +2399,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		ident = LT(1);
 		match(IDENT);
 		{
-		_loop124:
+		_loop110:
 		do {
 			if ((LA(1)==LBRACK)) {
 				match(LBRACK);
@@ -2613,7 +2409,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop124;
+				break _loop110;
 			}
 			
 		} while (true);
@@ -2624,7 +2420,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				reportTrouble(new CWarning(sourceRef, KjcMessages.OLD_STYLE_ARRAY_BOUNDS, null));
 				type = new CArrayType(type, bounds);
 			}
-			self = new JFormalParameter(sourceRef, desc, type, ident.getText(), isFinal);
+			self = new FjFormalParameter(sourceRef, desc, type, ident.getText(), isFinal);
 			
 		}
 		return self;
@@ -2638,6 +2434,44 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		match(LITERAL_throws);
 		self=jNameList();
+		return self;
+	}
+	
+	private final JStatement[]  jCompoundStatement(
+		
+	) throws RecognitionException, TokenStreamException {
+		JStatement[] self = null;
+		
+		
+		ArrayList		body = new ArrayList();
+		JStatement		stmt;
+		
+		
+		match(LCURLY);
+		{
+		_loop113:
+		do {
+			if ((_tokenSet_11.member(LA(1)))) {
+				stmt=jBlockStatement();
+				if ( inputState.guessing==0 ) {
+					
+						if (stmt instanceof JEmptyStatement) {
+						  reportTrouble(new CWarning(stmt.getTokenReference(), KjcMessages.STRAY_SEMICOLON, null));
+						}
+						body.add(stmt);
+					
+				}
+			}
+			else {
+				break _loop113;
+			}
+			
+		} while (true);
+		}
+		match(RCURLY);
+		if ( inputState.guessing==0 ) {
+			self = (JStatement[]) body.toArray(new JStatement[body.size()]);
+		}
 		return self;
 	}
 	
@@ -2655,10 +2489,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		
 		{
-		boolean synPredMatched93 = false;
+		boolean synPredMatched79 = false;
 		if (((LA(1)==LITERAL_this) && (LA(2)==LPAREN))) {
-			int _m93 = mark();
-			synPredMatched93 = true;
+			int _m79 = mark();
+			synPredMatched79 = true;
 			inputState.guessing++;
 			try {
 				{
@@ -2666,22 +2500,22 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			catch (RecognitionException pe) {
-				synPredMatched93 = false;
+				synPredMatched79 = false;
 			}
-			rewind(_m93);
+			rewind(_m79);
 			inputState.guessing--;
 		}
-		if ( synPredMatched93 ) {
+		if ( synPredMatched79 ) {
 			match(LITERAL_this);
 			if ( inputState.guessing==0 ) {
 				functorIsThis = true;
 			}
 		}
 		else {
-			boolean synPredMatched95 = false;
+			boolean synPredMatched81 = false;
 			if (((LA(1)==LITERAL_super) && (LA(2)==LPAREN))) {
-				int _m95 = mark();
-				synPredMatched95 = true;
+				int _m81 = mark();
+				synPredMatched81 = true;
 				inputState.guessing++;
 				try {
 					{
@@ -2689,18 +2523,18 @@ private static final int MAX_LOOKAHEAD = 2;
 					}
 				}
 				catch (RecognitionException pe) {
-					synPredMatched95 = false;
+					synPredMatched81 = false;
 				}
-				rewind(_m95);
+				rewind(_m81);
 				inputState.guessing--;
 			}
-			if ( synPredMatched95 ) {
+			if ( synPredMatched81 ) {
 				match(LITERAL_super);
 				if ( inputState.guessing==0 ) {
 					functorIsThis = false;
 				}
 			}
-			else if ((_tokenSet_10.member(LA(1))) && (_tokenSet_11.member(LA(2)))) {
+			else if ((_tokenSet_7.member(LA(1))) && (_tokenSet_8.member(LA(2)))) {
 				{
 				switch ( LA(1)) {
 				case LITERAL_boolean:
@@ -2756,7 +2590,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			match(RPAREN);
 			match(SEMI);
 			if ( inputState.guessing==0 ) {
-				self = new JConstructorCall(sourceRef, functorIsThis, expr, args);
+				self = new FjConstructorCall(sourceRef, functorIsThis, expr, args);
 			}
 			return self;
 		}
@@ -2779,7 +2613,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			ident = LT(1);
 			match(IDENT);
 			if ( inputState.guessing==0 ) {
-				self = new JNameExpression(sourceRef, ident.getText());
+				self = new FjNameExpression(sourceRef, ident.getText());
 			}
 			break;
 		}
@@ -2800,7 +2634,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_super);
 			if ( inputState.guessing==0 ) {
-				self = new JSuperExpression(sourceRef);
+				self = new FjSuperExpression(sourceRef);
 			}
 			break;
 		}
@@ -2824,7 +2658,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_this);
 			if ( inputState.guessing==0 ) {
-				self = new JThisExpression(sourceRef);
+				self = new FjThisExpression(sourceRef);
 			}
 			break;
 		}
@@ -2855,7 +2689,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			self=jAssignmentExpression();
 			match(RPAREN);
 			if ( inputState.guessing==0 ) {
-				self = new JParenthesedExpression(sourceRef, self);
+				self = new FjParenthesedExpression(sourceRef, self);
 			}
 			break;
 		}
@@ -2871,7 +2705,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			type=jBuiltInType();
 			{
-			_loop230:
+			_loop216:
 			do {
 				if ((LA(1)==LBRACK)) {
 					match(LBRACK);
@@ -2881,7 +2715,7 @@ private static final int MAX_LOOKAHEAD = 2;
 					}
 				}
 				else {
-					break _loop230;
+					break _loop216;
 				}
 				
 			} while (true);
@@ -2911,10 +2745,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		int			modifiers;
 		
 		
-		boolean synPredMatched130 = false;
-		if (((_tokenSet_15.member(LA(1))) && (_tokenSet_16.member(LA(2))))) {
-			int _m130 = mark();
-			synPredMatched130 = true;
+		boolean synPredMatched116 = false;
+		if (((_tokenSet_12.member(LA(1))) && (_tokenSet_13.member(LA(2))))) {
+			int _m116 = mark();
+			synPredMatched116 = true;
 			inputState.guessing++;
 			try {
 				{
@@ -2923,12 +2757,12 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			catch (RecognitionException pe) {
-				synPredMatched130 = false;
+				synPredMatched116 = false;
 			}
-			rewind(_m130);
+			rewind(_m116);
 			inputState.guessing--;
 		}
-		if ( synPredMatched130 ) {
+		if ( synPredMatched116 ) {
 			modifiers=jModifiers();
 			type=jClassDefinition(modifiers);
 			if ( inputState.guessing==0 ) {
@@ -2936,10 +2770,10 @@ private static final int MAX_LOOKAHEAD = 2;
 			}
 		}
 		else {
-			boolean synPredMatched132 = false;
-			if (((_tokenSet_17.member(LA(1))) && (_tokenSet_18.member(LA(2))))) {
-				int _m132 = mark();
-				synPredMatched132 = true;
+			boolean synPredMatched118 = false;
+			if (((_tokenSet_14.member(LA(1))) && (_tokenSet_15.member(LA(2))))) {
+				int _m118 = mark();
+				synPredMatched118 = true;
 				inputState.guessing++;
 				try {
 					{
@@ -2949,17 +2783,17 @@ private static final int MAX_LOOKAHEAD = 2;
 					}
 				}
 				catch (RecognitionException pe) {
-					synPredMatched132 = false;
+					synPredMatched118 = false;
 				}
-				rewind(_m132);
+				rewind(_m118);
 				inputState.guessing--;
 			}
-			if ( synPredMatched132 ) {
+			if ( synPredMatched118 ) {
 				modifiers=jModifiers();
 				self=jLocalVariableDeclaration(modifiers);
 				match(SEMI);
 			}
-			else if ((_tokenSet_19.member(LA(1))) && (_tokenSet_20.member(LA(2)))) {
+			else if ((_tokenSet_16.member(LA(1))) && (_tokenSet_17.member(LA(2)))) {
 				self=jStatement();
 			}
 			else {
@@ -3038,7 +2872,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		ident = LT(1);
 		match(IDENT);
 		{
-		_loop108:
+		_loop94:
 		do {
 			if ((LA(1)==LBRACK)) {
 				match(LBRACK);
@@ -3048,7 +2882,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop108;
+				break _loop94;
 			}
 			
 		} while (true);
@@ -3078,7 +2912,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				reportTrouble(new CWarning(sourceRef, KjcMessages.OLD_STYLE_ARRAY_BOUNDS, null));
 				type = new CArrayType(type, bounds);
 			}
-			self = new JVariableDefinition(sourceRef, modifiers, type, ident.getText(), expr);
+			self = new FjVariableDefinition(sourceRef, modifiers, type, ident.getText(), expr);
 			
 		}
 		return self;
@@ -3197,9 +3031,9 @@ private static final int MAX_LOOKAHEAD = 2;
 				vect.add(expr);
 			}
 			{
-			_loop114:
+			_loop100:
 			do {
-				if ((LA(1)==COMMA) && (_tokenSet_21.member(LA(2)))) {
+				if ((LA(1)==COMMA) && (_tokenSet_18.member(LA(2)))) {
 					match(COMMA);
 					expr=jVariableInitializer();
 					if ( inputState.guessing==0 ) {
@@ -3207,7 +3041,7 @@ private static final int MAX_LOOKAHEAD = 2;
 					}
 				}
 				else {
-					break _loop114;
+					break _loop100;
 				}
 				
 			} while (true);
@@ -3345,7 +3179,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			break;
 		}
 		default:
-			if ((_tokenSet_22.member(LA(1))) && (_tokenSet_23.member(LA(2)))) {
+			if ((_tokenSet_19.member(LA(1))) && (_tokenSet_20.member(LA(2)))) {
 				expr=jExpression();
 				match(SEMI);
 				if ( inputState.guessing==0 ) {
@@ -3406,10 +3240,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		match(RPAREN);
 		thenClause=jStatement();
 		{
-		boolean synPredMatched138 = false;
-		if (((LA(1)==LITERAL_else) && (_tokenSet_19.member(LA(2))))) {
-			int _m138 = mark();
-			synPredMatched138 = true;
+		boolean synPredMatched124 = false;
+		if (((LA(1)==LITERAL_else) && (_tokenSet_16.member(LA(2))))) {
+			int _m124 = mark();
+			synPredMatched124 = true;
 			inputState.guessing++;
 			try {
 				{
@@ -3417,16 +3251,16 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			catch (RecognitionException pe) {
-				synPredMatched138 = false;
+				synPredMatched124 = false;
 			}
-			rewind(_m138);
+			rewind(_m124);
 			inputState.guessing--;
 		}
-		if ( synPredMatched138 ) {
+		if ( synPredMatched124 ) {
 			match(LITERAL_else);
 			elseClause=jStatement();
 		}
-		else if ((_tokenSet_24.member(LA(1))) && (_tokenSet_25.member(LA(2)))) {
+		else if ((_tokenSet_21.member(LA(1))) && (_tokenSet_22.member(LA(2)))) {
 		}
 		else {
 			throw new NoViableAltException(LT(1), getFilename());
@@ -3667,7 +3501,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		match(SEMI);
 		if ( inputState.guessing==0 ) {
 			
-			self = new JReturnStatement(sourceRef, expr, getStatementComment());
+			self = new FjReturnStatement(sourceRef, expr, getStatementComment());
 			
 		}
 		return self;
@@ -3694,7 +3528,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			body = new ArrayList();
 		}
 		{
-		_loop151:
+		_loop137:
 		do {
 			if ((LA(1)==LITERAL_case||LA(1)==LITERAL_default)) {
 				group=jCasesGroup();
@@ -3703,7 +3537,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop151;
+				break _loop137;
 			}
 			
 		} while (true);
@@ -3740,7 +3574,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			tryClause = new JBlock(sourceRef, compound, null);
 		}
 		{
-		_loop170:
+		_loop156:
 		do {
 			if ((LA(1)==LITERAL_catch)) {
 				catcher=jHandler();
@@ -3749,7 +3583,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop170;
+				break _loop156;
 			}
 			
 		} while (true);
@@ -3805,6 +3639,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		case LITERAL_void:
 		case LITERAL_volatile:
 		case LITERAL_while:
+		case LITERAL_virtual:
+		case LITERAL_override:
+		case LITERAL_clean:
+		case LITERAL_collaboration:
 		case LITERAL_provided:
 		case LITERAL_expected:
 		case LITERAL_wrappee:
@@ -3949,26 +3787,26 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		
 		{
-		int _cnt154=0;
-		_loop154:
+		int _cnt140=0;
+		_loop140:
 		do {
-			if ((LA(1)==LITERAL_case||LA(1)==LITERAL_default) && (_tokenSet_26.member(LA(2)))) {
+			if ((LA(1)==LITERAL_case||LA(1)==LITERAL_default) && (_tokenSet_23.member(LA(2)))) {
 				label=jACase();
 				if ( inputState.guessing==0 ) {
 					labels.add(label);
 				}
 			}
 			else {
-				if ( _cnt154>=1 ) { break _loop154; } else {throw new NoViableAltException(LT(1), getFilename());}
+				if ( _cnt140>=1 ) { break _loop140; } else {throw new NoViableAltException(LT(1), getFilename());}
 			}
 			
-			_cnt154++;
+			_cnt140++;
 		} while (true);
 		}
 		{
-		_loop156:
+		_loop142:
 		do {
-			if ((_tokenSet_14.member(LA(1)))) {
+			if ((_tokenSet_11.member(LA(1)))) {
 				stmt=jBlockStatement();
 				if ( inputState.guessing==0 ) {
 					
@@ -3980,7 +3818,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop156;
+				break _loop142;
 			}
 			
 		} while (true);
@@ -4045,10 +3883,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		
 		{
-		boolean synPredMatched163 = false;
-		if (((_tokenSet_17.member(LA(1))) && (_tokenSet_18.member(LA(2))))) {
-			int _m163 = mark();
-			synPredMatched163 = true;
+		boolean synPredMatched149 = false;
+		if (((_tokenSet_14.member(LA(1))) && (_tokenSet_15.member(LA(2))))) {
+			int _m149 = mark();
+			synPredMatched149 = true;
 			inputState.guessing++;
 			try {
 				{
@@ -4058,16 +3896,16 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			catch (RecognitionException pe) {
-				synPredMatched163 = false;
+				synPredMatched149 = false;
 			}
-			rewind(_m163);
+			rewind(_m149);
 			inputState.guessing--;
 		}
-		if ( synPredMatched163 ) {
+		if ( synPredMatched149 ) {
 			modifiers=jModifiers();
 			self=jLocalVariableDeclaration(modifiers);
 		}
-		else if ((_tokenSet_22.member(LA(1))) && (_tokenSet_27.member(LA(2)))) {
+		else if ((_tokenSet_19.member(LA(1))) && (_tokenSet_24.member(LA(2)))) {
 			list=jExpressionList();
 			if ( inputState.guessing==0 ) {
 				self = new JExpressionListStatement(buildTokenReference(), list, getStatementComment());
@@ -4212,7 +4050,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			vect.add(expr);
 		}
 		{
-		_loop176:
+		_loop162:
 		do {
 			if ((LA(1)==COMMA)) {
 				match(COMMA);
@@ -4222,7 +4060,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop176;
+				break _loop162;
 			}
 			
 		} while (true);
@@ -4277,7 +4115,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			match(ASSIGN);
 			right=jAssignmentExpression();
 			if ( inputState.guessing==0 ) {
-				self = new JAssignmentExpression(self.getTokenReference(), self, right);
+				self = new FjAssignmentExpression(self.getTokenReference(), self, right);
 			}
 			break;
 		}
@@ -4486,7 +4324,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		self=jLogicalAndExpression();
 		{
-		_loop184:
+		_loop170:
 		do {
 			if ((LA(1)==LOR)) {
 				match(LOR);
@@ -4496,7 +4334,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop184;
+				break _loop170;
 			}
 			
 		} while (true);
@@ -4515,7 +4353,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		self=jInclusiveOrExpression();
 		{
-		_loop187:
+		_loop173:
 		do {
 			if ((LA(1)==LAND)) {
 				match(LAND);
@@ -4525,7 +4363,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop187;
+				break _loop173;
 			}
 			
 		} while (true);
@@ -4544,7 +4382,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		self=jExclusiveOrExpression();
 		{
-		_loop190:
+		_loop176:
 		do {
 			if ((LA(1)==BOR)) {
 				match(BOR);
@@ -4554,7 +4392,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop190;
+				break _loop176;
 			}
 			
 		} while (true);
@@ -4573,7 +4411,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		self=jAndExpression();
 		{
-		_loop193:
+		_loop179:
 		do {
 			if ((LA(1)==BXOR)) {
 				match(BXOR);
@@ -4583,7 +4421,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop193;
+				break _loop179;
 			}
 			
 		} while (true);
@@ -4602,7 +4440,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		self=jEqualityExpression();
 		{
-		_loop196:
+		_loop182:
 		do {
 			if ((LA(1)==BAND)) {
 				match(BAND);
@@ -4612,7 +4450,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop196;
+				break _loop182;
 			}
 			
 		} while (true);
@@ -4631,7 +4469,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		self=jRelationalExpression();
 		{
-		_loop199:
+		_loop185:
 		do {
 			switch ( LA(1)) {
 			case NOT_EQUAL:
@@ -4640,6 +4478,15 @@ private static final int MAX_LOOKAHEAD = 2;
 				right=jRelationalExpression();
 				if ( inputState.guessing==0 ) {
 					self = new JEqualityExpression(self.getTokenReference(), false, self, right);
+				}
+				break;
+			}
+			case FJEQUAL:
+			{
+				match(FJEQUAL);
+				right=jRelationalExpression();
+				if ( inputState.guessing==0 ) {
+					self = new FjEqualityExpression(self.getTokenReference(), true, self, right);
 				}
 				break;
 			}
@@ -4654,7 +4501,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			}
 			default:
 			{
-				break _loop199;
+				break _loop185;
 			}
 			}
 		} while (true);
@@ -4676,6 +4523,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		self=jShiftExpression();
 		{
 		switch ( LA(1)) {
+		case FJEQUAL:
 		case ASSIGN:
 		case BAND:
 		case BAND_ASSIGN:
@@ -4708,9 +4556,9 @@ private static final int MAX_LOOKAHEAD = 2;
 		case STAR_ASSIGN:
 		{
 			{
-			_loop204:
+			_loop190:
 			do {
-				if ((_tokenSet_28.member(LA(1)))) {
+				if ((_tokenSet_25.member(LA(1)))) {
 					{
 					switch ( LA(1)) {
 					case LT:
@@ -4757,7 +4605,7 @@ private static final int MAX_LOOKAHEAD = 2;
 					}
 				}
 				else {
-					break _loop204;
+					break _loop190;
 				}
 				
 			} while (true);
@@ -4794,9 +4642,9 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		self=jAdditiveExpression();
 		{
-		_loop208:
+		_loop194:
 		do {
-			if ((_tokenSet_29.member(LA(1)))) {
+			if ((_tokenSet_26.member(LA(1)))) {
 				{
 				switch ( LA(1)) {
 				case SL:
@@ -4835,7 +4683,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop208;
+				break _loop194;
 			}
 			
 		} while (true);
@@ -4854,7 +4702,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		self=jMultiplicativeExpression();
 		{
-		_loop211:
+		_loop197:
 		do {
 			switch ( LA(1)) {
 			case PLUS:
@@ -4877,7 +4725,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			}
 			default:
 			{
-				break _loop211;
+				break _loop197;
 			}
 			}
 		} while (true);
@@ -4896,7 +4744,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		self=jUnaryExpression();
 		{
-		_loop214:
+		_loop200:
 		do {
 			switch ( LA(1)) {
 			case STAR:
@@ -4928,7 +4776,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			}
 			default:
 			{
-				break _loop214;
+				break _loop200;
 			}
 			}
 		} while (true);
@@ -5074,7 +4922,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		case STRING_LITERAL:
 		{
 			{
-			if ((LA(1)==LPAREN) && (_tokenSet_30.member(LA(2)))) {
+			if ((LA(1)==LPAREN) && (_tokenSet_27.member(LA(2)))) {
 				match(LPAREN);
 				dest=jBuiltInTypeSpec();
 				{
@@ -5084,7 +4932,7 @@ private static final int MAX_LOOKAHEAD = 2;
 					match(RPAREN);
 					expr=jUnaryExpression();
 					if ( inputState.guessing==0 ) {
-						self = new JCastExpression(sourceRef, expr, dest);
+						self = new FjCastExpression(sourceRef, expr, dest, true, true);
 					}
 					break;
 				}
@@ -5112,10 +4960,10 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				boolean synPredMatched220 = false;
+				boolean synPredMatched206 = false;
 				if (((LA(1)==LPAREN) && (LA(2)==IDENT))) {
-					int _m220 = mark();
-					synPredMatched220 = true;
+					int _m206 = mark();
+					synPredMatched206 = true;
 					inputState.guessing++;
 					try {
 						{
@@ -5126,21 +4974,21 @@ private static final int MAX_LOOKAHEAD = 2;
 						}
 					}
 					catch (RecognitionException pe) {
-						synPredMatched220 = false;
+						synPredMatched206 = false;
 					}
-					rewind(_m220);
+					rewind(_m206);
 					inputState.guessing--;
 				}
-				if ( synPredMatched220 ) {
+				if ( synPredMatched206 ) {
 					match(LPAREN);
 					dest=jClassTypeSpec();
 					match(RPAREN);
 					expr=jUnaryExpressionNotPlusMinus();
 					if ( inputState.guessing==0 ) {
-						self = new JCastExpression(sourceRef, expr, dest);
+						self = new FjCastExpression(sourceRef, expr, dest, true, true);
 					}
 				}
-				else if ((_tokenSet_31.member(LA(1))) && (_tokenSet_32.member(LA(2)))) {
+				else if ((_tokenSet_28.member(LA(1))) && (_tokenSet_29.member(LA(2)))) {
 					self=jPostfixExpression();
 				}
 				else {
@@ -5174,7 +5022,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		self=jPrimaryExpression();
 		{
-		_loop226:
+		_loop212:
 		do {
 			switch ( LA(1)) {
 			case DOT:
@@ -5187,7 +5035,7 @@ private static final int MAX_LOOKAHEAD = 2;
 					ident = LT(1);
 					match(IDENT);
 					if ( inputState.guessing==0 ) {
-						self = new JNameExpression(sourceRef, self, ident.getText());
+						self = new FjNameExpression(sourceRef, self, ident.getText());
 					}
 					break;
 				}
@@ -5195,7 +5043,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				{
 					match(LITERAL_this);
 					if ( inputState.guessing==0 ) {
-						self = new JThisExpression(sourceRef, self);
+						self = new FjThisExpression(sourceRef, self);
 					}
 					break;
 				}
@@ -5203,7 +5051,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				{
 					match(LITERAL_super);
 					if ( inputState.guessing==0 ) {
-						self = new JSuperExpression(sourceRef, self);
+						self = new FjSuperExpression(sourceRef, self);
 					}
 					break;
 				}
@@ -5245,7 +5093,7 @@ private static final int MAX_LOOKAHEAD = 2;
 						} else if(((JNameExpression)self).getName().equals("proceed")) {
 						  self = new ProceedExpression(sourceRef, args);	
 						} else {
-						  self = new JMethodCallExpression(sourceRef,
+						  self = new FjMethodCallExpression(sourceRef,
 										   ((JNameExpression)self).getPrefix(),
 										   ((JNameExpression)self).getName(),
 										   args);
@@ -5257,8 +5105,8 @@ private static final int MAX_LOOKAHEAD = 2;
 			default:
 				if ((LA(1)==LBRACK) && (LA(2)==RBRACK)) {
 					{
-					int _cnt225=0;
-					_loop225:
+					int _cnt211=0;
+					_loop211:
 					do {
 						if ((LA(1)==LBRACK)) {
 							match(LBRACK);
@@ -5268,10 +5116,10 @@ private static final int MAX_LOOKAHEAD = 2;
 							}
 						}
 						else {
-							if ( _cnt225>=1 ) { break _loop225; } else {throw new NoViableAltException(LT(1), getFilename());}
+							if ( _cnt211>=1 ) { break _loop211; } else {throw new NoViableAltException(LT(1), getFilename());}
 						}
 						
-						_cnt225++;
+						_cnt211++;
 					} while (true);
 					}
 					match(DOT);
@@ -5280,7 +5128,7 @@ private static final int MAX_LOOKAHEAD = 2;
 						self = new JClassExpression(sourceRef, self, bounds);
 					}
 				}
-				else if ((LA(1)==LBRACK) && (_tokenSet_22.member(LA(2)))) {
+				else if ((LA(1)==LBRACK) && (_tokenSet_19.member(LA(2)))) {
 					match(LBRACK);
 					expr=jExpression();
 					match(RBRACK);
@@ -5289,7 +5137,7 @@ private static final int MAX_LOOKAHEAD = 2;
 					}
 				}
 			else {
-				break _loop226;
+				break _loop212;
 			}
 			}
 		} while (true);
@@ -5313,6 +5161,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			break;
 		}
 		case LITERAL_instanceof:
+		case FJEQUAL:
 		case ASSIGN:
 		case BAND:
 		case BAND_ASSIGN:
@@ -5424,6 +5273,9 @@ private static final int MAX_LOOKAHEAD = 2;
 								     org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 								     ident.getText(),
 				CTypeVariable.EMPTY,
+								     null,
+								     null,
+								     null,
 								     null,				     
 								     CReferenceType.EMPTY,
 								     context.getFields(),
@@ -5441,6 +5293,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			break;
 		}
 		case LITERAL_instanceof:
+		case FJEQUAL:
 		case ASSIGN:
 		case BAND:
 		case BAND_ASSIGN:
@@ -5486,7 +5339,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		case STAR_ASSIGN:
 		{
 			if ( inputState.guessing==0 ) {
-				self = new JQualifiedInstanceCreation(sourceRef, prefix, ident.getText(), args);
+				self = new FjQualifiedInstanceCreation(sourceRef, prefix, ident.getText(), args);
 			}
 			break;
 		}
@@ -5536,6 +5389,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				break;
 			}
 			case LITERAL_instanceof:
+			case FJEQUAL:
 			case ASSIGN:
 			case BAND:
 			case BAND_ASSIGN:
@@ -5609,6 +5463,7 @@ private static final int MAX_LOOKAHEAD = 2;
 					break;
 				}
 				case LITERAL_instanceof:
+				case FJEQUAL:
 				case ASSIGN:
 				case BAND:
 				case BAND_ASSIGN:
@@ -5690,6 +5545,9 @@ private static final int MAX_LOOKAHEAD = 2;
 											 "", //((CReferenceType)type).getQualifiedName(),
 						CTypeVariable.EMPTY,
 											 null,
+											 null,
+											 null,
+											 null,
 											 CReferenceType.EMPTY,
 											 context.getFields(),
 											 methods,
@@ -5706,6 +5564,7 @@ private static final int MAX_LOOKAHEAD = 2;
 					break;
 				}
 				case LITERAL_instanceof:
+				case FJEQUAL:
 				case ASSIGN:
 				case BAND:
 				case BAND_ASSIGN:
@@ -5751,7 +5610,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				case STAR_ASSIGN:
 				{
 					if ( inputState.guessing==0 ) {
-						self = new JUnqualifiedInstanceCreation(sourceRef, (CReferenceType)type, args);
+						self = new FjUnqualifiedInstanceCreation(sourceRef, (CReferenceType)type, args);
 					}
 					break;
 				}
@@ -5826,10 +5685,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		
 		{
-		int _cnt245=0;
-		_loop245:
+		int _cnt231=0;
+		_loop231:
 		do {
-			if ((LA(1)==LBRACK) && (_tokenSet_33.member(LA(2)))) {
+			if ((LA(1)==LBRACK) && (_tokenSet_30.member(LA(2)))) {
 				match(LBRACK);
 				{
 				switch ( LA(1)) {
@@ -5882,10 +5741,10 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				if ( _cnt245>=1 ) { break _loop245; } else {throw new NoViableAltException(LT(1), getFilename());}
+				if ( _cnt231>=1 ) { break _loop231; } else {throw new NoViableAltException(LT(1), getFilename());}
 			}
 			
-			_cnt245++;
+			_cnt231++;
 		} while (true);
 		}
 		if ( inputState.guessing==0 ) {
@@ -5994,7 +5853,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			container.add(typeParameter);
 		}
 		{
-		_loop261:
+		_loop247:
 		do {
 			if ((LA(1)==COMMA)) {
 				match(COMMA);
@@ -6004,7 +5863,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			}
 			else {
-				break _loop261;
+				break _loop247;
 			}
 			
 		} while (true);
@@ -6048,7 +5907,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				container.add(bound);
 			}
 			{
-			_loop270:
+			_loop256:
 			do {
 				if ((LA(1)==BAND)) {
 					match(BAND);
@@ -6058,7 +5917,7 @@ private static final int MAX_LOOKAHEAD = 2;
 					}
 				}
 				else {
-					break _loop270;
+					break _loop256;
 				}
 				
 			} while (true);
@@ -6196,13 +6055,17 @@ private static final int MAX_LOOKAHEAD = 2;
 		"\"void\"",
 		"\"volatile\"",
 		"\"while\"",
-		"\"cclass\"",
+		"\"virtual\"",
+		"\"override\"",
+		"\"clean\"",
+		"===",
 		"\"collaboration\"",
 		"\"provided\"",
 		"\"expected\"",
+		"\"binds\"",
+		"\"provides\"",
 		"\"wraps\"",
 		"\"wrappee\"",
-		"~",
 		"#",
 		"\"after\"",
 		"\"around\"",
@@ -6269,73 +6132,67 @@ private static final int MAX_LOOKAHEAD = 2;
 		"a type pattern for pointcut definition"
 	};
 	
-	private static final long[] _tokenSet_0_data_ = { 477986778302646288L, 140737488355472L, 0L, 0L };
+	private static final long[] _tokenSet_0_data_ = { 4297039262312826896L, 2251799813687552L, 0L, 0L };
 	public static final BitSet _tokenSet_0 = new BitSet(_tokenSet_0_data_);
-	private static final long[] _tokenSet_1_data_ = { 441957980209938448L, 144L, 0L, 0L };
+	private static final long[] _tokenSet_1_data_ = { 4297039261239083024L, 2304L, 0L, 0L };
 	public static final BitSet _tokenSet_1 = new BitSet(_tokenSet_1_data_);
-	private static final long[] _tokenSet_2_data_ = { -8776909354817221456L, 144115222435594422L, 0L, 0L };
+	private static final long[] _tokenSet_2_data_ = { 4301543964140440752L, 2305843558969510760L, 0L, 0L };
 	public static final BitSet _tokenSet_2 = new BitSet(_tokenSet_2_data_);
-	private static final long[] _tokenSet_3_data_ = { -8776909354817221456L, 2449958249374417079L, 0L, 0L };
+	private static final long[] _tokenSet_3_data_ = { 4301543964140440752L, 2305843842571570040L, 2L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_3 = new BitSet(_tokenSet_3_data_);
-	private static final long[] _tokenSet_4_data_ = { 4504701827613856L, 144115188075855872L, 0L, 0L };
+	private static final long[] _tokenSet_4_data_ = { 4504701827613856L, 2305843009213693952L, 0L, 0L };
 	public static final BitSet _tokenSet_4 = new BitSet(_tokenSet_4_data_);
-	private static final long[] _tokenSet_5_data_ = { 0L, 144115222980853761L, 0L, 0L };
+	private static final long[] _tokenSet_5_data_ = { 0L, 2305843567693660176L, 0L, 0L };
 	public static final BitSet _tokenSet_5 = new BitSet(_tokenSet_5_data_);
-	private static final long[] _tokenSet_6_data_ = { 0L, 140738027324416L, 0L, 0L };
+	private static final long[] _tokenSet_6_data_ = { 0L, 2251808437190656L, 0L, 0L };
 	public static final BitSet _tokenSet_6 = new BitSet(_tokenSet_6_data_);
-	private static final long[] _tokenSet_7_data_ = { 446462683111296176L, 144115222435594384L, 0L, 0L };
+	private static final long[] _tokenSet_7_data_ = { 5709792341984416L, -1152921229594722298L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_7 = new BitSet(_tokenSet_7_data_);
-	private static final long[] _tokenSet_8_data_ = { 446462683111296176L, 144115240160723088L, 0L, 0L };
+	private static final long[] _tokenSet_8_data_ = { 5709792341984416L, -1152884866186870778L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_8 = new BitSet(_tokenSet_8_data_);
-	private static final long[] _tokenSet_9_data_ = { 0L, 144115222980853760L, 0L, 0L };
+	private static final long[] _tokenSet_9_data_ = { 4323174131376434416L, -1150070107964044922L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_9 = new BitSet(_tokenSet_9_data_);
-	private static final long[] _tokenSet_10_data_ = { 3464474306162525344L, 2233785432364023808L, 0L, 0L };
+	private static final long[] _tokenSet_10_data_ = { 4611404508870323440L, -1407374917121042L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_10 = new BitSet(_tokenSet_10_data_);
-	private static final long[] _tokenSet_11_data_ = { 3464474306162525344L, 2233787705077014528L, 0L, 0L };
+	private static final long[] _tokenSet_11_data_ = { 4323174131376434416L, -1150633057917466234L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_11 = new BitSet(_tokenSet_11_data_);
-	private static final long[] _tokenSet_12_data_ = { 3926857364167830768L, 2233963627465941144L, 0L, 0L };
+	private static final long[] _tokenSet_12_data_ = { 4297039261239085072L, 2304L, 0L, 0L };
 	public static final BitSet _tokenSet_12 = new BitSet(_tokenSet_12_data_);
-	private static final long[] _tokenSet_13_data_ = { -5296514671344767760L, 2305755048281373886L, 0L, 0L };
+	private static final long[] _tokenSet_13_data_ = { 4297039261239085072L, 2305843009213696256L, 0L, 0L };
 	public static final BitSet _tokenSet_13 = new BitSet(_tokenSet_13_data_);
-	private static final long[] _tokenSet_14_data_ = { 3926857364167830768L, 2233928443093852312L, 0L, 0L };
+	private static final long[] _tokenSet_14_data_ = { 4301543963066696880L, 2305843009213696256L, 0L, 0L };
 	public static final BitSet _tokenSet_14 = new BitSet(_tokenSet_14_data_);
-	private static final long[] _tokenSet_15_data_ = { 441957980209940496L, 144L, 0L, 0L };
+	private static final long[] _tokenSet_15_data_ = { 4301543963066696880L, 2305843567693662464L, 0L, 0L };
 	public static final BitSet _tokenSet_15 = new BitSet(_tokenSet_15_data_);
-	private static final long[] _tokenSet_16_data_ = { 441957980209940496L, 144115188075856016L, 0L, 0L };
+	private static final long[] _tokenSet_16_data_ = { 26170054509438176L, -1150633057917468538L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_16 = new BitSet(_tokenSet_16_data_);
-	private static final long[] _tokenSet_17_data_ = { 446462682037552304L, 144115188075856016L, 0L, 0L };
+	private static final long[] _tokenSet_17_data_ = { 4611404507796598256L, -1407374917121658L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_17 = new BitSet(_tokenSet_17_data_);
-	private static final long[] _tokenSet_18_data_ = { 446462682037552304L, 144115222980853904L, 0L, 0L };
+	private static final long[] _tokenSet_18_data_ = { 5709792341984416L, -1152884857731153914L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_18 = new BitSet(_tokenSet_18_data_);
-	private static final long[] _tokenSet_19_data_ = { 3484934568329979104L, 2233928443093852168L, 0L, 0L };
+	private static final long[] _tokenSet_19_data_ = { 5709792341984416L, -1152884874911023098L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_19 = new BitSet(_tokenSet_19_data_);
-	private static final long[] _tokenSet_20_data_ = { 3926857364436282864L, 2305755048281373848L, 0L, 0L };
+	private static final long[] _tokenSet_20_data_ = { 293940168762131616L, -1970342067191802L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_20 = new BitSet(_tokenSet_20_data_);
-	private static final long[] _tokenSet_21_data_ = { 3464474306162525344L, 2233787705605496832L, 0L, 0L };
+	private static final long[] _tokenSet_21_data_ = { 4323174131376582128L, -1150070107964044922L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_21 = new BitSet(_tokenSet_21_data_);
-	private static final long[] _tokenSet_22_data_ = { 3464474306162525344L, 2233787704531755008L, 0L, 0L };
+	private static final long[] _tokenSet_22_data_ = { 4611404508872568816L, -1407374917121042L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_22 = new BitSet(_tokenSet_22_data_);
-	private static final long[] _tokenSet_23_data_ = { 3464474306430960800L, 2305719862834494464L, 0L, 0L };
+	private static final long[] _tokenSet_23_data_ = { 5709792341984416L, -1152884874894245882L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_23 = new BitSet(_tokenSet_23_data_);
-	private static final long[] _tokenSet_24_data_ = { 3926857364167978480L, 2233963627465941144L, 0L, 0L };
+	private static final long[] _tokenSet_24_data_ = { 293940168762131616L, -1970342033637370L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_24 = new BitSet(_tokenSet_24_data_);
-	private static final long[] _tokenSet_25_data_ = { -5296514671342522384L, 2305755048281373886L, 0L, 0L };
+	private static final long[] _tokenSet_25_data_ = { 0L, 585726164992L, 0L, 0L };
 	public static final BitSet _tokenSet_25 = new BitSet(_tokenSet_25_data_);
-	private static final long[] _tokenSet_26_data_ = { 3464474306162525344L, 2233787704532803584L, 0L, 0L };
+	private static final long[] _tokenSet_26_data_ = { 0L, 76561193666347008L, 0L, 0L };
 	public static final BitSet _tokenSet_26 = new BitSet(_tokenSet_26_data_);
-	private static final long[] _tokenSet_27_data_ = { 3464474306430960800L, 2305719862836591616L, 0L, 0L };
+	private static final long[] _tokenSet_27_data_ = { 4504701827613856L, 0L, 0L };
 	public static final BitSet _tokenSet_27 = new BitSet(_tokenSet_27_data_);
-	private static final long[] _tokenSet_28_data_ = { 0L, 36607885312L, 0L, 0L };
+	private static final long[] _tokenSet_28_data_ = { 5709792341984416L, -1152921229728940026L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_28 = new BitSet(_tokenSet_28_data_);
-	private static final long[] _tokenSet_29_data_ = { 0L, 4785074604146688L, 0L, 0L };
+	private static final long[] _tokenSet_29_data_ = { 293940168762131616L, -17179885562L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_29 = new BitSet(_tokenSet_29_data_);
-	private static final long[] _tokenSet_30_data_ = { 4504701827613856L, 0L };
+	private static final long[] _tokenSet_30_data_ = { 5709792341984416L, -1152603399934312442L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_30 = new BitSet(_tokenSet_30_data_);
-	private static final long[] _tokenSet_31_data_ = { 3464474306162525344L, 2233785432355635200L, 0L, 0L };
-	public static final BitSet _tokenSet_31 = new BitSet(_tokenSet_31_data_);
-	private static final long[] _tokenSet_32_data_ = { 3464474306430960800L, 2305843008139951104L, 0L, 0L };
-	public static final BitSet _tokenSet_32 = new BitSet(_tokenSet_32_data_);
-	private static final long[] _tokenSet_33_data_ = { 3464474306162525344L, 2233805296717799424L, 0L, 0L };
-	public static final BitSet _tokenSet_33 = new BitSet(_tokenSet_33_data_);
 	
 	}

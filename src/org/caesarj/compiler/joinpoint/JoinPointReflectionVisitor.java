@@ -3,9 +3,12 @@ package org.caesarj.compiler.joinpoint;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.caesarj.compiler.ast.JAdviceDeclaration;
+import org.caesarj.compiler.ast.AdviceDeclaration;
 import org.caesarj.compiler.ast.BodyVisitor;
-import org.caesarj.compiler.ast.JCaesarClassDeclaration;
+import org.caesarj.compiler.ast.JClassDeclaration;
+import org.caesarj.compiler.ast.FjFormalParameter;
+import org.caesarj.compiler.ast.FjMethodCallExpression;
+import org.caesarj.compiler.ast.FjNameExpression;
 import org.caesarj.compiler.ast.JBlock;
 import org.caesarj.compiler.ast.JClassBlock;
 import org.caesarj.compiler.ast.JClassDeclaration;
@@ -13,7 +16,6 @@ import org.caesarj.compiler.ast.JExpression;
 import org.caesarj.compiler.ast.JExpressionStatement;
 import org.caesarj.compiler.ast.JFieldDeclaration;
 import org.caesarj.compiler.ast.JFormalParameter;
-import org.caesarj.compiler.ast.JMethodCallExpression;
 import org.caesarj.compiler.ast.JMethodDeclaration;
 import org.caesarj.compiler.ast.JNameExpression;
 import org.caesarj.compiler.ast.JPhylum;
@@ -90,9 +92,9 @@ public class JoinPointReflectionVisitor
 			body,
 			methods,
 			decls);
-		if (self instanceof JCaesarClassDeclaration) {
-			JCaesarClassDeclaration clazz = (JCaesarClassDeclaration) self;
-			JAdviceDeclaration[] advices = clazz.getAdvices();
+		if (self instanceof JClassDeclaration) {
+			JClassDeclaration clazz = (JClassDeclaration) self;
+			AdviceDeclaration[] advices = clazz.getAdvices();
 			for (int i = 0; i < advices.length; i++) {
 				advices[i].accept(this);
 			}
@@ -113,9 +115,9 @@ public class JoinPointReflectionVisitor
 		CReferenceType[] exceptions,
 		JBlock body) {
 
-		if (self instanceof JAdviceDeclaration) {
+		if (self instanceof AdviceDeclaration) {
 
-			JAdviceDeclaration adviceDec = (JAdviceDeclaration) self;
+			AdviceDeclaration adviceDec = (AdviceDeclaration) self;
 			List adviceParameters = new ArrayList();
 			//include the old parameters
 			for (int i = 0; i < parameters.length; i++) {
@@ -130,8 +132,8 @@ public class JoinPointReflectionVisitor
 
 					adviceDec.setExtraArgumentFlag(
 						CaesarConstants.ThisJoinPointStaticPart);
-					JFormalParameter extraParameter =
-						new JFormalParameter(
+					FjFormalParameter extraParameter =
+						new FjFormalParameter(
 							TokenReference.NO_REF,
 							JFormalParameter.DES_GENERATED,
 							new CClassNameType(JOIN_POINT_STATIC_PART_CLASS),
@@ -143,8 +145,8 @@ public class JoinPointReflectionVisitor
 				if (needsThisJoinPoint) {
 
 					adviceDec.setExtraArgumentFlag(CaesarConstants.ThisJoinPoint);
-					JFormalParameter extraParameter =
-						new JFormalParameter(
+					FjFormalParameter extraParameter =
+						new FjFormalParameter(
 							TokenReference.NO_REF,
 							JFormalParameter.DES_GENERATED,
 							new CClassNameType(JOIN_POINT_CLASS),
@@ -157,8 +159,8 @@ public class JoinPointReflectionVisitor
 
 					adviceDec.setExtraArgumentFlag(
 						CaesarConstants.ThisEnclosingJoinPointStaticPart);
-					JFormalParameter extraParameter =
-						new JFormalParameter(
+					FjFormalParameter extraParameter =
+						new FjFormalParameter(
 							TokenReference.NO_REF,
 							JFormalParameter.DES_GENERATED,
 							new CClassNameType(JOIN_POINT_STATIC_PART_CLASS),
@@ -205,13 +207,13 @@ public class JoinPointReflectionVisitor
 		JFieldDeclaration fieldDeclaration) {
 
 		JExpression fieldExpr =
-			new JNameExpression(
+			new FjNameExpression(
 				where,
 				null,
 				fieldDeclaration.getVariable().getIdent());
 
 		JExpression prefix =
-			new JMethodCallExpression(
+			new FjMethodCallExpression(
 				where,
 				fieldExpr,
 				GET_SINGLETON_ASPECT_METHOD,
@@ -225,14 +227,14 @@ public class JoinPointReflectionVisitor
 		JExpression[] args =
 			{
 				fieldExpr,
-				new JMethodCallExpression(
+				new FjMethodCallExpression(
 					where,
 					threadPrefix,
 					"currentThread",
 					JExpression.EMPTY)};
 
 		JExpression expr =
-			new JMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
+			new FjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
 
 		JStatement[] body = { new JExpressionStatement(where, expr, null)};
 

@@ -1,0 +1,417 @@
+package org.caesarj.test;
+
+import java.io.PrintWriter;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
+
+import org.caesarj.compiler.CaesarParser;
+import org.caesarj.compiler.CompilerBase;
+import org.caesarj.compiler.KjcClassReader;
+import org.caesarj.compiler.KjcEnvironment;
+import org.caesarj.compiler.KjcOptions;
+import org.caesarj.compiler.Main;
+import org.caesarj.compiler.ast.JClassDeclaration;
+import org.caesarj.compiler.ast.FjCleanClassDeclaration;
+import org.caesarj.compiler.ast.DeclarationVisitor;
+import org.caesarj.compiler.ast.JClassImport;
+import org.caesarj.compiler.ast.JCompilationUnit;
+import org.caesarj.compiler.ast.JMethodDeclaration;
+import org.caesarj.compiler.ast.JPackageImport;
+import org.caesarj.compiler.ast.JPackageName;
+import org.caesarj.compiler.ast.JPhylum;
+import org.caesarj.compiler.ast.JTypeDeclaration;
+import org.caesarj.compiler.delegation.ClassTransformationFjVisitor;
+import org.caesarj.compiler.export.CSourceClass;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.compiler.types.KjcSignatureParser;
+import org.caesarj.compiler.types.KjcTypeFactory;
+import org.caesarj.compiler.types.SignatureParser;
+import org.caesarj.tools.antlr.runtime.ParserException;
+
+/**
+ * provides compilertests for familyJ functionality.
+ */
+public class CompileAndRunResultsTest extends FjTestCase {
+
+	public String[] errorfiles = new String[] {
+		"FailureInReturn.java",
+		"FailureWithoutFamilyJ.java",
+		"FailureInAssignment.java",
+		"FailureInAssignSubFamily.java",
+		"FailureInInitializer.java",
+		"FailureInParameterPassing.java",
+		"FailureInPassMethodReturn.java",
+		"FailureCleanClassProtectedMethod.java",
+		"FailureCleanClassPackageMethod.java",
+		"FailureCleanClassInner.java",
+		"FailureCleanClassPublicField.java",
+		"FailureCleanClassProtectedField.java",
+		"FailureCleanClassNonCleanInner.java",
+		"FailureCleanClassInheritsNonClean.java",
+		"FailureCleanClassVirtualInheritsNonClean.java",
+		"FailureWrongConstructor.java",
+		"FailurePassingCase1.java",
+		"FailurePassingCase2.java",
+		"FailurePassingNoPrefix.java",
+		"FailureNonCleanExtendsClean.java",
+		"FailureCleanAbstractClass.java",
+		"FailureWrongType.java",
+		"BugReport1.java",
+		"FailureInReturn.java"
+	};
+	
+	/**
+	 * combines the files that should generate errors with the expected errormessages.
+	 */
+	public String[][] errormessages = new String[][] {
+		{ "SubTest.java", "[FJLS 2.1]" },
+		{ errorfiles[0], "int generated/FailureWithoutFamilyJ$MessagerSub.message()" },
+		{ errorfiles[1], "[FJLS 2.5]" },
+		{ errorfiles[2], "[FJLS 2.5]" },
+		{ errorfiles[3]+":10", "[FJLS 2.5]" },
+		{ errorfiles[4]+":13", "[FJLS 2.5]" },
+		{ errorfiles[5]+":14", "[FJLS 2.5]" },
+		{ errorfiles[6]+":3", "[FJLS 1.2]" },
+		{ errorfiles[7]+":3", "[FJLS 1.2]" },
+		{ errorfiles[8]+":4", "[FJLS 1.3]" },
+		{ errorfiles[9]+":3", "[FJLS 1.4]" },
+		{ errorfiles[10]+":3", "[FJLS 1.4]" },
+		{ errorfiles[11]+":3", "[FJLS 1.5]" },
+		{ errorfiles[12]+":5", "[FJLS 1.7]" },
+		{ errorfiles[13]+":4", "[FJLS 1.7]" },
+		{ errorfiles[14]+":9", "\"V()\"" },
+		{ errorfiles[15]+":12", "[FJLS 2.5]" },
+		{ errorfiles[16]+":13", "[FJLS 2.5]" },
+		{ errorfiles[17]+":26", "[FJLS 2.5]" },
+		{ errorfiles[18]+":4", "[FJLS 1.8]" },
+		{ errorfiles[19]+":3", "[FJLS 1.9]" },
+		{ errorfiles[20]+":7", "family/Inner" },
+		{ errorfiles[21]+":19", "[FJLS 2.3]" }
+	};
+
+	protected Vector allUnits;
+	protected ClassModulatingFjVisitorMock modulator;
+	protected ClassReaderMock classReader;
+	protected CompilerBase compiler;
+	protected static boolean doSetUp = true;
+
+	public CompileAndRunResultsTest(String name) {
+		super(name);
+	}
+
+/**
+ * creates the test-environment. Tries to remove the remains of old tests, creates a 
+ * CompilerMock and runs it with the files stated in args and in errorfiles, expecting errors
+ * only in the later ones.
+ */
+	protected void setUp() throws Exception {
+		super.setUp();
+
+		if( doSetUp ) { try {
+			
+			removeClassFiles();			
+			allUnits = new Vector();		
+			
+			// these files should not raise errors
+			String[] args = new String[] {
+				"X_.java",
+				"Y_.java",
+				"SuperSubTest.java",
+				"TestingVerySimple.java",
+				"VerySimpleTest.java",
+				"UnqualifiedFamilyCreation.java",
+				"FamilyCast.java",
+				"HelloWorldTester.java",
+				"HelloWorld.java",
+				"JAXP.java",
+				"GraphTest.java",
+				"FactoryMethodTest.java",
+				"SubTest.java",
+				"Test.java",
+				"DoorHighLevelTest.java",
+				"DoorTest.java",
+				"Entities.java",
+				"Person.java"
+			};
+			
+			compiler = new CompilerMock( this, new PrintWriter( System.out ){
+				public void println() {
+				}
+				public void write(String s) {
+					if( modulator != null )
+						modulator.addMessage( s );
+					else
+						System.err.println( s );
+				}
+			} );
+			//run the compiler with the files that should run ok
+			compiler.run( args );
+			if (! errorMessageGenerated())
+				// these files will raise errors
+				for( int i = 0; i < errorfiles.length; i++ ) {
+					compiler.run( new String[]{ errorfiles[ i ] } );
+				}
+			
+		} catch( Throwable t ) {
+			t.printStackTrace();
+		} finally {
+			doSetUp = false;
+		} }
+	}
+
+	/**
+	 * @return true if the string "error" is contained in modulator.messages
+	 */
+	protected boolean errorMessageGenerated()
+	{
+		for (int i = 0; i < modulator.messages.size(); i++)
+			if (((String)modulator.messages.get(i)).indexOf("error") > 0)
+				return true;
+		
+		return false;
+	}
+
+/**
+ * just calls super.
+ */
+	protected void tearDown() throws Exception {
+		super.tearDown();
+	}
+
+/**
+ * this test removes the expected errormessages from the modulator. 
+ *
+ */
+	public void testCompilation() {
+		Iterator ifcIt = modulator.cleanClassInterfacesCreated.iterator();
+		Iterator classIt = modulator.cleanClassesVisited.iterator();
+
+		//////////////////////////////////////////
+		// assert all required messages are there:
+		//////////////////////////////////////////
+
+		Vector clonedMessages = (Vector) modulator.getMessages().clone();
+		try {
+			
+			//CHANGE: assertEquals( "we exactly expect n messages", errormessages.length, modulator.getMessages().size()	);		
+	//		if(errormessages.length!=modulator.getMessages().size())
+//			  fail(modulator.getMessages().size()+" messages expected, got "+errormessages.length+" messages");
+			for( int i = 0; i < errormessages.length; i++ ) {
+				modulator.findAndRemoveMessage( errormessages[ i ][ 0 ], errormessages[ i ][ 1 ] );
+			}
+			
+		} catch( Throwable t ) {
+			for( int i = 0; i < clonedMessages.size(); i++ ) {
+				System.out.println( clonedMessages.elementAt( i ) );
+			}
+			throw new RuntimeException( t );
+		}
+	
+		for( int i = 0; i < modulator.getMessages().size(); i++ ) {
+			System.out.println( modulator.getMessages().elementAt( i ) );
+		}
+	}
+	
+	/**
+	 * tests if intra-family casts fail as expected.
+	 * @throws Throwable
+	 */	
+	public void testBugReport() throws Throwable {
+		doGeneratedTest( "BugReport1" );
+	}
+
+	public void testSuperSubTest() throws Throwable {
+		doGeneratedTest( "SuperSubTest" );
+	}
+
+	public void testDoorTest() throws Throwable {
+		doGeneratedTest( "DoorTest" );
+	}
+
+	public void testGraphTest() throws Throwable {
+		doGeneratedTest( "GraphTest" );
+	}
+
+	public void testDoorHighLevelTest() throws Throwable {
+		doGeneratedTest( "DoorHighLevelTest" );
+	}
+
+	public void testFactoryMethodTest() throws Throwable {
+		doGeneratedTest( "FactoryMethodTest" );
+	}
+
+	class ClassModulatingFjVisitorMock extends ClassTransformationFjVisitor {
+
+		public ClassModulatingFjVisitorMock(KjcEnvironment environment) {			
+			super(environment);
+			messages = new Vector();
+		}
+
+		protected Vector messages;
+		public void addMessage( String e ) {
+			messages.add( e );
+		}
+		public Vector getMessages() {
+			return messages;
+		}
+		public String findAndRemoveMessage( String pattern ) {
+			return findAndRemoveMessage( pattern, null );
+		}
+		
+		/**
+		 * removes a message from messages if all given pattterns occur in it.
+		 * @param pattern
+		 * @param secondPattern
+		 * @return the removed message or null
+		 */
+		public String findAndRemoveMessage( String pattern, String secondPattern ) {
+			if( messages == null )
+				return null;
+			for( int i = 0; i < messages.size(); i++ ) {
+				String message = (String) messages.elementAt( i );
+				if( secondPattern == null && message.indexOf( pattern ) >= 0
+					|| message.indexOf( pattern ) >= 0 && message.indexOf( secondPattern ) >= 0 ) {
+					messages.remove( i );
+					i--;
+					return message;
+				}
+			}
+			return null;
+		}
+
+		int visitedCompilationsUnits = 0;
+		public void visitCompilationUnit(
+			JCompilationUnit self,
+			JPackageName packageName,
+			JPackageImport[] importedPackages,
+			JClassImport[] importedClasses,
+			JTypeDeclaration[] typeDeclarations) {
+			super.visitCompilationUnit(
+				self,
+				packageName,
+				importedPackages,
+				importedClasses,
+				typeDeclarations);
+			visitedCompilationsUnits++;
+		}
+	
+		int visitedClassDeclarations = 0;
+		public void visitClassDeclaration(
+			JClassDeclaration self,
+			int modifiers,
+			String ident,
+			CTypeVariable[] typeVariables,
+			String superClass,
+			CReferenceType[] interfaces,
+			JPhylum[] body,
+			JMethodDeclaration[] methods,
+			JTypeDeclaration[] decls) {
+			super.visitClassDeclaration(
+				self,
+				modifiers,
+				ident,
+				typeVariables,
+				superClass,
+				interfaces,
+				body,
+				methods,
+				decls);
+			visitedClassDeclarations++;
+		}
+	
+		Vector cleanClassIfcImplsCreated = new Vector();
+		Vector cleanClassInterfacesCreated = new Vector();
+		Vector cleanClassesVisited = new Vector();
+		public void visitFjCleanClassDeclaration(
+			FjCleanClassDeclaration self,
+			int modifiers,
+			String ident,
+			CTypeVariable[] typeVariables,
+			String superClass,
+			CReferenceType[] interfaces,
+			JPhylum[] body,
+			JMethodDeclaration[] methods,
+			JTypeDeclaration[] decls) {
+				
+			super.visitFjCleanClassDeclaration(
+				self,
+				modifiers,
+				ident,
+				typeVariables,
+				superClass,
+				interfaces,
+				body,
+				methods,
+				decls);
+				
+			cleanClassesVisited.add( self );
+			cleanClassInterfacesCreated.add( self.getCleanInterface() );
+			cleanClassIfcImplsCreated.add( self.getCleanInterfaceImplementation() );
+		}
+	}
+	
+	class CompilerMock extends Main {
+		
+		public CompilerMock( CompileAndRunResultsTest test, PrintWriter p ) {
+			super( test.getWorkingDirectory(), p );
+		}
+		
+		private KjcEnvironment cachedEnvironment;
+				
+		protected JCompilationUnit getJCompilationUnit(CaesarParser parser)
+			throws ParserException {				
+			JCompilationUnit compilationUnit = 
+				super.getJCompilationUnit(parser);
+			allUnits.add( compilationUnit );
+			return compilationUnit;
+		}
+		protected DeclarationVisitor getClassTransformation(KjcEnvironment environment) {
+			if( modulator == null )
+				modulator = new ClassModulatingFjVisitorMock( environment );
+			return modulator;
+		}
+		protected KjcEnvironment createEnvironment(KjcOptions options) {
+			if( cachedEnvironment == null ) {
+			    classReader = new ClassReaderMock(
+			    	options.classpath,
+			    	options.extdirs,
+			    	new KjcSignatureParser() );
+			    cachedEnvironment = new KjcEnvironment(
+			    	classReader, 
+					new KjcTypeFactory( classReader, options.generic ),
+					options );
+			}
+		    return cachedEnvironment;
+		}
+
+		protected void inform(String message) {
+			ClassModulatingFjVisitorMock modulator =
+				(ClassModulatingFjVisitorMock) getClassTransformation( cachedEnvironment );
+			modulator.addMessage( message );
+		}
+	};
+
+
+	class ClassReaderMock extends KjcClassReader {
+
+		public ClassReaderMock(
+			String classp,
+			String extdirs,
+			SignatureParser signatureParser) {
+			super(classp, extdirs, signatureParser);
+			allLoadedClasses = new Hashtable();
+		}
+	
+		Hashtable allLoadedClasses;
+		Hashtable getAllLoadedClasses() {
+			return allLoadedClasses;
+		}
+	
+		public boolean addSourceClass(CSourceClass cl) {
+			allLoadedClasses.put( cl.getQualifiedName(), cl );
+			return super.addSourceClass( cl );
+		}
+	}
+}

@@ -14,7 +14,8 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Walter Augusto Werner
  */
-public class CciWrapperDestructorExpression extends JMethodCallExpression
+public class CciWrapperDestructorExpression 
+	extends FjMethodCallExpression
 {
 	/**
 	 * The wrapper type to destruct.

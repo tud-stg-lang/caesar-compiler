@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 /**
  * declare precdence for crosscutting and deployed classes
  */
-public cclass CaesarTestCase_4 extends TestCase {
+public class CaesarTestCase_4 extends TestCase {
 
 	public CaesarTestCase_4() {
 		super("test");
@@ -33,12 +33,12 @@ public cclass CaesarTestCase_4 extends TestCase {
 	}
 }
 
-deployed cclass Ordering {
+deployed class Ordering {
 	declare precedence : C_4, A_4, D_4, B_4;
 }
 
 
-cclass A_4 {
+class A_4 {
 
 	pointcut callFoo() : call(* CaesarTestCase_4.foo());
 
@@ -47,7 +47,7 @@ cclass A_4 {
 	}
 }
 
-cclass B_4 {
+class B_4 {
 
 	pointcut callFoo() : call(* CaesarTestCase_4.foo());
 
@@ -56,7 +56,7 @@ cclass B_4 {
 	}
 }
 
-cclass C_4 {
+class C_4 {
 
 	pointcut callFoo() : call(* CaesarTestCase_4.foo());
 
@@ -65,7 +65,7 @@ cclass C_4 {
 	}
 }
 
-deployed cclass D_4 {
+deployed class D_4 {
 
 	pointcut callFoo() : call(* CaesarTestCase_4.foo());
 

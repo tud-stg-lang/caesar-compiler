@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcVisitor.java,v 1.7 2004-03-03 17:08:19 aracic Exp $
+ * $Id: KjcVisitor.java,v 1.8 2004-03-14 11:03:25 aracic Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -60,8 +60,7 @@ public interface KjcVisitor {
 			     JMethodDeclaration[] methods,
 			     JTypeDeclaration[] decls);
 			     
-
-	void visitFjVirtualClassDeclaration(JVirtualClassDeclaration self,
+	void visitFjOverrideClassDeclaration(FjOverrideClassDeclaration self,
 				int modifiers,
 				String ident,
 				CTypeVariable[] typeVariables,
@@ -71,6 +70,35 @@ public interface KjcVisitor {
 				JMethodDeclaration[] methods,
 				JTypeDeclaration[] decls);
 
+	void visitFjVirtualClassDeclaration(FjVirtualClassDeclaration self,
+				int modifiers,
+				String ident,
+				CTypeVariable[] typeVariables,
+				String superClass,
+				CReferenceType[] interfaces,
+				JPhylum[] body,
+				JMethodDeclaration[] methods,
+				JTypeDeclaration[] decls);
+
+	void visitCciWeaveletClassDeclaration(CciWeaveletClassDeclaration self,
+				int modifiers,
+				String ident,
+				CTypeVariable[] typeVariables,
+				String superClass,
+				CReferenceType[] interfaces,
+				JPhylum[] body,
+				JMethodDeclaration[] methods,
+				JTypeDeclaration[] decls);
+
+	void visitFjCleanClassDeclaration(FjCleanClassDeclaration self,
+				int modifiers,
+				String ident,
+				CTypeVariable[] typeVariables,
+				String superClass,
+				CReferenceType[] interfaces,
+				JPhylum[] body,
+				JMethodDeclaration[] methods,
+				JTypeDeclaration[] decls);
     
   /**
    * visits a class body
@@ -101,6 +129,12 @@ public interface KjcVisitor {
 				 JPhylum[] body,
 				 JMethodDeclaration[] methods);
 
+  void visitCciInterfaceDeclaration(CciInterfaceDeclaration self,
+  				int modifiers,
+  				String ident,
+  				CReferenceType[] interfaces,
+  				JPhylum[] body,
+  				JMethodDeclaration[] methods);
 
   // ----------------------------------------------------------------------
   // METHODS AND FIELDS

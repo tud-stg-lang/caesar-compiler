@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JConstructorDeclaration.java,v 1.3 2004-03-03 17:08:19 aracic Exp $
+ * $Id: JConstructorDeclaration.java,v 1.4 2004-03-14 11:03:26 aracic Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -94,11 +94,6 @@ public class JConstructorDeclaration extends JMethodDeclaration {
   public CMethod getCalledConstructor() {
     return ((JConstructorBlock)body).getCalledConstructor();
   }
-
-  public void setIdent(String newIdent) {
-      ident = newIdent;
-  }
-
 
   // ----------------------------------------------------------------------
   // SEMANTIC ANALYSIS

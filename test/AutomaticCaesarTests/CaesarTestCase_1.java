@@ -2,7 +2,7 @@ package generated;
 
 import junit.framework.TestCase;
 
-public cclass CaesarTestCase_1 extends TestCase {
+public class CaesarTestCase_1 extends TestCase {
 
 	public CaesarTestCase_1() {
 		super("test");

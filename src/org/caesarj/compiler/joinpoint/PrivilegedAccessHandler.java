@@ -7,6 +7,7 @@ import java.util.Map;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.ast.FjSourceClass;
+import org.caesarj.compiler.ast.FjSourceField;
 import org.caesarj.compiler.ast.PrivilegedField;
 import org.caesarj.compiler.ast.PrivilegedMethod;
 import org.caesarj.compiler.context.CField;
@@ -49,7 +50,8 @@ public class PrivilegedAccessHandler {
 			priviligedField =
 				new PrivilegedField(
 					field,
-					aspect);
+					aspect,
+					((FjSourceField) field).getFamily());
 			privilegedFields.put(field, priviligedField);
 		}
 

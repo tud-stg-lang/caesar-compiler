@@ -9,6 +9,7 @@ import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.aspectj.CaesarScope;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
@@ -22,10 +23,10 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Jürgen Hallpap
  */
-public class JPointcutDeclaration extends JMethodDeclaration {
+public class PointcutDeclaration extends FjMethodDeclaration {
 
-	public static final JPointcutDeclaration[] EMPTY =
-		new JPointcutDeclaration[0];
+	public static final PointcutDeclaration[] EMPTY =
+		new PointcutDeclaration[0];
 
 	/**The corresponding Pointcut.*/
 	private CaesarPointcut pointcut;
@@ -45,7 +46,7 @@ public class JPointcutDeclaration extends JMethodDeclaration {
 	 * @param javadoc
 	 * @param comments
 	 */
-	public JPointcutDeclaration(
+	public PointcutDeclaration(
 		TokenReference where,
 		int modifiers,
 		CTypeVariable[] typeVariables,
@@ -77,6 +78,8 @@ public class JPointcutDeclaration extends JMethodDeclaration {
 	public CSourceMethod checkInterface(CClassContext context)
 		throws PositionedError {
 
+		FjClassContext caesarContext = (FjClassContext) context;
+	
 		CBinaryTypeContext typeContext =
 			new CBinaryTypeContext(
 				context.getClassReader(),
@@ -136,13 +139,12 @@ public class JPointcutDeclaration extends JMethodDeclaration {
 			}
 		}
 
-        // TODO !!!
-        /*
-		context.setBindings(
+		FjClassContext classContext = (FjClassContext) context;
+		classContext.setBindings(
 			(CaesarFormalBinding[]) formalBindings.toArray(new CaesarFormalBinding[0]));
-        */
+
 		if (((modifiers & ACC_ABSTRACT) == 0)&&!checked) {
-				pointcut.resolve(new CaesarScope(context, caller));
+				pointcut.resolve(new CaesarScope((FjClassContext) context, caller));
 		}
 
 		CaesarMember rpd =

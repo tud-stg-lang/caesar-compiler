@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodDeclaration.java,v 1.4 2004-03-10 15:10:40 aracic Exp $
+ * $Id: JMethodDeclaration.java,v 1.5 2004-03-14 11:03:25 aracic Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -106,7 +106,7 @@ public class JMethodDeclaration extends JMemberDeclaration
 	public CSourceMethod checkInterface(CClassContext context)
 		throws PositionedError
 	{
-		boolean isInterface = context.getCClass().isInterface();
+		boolean inInterface = context.getCClass().isInterface();
 		boolean isExported = !(this instanceof JInitializerDeclaration);
 		String ident =
 			(this instanceof JConstructorDeclaration)
@@ -114,7 +114,7 @@ public class JMethodDeclaration extends JMemberDeclaration
 				: this.ident;
 
 		// Collect all parsed data
-		if (isInterface && isExported)
+		if (inInterface && isExported)
 		{
 			modifiers |= ACC_PUBLIC | ACC_ABSTRACT;
 		}
@@ -186,7 +186,7 @@ public class JMethodDeclaration extends JMemberDeclaration
 			(modifiers & ACC_ABSTRACT) == 0 || (modifiers & ACC_STRICT) == 0,
 			KjcMessages.METHOD_ABSTRACT_STRICT);
 
-		if (isInterface && isExported)
+		if (inInterface && isExported)
 		{
 			check(
 				context,
@@ -258,88 +258,81 @@ public class JMethodDeclaration extends JMemberDeclaration
 	 */
 	public void checkBody1(CClassContext context) throws PositionedError
 	{
-		try {
-		
+		check(
+			context,
+			context.getCClass().isAbstract() || !getMethod().isAbstract(),
+			KjcMessages.METHOD_ABSTRACT_CLASSNOT,
+			ident);
+
+		checkOverriding(context);
+
+		check(
+			context,
+			getMethod().getHeapForParameter() <= 255,
+			KjcMessages.MANY_METHOD_PARAMETER,
+			ident);
+
+		if (body == null)
+		{
 			check(
 				context,
-				context.getCClass().isAbstract() || !getMethod().isAbstract(),
-				KjcMessages.METHOD_ABSTRACT_CLASSNOT,
+				getMethod().isAbstract()
+					|| getMethod().isNative()
+					|| context.getClassContext().getCClass().isInterface(),
+				KjcMessages.METHOD_NOBODY_NOABSTRACT,
 				ident);
-	
-			checkOverriding(context);
-	
-			check(
-				context,
-				getMethod().getHeapForParameter() <= 255,
-				KjcMessages.MANY_METHOD_PARAMETER,
-				ident);
-	
-			if (body == null)
-			{
-				check(
-					context,
-					getMethod().isAbstract()
-						|| getMethod().isNative()
-						|| context.getClassContext().getCClass().isInterface(),
-					KjcMessages.METHOD_NOBODY_NOABSTRACT,
-					ident);
-			}
-			else
-			{
-				check(
-					context,
-					!context.getCClass().isInterface(),
-					KjcMessages.METHOD_BODY_IN_INTERFACE,
-					ident);
-	
-				check(
-					context,
-					!getMethod().isNative() && !getMethod().isAbstract(),
-					KjcMessages.METHOD_BODY_NATIVE_ABSTRACT,
-					ident);
-	
-				CMethodContext self =
-					new CMethodContext(
-						context,
-						context.getEnvironment(),
-						getMethod(),
-						parameters);
-				CBlockContext block =
-					new CBlockContext(
-						self,
-						context.getEnvironment(),
-						parameters.length);
-	
-				if (!getMethod().isStatic())
-				{
-					// add this local var
-					block.addThisVariable();
-				}
-	
-				for (int i = 0; i < parameters.length; i++)
-				{
-					parameters[i].analyse(block);
-				}
-	
-				body.analyse(block);
-	
-				block.close(getTokenReference());
-				self.close(getTokenReference());
-	
-				if (block.isReachable()
-					&& getMethod().getReturnType().getTypeID() != TID_VOID)
-				{
-					context.reportTrouble(
-						new CLineError(
-							getTokenReference(),
-							KjcMessages.METHOD_NEED_RETURN,
-							getMethod().getIdent()));
-				}
-			}
 		}
-		catch(Throwable t) {
-			int x;
-			x = 10;
+		else
+		{
+			check(
+				context,
+				!context.getCClass().isInterface(),
+				KjcMessages.METHOD_BODY_IN_INTERFACE,
+				ident);
+
+			check(
+				context,
+				!getMethod().isNative() && !getMethod().isAbstract(),
+				KjcMessages.METHOD_BODY_NATIVE_ABSTRACT,
+				ident);
+
+			CMethodContext self =
+				new CMethodContext(
+					context,
+					context.getEnvironment(),
+					getMethod(),
+					parameters);
+			CBlockContext block =
+				new CBlockContext(
+					self,
+					context.getEnvironment(),
+					parameters.length);
+
+			if (!getMethod().isStatic())
+			{
+				// add this local var
+				block.addThisVariable();
+			}
+
+			for (int i = 0; i < parameters.length; i++)
+			{
+				parameters[i].analyse(block);
+			}
+
+			body.analyse(block);
+
+			block.close(getTokenReference());
+			self.close(getTokenReference());
+
+			if (block.isReachable()
+				&& getMethod().getReturnType().getTypeID() != TID_VOID)
+			{
+				context.reportTrouble(
+					new CLineError(
+						getTokenReference(),
+						KjcMessages.METHOD_NEED_RETURN,
+						getMethod().getIdent()));
+			}
 		}
 	}
 

@@ -18,7 +18,7 @@ import org.aspectj.weaver.patterns.PatternNode;
 import org.caesarj.compiler.ast.JClassImport;
 import org.caesarj.compiler.ast.JPackageImport;
 import org.caesarj.compiler.constants.CaesarConstants;
-import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.util.UnpositionedError;
 
@@ -30,7 +30,7 @@ import org.caesarj.util.UnpositionedError;
  */
 public class CaesarScope implements IScope, CaesarConstants {
 
-	private CClassContext context;
+	private FjClassContext context;
 
 	private CClass caller;
 
@@ -38,7 +38,7 @@ public class CaesarScope implements IScope, CaesarConstants {
 
 	private IMessageHandler messageHandler;
 
-	public CaesarScope(CClassContext context, CClass caller) {
+	public CaesarScope(FjClassContext context, CClass caller) {
 		super();
 
 		this.world = CaesarBcelWorld.getInstance();
@@ -167,7 +167,7 @@ public class CaesarScope implements IScope, CaesarConstants {
 	 * @see org.aspectj.weaver.patterns.IScope#getImportedPrefixes()
 	 */
 	public String[] getImportedPrefixes() {
-		CClassContext classContext = (CClassContext) context;
+		FjClassContext classContext = (FjClassContext) context;
 		JPackageImport[] imports =
 			classContext
 				.getParentCompilationUnitContext()
@@ -186,7 +186,7 @@ public class CaesarScope implements IScope, CaesarConstants {
 	 * @see org.aspectj.weaver.patterns.IScope#getImportedNames()
 	 */
 	public String[] getImportedNames() {
-		CClassContext classContext = (CClassContext) context;
+		FjClassContext classContext = (FjClassContext) context;
 		JClassImport[] imports =
 			classContext
 				.getParentCompilationUnitContext()

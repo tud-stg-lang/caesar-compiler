@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.4 2004-03-10 15:10:40 aracic Exp $
+ * $Id: CClass.java,v 1.5 2004-03-14 11:03:27 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -25,6 +25,11 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import org.caesarj.compiler.ast.JClassDeclaration;
+import org.caesarj.compiler.ast.JFieldDeclaration;
+import org.caesarj.compiler.ast.JMethodDeclaration;
+import org.caesarj.compiler.ast.JPhylum;
+import org.caesarj.compiler.ast.JTypeDeclaration;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CField;
@@ -34,6 +39,7 @@ import org.caesarj.compiler.types.CClassOrInterfaceType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.SimpleStringBuffer;
@@ -150,12 +156,50 @@ public abstract class CClass extends CMember
 		  CModifier.contains(getModifiers(),ACC_CROSSCUTTING);
 	}
 	
-	public boolean isCaesarClass() {
-		return CModifier.contains(getModifiers(),ACC_CAESARCLASS);
 
+	/**
+	 * @return true if this class is defines the condition methods of an interface
+	 */
+	public boolean isAssertionClass()
+	{
+		throw new InconsistencyException("No Assertion class");
 	}
-	
 
+	public CClass getAssertionStatusClass(CClassContext context)
+		throws PositionedError
+	{
+		if (assertionStatusClass == null)
+		{
+			JClassDeclaration decl =
+				new JClassDeclaration(
+					TokenReference.NO_REF,
+					0,
+					getQualifiedName() + "$" + context.getNextSyntheticIndex(),
+					CTypeVariable.EMPTY,
+					context.getTypeFactory().createReferenceType(
+						TypeFactory.RFT_OBJECT),
+					CReferenceType.EMPTY,
+					JFieldDeclaration.EMPTY,
+					new JMethodDeclaration[0],
+					new JTypeDeclaration[0],
+					new JPhylum[0],
+					null,
+					null);
+
+			decl.generateInterface(
+				context.getEnvironment().getClassReader(),
+				null,
+				"");
+			decl.join(context.getCompilationUnitContext());
+			decl.checkInterface(context.getCompilationUnitContext());
+			decl.checkInitializers(context);
+			decl.checkTypeBody(context);
+
+			assertionStatusClass = decl.getCClass();
+		}
+
+		return assertionStatusClass;
+	}
 
 	/**
 	 * Returns true if the classs can declare static members, 

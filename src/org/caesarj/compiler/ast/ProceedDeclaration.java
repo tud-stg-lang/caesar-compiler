@@ -2,7 +2,6 @@ package org.caesarj.compiler.ast;
 
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
-import org.caesarj.compiler.export.*;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
@@ -16,7 +15,7 @@ import org.caesarj.util.UnpositionedError;
  * 
  * @author Jürgen Hallpap
  */
-public class ProceedDeclaration extends JMethodDeclaration {
+public class ProceedDeclaration extends FjMethodDeclaration {
 
 	/** The name of the enclosing advice-method.*/
 	private String adviceName;
@@ -53,9 +52,10 @@ public class ProceedDeclaration extends JMethodDeclaration {
 	/**
 	 * @see familyj.compiler.FjMethodDeclaration#checkInterface1(CClassContext)
 	 */
-	public CSourceMethod checkInterface(CClassContext context)
+	public CSourceMethod checkInterface1(CClassContext context)
 		throws PositionedError {
 
+		
 		try {
 			for (int i = 0; i < typeVariables.length; i++) {
 				typeVariables[i].checkType(context);
@@ -81,18 +81,25 @@ public class ProceedDeclaration extends JMethodDeclaration {
 					(CReferenceType) exceptions[i].checkType(typeContext);
 			}
 
+			FjFamily[] families = new FjFamily[parameterTypes.length];
+			for (int i = 0; i < families.length; i++) {
+				families[i] = ((FjFormalParameter) parameters[i]).getFamily();
+			}
+
 			setInterface(
-				new CProceed(
+				new Proceed(
 					context.getCClass(),
 					ident,
 					returnType,
 					parameterTypes,
-					adviceName));
+					adviceName,
+					families));
 
 			return (CSourceMethod) getMethod();
 		} catch (UnpositionedError cue) {
 			throw cue.addPosition(getTokenReference());
 		}
+
 	}
 
 	/**

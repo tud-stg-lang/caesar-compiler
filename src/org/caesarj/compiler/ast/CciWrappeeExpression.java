@@ -13,7 +13,8 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Walter Augusto Werner
  */
-public class CciWrappeeExpression extends JMethodCallExpression
+public class CciWrappeeExpression 
+	extends FjMethodCallExpression
 {
 
 	/**

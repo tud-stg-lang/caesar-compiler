@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.22 2004-03-11 22:31:40 aracic Exp $
+ * $Id: Caesar.g,v 1.23 2004-03-14 11:00:00 aracic Exp $
  */
 
 /*
@@ -168,8 +168,6 @@ jTypeDefinition [CParseCompilationUnitContext context]
     decl = jClassDefinition[mods]
   |
     decl = jInterfaceDefinition[mods]
-  |
-    decl = jCaesarClassDefinition[mods]
   )
     {
        context.addTypeDeclaration(environment.getClassReader(), decl);
@@ -178,7 +176,6 @@ jTypeDefinition [CParseCompilationUnitContext context]
     SEMI
       { reportTrouble(new CWarning(sourceRef, KjcMessages.STRAY_SEMICOLON, null)); }
 ;
-
 
 // JLS 14.4 : Local Variable Declaration Statement
 // A declaration is the creation of a reference or primitive-type variable
@@ -368,12 +365,22 @@ jModifier []
   "transient" { self = org.caesarj.classfile.ClassfileConstants2.ACC_TRANSIENT; }
 |
   "volatile" { self = org.caesarj.classfile.ClassfileConstants2.ACC_VOLATILE; }
+// andreas start
+|
+  "virtual" { self = org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL; }
+|
+  "override" { self = org.caesarj.classfile.ClassfileConstants2.FJC_OVERRIDE; }
+|
+  "clean" { self = org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN; }
+// andreas end
 |
 	"privileged" { self = org.caesarj.classfile.ClassfileConstants2.ACC_PRIVILEGED; }
 |
 	"deployed" { self = org.caesarj.classfile.ClassfileConstants2.ACC_DEPLOYED; }
 
 // Walter start
+|
+  "collaboration" { self = org.caesarj.classfile.ClassfileConstants2.CCI_COLLABORATION; }
 |
   "provided" { self = org.caesarj.classfile.ClassfileConstants2.CCI_PROVIDED; }
 |
@@ -382,101 +389,6 @@ jModifier []
 ;
 
 
-jCaesarClassDefinition [int modifiers]
-  returns [JCaesarClassDeclaration self = null]
-{
-  CTypeVariable[]       	typeVariables = CTypeVariable.EMPTY;
-  CReferenceType			superClass = null;
-  CReferenceType[]			interfaces = CReferenceType.EMPTY;
-  CReferenceType			wrappee = null;  
-  ParseClassContext	context = ParseClassContext.getInstance();
-  TokenReference	sourceRef = buildTokenReference();
-  JavadocComment	javadoc = getJavadocComment();
-  JavaStyleComment[]	comments = getStatementComment();
-}
-:
-  "cclass" ident:IDENT
-  (typeVariables = kTypeVariableDeclarationList[])?
-  (superClass =  jCompositeTypeClause[])?
-  (interfaces = jImplementsClause[])?
-  (wrappee = jWrapsClause[])?
-   
-  jCaesarClassBlock[context]
-  {
-      	JMethodDeclaration[]      methods;
-
-      	methods = context.getMethods();
-
-		self = new JCaesarClassDeclaration(
-			sourceRef,
-		   	modifiers,
-		   	ident.getText(),
-		   	typeVariables,
-		   	superClass,
-		   	wrappee,
-		   	interfaces,
-		   	context.getFields(),
-		   	methods,
-		   	context.getInnerClasses(),
-		   	context.getBody(),
-		   	javadoc,
-		   	comments,
-		   	context.getPointcuts(),
-		   	context.getAdvices(),
-		   	context.getDeclares()				   
-		);
-	 
-        context.release();
-    }
-;
-
-jVirtualClassDefinition [int modifiers]
-  returns [JVirtualClassDeclaration self = null]
-{
-  CTypeVariable[]       	typeVariables = CTypeVariable.EMPTY;
-  CReferenceType			superClass = null;
-  CReferenceType[]			interfaces = CReferenceType.EMPTY;
-  CReferenceType			wrappee = null;  
-  ParseClassContext	context = ParseClassContext.getInstance();
-  TokenReference	sourceRef = buildTokenReference();
-  JavadocComment	javadoc = getJavadocComment();
-  JavaStyleComment[]	comments = getStatementComment();
-}
-:
-  "class" ident:IDENT
-  (typeVariables = kTypeVariableDeclarationList[])?
-  (superClass =  jCompositeTypeClause[])?
-  (interfaces = jImplementsClause[])?
-  (wrappee = jWrapsClause[])?
-   
-  jCaesarClassBlock[context]
-  {
-      	JMethodDeclaration[]      methods;
-
-      	methods = context.getMethods();
-
-		self = new JVirtualClassDeclaration(
-			sourceRef,
-		   	modifiers,
-		   	ident.getText(),
-		   	typeVariables,
-		   	superClass,
-		   	wrappee,
-		   	interfaces,
-		   	context.getFields(),
-		   	methods,
-		   	context.getInnerClasses(),
-		   	context.getBody(),
-		   	javadoc,
-		   	comments,
-		   	context.getPointcuts(),
-		   	context.getAdvices(),
-		   	context.getDeclares()				   
-		);
-	 
-        context.release();
-    }
-;
 
 // Definition of a Java class
 jClassDefinition [int modifiers]
@@ -485,6 +397,9 @@ jClassDefinition [int modifiers]
   CTypeVariable[]       	typeVariables = CTypeVariable.EMPTY;
   CReferenceType			superClass = null;
   CReferenceType[]			interfaces = CReferenceType.EMPTY;
+  CReferenceType			binding = null;
+  CReferenceType			providing = null;
+  CReferenceType			wrappee = null;  
   ParseClassContext	context = ParseClassContext.getInstance();
   TokenReference	sourceRef = buildTokenReference();
   JavadocComment	javadoc = getJavadocComment();
@@ -493,66 +408,188 @@ jClassDefinition [int modifiers]
 :
   "class" ident:IDENT
   (typeVariables = kTypeVariableDeclarationList[])?
-  (superClass = jSuperClassClause[])?
+  //This is like this for prevent non-determinism
+  (superClass =  jSuperClassClause[]
+  | binding = jBindsClause[]
+  | providing = jProvidesClause[])?
+
   (interfaces = jImplementsClause[])?
+  (wrappee = jWrapsClause[])?
    
   jClassBlock[context]
   {
       JMethodDeclaration[]      methods;
 
       methods = context.getMethods();
-      
-      self = new JClassDeclaration(sourceRef,
-			   modifiers,
-			   ident.getText(),
-               typeVariables,
-			   superClass,
-			   interfaces,
-			   context.getFields(),
-			   methods,
-			   context.getInnerClasses(),
-			   context.getBody(),
-			   javadoc,
-			   comments
-			   );
-		
+      if (superClass instanceof CciWeaveletReferenceType)
+      	self = new CciWeaveletClassDeclaration(sourceRef,
+				   modifiers,
+				   ident.getText(),
+				   typeVariables,
+				   (CciWeaveletReferenceType)superClass,
+				   wrappee,
+				   interfaces,
+				   context.getFields(),
+				   methods,
+				   context.getInnerClasses(),
+				   context.getBody(),
+				   javadoc,
+				   comments);
+	  else if (providing != null || binding != null)
+	  {
+	  	if (CModifier.contains(modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL))
+            self = new FjVirtualClassDeclaration(sourceRef,
+				   modifiers,
+				   ident.getText(),
+				   typeVariables,
+				   superClass,
+				   binding,
+				   providing,
+				   wrappee,				   
+				   interfaces,
+				   context.getFields(),
+				   methods,
+				   context.getInnerClasses(),
+				   context.getBody(),
+				   javadoc,
+				   comments);
+	  	 else
+            self = new FjCleanClassDeclaration(sourceRef,
+				   modifiers | org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN,
+				   ident.getText(),
+				   typeVariables,
+				   superClass,
+				   binding,
+				   providing,
+				   wrappee,
+				   interfaces,
+				   context.getFields(),
+				   methods,
+				   context.getInnerClasses(),
+				   context.getBody(),
+				   javadoc,
+				   comments,
+				   context.getPointcuts(),
+				   context.getAdvices(),
+				   context.getDeclares()				   
+				   );
+	 }
+      else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_OVERRIDE ) ) {
+          self = new FjOverrideClassDeclaration(sourceRef,
+				   modifiers,
+				   ident.getText(),
+				   typeVariables,
+				   superClass,
+				   binding,
+				   providing,
+				   wrappee,
+				   interfaces,
+				   context.getFields(),
+				   methods,
+				   context.getInnerClasses(),
+				   context.getBody(),
+				   javadoc,
+				   comments);
+      } else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL ) ) {
+          self = new FjVirtualClassDeclaration(sourceRef,
+				   modifiers,
+				   ident.getText(),
+				   typeVariables,
+				   superClass,
+				   binding,
+				   providing,
+				   wrappee,			   
+				   interfaces,
+				   context.getFields(),
+				   methods,
+				   context.getInnerClasses(),
+				   context.getBody(),
+				   javadoc,
+				   comments);
+      } else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN ) ) {
+          self = new FjCleanClassDeclaration(sourceRef,
+				   modifiers,
+				   ident.getText(),
+				   typeVariables,
+				   superClass,
+				   binding,
+				   providing,
+				   wrappee,			   
+				   interfaces,
+				   context.getFields(),
+				   methods,
+				   context.getInnerClasses(),
+				   context.getBody(),
+				   javadoc,
+				   comments,
+				   context.getPointcuts(),
+				   context.getAdvices(),
+				   context.getDeclares());
+      } else {
+          self = new JClassDeclaration(sourceRef,
+				   modifiers,
+				   ident.getText(),
+                   typeVariables,
+				   superClass,
+				   binding,
+				   providing,
+				   wrappee,			   
+				   interfaces,
+				   context.getFields(),
+				   methods,
+				   context.getInnerClasses(),
+				   context.getBody(),
+				   javadoc,
+				   comments,				   
+				   context.getPointcuts(),
+				   context.getAdvices(),
+				   context.getDeclares());
+			}
         context.release();
     }
-;
-
-jCompositeTypeClause []
-  returns [CReferenceType self = null]
-{
-	CReferenceType[] compositeList = null;
-}
-:
-  ("extends" compositeList = jCompositeTypeList[])
-  {
-  	self = new CCompositeType(compositeList);
-  }
-;
-
-jCompositeTypeList []
-  returns [CReferenceType[] self = null]
-{
-  CReferenceType	name;
-  ArrayList	container = new ArrayList();
-}
-:
-  name = jTypeName[] { container.add(name); }
-  (
-    BAND
-    name = jTypeName[] { container.add(name); }
-  )*
-  { self = (CReferenceType[])container.toArray(new CReferenceType[container.size()]); }
 ;
 
 jSuperClassClause []
   returns [CReferenceType self = null]
 :
-  ("extends" self =  jTypeName[])
+  ("extends" self =  jSuperTypeName[])
 ;
 
+jBindsClause []
+  returns [CReferenceType self = null]
+:
+  ("binds" self = jTypeName[])
+;
+jProvidesClause []
+  returns [CReferenceType self = null]
+:
+   ("provides" self = jTypeName[])
+;
+
+
+jSuperTypeName []
+  returns [CReferenceType self = null]
+{
+	CReferenceType collaborationInterface = null;
+	CReferenceType implementation = null;
+	CReferenceType binding = null;
+}
+:
+  ( collaborationInterface = jTypeName[] )?
+  (	LPAREN implementation = jTypeName[]
+	COMMA 
+	binding = jTypeName[] RPAREN
+  )?
+  {
+  	if (collaborationInterface != null && implementation != null && binding != null)
+	  	self = new CciWeaveletReferenceType(collaborationInterface,
+  					implementation,
+  					binding);
+  	else
+  		self = collaborationInterface;
+
+  }
+;
 
 // Definition of a Java Interface
 jInterfaceDefinition [int modifiers]
@@ -573,7 +610,7 @@ jInterfaceDefinition [int modifiers]
   jClassBlock[context]
     {
 
-        self = new JInterfaceDeclaration(sourceRef,
+        self = new CciInterfaceDeclaration(sourceRef,
                                            modifiers,
                                            ident.getText(),
                                            typeVariables,
@@ -588,20 +625,6 @@ jInterfaceDefinition [int modifiers]
     }
 ;
 
-
-// This is the body of a class.  You can have fields and extra semicolons,
-// That's about it (until you see what a field is...)
-jCaesarClassBlock [ParseClassContext context]
-:
-  LCURLY
-  (
-    jCaesarMember[context]
-  |
-    SEMI
-      { reportTrouble(new CWarning(buildTokenReference(), KjcMessages.STRAY_SEMICOLON, null)); }
-  )*
-  RCURLY
-;
 
 // This is the body of a class.  You can have fields and extra semicolons,
 // That's about it (until you see what a field is...)
@@ -637,76 +660,12 @@ jImplementsClause[]
   ( "implements" self = jNameList[] )
 ;
 
+// Now the various things that can be defined inside a class or interface:
+// methods, constructors, or variable declaration
+// Note that not all of these are really valid in an interface (constructors,
+// for example), and if this grammar were used for a compiler there would
+// need to be some semantic checks to make sure we're doing the right thing...
 jMember [ParseClassContext context]
-{
-  int				modifiers = 0;
-  CType				type = null;
-  JMethodDeclaration		method;
-  CTypeVariable[]               typeVariables;
-  JTypeDeclaration		decl;
-  JVariableDefinition[]		vars;
-  JStatement[]			body = null;
-  TokenReference		sourceRef = buildTokenReference();
-  JFormalParameter[] parameters;
-  JFormalParameter extraParam = null;  
-  CaesarAdviceKind kind = null;
-  TypeFactory factory = environment.getTypeFactory();
-  CReferenceType[]		throwsList = CReferenceType.EMPTY;  
-  JPointcutDeclaration pointcutDecl;
-  JAdviceDeclaration adviceDecl;
-}
-:
-  	(
-   		modifiers = jModifiers[]
-   		(
-    		decl = jClassDefinition[modifiers]
-      		{ context.addInnerDeclaration(decl); }
-  		|
-    		decl = jInterfaceDefinition[modifiers]          // inner interface
-      		{ context.addInnerDeclaration(decl); }
-  		|
-    		method = jConstructorDefinition[context, modifiers]
-      		{ context.addMethodDeclaration(method); }
-		|
-    		// method with type variables
-	    	typeVariables = kTypeVariableDeclarationList[]
-    		type = jTypeSpec[]
-    		method = jMethodDefinition [context, modifiers, type, typeVariables]
-	    	{ context.addMethodDeclaration(method); }		
-		|  		  	
-    		type = jTypeSpec[]
-	    	(
-	      		method = jMethodDefinition [context, modifiers, type, CTypeVariable.EMPTY]
-		        { context.addMethodDeclaration(method); }
-	    	|
-	      		vars = jVariableDefinitions[modifiers, type] SEMI
-	        	{
-		  			for (int i = 0; i < vars.length; i++) {
-			    		context.addFieldDeclaration(
-			    			new JFieldDeclaration(
-			    				sourceRef,
-								vars[i],
-								getJavadocComment(),
-								getStatementComment()
-							)
-						);
-			  		}
-				}
-	    	)
-	    )
-	)
-	|	
-		// "static { ... }" class initializer
-		"static" body = jCompoundStatement[]
-    	{ context.addBlockInitializer(new JClassBlock(sourceRef, true, body)); }
-	|
-	  	// "{ ... }" instance initializer
-	 	body = jCompoundStatement[]
-    	{ context.addBlockInitializer(new JClassBlock(sourceRef, false, body)); }
-    
-;
-
-jCaesarMember [ParseClassContext context]
 {
   int				modifiers = 0;
   CType				type;
@@ -721,15 +680,20 @@ jCaesarMember [ParseClassContext context]
   CaesarAdviceKind kind = null;
   TypeFactory factory = environment.getTypeFactory();
   CReferenceType[]		throwsList = CReferenceType.EMPTY;  
-  JPointcutDeclaration pointcutDecl;
-  JAdviceDeclaration adviceDecl;
+  PointcutDeclaration pointcutDecl;
+  AdviceDeclaration adviceDecl;
 }
 :
-	(
-		modifiers = jModifiers[]
+  	(
+   		modifiers = jModifiers[]
    		(
-    		decl = jVirtualClassDefinition[modifiers]   // all inner classes are virtual
+    		decl = jClassDefinition[modifiers]              // inner class
       		{ context.addInnerDeclaration(decl); }
+  		|
+    		decl = jInterfaceDefinition[modifiers]          // inner interface
+      		{
+        		context.addInnerDeclaration(decl);
+      	}
   		|
     		method = jConstructorDefinition[context, modifiers]
       		{ context.addMethodDeclaration(method); }
@@ -742,21 +706,25 @@ jCaesarMember [ParseClassContext context]
 	  	|
 	  		//pointcut declaration  	
   			"pointcut" pointcutDecl = jPointcutDefinition[modifiers, CTypeVariable.EMPTY] 
-  			{ context.addPointcutDeclaration(pointcutDecl);	}
+  			{ 
+  				context.addPointcutDeclaration(pointcutDecl);	
+  			}
     	|	
         	"declare"
     		pattern : TYPE_PATTERN
-    		{    		
+    		{
+    		
 				try {
+
 					CaesarPatternParser patternParser = new CaesarPatternParser(
 															"declare "+pattern.getText(),
 															new CaesarSourceContext(sourceRef) );
 					context.addDeclare(patternParser.parseDeclare());		
 					
 				} catch(CaesarPatternParser.CaesarParserException e) {
-					reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));
+					reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));			
 				} catch(RuntimeException e) {
-			  		reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));
+			  		reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));							
 				}  			
 			}  			
 	  	|  	  	
@@ -764,7 +732,9 @@ jCaesarMember [ParseClassContext context]
   			"before"
 	  		LPAREN  parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN   	
  			adviceDecl = jAdviceDeclaration[CaesarAdviceKind.Before, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, null]
-			{ context.addAdviceDeclaration(adviceDecl); }  	 		  		 	 
+			{ 	
+				context.addAdviceDeclaration(adviceDecl);
+			}  	 		  		 	 
 	  	|
   			//after advice declaration
   			 "after" {kind = CaesarAdviceKind.After;}
@@ -783,39 +753,36 @@ jCaesarMember [ParseClassContext context]
   				{kind = CaesarAdviceKind.AfterThrowing;}
 			)?  	
  			adviceDecl = jAdviceDeclaration[kind, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, extraParam]   
-			{ context.addAdviceDeclaration(adviceDecl); }  	 		  		 	 
-	  	|   		  	
+			{ 
+				context.addAdviceDeclaration(adviceDecl);			
+			}  	 		  		 	 
+	  	| 
+  		  	// around advice declaration
     		type = jTypeSpec[]
 	    	(
-		    	// around advice declaration
-	  	  		"around"		  	
-		      	LPAREN  parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN   	
-	  		  	(throwsList = jThrowsClause[])?
-	 	  		adviceDecl = jAdviceDeclaration[CaesarAdviceKind.Around, modifiers, parameters, type, throwsList, extraParam] 	
-		  		{ 
-		  			context.addAdviceDeclaration(adviceDecl);	  			
-		  		}  	 		  		    
-	    	|
-	      		method = jMethodDefinition [context, modifiers, type, CTypeVariable.EMPTY]
-		        { context.addMethodDeclaration(method); }
-	    	|
-	      		vars = jVariableDefinitions[modifiers, type] SEMI
-	        	{
-		  			for (int i = 0; i < vars.length; i++) {
-			    		context.addFieldDeclaration(
-			    			new JFieldDeclaration(
-			    				sourceRef,
-								vars[i],
-								getJavadocComment(),
-								getStatementComment()
-							)
-						);
-			  		}
-				}
-	    	)
-	    )
+  	  		"around"		  	
+	      	LPAREN  parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN   	
+  		  	(throwsList = jThrowsClause[])?
+ 	  		adviceDecl = jAdviceDeclaration[CaesarAdviceKind.Around, modifiers, parameters, type, throwsList, extraParam] 	
+	  		{ 
+	  			context.addAdviceDeclaration(adviceDecl);	  			
+	  		}  	 		  		    
+    	|
+      		method = jMethodDefinition [context, modifiers, type, CTypeVariable.EMPTY]
+	        { context.addMethodDeclaration(method); }
+    	|
+      		vars = jVariableDefinitions[modifiers, type] SEMI
+        	{
+	  			for (int i = 0; i < vars.length; i++) {
+		    		context.addFieldDeclaration(new FjFieldDeclaration(sourceRef,
+																		vars[i],
+																		getJavadocComment(),
+																		getStatementComment()));
+		  		}
+			}
+    	)
 	)
-	|	
+	|
 		// "static { ... }" class initializer
 		"static" body = jCompoundStatement[]
     	{ context.addBlockInitializer(new JClassBlock(sourceRef, true, body)); }
@@ -823,9 +790,8 @@ jCaesarMember [ParseClassContext context]
 	  	// "{ ... }" instance initializer
 	 	body = jCompoundStatement[]
     	{ context.addBlockInitializer(new JClassBlock(sourceRef, false, body)); }
-    
+  	)
 ;
-
 
 jConstructorDefinition [ParseClassContext context, int modifiers]
   returns [JConstructorDeclaration self = null]
@@ -864,12 +830,12 @@ jConstructorDefinition [ParseClassContext context, int modifiers]
   )*
   RCURLY
     {
-        self = new JConstructorDeclaration(sourceRef,
+        self = new FjConstructorDeclaration(sourceRef,
                                            modifiers,
                                            name.getText(),
                                            parameters,
                                            throwsList,
-                                           new JConstructorBlock(sourceRef,
+                                           new FjConstructorBlock(sourceRef,
                                                                  constructorCall,
                                                                  (JStatement[]) body.toArray(new JStatement[body.size()])),
                                            javadoc,
@@ -901,7 +867,7 @@ jExplicitConstructorInvocation []
   )
   LPAREN args = jArgList[] RPAREN
   SEMI
-    { self = new JConstructorCall(sourceRef, functorIsThis, expr, args); }
+    { self = new FjConstructorCall(sourceRef, functorIsThis, expr, args); }
 ;
 
 jMethodDefinition [ParseClassContext context, int modifiers, CType type, CTypeVariable[] typeVariables]
@@ -935,13 +901,44 @@ jMethodDefinition [ParseClassContext context, int modifiers, CType type, CTypeVa
   )
 
     {
-         self = new JMethodDeclaration(sourceRef,
-            modifiers, typeVariables, type,
-            name.getText(), parameters, throwsList,
-            body == null 
-                ? null 
-                : new JBlock(sourceRef, body, null),
-            javadoc, comments);
+         // check if we have a clean method, i.e. a method that
+         // could be taken into a clean class's interface
+         if( (modifiers & Constants.ACC_PUBLIC) != 0
+             && (modifiers & Constants.ACC_STATIC) == 0 )
+                 self = new FjCleanMethodDeclaration(sourceRef,
+                                               modifiers,
+                                               typeVariables,
+                                               type,
+                                               name.getText(),
+                                               parameters,
+                                               throwsList,
+                                               body == null ? null : new JBlock(sourceRef, body, null),
+                                               javadoc,
+                                               comments);
+		 // check if we have private methods that might
+		 // need to receive a self parameter later
+         else if( (modifiers & Constants.ACC_PRIVATE) != 0 
+             && (modifiers & Constants.ACC_STATIC) == 0 )
+                 self = new FjPrivateMethodDeclaration(sourceRef,
+                                               modifiers,
+                                               typeVariables,
+                                               type,
+                                               name.getText(),
+                                               parameters,
+                                               throwsList,
+                                               body == null ? null : new JBlock(sourceRef, body, null),
+                                               javadoc,
+                                               comments);
+         // if this is not the case, instantiate
+         // a regular method
+         else
+                 self = new FjMethodDeclaration(sourceRef,
+                            modifiers, typeVariables, type,
+                            name.getText(), parameters, throwsList,
+                            body == null 
+                                ? null 
+                                : new JBlock(sourceRef, body, null),
+                            javadoc, comments);
 
       
     }
@@ -960,7 +957,7 @@ jVariableDefinitions [int modifiers, CType type]
     COMMA decl = jVariableDeclarator[modifiers, type]
       { vars.add(decl); }
   )*
-  { self = (JVariableDefinition[]) vars.toArray(new JVariableDefinition[vars.size()]); }
+  { self = (JVariableDefinition[]) vars.toArray(new FjVariableDefinition[vars.size()]); }
 ;
 
 // JLS 8.3 Variable Declarator
@@ -980,7 +977,7 @@ jVariableDeclarator [int modifiers, CType type]
 	reportTrouble(new CWarning(sourceRef, KjcMessages.OLD_STYLE_ARRAY_BOUNDS, null));
 	type = new CArrayType(type, bounds);
       }
-      self = new JVariableDefinition(sourceRef, modifiers, type, ident.getText(), expr);
+      self = new FjVariableDefinition(sourceRef, modifiers, type, ident.getText(), expr);
     }
 ;
 
@@ -1073,7 +1070,7 @@ jParameterDeclaration [int desc]
 	reportTrouble(new CWarning(sourceRef, KjcMessages.OLD_STYLE_ARRAY_BOUNDS, null));
 	type = new CArrayType(type, bounds);
       }
-      self = new JFormalParameter(sourceRef, desc, type, ident.getText(), isFinal);
+      self = new FjFormalParameter(sourceRef, desc, type, ident.getText(), isFinal);
     }
 ;
 
@@ -1288,7 +1285,7 @@ jReturnStatement []
 :
   "return" ( expr = jExpression[] )? SEMI
     {
-        self = new JReturnStatement(sourceRef, expr, getStatementComment());
+        self = new FjReturnStatement(sourceRef, expr, getStatementComment());
     }
 ;
 
@@ -1598,7 +1595,7 @@ jAssignmentExpression []
   self = jConditionalExpression[]
   (
     ASSIGN right = jAssignmentExpression[]
-      { self = new JAssignmentExpression(self.getTokenReference(), self, right); }
+      { self = new FjAssignmentExpression(self.getTokenReference(), self, right); }
   |
     oper = jCompoundAssignmentOperator[] right = jAssignmentExpression[]
       { self = new JCompoundAssignmentExpression(self.getTokenReference(), oper, self, right); }
@@ -1728,6 +1725,9 @@ jEqualityExpression []
   (
     NOT_EQUAL right = jRelationalExpression[]
       { self = new JEqualityExpression(self.getTokenReference(), false, self, right); }
+  |
+    FJEQUAL right = jRelationalExpression[]
+      { self = new FjEqualityExpression(self.getTokenReference(), true, self, right); }
   |
     EQUAL right = jRelationalExpression[]
       { self = new JEqualityExpression(self.getTokenReference(), true, self, right); }
@@ -1874,7 +1874,7 @@ jUnaryExpressionNotPlusMinus []
     LPAREN dest = jBuiltInTypeSpec[]
     ( 
       RPAREN expr = jUnaryExpression[]
-      { self = new JCastExpression(sourceRef, expr, dest); }
+      { self = new FjCastExpression(sourceRef, expr, dest, true, true); }
     |
       // the second posibility is e.g. " Class clazz = (int.class);"
       DOT "class" RPAREN
@@ -1893,7 +1893,7 @@ jUnaryExpressionNotPlusMinus []
     (LPAREN jClassTypeSpec[] RPAREN jUnaryExpressionNotPlusMinus[])=>
     LPAREN dest = jClassTypeSpec[] RPAREN
     expr = jUnaryExpressionNotPlusMinus[]
-      { self = new JCastExpression(sourceRef, expr, dest); }
+      { self = new FjCastExpression(sourceRef, expr, dest, true, true); }
   |
    self = jPostfixExpression[]
   )
@@ -1916,13 +1916,13 @@ jPostfixExpression[]
     DOT
     (
       ident : IDENT
-        { self = new JNameExpression(sourceRef, self, ident.getText()); }
+        { self = new FjNameExpression(sourceRef, self, ident.getText()); }
     |
       "this"
-        { self = new JThisExpression(sourceRef, self); }
+        { self = new FjThisExpression(sourceRef, self); }
     | // 31.08.01
       "super"
-        { self = new JSuperExpression(sourceRef, self); }
+        { self = new FjSuperExpression(sourceRef, self); }
     |
       "class"
         { self = new JClassExpression(sourceRef, self, 0); }
@@ -1947,7 +1947,7 @@ jPostfixExpression[]
 	} else if(((JNameExpression)self).getName().equals("proceed")) {
 	  self = new ProceedExpression(sourceRef, args);	
 	} else {
-	  self = new JMethodCallExpression(sourceRef,
+	  self = new FjMethodCallExpression(sourceRef,
 					   ((JNameExpression)self).getPrefix(),
 					   ((JNameExpression)self).getName(),
 					   args);
@@ -1975,14 +1975,14 @@ jPrimaryExpression []
 }
 :
   ident : IDENT
-    { self = new JNameExpression(sourceRef, ident.getText()); }
+    { self = new FjNameExpression(sourceRef, ident.getText()); }
 |
   self = jUnqualifiedNewExpression[]
 |
   self = jLiteral[]
 |
   "super"
-    { self = new JSuperExpression(sourceRef); }
+    { self = new FjSuperExpression(sourceRef); }
 |
   "true"
     { self = new JBooleanLiteral(sourceRef, true); }
@@ -1991,7 +1991,7 @@ jPrimaryExpression []
     { self = new JBooleanLiteral(sourceRef, false); }
 |
   "this"
-    { self = new JThisExpression(sourceRef); }
+    { self = new FjThisExpression(sourceRef); }
 | 
   "wrappee"
     { self = new CciWrappeeExpression(sourceRef); }
@@ -2002,7 +2002,7 @@ jPrimaryExpression []
    self = jWrapperDestructorExpression[null]
 |
   LPAREN self = jAssignmentExpression[] RPAREN
-    { self = new JParenthesedExpression(sourceRef, self); }
+    { self = new FjParenthesedExpression(sourceRef, self); }
 |
   type = jBuiltInType[]
   ( LBRACK RBRACK { bounds++; } )*
@@ -2059,6 +2059,9 @@ jUnqualifiedNewExpression []
 					 "", //((CReferenceType)type).getQualifiedName(),
                      CTypeVariable.EMPTY,
 					 null,
+					 null,
+					 null,
+					 null,
 					 CReferenceType.EMPTY,
 					 context.getFields(),
 					 methods,
@@ -2071,7 +2074,7 @@ jUnqualifiedNewExpression []
           { self = new JUnqualifiedAnonymousCreation(sourceRef, (CReferenceType)type, args, decl); }
       |
 	// epsilon
-        { self = new JUnqualifiedInstanceCreation(sourceRef, (CReferenceType)type, args); }
+        { self = new FjUnqualifiedInstanceCreation(sourceRef, (CReferenceType)type, args); }
       )
     )
   )
@@ -2102,6 +2105,9 @@ jQualifiedNewExpression [JExpression prefix]
 				     org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 				     ident.getText(),
                      CTypeVariable.EMPTY,
+				     null,
+				     null,
+				     null,
 				     null,				     
 				     CReferenceType.EMPTY,
 				     context.getFields(),
@@ -2114,7 +2120,7 @@ jQualifiedNewExpression [JExpression prefix]
       }
       { self = new JQualifiedAnonymousCreation(sourceRef, prefix, ident.getText(), args, decl); }
   |
-    { self = new JQualifiedInstanceCreation(sourceRef, prefix, ident.getText(), args); }
+    { self = new FjQualifiedInstanceCreation(sourceRef, prefix, ident.getText(), args); }
   )
 ;
 
@@ -2331,7 +2337,7 @@ kTypeVariableDeclaration []
 
 
 jAdviceDeclaration  [CaesarAdviceKind kind, int modifiers, JFormalParameter[] parameters, CType type, CReferenceType[] throwsList, JFormalParameter extraParam]
-	returns [JAdviceDeclaration self = null]
+	returns [AdviceDeclaration self = null]
 {
   int			bounds = 0;
   JStatement[]		body = null;
@@ -2361,7 +2367,7 @@ jAdviceDeclaration  [CaesarAdviceKind kind, int modifiers, JFormalParameter[] pa
 				parameters = newParameters;			
 			}
 		
-			self = new JAdviceDeclaration(sourceRef,
+			self = new AdviceDeclaration(sourceRef,
                                        modifiers,
                                        CTypeVariable.EMPTY,
                                        type,
@@ -2385,7 +2391,7 @@ jAdviceDeclaration  [CaesarAdviceKind kind, int modifiers, JFormalParameter[] pa
 ;
 
 jPointcutDefinition [int modifiers, CTypeVariable[] typeVariables]
-	returns [JPointcutDeclaration self = null]
+	returns [PointcutDeclaration self = null]
 {
   JFormalParameter[]	parameters;
   int			bounds = 0;
@@ -2400,7 +2406,7 @@ jPointcutDefinition [int modifiers, CTypeVariable[] typeVariables]
   LPAREN parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN
   pointcut = jPointcut []
   SEMI
-	{self = new JPointcutDeclaration(sourceRef,
+	{self = new PointcutDeclaration(sourceRef,
                                                modifiers,
                                                typeVariables,
                                                factory.getVoidType(),

@@ -54,15 +54,19 @@
 @literal	while
 
 
-@literal	cclass
+@literal	virtual
+@literal	override
+@literal	clean
+@operator	FJEQUAL	"==="
+
 @literal	collaboration
 @literal	provided
 @literal	expected
+@literal	binds
+@literal	provides
 @literal	wraps
 @literal	wrappee
-@operator	WDESTRUCTOR	"~"
-@operator	PATHMARKER	"#"
-
+@operator	WDESTRUCTOR	"#"
 
 
 @literal	after

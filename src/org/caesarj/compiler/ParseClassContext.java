@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: ParseClassContext.java,v 1.6 2004-03-03 17:08:18 aracic Exp $
+ * $Id: ParseClassContext.java,v 1.7 2004-03-14 11:03:26 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -24,13 +24,13 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import org.caesarj.compiler.aspectj.CaesarDeclare;
-import org.caesarj.compiler.ast.JAdviceDeclaration;
+import org.caesarj.compiler.ast.AdviceDeclaration;
 import org.caesarj.compiler.ast.JClassBlock;
 import org.caesarj.compiler.ast.JFieldDeclaration;
 import org.caesarj.compiler.ast.JMethodDeclaration;
 import org.caesarj.compiler.ast.JPhylum;
 import org.caesarj.compiler.ast.JTypeDeclaration;
-import org.caesarj.compiler.ast.JPointcutDeclaration;
+import org.caesarj.compiler.ast.PointcutDeclaration;
 
 
 public class ParseClassContext {
@@ -91,11 +91,11 @@ public class ParseClassContext {
 		body.add(block);
 	}
 
-	public void addPointcutDeclaration(JPointcutDeclaration pointcut) {
+	public void addPointcutDeclaration(PointcutDeclaration pointcut) {
 		pointcuts.add(pointcut);
 	}
 
-	public void addAdviceDeclaration(JAdviceDeclaration advice) {
+	public void addAdviceDeclaration(AdviceDeclaration advice) {
 		advices.add(advice);
 	}
 
@@ -131,14 +131,14 @@ public class ParseClassContext {
 		return (JPhylum[]) body.toArray(new JPhylum[body.size()]);
 	}
 
-	public JPointcutDeclaration[] getPointcuts() {
-		return (JPointcutDeclaration[]) pointcuts.toArray(
-			new JPointcutDeclaration[0]);
+	public PointcutDeclaration[] getPointcuts() {
+		return (PointcutDeclaration[]) pointcuts.toArray(
+			new PointcutDeclaration[0]);
 	}
 
-	public JAdviceDeclaration[] getAdvices() {
-		return (JAdviceDeclaration[]) advices.toArray(
-			new JAdviceDeclaration[0]);
+	public AdviceDeclaration[] getAdvices() {
+		return (AdviceDeclaration[]) advices.toArray(
+			new AdviceDeclaration[0]);
 	}
 
 	public CaesarDeclare[] getDeclares() {

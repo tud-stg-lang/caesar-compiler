@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JOwnerExpression.java,v 1.3 2004-02-29 21:37:24 ostermann Exp $
+ * $Id: JOwnerExpression.java,v 1.4 2004-03-14 11:03:25 aracic Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -150,7 +150,7 @@ public class JOwnerExpression extends JThisExpression
 						// andreas start
 						//expr = new JFieldAccessExpression(getTokenReference(), new JThisExpression(getTokenReference()), JAV_OUTER_THIS);
 						expr =
-							new JFieldAccessExpression(
+							new FjFieldAccessExpression(
 								getTokenReference(),
 								new JThisExpression(getTokenReference()),
 								JAV_OUTER_THIS);
@@ -162,7 +162,7 @@ public class JOwnerExpression extends JThisExpression
 					// andreas start
 					//expr = new JFieldAccessExpression(getTokenReference(), expr, JAV_OUTER_THIS);
 					expr =
-						new JFieldAccessExpression(
+						new FjFieldAccessExpression(
 							getTokenReference(),
 							expr,
 							JAV_OUTER_THIS);

@@ -2,7 +2,7 @@ package generated;
 
 import junit.framework.TestCase;
 
-public cclass CaesarTestCase_2 extends TestCase {
+public class CaesarTestCase_2 extends TestCase {
 
 	public CaesarTestCase_2() {
 		super("test");
@@ -31,7 +31,7 @@ public cclass CaesarTestCase_2 extends TestCase {
 	}
 }
 
-deployed cclass StaticAspect_2 {
+deployed class StaticAspect_2 {
 
 	pointcut callFoo() : cflow(call(* CaesarTestCase_2.test())) && call(* CaesarTestCase_2.foo());
 

@@ -4,21 +4,32 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.FjSourceClass;
+import org.caesarj.compiler.ast.DeclarationVisitor;
 import org.caesarj.compiler.ast.JCompilationUnit;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.CciConstants;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
+import org.caesarj.compiler.delegation.ClassTransformationFjVisitor;
 import org.caesarj.compiler.export.CSourceClass;
+import org.caesarj.compiler.family.CollaborationInterfaceTransformation;
+import org.caesarj.compiler.family.CollectClassesFjVisitor;
+import org.caesarj.compiler.family.FamiliesInitializerFjVisitor;
+import org.caesarj.compiler.family.InheritConstructorsFjVisitor;
+import org.caesarj.compiler.family.MethodTransformationFjVisitor;
+import org.caesarj.compiler.family.ResolveSuperClassFjVisitor;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
@@ -36,10 +47,11 @@ import org.caesarj.util.Utils;
  * 
  * @author Jürgen Hallpap
  */
-public class Main extends MainSuper implements  Constants  {
+public class Main extends org.caesarj.compiler.MainSuper implements  Constants  {
 
 	private CaesarMessageHandler messageHandler;
-	private Set errorMessages;	
+	private Set errorMessages;
+	private CollectClassesFjVisitor inherritConstructors;
 
 
 	// The used weaver. An instance ist created when it's needed in generateAndWeaveCode
@@ -99,32 +111,28 @@ public class Main extends MainSuper implements  Constants  {
 		}
 		
 
-		System.out.println("parseFiles");
 		JCompilationUnit[] tree = parseFiles(environment);
-		if (errorFound) {return false;}		
-		System.out.println("prepareJoinpointReflection");
+
+		if (errorFound) {return false;}
+		transformCollaborationInterfaces(environment,tree);
 		prepareJoinpointReflection(tree);
-		System.out.println("prepareDynamicDeployment");		
 		prepareDynamicDeployment(environment, tree);
-		System.out.println("joinAll");
-		joinAll(tree);		
+		createAllHelperInterfaces(environment, tree);
+		joinAll(tree);
 		if (errorFound) { return false; }
-		System.out.println("checkAllInterfaces");
-		checkAllInterfaces(tree);		
+		checkAllInterfaces(tree);
 		if (errorFound) { return false;	}
-		System.out.println("checkAllInitializers");
-		checkAllInitializers(tree);		
+		initAllFamilies(tree);
+		if (errorFound) { return false; }
+		checkAllInitializers(tree);
 		if (errorFound) { return false;	}
-		System.out.println("checkAllBodies");
 		checkAllBodies(tree);
 		if (errorFound) { return false;	}
 		if (noWeaveMode()) {
 			//just generate the code
-			System.out.println("genCode");
 			genCode(environment.getTypeFactory());
 		} else {
 			//generate code and perform weaving
-			System.out.println("generateAndWeaveCode");
 			generateAndWeaveCode(environment.getTypeFactory());
 		}
 
@@ -134,7 +142,7 @@ public class Main extends MainSuper implements  Constants  {
 
 		CodeSequence.endSession();
 		return true;
-	}	
+	}
 
     /**
      * - create advice attribute for AspectJ weaver if necessary
@@ -178,6 +186,16 @@ public class Main extends MainSuper implements  Constants  {
 		}
 	}
 
+	/**
+	 * tasks: upcast overridden types
+	 * do something with family parameters (not yet quite clear)
+	 */
+	protected void initAllFamilies(JCompilationUnit[] tree) {
+		for (int count = 0; count < tree.length; count++) {
+			initFamilies(tree[count]);
+			//tree[count].accept(new DebugVisitor());
+		}
+	}
 
 	/**
 	 * A lot happens in this phase. We should divide this
@@ -202,10 +220,28 @@ public class Main extends MainSuper implements  Constants  {
 	protected void checkAllInterfaces(JCompilationUnit[] tree) {
 		for (int count = 0; count < tree.length; count++) {
 			checkInterface(tree[count]);
+			//tree[count].accept(new DebugVisitor());
 		}
 	}
 
 
+	protected void createAllHelperInterfaces(
+		KjcEnvironment environment,
+		JCompilationUnit[] tree) {
+		for (int i = 0; i < tree.length; i++) {
+			tree[i].accept(getClassTransformation(environment));
+			//tree[i].accept(new DebugVisitor());
+		}
+	}
+
+	protected void transformCollaborationInterfaces(
+		KjcEnvironment environment,
+		JCompilationUnit[] tree) {
+
+		for (int i = 0; i < tree.length; i++) {
+			tree[i].accept(getCollaborationInteraceTransformation(environment));			
+		}
+	}
 
 
 	protected void prepareDynamicDeployment(
@@ -237,7 +273,7 @@ public class Main extends MainSuper implements  Constants  {
 
 	
 	protected void checkInterface(JCompilationUnit cunit) {
-		//cunit.accept(getMethodTransformation(cunit.getEnvironment()));
+		cunit.accept(getMethodTransformation(cunit.getEnvironment()));
 		super.checkInterface(cunit);
 	}
 
@@ -266,9 +302,85 @@ public class Main extends MainSuper implements  Constants  {
 		}
 		if (errorFound)
 			return;
-		
-	}	
-		
+
+		// let a visitor traverse the tree
+		// and resolve all overriders superclasses 
+		getResolveSuperClass(this, tree).transform(); 
+		if (errorFound)
+			return;
+
+		try {
+			Vector warnings =
+				getInheritConstructors(tree).transform();
+			for (int i = 0; i < warnings.size(); i++) {
+				inform((PositionedError) warnings.elementAt(i));
+			}
+		} catch (PositionedError e) {
+			reportTrouble(e);
+		}
+	}
+
+	
+	/**
+	 * Initializes the families of the compilation unit passed.
+	 * 
+	 * @param cunit
+	 */
+	protected void initFamilies(JCompilationUnit cunit)
+	{
+		cunit.accept(getFamiliesInitializer(cunit.getEnvironment()));
+	}
+
+
+	/**
+	 * 
+	 * @param environment
+	 * @return the visitor instance that transforms FamilyJ to Java.
+	 */
+	protected DeclarationVisitor getClassTransformation(KjcEnvironment environment) 
+	{
+		return new ClassTransformationFjVisitor(environment);
+	}
+	
+	/**
+	 * Returns the visitor instance for transforms the CIs.
+	 * @param environment
+	 * @return
+	 */
+	protected DeclarationVisitor getCollaborationInteraceTransformation(
+		KjcEnvironment environment) 
+	{
+		return new CollaborationInterfaceTransformation(environment, this);
+	}
+	
+	
+	/**
+	 *
+	 * @param environment
+	 * @return the visitor instance for initializes the families.
+	 */
+	protected DeclarationVisitor getFamiliesInitializer(KjcEnvironment environment)
+	{
+		return new FamiliesInitializerFjVisitor(this, environment);
+	}
+
+	protected CollectClassesFjVisitor getInheritConstructors(JCompilationUnit[] compilationUnits) {
+		if (inherritConstructors == null)
+			inherritConstructors =
+				new InheritConstructorsFjVisitor(compilationUnits);
+		return inherritConstructors;
+	}
+
+	protected DeclarationVisitor getMethodTransformation(KjcEnvironment environment) {
+		return new MethodTransformationFjVisitor(environment);
+	}
+
+	protected ResolveSuperClassFjVisitor getResolveSuperClass(
+		CompilerBase compiler,
+		JCompilationUnit compilationUnits[]) {
+		return new ResolveSuperClassFjVisitor(compiler, compilationUnits);
+	}
+
 	public void inform(PositionedError error) {
 		if (errorMessages == null)
 			errorMessages = new HashSet();

@@ -17,9 +17,9 @@ import org.caesarj.util.UnpositionedError;
  * 
  * @author Jürgen Hallpap
  */
-public class DeploymentSupportClassDeclaration extends JCaesarClassDeclaration {
+public class DeploymentSupportClassDeclaration extends JClassDeclaration {
 
-	private JCaesarClassDeclaration crosscuttingClass;
+	private JClassDeclaration crosscuttingClass;
 
 	private String postfix;
 
@@ -36,7 +36,7 @@ public class DeploymentSupportClassDeclaration extends JCaesarClassDeclaration {
 		JPhylum[] initializers,
 		JavadocComment javadoc,
 		JavaStyleComment[] comment,
-		JCaesarClassDeclaration crosscuttingClass,
+		JClassDeclaration crosscuttingClass,
 		String postfix) {
 		this(
 			where,
@@ -51,8 +51,8 @@ public class DeploymentSupportClassDeclaration extends JCaesarClassDeclaration {
 			initializers,
 			javadoc,
 			comment,
-			JPointcutDeclaration.EMPTY,
-			JAdviceDeclaration.EMPTY,
+			PointcutDeclaration.EMPTY,
+			AdviceDeclaration.EMPTY,
 			null,
 			crosscuttingClass,
 			postfix);
@@ -71,18 +71,19 @@ public class DeploymentSupportClassDeclaration extends JCaesarClassDeclaration {
 		JPhylum[] initializers,
 		JavadocComment javadoc,
 		JavaStyleComment[] comment,
-		JPointcutDeclaration[] pointcuts,
-		JAdviceDeclaration[] advices,
+		PointcutDeclaration[] pointcuts,
+		AdviceDeclaration[] advices,
 		CaesarDeclare[] declares,
-	    JCaesarClassDeclaration crosscuttingClass,
+		JClassDeclaration crosscuttingClass,
 		String postfix) {
-
 		super(
 			where,
 			modifiers,
 			ident,
 			typeVariables,
 			superClass,
+			null,
+			null,
 			null,
 			interfaces,
 			fields,
@@ -115,7 +116,7 @@ public class DeploymentSupportClassDeclaration extends JCaesarClassDeclaration {
 					
 			String superClassName = null;
 			// test klaus
-			if (crosscuttingClass instanceof JCaesarClassDeclaration) {
+			if (crosscuttingClass instanceof FjCleanClassDeclaration) {
 				
 //				String sc = 
 //				  crosscuttingClass.getSuperClass().getIdent();
@@ -134,8 +135,8 @@ public class DeploymentSupportClassDeclaration extends JCaesarClassDeclaration {
 				if(isRegistry()&&(!CModifier.contains(crosscuttingClass.getSuperClass().getCClass().getModifiers(),ACC_ABSTRACT))){
 				
 //					//setPointcuts(crosscuttingClass.getPointcuts());
-					crosscuttingClass.setPointcuts(new JPointcutDeclaration[0]);
-					this.pointcuts=new JPointcutDeclaration[0];
+					crosscuttingClass.setPointcuts(new PointcutDeclaration[0]);
+					pointcuts=new PointcutDeclaration[0];
 				}							
 				if(isRegistry()&&
 					(!CModifier.contains(
@@ -196,17 +197,17 @@ public class DeploymentSupportClassDeclaration extends JCaesarClassDeclaration {
 		JStatement[] newStatements = new JStatement[deployStatements.length + 1];
 		System.arraycopy(deployStatements, 0, newStatements, 0, deployStatements.length);
 
-		JExpression dprefix = new JNameExpression(TokenReference.NO_REF, superClassName);
-		JExpression fac= new JFieldAccessExpression(TokenReference.NO_REF,dprefix, "ajc$perSingletonInstance");
+		JExpression dprefix = new FjNameExpression(TokenReference.NO_REF, superClassName);
+		JExpression fac= new FjFieldAccessExpression(TokenReference.NO_REF,dprefix, "ajc$perSingletonInstance");
 		JFormalParameter[] dparameters = method.getArgs();
 		JExpression[] args = new JExpression[dparameters.length];
 		String argString="";
 		for(int i=0;i<args.length;i++){
-			 args[i]=new JNameExpression(TokenReference.NO_REF,dparameters[i].getIdent());
+			 args[i]=new FjNameExpression(TokenReference.NO_REF,dparameters[i].getIdent());
 			argString+=args[i]+", ";
 		}		
 		JExpression methodCall =
-			new JMethodCallExpression(TokenReference.NO_REF, fac, methodName, args);
+			new FjMethodCallExpression(TokenReference.NO_REF, fac, methodName, args);
 //		System.out.println("weaved in: "+dprefix+methodName+"("+argString+")");
 		newStatements[deployStatements.length] = new JExpressionStatement(TokenReference.NO_REF, methodCall, null);
 		method.setBlockBody(new JBlock(TokenReference.NO_REF,newStatements,null));

@@ -11,10 +11,9 @@ import org.caesarj.compiler.aspectj.CaesarAdviceKind;
 import org.caesarj.compiler.aspectj.CaesarFormalBinding;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.aspectj.CaesarScope;
-import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
@@ -27,7 +26,7 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Jürgen Hallpap
  */
-public class CSourceAdviceMethod extends CSourceMethod {
+public class CaesarAdvice extends FjSourceMethod {
 
 	/** The advice pointcut.*/
 	private CaesarPointcut pointcut;
@@ -55,7 +54,7 @@ public class CSourceAdviceMethod extends CSourceMethod {
 	 * @param parameterNames
 	 * @param extraArgumentFlags
 	 */
-	public CSourceAdviceMethod(
+	public CaesarAdvice(
 		CClass owner,
 		int modifiers,
 		String ident,
@@ -64,6 +63,7 @@ public class CSourceAdviceMethod extends CSourceMethod {
 		CReferenceType[] exceptions,
 		CTypeVariable[] typeVariables,
 		JBlock body,
+		FjFamily[] families,
 		CaesarPointcut pointcut,
 		CaesarAdviceKind kind,
 		int extraArgumentFlags) {
@@ -77,7 +77,8 @@ public class CSourceAdviceMethod extends CSourceMethod {
 			typeVariables,
 			false,
 			false,
-			body);
+			body,
+			families);
 
 		this.pointcut = pointcut;
 		this.kind = kind;
@@ -130,8 +131,11 @@ public class CSourceAdviceMethod extends CSourceMethod {
 		}
 
 		//set formal bindings
-		CClassContext classContext = (CClassContext)context;
+		FjClassContext classContext = (FjClassContext) context;
 		//classContext.setBindings((FormalBinding[]) formalBindings.toArray(new FormalBinding[0]));
+		classContext.setBindings(
+			//CaesarFormalBinding.wrappees(
+			(CaesarFormalBinding[]) formalBindings.toArray(new CaesarFormalBinding[0]));
 		//resolve the pointcut
 		pointcut.resolve(new CaesarScope(classContext, caller));
 

@@ -15,6 +15,7 @@ import org.caesarj.compiler.aspectj.AttributeAdapter;
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
+import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.context.CTypeContext;
@@ -44,6 +45,8 @@ public class FjSourceClass extends CSourceClass
 
 	protected List resolvedPointcuts = new ArrayList();
 	
+	protected FjTypeSystem typeSystem = new FjTypeSystem();
+
 	public FjSourceClass(
 		CClass owner,
 		TokenReference where,
@@ -616,12 +619,12 @@ public class FjSourceClass extends CSourceClass
 		resolvedPointcuts.add(rpd);
 	}
 	
-    /*
 	public CReferenceType getOwnerType()
 	{
 		CClass owner = getOwner();
 		if (owner != null
-			&& owner.isCaesarClass()
+			&& CModifier.contains(owner.getModifiers(), 
+				FJC_CLEAN | FJC_VIRTUAL | FJC_OVERRIDE)
 			&& FjConstants.isBaseName(ident))
 		{
 			return
@@ -629,7 +632,9 @@ public class FjSourceClass extends CSourceClass
 		}
 		return super.getOwnerType();
 	}
-
+	/**
+	 * 
+	 */
 	public boolean isDefinedInside(CClass outer)
 	{
 		if (this == outer || typeSystem.cleanInterface(this) == outer)
@@ -645,5 +650,5 @@ public class FjSourceClass extends CSourceClass
 			return getOwner().isDefinedInside(outer);
 		}		
 	}
-    */
+
 }

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JUnqualifiedAnonymousCreation.java,v 1.4 2004-02-29 21:37:23 ostermann Exp $
+ * $Id: JUnqualifiedAnonymousCreation.java,v 1.5 2004-03-14 11:03:25 aracic Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -186,6 +186,10 @@ public class JUnqualifiedAnonymousCreation extends JExpression {
     decl.setDefaultConstructor(cstr);
     decl.join(context.getClassContext());
     decl.checkInterface(context.getClassContext());
+    //Walter start
+    if (decl instanceof JClassDeclaration)
+		((JClassDeclaration)decl).initFamilies(context.getClassContext());
+	//Walter end
 
     if (context.isStaticContext()) {
       decl.getCClass().setModifiers(decl.getCClass().getModifiers() | ACC_STATIC);

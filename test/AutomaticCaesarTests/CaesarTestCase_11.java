@@ -9,7 +9,7 @@ import junit.framework.TestCase;
  * static Aspect w/concrete Pointcut inherits from static abstract aspect 
  * with concrete advice.
  */
-public cclass CaesarTestCase_11 extends TestCase {
+public class CaesarTestCase_11 extends TestCase {
 
 	public CaesarTestCase_11() {
 			super("test");
@@ -33,7 +33,7 @@ public cclass CaesarTestCase_11 extends TestCase {
 
 }
 
-	abstract cclass Aspect_11 {
+	abstract class Aspect_11 {
 		abstract pointcut execFoo(String s);
 	
 		before(String s) : execFoo(s) {
@@ -41,7 +41,7 @@ public cclass CaesarTestCase_11 extends TestCase {
 		}
 	}
 
-	cclass Aspect_11a extends Aspect_11 {
+	class Aspect_11a extends Aspect_11 {
 		pointcut execFoo(String s) : execution(* CaesarTestCase_11.foo(String)) && args(s);
 	}
 
