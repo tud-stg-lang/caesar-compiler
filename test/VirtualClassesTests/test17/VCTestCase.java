@@ -4,7 +4,7 @@ import junit.framework.*;
 import java.util.*;
 
 /**
- * Test deep inheritance relationships.
+ * Test extending deep classes relationships.
  *
  * @author Vaidas Gasiunas
  */
@@ -21,24 +21,11 @@ public class VCTestCase extends TestCase
 
 	public void test() {
 
-		System.out.println("-------> VCTest 17: Deep Inheritance: start");
+		System.out.println("-------> VCTest 17: Extending Deep Classes: start");
 
 		OuterB.InnerB b = (OuterB.InnerB)(new OuterB_Impl(null)).$newInnerB(); // !!! remove parameter
 
-		String resA = b.$newDeepestA().queryA();
-		String resB = b.$newDeepestB().queryA();
-		String resC = b.$newDeepestC().queryA();
-		String resD = b.$newDeepestD().queryA();
-		String resE = b.$newDeepestE().queryA();
-		String resF = b.$newDeepestF().queryA();
-		String resG = b.$newDeepestG().queryA();
-		String resH = b.$newDeepestH().queryA();
-		String resI = b.$newDeepestI().queryA();
-		String resJ = b.$newDeepestJ().queryA();
-		String resK = b.$newDeepestK().queryA();
-
-		String result = resA + "; " + resB + "; " + resC + "; " + resD + "; " + resE + "; " + resF + "; " + resG
-		              + "; " + resH + "; " + resI + "; " + resJ + "; " + resK;
+		String result = b.defaultObject().queryA();
 
 		System.out.println(result);
 		//assertEquals(result, expectedResult);
@@ -61,9 +48,21 @@ public cclass OuterA
 
 		public cclass DeepestB extends DeepestA
 		{
+			DeepestA _child = null;
+
+			public void setChild(OuterA.InnerA.DeepestA child)
+			{
+				_child = child;
+			}
+
+			public void setDefaultChild()
+			{
+				setChild($outer.$newDeepestC());
+			}
+
 			public String queryA()
 			{
-				return super.queryA() + ", A.A.B";
+				return super.queryA() + ", A.A.B, child: " + _child.queryA();
 			}
 		}
 
@@ -75,18 +74,53 @@ public cclass OuterA
 			}
 		}
 
-		public cclass DeepestJ
+		public OuterA.InnerA.DeepestB defaultObject()
 		{
-			public String queryA()
-			{
-				return "A.A.J";
-			}
+			DeepestB b = $newDeepestB();
+			b.setDefaultChild();
+			return b;
 		}
 	}
 
 	public cclass InnerB extends InnerA
 	{
-		public cclass DeepestD extends InnerA.DeepestA
+		public cclass DeepestA
+		{
+			public String queryA()
+			{
+				return super.queryA() + ", A.B.A";
+			}
+		}
+
+		public cclass DeepestB
+		{
+			DeepestA _child2 = null;
+
+			public void setChild2(OuterA.InnerA.DeepestA child)
+			{
+				_child2 = child;
+			}
+
+			public void setDefaultChild2()
+			{
+				setChild2($outer.$newDeepestD());
+			}
+
+			public String queryA()
+			{
+				return super.queryA() + ", A.B.A, child2: " + _child2.queryA();
+			}
+		}
+
+		public cclass DeepestC
+		{
+			public String queryA()
+			{
+				return super.queryA() + ", A.B.C";
+			}
+		}
+
+		public cclass DeepestD extends DeepestC
 		{
 			public String queryA()
 			{
@@ -94,69 +128,56 @@ public cclass OuterA
 			}
 		}
 
-		public cclass DeepestE extends InnerA.DeepestB
+		public OuterA.InnerA.DeepestB defaultObject()
 		{
-			public String queryA()
-			{
-				return super.queryA() + ", A.B.E";
-			}
-		}
-
-		public cclass DeepestF extends InnerA.DeepestC
-		{
-			public String queryA()
-			{
-				return super.queryA() + ", A.B.F";
-			}
-		}
-
-		public cclass DeepestG extends InnerA.DeepestA
-		{
-			public String queryA()
-			{
-				return super.queryA() + ", A.B.G";
-			}
-		}
-
-		public cclass DeepestH
-		{
-			public String queryA()
-			{
-				return "A.B.H";
-			}
-		}
-
-		public cclass DeepestI extends InnerA.DeepestC
-		{
-			public String queryA()
-			{
-				return super.queryA() + ", A.B.I";
-			}
-		}
-
-		public cclass DeepestK extends InnerA.DeepestA
-		{
-			public String queryA()
-			{
-				return super.queryA() + ", A.B.K";
-			}
+			DeepestB b = super.defaultObject();
+			b.setDefaultChild2();
+			return b;
 		}
 	}
 }
 
 public cclass OuterB extends OuterA
 {
-	public cclass InnerA
+	public cclass InnerA extends InnerA
 	{
-		public cclass DeepestD extends OuterA.InnerA.DeepestB
+		public cclass DeepestA
 		{
 			public String queryA()
 			{
-				return super.queryA() + ", B.A.D";
+				return super.queryA() + ", B.A.A";
 			}
 		}
 
-		public cclass DeepestE extends OuterA.InnerA.DeepestA
+		public cclass DeepestB
+		{
+			DeepestA _child3 = null;
+
+			public void setChild3(OuterA.InnerA.DeepestA child)
+			{
+				_child3 = child;
+			}
+
+			public void setDefaultChild3()
+			{
+				setChild3($outer.$newDeepestE());
+			}
+
+			public String queryA()
+			{
+				return super.queryA() + ", B.A.B, child3: " + _child3.queryA();
+			}
+		}
+
+		public cclass DeepestC
+		{
+			public String queryA()
+			{
+				return super.queryA() + ", B.A.C";
+			}
+		}
+
+		public cclass DeepestE extends DeepestC
 		{
 			public String queryA()
 			{
@@ -164,44 +185,11 @@ public cclass OuterB extends OuterA
 			}
 		}
 
-		public cclass DeepestF extends OuterA.InnerA.DeepestC
+		public OuterA.InnerA.DeepestB defaultObject()
 		{
-			public String queryA()
-			{
-				return super.queryA() + ", B.A.F";
-			}
-		}
-
-		public cclass DeepestG
-		{
-			public String queryA()
-			{
-				return "B.A.G";
-			}
-		}
-
-		public cclass DeepestH extends OuterA.InnerA.DeepestA
-		{
-			public String queryA()
-			{
-				return super.queryA() + ", B.A.H";
-			}
-		}
-
-		public cclass DeepestI extends OuterA.InnerA.DeepestB
-		{
-			public String queryA()
-			{
-				return super.queryA() + ", B.A.I";
-			}
-		}
-
-		public cclass DeepestK extends OuterA.InnerA.DeepestJ
-		{
-			public String queryA()
-			{
-				return super.queryA() + ", B.A.K";
-			}
+			DeepestB b = super.defaultObject();
+			b.setDefaultChild3();
+			return b;
 		}
 	}
 }
