@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjVirtualClassDeclaration.java,v 1.22 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.23 2005-02-21 15:19:29 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -442,10 +442,6 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         while(ownerSuperClass != null) {
             
             CMethod[] methods = ownerSuperClass.getMethods();
-            
-            if(methods == null) {
-                boolean stopHere = true;
-            }
             
             for (int i = 0; i < methods.length; i++) {
                 
