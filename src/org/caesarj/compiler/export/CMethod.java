@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CMethod.java,v 1.13 2005-02-11 18:45:22 aracic Exp $
+ * $Id: CMethod.java,v 1.14 2005-02-21 15:17:30 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -97,6 +97,17 @@ public abstract class CMethod extends CMember {
     
     public boolean isCaesarAccessorMethod() {
         return getIdent().startsWith(CaesarConstants.GETTER_PREFIX);
+    }
+    
+    // CRITICAL: scrap, there are false positives
+    public boolean isCaesarWrapperSupportMethod() throws UnpositionedError {
+        return 
+        	parameters.length == 1
+        	&& (owner.isMixin() || owner.isMixinInterface())
+        	&& (
+        	    owner.lookupClass(owner, ident) != null 
+        	    || (ident.length() > 3 && owner.lookupClass(owner, ident.substring(3)) != null)        	    
+    	    );
     }
     
     /**
