@@ -13,6 +13,10 @@ public class CaesarTestCase_1 extends TestCase {
 	public String expectedResult =
 		":foo:before foo:foo:before foo:foo:after foo";
 
+	/**
+	 * tests inheriting aspects
+	 *
+	 */
 	public void test() {
 		deploy(new InnerAspect()) {
 			foo();

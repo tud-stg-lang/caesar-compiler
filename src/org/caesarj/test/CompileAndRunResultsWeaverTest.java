@@ -71,7 +71,8 @@ public class CompileAndRunResultsWeaverTest extends FjTestCase {
 						"PrivilegedAccessTest.java",
 						"KlausTest.java",
 						"StaticAspect.java",
-						"AnotherAspect.java" };
+						"AnotherAspect.java"
+								};
 
 				compiler = new CompilerMock(this, new PrintWriter(System.out) {
 					public void println() {

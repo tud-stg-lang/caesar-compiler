@@ -178,7 +178,7 @@ public class AutomaticCaesarTests extends FjTestCase {
 		doGeneratedTest("CaesarTestCase_8");
 	}
 	
-	public void DISABLEDtestCaesarTestCase_9() throws Throwable {
+	public void testCaesarTestCase_9() throws Throwable {
 		doGeneratedTest("CaesarTestCase_9");
 	}
 	

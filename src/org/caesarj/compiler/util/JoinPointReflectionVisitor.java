@@ -177,11 +177,13 @@ public class JoinPointReflectionVisitor
 				(JFormalParameter[]) adviceParameters.toArray(
 					new JFormalParameter[0]));
 		}
-	} /**
-																																					 * Visits all NameExpressions.
-																																					 * Set the correspondig flag if a thisJoinPoint,thisJoinPointStaticPart
-																																					 * or thisEnclosingJoinPointStaticPart Expression is found.
-																																					 */
+	} 
+	
+	/**
+	 * Visits all NameExpressions.
+	 * Set the correspondig flag if a thisJoinPoint,thisJoinPointStaticPart
+	 * or thisEnclosingJoinPointStaticPart Expression is found.
+	 */
 	public void visitNameExpression(
 		JNameExpression self,
 		JExpression prefix,

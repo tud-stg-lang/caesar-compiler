@@ -1,18 +1,18 @@
 package generated;
 
-import java.io.IOException;
-
-import org.caesarj.runtime.CaesarThread;
 
 import junit.framework.TestCase;
 
+
+
 /**
- * thread safity of deployment
+ * static Aspect w/concrete Pointcut inherits from static abstract aspect 
+ * with concrete advice.
  */
 public class CaesarTestCase_11 extends TestCase {
 
 	public CaesarTestCase_11() {
-		super("test");
+			super("test");
 	}
 
 	public static StringBuffer result = new StringBuffer();
@@ -20,24 +20,31 @@ public class CaesarTestCase_11 extends TestCase {
 	public String expectedResult = ":before foo(bar):foo";
 
 	public void test() {
-		foo("bar");		
+		deploy(new Aspect_11a()){
+			foo("bar");
+		}
+		assertEquals(expectedResult, result.toString());
+		
 	}
 
-	public static void foo(String s) {
+	public void foo(String s) {
 		result.append(":foo");
+		System.out.println(":foo");
 	}
 
 }
 
-abstract crosscutting class Aspect_11 {
-	abstract pointcut execFoo(String s);
+	abstract crosscutting class Aspect_11 {
+		abstract pointcut execFoo(String s);
 	
-	before(String s) : execFoo(s) {
-		CaesarTestCase_11.result.append(":before foo(" + s +")");
+		before(String s) : execFoo(s) {
+			CaesarTestCase_11.result.append(":before foo(" + s +")");
+			System.out.println(":before foo(" + s +")");
+		}
 	}
-}
 
-crosscutting class Aspect_11a {
-	pointcut execFoo(String s) : execution(* foo(..)) && args(s);
-}
+	crosscutting class Aspect_11a extends Aspect_11 {
+		pointcut execFoo(String s) : execution(* CaesarTestCase_11.foo(String)) && args(s);
+	}
+
 

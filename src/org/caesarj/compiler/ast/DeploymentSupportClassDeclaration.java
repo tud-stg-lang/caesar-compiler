@@ -4,6 +4,7 @@ import org.aspectj.weaver.patterns.Declare;
 
 import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CContext;
+import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.JBlock;
@@ -25,7 +26,7 @@ import org.caesarj.compiler.UnpositionedError;
 /**
  * This class declaration is only for the generated deployment support classes.
  * 
- * @author J?rgen Hallpap
+ * @author Jürgen Hallpap
  */
 public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
 
@@ -118,9 +119,11 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
 		//Add the superClass only to those classes, whose crosscuttingClass
 		//has a crosscutting superClass
 		if (crosscuttingClass.getSuperClass() != null
-			&& (crosscuttingClass.getSuperClass().getCClass().getModifiers()
-				& ACC_CROSSCUTTING)
-				!= 0) {
+			&& (CModifier.contains(
+				 crosscuttingClass.getSuperClass().getCClass().getModifiers(),
+				 ACC_CROSSCUTTING)
+				)
+		    ) {
 					
 			String superClassName = null;
 			// test klaus
@@ -137,66 +140,45 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
 			}				
 
 			try {
-				System.out.println("superClass of "+ident+" was: "+superClass.getIdent());
 				boolean isRegistry=false;
 				for (int i=0; i<interfaces.length&&!isRegistry;i++){
-					if(interfaces[i].getIdent().equals("AspectRegistry")){
+					if(interfaces[i].getIdent().equals("AspectRegistry"))
 						isRegistry=true;
-				 		System.out.println("Registry gefunden");}
-				 	System.out.println(interfaces[i].getIdent());
 				}
-				if(pointcuts.length>0){
-				System.out.println("~~~~~~~~~~pointcuts found: ");
-				for (int i=0;i<pointcuts.length;i++)
-					System.out.println(pointcuts[i]);
-				System.out.println("~~~~~~~~~~");
-			}
-			if(pointcuts.length>0){
-			System.out.println("~~~~~~~~~~joinedPointcuts found: ");
-			for (int i=0;i<crosscuttingClass.pointcuts.length;i++)
-				System.out.println(crosscuttingClass.pointcuts[i]);
-			System.out.println("~~~~~~~~~~");
-			}
-
-
-//XXX callSuperClassToo is disabled. It doesnt work as expected 
-//(yet) but i want to check in the 
-//corrected imports and added comments first.
-				if(false && isRegistry)  {
+				wouldBeSuperClass=(CReferenceType) new CClassNameType(
+				superClassName.intern()).checkType(self);
+				System.out.println(ident+" mypc: "+pointcuts.length);
+				System.out.println(crosscuttingClass.getIdent()+" ccpc: "+crosscuttingClass.getPointcuts().length);
+				if(isRegistry&&(!CModifier.contains(crosscuttingClass.getSuperClass().getCClass().getModifiers(),ACC_ABSTRACT))){
+				
+//					//setPointcuts(crosscuttingClass.getPointcuts());
+					crosscuttingClass.setPointcuts(new PointcutDeclaration[0]);
+					pointcuts=new PointcutDeclaration[0];
+				}							
+				if(isRegistry&&
+					(!CModifier.contains(
+										crosscuttingClass.getModifiers(),
+										ACC_ABSTRACT)
+					)&&(!CModifier.contains(
+										wouldBeSuperClass.getCClass().getModifiers(),
+										ACC_ABSTRACT)
+					))
+			    		{
 					callSuperClassToo(methods[0],"$deploy",superClassName);
 					callSuperClassToo(methods[1],"$undeploy",superClassName);
+			    		
+			    		
+			    }else{
+					superClass = wouldBeSuperClass;
 					
-//					//transfer pointcuts to the AspectRegistry
-//					int ccPointcutsNr= crosscuttingClass.pointcuts.length;
-//					PointcutDeclaration[] joinedPointcuts=new PointcutDeclaration[pointcuts.length+ccPointcutsNr];
-//					for(int i=0;i<pointcuts.length;++i)
-//						joinedPointcuts[i]=pointcuts[i];
-//					for(int i=pointcuts.length;i<joinedPointcuts.length;++i)
-//						joinedPointcuts[i]=crosscuttingClass.pointcuts[i-pointcuts.length];
-//					pointcuts=joinedPointcuts;
-					if(pointcuts.length>0){
-			System.out.println("~~~~~~~~~~pointcuts found: ");
-			for (int i=0;i<pointcuts.length;i++)
-				System.out.println(pointcuts[i]);
-			System.out.println("~~~~~~~~~~");
-		}
-			
-						
-				}else{
-					superClass =(CReferenceType) new CClassNameType(
-					superClassName.intern()).checkType(self);
 				}
-				
-				
-				System.out.println("superClass of "+ident+" should have been: "+superClassName);
-				System.out.println("superClass of "+ident+" is now: "+superClass.getIdent());				
-				} catch (UnpositionedError e) {
-
-				context.reportTrouble(e.addPosition(getTokenReference()));
-			}
+			} catch (UnpositionedError e) {
+	
+			context.reportTrouble(e.addPosition(getTokenReference()));
 		}
-		super.checkInterface(context);
 	}
+	super.checkInterface(context);
+}
 
 /**
  * weaves calls to the given Method in the superclass
@@ -205,8 +187,10 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
  * @param supeClassName where to weave
  */
 		private void callSuperClassToo(JMethodDeclaration method,String methodName, String superClassName) {
-		if(method.getIdent()!=methodName)
+		if(method.getIdent()!=methodName){
 			System.out.println(methodName+" Statement not found");
+			return;
+		}
 		JStatement[] deployStatements=method.getBlockBody().getBody();
 		JStatement[] newStatements = new JStatement[deployStatements.length + 1];
 		System.arraycopy(deployStatements, 0, newStatements, 0, deployStatements.length);

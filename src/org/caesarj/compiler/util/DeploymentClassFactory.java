@@ -2388,7 +2388,6 @@ public class DeploymentClassFactory implements CaesarConstants {
 	public FjClassDeclaration createSingletonAspect() {
 		AdviceDeclaration[] advices = aspectClass.getAdvices();
 		JMethodDeclaration[] methods = aspectClass.getMethods();
-		PointcutDeclaration[] pointcuts = aspectClass.getPointcuts();
 		List fields = new ArrayList();
 
 		List singletonAspectMethods = new ArrayList();
@@ -2425,7 +2424,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		singletonAspectMethods.add(
 			createSingletonGetThreadLocalDeployedInstancesMethod());
 
-		//create the deployedIntances field
+		//create the deployedInstances field
 		CType ifcType = new CClassNameType(qualifiedAspectInterfaceName);
 		FjVariableDefinition deployedInstancesVar =
 			new FjVariableDefinition(
@@ -2478,33 +2477,81 @@ public class DeploymentClassFactory implements CaesarConstants {
 		} else {
 			initializers = new JPhylum[0];
 		}
+		
+		/* 
+		 * If the Aspect is not abstract, keep the pointcuts in the Aspect. 
+		 * otherwise copy the pointcuts to the AspectRegistry (aka 
+		 * singletonAspect).  
+		 * Also the Inheritance relation between registries is only kept, 
+		 * if the aspect is abstract. see DeploymentSupportClass.checkInterface 
+		 * for details.
+		 */
+		FjClassDeclaration singletonAspect=null;
+		
+			if((!CModifier.contains(aspectClass.getModifiers(),ACC_ABSTRACT))
+			){
+				
+				//create the aspect
+				singletonAspect=
+				new DeploymentSupportClassDeclaration(
+					aspectClass.getTokenReference(),
+					modifiers,
+					singletonAspectName,
+					CTypeVariable.EMPTY,
+					null,
+					interfaces,
+					(FjFieldDeclaration[]) fields.toArray(
+						new FjFieldDeclaration[0]),
+					(JMethodDeclaration[]) singletonAspectMethods.toArray(
+						new JMethodDeclaration[0]),
+					new JTypeDeclaration[0],
+					initializers,
+					null,
+					null,
+						//in concrete Aspects, COPY the pointcuts to the singleton. 
+						// Only the Pointcutresolver complains.
+					aspectClass.getPointcuts(),
+					//new PointcutDeclaration[0],
+					modifiedAdvices,
+					aspectClass.getDeclares(),
+					aspectClass,
+					REGISTRY_EXTENSION);
 
-		//create the aspect
-		FjClassDeclaration singletonAspect =
-			new DeploymentSupportClassDeclaration(
-				aspectClass.getTokenReference(),
-				modifiers,
-				singletonAspectName,
-				CTypeVariable.EMPTY,
-				null,
-				interfaces,
-				(FjFieldDeclaration[]) fields.toArray(
-					new FjFieldDeclaration[0]),
-				(JMethodDeclaration[]) singletonAspectMethods.toArray(
-					new JMethodDeclaration[0]),
-				new JTypeDeclaration[0],
-				initializers,
-				null,
-				null,
-				aspectClass.getPointcuts(),
-				modifiedAdvices,
-				aspectClass.getDeclares(),
-				aspectClass,
-				REGISTRY_EXTENSION);
+			singletonAspect.setPerClause(new PerSingleton());
 
-		singletonAspect.setPerClause(new PerSingleton());
+			
+			//aspectClass.setPointcuts(new PointcutDeclaration[0]);
+			}else{
+				//create the aspect
+				 singletonAspect =
+				new DeploymentSupportClassDeclaration(
+					aspectClass.getTokenReference(),
+					modifiers,
+					singletonAspectName,
+					CTypeVariable.EMPTY,
+					null,
+					interfaces,
+					(FjFieldDeclaration[]) fields.toArray(
+						new FjFieldDeclaration[0]),
+					(JMethodDeclaration[]) singletonAspectMethods.toArray(
+						new JMethodDeclaration[0]),
+					new JTypeDeclaration[0],
+					initializers,
+					null,
+					null,
+					aspectClass.getPointcuts(),
+					//new PointcutDeclaration[0],
+					modifiedAdvices,
+					aspectClass.getDeclares(),
+					aspectClass,
+					REGISTRY_EXTENSION);
 
-		aspectClass.setPointcuts(new PointcutDeclaration[0]);
+			singletonAspect.setPerClause(new PerSingleton());
+
+			
+			aspectClass.setPointcuts(new PointcutDeclaration[0]);
+			}
+		
 		aspectClass.setAdvices(new AdviceDeclaration[0]);
 		aspectClass.setDeclares(null);
 		aspectClass.setMethods(aspectClassMethods);

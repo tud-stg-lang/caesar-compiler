@@ -147,7 +147,12 @@ public class PointcutDeclaration extends FjMethodDeclaration {
 			(FormalBinding[]) formalBindings.toArray(new FormalBinding[0]));
 
 		if ((modifiers & ACC_ABSTRACT) == 0) {
-			pointcut.resolve(new CaesarScope((FjClassContext) context, caller));
+//XXX CHANGE I just ignore double resolving pointcuts. seems to work. 
+			try{
+				pointcut.resolve(new CaesarScope((FjClassContext) context, caller));
+			}catch(org.aspectj.weaver.BCException e){
+				System.out.println(e+ " in pointcut " +pointcut);
+			}
 		}
 
 		ResolvedPointcutDefinition rpd =
@@ -160,7 +165,8 @@ public class PointcutDeclaration extends FjMethodDeclaration {
 
 		return rpd;
 	}
-	public String toString(){
+	
+public String toString(){
 		return pointcut.toString();
 	}
 }

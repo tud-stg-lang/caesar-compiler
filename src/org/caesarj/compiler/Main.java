@@ -160,6 +160,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 				checkInterface(tree[count]);
 				//tree[count].accept(new DebugVisitor());
 			}
+
 			if (verboseMode()) {
 				inform(
 					CompilerMessages.INTERFACES_CHECKED,
