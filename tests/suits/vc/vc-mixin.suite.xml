@@ -117,5 +117,21 @@
 			public cclass OuterD extends OuterB &amp; OuterC {}
         </code>
     </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="MIXER_ERROR"  id="vcmixin008" description="mixing conflicting sequences">
+        <code>
+        	public cclass OuterA {
+			}
+			public cclass OuterB {
+			}
+			public cclass OuterC extends OuterB &amp; OuterA {
+			}
+			public cclass OuterD extends OuterA &amp; OuterB {
+			}
+			public cclass OuterE extends OuterC &amp; OuterD {
+			}			
+        </code>
+    </compile-check-error>
 	    
 </testsuite>
