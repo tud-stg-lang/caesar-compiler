@@ -15,7 +15,6 @@ import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CVoidType;
-import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.TokenReference;
 
 /**

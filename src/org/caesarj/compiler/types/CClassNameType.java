@@ -15,17 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassNameType.java,v 1.10 2004-11-19 16:09:01 klose Exp $
+ * $Id: CClassNameType.java,v 1.11 2004-11-19 16:24:18 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
@@ -142,7 +140,9 @@ public class CClassNameType extends CReferenceType
 	    if(context instanceof CContext) {
 	        CMethodContext methodCtx = ((CContext)context).getMethodContext();
 	        if(methodCtx != null) {
-	            list.add(0, methodCtx.getMethodDeclaration());
+	            if(methodCtx.getMethodDeclaration().getIdent().equals(CClassBodyContext.METHOD_NAME)) {
+	                list.add(0, methodCtx.getMethodDeclaration());
+	            }
 	        }
         }
 	    
@@ -204,24 +204,9 @@ public class CClassNameType extends CReferenceType
 	                    expr.getType(context.getTypeFactory()).getCClass().getQualifiedName()+"$"+pathSegs[pathSegs.length-1]
 	                );
 	                
-	                // strip occurences of CClassBodyContext from 
 	                JPhylum[] pos = makePos(context);
-	                Vector v = new Vector();
 	                
-	                for (int i = 0; i < pos.length; i++) {
-                        if (pos[i] instanceof JMethodDeclaration){
-                            JMethodDeclaration md = (JMethodDeclaration)pos[i];
-                            if (md.getIdent().equals(CClassBodyContext.METHOD_NAME)){
-                                continue;
-                            }
-                        }
-                        v.add(pos[i]);
-                    }
-	                
-	                pos = (JPhylum[]) v.toArray(new JPhylum[0]);
-	                
-	                return 
-	                	new CDependentType(pos, expr, clazz.getAbstractType());
+	                return new CDependentType(pos, expr, clazz.getAbstractType());
                 }
             }
             catch (Exception e) {
