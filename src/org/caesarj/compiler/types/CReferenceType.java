@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CReferenceType.java,v 1.18 2005-02-25 13:49:08 aracic Exp $
+ * $Id: CReferenceType.java,v 1.19 2005-03-04 18:16:16 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -49,7 +49,15 @@ public class CReferenceType extends CType {
      * @param in The context to search in
      * @return The number of steps
      */
-    public int getDefDepth(CContext in){
+    public int getDefDepth(CContext in) {
+                
+        if(in == null) {
+            // CRITICAL: in can be null for binary java types
+            // ignore for now
+            System.out.println("!!!in==null for: "+this);
+            return 1000; // return a big number in order to avoid false positives
+        }
+        
         int k = 0;	
         CClass myType = getCClass();
         
