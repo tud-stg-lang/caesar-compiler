@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjProceedExpression.java,v 1.2 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CjProceedExpression.java,v 1.3 2005-03-29 15:48:35 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -29,8 +29,6 @@ import org.caesarj.compiler.ast.CMethodNotFoundError;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.types.CClassNameType;
-import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
@@ -86,27 +84,7 @@ public class CjProceedExpression
 	public JExpression analyse(CExpressionContext context)
 		throws PositionedError {
 
-		JExpression typePrefix;
-
-		if (context.getClassContext().getCClass().isCrosscutting()) {
-
-			CReferenceType singletonType =
-				new CClassNameType(
-					context.getClassContext().getCClass().getQualifiedName()
-						+ REGISTRY_EXTENSION);
-
-			typePrefix =
-				new JTypeNameExpression(getTokenReference(), singletonType);
-
-		} else {
-			typePrefix = new JThisExpression(getTokenReference());
-		}
-
-		prefix =
-			new JNameExpression(
-				getTokenReference(),
-				typePrefix,
-				PER_SINGLETON_INSTANCE_FIELD);
+		prefix = new JThisExpression(getTokenReference());
 		ident =
 			(context.getMethodContext().getCMethod().getIdent()
 				+ PROCEED_METHOD)
