@@ -156,15 +156,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 	{
 	
 		TokenReference ref = getTokenReference();
-		new FjCastExpression(
-			ref,
-			new FjMethodCallExpression(
-				getTokenReference(),
-				prefix,
-				ident,
-				args),
-			wrapperType).analyse(context);		
-		
+
 		FjCastExpression result = 
 			new FjCastExpression(
 				ref,
@@ -508,13 +500,23 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 
 		// replace this call (it is inconsistent
 		// now because we used findMethod)
-		JMethodCallExpression newCall =
+		JExpression newExpression =
 			new FjMethodCallExpression(
 				getTokenReference(),
 				newPrefix,
 				newIdent,
 				newArgs);
-		return newCall.analyse(context);
+
+		//Walter if it is a wrapper recycling insert the cast before!
+		if (isWrapperRecycling())
+		{
+			newExpression = 
+				new FjCastExpression(
+					getTokenReference(),
+					newExpression,
+					wrapperType);
+		}
+		return newExpression.analyse(context);
 	}
 
 	protected JExpression handlePrivateNonThisCall(

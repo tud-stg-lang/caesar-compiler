@@ -172,7 +172,10 @@ public class CollaborationInterfaceTransformation
 		}
 		else if (self.getBinding() != null && lastBindingClass == null)
 		{
-			self.setModifiers(self.getModifiers() | Constants.CCI_BINDING);
+			self.setModifiers(
+				self.getModifiers() 
+				| Constants.CCI_BINDING
+				| Constants.ACC_CROSSCUTTING);
 			modifiers = self.getModifiers();
 			
 			//Sets the right super type of the inner classes, 
@@ -226,6 +229,10 @@ public class CollaborationInterfaceTransformation
 			superClass = self.getBindingTypeName();
 			self.setSuperClass(new CClassNameType(superClass));
 			self.addAccessors();
+			self.setModifiers(
+				self.getModifiers() 
+				| Constants.ACC_CROSSCUTTING);
+			modifiers = self.getModifiers();
 		}
 		else
 		{

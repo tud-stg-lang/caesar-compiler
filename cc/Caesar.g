@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.11 2003-08-28 11:44:44 ostermann Exp $
+ * $Id: Caesar.g,v 1.12 2003-08-28 16:00:52 werner Exp $
  */
 
 /*
@@ -487,7 +487,11 @@ jClassDefinition [int modifiers]
 				   context.getInnerClasses(),
 				   context.getBody(),
 				   javadoc,
-				   comments);
+				   comments,
+				   context.getPointcuts(),
+				   context.getAdvices(),
+				   context.getDeclares()				   
+				   );
 	 }
       else if( CModifier.contains( modifiers, org.caesarj.kjc.Constants.FJC_OVERRIDE ) ) {
           self = new FjOverrideClassDeclaration(sourceRef,
