@@ -1,3 +1,6 @@
+VC_13 - 22.09.2004
+- Passing Caesar CLASSPATH to aspect weaver
+	
 VC_12 - 17.09.2004
 - Caesar Attribut generation
 	we use GenericAttribute to store serialized Objects containing the information
