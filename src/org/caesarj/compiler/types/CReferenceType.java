@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CReferenceType.java,v 1.19 2005-03-04 18:16:16 aracic Exp $
+ * $Id: CReferenceType.java,v 1.20 2005-03-10 15:02:43 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -28,6 +28,7 @@ package org.caesarj.compiler.types;
 import java.util.Hashtable;
 
 import org.caesarj.compiler.CompilerBase;
+import org.caesarj.compiler.Log;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
@@ -54,7 +55,7 @@ public class CReferenceType extends CType {
         if(in == null) {
             // CRITICAL: in can be null for binary java types
             // ignore for now
-            System.out.println("!!!in==null for: "+this);
+            Log.verbose("!!!in==null for: "+this);
             return 1000; // return a big number in order to avoid false positives
         }
         

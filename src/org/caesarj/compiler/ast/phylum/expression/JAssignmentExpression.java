@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JAssignmentExpression.java,v 1.19 2005-02-25 16:50:45 aracic Exp $
+ * $Id: JAssignmentExpression.java,v 1.20 2005-03-10 15:01:55 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
+import org.caesarj.compiler.Log;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
@@ -127,8 +128,8 @@ public class JAssignmentExpression extends JBinaryExpression {
     if(right.getType(context.getTypeFactory()).isDependentType()) {
 	    Path rFam = right.getFamily();
 	    Path lFam = left.getFamily();
-	    System.out.println("ASSIGNEMENT (line "+getTokenReference().getLine()+"):");
-	    System.out.println("\t"+lFam+" <= "+rFam);
+	    Log.verbose("ASSIGNEMENT (line "+getTokenReference().getLine()+"):");
+	    Log.verbose("\t"+lFam+" <= "+rFam);
 	    if(lFam != null && rFam != null) {        
 	        check(context,
 	  	      rFam.isAssignableTo( lFam ),

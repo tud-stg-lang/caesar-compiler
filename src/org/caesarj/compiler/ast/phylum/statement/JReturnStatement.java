@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JReturnStatement.java,v 1.9 2005-02-25 16:50:32 aracic Exp $
+ * $Id: JReturnStatement.java,v 1.10 2005-03-10 15:02:04 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
 
+import org.caesarj.compiler.Log;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
@@ -127,8 +128,8 @@ public class JReturnStatement extends JStatement {
 	      ) {
 	            Path rFam = expr.getFamily();
 	            Path lFam = ((CReferenceType)returnType).getPath();
-	            System.out.println("RETURN STATEMENT (line "+getTokenReference().getLine()+"):");
-	            System.out.println("\t"+lFam+" <= "+rFam);
+	            Log.verbose("RETURN STATEMENT (line "+getTokenReference().getLine()+"):");
+	            Log.verbose("\t"+lFam+" <= "+rFam);
 	            if(lFam != null && rFam != null) {
 	                
 	                // k ^= number of steps to the method context

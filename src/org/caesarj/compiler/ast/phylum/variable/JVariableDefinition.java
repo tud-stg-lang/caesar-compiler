@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JVariableDefinition.java,v 1.18 2005-02-25 16:50:25 aracic Exp $
+ * $Id: JVariableDefinition.java,v 1.19 2005-03-10 15:02:16 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
 
+import org.caesarj.compiler.Log;
 import org.caesarj.compiler.ast.phylum.expression.JArrayInitializer;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
@@ -191,8 +192,8 @@ public class JVariableDefinition extends JLocalVariable {
                 try {
 		            Path rFam = expr.getFamily();
 		            Path lFam = ((CReferenceType)getType()).getPath();
-		            System.out.println("INITIALIZER (line "+getTokenReference().getLine()+"):");
-		            System.out.println("\t"+lFam+" <= "+rFam);
+		            Log.verbose("INITIALIZER (line "+getTokenReference().getLine()+"):");
+		            Log.verbose("\t"+lFam+" <= "+rFam);
 		            if(lFam != null && rFam != null) {
 		                
 		                // IVICA: if we are in the initialzer context, then calculate -3 to the rightExpression
