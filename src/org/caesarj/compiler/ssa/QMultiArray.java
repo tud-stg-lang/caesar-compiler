@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: QMultiArray.java,v 1.1 2004-02-08 16:47:49 ostermann Exp $
+ * $Id: QMultiArray.java,v 1.2 2004-02-09 17:33:55 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.classfile.MultiarrayInstruction;
 /**
  * A class to represent instruction multiarray
@@ -58,7 +58,7 @@ public class QMultiArray extends QCallReturn {
      * Return the type of the expression
      */
     public byte getType() {
-	return Constants.TYP_REFERENCE;
+	return ClassfileConstants2.TYP_REFERENCE;
     }
 
     // -------------------------------------------------------------------

@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: QConditionalJump.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: QConditionalJump.java,v 1.2 2004-02-09 17:33:54 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.classfile.JumpInstruction;
 
 /**
@@ -83,7 +83,7 @@ public class QConditionalJump extends QAbstractJumpInst {
 	} else {
 	    simplifyJump(destFalse);
 	}
-	codeGen.addInstruction(new JumpInstruction(Constants.opc_goto,
+	codeGen.addInstruction(new JumpInstruction(ClassfileConstants2.opc_goto,
 						   new EdgeLabel(destFalse)));
     }
 
@@ -106,48 +106,48 @@ public class QConditionalJump extends QAbstractJumpInst {
 	    QConstant constant = (QConstant) operand2.getOperand();
 	    if (constant.isNull()) {
 		switch (opcode) {
-		case Constants.opc_if_acmpeq:
+		case ClassfileConstants2.opc_if_acmpeq:
 		    operand1.getOperand().generateInstructions(codeGen);
-		    codeGen.addInstruction(new JumpInstruction(Constants.opc_ifnull,
+		    codeGen.addInstruction(new JumpInstruction(ClassfileConstants2.opc_ifnull,
 							       new EdgeLabel(destTrue)));
 		    return true;
-		case Constants.opc_if_acmpne:
+		case ClassfileConstants2.opc_if_acmpne:
 		    operand1.getOperand().generateInstructions(codeGen);
-		    codeGen.addInstruction(new JumpInstruction(Constants.opc_ifnonnull,
+		    codeGen.addInstruction(new JumpInstruction(ClassfileConstants2.opc_ifnonnull,
 							       new EdgeLabel(destTrue)));
 		    return true;
 		}
 	    } else if (constant.getValue() instanceof Integer &&
 		       ((Integer) constant.getValue()).intValue() == 0) {
 		switch (opcode) {
-		case Constants.opc_if_icmpeq:
+		case ClassfileConstants2.opc_if_icmpeq:
 		    operand1.getOperand().generateInstructions(codeGen);
-		    codeGen.addInstruction(new JumpInstruction(Constants.opc_ifeq,
+		    codeGen.addInstruction(new JumpInstruction(ClassfileConstants2.opc_ifeq,
 							       new EdgeLabel(destTrue)));
 		    return true;
-		case Constants.opc_if_icmpne:
+		case ClassfileConstants2.opc_if_icmpne:
 		    operand1.getOperand().generateInstructions(codeGen);
-		    codeGen.addInstruction(new JumpInstruction(Constants.opc_ifne,
+		    codeGen.addInstruction(new JumpInstruction(ClassfileConstants2.opc_ifne,
 							       new EdgeLabel(destTrue)));
 		    return true;
-		case Constants.opc_if_icmplt:
+		case ClassfileConstants2.opc_if_icmplt:
 		    operand1.getOperand().generateInstructions(codeGen);
-		    codeGen.addInstruction(new JumpInstruction(Constants.opc_iflt,
+		    codeGen.addInstruction(new JumpInstruction(ClassfileConstants2.opc_iflt,
 							       new EdgeLabel(destTrue)));
 		    return true;
-		case Constants.opc_if_icmpge:
+		case ClassfileConstants2.opc_if_icmpge:
 		    operand1.getOperand().generateInstructions(codeGen);
-		    codeGen.addInstruction(new JumpInstruction(Constants.opc_ifge,
+		    codeGen.addInstruction(new JumpInstruction(ClassfileConstants2.opc_ifge,
 							       new EdgeLabel(destTrue)));
 		    return true;
-		case Constants.opc_if_icmpgt:
+		case ClassfileConstants2.opc_if_icmpgt:
 		    operand1.getOperand().generateInstructions(codeGen);
-		    codeGen.addInstruction(new JumpInstruction(Constants.opc_ifgt,
+		    codeGen.addInstruction(new JumpInstruction(ClassfileConstants2.opc_ifgt,
 							       new EdgeLabel(destTrue)));
 		    return true;
-		case Constants.opc_if_icmple:
+		case ClassfileConstants2.opc_if_icmple:
 		    operand1.getOperand().generateInstructions(codeGen);
-		    codeGen.addInstruction(new JumpInstruction(Constants.opc_ifle,
+		    codeGen.addInstruction(new JumpInstruction(ClassfileConstants2.opc_ifle,
 							       new EdgeLabel(destTrue)));
 		    return true;
 		}

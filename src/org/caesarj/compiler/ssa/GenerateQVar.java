@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: GenerateQVar.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: GenerateQVar.java,v 1.2 2004-02-09 17:33:55 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
@@ -23,7 +23,7 @@ package org.caesarj.compiler.ssa;
 import java.util.Stack;
 import java.util.Vector;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.classfile.LocalVarInstruction;
 /**
  * Class used to generate quadruple variable.
@@ -90,8 +90,8 @@ public class GenerateQVar {
      */
     public QVar getNewVar(byte type) {
 	QVar var = new QVar(stackIndex++, type);
-	if (type == Constants.TYP_LONG ||
-	    type == Constants.TYP_DOUBLE) {
+	if (type == ClassfileConstants2.TYP_LONG ||
+	    type == ClassfileConstants2.TYP_DOUBLE) {
 	    stackIndex++;
 	}
 	return var;
@@ -105,8 +105,8 @@ public class GenerateQVar {
      */
     public QVar push(byte type) {
 	QVar var = new QVar(stackIndex++, type);
-	if (type == Constants.TYP_LONG ||
-	    type == Constants.TYP_DOUBLE) {
+	if (type == ClassfileConstants2.TYP_LONG ||
+	    type == ClassfileConstants2.TYP_DOUBLE) {
 	    stackIndex++;
 	}
 	stack.push(var);
@@ -148,8 +148,8 @@ public class GenerateQVar {
      */
     public void pop2() {
 	QOperand var = (QOperand) stack.pop();
-	if (var.getType() != Constants.TYP_LONG &&
-	    var.getType() != Constants.TYP_DOUBLE) {
+	if (var.getType() != ClassfileConstants2.TYP_LONG &&
+	    var.getType() != ClassfileConstants2.TYP_DOUBLE) {
 	    stack.pop();
 	}
     }
@@ -167,8 +167,8 @@ public class GenerateQVar {
      */
     public void dup2() {
 	QOperand var1 = (QOperand) stack.pop();
-	if (var1.getType() != Constants.TYP_LONG &&
-	    var1.getType() != Constants.TYP_DOUBLE) {
+	if (var1.getType() != ClassfileConstants2.TYP_LONG &&
+	    var1.getType() != ClassfileConstants2.TYP_DOUBLE) {
 
 	    QOperand var2 = (QOperand) stack.pop(); //we can replace this two
 	    stack.push(var2);        // instruction by a peek.
@@ -198,8 +198,8 @@ public class GenerateQVar {
     public void dup_x2() {
 	QOperand var1 = (QOperand) stack.pop();
 	QOperand var2 = (QOperand) stack.pop();
-	if (var2.getType() != Constants.TYP_LONG &&
-	    var2.getType() != Constants.TYP_DOUBLE) {
+	if (var2.getType() != ClassfileConstants2.TYP_LONG &&
+	    var2.getType() != ClassfileConstants2.TYP_DOUBLE) {
 	    QOperand var3 = (QOperand) stack.pop();
 	    stack.push(var1);
 	    stack.push(var3);
@@ -215,8 +215,8 @@ public class GenerateQVar {
      */
     public void dup2_x1() {
 	QOperand var1 = (QOperand) stack.pop();
-	if (var1.getType() != Constants.TYP_LONG &&
-	    var1.getType() != Constants.TYP_DOUBLE) {
+	if (var1.getType() != ClassfileConstants2.TYP_LONG &&
+	    var1.getType() != ClassfileConstants2.TYP_DOUBLE) {
 
 	    QOperand var2 = (QOperand) stack.pop();
 	    QOperand var3 = (QOperand) stack.pop();
@@ -237,14 +237,14 @@ public class GenerateQVar {
      */
     public void dup2_x2() {
 	QOperand var1 = (QOperand) stack.pop();
-	if (var1.getType() != Constants.TYP_LONG &&
-	    var1.getType() != Constants.TYP_DOUBLE) {
+	if (var1.getType() != ClassfileConstants2.TYP_LONG &&
+	    var1.getType() != ClassfileConstants2.TYP_DOUBLE) {
 
 	    QOperand var2 = (QOperand) stack.pop();
 	    QOperand var3 = (QOperand) stack.pop();
 
-	    if (var3.getType() != Constants.TYP_LONG &&
-		var3.getType() != Constants.TYP_DOUBLE) {
+	    if (var3.getType() != ClassfileConstants2.TYP_LONG &&
+		var3.getType() != ClassfileConstants2.TYP_DOUBLE) {
 
 		QOperand var4 = (QOperand) stack.pop();
 
@@ -265,8 +265,8 @@ public class GenerateQVar {
 
 	    QOperand var2 = (QOperand) stack.pop();
 
-	    if (var2.getType() != Constants.TYP_LONG &&
-		var2.getType() != Constants.TYP_DOUBLE) {
+	    if (var2.getType() != ClassfileConstants2.TYP_LONG &&
+		var2.getType() != ClassfileConstants2.TYP_DOUBLE) {
 
 		QOperand var3 = (QOperand) stack.pop();
 

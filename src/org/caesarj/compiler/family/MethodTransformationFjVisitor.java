@@ -1,6 +1,6 @@
 package org.caesarj.compiler.family;
 
-import org.caesarj.classfile.Constants;
+
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
@@ -14,6 +14,7 @@ import org.caesarj.compiler.ast.JFieldDeclaration;
 import org.caesarj.compiler.ast.JMethodDeclaration;
 import org.caesarj.compiler.ast.JPhylum;
 import org.caesarj.compiler.ast.JTypeDeclaration;
+import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.CciConstants;
 import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.export.CModifier;
@@ -95,9 +96,9 @@ public class MethodTransformationFjVisitor extends FjVisitor {
 			String mapName = null;			
 			if (owner instanceof FjCleanClassDeclaration
 				&& (CModifier.contains(self.getModifiers(), 
-						Constants.CCI_BINDING)
+						CaesarConstants.CCI_BINDING)
 					|| self.getSuperCollaborationInterface(
-						self.getCClass(), Constants.CCI_BINDING) != null))
+						self.getCClass(), CaesarConstants.CCI_BINDING) != null))
 			{
 				cleanOwner = (FjCleanClassDeclaration) owner;
 				mapName = CciConstants.toWrapperMapName(

@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: FieldInfo.java,v 1.2 2004-02-08 16:47:45 ostermann Exp $
+ * $Id: FieldInfo.java,v 1.3 2004-02-09 17:34:16 ostermann Exp $
  */
 
 package org.caesarj.classfile;
@@ -122,7 +122,7 @@ public class FieldInfo extends Member {
    * Returns the generic type of the this field
    */
   public String getGenericSignature() {
-    Attribute  attr = attributes.get(Constants.ATT_SIGNATURE);
+    Attribute  attr = attributes.get(ClassfileConstants2.ATT_SIGNATURE);
 
     return attr == null ? getSignature() : ((SignatureAttribute)attr).getSignature();
   }
@@ -138,7 +138,7 @@ public class FieldInfo extends Member {
    * Returns the value of the this field
    */
   public Object getConstantValue() {
-    Attribute		attr = attributes.get(Constants.ATT_CONSTANTVALUE);
+    Attribute		attr = attributes.get(ClassfileConstants2.ATT_CONSTANTVALUE);
 
     return attr == null ? null : ((ConstantValueAttribute)attr).getLiteral();
   }
@@ -150,7 +150,7 @@ public class FieldInfo extends Member {
     if (value != null) {
       attributes.add(new ConstantValueAttribute(value));
     } else {
-      attributes.remove(Constants.ATT_CONSTANTVALUE);
+      attributes.remove(ClassfileConstants2.ATT_CONSTANTVALUE);
     }
   }
 
@@ -158,7 +158,7 @@ public class FieldInfo extends Member {
    * Returns true if the field is deprecated
    */
   public boolean isDeprecated() {
-    return attributes.get(Constants.ATT_DEPRECATED) != null;
+    return attributes.get(ClassfileConstants2.ATT_DEPRECATED) != null;
   }
 
   /**
@@ -168,7 +168,7 @@ public class FieldInfo extends Member {
     if (deprecated) {
       attributes.add(new DeprecatedAttribute());
     } else {
-      attributes.remove(Constants.ATT_DEPRECATED);
+      attributes.remove(ClassfileConstants2.ATT_DEPRECATED);
     }
   }
 
@@ -176,7 +176,7 @@ public class FieldInfo extends Member {
    * Returns true if the field is synthetic
    */
   public boolean isSynthetic() {
-    return attributes.get(Constants.ATT_SYNTHETIC) != null;
+    return attributes.get(ClassfileConstants2.ATT_SYNTHETIC) != null;
   }
 
   /**
@@ -186,7 +186,7 @@ public class FieldInfo extends Member {
     if (synthetic) {
       attributes.add(new SyntheticAttribute());
     } else {
-      attributes.remove(Constants.ATT_SYNTHETIC);
+      attributes.remove(ClassfileConstants2.ATT_SYNTHETIC);
     }
   }
 

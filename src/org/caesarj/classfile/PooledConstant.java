@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: PooledConstant.java,v 1.1 2003-07-05 18:29:37 werner Exp $
+ * $Id: PooledConstant.java,v 1.2 2004-02-09 17:34:16 ostermann Exp $
  */
 
 package org.caesarj.classfile;
@@ -27,7 +27,7 @@ import java.io.IOException;
  * this is an abstraction to contain all the constant items
  * that can be created.
  */
-public abstract class PooledConstant implements Constants {
+public abstract class PooledConstant implements ClassfileConstants2 {
 
   // --------------------------------------------------------------------
   // CONSTRUCTORS

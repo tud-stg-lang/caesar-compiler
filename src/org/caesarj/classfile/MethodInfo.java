@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: MethodInfo.java,v 1.2 2004-02-08 16:47:45 ostermann Exp $
+ * $Id: MethodInfo.java,v 1.3 2004-02-09 17:34:16 ostermann Exp $
  */
 
 package org.caesarj.classfile;
@@ -136,7 +136,7 @@ public class MethodInfo extends Member {
    * Returns the generic signature of this method
    */
   public String getGenericSignature() {
-    Attribute  attr = attributes.get(Constants.ATT_SIGNATURE);
+    Attribute  attr = attributes.get(ClassfileConstants2.ATT_SIGNATURE);
 
     return attr == null ? getSignature() : ((SignatureAttribute)attr).getSignature();
   }
@@ -152,7 +152,7 @@ public class MethodInfo extends Member {
    * Returns the exceptions of this method
    */
   public String[] getExceptions() {
-    Attribute		attr = attributes.get(Constants.ATT_EXCEPTIONS);
+    Attribute		attr = attributes.get(ClassfileConstants2.ATT_EXCEPTIONS);
 
     return attr == null ? null : ((ExceptionsAttribute)attr).getExceptions();
   }
@@ -164,7 +164,7 @@ public class MethodInfo extends Member {
     if (exceptions != null) {
       attributes.add(new ExceptionsAttribute(exceptions));
     } else {
-      attributes.remove(Constants.ATT_EXCEPTIONS);
+      attributes.remove(ClassfileConstants2.ATT_EXCEPTIONS);
     }
   }
 
@@ -172,7 +172,7 @@ public class MethodInfo extends Member {
    * Returns true if the field is deprecated
    */
   public boolean isDeprecated() {
-    return attributes.get(Constants.ATT_DEPRECATED) != null;
+    return attributes.get(ClassfileConstants2.ATT_DEPRECATED) != null;
   }
 
   /**
@@ -182,7 +182,7 @@ public class MethodInfo extends Member {
     if (deprecated) {
       attributes.add(new DeprecatedAttribute());
     } else {
-      attributes.remove(Constants.ATT_DEPRECATED);
+      attributes.remove(ClassfileConstants2.ATT_DEPRECATED);
     }
   }
 
@@ -190,7 +190,7 @@ public class MethodInfo extends Member {
    * Returns true if the field is synthetic
    */
   public boolean isSynthetic() {
-    return attributes.get(Constants.ATT_SYNTHETIC) != null;
+    return attributes.get(ClassfileConstants2.ATT_SYNTHETIC) != null;
   }
 
   /**
@@ -200,7 +200,7 @@ public class MethodInfo extends Member {
     if (synthetic) {
       attributes.add(new SyntheticAttribute());
     } else {
-      attributes.remove(Constants.ATT_SYNTHETIC);
+      attributes.remove(ClassfileConstants2.ATT_SYNTHETIC);
     }
   }
 
@@ -208,7 +208,7 @@ public class MethodInfo extends Member {
    * Returns true if this method is the invariant
    */
   public boolean isInvariant() {
-    return attributes.get(Constants.ATT_INVARIANT) != null;
+    return attributes.get(ClassfileConstants2.ATT_INVARIANT) != null;
   }
 
   /**
@@ -218,7 +218,7 @@ public class MethodInfo extends Member {
     if (invariant) {
       attributes.add(new InvariantAttribute());
     } else {
-      attributes.remove(Constants.ATT_INVARIANT);
+      attributes.remove(ClassfileConstants2.ATT_INVARIANT);
     }
   }
 
@@ -226,7 +226,7 @@ public class MethodInfo extends Member {
    * Returns true if this method is a precondition
    */
   public boolean isPrecondition() {
-    return attributes.get(Constants.ATT_PRECONDITION) != null;
+    return attributes.get(ClassfileConstants2.ATT_PRECONDITION) != null;
   }
 
   /**
@@ -236,7 +236,7 @@ public class MethodInfo extends Member {
     if (precondition) {
       attributes.add(new PreconditionAttribute());
     } else {
-      attributes.remove(Constants.ATT_PRECONDITION);
+      attributes.remove(ClassfileConstants2.ATT_PRECONDITION);
     }
   }
 
@@ -246,7 +246,7 @@ public class MethodInfo extends Member {
    * @see #getOldValueStore()
    */
   public boolean isPostcondition() {
-    return attributes.get(Constants.ATT_POSTCONDITION) != null;
+    return attributes.get(ClassfileConstants2.ATT_POSTCONDITION) != null;
   }
 
   /**
@@ -254,7 +254,7 @@ public class MethodInfo extends Member {
    * @see #setPostcondition(String)
    */
   public String getOldValueStore() {
-    Attribute		attr = attributes.get(Constants.ATT_POSTCONDITION);
+    Attribute		attr = attributes.get(ClassfileConstants2.ATT_POSTCONDITION);
 
     return attr == null ? null : ((PostconditionAttribute)attr).getOldValueStore();
   }
@@ -278,7 +278,7 @@ public class MethodInfo extends Member {
    * there is no such method.
    */
   public MethodDescription getPreconditionMethod() {
-    Attribute   attr = attributes.get(Constants.ATT_CONSTRAINTS);
+    Attribute   attr = attributes.get(ClassfileConstants2.ATT_CONSTRAINTS);
 
     if (attr == null) {
       return null;
@@ -292,7 +292,7 @@ public class MethodInfo extends Member {
    * there is no such method.
    */
   public MethodDescription getPostconditionMethod() {
-    Attribute   attr = attributes.get(Constants.ATT_CONSTRAINTS);
+    Attribute   attr = attributes.get(ClassfileConstants2.ATT_CONSTRAINTS);
 
     if (attr == null) {
       return null;
@@ -315,7 +315,7 @@ public class MethodInfo extends Member {
    * Returns the code attribute associated with this method
    */
   public CodeInfo getCodeInfo() {
-    Attribute		attr = attributes.get(Constants.ATT_CODE);
+    Attribute		attr = attributes.get(ClassfileConstants2.ATT_CODE);
 
     return attr == null ? null : (CodeInfo)attr;
   }
@@ -328,7 +328,7 @@ public class MethodInfo extends Member {
       info.setParameterCount(getParameterCount());
       attributes.add(info);
     } else {
-      attributes.remove(Constants.ATT_CODE);
+      attributes.remove(ClassfileConstants2.ATT_CODE);
     }
   }
 

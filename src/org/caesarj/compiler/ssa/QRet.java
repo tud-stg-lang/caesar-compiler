@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: QRet.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: QRet.java,v 1.2 2004-02-09 17:33:54 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.classfile.LocalVarInstruction;
 
 /**
@@ -76,7 +76,7 @@ public class QRet extends QInst {
      * @param codeGen the code generator
      */
     public  void generateInstructions(CodeGenerator codeGen) {
-	codeGen.addInstruction(new LocalVarInstruction(Constants.opc_ret,
+	codeGen.addInstruction(new LocalVarInstruction(ClassfileConstants2.opc_ret,
 						       ((QVar)address.getOperand()).getRegister()));
     }
 

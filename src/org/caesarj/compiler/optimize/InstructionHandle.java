@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: InstructionHandle.java,v 1.1 2004-02-08 16:47:55 ostermann Exp $
+ * $Id: InstructionHandle.java,v 1.2 2004-02-09 17:33:55 ostermann Exp $
  */
 
 package org.caesarj.compiler.optimize;
@@ -25,6 +25,7 @@ import java.util.Vector;
 
 import org.caesarj.classfile.AbstractInstructionAccessor;
 import org.caesarj.classfile.AccessorContainer;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.classfile.HandlerInfo;
 import org.caesarj.classfile.Instruction;
 import org.caesarj.classfile.JumpInstruction;
@@ -37,7 +38,7 @@ import org.caesarj.util.InconsistencyException;
 /**
  *
  */
-public class InstructionHandle extends AbstractInstructionAccessor implements org.caesarj.classfile.Constants {
+public class InstructionHandle extends AbstractInstructionAccessor implements ClassfileConstants2 {
 
   // --------------------------------------------------------------------
   // CONSTRUCTORS

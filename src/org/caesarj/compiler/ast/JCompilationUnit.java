@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JCompilationUnit.java,v 1.2 2004-02-08 20:27:57 ostermann Exp $
+ * $Id: JCompilationUnit.java,v 1.3 2004-02-09 17:33:54 ostermann Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -315,6 +315,38 @@ public CCompilationUnit getExport()
   private Hashtable			allLoadedClasses = new Hashtable(); // $$$ DEFAULT VALUE IS OKAY ???
   private CCompilationUnit		export;
   private KjcEnvironment                environment;
+public void append(JTypeDeclaration decl) {
+	JTypeDeclaration[] newTypeDeclarations = new JTypeDeclaration[ typeDeclarations.length + 1 ];
+	for( int i = 0; i < typeDeclarations.length; i++ ) {
+		newTypeDeclarations[ i ] = typeDeclarations[ i ];
+	}
+	newTypeDeclarations[ typeDeclarations.length ] = decl;
+	typeDeclarations = newTypeDeclarations;
+}
+
+/**
+	 * Replaces the first parameter for the second in the compilation unit.
+	 * @param decl
+	 * @param newDecl
+	 */
+public void replace(JTypeDeclaration decl, JTypeDeclaration newDecl) {
+	for( int i = 0; i < typeDeclarations.length; i++ ) 
+	{
+		if (typeDeclarations[i] == decl)
+		{
+			typeDeclarations[i] = newDecl;
+			return;
+		}
+	}
+}
+
+public JTypeDeclaration[] getInners() {
+	return typeDeclarations;
+}
+
+public void setInners(JTypeDeclaration[] newInners) {
+	typeDeclarations = newInners;
+}
 
 
 }

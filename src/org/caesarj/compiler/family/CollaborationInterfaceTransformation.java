@@ -1,12 +1,11 @@
 package org.caesarj.compiler.family;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.CciInterfaceDeclaration;
 import org.caesarj.compiler.ast.CciWeaveletClassDeclaration;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
-import org.caesarj.compiler.ast.FjCompilationUnit;
 import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.FjVisitor;
 import org.caesarj.compiler.ast.JClassImport;
@@ -100,7 +99,7 @@ public class CollaborationInterfaceTransformation
 			importedClasses,
 			typeDeclarations);
 
-		JTypeDeclaration[] inners = ((FjCompilationUnit) self).getInners();
+		JTypeDeclaration[] inners = self.getInners();
 		for (int i = 0; i < inners.length; i++)
 		{
 			inners[i].generateInterface(
@@ -160,7 +159,7 @@ public class CollaborationInterfaceTransformation
 	{
 		if (self.getProviding() != null && lastProvidingClass == null)
 		{
-			self.setModifiers(self.getModifiers() | Constants.CCI_PROVIDING);
+			self.setModifiers(self.getModifiers() | ClassfileConstants2.CCI_PROVIDING);
 			modifiers = self.getModifiers();
 			//Transforms my inner classes into overriden classes.
 			self.transformInnerProvidingClasses();
@@ -175,8 +174,8 @@ public class CollaborationInterfaceTransformation
 		{
 			self.setModifiers(
 				self.getModifiers() 
-				| Constants.CCI_BINDING
-				| Constants.ACC_CROSSCUTTING);
+				| ClassfileConstants2.CCI_BINDING
+				| ClassfileConstants2.ACC_CROSSCUTTING);
 			modifiers = self.getModifiers();
 			
 			//Sets the right super type of the inner classes, 
@@ -232,7 +231,7 @@ public class CollaborationInterfaceTransformation
 			self.addAccessors();
 			self.setModifiers(
 				self.getModifiers() 
-				| Constants.ACC_CROSSCUTTING);
+				| ClassfileConstants2.ACC_CROSSCUTTING);
 			modifiers = self.getModifiers();
 		}
 		else
@@ -306,11 +305,11 @@ public class CollaborationInterfaceTransformation
 		JPhylum[] body,
 		JMethodDeclaration[] methods)
 	{
-		if (CModifier.contains(modifiers, Constants.CCI_COLLABORATION)
+		if (CModifier.contains(modifiers, ClassfileConstants2.CCI_COLLABORATION)
 			&& lastCollaborationInterface == null)
 		{
 			CciInterfaceDeclaration cciSelf = (CciInterfaceDeclaration) self;
-			if (! (owner.get() instanceof FjCompilationUnit))
+			if (! (owner.get() instanceof JCompilationUnit))
 			{
 				compiler.reportTrouble(
 					new PositionedError(
@@ -325,7 +324,7 @@ public class CollaborationInterfaceTransformation
 					FjCleanClassDeclaration classRepresentation 
 						= cciSelf.createCleanClassRepresentation();
 						
-					((FjCompilationUnit) owner.get()).replace(
+					((JCompilationUnit) owner.get()).replace(
 						self, classRepresentation);
 				}
 				catch(PositionedError e)

@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: SyntheticAttribute.java,v 1.2 2004-02-08 16:47:45 ostermann Exp $
+ * $Id: SyntheticAttribute.java,v 1.3 2004-02-09 17:34:16 ostermann Exp $
  */
 
 package org.caesarj.classfile;
@@ -69,7 +69,7 @@ public class SyntheticAttribute extends Attribute {
    * Returns the attribute's tag
    */
   /*package*/ protected int getTag() {
-    return Constants.ATT_SYNTHETIC;
+    return ClassfileConstants2.ATT_SYNTHETIC;
   }
 
   /**

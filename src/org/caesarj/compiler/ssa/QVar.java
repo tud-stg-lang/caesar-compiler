@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: QVar.java,v 1.1 2004-02-08 16:47:49 ostermann Exp $
+ * $Id: QVar.java,v 1.2 2004-02-09 17:33:54 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.classfile.LocalVarInstruction;
 import org.caesarj.util.InconsistencyException;
 
@@ -82,23 +82,23 @@ public class QVar extends QOperand {
 	int opcode;
 
 	switch (getType()) {
-	case Constants.TYP_REFERENCE:
-	    opcode = Constants.opc_aload;
+	case ClassfileConstants2.TYP_REFERENCE:
+	    opcode = ClassfileConstants2.opc_aload;
 	    break;
-	case Constants.TYP_DOUBLE:
-	    opcode = Constants.opc_dload;
+	case ClassfileConstants2.TYP_DOUBLE:
+	    opcode = ClassfileConstants2.opc_dload;
 	    break;
-	case Constants.TYP_FLOAT:
-	    opcode = Constants.opc_fload;
+	case ClassfileConstants2.TYP_FLOAT:
+	    opcode = ClassfileConstants2.opc_fload;
 	    break;
-	case Constants.TYP_INT:
-	    opcode = Constants.opc_iload;
+	case ClassfileConstants2.TYP_INT:
+	    opcode = ClassfileConstants2.opc_iload;
 	    break;
-	case Constants.TYP_LONG:
-	    opcode = Constants.opc_lload;
+	case ClassfileConstants2.TYP_LONG:
+	    opcode = ClassfileConstants2.opc_lload;
 	    break;
-	case Constants.TYP_ADDRESS:
-	    opcode = Constants.opc_aload;
+	case ClassfileConstants2.TYP_ADDRESS:
+	    opcode = ClassfileConstants2.opc_aload;
 	    break;
 	default:
 	    throw new InconsistencyException("unknows type : " + getType());
@@ -114,23 +114,23 @@ public class QVar extends QOperand {
 	int opcode;
 
 	switch (getType()) {
-	case Constants.TYP_REFERENCE:
-	    opcode = Constants.opc_astore;
+	case ClassfileConstants2.TYP_REFERENCE:
+	    opcode = ClassfileConstants2.opc_astore;
 	    break;
-	case Constants.TYP_DOUBLE:
-	    opcode = Constants.opc_dstore;
+	case ClassfileConstants2.TYP_DOUBLE:
+	    opcode = ClassfileConstants2.opc_dstore;
 	    break;
-	case Constants.TYP_FLOAT:
-	    opcode = Constants.opc_fstore;
+	case ClassfileConstants2.TYP_FLOAT:
+	    opcode = ClassfileConstants2.opc_fstore;
 	    break;
-	case Constants.TYP_INT:
-	    opcode = Constants.opc_istore;
+	case ClassfileConstants2.TYP_INT:
+	    opcode = ClassfileConstants2.opc_istore;
 	    break;
-	case Constants.TYP_LONG:
-	    opcode = Constants.opc_lstore;
+	case ClassfileConstants2.TYP_LONG:
+	    opcode = ClassfileConstants2.opc_lstore;
 	    break;
-	case Constants.TYP_ADDRESS:
-	    opcode = Constants.opc_astore;
+	case ClassfileConstants2.TYP_ADDRESS:
+	    opcode = ClassfileConstants2.opc_astore;
 	    break;
 	default:
 	    throw new InconsistencyException("unknows type : " + getType());

@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: QConstant.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: QConstant.java,v 1.2 2004-02-09 17:33:55 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.classfile.NoArgInstruction;
 import org.caesarj.classfile.PushLiteralInstruction;
 import org.caesarj.util.InconsistencyException;
@@ -39,7 +39,7 @@ public class QConstant extends QOperand {
      */
     public QConstant() {
 	this.nullConstant = true;
-	this.type = Constants.TYP_REFERENCE;
+	this.type = ClassfileConstants2.TYP_REFERENCE;
     }
 
     /**
@@ -54,7 +54,7 @@ public class QConstant extends QOperand {
 	    //Because PushLiteralInstruction return TYP_INT
 	    // for a String.
 	    //TO REMOVE if PushLiteralInstruction change.
-	    this.type = Constants.TYP_REFERENCE;
+	    this.type = ClassfileConstants2.TYP_REFERENCE;
 	} else {
 	    this.type = type;
 	}
@@ -139,7 +139,7 @@ public class QConstant extends QOperand {
      */
     public void generateInstructions(CodeGenerator codeGen) {
 	if (nullConstant) {
-	    codeGen.addInstruction(new NoArgInstruction(Constants.opc_aconst_null));
+	    codeGen.addInstruction(new NoArgInstruction(ClassfileConstants2.opc_aconst_null));
 	} else {
 	    if (value instanceof Integer) {
 		codeGen.addInstruction(new PushLiteralInstruction(((Integer)value).intValue()));

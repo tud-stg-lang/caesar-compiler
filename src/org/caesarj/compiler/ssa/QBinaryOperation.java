@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: QBinaryOperation.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: QBinaryOperation.java,v 1.2 2004-02-09 17:33:54 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.classfile.NoArgInstruction;
 
 /**
@@ -42,77 +42,77 @@ public class QBinaryOperation extends QExpression {
 	this.op1 = new QOperandBox(op1, this);
 	this.op2 = new QOperandBox(op2, this);
 	this.opcode = opcode;
-	if (opcode == Constants.opc_iinc) {
-	    this.opcode = Constants.opc_iadd;
+	if (opcode == ClassfileConstants2.opc_iinc) {
+	    this.opcode = ClassfileConstants2.opc_iadd;
 	}
 	this.exception = false;
 	switch(opcode) {
-	case Constants.opc_dcmpg:
-	case Constants.opc_dcmpl:
-	case Constants.opc_lcmp:
-	case Constants.opc_fcmpg:
-	case Constants.opc_fcmpl:
-	    this.type = Constants.TYP_INT;
+	case ClassfileConstants2.opc_dcmpg:
+	case ClassfileConstants2.opc_dcmpl:
+	case ClassfileConstants2.opc_lcmp:
+	case ClassfileConstants2.opc_fcmpg:
+	case ClassfileConstants2.opc_fcmpl:
+	    this.type = ClassfileConstants2.TYP_INT;
 	    break;
 
-	case Constants.opc_fadd:
-	case Constants.opc_fmul:
-	case Constants.opc_fsub:
-	    this.type = Constants.TYP_FLOAT;
+	case ClassfileConstants2.opc_fadd:
+	case ClassfileConstants2.opc_fmul:
+	case ClassfileConstants2.opc_fsub:
+	    this.type = ClassfileConstants2.TYP_FLOAT;
 	    break;
 
-	case Constants.opc_iadd:
-	case Constants.opc_imul:
-	case Constants.opc_isub:
-	case Constants.opc_ishl:
-	case Constants.opc_ishr:
-	case Constants.opc_iushr:
-	case Constants.opc_iand:
-	case Constants.opc_ior:
-	case Constants.opc_ixor:
-	    this.type = Constants.TYP_INT;
+	case ClassfileConstants2.opc_iadd:
+	case ClassfileConstants2.opc_imul:
+	case ClassfileConstants2.opc_isub:
+	case ClassfileConstants2.opc_ishl:
+	case ClassfileConstants2.opc_ishr:
+	case ClassfileConstants2.opc_iushr:
+	case ClassfileConstants2.opc_iand:
+	case ClassfileConstants2.opc_ior:
+	case ClassfileConstants2.opc_ixor:
+	    this.type = ClassfileConstants2.TYP_INT;
 	    break;
 
-	case Constants.opc_dadd:
-	case Constants.opc_dmul:
-	case Constants.opc_dsub:
-	    this.type = Constants.TYP_DOUBLE;
+	case ClassfileConstants2.opc_dadd:
+	case ClassfileConstants2.opc_dmul:
+	case ClassfileConstants2.opc_dsub:
+	    this.type = ClassfileConstants2.TYP_DOUBLE;
 	    break;
 
 
-	case Constants.opc_ladd:
-	case Constants.opc_land:
-	case Constants.opc_lmul:
-	case Constants.opc_lor:
-	case Constants.opc_lsub:
-	case Constants.opc_lxor:
-	case Constants.opc_lshl:
-	case Constants.opc_lshr:
-	case Constants.opc_lushr:
-	    this.type = Constants.TYP_LONG;
+	case ClassfileConstants2.opc_ladd:
+	case ClassfileConstants2.opc_land:
+	case ClassfileConstants2.opc_lmul:
+	case ClassfileConstants2.opc_lor:
+	case ClassfileConstants2.opc_lsub:
+	case ClassfileConstants2.opc_lxor:
+	case ClassfileConstants2.opc_lshl:
+	case ClassfileConstants2.opc_lshr:
+	case ClassfileConstants2.opc_lushr:
+	    this.type = ClassfileConstants2.TYP_LONG;
 	    break;
 
-	case Constants.opc_idiv:
-	case Constants.opc_irem:
-	    this.type = Constants.TYP_INT;
+	case ClassfileConstants2.opc_idiv:
+	case ClassfileConstants2.opc_irem:
+	    this.type = ClassfileConstants2.TYP_INT;
 	    this.exception = true;
 	    break;
 
-	case Constants.opc_fdiv:
-	case Constants.opc_frem:
-	    this.type = Constants.TYP_FLOAT;
+	case ClassfileConstants2.opc_fdiv:
+	case ClassfileConstants2.opc_frem:
+	    this.type = ClassfileConstants2.TYP_FLOAT;
 	    this.exception = true;
 	    break;
 
-	case Constants.opc_ddiv:
-	case Constants.opc_drem:
-	    this.type = Constants.TYP_DOUBLE;
+	case ClassfileConstants2.opc_ddiv:
+	case ClassfileConstants2.opc_drem:
+	    this.type = ClassfileConstants2.TYP_DOUBLE;
 	    this.exception = true;
 	    break;
 
-	case Constants.opc_ldiv:
-	case Constants.opc_lrem:
-	    this.type = Constants.TYP_LONG;
+	case ClassfileConstants2.opc_ldiv:
+	case ClassfileConstants2.opc_lrem:
+	    this.type = ClassfileConstants2.TYP_LONG;
 	    this.exception = true;
 	    break;
 	default:
@@ -135,7 +135,7 @@ public class QBinaryOperation extends QExpression {
      * Test the instruction is an integer addition
      */
     public boolean isIadd() {
-	return opcode == Constants.opc_iadd;
+	return opcode == ClassfileConstants2.opc_iadd;
     }
 
     /**

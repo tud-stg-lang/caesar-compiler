@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: SSAConstructorInfo.java,v 1.1 2004-02-08 16:47:49 ostermann Exp $
+ * $Id: SSAConstructorInfo.java,v 1.2 2004-02-09 17:33:54 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 
 /**
  * Class containing informations for a variables during SSA transformation
@@ -118,7 +118,7 @@ public class SSAConstructorInfo {
 	if (phis[bb.getIndex()] != null) return;
 	//the type is not used, the rigth type of all operands,
 	// will be defined when passing operands to SSA form.
-	QVar variable = new QVar(var, Constants.TYP_REFERENCE);
+	QVar variable = new QVar(var, ClassfileConstants2.TYP_REFERENCE);
 	phis[bb.getIndex()] = new QPhiCatch(variable);
     }
 
@@ -132,7 +132,7 @@ public class SSAConstructorInfo {
 	if (phis[bb.getIndex()] != null) return;
 	//the type is not used, the rigth type of all operands,
 	// will be defined when passing operands to SSA form.
-	QVar variable = new QVar(var, Constants.TYP_REFERENCE);
+	QVar variable = new QVar(var, ClassfileConstants2.TYP_REFERENCE);
 	phis[bb.getIndex()] = new QPhiReturn(variable, s);
     }
 
@@ -145,7 +145,7 @@ public class SSAConstructorInfo {
 	if (phis[bb.getIndex()] != null) return;
 	//the type is not used, the rigth type of all operands,
 	// will be defined when passing operands to SSA form.
-	QVar variable = new QVar(var, Constants.TYP_REFERENCE);
+	QVar variable = new QVar(var, ClassfileConstants2.TYP_REFERENCE);
 	phis[bb.getIndex()] = new QPhiJoin(variable, bb);
     }
 

@@ -22,7 +22,7 @@ public abstract class FjVisitor implements KjcVisitor {
 		public void set( Object o ) {
 			if (o == null
 				|| o instanceof FjClassDeclaration
-				|| o instanceof FjCompilationUnit
+				|| o instanceof JCompilationUnit
 				|| o instanceof CciInterfaceDeclaration)
 				reference = o;
 			else
@@ -41,14 +41,14 @@ public abstract class FjVisitor implements KjcVisitor {
 
 			if( reference instanceof FjClassDeclaration )
 				((FjClassDeclaration) reference).append( decl );
-			else if( reference instanceof FjCompilationUnit )
-				((FjCompilationUnit) reference).append( decl );
+			else if( reference instanceof JCompilationUnit )
+				((JCompilationUnit) reference).append( decl );
 		}
 		public String getQualifiedName() {
 
 			if( reference instanceof FjClassDeclaration )
 				return ((FjClassDeclaration) reference).getCClass().getQualifiedName() + "$";
-			else if( reference instanceof FjCompilationUnit )
+			else if( reference instanceof JCompilationUnit )
 				return new String();
 			else
 				return null;

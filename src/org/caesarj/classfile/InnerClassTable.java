@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: InnerClassTable.java,v 1.2 2003-08-28 16:12:05 ostermann Exp $
+ * $Id: InnerClassTable.java,v 1.3 2004-02-09 17:34:16 ostermann Exp $
  */
 
 package org.caesarj.classfile;
@@ -73,7 +73,7 @@ public class InnerClassTable extends Attribute {
    * Returns the attribute's tag
    */
   /*package*/ protected int getTag() {
-    return Constants.ATT_INNERCLASSES;
+    return ClassfileConstants2.ATT_INNERCLASSES;
   }
 
   /**

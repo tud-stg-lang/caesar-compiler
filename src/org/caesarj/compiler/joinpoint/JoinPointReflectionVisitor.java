@@ -3,7 +3,6 @@ package org.caesarj.compiler.joinpoint;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.caesarj.classfile.Constants;
 import org.caesarj.compiler.ast.AdviceDeclaration;
 import org.caesarj.compiler.ast.CaesarVisitor;
 import org.caesarj.compiler.ast.FjClassDeclaration;
@@ -39,7 +38,7 @@ import org.caesarj.util.TokenReference;
  */
 public class JoinPointReflectionVisitor
 	extends CaesarVisitor
-	implements CaesarConstants, Constants {
+	implements CaesarConstants  {
 
 	private boolean needsThisJoinPoint = false;
 	private boolean needsThisJoinPointStaticPart = false;

@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: QArrayLength.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: QArrayLength.java,v 1.2 2004-02-09 17:33:54 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.classfile.NoArgInstruction;
 
 /**
@@ -47,7 +47,7 @@ public class QArrayLength extends QCallReturn {
      * Return the type of the expression
      */
     public byte getType() {
-	return Constants.TYP_INT;
+	return ClassfileConstants2.TYP_INT;
     }
 
     // -------------------------------------------------------------------
@@ -77,7 +77,7 @@ public class QArrayLength extends QCallReturn {
      */
     public void generateInstructions(CodeGenerator codeGen) {
 	array.getOperand().generateInstructions(codeGen);
-	codeGen.addInstruction(new NoArgInstruction(Constants.opc_arraylength));
+	codeGen.addInstruction(new NoArgInstruction(ClassfileConstants2.opc_arraylength));
     }
 
     // -------------------------------------------------------------------

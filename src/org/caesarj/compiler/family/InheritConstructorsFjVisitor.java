@@ -13,10 +13,10 @@ import org.caesarj.util.UnpositionedError;
 public class InheritConstructorsFjVisitor
 	extends CollectClassesFjVisitor {
 
-	public InheritConstructorsFjVisitor( Vector compilationUnits ) {		
+	public InheritConstructorsFjVisitor( JCompilationUnit[] compilationUnits ) {		
 		super();
-		for( int i = 0; i < compilationUnits.size(); i++ ) {
-			((JCompilationUnit) compilationUnits.elementAt( i )).accept( this );
+		for( int i = 0; i < compilationUnits.length; i++ ) {
+			compilationUnits[i].accept( this );
 		}
 	}
 

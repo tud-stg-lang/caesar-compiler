@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: QMethodReturn.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: QMethodReturn.java,v 1.2 2004-02-09 17:33:54 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.classfile.InterfaceConstant;
 import org.caesarj.classfile.InvokeinterfaceInstruction;
 import org.caesarj.classfile.MethodRefConstant;
@@ -108,7 +108,7 @@ public class QMethodReturn extends  QCallReturn {
      */
     public String toString() {
 	String tmp = "";
-	if (opcode != Constants.opc_invokestatic) {
+	if (opcode != ClassfileConstants2.opc_invokestatic) {
 	    tmp += operands[0] + ".";
 	}
 	tmp += method.getName() + "(";
@@ -134,7 +134,7 @@ public class QMethodReturn extends  QCallReturn {
 	for (int i = 0; i < operands.length; ++i) {
 	    operands[i].getOperand().generateInstructions(codeGen);
 	}
-	if (opcode == Constants.opc_invokeinterface) {
+	if (opcode == ClassfileConstants2.opc_invokeinterface) {
 	    codeGen.addInstruction(new InvokeinterfaceInstruction((InterfaceConstant) method, interfaceNbArgs));
 	} else {
 	    codeGen.addInstruction(new MethodRefInstruction(opcode, (MethodRefConstant) method));

@@ -15,13 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: QuadrupleGenerator.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: QuadrupleGenerator.java,v 1.2 2004-02-09 17:33:54 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
 
 import org.caesarj.classfile.ClassRefInstruction;
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.classfile.FieldRefInstruction;
 import org.caesarj.classfile.IincInstruction;
 import org.caesarj.classfile.Instruction;
@@ -100,34 +100,34 @@ public class QuadrupleGenerator {
 		    bb.addInstruction(new QJump(bb.getDefaultNext()));
 		    break;
 		case -1://condition with one operand
-		    QOperand rightOp = new QConstant(new Integer(0), Constants.TYP_INT);
+		    QOperand rightOp = new QConstant(new Integer(0), ClassfileConstants2.TYP_INT);
 		    int newOpcode = 0;
 		    switch (opcode) {
-		    case Constants.opc_ifeq:
-			newOpcode = Constants.opc_if_icmpeq;
+		    case ClassfileConstants2.opc_ifeq:
+			newOpcode = ClassfileConstants2.opc_if_icmpeq;
 			break;
-		    case Constants.opc_ifne:
-			newOpcode = Constants.opc_if_icmpne;
+		    case ClassfileConstants2.opc_ifne:
+			newOpcode = ClassfileConstants2.opc_if_icmpne;
 			break;
-		    case Constants.opc_iflt:
-			newOpcode = Constants.opc_if_icmplt;
+		    case ClassfileConstants2.opc_iflt:
+			newOpcode = ClassfileConstants2.opc_if_icmplt;
 			break;
-		    case Constants.opc_ifge:
-			newOpcode = Constants.opc_if_icmpge;
+		    case ClassfileConstants2.opc_ifge:
+			newOpcode = ClassfileConstants2.opc_if_icmpge;
 			break;
-		    case Constants.opc_ifgt:
-			newOpcode = Constants.opc_if_icmpgt;
+		    case ClassfileConstants2.opc_ifgt:
+			newOpcode = ClassfileConstants2.opc_if_icmpgt;
 			break;
-		    case Constants.opc_ifle:
-			newOpcode = Constants.opc_if_icmple;
+		    case ClassfileConstants2.opc_ifle:
+			newOpcode = ClassfileConstants2.opc_if_icmple;
 			break;
-		    case Constants.opc_ifnull:
+		    case ClassfileConstants2.opc_ifnull:
 			rightOp = new QConstant(); //null
-			newOpcode = Constants.opc_if_acmpeq;
+			newOpcode = ClassfileConstants2.opc_if_acmpeq;
 			break;
-		    case Constants.opc_ifnonnull:
+		    case ClassfileConstants2.opc_ifnonnull:
 			rightOp = new QConstant(); //null
-			newOpcode = Constants.opc_if_acmpne;
+			newOpcode = ClassfileConstants2.opc_if_acmpne;
 			break;
 		    default:
 			throw new InconsistencyException("INVALID UNARY CONDITIONAL JUMP");
@@ -149,7 +149,7 @@ public class QuadrupleGenerator {
 		//putstatic or putfield
 		QOperand value = generateVar.pop();
 		QOperand ref = null;
-		if (opcode == Constants.opc_putfield) {
+		if (opcode == ClassfileConstants2.opc_putfield) {
 		    ref = generateVar.pop();
 		}
 		bb.addInstruction(new QPutField(((FieldRefInstruction)
@@ -174,50 +174,50 @@ public class QuadrupleGenerator {
 						      ops, opcode));
 	    } else if (inst instanceof NoArgInstruction) {
 		switch(opcode) {
-		case Constants.opc_dastore:
-		case Constants.opc_lastore:
-		case Constants.opc_aastore:
-		case Constants.opc_bastore:
-		case Constants.opc_castore:
-		case Constants.opc_fastore:
-		case Constants.opc_iastore:
-		case Constants.opc_sastore:
+		case ClassfileConstants2.opc_dastore:
+		case ClassfileConstants2.opc_lastore:
+		case ClassfileConstants2.opc_aastore:
+		case ClassfileConstants2.opc_bastore:
+		case ClassfileConstants2.opc_castore:
+		case ClassfileConstants2.opc_fastore:
+		case ClassfileConstants2.opc_iastore:
+		case ClassfileConstants2.opc_sastore:
 		    QOperand value = generateVar.pop();
 		    QOperand index = generateVar.pop();
 		    QOperand array = generateVar.pop();
 		    bb.addInstruction(new QPutArray(array, index, value, opcode));
 		    break;
 
-		case Constants.opc_return:
+		case ClassfileConstants2.opc_return:
 		    bb.addInstruction(new QReturn());
 		    break;
 
-		case Constants.opc_dreturn:
-		case Constants.opc_lreturn:
-		case Constants.opc_ireturn:
-		case Constants.opc_areturn:
-		case Constants.opc_freturn:
+		case ClassfileConstants2.opc_dreturn:
+		case ClassfileConstants2.opc_lreturn:
+		case ClassfileConstants2.opc_ireturn:
+		case ClassfileConstants2.opc_areturn:
+		case ClassfileConstants2.opc_freturn:
 		    bb.addInstruction(new QReturn(generateVar.pop(), opcode));
 		    break;
 
-		case Constants.opc_athrow:
+		case ClassfileConstants2.opc_athrow:
 		    bb.addInstruction(new QThrow(generateVar.pop()));
 		    break;
 
-		case Constants.opc_monitorenter:
-		case Constants.opc_monitorexit:
+		case ClassfileConstants2.opc_monitorenter:
+		case ClassfileConstants2.opc_monitorexit:
 		    bb.addInstruction(new QMonitor(generateVar.pop(), opcode));
 		    break;
 
-		case Constants.opc_pop:
+		case ClassfileConstants2.opc_pop:
 		    generateVar.pop();
 		    break;
 
-		case Constants.opc_pop2:
+		case ClassfileConstants2.opc_pop2:
 		    generateVar.pop2();
 		    break;
 
-		case Constants.opc_nop:
+		case ClassfileConstants2.opc_nop:
 		    /* Nothing to generate by definition */
 		    break;
 		}
@@ -241,7 +241,7 @@ public class QuadrupleGenerator {
 	    } else if (inst instanceof IincInstruction) {
 		IincInstruction iinc = (IincInstruction) inst;
 		QVar var = generateVar.getVar(iinc.getVariable(),
-					      Constants.TYP_INT);
+					      ClassfileConstants2.TYP_INT);
 		//verify that the variable is not in the stack
 		verifyVarNotInStack(var, bb);
 
@@ -249,13 +249,13 @@ public class QuadrupleGenerator {
 		  new QAssignment(var,
 		      new QBinaryOperation(var,
 			    new QConstant(new Integer(iinc.getIncrement()),
-					  Constants.TYP_INT),
+					  ClassfileConstants2.TYP_INT),
 			    opcode)));
 
 	    } else if (inst instanceof ClassRefInstruction) {//checkcast
 		ClassRefInstruction cri = (ClassRefInstruction) inst;
 		QOperand obj = generateVar.pop();
-		bb.addInstruction(new QAssignment(generateVar.push(Constants.TYP_REFERENCE),
+		bb.addInstruction(new QAssignment(generateVar.push(ClassfileConstants2.TYP_REFERENCE),
 					      new QCheckCast(cri.getClassConstant(), obj)));
 	    } else {
 		throw new InconsistencyException("Instruction inconnue " +
@@ -272,90 +272,90 @@ public class QuadrupleGenerator {
 						    lvi.getOperandType()));
 	    } else if (inst instanceof NoArgInstruction) {
 		switch (opcode) {
-		case Constants.opc_freturn://should not be here
+		case ClassfileConstants2.opc_freturn://should not be here
 		    //it's maybe a bug in NoArgInstruction.
 		    bb.addInstruction(new QReturn(generateVar.pop(), opcode));
 		    break;
 
 
-		case Constants.opc_dcmpg:
-		case Constants.opc_dcmpl:
-		case Constants.opc_lcmp:
-		case Constants.opc_fcmpg:
-		case Constants.opc_fcmpl:
-		case Constants.opc_fadd:
-		case Constants.opc_fmul:
-		case Constants.opc_fsub:
-		case Constants.opc_iadd:
-		case Constants.opc_imul:
-		case Constants.opc_isub:
-		case Constants.opc_ishl:
-		case Constants.opc_ishr:
-		case Constants.opc_iushr:
-		case Constants.opc_iand:
-		case Constants.opc_ior:
-		case Constants.opc_ixor:
-		case Constants.opc_dadd:
-		case Constants.opc_dmul:
-		case Constants.opc_dsub:
-		case Constants.opc_ladd:
-		case Constants.opc_land:
-		case Constants.opc_lmul:
-		case Constants.opc_lor:
-		case Constants.opc_lsub:
-		case Constants.opc_lxor:
-		case Constants.opc_lshl:
-		case Constants.opc_lshr:
-		case Constants.opc_lushr:
-		case Constants.opc_idiv:
-		case Constants.opc_irem:
-		case Constants.opc_fdiv:
-		case Constants.opc_frem:
-		case Constants.opc_ddiv:
-		case Constants.opc_drem:
-		case Constants.opc_ldiv:
-		case Constants.opc_lrem:
+		case ClassfileConstants2.opc_dcmpg:
+		case ClassfileConstants2.opc_dcmpl:
+		case ClassfileConstants2.opc_lcmp:
+		case ClassfileConstants2.opc_fcmpg:
+		case ClassfileConstants2.opc_fcmpl:
+		case ClassfileConstants2.opc_fadd:
+		case ClassfileConstants2.opc_fmul:
+		case ClassfileConstants2.opc_fsub:
+		case ClassfileConstants2.opc_iadd:
+		case ClassfileConstants2.opc_imul:
+		case ClassfileConstants2.opc_isub:
+		case ClassfileConstants2.opc_ishl:
+		case ClassfileConstants2.opc_ishr:
+		case ClassfileConstants2.opc_iushr:
+		case ClassfileConstants2.opc_iand:
+		case ClassfileConstants2.opc_ior:
+		case ClassfileConstants2.opc_ixor:
+		case ClassfileConstants2.opc_dadd:
+		case ClassfileConstants2.opc_dmul:
+		case ClassfileConstants2.opc_dsub:
+		case ClassfileConstants2.opc_ladd:
+		case ClassfileConstants2.opc_land:
+		case ClassfileConstants2.opc_lmul:
+		case ClassfileConstants2.opc_lor:
+		case ClassfileConstants2.opc_lsub:
+		case ClassfileConstants2.opc_lxor:
+		case ClassfileConstants2.opc_lshl:
+		case ClassfileConstants2.opc_lshr:
+		case ClassfileConstants2.opc_lushr:
+		case ClassfileConstants2.opc_idiv:
+		case ClassfileConstants2.opc_irem:
+		case ClassfileConstants2.opc_fdiv:
+		case ClassfileConstants2.opc_frem:
+		case ClassfileConstants2.opc_ddiv:
+		case ClassfileConstants2.opc_drem:
+		case ClassfileConstants2.opc_ldiv:
+		case ClassfileConstants2.opc_lrem:
 		    QOperand op2 = generateVar.pop();
 		    QOperand op1 = generateVar.pop();
 		    expr = new QBinaryOperation(op1, op2, opcode);
 		    break;
-		case Constants.opc_d2i:
-		case Constants.opc_l2i:
-		case Constants.opc_f2i:
-		case Constants.opc_i2b:
-		case Constants.opc_i2c:
-		case Constants.opc_i2s:
-		case Constants.opc_ineg:
-		case Constants.opc_d2f:
-		case Constants.opc_l2f:
-		case Constants.opc_i2f:
-		case Constants.opc_fneg:
-		case Constants.opc_d2l:
-		case Constants.opc_f2l:
-		case Constants.opc_i2l:
-		case Constants.opc_lneg:
-		case Constants.opc_l2d:
-		case Constants.opc_f2d:
-		case Constants.opc_i2d:
-		case Constants.opc_dneg:
+		case ClassfileConstants2.opc_d2i:
+		case ClassfileConstants2.opc_l2i:
+		case ClassfileConstants2.opc_f2i:
+		case ClassfileConstants2.opc_i2b:
+		case ClassfileConstants2.opc_i2c:
+		case ClassfileConstants2.opc_i2s:
+		case ClassfileConstants2.opc_ineg:
+		case ClassfileConstants2.opc_d2f:
+		case ClassfileConstants2.opc_l2f:
+		case ClassfileConstants2.opc_i2f:
+		case ClassfileConstants2.opc_fneg:
+		case ClassfileConstants2.opc_d2l:
+		case ClassfileConstants2.opc_f2l:
+		case ClassfileConstants2.opc_i2l:
+		case ClassfileConstants2.opc_lneg:
+		case ClassfileConstants2.opc_l2d:
+		case ClassfileConstants2.opc_f2d:
+		case ClassfileConstants2.opc_i2d:
+		case ClassfileConstants2.opc_dneg:
 		    QOperand op = generateVar.pop();
 		    expr = new QUnaryOperation(op, opcode);
 		    break;
 
-		case Constants.opc_aconst_null:
+		case ClassfileConstants2.opc_aconst_null:
 		    //put the constant on the stack.
 		    generateVar.push(new QConstant());
 			//expr = new QSimpleExpression(new QConstant());
 		    break;
 
-		case Constants.opc_aaload:
-		case Constants.opc_baload:
-		case Constants.opc_caload:
-		case Constants.opc_faload:
-		case Constants.opc_iaload:
-		case Constants.opc_saload:
-		case Constants.opc_daload:
-		case Constants.opc_laload:
+		case ClassfileConstants2.opc_aaload:
+		case ClassfileConstants2.opc_baload:
+		case ClassfileConstants2.opc_caload:
+		case ClassfileConstants2.opc_faload:
+		case ClassfileConstants2.opc_iaload:
+		case ClassfileConstants2.opc_saload:
+		case ClassfileConstants2.opc_daload:
+		case ClassfileConstants2.opc_laload:
 		    QOperand index = generateVar.pop();
 		    QOperand array = generateVar.pop();
 		    expr = new QGetArray(array, index,
@@ -363,36 +363,36 @@ public class QuadrupleGenerator {
 				   opcode);
 		    break;
 
-		case Constants.opc_arraylength:
+		case ClassfileConstants2.opc_arraylength:
 		    QOperand arr = generateVar.pop();
 		    expr = new QArrayLength(arr);
 		    break;
 
-		case Constants.opc_dup:
+		case ClassfileConstants2.opc_dup:
 		    generateVar.dup();
 		    break;
 
-		case Constants.opc_dup_x1:
+		case ClassfileConstants2.opc_dup_x1:
 		    generateVar.dup_x1();
 		    break;
 
-		case Constants.opc_dup_x2:
+		case ClassfileConstants2.opc_dup_x2:
 		    generateVar.dup_x2();
 		    break;
 
-		case Constants.opc_dup2:
+		case ClassfileConstants2.opc_dup2:
 		    generateVar.dup2();
 		    break;
 
-		case Constants.opc_dup2_x1:
+		case ClassfileConstants2.opc_dup2_x1:
 		    generateVar.dup2_x1();
 		    break;
 
-		case Constants.opc_dup2_x2:
+		case ClassfileConstants2.opc_dup2_x2:
 		    generateVar.dup2_x2();
 		    break;
 
-		case Constants.opc_swap:
+		case ClassfileConstants2.opc_swap:
 		    generateVar.swap();
 		    break;
 
@@ -427,7 +427,7 @@ public class QuadrupleGenerator {
 	    } else if (inst instanceof FieldRefInstruction) {
 		//getstatic or getfield
 		QOperand ref = null;
-		if (opcode == Constants.opc_getfield) {
+		if (opcode == ClassfileConstants2.opc_getfield) {
 		    ref = generateVar.pop();
 		}
 		FieldRefInstruction fri = (FieldRefInstruction) inst;
@@ -438,14 +438,14 @@ public class QuadrupleGenerator {
 		//instanceof, new or anewarray
 		ClassRefInstruction cr = (ClassRefInstruction) inst;
 		switch (opcode) {
-		case Constants.opc_instanceof:
+		case ClassfileConstants2.opc_instanceof:
 		    expr = new QInstanceOf(generateVar.pop(),
 					   cr.getClassConstant());
 		    break;
-		case Constants.opc_new:
+		case ClassfileConstants2.opc_new:
 		    expr = new QNew(cr.getClassConstant());
 		    break;
-		case Constants.opc_anewarray:
+		case ClassfileConstants2.opc_anewarray:
 		    expr = new QANewArray(cr.getClassConstant(),
 					  generateVar.pop());
 		    break;
@@ -562,7 +562,7 @@ public class QuadrupleGenerator {
      * @param bb the catch block.
      */
     public void addInitException(BasicBlock bb) {
-	bb.addInstruction(new QDeclareInitialised(generateVar.push(Constants.TYP_REFERENCE),
+	bb.addInstruction(new QDeclareInitialised(generateVar.push(ClassfileConstants2.TYP_REFERENCE),
 						  true));
     }
 
@@ -580,7 +580,7 @@ public class QuadrupleGenerator {
 						 " must be a store");
 	}
 	int register = ((LocalVarInstruction) inst).getIndex();
-	bb.addInstruction(new QDeclareInitialised(generateVar.getVar(register, Constants.TYP_REFERENCE), true));
+	bb.addInstruction(new QDeclareInitialised(generateVar.getVar(register, ClassfileConstants2.TYP_REFERENCE), true));
     }
 
     /**
@@ -589,7 +589,7 @@ public class QuadrupleGenerator {
      * @param bb the first block of the subroutine.
      */
     public void addInitSubroutine(BasicBlock bb) {
-	bb.addInstruction(new QDeclareInitialised(generateVar.push(Constants.TYP_ADDRESS),
+	bb.addInstruction(new QDeclareInitialised(generateVar.push(ClassfileConstants2.TYP_ADDRESS),
 						  true));
     }
 
@@ -607,7 +607,7 @@ public class QuadrupleGenerator {
 						 " must be a store");
 	}
 	int register = ((LocalVarInstruction) inst).getIndex();
-	bb.addInstruction(new QDeclareInitialised(generateVar.getVar(register, Constants.TYP_ADDRESS), true));
+	bb.addInstruction(new QDeclareInitialised(generateVar.getVar(register, ClassfileConstants2.TYP_ADDRESS), true));
     }
 
 
@@ -628,7 +628,7 @@ public class QuadrupleGenerator {
      */
     public int nbParam(MethodRefInstruction method) {
 	int nb = nbParam(method.getMethodRefConstant().getType());
-	if (method.getOpcode() != Constants.opc_invokestatic) {
+	if (method.getOpcode() != ClassfileConstants2.opc_invokestatic) {
 	    nb += 1; //the reference of the object
 	}
 	return nb;

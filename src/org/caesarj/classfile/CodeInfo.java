@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CodeInfo.java,v 1.2 2004-02-08 16:47:45 ostermann Exp $
+ * $Id: CodeInfo.java,v 1.3 2004-02-09 17:34:16 ostermann Exp $
  */
 
 package org.caesarj.classfile;
@@ -160,7 +160,7 @@ public class CodeInfo extends Attribute {
    * Returns the attribute's tag
    */
   /*package*/ protected int getTag() {
-    return Constants.ATT_CODE;
+    return ClassfileConstants2.ATT_CODE;
   }
 
   /**
@@ -194,7 +194,7 @@ public class CodeInfo extends Attribute {
    * Returns line number information
    */
   public LineNumberInfo[] getLineNumbers() {
-    Attribute		attr = attributes.get(Constants.ATT_LINENUMBERTABLE);
+    Attribute		attr = attributes.get(ClassfileConstants2.ATT_LINENUMBERTABLE);
 
     return attr == null ? null : ((LineNumberTable)attr).getLineNumbers();
   }
@@ -203,7 +203,7 @@ public class CodeInfo extends Attribute {
    * Returns local variable information
    */
   public LocalVariableInfo[] getLocalVariables() {
-    Attribute		attr = attributes.get(Constants.ATT_LOCALVARIABLETABLE);
+    Attribute		attr = attributes.get(ClassfileConstants2.ATT_LOCALVARIABLETABLE);
 
     return attr == null ? null : ((LocalVariableTable)attr).getLocalVariables();
   }
@@ -316,7 +316,7 @@ public class CodeInfo extends Attribute {
       throw new ClassFileFormatException("paramCnt not set");
     }
 
-    if (codeLength > Constants.MAX_CODE_PER_METHOD) {
+    if (codeLength > ClassfileConstants2.MAX_CODE_PER_METHOD) {
       throw new InstructionOverflowException("Method exceeds maxium of allowed instructions");
     }
     // JVMS 4.10  Limitations of the Java Virtual Machine

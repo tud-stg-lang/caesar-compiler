@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: SSAConstructor.java,v 1.1 2004-02-08 16:47:49 ostermann Exp $
+ * $Id: SSAConstructor.java,v 1.2 2004-02-09 17:33:54 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 /**
  * Transform all the variables of a control flow graph of a method
  * in SSA form.
@@ -527,11 +527,11 @@ public class SSAConstructor {
 		QPhi phi = varInfo.getPhiAtBlock(bb);
 		if (phi != null) {
 		    SSAVar var = ((QSSAVar) phi.getTarget()).getSSAVar();
-		    if (var.getType() == Constants.TYP_REFERENCE) {
+		    if (var.getType() == ClassfileConstants2.TYP_REFERENCE) {
 			QOperandBox[] ops = phi.getUses();
 			for (int j = 0; j < ops.length; ++j) {
 			    byte type = ops[j].getOperand().getType();
-			    if (type != Constants.TYP_REFERENCE) {
+			    if (type != ClassfileConstants2.TYP_REFERENCE) {
 				var.setType(type);
 				changed = true;
 				continue bb;

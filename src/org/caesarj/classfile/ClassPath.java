@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: ClassPath.java,v 1.2 2003-10-29 12:29:24 kloppenburg Exp $
+ * $Id: ClassPath.java,v 1.3 2004-02-09 17:34:16 ostermann Exp $
  */
 
 package org.caesarj.classfile;
@@ -445,14 +445,14 @@ class Data {
   }
 
   private static byte[] getByteArray() {
-    if (!Constants.ENV_USE_CACHE || stack.empty()) {
+    if (!ClassfileConstants2.ENV_USE_CACHE || stack.empty()) {
       return new byte[10000];
     }
     return (byte[])stack.pop();
   }
 
   private static void release(byte[] arr) {
-    if (Constants.ENV_USE_CACHE) {
+    if (ClassfileConstants2.ENV_USE_CACHE) {
       stack.push(arr);
     }
   }

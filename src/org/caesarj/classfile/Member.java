@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Member.java,v 1.1 2003-07-05 18:29:37 werner Exp $
+ * $Id: Member.java,v 1.2 2004-02-09 17:34:16 ostermann Exp $
  */
 
 package org.caesarj.classfile;
@@ -26,7 +26,7 @@ package org.caesarj.classfile;
  * Root class for class members (fields, methods, inner classes and interfaces)
  *
  */
-public abstract class Member implements Constants {
+public abstract class Member implements ClassfileConstants2 {
 
   // --------------------------------------------------------------------
   // CONSTRUCTORS

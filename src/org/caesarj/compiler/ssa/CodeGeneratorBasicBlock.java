@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CodeGeneratorBasicBlock.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: CodeGeneratorBasicBlock.java,v 1.2 2004-02-09 17:33:54 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
@@ -23,7 +23,7 @@ package org.caesarj.compiler.ssa;
 import java.util.BitSet;
 import java.util.Stack;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.classfile.IincInstruction;
 import org.caesarj.classfile.Instruction;
 import org.caesarj.classfile.LocalVarInstruction;
@@ -108,7 +108,7 @@ public class CodeGeneratorBasicBlock extends CodeGenerator {
 
 	// Because getPoppedFromStack is wrong for the jsr instruction
 	// in kopi
-	if (inst.getOpcode() == Constants.opc_jsr)
+	if (inst.getOpcode() == ClassfileConstants2.opc_jsr)
 	    nbPopped = 0;
 	// End
 
@@ -134,18 +134,18 @@ public class CodeGeneratorBasicBlock extends CodeGenerator {
 	while (currentInst.hasNext()) {
 	    currentInst = currentInst.getNext();
 	    Instruction inst = currentInst.inst;
-	    if (inst.getOpcode() != Constants.opc_nop) {
+	    if (inst.getOpcode() != ClassfileConstants2.opc_nop) {
 		if (currentInst.dead && currentInst.isStore()) {
 		    //store (dead) --> pop
 		    if (currentInst.stackTop.getSize() == 2) {
-			codeGen.addInstruction(new NoArgInstruction(Constants.opc_pop2));
+			codeGen.addInstruction(new NoArgInstruction(ClassfileConstants2.opc_pop2));
 		    } else {
-			codeGen.addInstruction(new NoArgInstruction(Constants.opc_pop));
+			codeGen.addInstruction(new NoArgInstruction(ClassfileConstants2.opc_pop));
 		    }
 		    if (ControlFlowGraph.DEBUG) {
 			System.out.println("Code Generator : store (dead)");
 		    }
-		} else if (currentInst.inst.getOpcode() == Constants.opc_dup &&
+		} else if (currentInst.inst.getOpcode() == ClassfileConstants2.opc_dup &&
 			   currentInst.hasNext() &&
 			   currentInst.getNext().dead &&
 			   currentInst.getNext().isStore()) {
@@ -231,9 +231,9 @@ public class CodeGeneratorBasicBlock extends CodeGenerator {
 		    Instruction dup;
 		    int size = use.stackTop.getSize();
 		    if (size == 1) {
-			dup = new NoArgInstruction(Constants.opc_dup);
+			dup = new NoArgInstruction(ClassfileConstants2.opc_dup);
 		    } else {
-			dup = new NoArgInstruction(Constants.opc_dup2);
+			dup = new NoArgInstruction(ClassfileConstants2.opc_dup2);
 		    }
 		    //in fact, I replace the use instruction by a dup,
 		    // and I insert a new instruction ('use instruction')
@@ -245,7 +245,7 @@ public class CodeGeneratorBasicBlock extends CodeGenerator {
 		    use.inst = dup;
 
 		    // reuse is now a nop instruction
-		    reuse.inst = new NoArgInstruction(Constants.opc_nop);
+		    reuse.inst = new NoArgInstruction(ClassfileConstants2.opc_nop);
 
 		    //modify the stack height between the two instructions
 		    for (ins = newInst; ins != reuse; ins = ins.getNext()) {
@@ -402,8 +402,8 @@ public class CodeGeneratorBasicBlock extends CodeGenerator {
 	 * Test if the instruction is a dup
 	 */
 	public boolean isDup() {
-	    return inst.getOpcode() == Constants.opc_dup ||
-		inst.getOpcode() == Constants.opc_dup2;
+	    return inst.getOpcode() == ClassfileConstants2.opc_dup ||
+		inst.getOpcode() == ClassfileConstants2.opc_dup2;
 	}
 
 	/**
@@ -426,7 +426,7 @@ public class CodeGeneratorBasicBlock extends CodeGenerator {
 	 * Test if the instruction is a ret instruction
 	 */
 	public boolean isRet() {
-	    return inst.getOpcode() == Constants.opc_ret;
+	    return inst.getOpcode() == ClassfileConstants2.opc_ret;
 	}
 
 	/**

@@ -1,7 +1,8 @@
 package org.caesarj.compiler.ast;
 
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
+
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.CciConstants;
 import org.caesarj.compiler.constants.FjConstants;
@@ -366,7 +367,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 	public FjCleanMethodDeclaration getAbstractFactoryMethod() {
 		return new FjCleanMethodDeclaration(
 			getTokenReference(),
-			Constants.ACC_PUBLIC,
+			ClassfileConstants2.ACC_PUBLIC,
 			typeVariables,
 			new CClassNameType("java/lang/Object"),
 			FjConstants.factoryMethodName(FjConstants.toIfcName(ident)),
@@ -514,7 +515,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 		FjCleanMethodDeclaration m =
 			new FjCleanMethodDeclaration(
 				getTokenReference(),
-				Constants.ACC_PUBLIC,
+		ClassfileConstants2.ACC_PUBLIC,
 				typeVariables,
 				new CClassNameType(org.caesarj.compiler.constants.Constants.JAV_OBJECT),
 				FjConstants.factoryMethodName(FjConstants.toIfcName(ident)),
@@ -600,7 +601,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 	{
 		return new FjCleanMethodDeclaration(
 			getTokenReference(),
-			Constants.ACC_PUBLIC,
+		ClassfileConstants2.ACC_PUBLIC,
 			typeVariables,
 			new CClassNameType(JAV_OBJECT),
 			CciConstants.toWrapperMethodCreationName(

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Vector;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.CciConstants;
@@ -663,7 +663,7 @@ public class FjCleanClassDeclaration
 			FjConstructorDeclaration noArgsConstructor =
 				new FjConstructorDeclaration(
 					getTokenReference(),
-					Constants.ACC_PUBLIC,
+					ClassfileConstants2.ACC_PUBLIC,
 					ident,
 					JFormalParameter.EMPTY,
 					CReferenceType.EMPTY,

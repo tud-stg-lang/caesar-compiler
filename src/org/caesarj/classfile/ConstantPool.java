@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: ConstantPool.java,v 1.1 2003-07-05 18:29:37 werner Exp $
+ * $Id: ConstantPool.java,v 1.2 2004-02-09 17:34:16 ostermann Exp $
  */
 
 package org.caesarj.classfile;
@@ -31,7 +31,7 @@ import org.caesarj.util.InconsistencyException;
  * The constant pool, in this object are stored all the constant of
  * the classfile
  */
-public class ConstantPool implements Constants {
+public class ConstantPool implements ClassfileConstants2 {
 
   // --------------------------------------------------------------------
   // CONSTRUCTORS
@@ -231,7 +231,7 @@ public class ConstantPool implements Constants {
 // optimization
 class PooledArray {
   static PooledConstant[] getPooledArray() {
-    if (!Constants.ENV_USE_CACHE || stack.empty()) {
+    if (!ClassfileConstants2.ENV_USE_CACHE || stack.empty()) {
       return new PooledConstant[ConstantPool.MAX_ENTRY];
     } else {
       return (PooledConstant[])stack.pop();
@@ -239,7 +239,7 @@ class PooledArray {
   }
 
   static void release(PooledConstant[] arr) {
-    if (arr != null && Constants.ENV_USE_CACHE) {
+    if (arr != null && ClassfileConstants2.ENV_USE_CACHE) {
       stack.push(arr);
     }
   }
@@ -253,7 +253,7 @@ class PooledArray {
 // optimization
 class Hashtables {
   static Hashtable getHashtable() {
-    if (!Constants.ENV_USE_CACHE || stack.empty()) {
+    if (!ClassfileConstants2.ENV_USE_CACHE || stack.empty()) {
       return new Hashtable(ConstantPool.MAX_ENTRY / 4);
     } else {
       return (Hashtable)stack.pop();
@@ -261,7 +261,7 @@ class Hashtables {
   }
 
   static void release(Hashtable arr) {
-    if (arr != null && Constants.ENV_USE_CACHE) {
+    if (arr != null && ClassfileConstants2.ENV_USE_CACHE) {
       arr.clear();
       stack.push(arr);
     }

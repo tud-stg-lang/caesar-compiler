@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: InnerClassInfo.java,v 1.3 2004-02-08 16:47:45 ostermann Exp $
+ * $Id: InnerClassInfo.java,v 1.4 2004-02-09 17:34:16 ostermann Exp $
  */
 
 package org.caesarj.classfile;
@@ -31,7 +31,7 @@ import java.io.IOException;
  * or interfaces which are not package members. It contains an array of
  * records, one for each encoded name.
  */
-public class InnerClassInfo implements Constants {
+public class InnerClassInfo implements ClassfileConstants2 {
 
   // --------------------------------------------------------------------
   // CONSTRUCTORS

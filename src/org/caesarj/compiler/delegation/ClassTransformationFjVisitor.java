@@ -5,7 +5,7 @@ import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassIfcImplDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassInterfaceDeclaration;
-import org.caesarj.compiler.ast.FjCompilationUnit;
+
 import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.FjVisitor;
 import org.caesarj.compiler.ast.JClassImport;
@@ -62,7 +62,7 @@ public class ClassTransformationFjVisitor extends FjVisitor
 			importedClasses,
 			typeDeclarations);
 
-		JTypeDeclaration[] inners = ((FjCompilationUnit) self).getInners();
+		JTypeDeclaration[] inners = self.getInners();
 		for (int i = 0; i < inners.length; i++)
 		{
 			inners[i].generateInterface(

@@ -15,14 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: QNewInitialized.java,v 1.1 2004-02-08 16:47:49 ostermann Exp $
+ * $Id: QNewInitialized.java,v 1.2 2004-02-09 17:33:55 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
 
 import org.caesarj.classfile.ClassConstant;
 import org.caesarj.classfile.ClassRefInstruction;
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.classfile.MethodRefConstant;
 import org.caesarj.classfile.MethodRefInstruction;
 import org.caesarj.classfile.NoArgInstruction;
@@ -70,7 +70,7 @@ public class QNewInitialized extends QCallReturn {
      * Return the type of the expression
      */
     public byte getType() {
-	return Constants.TYP_REFERENCE;
+	return ClassfileConstants2.TYP_REFERENCE;
     }
 
     // -------------------------------------------------------------------
@@ -114,13 +114,13 @@ public class QNewInitialized extends QCallReturn {
 	// ...
 	// paramn
 	// invokespecial <init>(param1, ..., paramn)
-	codeGen.addInstruction(new ClassRefInstruction(Constants.opc_new,
+	codeGen.addInstruction(new ClassRefInstruction(ClassfileConstants2.opc_new,
 						       className));
-	codeGen.addInstruction(new NoArgInstruction(Constants.opc_dup));
+	codeGen.addInstruction(new NoArgInstruction(ClassfileConstants2.opc_dup));
 	for (int i = 0; i < operands.length; ++i) {
 	    operands[i].getOperand().generateInstructions(codeGen);
 	}
-	codeGen.addInstruction(new MethodRefInstruction(Constants.opc_invokespecial, (MethodRefConstant) method));
+	codeGen.addInstruction(new MethodRefInstruction(ClassfileConstants2.opc_invokespecial, (MethodRefConstant) method));
 
     }
 

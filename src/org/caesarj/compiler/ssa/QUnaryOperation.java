@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: QUnaryOperation.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: QUnaryOperation.java,v 1.2 2004-02-09 17:33:55 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.classfile.NoArgInstruction;
 
 /**
@@ -41,35 +41,35 @@ public class QUnaryOperation extends QExpression {
 	this.op = new QOperandBox(op, this);
 	this.opcode = opcode;
 	switch(opcode) {
-	case Constants.opc_d2i:
-	case Constants.opc_l2i:
-	case Constants.opc_f2i:
-	case Constants.opc_i2b:
-	case Constants.opc_i2c:
-	case Constants.opc_i2s:
-	case Constants.opc_ineg:
-	    this.type = Constants.TYP_INT;
+	case ClassfileConstants2.opc_d2i:
+	case ClassfileConstants2.opc_l2i:
+	case ClassfileConstants2.opc_f2i:
+	case ClassfileConstants2.opc_i2b:
+	case ClassfileConstants2.opc_i2c:
+	case ClassfileConstants2.opc_i2s:
+	case ClassfileConstants2.opc_ineg:
+	    this.type = ClassfileConstants2.TYP_INT;
 	    break;
 
-	case Constants.opc_d2f:
-	case Constants.opc_l2f:
-	case Constants.opc_i2f:
-	case Constants.opc_fneg:
-	    this.type = Constants.TYP_FLOAT;
+	case ClassfileConstants2.opc_d2f:
+	case ClassfileConstants2.opc_l2f:
+	case ClassfileConstants2.opc_i2f:
+	case ClassfileConstants2.opc_fneg:
+	    this.type = ClassfileConstants2.TYP_FLOAT;
 	    break;
 
-	case Constants.opc_d2l:
-	case Constants.opc_f2l:
-	case Constants.opc_i2l:
-	case Constants.opc_lneg:
-	    this.type = Constants.TYP_LONG;
+	case ClassfileConstants2.opc_d2l:
+	case ClassfileConstants2.opc_f2l:
+	case ClassfileConstants2.opc_i2l:
+	case ClassfileConstants2.opc_lneg:
+	    this.type = ClassfileConstants2.TYP_LONG;
 	    break;
 
-	case Constants.opc_l2d:
-	case Constants.opc_f2d:
-	case Constants.opc_i2d:
-	case Constants.opc_dneg:
-	    this.type = Constants.TYP_DOUBLE;
+	case ClassfileConstants2.opc_l2d:
+	case ClassfileConstants2.opc_f2d:
+	case ClassfileConstants2.opc_i2d:
+	case ClassfileConstants2.opc_dneg:
+	    this.type = ClassfileConstants2.TYP_DOUBLE;
 	    break;
 	}
 

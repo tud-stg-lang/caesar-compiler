@@ -24,6 +24,7 @@ import org.caesarj.compiler.ast.FjNameExpression;
 import org.caesarj.compiler.ast.FjVariableDefinition;
 import org.caesarj.compiler.ast.JBlock;
 import org.caesarj.compiler.ast.JClassBlock;
+import org.caesarj.compiler.ast.JCompilationUnit;
 import org.caesarj.compiler.ast.JExpression;
 import org.caesarj.compiler.ast.JExpressionStatement;
 import org.caesarj.compiler.ast.JFormalParameter;
@@ -49,14 +50,52 @@ import org.caesarj.util.TokenReference;
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class DeploymentPreparation implements CaesarConstants {
-	public DeploymentPreparation(FjClassDeclaration cd) {
+	private DeploymentPreparation(FjClassDeclaration cd) {
 		this.cd = cd;
 	}
 	private FjClassDeclaration cd;
 	/**
 	 * Generates for every nested crosscutting class the corresponding deployment support classes.
 	 */
-	public void prepareForDynamicDeployment(KjcEnvironment environment)
+	public static void prepareForDynamicDeployment(KjcEnvironment environment, JCompilationUnit cu) {
+		List newTypeDeclarations = new ArrayList();
+		JTypeDeclaration typeDeclarations[] = cu.getInners();
+		for (int i = 0; i < typeDeclarations.length; i++) {
+			
+			newTypeDeclarations.add(typeDeclarations[i]);
+
+			if (typeDeclarations[i] instanceof FjClassDeclaration) {
+
+				FjClassDeclaration caesarClass =
+					(FjClassDeclaration) typeDeclarations[i];
+
+				if (caesarClass.isCrosscutting() && (!caesarClass.isStaticallyDeployed()) ) {
+
+					DeploymentClassFactory utils =
+						new DeploymentClassFactory(
+							caesarClass,
+							environment);
+
+					//modify the aspect class									
+					utils.modifyAspectClass();
+
+					//add the deployment support classes to the enclosing class							
+					newTypeDeclarations.add(utils.createAspectInterface());
+					newTypeDeclarations.add(utils.createMultiInstanceAspectClass());
+					newTypeDeclarations.add(utils.createMultiThreadAspectClass());
+					newTypeDeclarations.add(utils.createSingletonAspect());
+				}
+
+				if (caesarClass.getInners().length > 0) {
+					//consider nested types
+					new DeploymentPreparation(caesarClass).prepareForDynamicDeployment(environment);
+				}
+			}
+		}
+		cu.setInners((JTypeDeclaration[]) newTypeDeclarations.toArray(new JTypeDeclaration[0]));	
+
+	}
+	private void prepareForDynamicDeployment(KjcEnvironment environment)
 	{
 		List newInners = new ArrayList();
 
@@ -112,7 +151,10 @@ public class DeploymentPreparation implements CaesarConstants {
 		cd.generateInterface(environment.getClassReader(), cd.getOwner(), prefix);
 	}
 
-	public void prepareForStaticDeployment(CContext context)
+	public static void prepareForStaticDeployment(CContext context, FjClassDeclaration cd) {
+		new DeploymentPreparation(cd).prepareForStaticDeployment(context);
+	}
+	private void prepareForStaticDeployment(CContext context)
 	{
 		for (int i = 0; i < cd.getAdvices().length; i++)
 		{

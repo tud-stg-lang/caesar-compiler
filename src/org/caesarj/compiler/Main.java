@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
@@ -12,7 +14,6 @@ import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
-import org.caesarj.compiler.ast.FjCompilationUnit;
 import org.caesarj.compiler.ast.FjSourceClass;
 import org.caesarj.compiler.ast.FjVisitor;
 import org.caesarj.compiler.ast.JCompilationUnit;
@@ -29,6 +30,7 @@ import org.caesarj.compiler.family.FamiliesInitializerFjVisitor;
 import org.caesarj.compiler.family.InheritConstructorsFjVisitor;
 import org.caesarj.compiler.family.MethodTransformationFjVisitor;
 import org.caesarj.compiler.family.ResolveSuperClassFjVisitor;
+import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
 import org.caesarj.compiler.types.TypeFactory;
@@ -46,10 +48,9 @@ import org.caesarj.util.Utils;
  * 
  * @author Jürgen Hallpap
  */
-public class Main extends org.caesarj.compiler.MainSuper implements Constants {
+public class Main extends org.caesarj.compiler.MainSuper implements  Constants  {
 
 	private CaesarMessageHandler messageHandler;
-	protected Vector compilationUnits;
 	private Set errorMessages;
 	private CollectClassesFjVisitor inherritConstructors;
 
@@ -83,7 +84,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 	 */
 	public boolean run(String[] args) {
 		errorFound = false;
-		compilationUnits = null;
+
 
 		if (!parseArguments(args)) {
 			return false;
@@ -118,7 +119,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 		prepareJoinpointReflection(tree);
 		prepareDynamicDeployment(environment, tree);
 		createAllHelperInterfaces(environment, tree);
-		joinAll();
+		joinAll(tree);
 		if (errorFound) { return false; }
 		checkAllInterfaces(tree);
 		if (errorFound) { return false;	}
@@ -249,8 +250,9 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 		JCompilationUnit[] tree) {
 		//Modify and generate support classes for dynamic deployment.
 		for (int i = 0; i < tree.length; i++) {
-			FjCompilationUnit cu = (FjCompilationUnit) tree[i];
-			cu.prepareForDynamicDeployment(environment);
+			JCompilationUnit cu =  tree[i];
+			DeploymentPreparation.prepareForDynamicDeployment(environment,cu);
+
 		}
 	}
 
@@ -290,11 +292,11 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 	 *    - Copy inherited constructors in virtual classes
 	 */
 
-	protected void joinAll() {
+	protected void joinAll(JCompilationUnit[] tree) {
 		JCompilationUnit cunit;
 
-		for (int i = 0; i < compilationUnits.size(); i++) {
-			cunit = (JCompilationUnit) compilationUnits.elementAt(i);
+		for (int i = 0; i < tree.length; i++) {
+			cunit = tree[i];
 			// perform a first join pass to resolve all
 			// directly known (i.e. specified) superclasses
 			join(cunit);
@@ -303,14 +305,14 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 			return;
 
 		// let a visitor traverse the tree
-		// and resolve all overriders superclasses
-		getResolveSuperClass(this, compilationUnits).transform();
+		// and resolve all overriders superclasses 
+		getResolveSuperClass(this, tree).transform(); 
 		if (errorFound)
 			return;
 
 		try {
 			Vector warnings =
-				getInheritConstructors(compilationUnits).transform();
+				getInheritConstructors(tree).transform();
 			for (int i = 0; i < warnings.size(); i++) {
 				inform((PositionedError) warnings.elementAt(i));
 			}
@@ -363,7 +365,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 		return new FamiliesInitializerFjVisitor(this, environment);
 	}
 
-	protected CollectClassesFjVisitor getInheritConstructors(Vector compilationUnits) {
+	protected CollectClassesFjVisitor getInheritConstructors(JCompilationUnit[] compilationUnits) {
 		if (inherritConstructors == null)
 			inherritConstructors =
 				new InheritConstructorsFjVisitor(compilationUnits);
@@ -376,7 +378,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 
 	protected ResolveSuperClassFjVisitor getResolveSuperClass(
 		CompilerBase compiler,
-		Vector compilationUnits) {
+		JCompilationUnit compilationUnits[]) {
 		return new ResolveSuperClassFjVisitor(compiler, compilationUnits);
 	}
 
@@ -404,14 +406,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 		KjcEnvironment environment) {
 		InputBuffer buffer;
 
-		if (compilationUnits == null) {
-			// we are introducing some more state here
-			// since the regular compiler would call the
-			// join method once for each compilation unit
-			// but we need kind of a different flow
-			compilationUnits = new Vector();
-		}
-
 		try {
 			buffer = new InputBuffer(file, options.encoding);
 		} catch (UnsupportedEncodingException e) {
@@ -438,7 +432,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 
 		try {
 			unit = getJCompilationUnit(parser);
-			compilationUnits.add(unit);
 
 		} catch (ParserException e) {
 			reportTrouble(parser.beautifyParseError(e));

@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: InstructionIO.java,v 1.2 2004-02-08 16:47:45 ostermann Exp $
+ * $Id: InstructionIO.java,v 1.3 2004-02-09 17:34:16 ostermann Exp $
  */
 
 package org.caesarj.classfile;
@@ -30,7 +30,7 @@ import org.caesarj.util.InconsistencyException;
 /**
  * An utility class that read the instructions from a stream
  */
-public class InstructionIO implements Constants {
+public class InstructionIO implements ClassfileConstants2 {
 
   /**
    * Constructs an array of instructions from a class file stream

@@ -388,7 +388,7 @@ public class FjClassDeclaration
 		//statically deployed classes are considered as aspects
 		if (isStaticallyDeployed())
 		{
-			new DeploymentPreparation(this).prepareForStaticDeployment(context);
+			DeploymentPreparation.prepareForStaticDeployment(context, this);
 
 			modifiers |= ACC_FINAL;
 		}

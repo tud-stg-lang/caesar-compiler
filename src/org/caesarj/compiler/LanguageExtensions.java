@@ -15,11 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: LanguageExtensions.java,v 1.2 2004-02-08 20:28:00 ostermann Exp $
+ * $Id: LanguageExtensions.java,v 1.3 2004-02-09 17:33:55 ostermann Exp $
  */
 
 package org.caesarj.compiler;
 
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.compiler.ast.JEqualityExpression;
 import org.caesarj.compiler.ast.JExpression;
 import org.caesarj.compiler.ast.JExpressionStatement;
@@ -39,7 +40,7 @@ import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
 
-public class LanguageExtensions implements Constants {
+public class LanguageExtensions implements Constants, ClassfileConstants2  {
 
   public final JVariableDefinition createAssertVariable(TypeFactory factory) {
     return new JVariableDefinition(TokenReference.NO_REF, 

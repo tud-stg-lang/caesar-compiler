@@ -1,6 +1,6 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.CciConstants;
 import org.caesarj.compiler.constants.FjConstants;
@@ -552,7 +552,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 
 	protected CMethod privateToBeAccessed(CExpressionContext context)
 		throws PositionedError {
-		if ((getMethod(context).getModifiers() & Constants.ACC_PRIVATE) != 0) {
+		if ((getMethod(context).getModifiers() & ClassfileConstants2.ACC_PRIVATE) != 0) {
 			if (prefix != null) {
 				CClass expectedPrefix = getPrefixType(context).getCClass();
 				CReferenceType actualPrefix =
@@ -715,7 +715,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 
 		CClass methodReturn = getMethod(context).getReturnType().getCClass();
 		CClass prefixClass = getPrefixType(context).getCClass();
-		if ((methodReturn.getModifiers() & Constants.FJC_VIRTUAL) != 0
+		if ((methodReturn.getModifiers() & ClassfileConstants2.FJC_VIRTUAL) != 0
 			&& methodReturn.getOwner().equals(prefixClass))
 			return true;
 		else if (FjConstants.isFactoryMethodName(ident))
@@ -735,7 +735,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 			return false;
 
 		if ((getMethod(context).getReturnType().getCClass().getModifiers()
-			& Constants.FJC_VIRTUAL)
+			& ClassfileConstants2.FJC_VIRTUAL)
 			!= 0
 			&& getMethod(context).getReturnType().getCClass().getOwner().equals(
 				getPrefixType(context).getCClass().getOwner()))

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: ControlFlowGraph.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: ControlFlowGraph.java,v 1.2 2004-02-09 17:33:55 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
@@ -31,7 +31,7 @@ import org.caesarj.classfile.AccessorContainer;
 import org.caesarj.classfile.AccessorTransformer;
 import org.caesarj.classfile.BadAccessorException;
 import org.caesarj.classfile.CodeInfo;
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.classfile.HandlerInfo;
 import org.caesarj.classfile.Instruction;
 import org.caesarj.classfile.InstructionAccessor;
@@ -578,10 +578,10 @@ public class ControlFlowGraph {
 		//goto, jsr are distincts than other jump instructions.
 		Edge edge;
 		JumpInstruction jumpInst = (JumpInstruction) lastInst;
-		if (lastInst.getOpcode() == Constants.opc_goto) {
+		if (lastInst.getOpcode() == ClassfileConstants2.opc_goto) {
 		     edge = bb.addDefaultNextBlock(bbs[numBlocks[getInstructionLine(insts, jumpInst.getTarget())]]);
 		     jumpInst.setTarget(new EdgeLabel(edge));
-		} else if (lastInst.getOpcode() == Constants.opc_jsr) {
+		} else if (lastInst.getOpcode() == ClassfileConstants2.opc_jsr) {
 		    //do nothing here
 		    //see method findSubRoutines
 		} else {
@@ -711,7 +711,7 @@ public class ControlFlowGraph {
 				BasicBlock[] bbs) {
 	for(int i = 0; i < bbs.length; ++i) {
 	    Instruction lastInst = insts[bbs[i].getEnd()];
-	    if (lastInst.getOpcode() == Constants.opc_jsr) {
+	    if (lastInst.getOpcode() == ClassfileConstants2.opc_jsr) {
 		JumpInstruction jumpInst = (JumpInstruction) lastInst;
 		BasicBlock subroutineCall = bbs[i];
 
@@ -732,7 +732,7 @@ public class ControlFlowGraph {
 			    public boolean visit(Node n) {
 				BasicBlock bb = (BasicBlock) n;
 				Instruction last = insts[bb.getEnd()];
-				if (last.getOpcode() == Constants.opc_ret) {
+				if (last.getOpcode() == ClassfileConstants2.opc_ret) {
 				    //we found the end of the subroutine
 				    SubRoutine s = new SubRoutine(startSubroutine,
 								  currentBB);
@@ -761,7 +761,7 @@ public class ControlFlowGraph {
 	// its next block.
 	for(int i = 0; i < bbs.length; ++i) {
 	    Instruction lastInst = insts[bbs[i].getEnd()];
-	    if (lastInst.getOpcode() == Constants.opc_jsr) {
+	    if (lastInst.getOpcode() == ClassfileConstants2.opc_jsr) {
 		BasicBlock subroutineCall = bbs[i];
 		BasicBlock subroutineReturn = bbs[i+1];
 		subroutineCall.removeSuccessor(subroutineReturn);
@@ -778,9 +778,9 @@ public class ControlFlowGraph {
 	String	signature = methodInfo.getSignature();
 	int		paramNum = 0;
 
-	if ((methodInfo.getModifiers() & Constants.ACC_STATIC) == 0) {
+	if ((methodInfo.getModifiers() & ClassfileConstants2.ACC_STATIC) == 0) {
 	    // an instance method always passes "this" as first, hidden parameter
-	    start.addInstruction(new QDeclareInitialised(new QVar(paramNum, Constants.TYP_REFERENCE), false));
+	    start.addInstruction(new QDeclareInitialised(new QVar(paramNum, ClassfileConstants2.TYP_REFERENCE), false));
 
 	    paramNum += 1;
 	}
@@ -808,7 +808,7 @@ public class ControlFlowGraph {
 		}
 		pos += 1;
 
-		start.addInstruction(new QDeclareInitialised(new QVar(paramNum, Constants.TYP_REFERENCE), false));
+		start.addInstruction(new QDeclareInitialised(new QVar(paramNum, ClassfileConstants2.TYP_REFERENCE), false));
 
 		paramNum += 1;
 		break;
@@ -819,7 +819,7 @@ public class ControlFlowGraph {
 		}
 		pos += 1;
 
-		start.addInstruction(new QDeclareInitialised(new QVar(paramNum, Constants.TYP_REFERENCE), false));
+		start.addInstruction(new QDeclareInitialised(new QVar(paramNum, ClassfileConstants2.TYP_REFERENCE), false));
 
 		paramNum += 1;
 		break;
@@ -829,23 +829,23 @@ public class ControlFlowGraph {
 	    case 'C':
 	    case 'S':
 	    case 'I':
-		start.addInstruction(new QDeclareInitialised(new QVar(paramNum, Constants.TYP_INT), false));
+		start.addInstruction(new QDeclareInitialised(new QVar(paramNum, ClassfileConstants2.TYP_INT), false));
 
 		paramNum += 1;
 		break;
 	    case 'F':
-		start.addInstruction(new QDeclareInitialised(new QVar(paramNum, Constants.TYP_FLOAT), false));
+		start.addInstruction(new QDeclareInitialised(new QVar(paramNum, ClassfileConstants2.TYP_FLOAT), false));
 
 		paramNum += 1;
 		break;
 
 	    case 'D':
-		start.addInstruction(new QDeclareInitialised(new QVar(paramNum, Constants.TYP_DOUBLE), false));
+		start.addInstruction(new QDeclareInitialised(new QVar(paramNum, ClassfileConstants2.TYP_DOUBLE), false));
 		paramNum += 2;
 		break;
 
 	    case 'J':
-		start.addInstruction(new QDeclareInitialised(new QVar(paramNum, Constants.TYP_LONG), false));
+		start.addInstruction(new QDeclareInitialised(new QVar(paramNum, ClassfileConstants2.TYP_LONG), false));
 		paramNum += 2;
 		break;
 

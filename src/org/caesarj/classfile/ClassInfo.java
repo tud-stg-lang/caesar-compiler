@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: ClassInfo.java,v 1.2 2003-08-25 14:47:38 werner Exp $
+ * $Id: ClassInfo.java,v 1.3 2004-02-09 17:34:16 ostermann Exp $
  */
 
 package org.caesarj.classfile;
@@ -247,7 +247,7 @@ public class ClassInfo extends Member {
    * Returns the inner classes table of the class in the file
    */
   public InnerClassInfo[] getInnerClasses() {
-    Attribute		attr = attributes.get(Constants.ATT_INNERCLASSES);
+    Attribute		attr = attributes.get(ClassfileConstants2.ATT_INNERCLASSES);
 
     return attr == null ? null : ((InnerClassTable)attr).getEntries();
   }
@@ -259,7 +259,7 @@ public class ClassInfo extends Member {
     if (inners != null) {
       attributes.add(new InnerClassTable(inners));
     } else {
-      attributes.remove(Constants.ATT_INNERCLASSES);
+      attributes.remove(ClassfileConstants2.ATT_INNERCLASSES);
     }
   }
 
@@ -267,7 +267,7 @@ public class ClassInfo extends Member {
    * Returns the source file of the class in the file
    */
   public String getSourceFile() {
-    Attribute		attr = attributes.get(Constants.ATT_SOURCEFILE);
+    Attribute		attr = attributes.get(ClassfileConstants2.ATT_SOURCEFILE);
 
     return attr == null ? null : ((SourceFileAttribute)attr).getValue();
   }
@@ -279,7 +279,7 @@ public class ClassInfo extends Member {
     if (name != null) {
       attributes.add(new SourceFileAttribute(name));
     } else {
-      attributes.remove(Constants.ATT_SOURCEFILE);
+      attributes.remove(ClassfileConstants2.ATT_SOURCEFILE);
     }
   }
 
@@ -287,14 +287,14 @@ public class ClassInfo extends Member {
    * Returns true if the class is deprecated
    */
   public boolean isDeprecated() {
-    return attributes.get(Constants.ATT_DEPRECATED) != null;
+    return attributes.get(ClassfileConstants2.ATT_DEPRECATED) != null;
   }
 
   /**
    * Returns true if the class is synthetic
    */
   public boolean isSynthetic() {
-    return attributes.get(Constants.ATT_SYNTHETIC) != null;
+    return attributes.get(ClassfileConstants2.ATT_SYNTHETIC) != null;
   }
   /**
    * Sets the deprecated attribute of this field
@@ -303,7 +303,7 @@ public class ClassInfo extends Member {
     if (deprecated) {
       attributes.add(new DeprecatedAttribute());
     } else {
-      attributes.remove(Constants.ATT_DEPRECATED);
+      attributes.remove(ClassfileConstants2.ATT_DEPRECATED);
     }
   }
 
@@ -324,7 +324,7 @@ public class ClassInfo extends Member {
    * Returns the generic type of the this class
    */
   public String getGenericSignature() {
-    Attribute  attr = attributes.get(Constants.ATT_SIGNATURE);
+    Attribute  attr = attributes.get(ClassfileConstants2.ATT_SIGNATURE);
 
     return attr == null ? null : ((SignatureAttribute)attr).getSignature();
   }

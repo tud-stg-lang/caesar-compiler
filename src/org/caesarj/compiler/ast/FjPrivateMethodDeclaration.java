@@ -3,7 +3,7 @@ package org.caesarj.compiler.ast;
 import java.util.Arrays;
 import java.util.Vector;
 
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
@@ -57,7 +57,7 @@ public class FjPrivateMethodDeclaration extends FjMethodDeclaration {
 
 		return new FjMethodDeclaration(
 				getTokenReference(),
-				ACC_PRIVATE | Constants.ACC_FINAL,
+				ACC_PRIVATE | ClassfileConstants2.ACC_FINAL,
 				typeVariables,
 				returnType,
 				FjConstants.implementationMethodName( ident ),

@@ -15,14 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: QANewArray.java,v 1.1 2004-02-08 16:47:49 ostermann Exp $
+ * $Id: QANewArray.java,v 1.2 2004-02-09 17:33:54 ostermann Exp $
  */
 
 package org.caesarj.compiler.ssa;
 
 import org.caesarj.classfile.ClassConstant;
 import org.caesarj.classfile.ClassRefInstruction;
-import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.ClassfileConstants2;
 /**
  * A class to represent instruction new
  */
@@ -56,7 +56,7 @@ public class QANewArray extends QCallReturn {
      * Return the type of the expression
      */
     public byte getType() {
-	return Constants.TYP_REFERENCE;
+	return ClassfileConstants2.TYP_REFERENCE;
     }
     // -------------------------------------------------------------------
     // ACCESSOR
@@ -86,7 +86,7 @@ public class QANewArray extends QCallReturn {
      */
     public void generateInstructions(CodeGenerator codeGen) {
 	size.getOperand().generateInstructions(codeGen);
-	codeGen.addInstruction(new ClassRefInstruction(Constants.opc_anewarray,
+	codeGen.addInstruction(new ClassRefInstruction(ClassfileConstants2.opc_anewarray,
 						       className));
     }
 

@@ -1,32 +1,25 @@
 // $ANTLR 1.5A: "cc/Caesar.g" -> "CaesarParser.java"$
  package org.caesarj.compiler; 
-import java.util.ArrayList;
+import org.caesarj.tools.antlr.runtime.*;
 
-import org.caesarj.compiler.aspectj.CaesarAdviceKind;
-import org.caesarj.compiler.aspectj.CaesarPatternParser;
-import org.caesarj.compiler.aspectj.CaesarPointcut;
-import org.caesarj.compiler.aspectj.CaesarSourceContext;
-import org.caesarj.compiler.ast.*;
-import org.caesarj.compiler.constants.CaesarMessages;
-import org.caesarj.compiler.constants.Constants;
-import org.caesarj.compiler.constants.KjcMessages;
-import org.caesarj.compiler.context.CParseCompilationUnitContext;
-import org.caesarj.compiler.export.CModifier;
-import org.caesarj.compiler.types.CArrayType;
-import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
-import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.tools.antlr.extra.CompilerBase;
-import org.caesarj.tools.antlr.extra.InputBuffer;
-import org.caesarj.tools.antlr.runtime.BitSet;
-import org.caesarj.tools.antlr.runtime.NoViableAltException;
-import org.caesarj.tools.antlr.runtime.RecognitionException;
-import org.caesarj.tools.antlr.runtime.Token;
-import org.caesarj.tools.antlr.runtime.TokenStreamException;
-import org.caesarj.util.CWarning;
-import org.caesarj.util.PositionedError;
-import org.caesarj.util.TokenReference;
+  import java.util.ArrayList;
+
+  import org.caesarj.compiler.ast.*;
+  import org.caesarj.compiler.constants.*;
+  import org.caesarj.compiler.aspectj.CaesarAdviceKind;
+  import org.caesarj.compiler.aspectj.CaesarPatternParser;
+  import org.caesarj.compiler.aspectj.CaesarPointcut;
+  import org.caesarj.compiler.aspectj.CaesarSourceContext;
+
+  import org.caesarj.util.CWarning;
+  import org.caesarj.tools.antlr.extra.*;
+  import org.caesarj.compiler.ast.JavaStyleComment;
+  import org.caesarj.compiler.ast.JavadocComment;
+  import org.caesarj.tools.antlr.extra.InputBuffer;
+  import org.caesarj.compiler.context.*;
+  import org.caesarj.compiler.types.*;
+  import org.caesarj.compiler.export.*;
+  import org.caesarj.util.*;
 
 public class CaesarParser extends org.caesarj.tools.antlr.extra.Parser
        implements CaesarTokenTypes
@@ -76,7 +69,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		match(Token.EOF_TYPE);
 		if ( inputState.guessing==0 ) {
 			
-			self = new FjCompilationUnit(sourceRef,
+			self = new JCompilationUnit(sourceRef,
 			environment,
 							  pack,
 							  context.getPackageImports(),
@@ -396,15 +389,15 @@ private static final int MAX_LOOKAHEAD = 2;
 			
 			//!!! 010428 move to JXxxDeclaration
 			if (CModifier.getSubsetSize(self,
-							  org.caesarj.classfile.Constants.ACC_PUBLIC
-							  | org.caesarj.classfile.Constants.ACC_PROTECTED
-							  | org.caesarj.classfile.Constants.ACC_PRIVATE) > 1) {
+							  org.caesarj.classfile.ClassfileConstants2.ACC_PUBLIC
+							  | org.caesarj.classfile.ClassfileConstants2.ACC_PROTECTED
+							  | org.caesarj.classfile.ClassfileConstants2.ACC_PRIVATE) > 1) {
 				reportTrouble(new PositionedError(buildTokenReference(),
 								  KjcMessages.INCOMPATIBLE_MODIFIERS,
 								  CModifier.toString(CModifier.getSubsetOf(self,
-													   org.caesarj.classfile.Constants.ACC_PUBLIC
-													   | org.caesarj.classfile.Constants.ACC_PROTECTED
-													   | org.caesarj.classfile.Constants.ACC_PRIVATE))));
+													   org.caesarj.classfile.ClassfileConstants2.ACC_PUBLIC
+													   | org.caesarj.classfile.ClassfileConstants2.ACC_PROTECTED
+													   | org.caesarj.classfile.ClassfileConstants2.ACC_PRIVATE))));
 			}
 			
 		}
@@ -541,7 +534,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   comments);
 				  else if (providing != null || binding != null)
 				  {
-				  	if (CModifier.contains(modifiers, org.caesarj.classfile.Constants.FJC_VIRTUAL))
+				  	if (CModifier.contains(modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL))
 			self = new FjVirtualClassDeclaration(sourceRef,
 							   modifiers,
 							   ident.getText(),
@@ -559,7 +552,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   comments);
 				  	 else
 			self = new FjCleanClassDeclaration(sourceRef,
-							   modifiers | org.caesarj.classfile.Constants.FJC_CLEAN,
+							   modifiers | org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN,
 							   ident.getText(),
 							   typeVariables,
 							   superClass,
@@ -578,7 +571,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   context.getDeclares()				   
 							   );
 				 }
-			else if( CModifier.contains( modifiers, org.caesarj.classfile.Constants.FJC_OVERRIDE ) ) {
+			else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_OVERRIDE ) ) {
 			self = new FjOverrideClassDeclaration(sourceRef,
 							   modifiers,
 							   ident.getText(),
@@ -594,7 +587,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   context.getBody(),
 							   javadoc,
 							   comments);
-			} else if( CModifier.contains( modifiers, org.caesarj.classfile.Constants.FJC_VIRTUAL ) ) {
+			} else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL ) ) {
 			self = new FjVirtualClassDeclaration(sourceRef,
 							   modifiers,
 							   ident.getText(),
@@ -610,7 +603,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   context.getBody(),
 							   javadoc,
 							   comments);
-			} else if( CModifier.contains( modifiers, org.caesarj.classfile.Constants.FJC_CLEAN ) ) {
+			} else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN ) ) {
 			self = new FjCleanClassDeclaration(sourceRef,
 							   modifiers,
 							   ident.getText(),
@@ -814,7 +807,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_public);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.ACC_PUBLIC;
+				self = org.caesarj.classfile.ClassfileConstants2.ACC_PUBLIC;
 			}
 			break;
 		}
@@ -822,7 +815,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_protected);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.ACC_PROTECTED;
+				self = org.caesarj.classfile.ClassfileConstants2.ACC_PROTECTED;
 			}
 			break;
 		}
@@ -830,7 +823,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_private);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.ACC_PRIVATE;
+				self = org.caesarj.classfile.ClassfileConstants2.ACC_PRIVATE;
 			}
 			break;
 		}
@@ -838,7 +831,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_static);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.ACC_STATIC;
+				self = org.caesarj.classfile.ClassfileConstants2.ACC_STATIC;
 			}
 			break;
 		}
@@ -846,7 +839,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_abstract);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.ACC_ABSTRACT;
+				self = org.caesarj.classfile.ClassfileConstants2.ACC_ABSTRACT;
 			}
 			break;
 		}
@@ -854,7 +847,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_final);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.ACC_FINAL;
+				self = org.caesarj.classfile.ClassfileConstants2.ACC_FINAL;
 			}
 			break;
 		}
@@ -862,7 +855,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_native);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.ACC_NATIVE;
+				self = org.caesarj.classfile.ClassfileConstants2.ACC_NATIVE;
 			}
 			break;
 		}
@@ -870,7 +863,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_strictfp);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.ACC_STRICT;
+				self = org.caesarj.classfile.ClassfileConstants2.ACC_STRICT;
 			}
 			break;
 		}
@@ -878,7 +871,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_synchronized);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.ACC_SYNCHRONIZED;
+				self = org.caesarj.classfile.ClassfileConstants2.ACC_SYNCHRONIZED;
 			}
 			break;
 		}
@@ -886,7 +879,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_transient);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.ACC_TRANSIENT;
+				self = org.caesarj.classfile.ClassfileConstants2.ACC_TRANSIENT;
 			}
 			break;
 		}
@@ -894,7 +887,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_volatile);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.ACC_VOLATILE;
+				self = org.caesarj.classfile.ClassfileConstants2.ACC_VOLATILE;
 			}
 			break;
 		}
@@ -902,7 +895,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_virtual);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.FJC_VIRTUAL;
+				self = org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL;
 			}
 			break;
 		}
@@ -910,7 +903,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_override);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.FJC_OVERRIDE;
+				self = org.caesarj.classfile.ClassfileConstants2.FJC_OVERRIDE;
 			}
 			break;
 		}
@@ -918,7 +911,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_clean);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.FJC_CLEAN;
+				self = org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN;
 			}
 			break;
 		}
@@ -926,7 +919,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_privileged);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.ACC_PRIVILEGED;
+				self = org.caesarj.classfile.ClassfileConstants2.ACC_PRIVILEGED;
 			}
 			break;
 		}
@@ -934,7 +927,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_deployed);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.ACC_DEPLOYED;
+				self = org.caesarj.classfile.ClassfileConstants2.ACC_DEPLOYED;
 			}
 			break;
 		}
@@ -942,7 +935,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_collaboration);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.CCI_COLLABORATION;
+				self = org.caesarj.classfile.ClassfileConstants2.CCI_COLLABORATION;
 			}
 			break;
 		}
@@ -950,7 +943,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_provided);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.CCI_PROVIDED;
+				self = org.caesarj.classfile.ClassfileConstants2.CCI_PROVIDED;
 			}
 			break;
 		}
@@ -958,7 +951,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_expected);
 			if ( inputState.guessing==0 ) {
-				self = org.caesarj.classfile.Constants.CCI_EXPECTED;
+				self = org.caesarj.classfile.ClassfileConstants2.CCI_EXPECTED;
 			}
 			break;
 		}
@@ -5277,7 +5270,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				methods = context.getMethods();
 				
 					decl = new FjClassDeclaration(sourceRef,
-								     org.caesarj.classfile.Constants.ACC_FINAL, // JLS 15.9.5
+								     org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 								     ident.getText(),
 				CTypeVariable.EMPTY,
 								     null,
@@ -5548,7 +5541,7 @@ private static final int MAX_LOOKAHEAD = 2;
 						methods = context.getMethods();
 						
 							    decl = new FjClassDeclaration(sourceRef,
-											 org.caesarj.classfile.Constants.ACC_FINAL, // JLS 15.9.5
+											 org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 											 "", //((CReferenceType)type).getQualifiedName(),
 						CTypeVariable.EMPTY,
 											 null,

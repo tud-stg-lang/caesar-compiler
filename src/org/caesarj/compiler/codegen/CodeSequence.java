@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CodeSequence.java,v 1.2 2004-02-08 20:28:00 ostermann Exp $
+ * $Id: CodeSequence.java,v 1.3 2004-02-09 17:33:55 ostermann Exp $
  */
 
 /**
@@ -64,7 +64,7 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
    * Constructs a code attribute.
    */
   private CodeSequence() {
-    instructions = new Instruction[org.caesarj.classfile.Constants.MAX_CODE_PER_METHOD];
+    instructions = new Instruction[org.caesarj.classfile.ClassfileConstants2.MAX_CODE_PER_METHOD];
     handlers = new ArrayList();
     lines = new ArrayList();
     /* LOCAL VARIABLES NOT USED

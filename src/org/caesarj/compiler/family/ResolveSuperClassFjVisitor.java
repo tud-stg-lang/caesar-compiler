@@ -28,16 +28,16 @@ public class ResolveSuperClassFjVisitor extends FjVisitor {
 	
 	protected CompilerBase compiler;
 	protected Queue traversationOrder;
-	protected Vector compilationUnits;
+	protected JCompilationUnit compilationUnits[];
 	protected Hashtable compilationUnitMap;
 	
-	public ResolveSuperClassFjVisitor( CompilerBase compiler, Vector compilationUnits ) {
+	public ResolveSuperClassFjVisitor( CompilerBase compiler, JCompilationUnit compilationUnits[] ) {
 		this.compiler = compiler;
 		this.compilationUnits = compilationUnits;
 		traversationOrder = new Queue();
 		compilationUnitMap = new Hashtable();
-		for( int i = 0; i < compilationUnits.size(); i++ ) {
-			traversationOrder.enqueue( compilationUnits.elementAt( i ) );
+		for( int i = 0; i < compilationUnits.length; i++ ) {
+			traversationOrder.enqueue( compilationUnits[i] );
 		}
 	}
 
