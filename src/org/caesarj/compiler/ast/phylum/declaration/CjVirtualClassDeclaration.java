@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.17 2004-10-28 13:07:16 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.18 2004-10-28 16:09:42 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -144,7 +144,8 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
                     getTokenReference(),
                     ACC_PUBLIC,
                     subNode.getQualifiedName().getIdent(),
-                    new CReferenceType[0],
+                    CReferenceType.EMPTY,
+                    CReferenceType.EMPTY,
                     new JFieldDeclaration[0],
                     new JMethodDeclaration[0],
                     new JTypeDeclaration[0],
@@ -284,8 +285,18 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
                 )
             );
         }
+
+        if(CModifier.contains(ACC_ABSTRACT, modifiers)) {
+	        context.reportTrouble(
+	            new PositionedError(
+	                getTokenReference(),
+	                CaesarMessages.CCLASS_CANNOT_ABSTRACT
+                )
+            );
+        }
         
         super.join(context);
+        
     }
     
     /**
