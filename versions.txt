@@ -1,0 +1,24 @@
+VC_7 ...
+
+
+VC_6 - 28.06.2004
+- type graphs ->
+ 	explicit (as declared in caesar code), 
+	complete (including implicit types), 
+	java (mapped back to java)
+- super type adjustment
+- cclass interface creation
+- implicit type creation
+- ctors with free parameters
+- ctors inheritance
+- factory methods automatically created
+- class generator still not integrated
+
+
+VC_5 
+no info
+
+...
+
+VC_1 
+no info
