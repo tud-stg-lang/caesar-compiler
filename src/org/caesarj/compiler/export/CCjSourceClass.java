@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjSourceClass.java,v 1.13 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CCjSourceClass.java,v 1.14 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -239,6 +239,17 @@ public class CCjSourceClass extends CSourceClass
 		}
 
 		return ret;
+	}
+	
+	public boolean isAbstract()
+	{
+		if (CModifier.contains(getModifiers(), ACC_ABSTRACT)) {
+			return true;
+		}
+		if (getOwner() != null && getOwner().isAbstract()) {
+			return true;
+		}
+		return false;
 	}
 
 	public boolean isPrivileged()

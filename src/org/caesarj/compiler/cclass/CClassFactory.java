@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassFactory.java,v 1.31 2005-02-11 18:45:22 aracic Exp $
+ * $Id: CClassFactory.java,v 1.32 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -147,6 +147,7 @@ public class CClassFactory implements CaesarConstants {
         // link this two AST elements
         caesarClass.setMixinIfcDeclaration(cclassInterface);
         cclassInterface.setCorrespondingClassDeclaration(caesarClass);
+        cclassInterface.setOriginalCompUnit(caesarClass.getOriginalCompUnit());
         
 		return cclassInterface;
 	}

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AsmBuilder.java,v 1.2 2005-01-24 16:52:59 aracic Exp $
+ * $Id: AsmBuilder.java,v 1.3 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.asm;
@@ -38,7 +38,6 @@ import org.aspectj.asm.StructureModel;
 import org.aspectj.asm.StructureNode;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
-import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.declaration.CjAdviceMethodDeclaration;
@@ -53,7 +52,6 @@ import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.ast.visitor.VisitorSupport;
-import org.caesarj.compiler.export.CModifier;
 import org.caesarj.util.TokenReference;
 
 /**
@@ -344,7 +342,7 @@ public class AsmBuilder implements IVisitor {
      * ADVICE
      */
     public boolean visit(CjAdviceMethodDeclaration self) {
-        printIndent();
+    	printIndent();
         System.out.println("[advice] "+self.getIdent());
         
         ProgramElementNode peNode =
@@ -361,32 +359,25 @@ public class AsmBuilder implements IVisitor {
         
         JTypeDeclaration ownerType = getContext().typeDecl;
         
-        if (CModifier.contains(ownerType.getModifiers(), ClassfileConstants2.ACC_DEPLOYED)) {
-            getContext().asmElement.addChild(peNode);
-		} 
-        else {
-            final String REGISTRY_CLASS_NAME = "Registry";
-            
-			ProgramElementNode registryNode =
-				findChildByName(getContext().asmElement.getChildren(), REGISTRY_CLASS_NAME);
+        final String REGISTRY_CLASS_NAME = "Registry";
+        
+		ProgramElementNode registryNode =
+			findChildByName(getContext().asmElement.getChildren(), REGISTRY_CLASS_NAME);
 
-			if (registryNode == null) {
-				registryNode =
-					new ProgramElementNode(
-					    REGISTRY_CLASS_NAME,
-						ProgramElementNode.Kind.CLASS,
-						makeLocation(self.getTokenReference()),
-						self.getModifiers(),
-						"",
-						new ArrayList());
+		if (registryNode == null) {
+			registryNode =
+				new ProgramElementNode(
+				    REGISTRY_CLASS_NAME,
+					ProgramElementNode.Kind.CLASS,
+					makeLocation(self.getTokenReference()),
+					self.getModifiers(),
+					"",
+					new ArrayList());
 
-				getContext().asmElement.addChild(registryNode);
-			}
-
-			registryNode.addChild(peNode);
+			getContext().asmElement.addChild(registryNode);
 		}
-        
-        
+
+		registryNode.addChild(peNode);
         
         return false;
     }

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.58 2004-11-16 10:43:44 aracic Exp $
+ * $Id: Caesar.g,v 1.59 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 /*
@@ -110,7 +110,10 @@ returns [JPackageName self = JPackageName.UNNAMED]
 :
   (
     "package" name = jIdentifier[] SEMI
-      { self = new JPackageName(buildTokenReference(), name, getStatementComment()); }
+      { self = new JPackageName(buildTokenReference(), name, getStatementComment(), false); }
+  |
+    "cclass" name = jIdentifier[] SEMI
+      { self = new JPackageName(buildTokenReference(), name, getStatementComment(), true); }  
   )?
 ;
 
@@ -1943,7 +1946,7 @@ jUnqualifiedNewExpression []
   CType				type;
   JExpression[]			args;
   JArrayInitializer		init = null;
-  CjClassDeclaration		decl = null;
+  JClassDeclaration		decl = null;
   ParseClassContext		context = null;
   TokenReference		sourceRef = buildTokenReference();
 }
@@ -1963,26 +1966,25 @@ jUnqualifiedNewExpression []
       (
         { context = ParseClassContext.getInstance(); }
         jClassBlock[context]
-          {
-            JMethodDeclaration[]      methods;
+        {
+          JMethodDeclaration[]      methods;
 
-              methods = context.getMethods();
+          methods = context.getMethods();
 
-	    decl = new CjClassDeclaration(sourceRef,
-					 org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
-					 "", //((CReferenceType)type).getQualifiedName(),
-					 null,
-					 null,
-					 CReferenceType.EMPTY,
-					 context.getFields(),
-					 methods,
-					 context.getInnerClasses(),
-					 context.getBody(),
-					 getJavadocComment(),
-					 getStatementComment());
-	    context.release();
-	  }
-          { self = new JUnqualifiedAnonymousCreation(sourceRef, (CReferenceType)type, args, decl); }
+	      decl = new JClassDeclaration(sourceRef,
+					   org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
+					   "",
+					   null,
+					   CReferenceType.EMPTY,
+					   context.getFields(),
+					   methods,
+					   context.getInnerClasses(),
+					   context.getBody(),
+					   getJavadocComment(),
+					   getStatementComment());
+	      context.release();
+	  	}
+        { self = new JUnqualifiedAnonymousCreation(sourceRef, (CReferenceType)type, args, decl); }
       |
 	// epsilon
         { self = new CjUnqualifiedInstanceCreation(sourceRef, (CReferenceType)type, args); }

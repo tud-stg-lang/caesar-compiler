@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjVirtualClassDeclaration.java,v 1.23 2005-02-21 15:19:29 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.24 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -33,13 +33,16 @@ import java.util.List;
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
+import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.context.CjExternClassContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
@@ -47,6 +50,7 @@ import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
+import org.caesarj.compiler.typesys.graph.FurtherboundFurtherbindingRelation;
 import org.caesarj.compiler.typesys.graph.OuterInnerRelation;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.compiler.typesys.java.JavaTypeNode;
@@ -117,6 +121,36 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     }      
     
     /**
+     * Stores original compilation unit of externalized virtual classes
+     */
+    protected JCompilationUnit originalCompUnit = null;
+    
+    public JCompilationUnit getOriginalCompUnit() {
+        return originalCompUnit;
+    }
+    
+    public void setOriginalCompUnit(JCompilationUnit cu) {
+    	originalCompUnit = cu;
+    }
+
+    /**
+     * Constructs the class context.
+     */
+    protected CClassContext constructContext(CContext context) {
+    	if (originalCompUnit == null) {
+	        return super.constructContext(context);
+    	}
+    	else {
+    		return new CjExternClassContext(
+    	            context,
+    	            context.getEnvironment(),
+    	            sourceClass,
+    	            this,
+					originalCompUnit.getExport());
+    	}
+    }
+    
+    /**
      * this one generates recursively implicit inner types 
      */
     public void createImplicitCaesarTypes(CContext context) throws PositionedError {
@@ -164,14 +198,17 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
             
             ifcDecl.join(context);
             
+            /* determine if the class is abstract */
+            int abstractModifier = subNode.isAbstract() ? ACC_ABSTRACT : 0;
+            
             CjVirtualClassDeclaration implDecl =
                 new CjVirtualClassDeclaration(
                     getTokenReference(),
-                    ACC_PUBLIC,
+                    ACC_PUBLIC | abstractModifier,
                     subNode.getQualifiedImplName().getIdent(),
                     CReferenceType.EMPTY,
                     null, // wrappee
-                    new CReferenceType[]{ifcDecl.getCClass().getAbstractType()},
+                    new CReferenceType[]{ifcDecl.getCClass().getAbstractType()}, // CTODO ifcs
                     new JFieldDeclaration[0],
 					new JMethodDeclaration[0],
                     new JTypeDeclaration[0],
@@ -289,18 +326,8 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
                 )
             );
         }
-
-        if(CModifier.contains(ACC_ABSTRACT, modifiers)) {
-	        context.reportTrouble(
-	            new PositionedError(
-	                getTokenReference(),
-	                CaesarMessages.CCLASS_CANNOT_ABSTRACT
-                )
-            );
-        }
-        
-        super.join(context);
-        
+             
+        super.join(context);        
     }
     
     /**
@@ -363,12 +390,44 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         }
     	
         
+        checkAbstractInners(context);    	
+        
     	super.checkInterface(context);
     	
 		// CTODO: check inheritance of full throwable list on method redefinition
     }
     
-    
+    /**
+     * Checks if concrete virtual classes do not override abstract ones
+     */
+    protected void checkAbstractInners(CContext context) throws PositionedError {
+    	JavaQualifiedName qualifiedName =
+            new JavaQualifiedName(
+                getMixinIfcDeclaration().getCClass().getQualifiedName()
+            );
+    	
+    	CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
+        CaesarTypeNode typeNode = typeSystem.getCaesarTypeGraph().getType(qualifiedName);
+    	
+    	for(Iterator it = typeNode.declaredInners(); it.hasNext(); ) {
+            CaesarTypeNode subNode = ((OuterInnerRelation)it.next()).getInnerNode();
+            
+            if (subNode.isAbstract()) {
+            	Iterator furtherbounds = subNode.incrementFor();
+                while (furtherbounds.hasNext()) {
+                	FurtherboundFurtherbindingRelation rel = (FurtherboundFurtherbindingRelation)furtherbounds.next();
+                	CaesarTypeNode furtherBound = rel.getFurtherboundNode();
+                	if (!furtherBound.isAbstract()) {
+            			throw new PositionedError(
+            				subNode.getTypeDecl().getTokenReference(),
+        					CaesarMessages.ABSTRACT_CANNOT_OVERRIDE_CONCRETE
+        				);                		            		
+                	}
+                }
+            }                        
+        }
+    }
+        
     // check method overriding in the context of virtual classes
     public void checkVirtualClassMethodSignatures(CCompilationUnitContext context) throws PositionedError {
     	for (int i = 0; i < methods.length; i++) {    	        	    

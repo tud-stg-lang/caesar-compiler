@@ -20,13 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JUnqualifiedAnonymousCreation.java,v 1.8 2005-02-16 16:33:13 aracic Exp $
+ * $Id: JUnqualifiedAnonymousCreation.java,v 1.9 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.ast.CMethodNotFoundError;
-import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JConstructorDeclaration;
 import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
@@ -67,7 +67,7 @@ public class JUnqualifiedAnonymousCreation extends JExpression {
         TokenReference where,
         CReferenceType objectType,
         JExpression[] params,
-        CjClassDeclaration decl) {
+        JClassDeclaration decl) {
         super(where);
 
         this.type = objectType;
@@ -379,5 +379,5 @@ public class JUnqualifiedAnonymousCreation extends JExpression {
     private CReferenceType type;
     private CClass local;
     private CMethod constructor;
-    private CjClassDeclaration decl;
+    private JClassDeclaration decl;
 }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CMethod.java,v 1.14 2005-02-21 15:17:30 aracic Exp $
+ * $Id: CMethod.java,v 1.15 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -693,13 +693,13 @@ public abstract class CMethod extends CMember {
      *            force non-virtual dispatching
      */
     public void genCode(GenerationContext context, boolean nonVirtual) {
-        genCode(context, nonVirtual, getPrefixName());
+        genCode(context, nonVirtual, owner);
     }
     
-    public void genCode(GenerationContext context, boolean nonVirtual, String callTarget) {
+    public void genCode(GenerationContext context, boolean nonVirtual, CClass callTarget) {
         CodeSequence code = context.getCodeSequence();
 
-        if (getOwner().isInterface()) {
+        if (callTarget.isInterface()) {
             int size = 0;
 
             for (int i = 0; i < parameters.length; i++) {
@@ -707,7 +707,7 @@ public abstract class CMethod extends CMember {
             }
 
             code.plantInstruction(new InvokeinterfaceInstruction(
-                callTarget, //getPrefixName(),
+            	callTarget.getQualifiedName(), // getPrefixName(),
                 getIdent(),
                 getSignature(),
                 size + 1)); // this
@@ -728,7 +728,7 @@ public abstract class CMethod extends CMember {
 
             code.plantMethodRefInstruction(
                 opcode, 
-                callTarget, //getPrefixName(),
+                callTarget.getQualifiedName(), //getPrefixName(),
                 getIdent(), 
                 getSignature()
             );

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.25 2005-02-28 14:30:11 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.26 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -713,25 +713,25 @@ public class JMethodCallExpression extends JExpression
 			    method.genCode(
 			        context, 
 			        true, 
-			        callerClass.getSuperClass().getQualifiedName());		    		   
+			        callerClass.getSuperClass());		    		   
 			}	
 			else {
-			    String prefixTarget = null;
+			    CClass prefixTarget = null;
 			    
 			    // callerClass.descendsFrom(method.getOwner()
 				if(prefix instanceof JOwnerExpression) {
-				    prefixTarget = callerClass.getQualifiedName();
+				    prefixTarget = callerClass;
 				}
 				else if(prefix == null && callerClass.descendsFrom(method.getOwner())) {
 				    // this check is necessary, since we could have an inner class with prefix = null
 				    // accessing methods defined in the enclosing class
-				    prefixTarget = callerClass.getQualifiedName();
+				    prefixTarget = callerClass;
 				}
 				else if(prefix != null) {
-				    prefixTarget = prefix.getType(context.getTypeFactory()).getCClass().getQualifiedName();
+				    prefixTarget = prefix.getType(context.getTypeFactory()).getCClass();
 				}
 				else {
-				    prefixTarget = method.getOwner().getQualifiedName();
+				    prefixTarget = method.getOwner();
 				}
 				
 		        method.genCode(
@@ -744,7 +744,7 @@ public class JMethodCallExpression extends JExpression
 		    method.genCode(
 	            context, 
 	            prefix instanceof JSuperExpression, 
-	            method.getOwner().getQualifiedName());	
+	            method.getOwner());	
 		}
 		
 

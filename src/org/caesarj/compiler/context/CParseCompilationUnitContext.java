@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CParseCompilationUnitContext.java,v 1.3 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CParseCompilationUnitContext.java,v 1.4 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -79,7 +79,11 @@ public class CParseCompilationUnitContext {
 
   public void addTypeDeclaration(ClassReader classReader, JTypeDeclaration decl) {
     typeDeclarations.add(decl);
-    decl.generateInterface(classReader, null, packageName);
+    
+    if (!pack.isCollaboration()) {
+    	/* cannot correctly generate CClass for external classes at this point*/        
+    	decl.generateInterface(classReader, null, packageName);
+    }
   }
 
   // ----------------------------------------------------------------------

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjMixinInterfaceDeclaration.java,v 1.13 2005-01-27 15:16:56 aracic Exp $
+ * $Id: CjMixinInterfaceDeclaration.java,v 1.14 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -30,12 +30,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.caesarj.compiler.ClassReader;
+import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
+import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.context.CjExternClassContext;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
@@ -384,6 +387,36 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
     
     public CjVirtualClassDeclaration getCorrespondingClassDeclaration() {
         return caesarClassDeclaration;
+    }
+    
+    /**
+     * Stores original compilation unit of externalized virtual classes
+     */
+    protected JCompilationUnit originalCompUnit = null;
+    
+    public JCompilationUnit getOriginalCompUnit() {
+        return originalCompUnit;
+    }
+    
+    public void setOriginalCompUnit(JCompilationUnit cu) {
+    	originalCompUnit = cu;
+    }
+
+    /**
+     * Constructs the class context.
+     */
+    protected CClassContext constructContext(CContext context) {
+    	if (originalCompUnit == null) {
+	        return super.constructContext(context);
+    	}
+    	else {
+    		return new CjExternClassContext(
+    	            context,
+    	            context.getEnvironment(),
+    	            sourceClass,
+    	            this,
+					originalCompUnit.getExport());
+    	}
     }
     
     private CjVirtualClassDeclaration caesarClassDeclaration = null;

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjClassDeclaration.java,v 1.30 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.31 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -62,7 +62,6 @@ import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceField;
-import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CVoidType;
 import org.caesarj.util.PositionedError;
@@ -412,13 +411,29 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
      */
     public void checkInterface(CContext context) throws PositionedError {
 
-        //statically deployed classes are considered as aspects
+        //statically deployed classes cannot be further overridden
         if (isStaticallyDeployed()) {
-            DeploymentPreparation.prepareForStaticDeployment(
-                context,
-                (CjClassDeclaration)this);
-
-            modifiers |= ACC_FINAL;
+        	// inner classes cannot be statically deployed
+        	if (isNested()) {
+        		context.reportTrouble(
+    	            new PositionedError(
+    	                getTokenReference(),
+    	                CaesarMessages.CANNOT_DEPLOY_VIRTUAL
+                    )
+                );
+        	}
+        	
+        	// abstract classes cannot be statically deployed
+        	if (getCClass().isAbstract()) {
+            	context.reportTrouble(
+    	            new PositionedError(
+    	                getTokenReference(),
+    	                CaesarMessages.CANNOT_DEPLOY_ABSTRACT
+                    )
+                );            
+            }
+        	
+        	modifiers |= ACC_FINAL;
         }
         
         // call JClassDeclaration checkInterface

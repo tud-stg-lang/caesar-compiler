@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarConstants.java,v 1.12 2005-02-16 13:24:05 aracic Exp $
+ * $Id: CaesarConstants.java,v 1.13 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.constants;
@@ -33,6 +33,13 @@ package org.caesarj.compiler.constants;
  * @author Jürgen Hallpap
  */
 public interface CaesarConstants extends Constants {
+	
+	// Caesar compiler version information
+	public static final int VER_MAJOR = 0;
+	public static final int VER_MINOR = 5;
+	public static final int VER_PATCH = 0;
+	
+	public static final String VERSION_STR = "0.5.0";
 
 	//Caesar names for generated methods, fields and parameters
 
@@ -48,6 +55,9 @@ public interface CaesarConstants extends Constants {
 
 	public static final String PER_SINGLETON_INSTANCE_FIELD =
 		"ajc$perSingletonInstance";
+	
+	public static final String STATIC_INSTANCE_FIELD =
+		"$staticInstance";
 	
 	public static final String ASPECT_CONTAINER_FIELD =
 		"$aspectContainer";

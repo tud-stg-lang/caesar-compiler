@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: MainSuper.java,v 1.18 2005-01-24 16:52:58 aracic Exp $
+ * $Id: MainSuper.java,v 1.19 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -353,7 +353,7 @@ public abstract class MainSuper extends CompilerBase {
      * Returns true iff comments should be parsed (false if to be skipped)
      */
     public boolean parseComments() {
-        return options.deprecation || (options.beautify && !options.nowrite);
+    	return false;
     }
 
     /**

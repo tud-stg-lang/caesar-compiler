@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassPreparation.java,v 1.32 2005-02-21 15:17:57 aracic Exp $
+ * $Id: CClassPreparation.java,v 1.33 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -151,76 +151,59 @@ public class CClassPreparation implements CaesarConstants {
 	    TypeFactory typeFactory = environment.getTypeFactory();
         ClassReader classReader = environment.getClassReader();
         
-        CjInterfaceDeclaration ifcDecl = decl.getMixinIfcDeclaration();
-        
         CClass innerClass = inner.getCClass();
                                     
-        JBlock creationBlock = new JBlock(
-            decl.getTokenReference(),
-            new JStatement[] {
-                new JReturnStatement(
-                    decl.getTokenReference(),
-                    new JUnqualifiedInstanceCreation(
-                        decl.getTokenReference(),
-                        innerClass.getAbstractType(),
-                        //JExpression.EMPTY
-						new JExpression[]{
-                    		new JThisExpression(decl.getTokenReference())
-                		}
-                    ),
-                    null
-                )
-            },
-            null
-        );
-        
-        /*
-        CaesarTypeNode topMost = inner.getMixin().getTopmostNode();
-        
-        CClass returnType = classReader.loadClass(
-            typeFactory, 
-            topMost.getQualifiedName().toString()    
-        );
-        */
-        
-        /*
-        CClass returnType = classReader.loadClass(
-            typeFactory, 
-            inner.getMixin().getQualifiedName().toString()    
-        );
-        */
-
-        
-        JMethodDeclaration facMethodDecl = new JMethodDeclaration(
+        if ((decl.getModifiers() & ACC_ABSTRACT) == 0) {
+        	/* create concrete factory method inside concrete collaboration */
+        	JBlock creationBlock = new JBlock(
                 decl.getTokenReference(),
-                ACC_PUBLIC,
-                //returnType.getAbstractType(),
-                // let the CClassNameType lookup handle this (needed in order to obtain the declaration context)
-                new CClassNameType(inner.getType().getQualifiedName().getIdent()),
-                FACTORY_METHOD_PREFIX+inner.getType().getQualifiedName().getIdent(),
-                JFormalParameter.EMPTY, // formal params
-                CReferenceType.EMPTY,
-                creationBlock,
-                null, null
-            );  
-        
-        /*
-        JMethodDeclaration facIfcMethodDecl = new JMethodDeclaration(
-            decl.getTokenReference(),
-            ACC_PUBLIC,
-            CTypeVariable.EMPTY,
-            returnType.getAbstractType(),
-            "$new"+inner.getType().getQualifiedName().getIdent(),
-            JFormalParameter.EMPTY, // formal params
-            CReferenceType.EMPTY,
-            null,
-            null, null
-        );  
-        */
-        
-        decl.addMethod(facMethodDecl);
-        //ifcDecl.addMethod(facIfcMethodDecl);                         
-	    
+                new JStatement[] {
+                    new JReturnStatement(
+                        decl.getTokenReference(),
+                        new JUnqualifiedInstanceCreation(
+                            decl.getTokenReference(),
+                            innerClass.getAbstractType(),
+                            //JExpression.EMPTY
+    						new JExpression[]{
+                        		new JThisExpression(decl.getTokenReference())
+                    		}
+                        ),
+                        null
+                    )
+                },
+                null
+            );
+        	
+        	JMethodDeclaration facMethodDecl = new JMethodDeclaration(
+                    decl.getTokenReference(),
+                    ACC_PUBLIC,
+		            // let the CClassNameType lookup handle this (needed in order to obtain the declaration context)
+                    new CClassNameType(inner.getType().getQualifiedName().getIdent()),
+                    FACTORY_METHOD_PREFIX+inner.getType().getQualifiedName().getIdent(),
+                    JFormalParameter.EMPTY, // formal params
+                    CReferenceType.EMPTY,
+                    creationBlock,
+                    null, null
+                );
+        	
+        	decl.addMethod(facMethodDecl);
+        }
+        else {
+        	/* create abstract factory method inside abstract collaboration */
+        	JMethodDeclaration facMethodDecl = new JMethodDeclaration(
+                    decl.getTokenReference(),
+                    ACC_PUBLIC | ACC_ABSTRACT,
+					// let the CClassNameType lookup handle this (needed in order to obtain the declaration context)
+                    new CClassNameType(inner.getType().getQualifiedName().getIdent()),
+                    FACTORY_METHOD_PREFIX+inner.getType().getQualifiedName().getIdent(),
+                    JFormalParameter.EMPTY, // formal params
+                    CReferenceType.EMPTY,
+                    null,
+                    null, null
+                );
+        	
+        	decl.addMethod(facMethodDecl);
+        }
 	}
 	
 	/*
@@ -347,11 +330,15 @@ public class CClassPreparation implements CaesarConstants {
                     JavaTypeNode inner = (JavaTypeNode) innerIt.next();
                     
                     if(!inner.isToBeGeneratedInBytecode()) {
-                        generateFactoryMethod(
-                            environment,
-                            inner,
-                            decl
-                        );
+                    	
+                    	/* generate factory method for non-abstract classes */
+                    	if((inner.getDeclaration().getModifiers() & ACC_ABSTRACT) == 0) { 
+	                        generateFactoryMethod(
+	                            environment,
+	                            inner,
+	                            decl
+	                        );
+                    	}
                         
                         if(inner.getDeclaration().isWrapper()) {
 	                        generateWrapperSupport(

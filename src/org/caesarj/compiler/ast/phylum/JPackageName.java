@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JPackageName.java,v 1.3 2005-01-24 16:52:59 aracic Exp $
+ * $Id: JPackageName.java,v 1.4 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -43,11 +43,12 @@ public class JPackageName extends JPhylum {
    * @param	where		the token reference of this node
    * @param	name		the package name
    */
-  public JPackageName(TokenReference where, String name, JavaStyleComment[] comments) {
+  public JPackageName(TokenReference where, String name, JavaStyleComment[] comments, boolean isCollab) {
     super(where);
 
     this.name = name.intern();
     this.comments = comments;
+    this.isCollab = isCollab;
   }
 
   // ----------------------------------------------------------------------
@@ -63,6 +64,15 @@ public class JPackageName extends JPhylum {
     return name;
   }
   
+  /**
+   * Returns if the package is a collaboration
+   *
+   * @return	is it collaboration name
+   */
+  public boolean isCollaboration() {
+    return isCollab;
+  }
+  
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------
@@ -70,8 +80,9 @@ public class JPackageName extends JPhylum {
   /**
    * The unnamed package (JLS 7.4.2).
    */
-  public static final JPackageName	UNNAMED = new JPackageName(TokenReference.NO_REF, "", null);
+  public static final JPackageName	UNNAMED = new JPackageName(TokenReference.NO_REF, "", null, false);
 
   private final String			name;
   private final JavaStyleComment[]	comments;
+  private final boolean			isCollab;
 }

@@ -16,8 +16,10 @@
  <property name="source" location="src/org/caesarj"/>
  <property name="packageBase" location="src"></property>
  <property name="inputFiles" location="cc"></property>
+ <property name="scripts" location="scripts"></property>
  <property name="libs" location="lib"/>
  <property name="dist" location="dist"/>
+ <property name="cjrmi-dist" location="../org.caesarj.ui"/>
 
  <!-- Create CaesarMessages.java -->
 	 
@@ -66,6 +68,30 @@
  	</jar>
  	
  	<delete dir="${tmpbin}"/> 	
+ </target>
+	
+ <target name="command-line-zip" depends="dist">
+ 	<mkdir dir="${dist}/zip"/>
+ 	<mkdir dir="${dist}/zip/bin"/>
+ 	<mkdir dir="${dist}/zip/lib"/>
+ 	
+ 	<copy file="${scripts}/cj" todir="${dist}/zip/bin"/>
+ 	<copy file="${scripts}/cj.cmd" todir="${dist}/zip/bin"/>
+ 	<copy file="${scripts}/cjc" todir="${dist}/zip/bin"/>
+ 	<copy file="${scripts}/cjc.cmd" todir="${dist}/zip/bin"/>
+ 	<copy file="${scripts}/cjrmic" todir="${dist}/zip/bin"/>
+ 	<copy file="${scripts}/cjrmic.cmd" todir="${dist}/zip/bin"/>
+ 	
+ 	<copy file="${libs}/aspectjrt.jar" todir="${dist}/zip/lib"/>
+ 	<copy file="${libs}/aspectjtools.jar" todir="${dist}/zip/lib"/>
+ 	<copy file="${libs}/aspectjrt.jar" todir="${dist}/zip/lib"/>
+ 	<copy file="${cjrmi-dist}/cj-rmic.jar" todir="${dist}/zip/lib"/>
+ 	<copy file="${dist}/caesar-compiler.jar" todir="${dist}/zip/lib"/>
+ 	<copy file="${dist}/caesar-runtime.jar" todir="${dist}/zip/lib"/>
+ 	
+ 	<zip destfile="${dist}/caesarj.zip" basedir="${dist}/zip"/>
+ 	
+ 	<delete dir="${dist}/zip"/> 	
  </target>
 
  <!-- Generate stubs for remote runtime classes -->

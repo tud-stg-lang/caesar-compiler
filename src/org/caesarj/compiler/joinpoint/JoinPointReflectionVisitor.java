@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JoinPointReflectionVisitor.java,v 1.19 2005-01-24 16:52:59 aracic Exp $
+ * $Id: JoinPointReflectionVisitor.java,v 1.20 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -33,13 +33,7 @@ import org.caesarj.compiler.ast.phylum.declaration.CjAdviceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMemberDeclaration;
-import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
-import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
-import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
-import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
-import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.ast.visitor.VisitorSupport;
@@ -91,7 +85,7 @@ public class JoinPointReflectionVisitor implements IVisitor, CaesarConstants  {
     			JFieldDeclaration field = (JFieldDeclaration) self.getBody()[i];
     			if ((field.getVariable().getModifiers() & ACC_DEPLOYED) != 0) {
     				((CjClassDeclaration) self).addClassBlock(
-    					createStaticDeployBlock(
+    					DeploymentPreparation.createStaticFieldDeployBlock(
     						field.getTokenReference(),
     						(CjClassDeclaration) self,
     						field));
@@ -178,36 +172,4 @@ public class JoinPointReflectionVisitor implements IVisitor, CaesarConstants  {
 		
         return true;
     }
-
-
-	/*
-	 * Creates static initalization block:
-	 * 
-	 * {
-	 *    DeploySupport.deployBlock(<field>);
-	 * }
-	 * 
-	 */
-	private JClassBlock createStaticDeployBlock(
-		TokenReference where,
-		CjClassDeclaration classDeclaration,
-		JFieldDeclaration fieldDeclaration) {
-
-		JExpression prefix =
-            new JTypeNameExpression(
-                where,
-                new CClassNameType(CAESAR_DEPLOY_SUPPORT_CLASS));
-
-        JExpression deployStatementCall =
-            new JMethodCallExpression(
-                where,
-                prefix,
-                "deployBlock",
-                new JExpression[] {new JNameExpression(where, fieldDeclaration.getVariable().getIdent())});
-
-		JStatement[] body = { new JExpressionStatement(where, deployStatementCall, null) };
-
-		return new JClassBlock(where, true, body);
-	}
-
 }

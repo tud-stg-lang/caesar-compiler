@@ -1,3 +1,21 @@
+VC_M15C - 15.02.2005
+- Virtual class can be defined in a separate file outside its enclosing collaboration. 
+  The file contains cclass declaration instead of package declaration at the beginning.
+
+VC_M15B - 09.02.2005
+- Abstract classes supported
+- Static deployment is based on dynamic deployment	
+- Pure Java compilation problems fixed
+	- Method call type (invokevirtual or invokeinterface) is determined by call target rather 
+	  than by method owner
+	
+VC_M15A - 02.02.2005
+- Pure Java compilation problems fixed
+	- new Cls() expression is again allowed as statement
+	- Access to fields of outer classes is restored
+	- Byte code generation for interface method calls is fixed. 
+	  Interface methods are now called with the interface as target type.
+
 VC_M15 - 17.11.2004
 - Legacy code removed
 	- Invariants

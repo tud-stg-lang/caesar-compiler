@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.27 2005-02-25 13:42:56 aracic Exp $
+ * $Id: CaesarMessages.msg,v 1.28 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -126,3 +126,18 @@ error	ILLEGAL_PATH
 
 error	DECLARATION_DEPENDENCY_ORDER
 		"The declaration of the first variable access in the path has to be before the declaration of the dependent type."
+		
+error   ABSTRACT_CANNOT_OVERRIDE_CONCRETE
+		"A concrete virtual class cannot be overriden by an abstract one"
+		
+error   CANNOT_DEPLOY_ABSTRACT
+		"Cannnot statically deploy an abstract class"
+		
+error   CANNOT_DEPLOY_VIRTUAL
+		"Cannnot statically deploy a virtual class"
+		
+error   CCLASS_CANNOT_NEST_CLASS
+		"Cannot include Java class to a cclass"
+		
+error   CANNOT_FIND_ENCLOSING_CCLASS
+		"Cannot find the enclosing cclass"

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClass.java,v 1.35 2005-02-16 13:24:18 aracic Exp $
+ * $Id: CClass.java,v 1.36 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -191,8 +191,7 @@ public abstract class CClass extends CMember
 		this.localClass = localClass;
 	}
 	public boolean isCrosscutting() {
-		return (!CModifier.contains(getModifiers(),ACC_DEPLOYED)) &&
-		  CModifier.contains(getModifiers(),ACC_CROSSCUTTING);
+		return CModifier.contains(getModifiers(),ACC_CROSSCUTTING);
 	}
 	
 

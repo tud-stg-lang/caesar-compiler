@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTypeNode.java,v 1.13 2005-01-24 16:53:02 aracic Exp $
+ * $Id: CaesarTypeNode.java,v 1.14 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.graph;
@@ -29,6 +29,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.caesarj.classfile.ClassfileConstants2;
+import org.caesarj.compiler.ast.phylum.declaration.CjMixinInterfaceDeclaration;
 import org.caesarj.compiler.typesys.CaesarTypeSystemException;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.compiler.typesys.visitor.ICaesarTypeVisitor;
@@ -52,6 +54,9 @@ public class CaesarTypeNode {
 	
 	private JavaQualifiedName qualifiedName;
 	private JavaQualifiedName qualifiedImplName;
+	
+	// null for implicit types
+	private CjMixinInterfaceDeclaration typeDecl = null; 
 	
 	private List mixinList = new LinkedList();
 	
@@ -87,6 +92,10 @@ public class CaesarTypeNode {
 	public JavaQualifiedName getQualifiedImplName() {
 		return qualifiedImplName;
 	}
+	
+	public CjMixinInterfaceDeclaration getTypeDecl() {
+		return typeDecl;
+	}    
 
 	public List getMixinList() {
 		return mixinList;
@@ -123,6 +132,23 @@ public class CaesarTypeNode {
 	public boolean isDeclaredType() {
 		return kind.equals(DECLARED);
 	}
+	
+	public boolean isAbstract() {
+		/* determine if the class is abstract */
+		if (isDeclaredType()) {
+			return (typeDecl.getCorrespondingClassDeclaration().getModifiers() & ClassfileConstants2.ACC_ABSTRACT) != 0;
+		}
+		else {
+			boolean isAbstr = true;
+			for (Iterator it = incrementFor(); it.hasNext();) {
+				FurtherboundFurtherbindingRelation rel = (FurtherboundFurtherbindingRelation)it.next();
+				if (!rel.getFurtherboundNode().isAbstract()) {
+					isAbstr = false;
+				}				
+			}
+			return isAbstr;
+		}
+	}
 
 	public Iterator parents() {
 		return inheritsFrom.iterator();
@@ -136,6 +162,10 @@ public class CaesarTypeNode {
 		return kind;
 	}
 
+	
+	public void setTypeDecl(CjMixinInterfaceDeclaration decl) {
+		typeDecl = decl;
+	} 
 	
 	public void addEnclosedBy(BidirectionalRelation relation) {	    
 		addToList(relation, enclosedBy);

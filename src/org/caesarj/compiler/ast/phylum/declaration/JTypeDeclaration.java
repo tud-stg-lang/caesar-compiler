@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclaration.java,v 1.44 2005-02-16 16:34:03 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.45 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -146,12 +146,14 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         System.arraycopy(newDecls, 0, newInners, inners.length, newDecls.length);
         inners = newInners;
         
-        CReferenceType[] newInnerRefs = new CReferenceType[newDecls.length];
-        for(int i=0; i<newInnerRefs.length; i++) {
-            newInnerRefs[i] = newDecls[i].getCClass().getAbstractType();
+        if (isExported()) {
+	        CReferenceType[] newInnerRefs = new CReferenceType[newDecls.length];
+	        for(int i=0; i<newInnerRefs.length; i++) {
+	            newInnerRefs[i] = newDecls[i].getCClass().getAbstractType();
+	        }
+	        
+	        getCClass().addInnerClass(newInnerRefs);
         }
-        
-        getCClass().addInnerClass(newInnerRefs);
     }
     
     /**

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.36 2005-01-24 16:52:59 aracic Exp $
+ * $Id: DeploymentClassFactory.java,v 1.37 2005-03-01 15:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -33,15 +33,47 @@ import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.aspectj.CaesarNameMangler;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.declaration.*;
-import org.caesarj.compiler.ast.phylum.expression.*;
+import org.caesarj.compiler.ast.phylum.declaration.CjAdviceDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjAdviceMethodDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjDeploymentSupportClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjMethodDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjPointcutDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjProceedDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JConstructorDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.expression.JAssignmentExpression;
+import org.caesarj.compiler.ast.phylum.expression.JConstructorCall;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
+import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
+import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
+import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
-import org.caesarj.compiler.ast.phylum.statement.*;
+import org.caesarj.compiler.ast.phylum.statement.JBlock;
+import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
+import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
+import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
+import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarConstants;
-import org.caesarj.compiler.export.CModifier;
-import org.caesarj.compiler.types.*;
+import org.caesarj.compiler.types.CBooleanType;
+import org.caesarj.compiler.types.CByteType;
+import org.caesarj.compiler.types.CCharType;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CDoubleType;
+import org.caesarj.compiler.types.CFloatType;
+import org.caesarj.compiler.types.CIntType;
+import org.caesarj.compiler.types.CLongType;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CShortType;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
 
 /**
@@ -344,13 +376,12 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CReferenceType[] interfaces =
 			{ new CClassNameType(CAESAR_ASPECT_REGISTRY_IFC_CLASS)};
 
-		int modifiers = aspectClass.getModifiers();
+		int modifiers = ACC_PUBLIC;
 		if (aspectClass.getOwner() != null) {
 			//the nested singletons need to be static
 			modifiers |= ACC_STATIC;
 		}
-		modifiers = CModifier.notElementsOf(modifiers, ACC_DEPLOYED | ACC_MIXIN);
-
+		
 		// create class initializer
 		JPhylum[] initializers = new JPhylum[1];
 		initializers[0] = createSingletonAspectClinit();
