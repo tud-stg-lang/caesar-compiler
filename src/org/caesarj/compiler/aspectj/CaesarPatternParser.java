@@ -20,11 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarPatternParser.java,v 1.3 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CaesarPatternParser.java,v 1.4 2005-03-10 12:32:09 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
 
+import org.aspectj.weaver.patterns.IToken;
+import org.aspectj.weaver.patterns.ITokenSource;
 import org.aspectj.weaver.patterns.ParserException;
 import org.aspectj.weaver.patterns.PatternParser;
 
@@ -49,12 +51,13 @@ public class CaesarPatternParser {
 	}
 //Attribute
 	private PatternParser	patternParser;
+	private ITokenSource	tokenSource;
+	
 // Counstruction
 	public CaesarPatternParser( String input, CaesarSourceContext context )
 	{
-		patternParser = new PatternParser(
-			CaesarTokenSource.createTokenSource(input,context)
-			);
+		tokenSource = CaesarTokenSource.createTokenSource(input,context);
+		patternParser = new PatternParser(tokenSource);			
 	}
 // Interface
 	public CaesarDeclare parseDeclare() {
@@ -71,12 +74,14 @@ public class CaesarPatternParser {
 
 	public CaesarPointcut parsePointcut() {
 		CaesarPointcut ret;
-		try{
-			ret = new CaesarPointcut( patternParser.parsePointcut() );
+		try {
+			ret = new CaesarPointcut(patternParser.parsePointcut());
 		}
-		catch(ParserException ex)
-		{
+		catch(ParserException ex) {
 			throw new CaesarParserException(ex);
+		}
+		if (tokenSource.peek() != IToken.EOF) {
+			throw new CaesarParserException(new ParserException("symbols found after pointcut", tokenSource.peek()));
 		}
 		return ret;
 	}
