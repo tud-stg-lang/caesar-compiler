@@ -15,11 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CArrayType.java,v 1.5 2004-10-17 20:59:36 aracic Exp $
+ * $Id: CArrayType.java,v 1.6 2004-10-18 20:22:02 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
 
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
@@ -199,7 +200,12 @@ public class CArrayType extends CReferenceType {
         throw new UnpositionedError(KjcMessages.OVERSIZED_ARRAY_BOUND, baseType);
       }
       baseType = baseType.checkType(context);
-            
+
+      // IVICA: currently we do not support arrays of Caesar classes
+      if(baseType.getCClass().isMixinInterface()) {
+          throw new UnpositionedError(CaesarMessages.CCLASS_ARRAYS_NOT_ALLOWED);
+      }
+      
       //setClass(context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT).getCClass());
     }
     

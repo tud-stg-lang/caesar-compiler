@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.15 2004-10-15 15:33:55 aracic Exp $
+ * $Id: CaesarMessages.msg,v 1.16 2004-10-18 20:25:01 aracic Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -71,6 +71,10 @@ error	NAME_CLASH
 
 error	CLASS_GENERATOR
 		"Class Generator failed on \"{0}\": {1}."
+
+
+error	CCLASS_ARRAYS_NOT_ALLOWED
+		"Currently arrays of Caesar classes are not supported."
 
 
 // MISC

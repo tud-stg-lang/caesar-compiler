@@ -22,8 +22,13 @@ public class CastUtils {
     
     public CType castFrom(CContext context, CType t, CClass contextClass) {
         
-        if(t.isClassType()) {
-		    CClass tClass = t.getCClass();
+        CType res = null;
+        //CArrayType arrayType = t.isArrayType() ? (CArrayType)t : null;        
+        //CType type = arrayType != null ? arrayType.getBaseType() : t;
+        CType type = t;
+        
+        if(type.isClassType()) {
+		    CClass tClass = type.getCClass();
 		        
 		    if(tClass.isMixinInterface() && contextClass.isMixin()) {
 	            String tNewClassQn = 
@@ -42,11 +47,17 @@ public class CastUtils {
 		            
 		            CType newT = newPrefixClass.getAbstractType();          
 		            
-		            return newT;
+		            res = newT;
 	            }	        
 	        }  
         }
         
-        return null;
+        /*
+        if(arrayType != null) {
+            res = new CArrayType(res, arrayType.getArrayBound());
+        }
+        */
+        
+        return res;
     }
 }
