@@ -1,5 +1,7 @@
 package org.caesarj.compiler.ast.phylum.expression;
 
+import org.caesarj.compiler.ast.visitor.IVisitor;
+import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.export.CClass;
@@ -14,7 +16,7 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Ivica Aracic 
  */
-public class CjMethodCallExpression2 extends JExpression {
+public class CjMethodCallExpression2 extends JExpression implements CaesarConstants {
     
     protected JExpression prefix;
 	protected String ident;
@@ -29,7 +31,7 @@ public class CjMethodCallExpression2 extends JExpression {
 		super(where);
 
 		this.prefix = prefix;
-		this.ident = ident.intern(); // $$$ graf 010530 : why intern ?
+		this.ident = ident.intern();
 		this.args = args;
 	}
     
@@ -40,12 +42,8 @@ public class CjMethodCallExpression2 extends JExpression {
     public JExpression analyse(CExpressionContext context) throws PositionedError {        
         TypeFactory factory = context.getTypeFactory();       
 
-        JExpression expr = new JMethodCallExpression(
-            getTokenReference(),
-            prefix, ident, args
-        );
-        
-        /* TODO inserting automatic casts
+        JExpression expr;
+                
         if(prefix != null) {
 	        prefix = prefix.analyse(context);
 	                
@@ -54,15 +52,19 @@ public class CjMethodCallExpression2 extends JExpression {
 	        
 	        CClass contextClass = context.getClassContext().getCClass();
 	        
+	        expr = new JMethodCallExpression(getTokenReference(), prefix, ident, args);
+	        
 	        if(
-	            (prefixClass.isMixinInterface() || prefixClass.isMixin())
+	            (prefixClass.isMixinInterface() /*|| prefixClass.isMixin()*/)
 	            && contextClass.isMixin()
 	        ) {
 	            
+	            /*
 	            if(prefixClass.isMixin()) {
 	                prefixType = prefixClass.getInterfaces()[0];
 	                prefixClass = prefixType.getCClass();
 	            }
+	            */
 	            
 	            String newPrefixClassQn = 
 	                context.getEnvironment().getCaesarTypeSystem().
@@ -71,56 +73,32 @@ public class CjMethodCallExpression2 extends JExpression {
 		                    contextClass.convertToIfcQn()
 		                );
 	            
-	            CClass newPrefixClass = 
-	                context.getClassReader().loadClass(
-	                    factory,
-	                    newPrefixClassQn
-	                );
-	            
-	            CType newPrefixType = newPrefixClass.getAbstractType();          
-	            
-	            expr = new JMethodCallExpression(
-	                getTokenReference(),
-	                new JCastExpression(
-	                    getTokenReference(),
-	                    prefix,
-	                    newPrefixType
-	                ),
-	                ident, args
-	            );
+	            if(newPrefixClassQn != null) {
+		            CClass newPrefixClass = 
+		                context.getClassReader().loadClass(
+		                    factory,
+		                    newPrefixClassQn
+		                );
+		            
+		            CType newPrefixType = newPrefixClass.getAbstractType();          
+		            
+		            expr = new JMethodCallExpression(
+		                getTokenReference(),
+		                new JCastExpression(
+		                    getTokenReference(),
+		                    prefix,
+		                    newPrefixType
+		                ),
+		                ident, args
+		            );
+	            }
 	        }
+        }  
+        else {
+            expr = new JMethodCallExpression(getTokenReference(), prefix, ident, args);
         }
-        */
-        
-        
-        JExpression res = expr.analyse(context);
-        
-        /*
-        // insert cast for the method result (depending on the context again)
-        CClass resClass = res.getType(factory).getCClass();
-        if(resClass.isMixinInterface()) {
-            String newResClassQn = 
-                context.getEnvironment().getCaesarTypeSystem().
-                	findInContextOf(
-	                    resClass.getQualifiedName(),
-	                    contextClass.convertToIfcQn()
-	                );  
-            
-            CClass newResClass = 
-                context.getClassReader().loadClass(
-                    factory,
-                    newResClassQn
-                );
-            
-            res = new JCastExpression(
-                getTokenReference(),
-                res,
-                newResClass.getAbstractType()
-            );
-        }
-        */
-                
-        return res;
+
+        return expr.analyse(context);
     }
     
     public boolean isStatementExpression() {
@@ -130,4 +108,12 @@ public class CjMethodCallExpression2 extends JExpression {
     public void genCode(GenerationContext context, boolean discardValue) {
         throw new InconsistencyException();
     }
+    
+    public void recurse(IVisitor p) {
+        if(prefix != null)
+            prefix.accept(p);
+        for (int i = 0; i < args.length; i++) {
+            args[i].accept(p);
+        }
+    }    
 }

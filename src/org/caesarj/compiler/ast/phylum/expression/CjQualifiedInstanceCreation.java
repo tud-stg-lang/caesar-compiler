@@ -1,5 +1,6 @@
 package org.caesarj.compiler.ast.phylum.expression;
 
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
@@ -79,5 +80,12 @@ public class CjQualifiedInstanceCreation extends JExpression {
     
     public void genCode(GenerationContext context, boolean discardValue) {
         throw new InconsistencyException();
+    }
+    
+    public void recurse(IVisitor s) {
+        prefix.accept(s);
+        for (int i = 0; i < params.length; i++) {
+            params[i].accept(s);
+        }
     }
 }

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.19 2004-09-08 17:07:29 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.20 2004-09-09 14:35:57 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -651,7 +651,8 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         for (int i = 0; i < methods.length; i++) {
             methods[i].accept(s);
         }
-        /* IVICA this has caused that fields has been visited twice
+        // IVICA this has caused that fields has been visited twice
+        /*
         for (int i = 0; i < body.length; i++) {
             body[i].accept(s);
         }

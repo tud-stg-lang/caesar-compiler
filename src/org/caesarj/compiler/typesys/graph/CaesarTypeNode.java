@@ -218,6 +218,11 @@ public class CaesarTypeNode {
 	 * A.A in context of B is B.A
 	 */
 	public CaesarTypeNode getTypeInContextOf(CaesarTypeNode n) {
+	    
+	    // top level class, no redefinition possible
+	    if(enclosedBy.size() == 0)
+	        return this;
+	    
 	    List l1 = new LinkedList();
 	    List l2 = new LinkedList();
 	    
@@ -230,18 +235,23 @@ public class CaesarTypeNode {
 	    CaesarTypeNode contextOuterChain[] = 
 	        (CaesarTypeNode[])l2.toArray(new CaesarTypeNode[l2.size()]);
 	    
+	    if(thisOuterChain.length == 1 && contextOuterChain.length==2) {
+	        System.out.println("stop here");
+	    }
+	    
 	    // check subtype relations
 	    int j;
 	    CaesarTypeNode currentOuter = null;
+	    	    
 	    for(j=0; j<thisOuterChain.length-1 && j<contextOuterChain.length; j++) {
 	        currentOuter = contextOuterChain[j];
 	        if(!contextOuterChain[j].isSubtypeOf(thisOuterChain[j]))
 	            return null;
-        }	    	   	   
-
+        }
+	    
 	    if(currentOuter == null)
 	        return null;
-	    
+
 	    for (int i = j; i < thisOuterChain.length; i++) {
             currentOuter = currentOuter.lookupInner(thisOuterChain[i].getQualifiedName().getIdent());
         }
@@ -251,9 +261,8 @@ public class CaesarTypeNode {
 	
 	private void genOuterList(List l) {
 	    l.add(0, this);
-	    if(enclosedBy.size()>0) {
-	        CaesarTypeNode o = ((OuterInnerRelation)enclosedBy.get(0)).getOuterNode();	        
-	        o.genOuterList(l);
+	    if(enclosedBy.size()>0) {	        
+	        getOuter().genOuterList(l);
         }
     }
 	
