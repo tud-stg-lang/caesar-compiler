@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.3 2004-04-05 15:17:27 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.4 2004-04-06 21:48:43 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -46,7 +46,7 @@ import org.caesarj.util.TokenReference;
 import org.caesarj.util.Utils;
 
 /**
- * This class represents a cclass in the syntax tree. 
+ * This class represents a cclass in the syntax tree.  
  */
 public class CjClassDeclaration
     extends JClassDeclaration
@@ -136,6 +136,56 @@ public class CjClassDeclaration
             CjAdviceDeclaration.EMPTY,
             null);
     }
+    
+    public CjClassDeclaration(
+        TokenReference where,
+        int modifiers,
+        String ident,
+        CTypeVariable[] typeVariables,
+        CReferenceType superClass,
+        CReferenceType wrappee,
+        CReferenceType[] interfaces,
+        JFieldDeclaration[] fields,
+        JMethodDeclaration[] methods,
+        JTypeDeclaration[] inners,
+        JPhylum[] initializers,
+        JavadocComment javadoc,
+        JavaStyleComment[] comment,
+        CjPointcutDeclaration[] pointcuts,
+        CjAdviceDeclaration[] advices,
+        CaesarDeclare[] declares,
+        boolean implClass) {
+        this(
+            where,
+            modifiers,
+            implClass ? ident+"_Impl" : ident, // IVICA,
+            typeVariables,
+            superClass,
+            wrappee,
+            interfaces,
+            fields,
+            methods,
+            inners,
+            initializers,
+            javadoc,
+            comment,
+            pointcuts,
+            advices,
+            declares);
+              
+        // IVICA 
+        if(implClass) {                    
+            originalIdent = ident;
+            
+            //rename constructors
+            for(int i=0; i<this.methods.length; i++) {
+                JMethodDeclaration method = this.methods[i];
+                if(method instanceof JConstructorDeclaration) {
+                    method.ident = (method.ident + "_Impl").intern();
+                }
+            }
+        }        
+    }
 
     public CjClassDeclaration(
         TokenReference where,
@@ -157,7 +207,7 @@ public class CjClassDeclaration
         super(
             where,
             modifiers,
-            ident+"_Impl", // IVICA
+            ident,
             typeVariables,
             superClass,
             interfaces,
@@ -167,23 +217,11 @@ public class CjClassDeclaration
             initializers,
             javadoc,
             comment);
+           
         this.wrappee = wrappee;
         this.pointcuts = pointcuts;
         this.advices = advices;
-        this.declares = declares;
-       
-       
-        // IVICA 
-        originalIdent = ident;
-        
-        //rename constructors
-        for(int i=0; i<methods.length; i++) {
-            JMethodDeclaration method = methods[i];
-            if(method instanceof JConstructorDeclaration) {
-                method.ident = (method.ident + "_Impl").intern();
-            }
-        }
-        
+        this.declares = declares;      
         
         // structural detection of crosscutting property
         if ((advices.length > 0) || (pointcuts.length > 0))
