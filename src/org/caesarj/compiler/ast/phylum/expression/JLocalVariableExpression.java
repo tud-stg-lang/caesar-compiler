@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JLocalVariableExpression.java,v 1.8 2005-02-16 16:33:37 aracic Exp $
+ * $Id: JLocalVariableExpression.java,v 1.9 2005-03-03 12:17:53 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -166,6 +166,19 @@ public class JLocalVariableExpression extends JExpression {
     public JExpression analyse(CExpressionContext context)
         throws PositionedError {
 
+        // IVICA: store family information
+        try {
+            CType type = variable.getType();            
+	        if(type.isReference()) {	
+	            thisAsFamily = Path.createFrom(context.getBlockContext(), this);
+	            if(type.isCaesarReference())
+	                family = thisAsFamily.normalize();
+	        }
+        }
+        catch (UnpositionedError e) {
+            throw e.addPosition(getTokenReference());
+        }
+        
         // IVICA: insert cast
         if(!context.isLeftSide()) {
 	        CType castType = 
@@ -201,18 +214,6 @@ public class JLocalVariableExpression extends JExpression {
             return variable.getValue();
         }
         
-        // IVICA: store family information
-        try {
-            CType type = variable.getType();
-	        if(type.isCaesarReference()) {
-	            thisAsFamily = Path.createFrom(context.getBlockContext(), this);
-	            family = thisAsFamily.normalize();
-	        }
-        }
-        catch (UnpositionedError e) {
-            throw e.addPosition(getTokenReference());
-        }
-
         return this;
     }    
 
