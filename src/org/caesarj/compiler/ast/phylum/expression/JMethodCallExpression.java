@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.20 2005-02-12 18:12:23 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.21 2005-02-14 16:28:56 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -30,6 +30,7 @@ import org.caesarj.compiler.Log;
 import org.caesarj.compiler.ast.CMethodNotFoundError;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.AdditionalGenerationContext;
@@ -45,7 +46,6 @@ import org.caesarj.compiler.family.ContextExpression;
 import org.caesarj.compiler.family.MethodAccess;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CArrayType;
-import org.caesarj.compiler.types.CDependentType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CThrowableInfo;
 import org.caesarj.compiler.types.CType;
@@ -277,7 +277,7 @@ public class JMethodCallExpression extends JExpression
 		
 		argTypes = method.getParameters();
 				
-		Log.verbose("METHOD-CALL at line "+getTokenReference().getLine());
+		Log.verbose("METHOD-CALL to "+getIdent()+" at line "+getTokenReference().getLine());
 		argPaths = new Path[argTypes.length];
 		argTypePaths = new Path[argTypes.length];
 		for (int i = 0; i < argTypes.length; i++)
@@ -410,16 +410,23 @@ public class JMethodCallExpression extends JExpression
 			    
 			    Log.verbose("expr:"+argPaths[i]+" -> fam:"+argTypePaths[i]);
 			    
-			    if(argTypes[i].isDependentType()) {
-			        CDependentType depType = (CDependentType)refType;
+			    //if(argTypes[i].isDependentType())
+			    if(argTypes[i].getCClass().isNested()) {
+			        CReferenceType depType = (CReferenceType)refType;
 			        Path depTypePath = depType.getPath();
 			        
 			        // the family of this dependent type starts with a parameter
-			        if(depType.getK() == 0) {
+			        if(((ContextExpression)depTypePath.getHead()).getK() == 0) {
 			            // use the path of the dependent parameter type
 			            // and substitute the parameter access ( ctx(0).param ) with the 
 			            // passed path of the argument expression				            
 			            ArgumentAccess fa = (ArgumentAccess)depTypePath.getHeadPred();
+			            
+			            check(
+			                context,
+			                fa.getArgPos() < i,
+			                CaesarMessages.DECLARATION_DEPENDENCY_ORDER
+			            );
 			            
 			            depTypePath = depTypePath.substituteFirstAccess( argPaths[fa.getArgPos()] );
 			            
