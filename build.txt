@@ -2,10 +2,17 @@ Building the CaesarJ-Project with ANT
 
 Author: Karl Klose <karl.klose@gmx.de>
 
+Overview
+
 The ANT script build.xml includes targets for
-1. Generating the scanner files&code
-2. Generating the parser files&code
-3. Compiling all changed compilation units
+1. MSGGEN:   Generating CaesarMessages.java
+2. SCANNER:  Generating the scanner code
+3. PARSER:   Generating the parser code
+4. COMPILE:  Compiling all changed compilation units
+5. DIST:     Pack a distribution JAR-File
+6. COMPLETE: Run targets 1-4
+
+How to run a target
 
 Running the build file the first time:
 - Right-click on the build.xml file located in the caesar project root
@@ -18,3 +25,9 @@ This configuration has been saved and is accessible through the "Run as..."
 command either in the "Project"-Menu or the toolbar.
 You can modify or add configurations by following the same routine as for the
 first time.
+
+Dependencies
+
+Some targets automatically run other targets they depend on:
+- DIST:     Runs the compile target to update the classfiles
+- COMPLETE: Runs targets 1-4
