@@ -13,20 +13,17 @@ public class VCTestCase_0 extends TestCase {
 	public StringBuffer result = new StringBuffer();
 
 	public void test() {
-        B b = new B();
-        A a = b;
-        //D d = new D();
+        D d = new D();
+        A a = d;
+        B b = d;
         
         System.out.println(a.a());
         System.out.println(b.a());
         System.out.println(b.b());
-
-/*
         System.out.println(d.a());
         System.out.println(d.b());
         System.out.println(d.c());
         System.out.println(d.d());
-*/
 	}
 }
 
@@ -49,6 +46,10 @@ public cclass C extends A {
 }
 
 public cclass D extends B & C {
+    public D() {        
+        System.out.println("hohoho D");
+    }
+    
     public String d() {
         return a()+'-'+b()+'-'+c();
     }    

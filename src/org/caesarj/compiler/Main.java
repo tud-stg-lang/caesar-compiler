@@ -79,19 +79,21 @@ public class Main extends MainSuper implements Constants {
         if (!parseArguments(args)) {
             return false;
         }
+        
         KjcEnvironment environment = createEnvironment(options);
         setSourceVersion(environment.getSourceVersion());
         initialize(environment);
+        
         if (infiles.size() == 0) {
             options.usage();
             inform(KjcMessages.NO_INPUT_FILE);
             return false;
         }
+        
         options.destination = checkDestination(options.destination);
+        
         if (verboseMode()) {
-            inform(
-                CaesarMessages.COMPILATION_STARTED,
-                new Integer(infiles.size()));
+            inform(CaesarMessages.COMPILATION_STARTED, new Integer(infiles.size()));
         }
 
         try {
@@ -117,8 +119,9 @@ public class Main extends MainSuper implements Constants {
         
         checkAllConstructorInterfaces(tree);
         
-        // CTODO prepareVirtualClasses: transform extends and generate factory methods
-        
+        // CTODO prepareVirtualClasses: 
+        // - transform inner class supertype 
+        // - generate factory methods        
         
         generateSourceDependencyGraph(tree);
 
@@ -126,11 +129,11 @@ public class Main extends MainSuper implements Constants {
             generateCompilerPassInfo();
             
         while(compilerPass != null) {       
-            
             compilerPass.begin();
-
             {
-                // CTODO mix classes here
+                // CTODO mix classes
+                // - get all types which can be mixed from compilerPass
+                // - mix it (weaver! generated code also as input for weaver?)
                 
                 checkAllInterfaces(tree);
                 if(errorFound) return false;
@@ -143,7 +146,6 @@ public class Main extends MainSuper implements Constants {
                 
                 genCode(environment.getTypeFactory());
             }
-  
             compilerPass.end();
             
             compilerPass = compilerPass.getNextPass();
@@ -156,15 +158,6 @@ public class Main extends MainSuper implements Constants {
             weaveGeneratedCode(environment.getTypeFactory());
         }
                 
-        /*
-        if (noWeaveMode()) {
-            genCode(environment.getTypeFactory());
-        }
-        else {
-            generateAndWeaveCode(environment.getTypeFactory());
-        }
-        */
-
         if (verboseMode()) {
             inform(CaesarMessages.COMPILATION_ENDED);
         }
