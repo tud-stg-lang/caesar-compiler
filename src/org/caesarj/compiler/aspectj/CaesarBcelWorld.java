@@ -52,7 +52,7 @@ public class CaesarBcelWorld /*extends BcelWorld */{
 	private class BcelWorldAdapter extends BcelWorld{
 		
 		public BcelWorldAdapter(String classPath) {
-			super(classPath);
+			super(classPath == null ? "" : classPath);
 		}
 		
 		/**
