@@ -65,7 +65,11 @@ public class VirtualClassesTests extends FjTestCase {
 	public void testCaesarTestCase_14() throws Throwable {
         doGeneratedTest("test14", "VCTestCase");
     }
-	
+
+	public void testCaesarTestCase_14b() throws Throwable {
+        doGeneratedTest("test14b", "VCTestCase");
+    }
+
 	public void testCaesarTestCase_15() throws Throwable {
         doGeneratedTest("test15", "VCTestCase");
     }
@@ -133,4 +137,5 @@ public class VirtualClassesTests extends FjTestCase {
 	public void testCaesarTestCase_99() throws Throwable {
         doGeneratedTest("test99", "VCTestCase");
     }
+
 }
