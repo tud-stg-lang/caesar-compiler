@@ -93,4 +93,20 @@ public class AspectDeploymentTests extends FjTestCase
 	public void testCaesarTestCase_22() throws Throwable {
 		compileAndRun("test122", "ADTestCase");
 	}
+	
+	public void testCaesarTestCase_23() throws Throwable {
+		compileAndRun("test123", "ADTestCase");
+	}
+		
+	public void testCaesarTestCase_24() throws Throwable {
+		compileAndRun("test124", "ADTestCase");
+	}
+	
+	public void testCaesarTestCase_25() throws Throwable {
+		compileAndRun("test125", "ADTestCase");
+	}
+	
+	public void testCaesarTestCase_26() throws Throwable {
+		compileAndRun("test126", "ADTestCase");
+	}
 }
