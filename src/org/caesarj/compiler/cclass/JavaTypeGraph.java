@@ -15,6 +15,7 @@ public class JavaTypeGraph {
     
     private HashMap nodes = new HashMap();
     private JavaTypeNode root;
+    private HashMap caesar2javaMap = new HashMap();
     
     public JavaTypeGraph() {
         CaesarTypeNode typeNode = new CaesarTypeNode(null, "java/lang/Object", false);
@@ -68,7 +69,7 @@ public class JavaTypeGraph {
         root.calculateCompilationLevel(0, false);
 
         // calculate names        
-        root.calculateQualifiedNames();
+        root.calculateOuterAndQualifiedName();
     }
     
     
@@ -78,5 +79,13 @@ public class JavaTypeGraph {
         
     public void debug() {
         root.debug(0);
+    }
+
+    public void registerJavaType(CaesarTypeNode type, JavaTypeNode node) {
+        caesar2javaMap.put(type, node);
     }    
+    
+    public JavaTypeNode getJavaTypeNode(CaesarTypeNode type) {
+        return (JavaTypeNode)caesar2javaMap.get(type);
+    }
 }
