@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.11 2004-04-22 15:25:20 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.12 2004-04-27 13:27:39 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -321,17 +321,22 @@ public class CjClassDeclaration
      * Sets the owner declaration. This method was pulled up.
      * @param ownerDecl
      */
+    /*
     public void setOwnerDeclaration(CjClassDeclaration ownerDecl) {
         this.ownerDecl = ownerDecl;
     }
+    */
 
     /**
      * Returns the owner declaration. This method was pulled up.
      * @return FjClassDeclaration
      */
+    /*
     public CjClassDeclaration getOwnerDeclaration() {
         return ownerDecl;
     }
+    */
+    
     /**
      * Returns the ident of the class
      * @return String
@@ -355,21 +360,6 @@ public class CjClassDeclaration
     	  setInners(newInners);
       }
     */
-
-    /**
-     * Adds a method to the class. This method was pulled up. 
-     * @param newMethod
-     */
-    public void addMethod(JMethodDeclaration newMethod) {
-        JMethodDeclaration[] newMethods =
-            new JMethodDeclaration[methods.length + 1];
-
-        System.arraycopy(methods, 0, newMethods, 0, methods.length);
-
-        newMethods[methods.length] = newMethod;
-
-        methods = newMethods;
-    }
 
     /**
      * Adds a field in the class.
@@ -497,23 +487,19 @@ public class CjClassDeclaration
     // IVICA checkConstructorInterfaceOnly
     /**
      * this one generates only constructor information in 
-     * sourceClass, super type is set to Object
+     * sourceClass
      */    
     public void checkConstructorInterfaceOnly(CContext context) throws PositionedError {
-        // TODO default constructor missing
-        CMethod methodList[] = new CMethod[methods.length];
+        // CTODO default constructor missing
+        List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {
-            methodList[i] = methods[i].checkInterface(self);
-            for (int j = 0; j < i; j++) {
-                check(
-                    context,
-                    !methodList[i].equals(methodList[j]),
-                    KjcMessages.METHOD_REDEFINE,
-                    methodList[i]);
+            if(methods[i] instanceof JConstructorDeclaration) {
+                CMethod m = methods[i].checkInterface(self);
+                methodList.add(m);
             }
         }
 
-        sourceClass.close(this.interfaces, new Hashtable(), methodList);
+        sourceClass.close(this.interfaces, new Hashtable(), (CMethod[])methodList.toArray(new CMethod[0]));
         
         // Check inners
         for(int k = 0; k < inners.length; k++) {

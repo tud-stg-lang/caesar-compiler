@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.7 2004-04-19 15:22:57 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.8 2004-04-27 13:27:39 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -127,6 +127,21 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
 
         sourceClass.setInnerClasses(innerClasses); // prevent interface
         uniqueSourceClass = classReader.addSourceClass(sourceClass);
+    }
+
+    /**
+     * Adds a method to the class. This method was pulled up. 
+     * @param newMethod
+     */
+    public void addMethod(JMethodDeclaration newMethod) {
+        JMethodDeclaration[] newMethods =
+            new JMethodDeclaration[methods.length + 1];
+
+        System.arraycopy(methods, 0, newMethods, 0, methods.length);
+
+        newMethods[methods.length] = newMethod;
+
+        methods = newMethods;
     }
 
     // ----------------------------------------------------------------------
