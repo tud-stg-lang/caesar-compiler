@@ -6,7 +6,6 @@
 	<classpathentry sourcepath="lib/aspectjtools-src.jar" kind="lib" path="lib/aspectjtools.jar"/>
 	<classpathentry kind="lib" path="lib/java-getopt-1.0.9.jar"/>
 	<classpathentry kind="lib" path="lib/JFlex.jar"/>
-	<classpathentry kind="lib" path="generated"/>
 	<classpathentry kind="lib" path="test/AspectDeploymentTests"/>
 	<classpathentry kind="lib" path="test/CompileAndRunResultsWeaverTest"/>
 	<classpathentry kind="lib" path="test/UppercaseServer"/>
@@ -16,5 +15,7 @@
 	<classpathentry kind="lib" path="test/StructureModelTests"/>
 	<classpathentry kind="lib" path="test/CompilerErrorsTests"/>
 	<classpathentry kind="lib" path="test/TypeSystemTests"/>
+	<classpathentry kind="lib" path="tests/bin"/>
+	<classpathentry kind="lib" path="lib/jdom.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
