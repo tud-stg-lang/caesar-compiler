@@ -82,24 +82,19 @@ public class KjcOptions extends org.caesarj.util.Options {
 
   public String[] getOptions() {
     String[]	parent = super.getOptions();
-    String[]	total = new String[parent.length + 17];
+    String[]	total = new String[parent.length + 9];
     System.arraycopy(parent, 0, total, 0, parent.length);
-    total[parent.length + 0] = "  --beautify, -b:       Beautifies the source code [false]";
-    total[parent.length + 1] = "  --verbose, -v:        Prints out information during compilation [false]";
-    total[parent.length + 2] = "  --java, -j:           Generates java source code instead of class [false]";
-    total[parent.length + 3] = "  --encoding, -e<String>: Sets the character encoding for the source file(s).";
-    total[parent.length + 4] = "  --nowrite, -n:        Only checks files, doesn't generate code [false]";
-    total[parent.length + 5] = "  --warning, -w<int>:   Maximal level of warnings to be displayed [1]";
-    total[parent.length + 6] = "  --nowarn, -*:         Not used, for compatibility purpose [false]";
-    total[parent.length + 7] = "  --optimize, -O<int>:  Optimizes X times [1]";
-    total[parent.length + 8] = "  --deprecation, -D:    Tests for deprecated members [false]";
-    total[parent.length + 9] = "  --extdirs, -t<String>: Define location of installed extensions";
-    total[parent.length + 10] = "  --destination, -d<String>: Writes files to destination";
-    total[parent.length + 11] = "  --classpath, -C<String>: Changes class path to classpath";
-    total[parent.length + 12] = "  --debug, -g:          Produces debug information (does nothing yet) [false]";
-    total[parent.length + 13] = "  --source, -s<String>: Sets the source language (1.1, 1.2, 1.3, 1.4) [1.2]";
-    total[parent.length + 15] = "  --generic, -G:        Enables generic extension to Java [false]";
-    total[parent.length + 16] = "  --filter, -f<String>: Warning filter [org.caesarj.kjc.DefaultFilter]";
+    total[parent.length + 0] = "  --verbose, -v:        Prints out information during compilation [false]";
+    total[parent.length + 1] = "  --encoding, -e<String>: Sets the character encoding for the source file(s).";
+    total[parent.length + 2] = "  --nowrite, -n:        Only checks files, doesn't generate code [false]";
+    total[parent.length + 3] = "  --warning, -w<int>:   Maximal level of warnings to be displayed [1]";
+    total[parent.length + 4] = "  --optimize, -O<int>:  Optimizes X times [1]";
+    total[parent.length + 5] = "  --deprecation, -D:    Tests for deprecated members [false]";
+    total[parent.length + 6] = "  --destination, -d<String>: Writes files to destination";
+    total[parent.length + 7] = "  --classpath, -C<String>: Changes class path to classpath";
+//    total[parent.length + 12] = "  --debug, -g:          Produces debug information (does nothing yet) [false]";
+    total[parent.length + 8] = "  --source, -s<String>: Sets the source language (1.1, 1.2, 1.3, 1.4) [1.2]";
+//    total[parent.length + 16] = "  --filter, -f<String>: Warning filter [org.caesarj.kjc.DefaultFilter]";
     
     return total;
   }
