@@ -186,7 +186,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 	private JMethodDeclaration createAspectClassAdviceMethod(CjAdviceDeclaration advice) {
 		
 		return new CjAdviceMethodDeclaration(
-						where,
+		    			advice,
+						advice.getTokenReference(),
 						ACC_PUBLIC | ACC_SYNCHRONIZED,
 						CTypeVariable.EMPTY,
 						advice.getReturnType(),

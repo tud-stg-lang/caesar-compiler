@@ -17,7 +17,10 @@ import org.caesarj.util.TokenReference;
  */
 public class CjAdviceMethodDeclaration extends CjMethodDeclaration {
 
+    protected CjAdviceDeclaration advice;
+    
     public CjAdviceMethodDeclaration(
+        CjAdviceDeclaration advice,
         TokenReference where,
         int modifiers,
         CTypeVariable[] typeVariables,
@@ -39,5 +42,11 @@ public class CjAdviceMethodDeclaration extends CjMethodDeclaration {
             body,
             javadoc,
             comments);
+        
+        this.advice = advice;
+    }
+    
+    public CjAdviceDeclaration getAdvice() {
+        return advice;
     }
 }
