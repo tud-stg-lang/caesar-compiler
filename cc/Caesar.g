@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.32 2004-03-15 18:23:13 aracic Exp $
+ * $Id: Caesar.g,v 1.33 2004-03-16 11:38:39 aracic Exp $
  */
 
 /*
@@ -1594,9 +1594,6 @@ jEqualityExpression []
   (
     NOT_EQUAL right = jRelationalExpression[]
       { self = new JEqualityExpression(self.getTokenReference(), false, self, right); }
-  |
-    FJEQUAL right = jRelationalExpression[]
-      { self = new FjEqualityExpression(self.getTokenReference(), true, self, right); }
   |
     EQUAL right = jRelationalExpression[]
       { self = new JEqualityExpression(self.getTokenReference(), true, self, right); }
