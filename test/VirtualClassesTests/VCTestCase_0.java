@@ -27,24 +27,6 @@ public class VCTestCase_0 extends TestCase {
 	}
 }
 
-public cclass A {
-    public String a() {
-        return "A.a";
-    }
-}
-
-public cclass B extends A {
-    public String b() {
-        return "B.b";
-    }
-}
-
-public cclass C extends A {
-    public String c() {
-        return "C.c";
-    }
-}
-
 public cclass D extends B & C {
     public D() {        
         System.out.println("hohoho D");
@@ -55,8 +37,3 @@ public cclass D extends B & C {
     }    
 }
 
-public class X {
-    public String toString() {
-        return "X";
-    }
-}
