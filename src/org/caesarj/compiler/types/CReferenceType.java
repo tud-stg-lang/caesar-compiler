@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CReferenceType.java,v 1.9 2005-01-14 17:47:24 aracic Exp $
+ * $Id: CReferenceType.java,v 1.10 2005-01-17 18:10:34 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -38,7 +38,6 @@ import org.caesarj.util.UnpositionedError;
  * This class represents class type in the type structure
  */
 public class CReferenceType extends CType {
-
     /**
      * Calculate the number of steps to the outer context needed to find
      * this type.
@@ -70,9 +69,17 @@ public class CReferenceType extends CType {
         return k;
     }
     
+    protected CContext defCtx; /** the context in which this type was defined */
     
-    public Path getPath(CContext context) {
-        return new ContextExpression(getDefDepth(context), null);
+    /**
+     * Sets the context in which this type was defined
+     */
+    public void setDefCtx(CContext defCtx) {
+        this.defCtx = defCtx;
+    }
+    
+    public Path getPath() {
+        return new ContextExpression(null, getDefDepth(defCtx), null);
     }
     
 	// ----------------------------------------------------------------------
@@ -85,7 +92,6 @@ public class CReferenceType extends CType {
 	 */
 	protected CReferenceType() {
 		super(TID_CLASS);
-
 		this.clazz = BAC_CLASS;
 	}
 
@@ -95,7 +101,6 @@ public class CReferenceType extends CType {
 	 */
 	public CReferenceType(CClass clazz) {
 		super(TID_CLASS);
-
 		this.clazz = clazz;
 
 		if (!(this instanceof CArrayType)) {
@@ -228,9 +233,6 @@ public class CReferenceType extends CType {
 		return clazz;
 	}
 
-	public CType getErasure(CTypeContext context) throws UnpositionedError {
-		return new CErasedReferenceType(getCClass());
-	}
 	// ----------------------------------------------------------------------
 	// INTERFACE CHECKING
 	// ----------------------------------------------------------------------
