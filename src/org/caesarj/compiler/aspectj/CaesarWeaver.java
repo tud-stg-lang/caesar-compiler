@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarWeaver.java,v 1.6 2005-03-31 14:06:10 thiago Exp $
+ * $Id: CaesarWeaver.java,v 1.7 2005-04-06 11:58:13 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -42,6 +42,7 @@ import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.util.Message;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * @author Karl Klose
@@ -52,35 +53,7 @@ import org.caesarj.util.TokenReference;
 public class CaesarWeaver {
     
     private String destination;
-    
-	/*
-	 * This class wrapps the AbortException. It is generated and thrown by 
-	 * performWeaving in the case that an AbortException is theown by the
-	 * BcelWeaver method.
-	 * @author Karl Klose
-	 */
-	public class WeavingException extends RuntimeException
-	{
-		private AbortException	e;
-		public WeavingException( AbortException e )
-		{
-			this.e = e;
-		}
-		
-		public PositionedError	getError()
-		{
-			return 	new PositionedError(
-							new TokenReference(
-								e
-									.getIMessage()
-									.getSourceLocation()
-									.getSourceFile()
-									.getName(),
-								e.getIMessage().getSourceLocation().getLine()),
-							new Message(CaesarMessages.WEAVER_ERROR, e.getMessage()));	
-		}
-	}
-	
+    		
 // Attributes
 	// list of UnwovenClassFile objects to weave	
 	private List unwovenClasses;
@@ -105,7 +78,7 @@ public class CaesarWeaver {
 	{
 		unwovenClasses.add(new UnwovenClassFile(filename,bytes));
 	}
-	public void	performWeaving(CaesarBcelWorld world) throws IOException
+	public void	performWeaving(CaesarBcelWorld world) throws IOException, PositionedError, UnpositionedError
 	{
 		try{
 		    /*
@@ -166,7 +139,17 @@ public class CaesarWeaver {
 		catch( AbortException e )
 		{
 			// Create a wrapper for the catched exception
-			throw new CaesarWeaver.WeavingException(e);
+			if (e.getIMessage() != null && e.getIMessage().getSourceLocation() != null) {
+				throw new PositionedError(
+								new TokenReference(
+									e.getIMessage().getSourceLocation().getSourceFile().getName(),
+									e.getIMessage().getSourceLocation().getLine()),
+								new Message(CaesarMessages.WEAVER_ERROR, e.getMessage()));
+			}
+			else {
+				throw new UnpositionedError(
+						new Message(CaesarMessages.WEAVER_ERROR, e.getMessage()));
+			}
 		}
 	}
 }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.95 2005-04-04 09:44:05 gasiunas Exp $
+ * $Id: Main.java,v 1.96 2005-04-06 11:59:35 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -750,9 +750,13 @@ public class Main extends MainSuper implements Constants {
             Log.verbose("...weaver failed");
             reportTrouble(new UnpositionedError(CaesarMessages.WEAVING_FAILED));
         }
-        catch (CaesarWeaver.WeavingException we) {
+        catch (UnpositionedError e) {
             Log.verbose("...weaver failed");
-            reportTrouble(we.getError());
+            reportTrouble(e);
+        }
+        catch (PositionedError e) {
+            Log.verbose("...weaver failed");
+            reportTrouble(e);
         }
     }
 
