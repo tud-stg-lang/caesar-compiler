@@ -32,6 +32,7 @@ import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CField;
@@ -305,71 +306,84 @@ public class CClassPreparation implements CaesarConstants {
         CompilerBase compilerBase, 
         KjcEnvironment environment
     ) throws UnpositionedError {
-        CaesarTypeSystem caesarTypeSystem = environment.getCaesarTypeSystem(); 
-        TypeFactory typeFactory = environment.getTypeFactory();
-        ClassReader classReader = environment.getClassReader();
-                
-        Collection allTypes = caesarTypeSystem.getJavaGraph().getAllTypes();        
-        
-        for (Iterator it = allTypes.iterator(); it.hasNext();) {
-            JavaTypeNode item = (JavaTypeNode)it.next();                        
-                        
-            CjClassDeclaration decl = item.getDeclaration();
-            if(decl != null) {
-                CjInterfaceDeclaration ifcDecl = decl.getCorrespondingInterfaceDeclaration();
-                for (Iterator innerIt = item.getInners().iterator(); innerIt.hasNext();) {
-                    JavaTypeNode inner = (JavaTypeNode) innerIt.next();
+        try {
+            CaesarTypeSystem caesarTypeSystem = environment.getCaesarTypeSystem(); 
+            TypeFactory typeFactory = environment.getTypeFactory();
+            ClassReader classReader = environment.getClassReader();
                     
-                    // if we have a inner corresponding to a caesar type generate factory method
-                    if(!inner.isToBeGeneratedInBytecode()) {                        
-                        CClass innerClass = inner.getCClass();
-                        CMethod methods[] = innerClass.getMethods();
+            Collection allTypes = caesarTypeSystem.getJavaGraph().getAllTypes();        
+            
+            for (Iterator it = allTypes.iterator(); it.hasNext();) {
+                JavaTypeNode item = (JavaTypeNode)it.next();                        
+                            
+                CjClassDeclaration decl = item.getDeclaration();
+                if(decl != null) {
+                    CjInterfaceDeclaration ifcDecl = decl.getCorrespondingInterfaceDeclaration();
+                    for (Iterator innerIt = item.getInners().iterator(); innerIt.hasNext();) {
+                        JavaTypeNode inner = (JavaTypeNode) innerIt.next();
                         
-                        for (int i = 0; i < methods.length; i++) {
-                            if(methods[i].isConstructor()) {
-                                
-                                JExpression[] params = new JExpression[methods[i].getParameters().length];
-                                for (int j = 0; j < params.length; j++) {
-                                    params[j] = new JNameExpression(decl.getTokenReference(), ("p"+j).intern());
-                                }
-                                
-                                JBlock creationBlock = new JBlock(
-                                    decl.getTokenReference(),
-                                    new JStatement[] {
-                                        new JReturnStatement(
-                                            decl.getTokenReference(),
-                                            new JUnqualifiedInstanceCreation(
-                                                decl.getTokenReference(),
-                                                innerClass.getAbstractType(),
-                                                params
-                                            ),
-                                            null
-                                        )
-                                    },
-                                    null
-                                );
-                                
-                                JFormalParameter formalParams[] = 
-                                    new JFormalParameter[methods[i].getParameters().length];
-                                
-                                for (int j = 0; j < formalParams.length; j++) {
-                                    formalParams[j] = new JFormalParameter(
-                                        decl.getTokenReference(),
-                                        JFormalParameter.DES_PARAMETER,
-                                        methods[i].getParameters()[j],
-                                        ("p"+j).intern(),
-                                        false // CTODO: final markierte ctor params                                
-                                    );
-                                }
-                                
+                        // if we have a inner corresponding to a caesar type generate factory method
+                        if(!inner.isToBeGeneratedInBytecode()) {                        
+                            CClass innerClass = inner.getCClass();
+                            CMethod methods[] = innerClass.getMethods();
+                            
+                            for (int i = 0; i < methods.length; i++) {
+                                if(methods[i].isConstructor()) {
                                     
-                                CaesarTypeNode topMost = inner.getMixin().getTopmostNode();
-                                CClass returnType = classReader.loadClass(
-                                    typeFactory, 
-                                    topMost.getQualifiedName().toString()    
-                                );
-                                
-                                JMethodDeclaration facMethodDecl = new JMethodDeclaration(
+                                    JExpression[] params = new JExpression[methods[i].getParameters().length];
+                                    for (int j = 0; j < params.length; j++) {
+                                        params[j] = new JNameExpression(decl.getTokenReference(), ("p"+j).intern());
+                                    }
+                                    
+                                    JBlock creationBlock = new JBlock(
+                                        decl.getTokenReference(),
+                                        new JStatement[] {
+                                            new JReturnStatement(
+                                                decl.getTokenReference(),
+                                                new JUnqualifiedInstanceCreation(
+                                                    decl.getTokenReference(),
+                                                    innerClass.getAbstractType(),
+                                                    params
+                                                ),
+                                                null
+                                            )
+                                        },
+                                        null
+                                    );
+                                    
+                                    JFormalParameter formalParams[] = 
+                                        new JFormalParameter[methods[i].getParameters().length];
+                                    
+                                    for (int j = 0; j < formalParams.length; j++) {
+                                        formalParams[j] = new JFormalParameter(
+                                            decl.getTokenReference(),
+                                            JFormalParameter.DES_PARAMETER,
+                                            methods[i].getParameters()[j],
+                                            ("p"+j).intern(),
+                                            false // CTODO: final markierte ctor params                                
+                                        );
+                                    }
+                                    
+                                        
+                                    CaesarTypeNode topMost = inner.getMixin().getTopmostNode();
+                                    CClass returnType = classReader.loadClass(
+                                        typeFactory, 
+                                        topMost.getQualifiedName().toString()    
+                                    );
+                                    
+                                    JMethodDeclaration facMethodDecl = new JMethodDeclaration(
+                                            decl.getTokenReference(),
+                                            methods[i].getModifiers(),
+                                            methods[i].getTypeVariables(),
+                                            returnType.getAbstractType(),
+                                            "$new"+inner.getType().getQualifiedName().getIdent(),
+                                            formalParams, // formal params
+                                            methods[i].getThrowables(),
+                                            creationBlock,
+                                            null, null
+                                        );  
+                                    
+                                    JMethodDeclaration facIfcMethodDecl = new JMethodDeclaration(
                                         decl.getTokenReference(),
                                         methods[i].getModifiers(),
                                         methods[i].getTypeVariables(),
@@ -377,29 +391,22 @@ public class CClassPreparation implements CaesarConstants {
                                         "$new"+inner.getType().getQualifiedName().getIdent(),
                                         formalParams, // formal params
                                         methods[i].getThrowables(),
-                                        creationBlock,
+                                        null,
                                         null, null
                                     );  
-                                
-                                JMethodDeclaration facIfcMethodDecl = new JMethodDeclaration(
-                                    decl.getTokenReference(),
-                                    methods[i].getModifiers(),
-                                    methods[i].getTypeVariables(),
-                                    returnType.getAbstractType(),
-                                    "$new"+inner.getType().getQualifiedName().getIdent(),
-                                    formalParams, // formal params
-                                    methods[i].getThrowables(),
-                                    null,
-                                    null, null
-                                );  
-                                
-                                decl.addMethod(facMethodDecl);
-                                ifcDecl.addMethod(facIfcMethodDecl);
+                                    
+                                    decl.addMethod(facMethodDecl);
+                                    ifcDecl.addMethod(facIfcMethodDecl);
+                                }
                             }
                         }
                     }
                 }
             }
+        }
+        catch (Exception e) {
+            // MSG
+            throw new UnpositionedError(CaesarMessages.CANNOT_CREATE);
         }
     }
     

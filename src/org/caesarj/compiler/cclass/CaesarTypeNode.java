@@ -77,7 +77,7 @@ public class CaesarTypeNode {
     }   
     
     // returns the topmost node inheriting from object in the inheritance hierarchy
-    public CaesarTypeNode getTopmostNode() {
+    public CaesarTypeNode getTopmostNode() throws CaesarTypeSystemException {
         if(!isFurtherbinding()) {
             return this;
         }
@@ -104,7 +104,7 @@ public class CaesarTypeNode {
                     else {
                         // compare with ref
                         if(!ref.equals(item))
-                            return null;
+                            throw new CaesarTypeSystemException();
                     }
                 }                               
             }
@@ -392,5 +392,48 @@ public class CaesarTypeNode {
 
     public List getFurtherboundList() {
         return furtherboundList;
+    }
+
+    /**
+     * returns the first point where the inheritance paths join to a single element 
+     */
+    public CaesarTypeNode findFirstInheritanceJoinPoint() throws CaesarTypeSystemException {
+        Integer parentCount = new Integer(getParents().size());
+        HashMap map = new HashMap();
+        CaesarTypeNode res = null;
+        for (Iterator it = getParents().iterator(); it.hasNext();) {
+            CaesarTypeNode p = (CaesarTypeNode) it.next();
+            res = p.findFirstInheritanceJoinPoint(map, parentCount);
+        }
+        
+        if(res == null)
+            throw new CaesarTypeSystemException();
+        
+        return res;
+    }
+    
+    private CaesarTypeNode findFirstInheritanceJoinPoint(HashMap node2MatchMap, Integer matchs) {
+        Integer thisMatchs = (Integer)node2MatchMap.get(this);
+        
+        thisMatchs = 
+            thisMatchs == null ? 
+                new Integer(1) : 
+                new Integer(thisMatchs.intValue()+1);            
+        
+        node2MatchMap.put(this, thisMatchs);
+            
+        if(thisMatchs.equals(matchs)) {
+            return this;
+        }
+        else {
+            CaesarTypeNode res = null;
+            
+            for (Iterator it = getParents().iterator(); it.hasNext();) {
+                CaesarTypeNode p = (CaesarTypeNode) it.next();
+                res = p.findFirstInheritanceJoinPoint(node2MatchMap, matchs);
+            }
+            
+            return res;
+        }
     }
 }

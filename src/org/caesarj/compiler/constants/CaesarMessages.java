@@ -28,4 +28,8 @@ public interface CaesarMessages extends org.caesarj.util.Messages {
   MessageDescription	DESCENDANT_OF_CROSSCUTTING_CLASS_NOT_DECLARED_CROSSCUTTING = new MessageDescription("descendants of crosscutting classes must be declared crosscutting", null, 0);
   MessageDescription	VIRTUAL_ACCESSING_OUTER_PRIVATE = new MessageDescription("Virtual or override class \"{0}\" cannot access private methods or fields of the enclosing class.", null, 0);
   MessageDescription	VIRTUAL_CALLING_OUTER_OUTER = new MessageDescription("Virtual or override class \"{0}\" cannot call methods or access fields defined in the enclosing class of its outer class.", null, 0);
+  
+  // IVICA
+  MessageDescription    NAME_CLASH = new MessageDescription("Name clash for member \"{0}\" detected.", null, 0);
+  MessageDescription    FATAL_ERROR = new MessageDescription("Fatal Error.", null, 0);
 }
