@@ -17,7 +17,7 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
-// FJPULLUP hard
+// FJKEEP
 public class CjMethodDeclaration extends JMethodDeclaration {
 
 	public CjMethodDeclaration(
@@ -202,24 +202,4 @@ public class CjMethodDeclaration extends JMethodDeclaration {
 			| CCI_PROVIDED;
 	}
 
-	/**
-	 * DEBUG - WALTER
-	 * @author Walter Augusto Werner
-	 */	
-	/* FJRM
-	public void print()
-	{
-		super.print();
-		System.out.print(" ------> Families: ");
-		for (int i = 0; i < parameters.length; i++)
-		{
-			if (i > 0) System.out.print(", ");
-			System.out.print(parameters[i].getIdent());
-			System.out.print(" - ");
-			System.out.print(((FjFormalParameter)parameters[i]).getFamily());
-		}
-		System.out.println();
-
-	}
-	*/
 }

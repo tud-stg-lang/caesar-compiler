@@ -1,16 +1,15 @@
 package org.caesarj.compiler.ast.phylum.declaration;
 
-import java.util.Hashtable;
-
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
-import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.export.*;
+import org.caesarj.compiler.export.CCjSourceClass;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.PositionedError;
@@ -91,115 +90,6 @@ public class CjInterfaceDeclaration
 		// static and public.
 		if (isNested() && getOwner().getCClass().isInterface()) {
 			setModifiers(modifiers | ACC_STATIC | ACC_PUBLIC);
-		}
-	}
-	
-	/* FJRM
-	protected CClassContext constructContext(CContext context) {
-		return new FjInterfaceContext(
-			context,
-			context.getEnvironment(),
-			sourceClass,
-			this);
-	}
-	
-	
-	public void checkInterface(CContext context) throws PositionedError {
-
-		// when checking members we need the
-		// ifc declaration, so pass it here
-		if( context instanceof FjAdditionalContext )
-			((FjAdditionalContext) self).pushContextInfo(
-				((FjAdditionalContext) context).peekContextInfo() );
-		((FjAdditionalContext) self).pushContextInfo( this );
-		
-		boolean atLeastOneResolved = true;
-		int i = 0;
-		// in each iteration there has to be at least
-		// one field to be checked, if not, there is a
-		// circularity, so stop
-		while( atLeastOneResolved ) {
-			atLeastOneResolved = false;
-			for( int j = 0; j < getFields().length; j++ ) {
-				FjFieldDeclaration field = ((FjFieldDeclaration) getFields()[ j ]);
-				if( !field.isChecked() ) {
-					field.setChecked( true );
-					field.checkInterface( self );
-					if( field.isChecked() )
-						atLeastOneResolved = true;
-				}
-			}
-			i++;
-		}
-
-		super.checkInterface(context);
-		((FjInterfaceContext) self).popContextInfo();
-		((FjInterfaceContext) self).popContextInfo();
-	}
-	*/
-
-	/**
-	 * I just copied it here, after I will see if everything is needed.
-	 * @param context
-	 * @throws PositionedError
-	 * @author Walter Augusto Werner
-	 */
-	public void initFamilies(CClassContext context) 
-		throws PositionedError		
-	{
-		//Initializes the families of the fields.
-		
-		Hashtable hashField = new Hashtable(fields.length + 1);
-		for (int i = fields.length - 1; i >= 0 ; i--) 
-		{
-			/* FJRM
-			CSourceField field = ((FjFieldDeclaration)fields[i])
-				.initFamily(context);
-			*/
-			
-			// FJADD
-			CSourceField field = fields[i].checkInterface(context);
-							
-			field.setPosition(i);
-			
-			hashField.put(field.getIdent(), field);
-		}
-		
-		
-		// Initializes the families of the methods.
-		CMethod[] methodList = new CMethod[methods.length];
-		int i = 0;
-		for (; i < methods.length; i++)
-		{ 
-			/* FJRM
-			if (methods[i] instanceof FjMethodDeclaration)
-				methodList[i] = ((FjMethodDeclaration)methods[i])
-					.initFamilies(context);
-			else
-			*/
-				methodList[i] = methods[i].checkInterface(context);
-		}
-		
-		
-		sourceClass.close(sourceClass.getInterfaces(), 
-			sourceClass.getSuperType(), hashField, methodList);
-			
-		for (int j = 0; j < inners.length; j++)
-		{
-			/* FJRM
-			FjClassContext innerContext = new FjClassContext(context, 
-				context.getEnvironment(), 
-				(CSourceClass)inners[j].getCClass(), 
-				this);
-				
-			((FjAdditionalContext)innerContext).pushContextInfo(this);
-			*/
-			
-			if (inners[j] instanceof JClassDeclaration)
-				((JClassDeclaration)inners[j]).initFamilies(null);
-			else if (inners[j] instanceof CjInterfaceDeclaration)
-				((CjInterfaceDeclaration)inners[j]).initFamilies(null);
-							
 		}
 	}
 	

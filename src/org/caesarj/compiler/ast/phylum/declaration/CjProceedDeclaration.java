@@ -85,13 +85,6 @@ public class CjProceedDeclaration extends CjMethodDeclaration {
 					(CReferenceType) exceptions[i].checkType(typeContext);
 			}
 
-			/* FJRM
-			FjFamily[] families = new FjFamily[parameterTypes.length];			
-			for (int i = 0; i < families.length; i++) {
-				families[i] = ((FjFormalParameter) parameters[i]).getFamily();
-			}
-			*/
-
 			setInterface(
 				new CCjProceed(
 					context.getCClass(),

@@ -12,14 +12,12 @@ import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
-import org.caesarj.compiler.ast.visitor.DeclarationVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
-import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CCjSourceClass;
-import org.caesarj.compiler.family.FamiliesInitializerFjVisitor;
+import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
@@ -109,9 +107,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 		joinAll(tree);
 		if (errorFound) { return false; }
 		checkAllInterfaces(tree);
-		if (errorFound) { return false;	}
-		initAllFamilies(tree);
-		if (errorFound) { return false; }
+		if (errorFound) { return false;	}			
 		checkAllInitializers(tree);
 		if (errorFound) { return false;	}
 		checkAllBodies(tree);
@@ -171,17 +167,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 	protected void checkAllInitializers(JCompilationUnit[] tree) {
 		for (int count = 0; count < tree.length; count++) {
 			checkInitializers(tree[count]);
-		}
-	}
-
-	/**
-	 * tasks: upcast overridden types
-	 * do something with family parameters (not yet quite clear)
-	 */
-	protected void initAllFamilies(JCompilationUnit[] tree) {
-		for (int count = 0; count < tree.length; count++) {
-			initFamilies(tree[count]);
-			//tree[count].accept(new DebugVisitor());
 		}
 	}
 
@@ -253,9 +238,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 	 * - resolve superclasses and create CClassOrInterface type for superclass
 	 * - check conditions on superclasses like accessibility, superclass not final, superclass not interface
 	 * - similarly for implemented interfaces: resolve, create CClassOrInterface type, check for "is interface", accessiblity, circularity
-	 * - Virtual-Class related stuff: 
-	 *    - resolve/change superclass links in "override" declarations
-	 *    - Copy inherited constructors in virtual classes
 	 */
 
 	protected void joinAll(JCompilationUnit[] tree) {
@@ -272,27 +254,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 	}
 
 	
-	/**
-	 * Initializes the families of the compilation unit passed.
-	 * 
-	 * @param cunit
-	 */
-	protected void initFamilies(JCompilationUnit cunit)
-	{
-		cunit.accept(getFamiliesInitializer(cunit.getEnvironment()));
-	}
-
-	
-	/**
-	 *
-	 * @param environment
-	 * @return the visitor instance for initializes the families.
-	 */
-	protected DeclarationVisitor getFamiliesInitializer(KjcEnvironment environment)
-	{
-		return new FamiliesInitializerFjVisitor(this, environment);
-	}
-
 	public void inform(PositionedError error) {
 		if (errorMessages == null)
 			errorMessages = new HashSet();

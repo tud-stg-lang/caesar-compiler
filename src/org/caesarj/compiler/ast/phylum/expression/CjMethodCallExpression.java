@@ -14,8 +14,7 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
-// FJTODO 
-// it will be best to keep this one and JMethodCallExpression separated  
+// FJKEEP  
 public class CjMethodCallExpression extends JMethodCallExpression {
 
 	protected JExpression[] unanalysedArgs;
@@ -60,7 +59,6 @@ public class CjMethodCallExpression extends JMethodCallExpression {
 		CMethod method,
 		JExpression[] args) {
 		super(where, prefix, method, args);
-		// FJRM cachedWhere = where;
 	}
 
 	public CjMethodCallExpression(
@@ -70,7 +68,6 @@ public class CjMethodCallExpression extends JMethodCallExpression {
 		JExpression[] args,
 		JExpression[] unanalysedArgs) {
 		super(where, prefix, method, args);
-		// FJRM cachedWhere = where;
 		this.unanalysedArgs = new JExpression[unanalysedArgs.length];
 		for (int i = 0; i < unanalysedArgs.length; i++) {
 			this.unanalysedArgs[i] = unanalysedArgs[i];
@@ -91,43 +88,14 @@ public class CjMethodCallExpression extends JMethodCallExpression {
 		throws PositionedError 
 	{
 		JExpression expression;
-		/* FJRM
-		if (isWithinImplementationMethod(context) && ! isWrapperRecycling() 
-			&& isSuperMethodCall())
-			expression = handleSuperCall(context);
-		else if (isWithinImplementationMethod(context) && ! isWrapperRecycling()
-				&& isThisMethodCall(context))
-			expression = handleThisCall(context);
-		else
-		*/ 
-		{	
-			/* FJRM		
-			assertPrefixIsSet(context);
-			checkFamilies(context);
-			resetPrefix();
-			*/
-			//If wrapper is not null, it is a wrapper recycling operator
-			if (isWrapperRecycling())
-				expression = handleWrapperRecyclingCall(context);
-			else
-				expression = analyseExpression(context);			
-		}
 		
-		/* FJRM
-		//Walter: Cast the type for the most specific one.
-		//Walter: It is because the type may be overridden in this context.
-		if (! typeBound)
-		{
-			CReferenceType returnType = getOverriddenReturnType(context);
-			if (returnType != null)
-			{
-				expression = new JCastExpression(getTokenReference(), 
-					expression, returnType);
-				typeBound = true;
-			}
-		}
-		*/
-
+		//If wrapper is not null, it is a wrapper recycling operator
+		if (isWrapperRecycling())
+			expression = handleWrapperRecyclingCall(context);
+		else
+			expression = analyseExpression(context);			
+		
+		
 		return expression;
 	}
 	
@@ -241,340 +209,7 @@ public class CjMethodCallExpression extends JMethodCallExpression {
 		
 	}
 
-	/* FJRM
-	protected void assertPrefixIsSet(CExpressionContext context)
-		throws PositionedError 
-	{
-		setMethod(context);
 
-	
-		if (prefix == null)
-		{
-			if (isThisMethodCall(context))
-				prefix = new FjThisExpression(getTokenReference());
-			else
-				prefix = new OuterThisDummyPrefix(getTokenReference());
-		}		
-	}
-	*/
-	
-
-	/**
-	 * Returns the return type of the method that it calls if the type is 
-	 * overridden in the context, otherwise it returns null. 
-	 * The return type is bound to the most "specific" type, for example, 
-	 * if in this context the return type of the method is overridden, 
-	 * the overriden type is returned.
-	 * 
-	 * @param context
-	 * @return the overriden type if it exists and <b>null</b> otherwise.
-	 * @author Walter Augusto Werner
-	 */
-	/* FJRM
-	private CReferenceType getOverriddenReturnType(CExpressionContext context) 
-		throws PositionedError
-	{
-		CType returnType = getMethod(context).getReturnType();
-			
-		if (returnType.isReference()) 
-		{
-			CReferenceType bound = new FjTypeSystem().lowerBound(
-				context, returnType.getCClass().getIdent());
-				
-			if (bound != null && ! bound.equals(returnType) 
-				&& CModifier.contains(bound.getCClass().getModifiers(), 
-					FJC_OVERRIDE))
-				return bound;
-		}
-		return null;
-	}
-
-	protected void resetPrefix() {
-		if (prefix instanceof OuterThisDummyPrefix)
-			prefix = null;
-	}
-
-	
-	protected void checkFamilies(CExpressionContext context)
-		throws PositionedError 
-	{
-		if (getMethod(context) instanceof FjSourceMethod) 
-		{
-			FjFamily[] expectedFamilies =
-				((FjSourceMethod) method).getFamilies();
-			boolean thisFound = false;
-			boolean outerThisFound = false;
-			for (int i = 0; i < expectedFamilies.length; i++) {
-				if (expectedFamilies[i] != null) {
-					if (expectedFamilies[i].isThis())
-						thisFound = true;
-					else if (expectedFamilies[i].isOuterThis())
-						outerThisFound = true;
-				}
-			}
-
-			if (thisFound)
-				check(
-					context,
-					prefix.toFamily(context.getBlockContext()) != null,
-					CaesarMessages.NO_THIS_FAMILY,
-					ident);
-
-			if (outerThisFound)
-				check(
-					context,
-					prefix.getFamily(context) != null,
-					CaesarMessages.NO_OUTERTHIS_FAMILY,
-					ident);
-
-			FjTypeSystem fjts = new FjTypeSystem();
-			for (int i = 0; i < args.length; i++) {
-				if (expectedFamilies[i] != null
-					&& expectedFamilies[i].isParameter())
-					fjts.checkInFamily(
-						context,
-						unanalysedArgs[expectedFamilies[i].getParameterIndex()],
-						unanalysedArgs[i]);
-				else if (
-					expectedFamilies[i] != null
-						&& expectedFamilies[i].isThis())
-					fjts.checkInFamily(context, prefix, unanalysedArgs[i]);
-				else if (
-					expectedFamilies[i] != null
-						&& expectedFamilies[i].isOuterThis()) {
-					fjts.checkFamilies(context, prefix, unanalysedArgs[i]);
-				} else
-					fjts.checkFamilies(
-						context,
-						expectedFamilies[i],
-						unanalysedArgs[i]);
-			}
-		}
-	}	
-
-	protected String isCallToPrivateNonThis(
-		CExpressionContext context,
-		PositionedError e) {
-		if (e.getFormattedMessage().getDescription()
-			== KjcMessages.METHOD_NOT_FOUND) {
-			String call = e.getFormattedMessage().getParams()[0].toString();
-			int dotPosition = call.indexOf('.');
-			if (!FjConstants.isPrivateAccessorId(ident) && dotPosition >= 0) {
-				String typeName = call.substring(0, dotPosition);
-				CClass cleanIfcOfContext =
-					new FjTypeSystem().cleanInterface(
-						context.getClassContext().getCClass());
-				if (typeName.equals(cleanIfcOfContext.getIdent()))
-					return typeName;
-			}
-		}
-		return null;
-	}
-	
-	protected JExpression handleSuperCall(CExpressionContext context)
-		throws PositionedError {
-		CClass clazz = context.getClassContext().getCClass();
-		CReferenceType parentType = clazz.getSuperClass().getInterfaces()[0];
-		//If it is in a binding or providing class it cannot call super
-		if (! FjConstants.isIfcImplName(clazz.getIdent())
-			&& ! FjConstants.isFactoryMethodName(ident)
-			&& ! CciConstants.isAdaptMethodName(ident)
-			&& CModifier.contains(clazz.getModifiers(), 
-				(CCI_BINDING | CCI_PROVIDING)))
-			throw 
-				new CMethodNotFoundError(
-					getTokenReference(), 
-					this, 
-					parentType.getQualifiedName() + 
-						"." + ident, 
-					getArgumentTypes(context, args, context.getTypeFactory()));
-
-
-
-		// super is replaced by parent's target					
-		JExpression parentGetTarget =
-			new FjMethodCallExpression(
-				getTokenReference(),
-				new FjFieldAccessExpression(
-					FjConstants.STD_TOKEN_REFERENCE,
-					FjConstants.PARENT_NAME),
-				FjConstants.GET_TARGET_METHOD_NAME,
-				JExpression.EMPTY);
-
-		JExpression parentPrefix =
-			new FjCastExpression(
-				getTokenReference(),
-				parentGetTarget,
-				parentType,
-				false);
-
-		// selfContext-method is called
-		String parentMethod = FjConstants.selfContextMethodName(ident);
-
-		// a dispatcher is passed as first parameter
-		JExpression[] parentArgs = new JExpression[args.length + 1];
-		for (int i = 0; i < unanalysedArgs.length; i++) {
-			parentArgs[i + 1] = unanalysedArgs[i];
-		}
-		parentArgs[0] =
-			new JMethodCallExpression(
-				getTokenReference(),
-				null,
-				FjConstants.GET_DISPATCHER_METHOD_NAME,
-				new JExpression[] {
-					 new FjNameExpression(
-						getTokenReference(),
-						FjConstants.SELF_NAME)});
-
-		// replace this call
-		JMethodCallExpression parentCall =
-			new FjMethodCallExpression(
-				getTokenReference(),
-				parentPrefix,
-				parentMethod,
-				parentArgs);
-
-		if (isObjectsMethod(context)) {
-			return new JConditionalExpression(
-				getTokenReference(),
-				new JEqualityExpression(
-					getTokenReference(),
-					true,
-					parentGetTarget,
-					new JThisExpression(getTokenReference())),
-				new JMethodCallExpression(
-					getTokenReference(),
-					prefix,
-					ident,
-					args),
-				parentCall).analyse(
-				context);
-		} else {
-			return parentCall.analyse(context);
-		}
-	}	
-
-	protected boolean isObjectsMethod(CExpressionContext context)
-		throws PositionedError {
-		String methodId =
-			FjConstants.uniqueMethodId(ident, getArgumentTypes(context, args, 
-				context.getTypeFactory()));
-		return methodId.equals("toString")
-			|| methodId.equals("hashCode")
-			|| methodId.equals("finalize")
-			|| methodId.equals("clone");
-	}
-	
-	protected JExpression handleThisCall(CExpressionContext context)
-		throws PositionedError {
-		// use _self instead of this
-		// if the method is not private
-		JExpression newPrefix = null;
-		JExpression[] newArgs = unanalysedArgs;
-		String newIdent = ident;
-
-		if ((getMethod(context).getModifiers() & ACC_PRIVATE) == 0)
-			newPrefix =
-				new FjNameExpression(
-					getTokenReference(),
-					FjConstants.SELF_NAME);
-
-		// if it is private insert a cast in order
-		// not to loop when returning here in recursion
-		else {
-			newPrefix =
-				new FjCastExpression(
-					getTokenReference(),
-					new FjThisExpression(getTokenReference(), false),
-					context.getClassContext().getCClass().getAbstractType());
-			newArgs = new JExpression[unanalysedArgs.length + 1];
-			for (int i = 0; i < unanalysedArgs.length; i++) {
-				newArgs[i + 1] = unanalysedArgs[i];
-			}
-			newArgs[0] =
-				new FjNameExpression(
-					getTokenReference(),
-					FjConstants.SELF_NAME);
-			newIdent = FjConstants.implementationMethodName(ident);
-		}
-
-		// replace this call (it is inconsistent
-		// now because we used findMethod)
-		JExpression newExpression =
-			new FjMethodCallExpression(
-				getTokenReference(),
-				newPrefix,
-				newIdent,
-				newArgs);
-
-		//Walter if it is a wrapper recycling insert the cast before!
-		if (isWrapperRecycling())
-		{
-			newExpression = 
-				new FjCastExpression(
-					getTokenReference(),
-					newExpression,
-					wrapperType);
-		}
-		return newExpression.analyse(context);
-	}
-
-	protected JExpression handlePrivateNonThisCall(
-		CExpressionContext context,
-		String typeName)
-		throws PositionedError {
-
-		return new FjMethodCallExpression(
-			getTokenReference(),
-			prefix,
-			FjConstants.privateAccessorId(
-				ident,
-				typeName,
-				FjConstants.uniqueMethodId(
-					ident,
-					getArgumentTypes(context, args, context.getTypeFactory()))),
-			args).analyse(
-			context);
-	}
-
-	protected boolean isThisMethodCall(CExpressionContext context)
-		throws PositionedError {
-		
-		CClass local = context.getClassContext().getCClass();
-		
-		if (prefix != null && prefix instanceof JThisExpression 
-			&& ((JThisExpression)prefix).getPrefix() == null)
-			return true;
-		else if (prefix != null)
-			return false;
-		else {
-			CClass currentClass = context.getClassContext().getCClass();
-			CClass currentCleanIfc =
-				new FjTypeSystem().cleanInterface(currentClass);
-			CClass methodOwner = getMethod(context).getOwner();
-			return (
-				currentClass.descendsFrom(methodOwner)
-					|| currentCleanIfc.descendsFrom(methodOwner))
-				&& !getMethod(context).isStatic();
-		}
-	}
-
-	protected CMethod privateToBeAccessed(CExpressionContext context)
-		throws PositionedError {
-		if ((getMethod(context).getModifiers() & ClassfileConstants2.ACC_PRIVATE) != 0) {
-			if (prefix != null) {
-				CClass expectedPrefix = getPrefixType(context).getCClass();
-				CReferenceType actualPrefix =
-					(CReferenceType) prefix.analyse(context).getType(
-						context.getTypeFactory());
-				FjTypeSystem fjts = new FjTypeSystem();
-				if (fjts.cleanInterface(expectedPrefix).equals(actualPrefix))
-					return getMethod(context);
-			}
-		}
-		return null;
-	}
-	*/
 	/**
 	 * Overridden for allow the wrapper recycling construction.
 	 * If the method is not found, it tries the wrapper recycling method. 
@@ -607,27 +242,6 @@ public class CjMethodCallExpression extends JMethodCallExpression {
 							: prefix.getType(context.getTypeFactory())
 								.getCClass();
 								
-/* FJRM wrappee								
-			while (wrapperType == null)
-			{
-				try
-				{				
-					wrapperType = 
-						(CReferenceType) 
-							new FjTypeSystem()
-								.lowerBound(
-									context.getClassContext(),
-									owner, 
-									wrapperTypeName);
-				}
-				catch (UnpositionedError e2)
-				{
-					owner = owner.getOwner();
-					if (owner == null)
-						throw e2.addPosition(getTokenReference());
-				}
-			}
-*/	
 		}
 		catch (PositionedError e)
 		{
@@ -651,13 +265,9 @@ public class CjMethodCallExpression extends JMethodCallExpression {
 			&& CModifier.contains(methodOwner.getModifiers(), 
 				(FJC_CLEAN | FJC_VIRTUAL | FJC_OVERRIDE)))
 		{
-			/* FJRM
-			CClass cleanLocal = new FjTypeSystem().cleanInterface(methodOwner);
-			*/
-			CClass cleanLocal = methodOwner; // FJADDED
 			try 
 			{
-				method = cleanLocal.lookupMethod(
+				method = methodOwner.lookupMethod(
 					context.getClassContext(), 
 					local, 
 					null, 
@@ -711,119 +321,6 @@ public class CjMethodCallExpression extends JMethodCallExpression {
 		return method;
 	}
 
-	/* FJRM
-	protected boolean returnTypeIsPrefixVirtualInner(CExpressionContext context)
-		throws PositionedError {
-
-		if (!getMethod(context).getReturnType().isReference())
-			return false;
-
-		CClass methodReturn = getMethod(context).getReturnType().getCClass();
-		CClass prefixClass = getPrefixType(context).getCClass();
-		if ((methodReturn.getModifiers() & ClassfileConstants2.FJC_VIRTUAL) != 0
-			&& methodReturn.getOwner().equals(prefixClass))
-			return true;
-		else if (FjConstants.isFactoryMethodName(ident))
-			return true;
-		else if (isWrapperRecycling())
-			return true;			
-		return false;
-	}
-
-	protected boolean returnTypeIsPrefixsOwnerVirtualInner(CExpressionContext context)
-		throws PositionedError {
-
-		if (!getMethod(context).getReturnType().isReference())
-			return false;
-
-		if (!getPrefixType(context).getCClass().isNested())
-			return false;
-
-		if ((getMethod(context).getReturnType().getCClass().getModifiers()
-			& ClassfileConstants2.FJC_VIRTUAL)
-			!= 0
-			&& getMethod(context).getReturnType().getCClass().getOwner().equals(
-				getPrefixType(context).getCClass().getOwner()))
-			return true;
-
-		return false;
-	}
-
-	protected boolean isWithinImplementationMethod(CExpressionContext context) {
-		return FjConstants.isImplementationMethodName(
-			context.getMethodContext().getCMethod().getIdent());
-	}
-
-	protected boolean isSuperMethodCall() {
-		return ((prefix != null) && (prefix instanceof JSuperExpression) 
-			&& ((JSuperExpression)prefix).getPrefix() == null);
-	}
-
-	public FjFamily getFamily(CExpressionContext context)
-		throws PositionedError {
-		FjFamily result = null;
-		FjFamilyContext fc = FjFamilyContext.getInstance();
-		assertPrefixIsSet(context);
-		if (ident == FjConstants.GET_PARENT_METHOD_NAME)
-			result =
-				new FjSuperExpression(getTokenReference()).getFamily(context);
-		else if (ident == FjConstants.GET_TARGET_METHOD_NAME)
-			result =
-				new FjThisExpression(getTokenReference()).getFamily(context);
-		else if (returnTypeIsPrefixVirtualInner(context)) {
-			result = prefix.toFamily(context.getBlockContext());
-			result =
-				fc.addTypesFamilies(
-					(result != null) ? result.first() : null,
-					(CReferenceType) getMethod(context).getReturnType());
-		} else if (returnTypeIsPrefixsOwnerVirtualInner(context)) {
-			result = prefix.getFamily(context);
-			result =
-				fc.addTypesFamilies(
-					(result != null) ? result.first() : null,
-					(CReferenceType) getMethod(context).getReturnType());
-		}
-		resetPrefix();
-		return result;
-	}
-
-	public FjFamily toFamily(CBlockContext context) throws PositionedError {
-		if (ident == FjConstants.GET_PARENT_METHOD_NAME 
-			|| ident == FjConstants.GET_TARGET_METHOD_NAME)
-			return new FjSuperExpression(getTokenReference()).toFamily(context);
-		return null;
-	}
-
-	protected TokenReference cachedWhere;
-
-	protected class OuterThisDummyPrefix extends JExpression {
-		public OuterThisDummyPrefix(TokenReference where) {
-			super(where);
-		}
-		public void accept(KjcVisitor p) {
-		}
-		public JExpression analyse(CExpressionContext context)
-			throws PositionedError {
-			return null;
-		}
-		public void genCode(GenerationContext context, boolean discardValue) {
-		}
-		public CType getType(TypeFactory factory) {
-			return null;
-		}
-		public FjFamily toFamily(CBlockContext context)
-			throws PositionedError {
-			try {
-				return new FjTypeSystem().resolveFamily(
-					context,
-					FjConstants.OUTER_THIS_NAME,
-					false);
-			} catch (UnpositionedError e) {
-				throw e.addPosition(getTokenReference());
-			}
-		}
-	}
-	*/
 
 	public void setArgs(JExpression[] args) {
 		this.args = args;
