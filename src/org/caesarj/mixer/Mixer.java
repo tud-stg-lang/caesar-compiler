@@ -46,24 +46,17 @@ public class Mixer {
     	return s;
     }
     
-    public String generateClass(String destinationPackage, MixinList mixinList) throws MixerException {
-    	// Make sure that the destinationpackage uses '/' as delimiter and ends with a '/'.
-    	if (!destinationPackage.equals("")){
-    		destinationPackage.replace('.','/');
-    		if (!destinationPackage.endsWith("/"))	destinationPackage += "/";
-    	}
+    public String generateClass(MixinList mixinList) throws MixerException {
     	
     	/* DEBUG: Disable hashcodes for better readability */
     	MixinList.appendHashcode(false);
     	
-    	int last = mixinList.size()-1;
-    	while ( mixinList.get(last).getFullQualifiedName().equals("java/lang/Object")){
-    		last--;
-    		if (last < 1)	throw new MixerException(
-    							"Not enough mixins for this operation (need >2 != Object): "
+   		if (mixinList.size() < 2)	throw new MixerException(
+    							"Not enough mixins for this operation: "
     							+ mixinList);
-    	}
     	
+   		int last = mixinList.size()-1;
+   		
     	String thisMixin="", superMixin;
 		superMixin = mixinList.get(last).getFullQualifiedName();
     	// Check the superclass relation, beginning with the second last
@@ -80,10 +73,8 @@ public class Mixer {
     			String	newClassName = 	mixinList.get(element).getPackageName() +"/"+
 										mixinList.generateClassName(element,last);
     			
-    			
     			replacedClasses.put( thisMixin, newClassName );
     			createModifiedClass(thisMixin, newClassName, superMixin);
-
 				
     			// add the superclass of this class to the hashmap, so we don't have to load 
     			// the classfile for our generated classes later
@@ -91,15 +82,10 @@ public class Mixer {
     			thisMixin = newClassName; 
     		}
     		
-    		System.out.println( thisMixin + " extends "+superMixin);
-
-    		superMixin = thisMixin;
+     		superMixin = thisMixin;
     	}
-    	
-     	// construct the name of the resulting class 
-    	String resultingClassName = thisMixin;//destinationPackage + mixinList.generateClassName();
    	    	
-        return resultingClassName;
+        return thisMixin;
     }
 
     /**
@@ -116,7 +102,7 @@ public class Mixer {
 		// load class
 		JavaClass	clazz = Repository.lookupClass(originalClass);
 		ClassGen generator = new ClassGen(clazz);
-		
+		// and modify it
 		visitor.start(clazz);
 		
 		// find all inner classes and run recursively?

@@ -81,7 +81,6 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 	private ConstantPoolGen cpoolGenerator;
 	
 	public void start(JavaClass clazz) throws MixerException {
-		System.out.println("Class "+clazz.getClassName());
 		
 		classGenerator = new ClassGen(clazz);
 		
@@ -138,8 +137,6 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 			cpoolGenerator.setConstant(index, 
 					new ConstantUtf8( 
 							getNewSignature( method.getSignature() ) ) );
-			System.out.println(method);
-			
 		}
 		super.visitMethod(method);
 	}
