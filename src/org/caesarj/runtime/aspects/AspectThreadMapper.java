@@ -106,4 +106,13 @@ public class AspectThreadMapper implements AspectContainerIfc {
 			$threadObjects.put(destThread, lstNew);
 		}
 	}
+	
+	/**
+	 * Undeploys all objects from the given thread
+	 * 
+	 * @param thread	Deployment thread
+	 */
+	public void undeployAllFromThread(Thread thread) {
+		$threadObjects.remove(thread);
+	}
 }
