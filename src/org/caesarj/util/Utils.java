@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Utils.java,v 1.6 2005-01-24 16:52:58 aracic Exp $
+ * $Id: Utils.java,v 1.7 2005-03-30 07:22:07 gasiunas Exp $
  */
 
 package org.caesarj.util;
@@ -151,6 +151,17 @@ public abstract class Utils {
     }
 
     return result;
+  }
+  
+  /**
+   * Converts qualified class name to source code class name
+   * 
+   * @param qualifiedClassName - qualified class name for ex. org/caeasarj/Sample$Nested
+   * @return source code class name
+   */
+  public static String getClassSourceName(String qualifiedClassName) {
+  	String srcClassName = qualifiedClassName.replace('/', '.');
+  	return srcClassName.replace('$', '.');
   }
   
 

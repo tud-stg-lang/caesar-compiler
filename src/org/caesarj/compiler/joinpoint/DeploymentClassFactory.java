@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.41 2005-03-29 15:49:16 gasiunas Exp $
+ * $Id: DeploymentClassFactory.java,v 1.42 2005-03-30 07:22:26 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -78,6 +78,7 @@ import org.caesarj.compiler.types.CShortType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.Utils;
 
 /**
  * This factory creates the support classes for dynamic deployment.
@@ -130,8 +131,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		String packageName = aspectClass.getCClass().getPackage();
 		String qualifiedAspectClassName = aspectClass.getCClass().getQualifiedName();
 		
-		srcAspectClassName = qualifiedAspectClassName.replace('/', '.');
-		srcAspectClassName = srcAspectClassName.replace('$', '.');
+		srcAspectClassName = Utils.getClassSourceName(qualifiedAspectClassName);
 		
 		this.packagePrefix = packageName.length() > 0 ? packageName + "/" : "";
 

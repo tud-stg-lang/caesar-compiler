@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassPreparation.java,v 1.34 2005-03-29 09:45:35 gasiunas Exp $
+ * $Id: CClassPreparation.java,v 1.35 2005-03-30 07:22:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -68,6 +68,7 @@ import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
 import org.caesarj.compiler.typesys.java.JavaTypeNode;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.Utils;
 
 /**
  * ...
@@ -232,8 +233,8 @@ public class CClassPreparation implements CaesarConstants {
         TokenReference where = decl.getTokenReference();
                 
         String wrapperClassIdent = inner.getMixin().getQualifiedName().getIdent();
-        String wrapperClassName = inner.getMixin().getQualifiedName().toString().replace('/','.').replace('$','.');
-        String wrappeeClassName = innerDecl.getWrappee().getQualifiedName().replace('/','.').replace('$','.');        
+        String wrapperClassName = Utils.getClassSourceName(inner.getMixin().getQualifiedName().toString());
+        String wrappeeClassName = Utils.getClassSourceName(innerDecl.getWrappee().getQualifiedName());        
         String wrapperMapName = "$"+wrapperClassIdent+"_wrapper_map";
         
         // TODO map = new WeakHashMap() didn't work
