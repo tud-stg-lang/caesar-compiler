@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.8 2004-04-27 13:27:39 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.9 2004-05-19 16:29:03 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -604,6 +604,10 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     
     public void setEnabledInPass(int enabledInPass) {
         this.enabledInPass = enabledInPass;
+    }
+    
+    public CReferenceType[] getInterfaces() {
+        return interfaces;
     }
 
     // ----------------------------------------------------------------------
