@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjMixinInterfaceDeclaration.java,v 1.12 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CjMixinInterfaceDeclaration.java,v 1.13 2005-01-27 15:16:56 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -325,13 +325,12 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
             }
         }
         
-        getCClass().addMethod(
+        getCClass().setMethods(
             (CSourceMethod[])interfaceMethods.toArray(new CSourceMethod[interfaceMethods.size()])
         );
         
-        addMethods(
-            (JMethodDeclaration[])interfaceMethodDecls.toArray(new JMethodDeclaration[interfaceMethodDecls.size()])
-        );
+        methods =
+            (JMethodDeclaration[])interfaceMethodDecls.toArray(new JMethodDeclaration[interfaceMethodDecls.size()]);        
         
         for (int i = 0; i < inners.length; i++) {
             inners[i].completeCClassInterfaces(context);
