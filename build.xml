@@ -15,6 +15,23 @@
  <property name="packageBase" location="${basedir}/src"></property>
  <property name="inputFiles" location="${basedir}/cc"></property>
  <property name="libs" location="lib"/>
+ <property name="dist" location="dist"/>
+
+ <!-- pack for distribution -->
+ <target name="dist" depends="compile">
+ 	<delete dir="${dist}"/>
+ 	<mkdir dir="${dist}"/>
+ 	
+ 	<jar basedir="bin" jarfile="${dist}/caesar-compiler.jar">
+		<include name="**/*"/>		
+		<exclude name="org/caesarj/runtime/*"/>
+ 	</jar>
+
+ 	<jar basedir="bin" jarfile="${dist}/caesar-runtime.jar">
+		<include name="org/caesarj/runtime/*"/>
+ 	</jar>
+ </target>
+ 
  
  <!-- Compile-only target -->
  <target name="compile" description="compile the source files">
@@ -84,10 +101,7 @@
  </target>
  
  <!-- The complete building target -->
- <target name="complete" description="do complete build">
-  <antcall target="scanner"/>
-  <antcall target="parser"/>
-  <antcall target="compile"/>
+ <target name="complete" depends="scanner, parser, compile" description="do complete build">
  </target>
  
 </project>
