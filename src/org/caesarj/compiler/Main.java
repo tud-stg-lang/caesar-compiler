@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.87 2005-03-03 16:23:37 aracic Exp $
+ * $Id: Main.java,v 1.88 2005-03-10 10:42:58 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -177,7 +177,8 @@ public class Main extends MainSuper implements Constants {
         joinAll(tree);                  
         if(errorFound) return false;
         
-        generateCaesarTypeSystem(environment, tree);        
+        generateCaesarTypeSystem(environment, tree);
+        if(errorFound) return false;
 
         createMixinCloneTypeInfo(environment, tree[0]);
         
@@ -429,7 +430,7 @@ public class Main extends MainSuper implements Constants {
             );
         }
         
-        environment.getCaesarTypeSystem().generate();
+        environment.getCaesarTypeSystem().generate(this);
     }
  
     /**

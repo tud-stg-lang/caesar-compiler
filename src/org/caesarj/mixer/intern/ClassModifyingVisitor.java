@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ClassModifyingVisitor.java,v 1.14 2005-02-09 16:48:18 aracic Exp $
+ * $Id: ClassModifyingVisitor.java,v 1.15 2005-03-10 10:42:58 gasiunas Exp $
  */
 
 package org.caesarj.mixer.intern;
@@ -108,13 +108,7 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 		
 		// create a copy as work base
 		JavaClass newClass = clazz.copy();
-/*
-		Attribute	[] attributes = newClass.getAttributes();
-		for (int i = 0; i < attributes.length; i++) {
-			Attribute attribute = attributes[i];
-			if (attribute.getTag() != Constants.ATTR_INNER_CLASSES) continue;
-		}
-*/		
+		
 		// find indices of class and super class name
 		int classNameIndex = newClass.getClassNameIndex(),
 		superclassNameIndex = newClass.getSuperclassNameIndex();
@@ -130,8 +124,6 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 		
 		// visit fields, methods and local variables to replace type references
 		new DescendingVisitor(newClass, this).visit();
-		
-///		System.out.println( newClass.getConstantPool() );
 		
 		// Delete all inner class references 
 		Attribute[] atts = newClass.getAttributes();
@@ -158,28 +150,6 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 		// take a look at all methodrefs
 		modifyMethodRefs(newClass);
 
-/*		KK Add inner class references here. Do we need this?
-		// Add reference to the outer-class-file 
-		if (!oldOuterClassName.equals(newOuterClassName)){
-			JavaClass outer = Repository.lookupClass(newOuterClassName);
-			if (outer == null)	{
-				System.err.println("Waring: Referenced outer class "+newOuterClassName+" doesn't exist.");
-			}
-			else {
-				
-				InnerClass c = Tools.createInnerClass( 
-										outer, 
-										newOuterClassName, 
-										newClassName );
-				InnerClasses a = Tools.getInnerClassesAttribute(outer);
-				a.setInnerClasses( Tools.add(c, a.getInnerClasses() ) );
-				
-				
-				System.out.println(outer);
-				writeClass(outer);
-			}
-		}
-*/
 		// return generated class
 		return newClass;	
 	}

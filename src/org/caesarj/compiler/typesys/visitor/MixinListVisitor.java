@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: MixinListVisitor.java,v 1.6 2005-01-24 16:52:59 aracic Exp $
+ * $Id: MixinListVisitor.java,v 1.7 2005-03-10 10:42:58 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.visitor;
@@ -31,6 +31,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.caesarj.compiler.CompilerBase;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.typesys.graph.CaesarTypeGraph;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
 import org.caesarj.compiler.typesys.graph.OuterInnerRelation;
@@ -38,6 +40,7 @@ import org.caesarj.compiler.typesys.graph.SuperSubRelation;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.mixer.Linearizator;
 import org.caesarj.mixer.MixerException;
+import org.caesarj.util.PositionedError;
 
 /**
  * ...
@@ -48,9 +51,11 @@ public class MixinListVisitor implements ICaesarTypeVisitor {
 	
 	private final CaesarTypeGraph g;
 	private Set visited = new HashSet();
+	private CompilerBase compiler;
 	
-	public MixinListVisitor(CaesarTypeGraph g) {
-		this.g = g;        
+	public MixinListVisitor(CaesarTypeGraph g, CompilerBase compiler) {
+		this.g = g;
+		this.compiler = compiler;
 	}
 	
 	public void visitCaesarTypeNode(CaesarTypeNode n) {        
@@ -66,7 +71,19 @@ public class MixinListVisitor implements ICaesarTypeVisitor {
             outerMixinList = outer.getMixinList();
         }
         
-        createMixinList(n.getMixinList(), outerMixinList, 0, n.getQualifiedName());        
+        try {
+        	createMixinList(n.getMixinList(), outerMixinList, 0, n.getQualifiedName());
+        }
+        catch (MixerException e) {
+            compiler.reportTrouble(
+        		new PositionedError(
+        			n.getTokenRef(),	
+    				CaesarMessages.MIXER_ERROR,
+					n.getQualifiedName(),
+					e.getMessage()
+				)
+			);
+        }
         
 		for (Iterator it = n.inners(); it.hasNext();)
 			((OuterInnerRelation)it.next()).getInnerNode().accept(this);
@@ -77,7 +94,8 @@ public class MixinListVisitor implements ICaesarTypeVisitor {
         List outerMixinList, 
         int m,         
         JavaQualifiedName qualifiedName        
-    ) {    	    
+    ) throws MixerException
+	{    	    
         CaesarTypeNode currentMixin;
         CaesarTypeNode t;
 
@@ -108,19 +126,14 @@ public class MixinListVisitor implements ICaesarTypeVisitor {
             }
             
             if(superClassMixinLists.size() > 0) {
-                try {
-                    // C3 Linearization
-                    List mergedList = Linearizator.instance().mixFromLeftToRight(
-                		(List[])superClassMixinLists.toArray(new List[superClassMixinLists.size()])
-					);
-                    
-                    // append
-                    for(Iterator it=mergedList.iterator(); it.hasNext(); ) {
-                        mixinListToAppend.add(it.next());
-                    }
-                }
-                catch (MixerException e) {
-                    e.printStackTrace();
+                // C3 Linearization
+                List mergedList = Linearizator.instance().mixFromLeftToRight(
+            		(List[])superClassMixinLists.toArray(new List[superClassMixinLists.size()])
+				);
+                
+                // append
+                for(Iterator it=mergedList.iterator(); it.hasNext(); ) {
+                    mixinListToAppend.add(it.next());
                 }
             }
         }

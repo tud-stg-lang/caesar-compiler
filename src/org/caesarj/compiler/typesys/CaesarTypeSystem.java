@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTypeSystem.java,v 1.10 2005-01-24 16:53:02 aracic Exp $
+ * $Id: CaesarTypeSystem.java,v 1.11 2005-03-10 10:42:58 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys;
 
+import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.Log;
 import org.caesarj.compiler.typesys.graph.CaesarTypeGraph;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
@@ -71,14 +72,14 @@ public class CaesarTypeSystem {
         return res;
     }
 	
-	public void generate() {
+	public void generate(CompilerBase compiler) {
 		DumpTypesVisitor dumpTypesVisitor = new DumpTypesVisitor(caesarTypeGraph);
 		
 		//dumpTypesVisitor.run();
 		
 		new AddImplicitTypesAndRelationsVisitor(caesarTypeGraph).run();
 		new FurtherbindingVisitor(caesarTypeGraph).run();
-		new MixinListVisitor(caesarTypeGraph).run();
+		new MixinListVisitor(caesarTypeGraph, compiler).run();
 		
 		dumpTypesVisitor.run();
 		

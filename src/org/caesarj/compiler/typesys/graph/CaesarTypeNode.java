@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTypeNode.java,v 1.14 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: CaesarTypeNode.java,v 1.15 2005-03-10 10:42:58 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.graph;
@@ -35,6 +35,7 @@ import org.caesarj.compiler.typesys.CaesarTypeSystemException;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.compiler.typesys.visitor.ICaesarTypeVisitor;
 import org.caesarj.util.InconsistencyException;
+import org.caesarj.util.TokenReference;
 
 /**
  * ...
@@ -95,7 +96,19 @@ public class CaesarTypeNode {
 	
 	public CjMixinInterfaceDeclaration getTypeDecl() {
 		return typeDecl;
-	}    
+	} 
+	
+	public TokenReference getTokenRef() {
+		if (getTypeDecl() != null) {
+			return getTypeDecl().getTokenReference();
+		}
+		else if (getOuter() != null) {
+			return getOuter().getTokenRef();
+		}
+		else {
+			return null;
+		}
+	}
 
 	public List getMixinList() {
 		return mixinList;

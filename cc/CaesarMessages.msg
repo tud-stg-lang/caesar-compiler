@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.28 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: CaesarMessages.msg,v 1.29 2005-03-10 10:42:58 gasiunas Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -141,3 +141,6 @@ error   CCLASS_CANNOT_NEST_CLASS
 		
 error   CANNOT_FIND_ENCLOSING_CCLASS
 		"Cannot find the enclosing cclass"
+		
+error	MIXER_ERROR
+		"Failed to generate mixin list for class \"{0}\": {1}."
