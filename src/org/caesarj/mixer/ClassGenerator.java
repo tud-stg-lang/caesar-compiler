@@ -2,6 +2,7 @@ package org.caesarj.mixer;
 
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
+import org.caesarj.compiler.ByteCodeMap;
 import org.caesarj.mixer.intern.ClassModifier;
 
 public class ClassGenerator {
@@ -14,9 +15,9 @@ public class ClassGenerator {
 	/*
 	 * Construction
 	 */
-    public ClassGenerator(String inputDir, String outputDir) 
+    public ClassGenerator(String inputDir, String outputDir, ByteCodeMap byteCodeMap) 
     {
-    	_modifier = new ClassModifier(inputDir, outputDir);    	
+    	_modifier = new ClassModifier(inputDir, outputDir, byteCodeMap);
     }
 
     /*

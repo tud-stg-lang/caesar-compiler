@@ -13,6 +13,8 @@ import org.apache.bcel.classfile.ClassParser;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.compiler.typesys.java.JavaTypeNode;
+import org.caesarj.compiler.ByteCodeMap;
+
 import org.caesarj.mixer.MixerException;
 
 import java.util.Vector;
@@ -21,10 +23,10 @@ import java.io.InputStream;
 import java.io.File;
 
 /**
- * @author User
+ * @author Vaidas Gasiunas
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Generates mixin classes as copies of compiled classes
+ *  
  */
 public class ClassModifier 
 {
@@ -32,11 +34,14 @@ public class ClassModifier
 	private String _outputDir;
 	
 	private ClassPath _classPath;
+	
+	private ByteCodeMap _byteCodeMap;
 		
-	public ClassModifier(String inputDir, String outputDir)
+	public ClassModifier(String inputDir, String outputDir, ByteCodeMap byteCodeMap)
 	{
 		_inputDir = inputDir;
 		_outputDir = outputDir;
+		_byteCodeMap = byteCodeMap;
 		
 		// lookup for input classes only in input directory
 		_classPath = new ClassPath(inputDir);
@@ -113,9 +118,14 @@ public class ClassModifier
 	 * @throws MixerException
 	 */
 	protected void writeClass(String newClassName, JavaClass clazz ) throws MixerException{
-		try {
-			clazz.dump(_outputDir + File.separator + newClassName+".class");
-		} catch (IOException e) {
+		try 
+		{
+			String fileName = _outputDir + File.separator + newClassName+".class";
+			clazz.dump(fileName);
+			
+			_byteCodeMap.addClassFile(fileName, clazz.getBytes());
+		} 
+		catch (IOException e) {
 			throw new MixerException( "Unable to write classfile:" + e);
 		}
 	}
