@@ -135,7 +135,7 @@ public cclass X {
 		}
 	}
 	
-	public cclass B extends A {
+	public cclass B {
 		protected X.A.A a;
 	}
 }
@@ -149,7 +149,8 @@ public cclass Y extends X {
 	
 	public cclass B {
 		public void exec() {
-			a = this.new A();
+			Y.A ya = $outer.new A();
+			a = ya.new A();
 			a.x();
 		}
 	}
