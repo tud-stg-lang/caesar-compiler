@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.eclipse.jdt.internal.core.util.ToStringSorter;
+
 /**
  * ...
  * 
@@ -39,13 +41,27 @@ public class MixinList {
         return l.contains(e);
     }
     
+    public void setAt( int i, Element e ){
+    	l.set(i,e);
+    }
+    
+    /**
+     * Generates a name for the class represented by the mixin list.
+     */
     public String generateClassName() throws MixerException {
+    	return generateClassName(0, size()-1);
+    }
+    
+    /**
+     * Generates a name for the class represented by the (partial) list 
+     * beginning with item start and icnluding element end. 
+     */
+    public String generateClassName(int start, int end) throws MixerException {
         try {       
             StringBuffer packageNames = new StringBuffer();
             StringBuffer className    = new StringBuffer();
-            for(Iterator it=l.iterator(); it.hasNext(); ) {
-                Element e = (Element)it.next();
-                    
+            for (int element = start; element<=end; element++){
+                Element e = get(element);
                 className.append('_');
                 className.append(e.getInterfaceName());
                     
@@ -56,7 +72,7 @@ public class MixinList {
             }
                 
             className.append('_');
-            className.append(generateHashCode(packageNames.toString()));
+           className.append(generateHashCode(packageNames.toString()));
                 
             return 
                 className.toString();
