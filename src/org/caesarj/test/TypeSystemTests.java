@@ -7,7 +7,49 @@ public class TypeSystemTests extends FjTestCase {
 	}
 
 	public void testCaesarTestCase_01() throws Throwable {
-        compileAndRun("typesystest01", "TypeSysTestCase");
+	    compileDontRun("typesystest01");
     }
+
+	public void testCaesarTestCase_02() throws Throwable {
+	    compileDontRun("typesystest02");
+    }
+
+	public void testCaesarTestCase_03() throws Throwable {
+	    compileDontRun("typesystest03");
+    }
+
+	public void testCaesarTestCase_04() throws Throwable {
+	    compileDontRun("typesystest04");
+    }
+
+	public void testCaesarTestCase_05() throws Throwable {	    
+	    compileDontRun("typesystest05");
+    }
+
+	public void testCaesarTestCase_06() throws Throwable {
+	    compileDontRun("typesystest06");
+    }
+
+	public void testCaesarTestCase_07() throws Throwable {
+	    compileDontRun("typesystest07");
+    }
+
+	public void testCaesarTestCase_08() throws Throwable {
+	    compileDontRun("typesystest08");
+    }
+
+	public void testCaesarTestCase_09() throws Throwable {
+	    compileDontRun("typesystest09");
+    }
+
+
+	/*
+	 * TEST ERRORS
+	 */
+	/*
+	public void testCaesarTestCase_100() throws Throwable {
+	    compileAndCheckErrors("typesystest100", new String[]{""});
+    }
+    */
 
 }

@@ -84,6 +84,10 @@ public class FjTestCase extends TestCase
 	    assertTrue(!success);	    
 	}
 	
+	protected void compileDontRun(String pckgName) throws Throwable {
+	    assertTrue( compile(pckgName) );
+	}
+	
 	protected boolean compile(String pckgName) throws Throwable 
 	{
 		// Clean up output folder
