@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JCastExpression.java,v 1.8 2005-02-16 13:23:59 aracic Exp $
+ * $Id: JCastExpression.java,v 1.9 2005-03-01 13:01:30 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -116,26 +116,39 @@ public class JCastExpression extends JExpression {
             try {
                 dest = new CDependentNameType(((CClassNameType) dest)
                     .getQualifiedName()).checkType(context);
-                
-                // set the family of this cast expression
-                JExpression famExpr = ((CDependentType)dest).getFamily();
-                family = ((CDependentType)dest).getFamily().getThisAsFamily();
-                
-                TokenReference where = getTokenReference();
-                
-                // put the expr into a cast call
-                JMethodCallExpression castCall = new JMethodCallExpression(
-                    where,
-                    new JTypeNameExpression(where, new CClassNameType(CaesarConstants.CAESAR_CAST_SUPPORT)),
-                    "cast",
-                    new JExpression[] { famExpr, expr }
-                );
-             
-                expr = castCall.analyse(context);
             }
             catch (UnpositionedError ue2) {
                 throw ue2.addPosition(getTokenReference());
             }
+        }
+        
+        if(dest.isDependentType()) {
+//          set the family of this cast expression
+            JExpression famExpr = ((CDependentType)dest).getFamily();
+            
+            TokenReference where = getTokenReference();
+            
+            if(famExpr == null) {
+                famExpr = 
+	                new JThisExpression(
+	                    where,
+	                    new JTypeNameExpression(where, dest.getCClass().getOwnerType())
+	                ).analyse(context);
+            }
+                
+            family = famExpr.getThisAsFamily();
+            
+                                   
+            
+            // put the expr into a cast call
+            JMethodCallExpression castCall = new JMethodCallExpression(
+                where,
+                new JTypeNameExpression(where, new CClassNameType(CaesarConstants.CAESAR_CAST_SUPPORT)),
+                "cast",
+                new JExpression[] { famExpr, expr }
+            );
+         
+            expr = castCall.analyse(context);
         }
 
         check(
