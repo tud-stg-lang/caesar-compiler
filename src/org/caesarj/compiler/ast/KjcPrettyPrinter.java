@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcPrettyPrinter.java,v 1.2 2004-02-08 20:27:58 ostermann Exp $
+ * $Id: KjcPrettyPrinter.java,v 1.3 2004-02-23 09:49:42 klose Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -1810,4 +1810,35 @@ public class KjcPrettyPrinter extends org.caesarj.util.Utils implements Constant
   protected boolean			nl = true;
 
   protected final TypeFactory           factory;
+/* (non-Javadoc)
+ * @see org.caesarj.compiler.ast.KjcVisitor#visitFjOverrideClassDeclaration(org.caesarj.compiler.ast.FjOverrideClassDeclaration, int, java.lang.String, org.caesarj.compiler.types.CTypeVariable[], java.lang.String, org.caesarj.compiler.types.CReferenceType[], org.caesarj.compiler.ast.JPhylum[], org.caesarj.compiler.ast.JMethodDeclaration[], org.caesarj.compiler.ast.JTypeDeclaration[])
+ */
+public void visitFjOverrideClassDeclaration(FjOverrideClassDeclaration self, int modifiers, String ident, CTypeVariable[] typeVariables, String superClass, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods, JTypeDeclaration[] decls) {
+	// TODO Auto-generated method stub
+	
+}
+
+/* (non-Javadoc)
+ * @see org.caesarj.compiler.ast.KjcVisitor#visitFjVirtualClassDeclaration(org.caesarj.compiler.ast.FjVirtualClassDeclaration, int, java.lang.String, org.caesarj.compiler.types.CTypeVariable[], java.lang.String, org.caesarj.compiler.types.CReferenceType[], org.caesarj.compiler.ast.JPhylum[], org.caesarj.compiler.ast.JMethodDeclaration[], org.caesarj.compiler.ast.JTypeDeclaration[])
+ */
+public void visitFjVirtualClassDeclaration(FjVirtualClassDeclaration self, int modifiers, String ident, CTypeVariable[] typeVariables, String superClass, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods, JTypeDeclaration[] decls) {
+	// TODO Auto-generated method stub
+	
+}
+
+/* (non-Javadoc)
+ * @see org.caesarj.compiler.ast.KjcVisitor#visitCciWeaveletClassDeclaration(org.caesarj.compiler.ast.CciWeaveletClassDeclaration, int, java.lang.String, org.caesarj.compiler.types.CTypeVariable[], java.lang.String, org.caesarj.compiler.types.CReferenceType[], org.caesarj.compiler.ast.JPhylum[], org.caesarj.compiler.ast.JMethodDeclaration[], org.caesarj.compiler.ast.JTypeDeclaration[])
+ */
+public void visitCciWeaveletClassDeclaration(CciWeaveletClassDeclaration self, int modifiers, String ident, CTypeVariable[] typeVariables, String superClass, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods, JTypeDeclaration[] decls) {
+	// TODO Auto-generated method stub
+	
+}
+
+/* (non-Javadoc)
+ * @see org.caesarj.compiler.ast.KjcVisitor#visitFjCleanClassDeclaration(org.caesarj.compiler.ast.FjCleanClassDeclaration, int, java.lang.String, org.caesarj.compiler.types.CTypeVariable[], java.lang.String, org.caesarj.compiler.types.CReferenceType[], org.caesarj.compiler.ast.JPhylum[], org.caesarj.compiler.ast.JMethodDeclaration[], org.caesarj.compiler.ast.JTypeDeclaration[])
+ */
+public void visitFjCleanClassDeclaration(FjCleanClassDeclaration self, int modifiers, String ident, CTypeVariable[] typeVariables, String superClass, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods, JTypeDeclaration[] decls) {
+	// TODO Auto-generated method stub
+	
+}
 }

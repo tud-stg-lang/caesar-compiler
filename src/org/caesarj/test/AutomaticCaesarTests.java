@@ -247,7 +247,7 @@ public class AutomaticCaesarTests extends FjTestCase {
 		}
 
 		int visitedClassDeclarations = 0;
-		public void visitFjClassDeclaration(
+		public void visitClassDeclaration(
 			JClassDeclaration self,
 			int modifiers,
 			String ident,
@@ -257,7 +257,7 @@ public class AutomaticCaesarTests extends FjTestCase {
 			JPhylum[] body,
 			JMethodDeclaration[] methods,
 			JTypeDeclaration[] decls) {
-			super.visitFjClassDeclaration(
+			super.visitClassDeclaration(
 				self,
 				modifiers,
 				ident,

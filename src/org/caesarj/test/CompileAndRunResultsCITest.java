@@ -245,7 +245,7 @@ public class CompileAndRunResultsCITest extends FjTestCase
         }
 
         int visitedClassDeclarations = 0;
-        public void visitFjClassDeclaration(
+        public void visitClassDeclaration(
             JClassDeclaration self,
             int modifiers,
             String ident,
@@ -256,7 +256,7 @@ public class CompileAndRunResultsCITest extends FjTestCase
             JMethodDeclaration[] methods,
             JTypeDeclaration[] decls)
         {
-            super.visitFjClassDeclaration(
+            super.visitClassDeclaration(
                 self,
                 modifiers,
                 ident,

@@ -552,5 +552,19 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 			null);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.caesarj.compiler.ast.JClassDeclaration#accept(org.caesarj.compiler.ast.KjcVisitor)
+	 */
+	public void accept(KjcVisitor p) {
+		p.visitFjVirtualClassDeclaration(this,
+					modifiers,
+					ident,
+					typeVariables,
+					superClass != null ? superClass.toString() : null,
+					interfaces,
+					body,
+					methods,
+					inners);
+	}
 
 }

@@ -273,4 +273,18 @@ public class FjOverrideClassDeclaration
 			null);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.caesarj.compiler.ast.JClassDeclaration#accept(org.caesarj.compiler.ast.KjcVisitor)
+	 */
+	public void accept(KjcVisitor p) {
+		p.visitFjOverrideClassDeclaration(this,
+					modifiers,
+					ident,
+					typeVariables,
+					superClass != null ? superClass.toString() : null,
+					interfaces,
+					body,
+					methods,
+					inners);
+	}
 }

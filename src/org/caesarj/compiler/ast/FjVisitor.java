@@ -76,63 +76,12 @@ public abstract class FjVisitor implements KjcVisitor {
 		JPhylum[] body,
 		JMethodDeclaration[] methods,
 		JTypeDeclaration[] decls) {
-			if( self instanceof FjOverrideClassDeclaration )
-				visitFjOverrideClassDeclaration(
-					(FjOverrideClassDeclaration) self,
-					modifiers,
-					ident,
-					typeVariables,
-					superClass,
-					interfaces,
-					body,
-					methods,
-					decls );
-			else if( self instanceof FjVirtualClassDeclaration )
-				visitFjVirtualClassDeclaration(
-					(FjVirtualClassDeclaration) self,
-					modifiers,
-					ident,
-					typeVariables,
-					superClass,
-					interfaces,
-					body,
-					methods,
-					decls );
-			else if (self instanceof CciWeaveletClassDeclaration)
-				visitCciWeaveletClassDeclaration(
-					(CciWeaveletClassDeclaration) self,
-					modifiers,
-					ident,
-					typeVariables,
-					superClass,
-					interfaces,
-					body,
-					methods,
-					decls );					
-			else if( self instanceof FjCleanClassDeclaration )
-				visitFjCleanClassDeclaration(
-					(FjCleanClassDeclaration) self,
-					modifiers,
-					ident,
-					typeVariables,
-					superClass,
-					interfaces,
-					body,
-					methods,
-					decls );
-			else if( self instanceof JClassDeclaration )
-				visitFjClassDeclaration(
-					(JClassDeclaration) self,
-					modifiers,
-					ident,
-					typeVariables,
-					superClass,
-					interfaces,
-					body,
-					methods,
-					decls );
-			else {
+			Object oldOwner = this.owner.get();
+			owner.set( self );
+			for( int i = 0; i < decls.length; i++ ) {
+				decls[i].accept( this );
 			}
+			owner.set( oldOwner );
 	}
 	
 	/**
@@ -150,26 +99,6 @@ public abstract class FjVisitor implements KjcVisitor {
 			typeDeclarations[i].accept( this );
 		}
 		owner.set(null);
-
-	}
-
-	public void visitFjClassDeclaration(
-		JClassDeclaration self,
-		int modifiers,
-		String ident,
-		CTypeVariable[] typeVariables,
-		String superClass,
-		CReferenceType[] interfaces,
-		JPhylum[] body,
-		JMethodDeclaration[] methods,
-		JTypeDeclaration[] decls) {
-
-		Object oldOwner = this.owner.get();
-		owner.set( self );
-		for( int i = 0; i < decls.length; i++ ) {
-			decls[i].accept( this );
-		}
-		owner.set( oldOwner );
 
 	}
 
@@ -206,7 +135,7 @@ public abstract class FjVisitor implements KjcVisitor {
 		JPhylum[] body,
 		JMethodDeclaration[] methods,
 		JTypeDeclaration[] decls) {
-		visitFjClassDeclaration(
+		visitClassDeclaration(
 			self,
 			modifiers,
 			ident,

@@ -85,7 +85,7 @@ public class FamiliesInitializerFjVisitor
 
 	}
 
-	public void visitFjClassDeclaration(
+	public void visitClassDeclaration(
 		JClassDeclaration self,
 		int modifiers,
 		String ident,
@@ -108,7 +108,7 @@ public class FamiliesInitializerFjVisitor
 		{
 			context.reportTrouble(e);
 		}
-		super.visitFjClassDeclaration(
+		super.visitClassDeclaration(
 			self,
 			modifiers,
 			ident,

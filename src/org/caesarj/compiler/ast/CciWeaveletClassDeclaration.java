@@ -312,6 +312,22 @@ public class CciWeaveletClassDeclaration
 			superCollaborationInterface);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.caesarj.compiler.ast.JClassDeclaration#accept(org.caesarj.compiler.ast.KjcVisitor)
+	 */
+	public void accept(KjcVisitor p) {
+		p.visitCciWeaveletClassDeclaration(this,
+					modifiers,
+					ident,
+					typeVariables,
+					superClass != null ? superClass.toString() : null,
+					interfaces,
+					body,
+					methods,
+					inners);
+	}
+
+
 	/** TODO: Remove if not needed
 	 * Constructs the source class which represents the weavelet.
 	 *

@@ -75,7 +75,7 @@ public class ClassTransformationFjVisitor extends FjVisitor
 	/**
 	 * sets the owner on visited classes.
 	 */
-	public void visitFjClassDeclaration(
+	public void visitClassDeclaration(
 		JClassDeclaration self,
 		int modifiers,
 		String ident,
@@ -91,10 +91,9 @@ public class ClassTransformationFjVisitor extends FjVisitor
 		// owners in order to be able to access
 		// fields when inheriting
 		Object myOwner = owner.get();
-		if (myOwner instanceof JClassDeclaration)
-			self.setOwnerDeclaration(myOwner);
+		self.setOwnerDeclaration(myOwner);
 
-		super.visitFjClassDeclaration(
+		super.visitClassDeclaration(
 			self,
 			modifiers,
 			ident,

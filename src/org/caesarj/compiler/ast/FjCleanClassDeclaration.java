@@ -959,4 +959,20 @@ public class FjCleanClassDeclaration
 				CciConstants.WRAPPER_MAP_JAVADOC,
 				new JavaStyleComment[0]);
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.caesarj.compiler.ast.JClassDeclaration#accept(org.caesarj.compiler.ast.KjcVisitor)
+	 */
+	public void accept(KjcVisitor p) {
+		p.visitFjCleanClassDeclaration(this,
+					modifiers,
+					ident,
+					typeVariables,
+					superClass != null ? superClass.toString() : null,
+					interfaces,
+					body,
+					methods,
+					inners);
+	}
+
 }

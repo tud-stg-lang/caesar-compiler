@@ -112,7 +112,7 @@ public class CollaborationInterfaceTransformation
 	/**
 	 * Also sets the owner of the classes.
 	 */	
-	public void visitFjClassDeclaration(
+	public void visitClassDeclaration(
 		JClassDeclaration self,
 		int modifiers,
 		String ident,
@@ -131,7 +131,7 @@ public class CollaborationInterfaceTransformation
 		if (myOwner instanceof JClassDeclaration)
 			self.setOwnerDeclaration(myOwner);
 
-		super.visitFjClassDeclaration(
+		super.visitClassDeclaration(
 			self,
 			modifiers,
 			ident,

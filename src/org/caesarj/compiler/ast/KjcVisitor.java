@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcVisitor.java,v 1.2 2004-02-08 20:27:58 ostermann Exp $
+ * $Id: KjcVisitor.java,v 1.3 2004-02-23 09:49:42 klose Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -59,6 +59,47 @@ public interface KjcVisitor {
 			     JPhylum[] body,
 			     JMethodDeclaration[] methods,
 			     JTypeDeclaration[] decls);
+			     
+	void visitFjOverrideClassDeclaration(FjOverrideClassDeclaration self,
+				int modifiers,
+				String ident,
+				CTypeVariable[] typeVariables,
+				String superClass,
+				CReferenceType[] interfaces,
+				JPhylum[] body,
+				JMethodDeclaration[] methods,
+				JTypeDeclaration[] decls);
+
+	void visitFjVirtualClassDeclaration(FjVirtualClassDeclaration self,
+				int modifiers,
+				String ident,
+				CTypeVariable[] typeVariables,
+				String superClass,
+				CReferenceType[] interfaces,
+				JPhylum[] body,
+				JMethodDeclaration[] methods,
+				JTypeDeclaration[] decls);
+
+	void visitCciWeaveletClassDeclaration(CciWeaveletClassDeclaration self,
+				int modifiers,
+				String ident,
+				CTypeVariable[] typeVariables,
+				String superClass,
+				CReferenceType[] interfaces,
+				JPhylum[] body,
+				JMethodDeclaration[] methods,
+				JTypeDeclaration[] decls);
+
+	void visitFjCleanClassDeclaration(FjCleanClassDeclaration self,
+				int modifiers,
+				String ident,
+				CTypeVariable[] typeVariables,
+				String superClass,
+				CReferenceType[] interfaces,
+				JPhylum[] body,
+				JMethodDeclaration[] methods,
+				JTypeDeclaration[] decls);
+    
   /**
    * visits a class body
    */

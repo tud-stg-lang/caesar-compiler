@@ -26,7 +26,7 @@ public class CollectClassesFjVisitor extends FjVisitor {
 		transformationIsDone = false;
 	}
 
-	public void visitFjClassDeclaration(
+	public void visitClassDeclaration(
 		JClassDeclaration self,
 		int modifiers,
 		String ident,
@@ -41,7 +41,7 @@ public class CollectClassesFjVisitor extends FjVisitor {
 			// collect the class
 			allClasses.put( self.getCClass().getQualifiedName(), self );
 
-		super.visitFjClassDeclaration(
+		super.visitClassDeclaration(
 			self,
 			modifiers,
 			ident,
