@@ -1,15 +1,22 @@
 package org.caesarj.test;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.io.PrintWriter;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
 
 import junit.framework.TestCase;
 
-import java.io.PrintWriter;
-import java.io.FilenameFilter;
-import java.util.Hashtable;
-import java.util.Vector;
-
-import org.caesarj.compiler.*;
+import org.caesarj.compiler.CaesarParser;
+import org.caesarj.compiler.CompilerBase;
+import org.caesarj.compiler.KjcClassReader;
+import org.caesarj.compiler.KjcEnvironment;
+import org.caesarj.compiler.KjcOptions;
+import org.caesarj.compiler.Main;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.types.KjcSignatureParser;
@@ -74,12 +81,24 @@ public class FjTestCase extends TestCase
 		
 		// Retrieve input files
 		File workingDir = new File( getWorkingDirectory() + File.separator + pckgName);
-		String[] args = workingDir.list(new JavaExtFilter());
 		
-		for (int i1 = 0; i1 < args.length; i1++)
+		List files = new LinkedList();
+		findAllFiles(workingDir, files);
+		
+		List fileNames = new LinkedList();
+		
+		Iterator it = files.iterator();
+		while (it.hasNext()) 
 		{
-			args[i1] = pckgName + File.separator + args[i1];
+			File file = (File)it.next();
+			String fileName = file.getName();
+			if (fileName.endsWith( ".java" )) 
+			{
+				fileNames.add(file.getAbsolutePath());				
+			}
 		}
+		
+		String[] args = (String[])fileNames.toArray(new String[0]);
 		
 		// Compile test
 		compiler.run(args);
@@ -147,21 +166,46 @@ public class FjTestCase extends TestCase
 	{
 		File workingDir = new File( getWorkingDirectory() + File.separator 
 			+ "generated" + (pckgName == null ? "" : File.separator + pckgName));
-		File[] files = workingDir.listFiles();
+		List files = new LinkedList();
+		findAllFiles(workingDir, files);
+		
 		int deleteCount = 0;
 		try {
-			for( int i = 0; i < files.length; i++ ) {
-				if( files[ i ].getName().endsWith( ".class" ) ) {
-					if( files[ i ].delete() )
+			Iterator it = files.iterator();
+			while (it.hasNext()) 
+			{
+				File file = (File)it.next();
+				if (file.getName().endsWith( ".class" )) {
+					if (file.delete())
 						deleteCount++;
 				}
 			}
-		} catch( Throwable t ) {
-		} finally {
-			if( deleteCount == 0 )
-				warn( "no class files were deleted" );
+		} 
+		catch( Throwable t ) {
+		} 
+		
+		if( deleteCount == 0 )
+			warn( "no class files were deleted" );		
+	}
+	
+	private void findAllFiles(File dir, List lst)
+	{
+		File[] files = dir.listFiles();
+		if (files == null)
+			return;
+		
+		for (int i = 0; i < files.length; i++) 
+		{
+			if (files[i].isDirectory())
+			{
+				findAllFiles(files[i], lst);
+			}
+			else
+			{
+				lst.add(files[i]);
+			}
 		}
-	}	
+	}
 }
 
 /*
@@ -229,13 +273,5 @@ class ClassReaderMock extends KjcClassReader
 	public boolean addSourceClass(CSourceClass cl) {
 		allLoadedClasses.put(cl.getQualifiedName(), cl);
 		return super.addSourceClass(cl);
-	}
-}
-
-class JavaExtFilter implements FilenameFilter
-{
-	public boolean accept(File dir, String name) 
-	{
-		return name.endsWith(".java") ; 
 	}
 }
