@@ -22,10 +22,6 @@ import org.caesarj.util.TokenReference;
  */
 public class CClassBodyContext extends CMethodContext {
 
-    public int getDepth(){
-        return parent.getDepth();
-    }
-    
     public static final String METHOD_NAME = "$TEMPORARY_METHOD_ENTRY"; 
     
     CMethod method;
