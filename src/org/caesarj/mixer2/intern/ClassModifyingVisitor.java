@@ -136,7 +136,10 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 		for (int i = 0; i < atts.length; i++) {
 			Attribute attribute = atts[i];
 			if (attribute.getTag() == org.apache.bcel.Constants.ATTR_INNER_CLASSES){
-				((InnerClasses)attribute).setInnerClasses(new InnerClass[0]);
+				InnerClasses ic = (InnerClasses)attribute;
+				ic.setInnerClasses(new InnerClass[0]);
+				ic.setLength(2);
+				
 			}
 			v.add( attribute );
 		}
@@ -145,7 +148,7 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 		
 		// take a look at all methodrefs
 		modifyMethodRefs(newClass);
-/*		
+/*		KK
 		// Add reference to the outer-class-file 
 		if (!oldOuterClassName.equals(newOuterClassName)){
 			JavaClass outer = Repository.lookupClass(newOuterClassName);
