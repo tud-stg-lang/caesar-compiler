@@ -16,13 +16,13 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Ivica Aracic 
  */
-public class CjMethodCallExpression2 extends JExpression implements CaesarConstants {
+public class CjMethodCallExpression extends JExpression implements CaesarConstants {
     
     protected JExpression prefix;
 	protected String ident;
 	protected JExpression[] args;
     
-    public CjMethodCallExpression2(
+    public CjMethodCallExpression(
 		TokenReference where,
 		JExpression prefix,
 		String ident,
