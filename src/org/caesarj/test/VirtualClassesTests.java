@@ -105,4 +105,8 @@ public class VirtualClassesTests extends FjTestCase {
 	public void testCaesarTestCase_24() throws Throwable {
         doGeneratedTest("test24", "VCTestCase");
     }
+	
+	public void testCaesarTestCase_25() throws Throwable {
+        doGeneratedTest("test25", "VCTestCase");
+    }
 }
