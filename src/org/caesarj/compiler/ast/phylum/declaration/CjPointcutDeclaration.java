@@ -163,6 +163,10 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 		return rpd;
 	}
 	
+	public CaesarPointcut getPointcut() {
+	    return pointcut;
+	}
+	
 	public String toString(){
 		return pointcut.toString();
 	}
