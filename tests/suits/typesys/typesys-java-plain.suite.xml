@@ -91,4 +91,27 @@
 		</code>
     </compile>	
 
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="accessor002" description="Check accessors.">
+        <code>
+			public class HierarchicalLayoutStrategy {
+			    private NodeTree nodeTree = new NodeTree();
+			
+			    private class NodeTree {			
+			        private TreeElement root;
+			
+			        private void removeNode() {
+			            TreeElement t = null;
+		                t.parent.children.remove(t);
+			        }
+			
+			        private class TreeElement {		
+			        	private TreeElement parent;	
+			            private java.util.List children;
+			        }			
+			    }						    
+			}
+		</code>
+    </compile>	
+
 </testsuite>
