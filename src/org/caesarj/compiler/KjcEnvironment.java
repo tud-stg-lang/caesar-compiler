@@ -15,12 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcEnvironment.java,v 1.4 2004-06-02 15:03:13 aracic Exp $
+ * $Id: KjcEnvironment.java,v 1.5 2004-06-15 16:34:23 aracic Exp $
  */
 
 package org.caesarj.compiler;
 
-import org.caesarj.compiler.cclass.CaesarTypeGraph;
 import org.caesarj.compiler.cclass.CaesarTypeSystem;
 import org.caesarj.compiler.types.SignatureParser;
 import org.caesarj.compiler.types.TypeFactory;

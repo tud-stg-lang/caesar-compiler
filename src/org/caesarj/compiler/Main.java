@@ -14,10 +14,7 @@ import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.cclass.CClassPreparation;
-import org.caesarj.compiler.cclass.CaesarTypeNode;
-import org.caesarj.compiler.cclass.CaesarTypeSystem;
 import org.caesarj.compiler.cclass.CaesarTypeGraphGenerator;
-import org.caesarj.compiler.cclass.CaesarTypeGraph;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
@@ -131,9 +128,6 @@ public class Main extends MainSuper implements Constants {
         checkAllInterfaces(tree); 
         if(errorFound) return false;
                 
-        handleConstructorInheritance(environment);
-        if(errorFound) return false;
-        
         checkAllInitializers(tree);
         if(errorFound) return false;
                 
@@ -165,13 +159,6 @@ public class Main extends MainSuper implements Constants {
             this,
             environment,
             cu
-        );
-    }
-    
-    protected void handleConstructorInheritance(KjcEnvironment environment) {
-        CClassPreparation.instance().handleConstructorInheritance(
-            this,
-            environment
         );
     }
     
