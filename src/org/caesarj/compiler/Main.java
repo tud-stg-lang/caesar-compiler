@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.84 2005-01-27 15:21:38 aracic Exp $
+ * $Id: Main.java,v 1.85 2005-02-21 15:16:44 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -189,8 +189,11 @@ public class Main extends MainSuper implements Constants {
         checkDependentTypesInAllInterfaces(tree); 
         if(errorFound) return false;
         
-        // CTODO: why two calls? see bellow
-        //completeMixinCloneTypeInfo(environment, tree[0]);
+        // this step generates missing mixin chain parts
+        // (these are all the classes where the statically 
+        // known super class parameter has been changed due to the linearization process) 
+        // the temporary info generated is used in checkVirtualClassMethodSignatures
+        completeMixinCloneTypeInfo(environment, tree[0]);
         
         // check overridding in virtual classes
         // we have to keep the signature of a overridding method having virtual classes as
@@ -203,9 +206,7 @@ public class Main extends MainSuper implements Constants {
         completeCClassInterfaces(tree);
         if(errorFound) return false;
 
-        // this step generates missing mixin chain parts
-        // (these are all the classes where the statically 
-        // known super class parameter has been changed due to the linearization process) 
+        // repeat the process 
         completeMixinCloneTypeInfo(environment, tree[0]);
         
         checkAllInitializers(tree);
