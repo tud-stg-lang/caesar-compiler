@@ -1,4 +1,33 @@
-VC_14 - not tagged yet
+VC_15 - 17.11.2004
+- Legacy code removed
+	- Invariants
+	- Generics
+- Virtual Class Scoping: Extending from implicit virtual types requires an explicit redefiniton
+- Unit Tests for compiler errors added
+- CaesarObjectIfc added, so that CaesarObject methods also can be accessed via a cclass ifc
+- Access to the outer reference has been changed
+	- outer reference stored in CaesarObject 
+	- A.B.this.x() instead of $outer.x()
+	- insert implicit outer prefix when resolving method calls
+	- see CjOuterExpression, JThisExpression, JMethodCallExpression
+- wrappee 
+	- own keyword again -> CjWrappeeExpression
+	- added checks on wrappee overridding
+- Automatic casts revised, now they take place only in:
+	- CjMethodCallExpression: only return type casted depending on the method call prefix
+	- JLocalVariableExpression 
+	- JFieldAccessExpression: analogous to CjMethodCallExpression
+- Bytecode generation for field access changed, analogous to method targets, the field targets
+  are set to "this" or to "super", rather than to the owner of the field (which caused problems
+  with mixin copies -> see mantis)
+- Added compiler messages (see constants.CaesarMessages)
+- CjMixinInterfaceDeclaration now distinguishs among cclass and normal java ifcs
+- visibility checks
+	- package visibility prohibited
+- For list of bugfixes see mantis
+
+
+VC_14 - ?.10.2004
 - Virtual Class scoping
 	- lookup has been changed
 		- if looking up in a mixin class, first we lookup in the direct mixin interface class
