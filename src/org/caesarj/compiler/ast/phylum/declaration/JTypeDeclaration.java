@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclaration.java,v 1.42 2005-02-09 16:54:35 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.43 2005-02-09 17:02:02 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -422,7 +422,9 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         for (int i = 0; i < methods.length; i++) {
             methodList[i] = methods[i].checkInterface(self);
             
-            /* CRITICAL: temporary removed, since dependent return types can not be resolved in this step
+            // IVICA: this has been moved to checkBody pass
+            // see there why it is so
+            /*
             for (int j = 0; j < i; j++) {
                 check(
                     context,
@@ -678,6 +680,18 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         
         context.addSourceClass(sourceClass);
 
+        // this has been moved from checkInterfaces to here
+        // reason: dependent types in signatures are resolved after the checkInterface step
+        for (int i = 0; i < methods.length; i++) {            
+            for (int j = 0; j < i; j++) {
+                check(
+                    context,
+                    !methods[i].equals(methods[j]),
+                    KjcMessages.METHOD_REDEFINE,
+                    methods[i]);
+            }
+        }        
+        
         for (int i = 0; i < interfaces.length; i++) {
             check(
                 context,
