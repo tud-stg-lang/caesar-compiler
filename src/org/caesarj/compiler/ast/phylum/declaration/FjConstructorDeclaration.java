@@ -381,8 +381,8 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 		ident = newIdent;
 	}
 
-	public FjCleanMethodDeclaration getAbstractFactoryMethod() {
-		return new FjCleanMethodDeclaration(
+	public JMethodDeclaration getAbstractFactoryMethod() {
+		return new JMethodDeclaration(
 			getTokenReference(),
 			ClassfileConstants2.ACC_PUBLIC,
 			typeVariables,
@@ -473,9 +473,9 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 	 * 
 	 * @return
 	 */
-	public FjCleanMethodDeclaration createAbstractWrapperInitializationMethod() 
+	public JMethodDeclaration createAbstractWrapperInitializationMethod() 
 	{
-		return new FjCleanMethodDeclaration(
+		return new JMethodDeclaration(
 			getTokenReference(),
 		ClassfileConstants2.ACC_PUBLIC,
 			typeVariables,
@@ -629,7 +629,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 	 * return _localWrapper;
 	 * 
 	 */	
-	public FjCleanMethodDeclaration createWrapperCreatorMethod(
+	public JMethodDeclaration createWrapperCreatorMethod(
 		String mapName)
 	{
 		
@@ -760,7 +760,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 		
 	
 		return 
-			new FjCleanMethodDeclaration(
+			new JMethodDeclaration(
 				ref, 
 				ACC_PUBLIC, 
 				typeVariables, 
@@ -784,7 +784,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 	 * Object key = <keyExpression>;
 	 * _<wrapperType>.remove(key);
 	 */	
-	public FjCleanMethodDeclaration createWrapperDestructorMethod(
+	public JMethodDeclaration createWrapperDestructorMethod(
 		String mapName)
 	{
 
@@ -843,7 +843,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 		
 	
 		return 
-			new FjCleanMethodDeclaration(
+			new JMethodDeclaration(
 				ref, 
 				ACC_PUBLIC, 
 				typeVariables, 

@@ -68,7 +68,7 @@ public class PrivilegedField extends FjSourceField {
 			CaesarMember.privilegedAccessMethodForFieldGet(aspectType,field);
 
 		CType[] readerParameterTypes = { getOwnerType()};
-		FjFamily[] parameterFamilies = { getFamily()};
+
 
 		reader =
 			new FjSourceMethod(
@@ -81,8 +81,7 @@ public class PrivilegedField extends FjSourceField {
 				CTypeVariable.EMPTY,
 				false,
 				true,
-				null,
-				parameterFamilies);
+				null);
 
 		
 		CaesarMember writerMember = 
@@ -103,8 +102,7 @@ public class PrivilegedField extends FjSourceField {
 				CTypeVariable.EMPTY,
 				false,
 				true,
-				null,
-				new FjFamily[0]);
+				null);
 
 	}
 

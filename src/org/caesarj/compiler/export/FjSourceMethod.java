@@ -3,15 +3,12 @@ package org.caesarj.compiler.export;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CTypeContext;
-import org.caesarj.compiler.family.FjFamily;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.UnpositionedError;
 
 public class FjSourceMethod extends CSourceMethod {
-
-	protected FjFamily[] families;
 
 	public FjSourceMethod(
 		CClass owner,
@@ -23,8 +20,7 @@ public class FjSourceMethod extends CSourceMethod {
 		CTypeVariable[] typeVariables,
 		boolean deprecated,
 		boolean synthetic,
-		JBlock body,
-		FjFamily[] families) {
+		JBlock body) {
 		super(
 			owner,
 			modifiers,
@@ -36,12 +32,8 @@ public class FjSourceMethod extends CSourceMethod {
 			deprecated,
 			synthetic,
 			body);
-		this.families = families;
 	}
 
-	public FjFamily[] getFamilies() {
-		return families;
-	}
 	/**
 	 * Checks if the modifiers (provided and expected) are changed in the 
 	 * overriding.

@@ -99,8 +99,7 @@ public class ProceedDeclaration extends FjMethodDeclaration {
 					ident,
 					returnType,
 					parameterTypes,
-					adviceName,
-					families));
+					adviceName));
 
 			return (CSourceMethod) getMethod();
 		} catch (UnpositionedError cue) {

@@ -14,7 +14,6 @@ import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.export.FjSourceMethod;
-import org.caesarj.compiler.family.FjFamily;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
@@ -349,14 +348,6 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 					(CReferenceType) exceptions[i].checkType(typeContext);
 			}
 
-			FjFamily[] families = new FjFamily[parameters.length];
-			/* 	FJRM  
-			 	FJTODO
-			for (int i = 0; i < families.length; i++) {
-				families[i] = ((FjFormalParameter) parameters[i]).getFamily();
-			}
-			*/
-
 			setInterface(new FjSourceMethod(
 				context.getCClass(),
 				modifiers,
@@ -368,7 +359,7 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 				isDeprecated(),
 				false,
 			// not synthetic
-			body, families));
+			body));
 
 			return (CSourceMethod) getMethod();
 		} catch (UnpositionedError cue) {

@@ -2049,46 +2049,13 @@ private static final int MAX_LOOKAHEAD = 2;
 		}
 		if ( inputState.guessing==0 ) {
 			
-			// check if we have a clean method, i.e. a method that
-			// could be taken into a clean class's interface
-			if( (modifiers & Constants.ACC_PUBLIC) != 0
-			&& (modifiers & Constants.ACC_STATIC) == 0 )
-			self = new FjCleanMethodDeclaration(sourceRef,
-			modifiers,
-			typeVariables,
-			type,
-			name.getText(),
-			parameters,
-			throwsList,
-			body == null ? null : new JBlock(sourceRef, body, null),
-			javadoc,
-			comments);
-					 // check if we have private methods that might
-					 // need to receive a self parameter later
-			else if( (modifiers & Constants.ACC_PRIVATE) != 0 
-			&& (modifiers & Constants.ACC_STATIC) == 0 )
-			self = new FjPrivateMethodDeclaration(sourceRef,
-			modifiers,
-			typeVariables,
-			type,
-			name.getText(),
-			parameters,
-			throwsList,
-			body == null ? null : new JBlock(sourceRef, body, null),
-			javadoc,
-			comments);
-			// if this is not the case, instantiate
-			// a regular method
-			else
-			self = new FjMethodDeclaration(sourceRef,
-			modifiers, typeVariables, type,
-			name.getText(), parameters, throwsList,
-			body == null 
-			? null 
-			: new JBlock(sourceRef, body, null),
-			javadoc, comments);
-			
-			
+				     self = new JMethodDeclaration(sourceRef,
+				                modifiers, typeVariables, type,
+				                name.getText(), parameters, throwsList,
+				                body == null 
+				                    ? null 
+				                    : new JBlock(sourceRef, body, null),
+				                javadoc, comments);      
 			
 		}
 		return self;
@@ -2591,7 +2558,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			self=jAssignmentExpression();
 			match(RPAREN);
 			if ( inputState.guessing==0 ) {
-				self = new FjParenthesedExpression(sourceRef, self);
+				self = new JParenthesedExpression(sourceRef, self);
 			}
 			break;
 		}

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.2 2004-03-15 14:12:07 aracic Exp $
+ * $Id: JClassDeclaration.java,v 1.3 2004-03-15 16:47:14 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -799,7 +799,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
    * @param returnType The return type
    * @return FjCleanMethodDeclaration
    */
-  protected FjCleanMethodDeclaration createAccessor(
+  protected JMethodDeclaration createAccessor(
 	  String accessedName, 
 	  JExpression returnExpression, 
 	  CReferenceType returnType)
@@ -813,7 +813,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 					
 	  JBlock body = new JBlock(getTokenReference(), statements, null);
 	
-	  return new FjCleanMethodDeclaration(
+	  return new JMethodDeclaration(
 		  getTokenReference(),
 		  ACC_PUBLIC,
 		  new CTypeVariable[0],

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.27 2004-03-15 14:12:07 aracic Exp $
+ * $Id: Caesar.g,v 1.28 2004-03-15 16:47:14 aracic Exp $
  */
 
 /*
@@ -802,47 +802,14 @@ jMethodDefinition [ParseClassContext context, int modifiers, CType type, CTypeVa
     )
   )
 
-    {
-         // check if we have a clean method, i.e. a method that
-         // could be taken into a clean class's interface
-         if( (modifiers & Constants.ACC_PUBLIC) != 0
-             && (modifiers & Constants.ACC_STATIC) == 0 )
-                 self = new FjCleanMethodDeclaration(sourceRef,
-                                               modifiers,
-                                               typeVariables,
-                                               type,
-                                               name.getText(),
-                                               parameters,
-                                               throwsList,
-                                               body == null ? null : new JBlock(sourceRef, body, null),
-                                               javadoc,
-                                               comments);
-		 // check if we have private methods that might
-		 // need to receive a self parameter later
-         else if( (modifiers & Constants.ACC_PRIVATE) != 0 
-             && (modifiers & Constants.ACC_STATIC) == 0 )
-                 self = new FjPrivateMethodDeclaration(sourceRef,
-                                               modifiers,
-                                               typeVariables,
-                                               type,
-                                               name.getText(),
-                                               parameters,
-                                               throwsList,
-                                               body == null ? null : new JBlock(sourceRef, body, null),
-                                               javadoc,
-                                               comments);
-         // if this is not the case, instantiate
-         // a regular method
-         else
-                 self = new FjMethodDeclaration(sourceRef,
-                            modifiers, typeVariables, type,
-                            name.getText(), parameters, throwsList,
-                            body == null 
-                                ? null 
-                                : new JBlock(sourceRef, body, null),
-                            javadoc, comments);
-
-      
+    {         
+	     self = new JMethodDeclaration(sourceRef,
+	                modifiers, typeVariables, type,
+	                name.getText(), parameters, throwsList,
+	                body == null 
+	                    ? null 
+	                    : new JBlock(sourceRef, body, null),
+	                javadoc, comments);      
     }
 ;
 
@@ -1904,7 +1871,7 @@ jPrimaryExpression []
    self = jWrapperDestructorExpression[null]
 |
   LPAREN self = jAssignmentExpression[] RPAREN
-    { self = new FjParenthesedExpression(sourceRef, self); }
+    { self = new JParenthesedExpression(sourceRef, self); }
 |
   type = jBuiltInType[]
   ( LBRACK RBRACK { bounds++; } )*

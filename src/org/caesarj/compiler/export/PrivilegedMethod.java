@@ -47,8 +47,8 @@ public class PrivilegedMethod extends FjSourceMethod {
 			new JBlock(
 				TokenReference.NO_REF,
 				JBlock.EMPTY,
-				new JavaStyleComment[0]),
-			((FjSourceMethod) baseMethod).getFamilies());
+				new JavaStyleComment[0])
+			);
 
 		this.baseMethod = baseMethod;
 	}
