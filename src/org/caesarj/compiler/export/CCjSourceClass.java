@@ -6,7 +6,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.caesarj.classfile.*;
+import org.caesarj.classfile.Attribute;
+import org.caesarj.classfile.AttributedClassInfo;
+import org.caesarj.classfile.ClassFileFormatException;
+import org.caesarj.classfile.ClassInfo;
+import org.caesarj.classfile.ConstantPoolOverflowException;
+import org.caesarj.classfile.InstructionOverflowException;
+import org.caesarj.classfile.LocalVariableOverflowException;
 import org.caesarj.compiler.aspectj.AttributeAdapter;
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.aspectj.CaesarMember;
@@ -186,75 +192,6 @@ public class CCjSourceClass extends CSourceClass
 		// andreas end
 	}
 
-	/**
-	* Generates the Bytecode to a byte array.
-	* 
-	* @param BytecodeOptimizer optimizer
-	* @param String destination
-	* @param TypeFactory factory
-	* 
-	* @return byte[]
-	*/
-	public byte[] genCodeToBuffer(
-		BytecodeOptimizer optimizer,
-		String destination,
-		TypeFactory factory)
-		throws IOException, ClassFileFormatException, PositionedError
-	{
-		decl = null; // garbage
-
-		String[] classPath =
-			Utils.splitQualifiedName(getSourceFile(), File.separatorChar);
-
-		try
-		{
-
-			AttributedClassInfo classInfo =
-				new AttributedClassInfo(
-					(short) (getModifiers() & (~ACC_STATIC)),
-					getQualifiedName(),
-					getSuperClass() == null
-						? null
-						: getSuperClass().getQualifiedName(),
-					genInterfaces(),
-					genFields(factory),
-					genMethods(optimizer, factory),
-					genInnerClasses(),
-					classPath[1],
-					getSuperClass() == null ? null : getGenericSignature(),
-					isDeprecated(),
-					isSynthetic(),
-					genExtraAttributes());
-
-			return classInfo.getByteArray();
-		}
-		catch (ConstantPoolOverflowException e)
-		{
-			throw new PositionedError(
-				new TokenReference(classPath[1], 0),
-				KjcMessages.CONSTANTPOOL_OVERFLOW);
-		}
-		catch (InstructionOverflowException e)
-		{
-			throw new PositionedError(
-				new TokenReference(classPath[1], 0),
-				KjcMessages.INSTRUCTION_OVERFLOW,
-				e.getMethod());
-		}
-		catch (LocalVariableOverflowException e)
-		{
-			throw new PositionedError(
-				new TokenReference(classPath[1], 0),
-				KjcMessages.LOCAL_VARIABLE_OVERFLOW,
-				e.getMethod());
-		}
-		catch (ClassFileFormatException e)
-		{
-			System.err.println(
-				"GenCode failure in source class: " + getQualifiedName());
-			throw e;
-		}
-	}
 
 	/**
 	 * Returns the resolvedPointcuts.
@@ -314,52 +251,6 @@ public class CCjSourceClass extends CSourceClass
 	public PrivilegedAccessHandler getPrivilegedAccessHandler()
 	{
 		return privilegedAccessHandler;
-	}
-
-	/**
-	 * Generates the AspectJ specific class attributes.
-	 */
-	protected Attribute[] genExtraAttributes()
-	{
-		List attributeList = new ArrayList();
-
-		if (perClause != null)
-		{
-			attributeList.add( AttributeAdapter.createAspect(perClause) );
-		}
-		else if (declares.length > 0)
-		{
-			attributeList.add(
-				AttributeAdapter.createAspect(CaesarPointcut.createPerSingleton())
-			);
-		}
-
-		for (int i = 0; i < declares.length; i++)
-		{
-			attributeList.add(
-				AttributeAdapter.createDeclareAttribute( declares[i] ) );
-		}
-
-		if (isPrivileged())
-		{
-			attributeList.add(
-				AttributeAdapter.createPrivilegedAttribute(
-						privilegedAccessHandler.getAccessedMembers() )
-					);
-		}
-
-		Iterator iterator = resolvedPointcuts.iterator();
-		while (iterator.hasNext())
-		{
-			CaesarMember rpd =	(CaesarMember)iterator.next();
-
-			attributeList.add(
-				AttributeAdapter.createPointcutDeclarationAttribute(rpd)
-				);
-		}
-
-		return (Attribute[]) attributeList.toArray(new Attribute[0]);
-
 	}
 
 	/**
@@ -544,66 +435,113 @@ public class CCjSourceClass extends CSourceClass
 
 	}
 
-	/**
-	 * Overriden to create ClassInfo.
-	 */
-	public void genCode(
-		BytecodeOptimizer optimizer,
-		String destination,
-		TypeFactory factory)
-		throws IOException, ClassFileFormatException, PositionedError
-	{
-		decl = null; // garbage
-		String[] classPath =
-			Utils.splitQualifiedName(getSourceFile(), File.separatorChar);
+    /**
+     * Generates the AspectJ specific class attributes.
+     */
+    protected Attribute[] genExtraAttributes()
+    {
+        List attributeList = new ArrayList();
 
-		try
-		{
-			AttributedClassInfo classInfo =
-				new AttributedClassInfo(
-					(short) (getModifiers() & (~ACC_STATIC)),
-					getQualifiedName(),
-					getSuperClass() == null
-						? null
-						: getSuperClass().getQualifiedName(),
-					genInterfaces(),
-					genFields(factory),
-					genMethods(optimizer, factory),
-					genInnerClasses(),
-					classPath[1],
-					getSuperClass() == null ? null : getGenericSignature(),
-					isDeprecated(),
-					isSynthetic(),
-					genExtraAttributes());
-			classInfo.write(destination);
-		}
-		catch (ConstantPoolOverflowException e)
-		{
-			throw new PositionedError(
-				new TokenReference(classPath[1], 0),
-				KjcMessages.CONSTANTPOOL_OVERFLOW);
-		}
-		catch (InstructionOverflowException e)
-		{
-			throw new PositionedError(
-				new TokenReference(classPath[1], 0),
-				KjcMessages.INSTRUCTION_OVERFLOW,
-				e.getMethod());
-		}
-		catch (LocalVariableOverflowException e)
-		{
-			throw new PositionedError(
-				new TokenReference(classPath[1], 0),
-				KjcMessages.LOCAL_VARIABLE_OVERFLOW,
-				e.getMethod());
-		}
-		catch (ClassFileFormatException e)
-		{
-			System.err.println(
-				"GenCode failure in source class: " + getQualifiedName());
-			throw e;
-		}
-	}
+        if (perClause != null)
+        {
+            attributeList.add( AttributeAdapter.createAspect(perClause) );
+        }
+        else if (declares.length > 0)
+        {
+            attributeList.add(
+                AttributeAdapter.createAspect(CaesarPointcut.createPerSingleton())
+            );
+        }
+
+        for (int i = 0; i < declares.length; i++)
+        {
+            attributeList.add(
+                AttributeAdapter.createDeclareAttribute( declares[i] ) );
+        }
+
+        if (isPrivileged())
+        {
+            attributeList.add(
+                AttributeAdapter.createPrivilegedAttribute(
+                        privilegedAccessHandler.getAccessedMembers() )
+                    );
+        }
+
+        Iterator iterator = resolvedPointcuts.iterator();
+        while (iterator.hasNext())
+        {
+            CaesarMember rpd =  (CaesarMember)iterator.next();
+
+            attributeList.add(
+                AttributeAdapter.createPointcutDeclarationAttribute(rpd)
+                );
+        }
+
+        return (Attribute[]) attributeList.toArray(new Attribute[0]);
+    }
+
+    
+    /**
+     * Overriden to create addition attribute in ClassInfo.
+     */
+    public ClassInfo genClassInfo(
+        BytecodeOptimizer optimizer,
+        String destination,
+        TypeFactory factory)
+        throws IOException, ClassFileFormatException, PositionedError
+    {
+        decl = null; // garbage
+        String[] classPath =
+            Utils.splitQualifiedName(getSourceFile(), File.separatorChar);
+
+        try
+        {
+            AttributedClassInfo classInfo =
+                new AttributedClassInfo(
+                    (short) (getModifiers() & (~ACC_STATIC)),
+                    getQualifiedName(),
+                    getSuperClass() == null
+                        ? null
+                        : getSuperClass().getQualifiedName(),
+                    genInterfaces(),
+                    genFields(factory),
+                    genMethods(optimizer, factory),
+                    genInnerClasses(),
+                    classPath[1],
+                    getSuperClass() == null ? null : getGenericSignature(),
+                    isDeprecated(),
+                    isSynthetic(),
+                    genExtraAttributes());
+            
+            return classInfo;
+        }
+        catch (ConstantPoolOverflowException e)
+        {
+            throw new PositionedError(
+                new TokenReference(classPath[1], 0),
+                KjcMessages.CONSTANTPOOL_OVERFLOW);
+        }
+        catch (InstructionOverflowException e)
+        {
+            throw new PositionedError(
+                new TokenReference(classPath[1], 0),
+                KjcMessages.INSTRUCTION_OVERFLOW,
+                e.getMethod());
+        }
+        catch (LocalVariableOverflowException e)
+        {
+            throw new PositionedError(
+                new TokenReference(classPath[1], 0),
+                KjcMessages.LOCAL_VARIABLE_OVERFLOW,
+                e.getMethod());
+        }
+        catch (ClassFileFormatException e)
+        {
+            System.err.println(
+                "GenCode failure in source class: " + getQualifiedName());
+            throw e;
+        }
+    }
 
 	public void addResolvedPointcut(CaesarMember rpd)
 	{

@@ -15,12 +15,13 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: ClassInfo.java,v 1.3 2004-02-09 17:34:16 ostermann Exp $
+ * $Id: ClassInfo.java,v 1.4 2004-04-08 10:56:59 aracic Exp $
  */
 
 package org.caesarj.classfile;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
@@ -531,6 +532,19 @@ public class ClassInfo extends Member {
 public AttributeList getAttributes() {
 	return attributes;
 }  
+
+/**
+ * Gets the class as byte[].
+ * 
+ * @return byte[]
+ */
+public byte[] getByteArray() throws IOException, ClassFileFormatException {
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+
+    write(dataOutputStream);
+    return outputStream.toByteArray();
+}
 
   // --------------------------------------------------------------------
   // DATA MEMBERS

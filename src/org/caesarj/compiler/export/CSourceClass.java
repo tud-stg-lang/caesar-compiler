@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CSourceClass.java,v 1.4 2004-03-22 13:01:38 aracic Exp $
+ * $Id: CSourceClass.java,v 1.5 2004-04-08 10:56:59 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -498,12 +498,48 @@ public class CSourceClass extends CClass {
     // ----------------------------------------------------------------------
 
     /**
+     * Generated code and dumps content to a file
+     * 
+     * @param BytecodeOptimizer optimizer
+     * @param String destination
+     * @param TypeFactory factory
+     */
+    public void genCode(
+        BytecodeOptimizer optimizer,
+        String destination,
+        TypeFactory factory)
+        throws IOException, ClassFileFormatException, PositionedError
+    {
+        ClassInfo classInfo = genClassInfo(optimizer, destination, factory);
+        classInfo.write(destination);
+    }
+    
+    /**
+    * Generates the Bytecode to a byte array.
+    * 
+    * @param BytecodeOptimizer optimizer
+    * @param String destination
+    * @param TypeFactory factory
+    * 
+    * @return byte[]
+    */
+    public byte[] genCodeToBuffer(
+        BytecodeOptimizer optimizer,
+        String destination,
+        TypeFactory factory)
+        throws IOException, ClassFileFormatException, PositionedError
+    {
+        ClassInfo classInfo = genClassInfo(optimizer, destination, factory);
+        return classInfo.getByteArray();
+    }
+
+    /**
      * Generates a JVM class file for this class.
      *
      * @param	optimizer	the bytecode optimizer to use
      * @param	destination	the root directory of the class hierarchy
      */
-    public void genCode(
+    public ClassInfo genClassInfo(
         BytecodeOptimizer optimizer,
         String destination,
         TypeFactory factory)
@@ -528,7 +564,7 @@ public class CSourceClass extends CClass {
                     getSuperClass() == null ? null : getGenericSignature(),
                     isDeprecated(),
                     isSynthetic());
-            classInfo.write(destination);
+            return classInfo;
         }
         catch (ConstantPoolOverflowException e) {
             throw new PositionedError(

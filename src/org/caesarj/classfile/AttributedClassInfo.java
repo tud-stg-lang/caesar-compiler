@@ -117,17 +117,4 @@ public class AttributedClassInfo extends ClassInfo {
 		super(in, interfaceOnly);
 	}
 
-	/**
-	 * Gets the class as byte[].
-	 * 
-	 * @return byte[]
-	 */
-	public byte[] getByteArray() throws IOException, ClassFileFormatException {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
-
-		write(dataOutputStream);
-		return outputStream.toByteArray();
-	}
-
 }
