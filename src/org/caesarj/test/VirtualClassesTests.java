@@ -104,6 +104,11 @@ public class VirtualClassesTests extends FjTestCase {
         compileAndRun("test18", "VCTestCase");
     }
 
+	/* Test multiple inheritance. */
+	public void testCaesarTestCase_18b() throws Throwable {
+        compileAndRun("test18b", "VCTestCase");
+    }
+
 	/* Test multiple inheritance of state. */
 	public void testCaesarTestCase_19() throws Throwable {
         compileAndRun("test19", "VCTestCase");
