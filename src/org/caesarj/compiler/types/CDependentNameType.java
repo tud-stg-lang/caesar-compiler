@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CDependentNameType.java,v 1.6 2005-01-19 13:42:17 klose Exp $
+ * $Id: CDependentNameType.java,v 1.7 2005-01-20 13:43:46 klose Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -37,6 +37,8 @@ import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.family.Path;
+import org.caesarj.util.MessageDescription;
+import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
@@ -74,74 +76,85 @@ public class CDependentNameType extends CClassNameType
 	    return expr;
 	}
 	
+	/**
+	 * Resolve and check this dependent type.
+	 */
 	public CType checkType(CTypeContext context) throws UnpositionedError
 	{	 	   
 	    // IVICA: try to lookup the path first	   
 	    JExpression expr = convertToExpression();
-	    
-	    if (expr != null){
-            try {
-                CContext ctx = (CContext)context;
-                CExpressionContext ectx = null;
-                //CClassContext classContext;
-                KjcEnvironment env;
+	    if (expr == null){
+	        throw new UnpositionedError(KjcMessages.TYPE_UNKNOWN, qualifiedName);
+	    }
+        CContext ctx = (CContext)context;
+        CExpressionContext ectx = null;
+        KjcEnvironment env;
 
-                // create expression context
-                if (context instanceof CClassContext){
-                    CClassContext classContext = (CClassContext)context;
-                    env = classContext.getEnvironment();
-	                ectx =
-	                    new CExpressionContext(
-		                    new CBlockContext(
-		                        new CClassBodyContext(classContext, env), env, 0 
-	                        ),
-		                    env
-	                    );
-                } else if (context instanceof CBlockContext){
-                    env = ((CBlockContext)context).getEnvironment();
-                    ectx = new CExpressionContext( (CBlockContext)context, env );
-                } else {
-                    throw new Exception();
-                }
+        // create expression context to analyse the expression
+        if (context instanceof CClassContext){
+            CClassContext classContext = (CClassContext)context;
+            env = classContext.getEnvironment();
+            ectx =
+                new CExpressionContext(
+                    new CBlockContext(
+                        new CClassBodyContext(classContext, env), env, 0 
+                    ),
+                    env
+                );
+        
+        } else if (context instanceof CBlockContext){
+            env = ((CBlockContext)context).getEnvironment();
+            ectx = new CExpressionContext( (CBlockContext)context, env );
+        
+        } else {
+            throw new UnpositionedError(KjcMessages.TYPE_UNKNOWN, qualifiedName);
+        }
+        
+        // try to anylse the fieldaccess
+        try{
+            expr = expr.analyse(ectx);
+        
+            if(expr instanceof JFieldAccessExpression || expr instanceof JLocalVariableExpression || expr instanceof JOwnerExpression) {                    
+                TypeFactory factory = context.getTypeFactory();              
+                CClass clazz;
                 
-                // try to anylse the fieldaccess
-                try{
-                    expr = expr.analyse(ectx);
-                } catch (Exception e){
-                    // TODO [karl] Overwork handling of exceptions here, e.g. "Local not initialized errors"
-                    // should not be handeled as "Type not found"-errors as it is now. (This happens because
-                    // these exceptions are caught below and an generic UnpositionedError is thrown in the
-                    // last line) 
-                    throw e;
-                }
-                
-                
-                if(expr instanceof JFieldAccessExpression || expr instanceof JLocalVariableExpression || expr instanceof JOwnerExpression) {                    
-                    TypeFactory factory = context.getTypeFactory();              
-                    CClass clazz = null;
-                    
-                    String pathSegs[] = qualifiedName.split("/");
-	                
-	                clazz = context.getClassReader().loadClass(
-	                    context.getTypeFactory(),
-	                    expr.getType(context.getTypeFactory()).getCClass().getQualifiedName()+"$"+pathSegs[pathSegs.length-1]
-	                );
+                String pathSegs[] = qualifiedName.split("/");
 
-	                int k = Path.calcK((CContext)context, expr);
-	                
-	                //
-	                // create and return new CDependentType
-	                //
-	                CType t = clazz.getAbstractType().checkType(context);
-	                CDependentType dt = new CDependentType((CContext)context, k, expr, t);
-	                return dt;
+                // calculate the plain type of this dependent type
+                clazz = context.getClassReader().loadClass(
+                    context.getTypeFactory(),
+                    expr.getType(context.getTypeFactory()).getCClass().getQualifiedName()+"$"+pathSegs[pathSegs.length-1]
+                );
+
+                // calculate k for this dependent type
+                int k = Path.calcK( (CContext)context, expr );
+                
+                // create and return new CDependentType
+                CType t = clazz.getAbstractType().checkType(context);
+                CDependentType dt = new CDependentType((CContext)context, k, expr, t);
+                return dt;
+            }
+
+        } catch (Exception e){
+            // If the message of a positioned error is in passThrough, the
+            // exception is thrown further. Otherwise, a TYPE_UNKNOWN error
+            // is thrown at the end of the function.
+            final MessageDescription[] passThrough = new MessageDescription[]{
+                    KjcMessages.UNINITIALIZED_FIELD_USED,
+                    KjcMessages.UNINITIALIZED_LOCAL_VARIABLE
+            };
+            
+            if (e instanceof PositionedError){
+                PositionedError pe = (PositionedError)e;
+                for (int i=0; i<passThrough.length; i++){
+                    if (pe.hasDescription(passThrough[i])){
+                        throw new UnpositionedError(passThrough[i], pe.getMessageParameters() );
+                    }
                 }
             }
-            catch (Exception e) {
-                // ...
-            }            
-	    }
-	    
+        }
+        
+        // Throw a default error message
 		throw new UnpositionedError(KjcMessages.TYPE_UNKNOWN, qualifiedName);
 	}  
 		
