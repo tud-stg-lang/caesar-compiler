@@ -59,11 +59,8 @@ public cclass DeployA
 
 public deployed cclass Ordering
 {
-    // TODO
-	declare precedence : AspectC_Impl, AspectA_Impl, AspectD_Impl, AspectB_Impl;
-    //declare precedence : AspectC, AspectA, AspectD, AspectB;
+	declare precedence : AspectC, AspectA, AspectD, AspectB;   
 }
-
 
 public cclass AspectA
 {

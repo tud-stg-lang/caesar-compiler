@@ -59,7 +59,7 @@ public cclass DeployA
 
 abstract public cclass AbstractOrdering
 {
-    declare precedence :  AspectC_Impl, AspectA_Impl, AspectD_Impl, AspectB_Impl;    
+    declare precedence :  AspectC, AspectA, AspectD, AspectB;    
 }
 
 public deployed cclass Ordering extends AbstractOrdering {
