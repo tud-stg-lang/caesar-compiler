@@ -6,8 +6,9 @@
  */
 package org.caesarj.mixer.intern;
 
-import org.apache.bcel.Repository;
+import org.apache.bcel.util.ClassPath;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.ClassParser;
 
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
@@ -16,6 +17,7 @@ import org.caesarj.mixer.MixerException;
 
 import java.util.Vector;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.File;
 
 /**
@@ -26,13 +28,18 @@ import java.io.File;
  */
 public class ClassModifier 
 {
-	String _inputDir;
-	String _outputDir;
+	private String _inputDir;
+	private String _outputDir;
 	
+	private ClassPath _classPath;
+		
 	public ClassModifier(String inputDir, String outputDir)
 	{
 		_inputDir = inputDir;
 		_outputDir = outputDir;
+		
+		// lookup for input classes only in input directory
+		_classPath = new ClassPath(inputDir);
 	}
 	
 	public void modify( 
@@ -42,10 +49,16 @@ public class ClassModifier
 			String outerClassName,
 			CaesarTypeSystem typeSystem) throws MixerException
 	{
-		// Load the class
-		JavaClass	clazz = Repository.lookupClass(className);
+		JavaClass	clazz = null;
 		
-		if (clazz == null) {
+		// Load the class
+		try 
+		{
+			InputStream is = _classPath.getInputStream(className);
+			clazz = new ClassParser(is, className).parse();
+		} 
+		catch(IOException e)
+		{
 			throw new MixerException("Class not found "+ className);
 		}
 		
