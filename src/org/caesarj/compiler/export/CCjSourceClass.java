@@ -233,6 +233,11 @@ public class CCjSourceClass extends CSourceClass
 	{
 		return declares;
 	}
+    
+    // IVICA: get typedeclaration of this source class
+    public JTypeDeclaration getTypeDeclaration() {
+        return decl;
+    }
 
 	/**
 	 * Sets the perClause.
