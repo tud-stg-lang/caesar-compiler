@@ -24,7 +24,7 @@ public class CaesarPointcut {
 		return pointcut;
 	}
 // Functions
-	static public CaesarPointcut	makeMathesNothing()
+	static public CaesarPointcut	makeMatchesNothing()
 	{
 		return new CaesarPointcut(Pointcut.makeMatchesNothing(Pointcut.SYMBOLIC));
 	}
