@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarConstants.java,v 1.9 2005-01-24 16:52:59 aracic Exp $
+ * $Id: CaesarConstants.java,v 1.10 2005-02-09 16:51:36 aracic Exp $
  */
 
 package org.caesarj.compiler.constants;
@@ -119,7 +119,9 @@ public interface CaesarConstants extends Constants {
     	WRAPPER_WRAPPEE_INIT  = "$initWrappee",
     	
     	OUTER_ACCESS          = "outer",
-    	OUTER_FIELD           = "$outer";
+    	OUTER_FIELD           = "$outer",
+    	
+    	FACTORY_METHOD_PREFIX = "$new";
     
 	//Caesar extension for the generated deployment support classes
 
