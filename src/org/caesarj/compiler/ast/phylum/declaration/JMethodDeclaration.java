@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodDeclaration.java,v 1.12 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JMethodDeclaration.java,v 1.13 2005-02-14 16:28:27 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -120,6 +120,13 @@ public class JMethodDeclaration extends JMemberDeclaration {
     public CSourceMethod checkInterface(CClassContext context)
         throws PositionedError {
 
+        
+        CMethodContext self = new CMethodContext(
+			context, 
+			context.getEnvironment(),
+			this );
+
+        
         // in a mixin a method may not be package-visible
         if(context.getCClass().isMixin()) {
 		    check(
@@ -130,7 +137,7 @@ public class JMethodDeclaration extends JMemberDeclaration {
 	            ),
 		        CaesarMessages.CCLASS_PACKAGE_VISIBILITY);
         }
-
+        
         
         boolean inInterface = context.getCClass().isInterface();
         boolean isExported = !(this instanceof JInitializerDeclaration);
@@ -230,8 +237,9 @@ public class JMethodDeclaration extends JMemberDeclaration {
             // the reason was that CClassNameType has to store the context in which the type
             // was resolved. The stored context has to be of type CContext
             // !!!impact of this change is unkown!!!   
+            // furthermore: the passed context is self rather than the class context passed to checkInterface
             try {
-                returnType = returnType.checkType(context);
+                returnType = returnType.checkType(self);
             }
             catch (UnpositionedError e) {
                 // ignore for now, it could be a dependent type
@@ -239,12 +247,12 @@ public class JMethodDeclaration extends JMemberDeclaration {
                 // also there the exception will be thrown
             }
             for (int i = 0; i < parameterTypes.length; i++) {
-                parameterTypes[i] = parameters[i].checkInterface(context);
+                parameterTypes[i] = parameters[i].checkInterface(self);
             }            
 
             for (int i = 0; i < exceptions.length; i++) {
                 exceptions[i] =
-                    (CReferenceType)exceptions[i].checkType(context);
+                    (CReferenceType)exceptions[i].checkType(self);
             }
             
             // --------
