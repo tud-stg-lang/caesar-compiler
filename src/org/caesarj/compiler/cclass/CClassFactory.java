@@ -17,7 +17,6 @@ import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CCompositeNameType;
 import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
 
@@ -180,7 +179,6 @@ public class CClassFactory implements CaesarConstants {
 		return new CjMethodDeclaration(
 			where,
 			ACC_PUBLIC | ACC_ABSTRACT,
-			CTypeVariable.EMPTY,
 			m.getReturnType(),
 			m.getIdent(),
 			m.getParameters(),

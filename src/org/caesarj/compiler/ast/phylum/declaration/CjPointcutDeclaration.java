@@ -19,7 +19,6 @@ import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
@@ -54,7 +53,6 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 	public CjPointcutDeclaration(
 		TokenReference where,
 		int modifiers,
-		CTypeVariable[] typeVariables,
 		CType returnType,
 		String ident,
 		JFormalParameter[] parameters,
@@ -63,7 +61,6 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 		super(
 			where,
 			modifiers,
-			typeVariables,
 			returnType,
 			ident,
 			parameters,
@@ -90,7 +87,6 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 				context.getClassReader(),
 				context.getTypeFactory(),
 				context,
-				typeVariables,
 				(modifiers & ACC_STATIC) == 0);
 
 		CType[] parameterTypes = new CType[parameters.length];

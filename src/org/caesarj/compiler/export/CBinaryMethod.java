@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBinaryMethod.java,v 1.1 2004-02-08 16:47:45 ostermann Exp $
+ * $Id: CBinaryMethod.java,v 1.2 2004-10-15 11:12:53 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -25,7 +25,6 @@ import org.caesarj.classfile.MethodInfo;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.SignatureParser;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.UnpositionedError;
@@ -66,7 +65,6 @@ public class CBinaryMethod extends CMethod {
                              methodInfo, 
                              methodSignature.returnType, 
                              paramTypes,
-                             methodSignature.typeVariables,
                              methodSignature.exceptions);
   }
 
@@ -80,7 +78,6 @@ public class CBinaryMethod extends CMethod {
                         MethodInfo methodInfo, 
                         CType retType, 
                         CType[] paramTypes,
-                        CTypeVariable[] typeVariable,
                         CReferenceType[] exceptions) {
     super(owner,
 	  methodInfo.getModifiers(),
@@ -88,7 +85,6 @@ public class CBinaryMethod extends CMethod {
           retType,
           paramTypes,
 	  buildExceptionTypes(factory, methodInfo, exceptions),
-          typeVariable,
 	  methodInfo.isDeprecated(),
           methodInfo.isSynthetic());
 
@@ -159,7 +155,7 @@ public class CBinaryMethod extends CMethod {
                                                      context.getSignatureParser(),
                                                      preMethod.getType());
 
-      preconditionMethod = preClass.getCClass().lookupMethod(context, getOwner(), null, preMethod.getName(), params,  preClass.getCClass().getTypeVariables());
+      preconditionMethod = preClass.getCClass().lookupMethod(context, getOwner(), null, preMethod.getName(), params);
     }
     MethodDescription   postMethod = methodInfo.getPostconditionMethod();
 
@@ -169,7 +165,7 @@ public class CBinaryMethod extends CMethod {
                                                       context.getSignatureParser(),
                                                       postMethod.getType());
 
-      postconditionMethod = postClass.getCClass().lookupMethod(context, getOwner(), null, postMethod.getName(), params, postClass.getCClass().getTypeVariables());
+      postconditionMethod = postClass.getCClass().lookupMethod(context, getOwner(), null, postMethod.getName(), params);
     }
       
     if (methodInfo.isPostcondition() && methodInfo.getOldValueStore() != null) {

@@ -32,7 +32,6 @@ import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.CWarning;
 import org.caesarj.util.PositionedError;
@@ -45,7 +44,6 @@ public class JClassDeclaration extends JTypeDeclaration {
         TokenReference where,
         int modifiers,
         String ident,
-        CTypeVariable[] typeVariables,
         CReferenceType superClass,
         CReferenceType[] interfaces,
         JFieldDeclaration[] fields,
@@ -58,7 +56,6 @@ public class JClassDeclaration extends JTypeDeclaration {
             where,
             modifiers,
             ident,
-            typeVariables,
             interfaces,
             fields,
             methods,
@@ -264,16 +261,11 @@ public class JClassDeclaration extends JTypeDeclaration {
         // JSR 41 2.2
         // A parameterized type may not inherit directly or indirectly form 
         // java.lang.Throwable
-        check(
-            self,
-            !getCClass().isGenericClass()
-                || !getCClass().descendsFrom(
-                    context
-                        .getTypeFactory()
-                        .createReferenceType(TypeFactory.RFT_THROWABLE)
-                        .getCClass()),
-            KjcMessages.GENERIC_THROWABLE);
-
+    	check(
+                self,
+                true,
+                KjcMessages.GENERIC_THROWABLE);
+    	
         if (getCClass().isNested()
             && getOwner().getCClass().isClass()
             && !getCClass().isStatic()

@@ -382,9 +382,6 @@ public class Main extends MainSuper implements Constants {
      * A lot happens in this phase. We should divide this
      * into small steps.
      * 
-     * - create self-enabled methods in clean classes
-     * - create factory methods for virtual classes
-     * - create wrapper creater/destructor methods
      * - register type at CaesarBCEL world
      * - prepare for static deployment if necessary (create advice-, aspectOf-method etc.)
      * - check modifiers of classes

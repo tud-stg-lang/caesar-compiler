@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassNameType.java,v 1.3 2004-04-21 14:21:02 aracic Exp $
+ * $Id: CClassNameType.java,v 1.4 2004-10-15 11:12:54 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -168,8 +168,7 @@ public class CClassNameType extends CReferenceType
 					new CClassOrInterfaceType(
 						context.getClassReader().loadClass(
 							context.getTypeFactory(),
-							qualifiedName),
-						arguments);
+							qualifiedName));
 				return type.checkType(context);
 			}
 			else
@@ -242,7 +241,7 @@ public class CClassNameType extends CReferenceType
 				if (innerClass != null)
 				{
 					CType type =
-						new CClassOrInterfaceType(innerClass, arguments);
+						new CClassOrInterfaceType(innerClass);
 
 					return type.checkType(context);
 				}
@@ -256,15 +255,6 @@ public class CClassNameType extends CReferenceType
 		}
 		else
 		{
-			// is it a type variable
-			CTypeVariable typeVariable =
-				context.lookupTypeVariable(qualifiedName);
-
-			if (typeVariable != null)
-			{
-				return typeVariable.checkType(context); // it is a typevariable
-			}
-
 			// It is a class or interface
 			CClassContext classContext = context.getClassContext();
 			CClass caller;
@@ -285,7 +275,7 @@ public class CClassNameType extends CReferenceType
 
 			if (theClazz != null)
 			{
-				CType type = new CClassOrInterfaceType(theClazz, arguments);
+				CType type = new CClassOrInterfaceType(theClazz);
 
 				return type.checkType(context);
 			}
@@ -297,8 +287,7 @@ public class CClassNameType extends CReferenceType
 					return new CClassOrInterfaceType(
 						context.getClassReader().loadClass(
 							context.getTypeFactory(),
-							qualifiedName),
-						arguments).checkType(
+							qualifiedName)).checkType(
 						context);
 				}
 				else

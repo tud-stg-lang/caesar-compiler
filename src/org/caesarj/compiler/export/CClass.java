@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.26 2004-10-10 19:20:29 aracic Exp $
+ * $Id: CClass.java,v 1.27 2004-10-15 11:12:53 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -38,7 +38,6 @@ import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.types.CClassOrInterfaceType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.runtime.AdditionalCaesarTypeInformation;
@@ -187,7 +186,6 @@ public abstract class CClass extends CMember
 					TokenReference.NO_REF,
 					0,
 					getQualifiedName() + "$" + context.getNextSyntheticIndex(),
-					CTypeVariable.EMPTY,
 					context.getTypeFactory().createReferenceType(
 						TypeFactory.RFT_OBJECT),
 					CReferenceType.EMPTY,
@@ -302,22 +300,6 @@ public abstract class CClass extends CMember
 	}
 
 	/**
-	 * Returns the type variables of this class
-	 */
-	public CTypeVariable[] getTypeVariables()
-	{
-		return typeVariables;
-	}
-
-	/**
-	 * Sets the type variables  of this class
-	 */
-	public void setTypeVariables(CTypeVariable[] typeVariables)
-	{
-		this.typeVariables = typeVariables;
-	}
-
-	/**
 	 * Returns the type of this class.
 	 */
 	public CReferenceType getAbstractType()
@@ -326,8 +308,7 @@ public abstract class CClass extends CMember
 		{
 			type =
 				new CClassOrInterfaceType(
-					this,
-					new CReferenceType[][] { typeVariables });
+					this);
 		}
 		return type;
 	}
@@ -466,110 +447,7 @@ public abstract class CClass extends CMember
 		return false;
 	}
 
-	public boolean descendsFrom(
-		CReferenceType from,
-		CReferenceType[] actuals,
-		CReferenceType[] substitution)
-	{
-		verify(actuals != null);
-		verify(actuals.length == typeVariables.length);
-
-		if (from.getCClass() == this)
-		{
-			CReferenceType[] typeArgs;
-
-			if (isGenericClass())
-			{
-				typeArgs = from.getArguments();
-			}
-			else
-			{
-				typeArgs = CReferenceType.EMPTY;
-			}
-
-			verify(typeArgs.length == actuals.length);
-
-			for (int i = 0; i < actuals.length; i++)
-			{
-				CReferenceType tArg = typeArgs[i];
-
-				if (tArg.isTypeVariable())
-				{
-					tArg = substitution[((CTypeVariable) tArg).getIndex()];
-				}
-				if (!tArg.equals(actuals[i], substitution))
-				{
-					return false;
-				}
-
-				//           if (!tArg.equals(actuals[i])) {
-				//             return false;
-				//           }
-			}
-			return true;
-		}
-		else if (getSuperClass() == null)
-		{
-			// java/lang/object
-			return false;
-		}
-		else
-		{
-			CReferenceType[] actualTypeArgs = superClassType.getArguments();
-			CReferenceType[] newSubstitution =
-				new CReferenceType[actualTypeArgs.length];
-
-			// resolve typeVariable
-			for (int i = 0; i < actualTypeArgs.length; i++)
-			{
-				if (actualTypeArgs[i].isTypeVariable())
-				{
-					newSubstitution[i] =
-						actuals[((CTypeVariable) actualTypeArgs[i]).getIndex()];
-				}
-				else
-				{
-					newSubstitution[i] = actualTypeArgs[i];
-				}
-			}
-			if (getSuperClass()
-				.descendsFrom(from, newSubstitution, substitution))
-			{
-				return true;
-			}
-			else
-			{
-				for (int i = 0; i < interfaces.length; i++)
-				{
-					actualTypeArgs = interfaces[i].getArguments();
-					newSubstitution = new CReferenceType[actualTypeArgs.length];
-
-					// resolve typeVariable
-					for (int k = 0; k < actualTypeArgs.length; k++)
-					{
-						if (actualTypeArgs[k].isTypeVariable())
-						{
-							newSubstitution[k] =
-								actuals[((CTypeVariable) actualTypeArgs[k])
-									.getIndex()];
-						}
-						else
-						{
-							newSubstitution[k] = actualTypeArgs[k];
-						}
-					}
-
-					if (interfaces[i]
-						.getCClass()
-						.descendsFrom(from, newSubstitution, substitution))
-					{
-						return true;
-					}
-				}
-				return false;
-			}
-		}
-	}
+	
 
 	/**
 	 * Returns true iff this class is defined inside the specified class
@@ -660,44 +538,6 @@ public abstract class CClass extends CMember
 	public boolean isQualifiedAndAnonymous()
 	{
 		return qualifiedAndAnonymous;
-	}
-	// ----------------------------------------------------------------------
-	// CHECKING
-	// ----------------------------------------------------------------------
-
-	public void checkInstantiation(
-		CTypeContext context,
-		CReferenceType[] typeArguments)
-		throws UnpositionedError
-	{
-		CTypeVariable[] typeVariables = getTypeVariables();
-
-		if (typeArguments.length < typeVariables.length)
-		{
-			throw new UnpositionedError(
-				KjcMessages.LESS_TYPEARG,
-				getQualifiedName(),
-				String.valueOf(typeVariables.length));
-		}
-		if (typeArguments.length > typeVariables.length)
-		{
-			throw new UnpositionedError(
-				KjcMessages.OVERSUP_TYPEARG,
-				getQualifiedName(),
-				String.valueOf(typeVariables.length));
-		}
-
-		for (int i = 0; i < typeArguments.length; i++)
-		{
-			if (!typeArguments[i]
-				.isAssignableTo(context, typeVariables[i], typeArguments, true))
-			{
-				throw new UnpositionedError(
-					KjcMessages.TYPEARG_NOT_IN_BOUND,
-					typeArguments[i].getIdent(),
-					typeVariables[i].getIdent());
-			}
-		}
 	}
 	// ----------------------------------------------------------------------
 	// LOOKUP
@@ -936,12 +776,11 @@ public abstract class CClass extends CMember
 		CClass caller,
 		CType primary,
 		String ident,
-		CType[] actuals,
-		CReferenceType[] substitution)
+		CType[] actuals)
 		throws UnpositionedError
 	{
 		CMethod[] applicable =
-			getApplicableMethods(context, ident, actuals, substitution);
+			getApplicableMethods(context, ident, actuals);
 		CMethod[] candidates = new CMethod[applicable.length];
 		int length = 0;
 
@@ -966,8 +805,7 @@ public abstract class CClass extends CMember
 				else if (
 					candidates[current].isMoreSpecificThan(
 						context,
-						applicable[i],
-						substitution))
+						applicable[i]))
 				{
 					// other method is more specific: skip it
 					continue _all_methods_;
@@ -975,8 +813,7 @@ public abstract class CClass extends CMember
 				else if (
 					applicable[i].isMoreSpecificThan(
 						context,
-						candidates[current],
-						substitution))
+						candidates[current]))
 				{
 					// this method is more specific: remove the other
 					if (current < length - 1)
@@ -1011,7 +848,7 @@ public abstract class CClass extends CMember
 			for (int i = 1; i < length; i++)
 			{
 				if (!candidates[i]
-					.hasSameSignature(candidates[0], substitution))
+					.hasSameSignature(candidates[0]))
 				{
 					// more than one most specific method with different signatures: ambiguous
 					throw new UnpositionedError(
@@ -1147,21 +984,11 @@ public abstract class CClass extends CMember
 			// resolve typeVariable
 			for (int i = 0; i < actualTypeArgs.length; i++)
 			{
-				if (actualTypeArgs[i].isTypeVariable())
-				{
-					newSubstitution[i] =
-						substitution[((CTypeVariable) actualTypeArgs[i])
-							.getIndex()];
-				}
-				else
-				{
-					newSubstitution[i] = actualTypeArgs[i];
-				}
+				newSubstitution[i] = actualTypeArgs[i];
 			}
 			superClassType.getCClass().checkOverriding(
 				context,
 				method,
-				newSubstitution,
 				bridges);
 		}
 		for (int i = 0; i < interfaces.length; i++)
@@ -1173,16 +1000,7 @@ public abstract class CClass extends CMember
 			// resolve typeVariable
 			for (int k = 0; k < actualTypeArgs.length; k++)
 			{
-				if (actualTypeArgs[k].isTypeVariable())
-				{
-					newSubstitution[k] =
-						substitution[((CTypeVariable) actualTypeArgs[k])
-							.getIndex()];
-				}
-				else
-				{
-					newSubstitution[k] = actualTypeArgs[k];
-				}
+				newSubstitution[k] = actualTypeArgs[k];
 			}
 			// interface method require bridges, they are abstract and must be overridden
 			// the correct overwritting should be checked.
@@ -1216,7 +1034,7 @@ public abstract class CClass extends CMember
 				continue;
 			}
 			direct = ovMethod.hasSameSignature(context, method);
-			indirect = ovMethod.hasSameSignature(method, substitution);
+			indirect = ovMethod.hasSameSignature(method);
 			if (!direct && !indirect)
 			{
 				continue;
@@ -1451,8 +1269,7 @@ public abstract class CClass extends CMember
 	public CMethod[] getApplicableMethods(
 		CTypeContext context,
 		String ident,
-		CType[] actuals,
-		CReferenceType[] substitution)
+		CType[] actuals)
 	{
 		ArrayList container = new ArrayList();
 
@@ -1460,8 +1277,7 @@ public abstract class CClass extends CMember
 			context,
 			container,
 			ident,
-			actuals,
-			substitution);
+			actuals);
 		return (CMethod[]) container.toArray(new CMethod[container.size()]);
 		//Utils.toArray(container, CMethod.class);
 	}
@@ -1476,14 +1292,13 @@ public abstract class CClass extends CMember
 		CTypeContext context,
 		ArrayList container,
 		String ident,
-		CType[] actuals,
-		CReferenceType[] substitution)
+		CType[] actuals)
 	{
 		// look in current class
 		for (int i = 0; i < methods.length; i++)
 		{
 			if (methods[i]
-				.isApplicableTo(context, ident, actuals, substitution))
+				.isApplicableTo(context, ident, actuals))
 			{
 				container.add(methods[i]);
 			}
@@ -1503,13 +1318,6 @@ public abstract class CClass extends CMember
 
 				for (int i = 0; i < newSubstitution.length; i++)
 				{
-					if (actualArgs[i].isTypeVariable())
-					{
-						newSubstitution[i] =
-							substitution[((CTypeVariable) actualArgs[i])
-								.getIndex()];
-					}
-					else
 					{
 						newSubstitution[i] = actualArgs[i];
 					}
@@ -1518,8 +1326,7 @@ public abstract class CClass extends CMember
 					context,
 					container,
 					ident,
-					actuals,
-					newSubstitution);
+					actuals);
 			}
 
 			for (int i = 0; i < interfaces.length; i++)
@@ -1530,13 +1337,6 @@ public abstract class CClass extends CMember
 
 				for (int k = 0; k < newSubstitution.length; k++)
 				{
-					if (actualArgs[k].isTypeVariable())
-					{
-						newSubstitution[k] =
-							substitution[((CTypeVariable) actualArgs[k])
-								.getIndex()];
-					}
-					else
 					{
 						newSubstitution[k] = actualArgs[k];
 					}
@@ -1545,8 +1345,7 @@ public abstract class CClass extends CMember
 					context,
 					container,
 					ident,
-					actuals,
-					newSubstitution);
+					actuals);
 			}
 		}
 	}
@@ -1655,88 +1454,8 @@ public abstract class CClass extends CMember
 	public CMethod getInvariant()
 	{
 		return null;
-	}
-
-	public CTypeVariable lookupTypeVariable(String ident)
-	{
-		for (int i = 0; i < typeVariables.length; i++)
-		{
-			if (ident == typeVariables[i].getIdent())
-			{
-				return typeVariables[i];
-			}
-		}
-		if (getOwner() == null || isStatic())
-		{
-			return null;
-		}
-		else
-		{
-			return getOwner().lookupTypeVariable(ident);
-		}
-	}
-
-	/**
-	 * If a generic type is instantiated, the typevariables are substituted with 
-	 * type arguments. This method returns the corresponing type argument for the
-	 * type variable.
-	 *
-	 * @param typeVariable 
-	 * @param substitution
-	 */
-	public CReferenceType getSubstitution(
-		CTypeVariable typeVariable,
-		CReferenceType[][] sub)
-	{
-		verify(!typeVariable.isMethodTypeVariable());
-		CReferenceType substitution =
-			getSubstitution(typeVariable, sub[sub.length - 1]);
-
-		if ((substitution == null) && (getOwner() != null))
-		{
-			CTypeVariable[] ownerTypeVariable = getOwner().getTypeVariables();
-			CReferenceType[][] subThere;
-
-			if (sub.length > 1)
-			{
-				subThere = new CReferenceType[sub.length - 1][];
-				for (int i = 0; i < sub.length - 1; i++)
-				{
-					subThere[i] = new CReferenceType[sub[i].length];
-					System.arraycopy(sub[i], 0, subThere[i], 0, sub[i].length);
-				}
-			}
-			else
-			{
-				return typeVariable;
-				//         subThere = new CReferenceType[1][];
-				//         subThere[0] = new CReferenceType[ownerTypeVariable.length];
-				//         System.arraycopy(ownerTypeVariable, 0, subThere[0], 0, ownerTypeVariable.length);
-			}
-			substitution = getOwner().getSubstitution(typeVariable, subThere);
-		}
-		return substitution;
-	}
-
-	private boolean ownerOf(CTypeVariable typeVariable)
-	{
-		if (typeVariables == null)
-		{
-			return false;
-		}
-		else
-		{
-			for (int i = 0; i < typeVariables.length; i++)
-			{
-				if (typeVariables[i] == typeVariable)
-				{
-					return true;
-				}
-			}
-			return false;
-		}
-	}
-
+	}	
+	
 	// CTODO this here is not nice
 	public String convertToIfcQn() {
 		return new JavaQualifiedName(getQualifiedName()).convertToIfcName().toString();
@@ -1744,93 +1463,6 @@ public abstract class CClass extends CMember
 	
 	public String convertToImplQn() {
 		return new JavaQualifiedName(getQualifiedName()).convertToImplName().toString();
-	}
-
-	public CReferenceType getSubstitution(
-		CTypeVariable typeVariable,
-		CReferenceType[] substitutions)
-	{
-		verify(substitutions != null);
-		verify(!typeVariable.isMethodTypeVariable());
-		verify(substitutions.length == typeVariables.length);
-		CReferenceType substitution = null;
-
-		// resolve typeVariable
-		if (ownerOf(typeVariable))
-		{
-			return substitutions[typeVariable.getIndex()];
-		}
-		else
-		{
-			if (superClassType != null)
-			{
-				substitution =
-					getSuperSubstitution(
-						superClassType,
-						typeVariable,
-						substitutions);
-				if (substitution != null)
-				{
-					return substitution;
-				}
-			}
-
-			for (int i = 0; i < interfaces.length; i++)
-			{
-				substitution =
-					getSuperSubstitution(
-						interfaces[i],
-						typeVariable,
-						substitutions);
-				if (substitution != null)
-				{
-					break;
-				}
-			}
-			return substitution;
-		}
-	}
-
-	private CReferenceType getSuperSubstitution(
-		CReferenceType superType,
-		CTypeVariable typeVar,
-		CReferenceType[] substitution)
-	{
-		CReferenceType[] newSubstitution;
-
-		if (!superType.isGenericType())
-		{
-			newSubstitution = CReferenceType.EMPTY;
-		}
-		else
-		{
-			//FIX mke copy!!  of actualTypeArgs
-			// resolve typeVariable
-			CReferenceType[] typeArguments =
-				((CClassOrInterfaceType) superType).getArguments();
-
-			newSubstitution = new CReferenceType[typeArguments.length];
-
-			for (int i = 0; i < typeArguments.length; i++)
-			{
-				if (typeArguments[i].isTypeVariable())
-				{
-					newSubstitution[i] =
-						substitution[((CTypeVariable) typeArguments[i])
-							.getIndex()];
-				}
-				else
-				{
-					newSubstitution[i] = typeArguments[i];
-				}
-			}
-		}
-		return superType.getCClass().getSubstitution(typeVar, newSubstitution);
-	}
-
-	public boolean isGenericClass()
-	{
-		return typeVariables.length > 0;
 	}
 
 	/**
@@ -1842,15 +1474,8 @@ public abstract class CClass extends CMember
 		String result;
 
 		buffer = SimpleStringBuffer.request();
-		if (typeVariables.length > 0)
-		{
-			buffer.append('<');
-			for (int i = 0; i < typeVariables.length; i++)
-			{
-				typeVariables[i].appendDefinitionSignature(buffer);
-			}
-			buffer.append('>');
-		}
+
+
 		superClassType.appendGenericSignature(buffer);
 		for (int i = 0; i < interfaces.length; i++)
 		{
@@ -1907,7 +1532,6 @@ public abstract class CClass extends CMember
 			0,
 			"<gen>",
 			"<gen>",
-			CTypeVariable.EMPTY,
 			false,
 			true,
 			null);
@@ -1966,7 +1590,6 @@ public abstract class CClass extends CMember
 	protected CMethod[] methods;
 	private boolean qualifiedAndAnonymous;
 	private int syntheticIndex = 0;
-	private CTypeVariable[] typeVariables;
 
 	private boolean implicit = false;
 	

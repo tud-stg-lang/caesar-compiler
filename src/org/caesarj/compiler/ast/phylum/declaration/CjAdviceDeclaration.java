@@ -14,7 +14,6 @@ import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -49,7 +48,6 @@ public class CjAdviceDeclaration
     public CjAdviceDeclaration(
         TokenReference where,
         int modifiers,
-        CTypeVariable[] typeVariables,
         CType returnType,
         JFormalParameter[] parameters,
         CReferenceType[] exceptions,
@@ -62,7 +60,6 @@ public class CjAdviceDeclaration
         super(
             where,
             modifiers,
-            typeVariables,
             returnType,
             ADVICE_METHOD,
             parameters,
@@ -127,7 +124,6 @@ public class CjAdviceDeclaration
                 context.getClassReader(),
                 context.getTypeFactory(),
                 context,
-                typeVariables,
                 (modifiers & ACC_STATIC) == 0);
 
         CType[] parameterTypes = new CType[parameters.length];
@@ -145,7 +141,6 @@ public class CjAdviceDeclaration
                 returnType,
                 parameterTypes,
                 exceptions,
-                typeVariables,
                 body,
                 pointcut,
                 kind,

@@ -26,7 +26,6 @@ import org.caesarj.compiler.joinpoint.PrivilegedAccessHandler;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
@@ -52,7 +51,6 @@ public class CCjSourceClass extends CSourceClass
 		int modifiers,
 		String ident,
 		String qualifiedName,
-		CTypeVariable[] typeVariables,
 		boolean deprecated,
 		boolean synthetic,
 		JTypeDeclaration decl)
@@ -63,7 +61,6 @@ public class CCjSourceClass extends CSourceClass
 			modifiers,
 			ident,
 			qualifiedName,
-			typeVariables,
 			deprecated,
 			synthetic,
 			decl,
@@ -76,7 +73,6 @@ public class CCjSourceClass extends CSourceClass
 		int modifiers,
 		String ident,
 		String qualifiedName,
-		CTypeVariable[] typeVariables,
 		boolean deprecated,
 		boolean synthetic,
 		JTypeDeclaration decl,
@@ -88,7 +84,6 @@ public class CCjSourceClass extends CSourceClass
 			modifiers,
 			ident,
 			qualifiedName,
-			typeVariables,
 			deprecated,
 			synthetic,
 			decl);
@@ -324,7 +319,7 @@ public class CCjSourceClass extends CSourceClass
 	{
 
 		CMethod[] applicable =
-			getApplicableMethods(context, ident, actuals, substitution);
+			getApplicableMethods(context, ident, actuals);
 		CMethod[] candidates = new CMethod[applicable.length];
 		int length = 0;
 
@@ -362,8 +357,7 @@ public class CCjSourceClass extends CSourceClass
 				else if (
 					candidates[current].isMoreSpecificThan(
 						context,
-						applicable[i],
-						substitution))
+						applicable[i]))
 				{
 					// other method is more specific: skip it
 					continue _all_methods_;
@@ -371,8 +365,7 @@ public class CCjSourceClass extends CSourceClass
 				else if (
 					applicable[i].isMoreSpecificThan(
 						context,
-						candidates[current],
-						substitution))
+						candidates[current]))
 				{
 					// this method is more specific: remove the other
 					if (current < length - 1)
@@ -407,7 +400,7 @@ public class CCjSourceClass extends CSourceClass
 			for (int i = 1; i < length; i++)
 			{
 				if (!candidates[i]
-					.hasSameSignature(candidates[0], substitution))
+					.hasSameSignature(candidates[0]))
 				{
 					// more than one most specific method with different signatures: ambiguous
 					throw new UnpositionedError(

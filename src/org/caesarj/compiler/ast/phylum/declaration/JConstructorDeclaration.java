@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JConstructorDeclaration.java,v 1.3 2004-09-06 13:31:34 aracic Exp $
+ * $Id: JConstructorDeclaration.java,v 1.4 2004-10-15 11:12:52 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -37,7 +37,6 @@ import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.CWarning;
 import org.caesarj.util.PositionedError;
@@ -78,7 +77,6 @@ public class JConstructorDeclaration extends JMethodDeclaration {
   {
     super(where,
 	  modifiers,
-          CTypeVariable.EMPTY,
 	  factory.getVoidType(),
 	  ident,
 	  parameters,

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CSourceClass.java,v 1.8 2004-07-21 09:53:11 aracic Exp $
+ * $Id: CSourceClass.java,v 1.9 2004-10-15 11:12:53 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -50,7 +50,6 @@ import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
@@ -76,7 +75,6 @@ public class CSourceClass extends CClass {
         int modifiers,
         String ident,
         String qualifiedName,
-        CTypeVariable[] typeVariables,
         boolean deprecated,
         boolean synthetic,
         JTypeDeclaration decl) {
@@ -89,7 +87,6 @@ public class CSourceClass extends CClass {
             null,
             deprecated,
             synthetic);
-        setTypeVariables(typeVariables);
         this.decl = decl;
     }
 

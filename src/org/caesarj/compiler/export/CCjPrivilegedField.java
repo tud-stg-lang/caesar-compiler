@@ -4,7 +4,6 @@ import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.CVoidType;
 
 /**
@@ -74,7 +73,6 @@ public class CCjPrivilegedField extends CSourceField {
 				getType(),
 				readerParameterTypes,
 				CReferenceType.EMPTY,
-				CTypeVariable.EMPTY,
 				false,
 				true,
 				null);
@@ -95,7 +93,6 @@ public class CCjPrivilegedField extends CSourceField {
 				new CVoidType(),
 				writerParameterTypes,
 				CReferenceType.EMPTY,
-				CTypeVariable.EMPTY,
 				false,
 				true,
 				null);

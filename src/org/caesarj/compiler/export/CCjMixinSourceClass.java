@@ -12,7 +12,6 @@ import java.util.List;
 
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.TokenReference;
 
 /**
@@ -31,7 +30,6 @@ public class CCjMixinSourceClass extends CCjSourceClass
 		int modifiers,
 		String ident,
 		String qualifiedName,
-		CTypeVariable[] typeVariables,
 		boolean deprecated,
 		boolean synthetic,
 		JTypeDeclaration decl,
@@ -43,7 +41,6 @@ public class CCjMixinSourceClass extends CCjSourceClass
 			modifiers,
 			ident,
 			qualifiedName,
-			typeVariables,
 			deprecated,
 			synthetic,
 			decl,

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CContext.java,v 1.6 2004-07-21 08:28:33 aracic Exp $
+ * $Id: CContext.java,v 1.7 2004-10-15 11:12:54 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -29,7 +29,6 @@ import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.MessageDescription;
 import org.caesarj.util.PositionedError;
@@ -117,19 +116,7 @@ public abstract class CContext extends org.caesarj.util.Utils implements CTypeCo
     return getClassContext().lookupField(caller, primary, ident);
   }
 
-  /**
-   * Searches the class, interface and Method to locate declarations of TV's that are
-   * accessible.
-   * 
-   * @param	ident		the simple name of the field
-   * @return	the TV definition
-   * @exception UnpositionedError	this error will be positioned soon
-   */
-  public CTypeVariable lookupTypeVariable(String ident)
-    throws UnpositionedError
-  {
-    return getMethodContext().lookupTypeVariable(ident);
-  }
+ 
   /**
    * lookupLocalVariable
    * @param	ident		the name of the local variable

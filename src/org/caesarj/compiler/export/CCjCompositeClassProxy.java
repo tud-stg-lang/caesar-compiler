@@ -26,7 +26,7 @@ public class CCjCompositeClassProxy extends CBadClass {
 	public boolean descendsFrom(CReferenceType from, CReferenceType[] actuals, CReferenceType[] substitution) {            		
         CReferenceType[] interfaces = compositeType.getInterfaceList();
         for(int i=0; i<interfaces.length; i++)
-            if(interfaces[i].getCClass().descendsFrom(from, actuals, substitution))
+            if(interfaces[i].getCClass().descendsFrom(from.getCClass()))
                 return true;
         return false;
 	}

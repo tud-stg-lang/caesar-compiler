@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JConstructorCall.java,v 1.2 2004-09-06 13:31:35 aracic Exp $
+ * $Id: JConstructorCall.java,v 1.3 2004-10-15 11:12:53 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -34,7 +34,6 @@ import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CThrowableInfo;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
@@ -118,11 +117,6 @@ public class JConstructorCall extends JExpression {
 //                                                   context.getEnvironment(), 
 //                                                   context.getMethodContext().getCMethod().getParameters().length);
       CExpressionContext exprContext = new CExpressionContext(context.getBlockContext(), context.getEnvironment()) {
-          public CTypeVariable lookupTypeVariable(String ident)
-            throws UnpositionedError
-          {
-            return null;
-          }
       };
       expr = expr.analyse(exprContext);
 
@@ -167,7 +161,7 @@ public class JConstructorCall extends JExpression {
 
     verify(clazz != null);
     try {
-      method = clazz.lookupMethod(context, context.getClassContext().getCClass(), null, JAV_CONSTRUCTOR, argsType, context.getClassContext().getCClass().getSuperType().getArguments());
+      method = clazz.lookupMethod(context, context.getClassContext().getCClass(), null, JAV_CONSTRUCTOR, argsType);
       exprContext = context;
     } catch (UnpositionedError e) {
       throw e.addPosition(getTokenReference());
@@ -182,7 +176,8 @@ public class JConstructorCall extends JExpression {
 	System.arraycopy(argsType, 0, argsType2, 0, argsType.length);
 	argsType2[argsType.length] = clazz.getOwnerType();
 	try {
-	  method = clazz.lookupMethod(context, context.getClassContext().getCClass(), null, JAV_CONSTRUCTOR, argsType2, context.getClassContext().getCClass().getTypeVariables());
+		//MEF(c): method = clazz.lookupMethod(context, context.getClassContext().getCClass(), null, JAV_CONSTRUCTOR, argsType2, context.getClassContext().getCClass().getTypeVariables());
+		method = clazz.lookupMethod(context, context.getClassContext().getCClass(), null, JAV_CONSTRUCTOR, argsType2);
           exprContext = context;
 	} catch (UnpositionedError e) {
 	  throw e.addPosition(getTokenReference());

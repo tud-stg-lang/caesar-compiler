@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.14 2004-10-10 19:29:14 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.15 2004-10-15 11:12:52 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -40,7 +40,6 @@ import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
@@ -60,7 +59,6 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         TokenReference where,
         int modifiers,
         String ident,
-        CTypeVariable[] typeVariables,
         CReferenceType superClass,
         CReferenceType wrappee,
         CReferenceType[] interfaces,
@@ -78,7 +76,6 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
             where,
             modifiers | ACC_MIXIN,
             implClass ? ident+"_Impl" : ident,
-            typeVariables,
             superClass,
             wrappee,
             interfaces,
@@ -110,7 +107,6 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         TokenReference where,
         int modifiers,
         String ident,
-        CTypeVariable[] typeVariables,
         CReferenceType superClass,
         CReferenceType wrappee,
         CReferenceType[] interfaces,
@@ -123,7 +119,6 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
 	        where,
 	        modifiers | ACC_MIXIN,
 	        ident,
-	        typeVariables,
 	        superClass,
 	        wrappee,
 	        interfaces,
@@ -140,7 +135,6 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         TokenReference where,
         int modifiers,
         String ident,
-        CTypeVariable[] typeVariables,
         CReferenceType superClass,
         CReferenceType wrappee,
         CReferenceType[] interfaces,
@@ -157,7 +151,6 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
 	        where,
 	        modifiers | ACC_MIXIN,
 	        ident,
-	        typeVariables,
 	        superClass,
 	        wrappee,
 	        interfaces,
@@ -232,7 +225,6 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
                     getTokenReference(),
                     ACC_PUBLIC,
                     subNode.getQualifiedImplName().getIdent(),
-                    new CTypeVariable[0],
                     context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT),
                     null, // wrappee
                     new CReferenceType[]{ifcDecl.getCClass().getAbstractType()}, // CTODO ifcs

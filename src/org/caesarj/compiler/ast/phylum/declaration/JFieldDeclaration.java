@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldDeclaration.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
+ * $Id: JFieldDeclaration.java,v 1.3 2004-10-15 11:12:52 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -229,7 +229,7 @@ public class JFieldDeclaration extends JMemberDeclaration {
 		//JSR 41 Tht type of a static field can't be a type variable
 		check(
 			context,
-			!variable.isStatic() || !variable.getType().isTypeVariable(),
+			true,
 			KjcMessages.TV_STATIC_FIELD,
 			getField().getIdent());
 

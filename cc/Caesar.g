@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.51 2004-09-12 14:29:04 aracic Exp $
+ * $Id: Caesar.g,v 1.52 2004-10-15 11:13:08 aracic Exp $
  */
 
 /*
@@ -378,7 +378,6 @@ jModifier []
 jClassDefinition [int modifiers]
   returns [JClassDeclaration self = null]
 {
-  CTypeVariable[]    typeVariables = CTypeVariable.EMPTY;
   CReferenceType     superClass    = null;
   CReferenceType[]   interfaces    = CReferenceType.EMPTY;
   ParseClassContext  context       = ParseClassContext.getInstance();
@@ -388,7 +387,6 @@ jClassDefinition [int modifiers]
 }
 :
   "class" ident:IDENT
-  (typeVariables = kTypeVariableDeclarationList[])?
   //This is like this for prevent non-determinism
   (superClass =  jSuperClassClause[])?
 
@@ -403,7 +401,6 @@ jClassDefinition [int modifiers]
           self = new JClassDeclaration(sourceRef,
 				   modifiers,
 				   ident.getText(),
-                   typeVariables,
 				   superClass,	   
 				   interfaces,
 				   context.getFields(),
@@ -421,7 +418,6 @@ jClassDefinition [int modifiers]
 jCClassDefinition [int modifiers]
   returns [CjClassDeclaration self = null]
 {
-  CTypeVariable[]    typeVariables = CTypeVariable.EMPTY;
   CReferenceType     superClass = null;
   CReferenceType[]   interfaces = CReferenceType.EMPTY;
   CReferenceType     wrappee = null;
@@ -432,7 +428,6 @@ jCClassDefinition [int modifiers]
 }
 :
   "cclass" ident:IDENT
-  (typeVariables = kTypeVariableDeclarationList[])?
   //This is like this for prevent non-determinism
   (superClass =  jCSuperClassClause[])?
 
@@ -448,7 +443,6 @@ jCClassDefinition [int modifiers]
           self = new CjVirtualClassDeclaration(sourceRef,
 				   modifiers,
 				   ident.getText(),
-                   typeVariables,
 				   superClass,
 				   wrappee,			   
 				   interfaces,
@@ -505,7 +499,6 @@ jCSuperClassClause []
 jInterfaceDefinition [int modifiers]
   returns [JTypeDeclaration self = null]
 {
-  CTypeVariable[]       typeVariables = CTypeVariable.EMPTY;
   CReferenceType[]		interfaces =  CReferenceType.EMPTY;
   ParseClassContext	context = ParseClassContext.getInstance();
   TokenReference	sourceRef = buildTokenReference();
@@ -513,7 +506,6 @@ jInterfaceDefinition [int modifiers]
 :
   "interface" ident:IDENT
 
-  (typeVariables = kTypeVariableDeclarationList[])?
   // it might extend some other interfaces
   interfaces = jInterfaceExtends[]
   // now parse the body of the interface (looks like a class...)
@@ -523,7 +515,6 @@ jInterfaceDefinition [int modifiers]
         self = new JInterfaceDeclaration(sourceRef,
                                            modifiers,
                                            ident.getText(),
-                                           typeVariables,
                                            interfaces,
                                            context.getFields(),
                                            context.getMethods(),
@@ -593,7 +584,6 @@ jMember [ParseClassContext context]
   int                   modifiers = 0;
   CType                 type;
   JMethodDeclaration    method;
-  CTypeVariable[]       typeVariables;
   JTypeDeclaration      decl;
   JVariableDefinition[] vars;
   JStatement[]          body = null;
@@ -619,15 +609,9 @@ jMember [ParseClassContext context]
     		method = jConstructorDefinition[context, modifiers]
       		{ context.addMethodDeclaration(method); }
   		|
-    		// method with type variables
-	    	typeVariables = kTypeVariableDeclarationList[]
-    		type = jTypeSpec[]
-    		method = jMethodDefinition [context, modifiers, type, typeVariables]
-	    	{ context.addMethodDeclaration(method); }
-	  	| 
     		type = jTypeSpec[]
 	    	(
-	      		method = jMethodDefinition [context, modifiers, type, CTypeVariable.EMPTY]
+	      		method = jMethodDefinition [context, modifiers, type]
 		        { context.addMethodDeclaration(method); }
 	    	|
 	      		vars = jVariableDefinitions[modifiers, type] SEMI
@@ -658,7 +642,6 @@ jCMember [ParseClassContext context]
   int                   modifiers = 0;
   CType                 type;
   JMethodDeclaration    method;
-  CTypeVariable[]       typeVariables;
   JTypeDeclaration      decl;
   JVariableDefinition[] vars;
   JStatement[]          body = null;
@@ -681,14 +664,8 @@ jCMember [ParseClassContext context]
     		method = jConstructorDefinition[context, modifiers]
       		{ context.addMethodDeclaration(method); }
   		|
-    		// method with type variables
-	    	typeVariables = kTypeVariableDeclarationList[]
-    		type = jTypeSpec[]
-    		method = jMethodDefinition [context, modifiers, type, typeVariables]
-	    	{ context.addMethodDeclaration(method); }
-	  	|
 	  		//pointcut declaration  	
-  			"pointcut" pointcutDecl = jPointcutDefinition[modifiers, CTypeVariable.EMPTY] 
+  			"pointcut" pointcutDecl = jPointcutDefinition[modifiers] 
   			{ 
   				context.addPointcutDeclaration(pointcutDecl);	
   			}
@@ -751,7 +728,7 @@ jCMember [ParseClassContext context]
 		  			context.addAdviceDeclaration(adviceDecl);	  			
 		  		}  	 		  		    
 	    	|
-	      		method = jMethodDefinition [context, modifiers, type, CTypeVariable.EMPTY]
+	      		method = jMethodDefinition [context, modifiers, type]
 		        { context.addMethodDeclaration(method); }
 	    	|
 	      		vars = jVariableDefinitions[modifiers, type] SEMI
@@ -863,11 +840,11 @@ public jsMethodDefinition []
 :
 	modifiers = jModifiers[]
 	type = jTypeSpec[]
-	self = jMethodDefinition [ParseClassContext.getInstance(), modifiers, type, CTypeVariable.EMPTY]
+	self = jMethodDefinition [ParseClassContext.getInstance(), modifiers, type]
 ;
 
 
-private jMethodDefinition [ParseClassContext context, int modifiers, CType type, CTypeVariable[] typeVariables]
+private jMethodDefinition [ParseClassContext context, int modifiers, CType type]
   returns [JMethodDeclaration self = null]
 {
   JFormalParameter[]	parameters;
@@ -899,7 +876,7 @@ private jMethodDefinition [ParseClassContext context, int modifiers, CType type,
 
     {         
 	     self = new JMethodDeclaration(sourceRef,
-	                modifiers, typeVariables, type,
+	                modifiers, type,
 	                name.getText(), parameters, throwsList,
 	                body == null 
 	                    ? null 
@@ -1999,7 +1976,6 @@ jUnqualifiedNewExpression []
 	    decl = new CjClassDeclaration(sourceRef,
 					 org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 					 "", //((CReferenceType)type).getQualifiedName(),
-                     CTypeVariable.EMPTY,
 					 null,
 					 null,
 					 CReferenceType.EMPTY,
@@ -2044,7 +2020,6 @@ jQualifiedNewExpression [JExpression prefix]
 	decl = new CjClassDeclaration(sourceRef,
 				     org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 				     ident.getText(),
-                     CTypeVariable.EMPTY,
 				     null,
 				     null,				     
 				     CReferenceType.EMPTY,
@@ -2226,51 +2201,6 @@ kReferenceTypeList []
   }
 ;
 
-kTypeVariableDeclarationList []
-  returns [CTypeVariable[] self = CTypeVariable.EMPTY]
-{
-  CTypeVariable  tv = null;
-  ArrayList	 container = new ArrayList();
-}
-:
-    LT tv = kTypeVariableDeclaration[] { container.add(tv); }
-    (
-      COMMA
-      tv = kTypeVariableDeclaration[]  { container.add(tv); }
-    )*
-    {
-      self = (CTypeVariable[])container.toArray(new CTypeVariable[container.size()]);
-      for (int i =0; i< self.length; i++) {
-         self[i].setIndex(i);
-      }
-    }
-    GT
-    {
-      if (!environment.isGenericEnabled()) {
-        reportTrouble(new PositionedError(buildTokenReference(), KjcMessages.UNSUPPORTED_GENERIC_TYPE, null));
-      }
-    }
-;
-
-kTypeVariableDeclaration []
-  returns [CTypeVariable self = null]
-{
-  CReferenceType     bound;
-  ArrayList	 container = new ArrayList();
-}
-:
-  ident : IDENT
-  (
-    "extends"
-    bound = jTypeName[] { container.add(bound); }
-    (BAND) => (
-      BAND bound = jTypeName[] { container.add(bound); }
-    )*
-  )?
-  {
-    self = new CTypeVariable(ident.getText(), (CReferenceType[])container.toArray(new CReferenceType[container.size()]));
-  }
-;
 
 
 
@@ -2307,7 +2237,6 @@ jCjAdviceDeclaration  [CaesarAdviceKind kind, int modifiers, JFormalParameter[] 
 		
 			self = new CjAdviceDeclaration(sourceRef,
                                        modifiers,
-                                       CTypeVariable.EMPTY,
                                        type,
                                        parameters,
                                        throwsList,
@@ -2328,7 +2257,7 @@ jCjAdviceDeclaration  [CaesarAdviceKind kind, int modifiers, JFormalParameter[] 
 	}
 ;
 
-jPointcutDefinition [int modifiers, CTypeVariable[] typeVariables]
+jPointcutDefinition [int modifiers]
 	returns [CjPointcutDeclaration self = null]
 {
   JFormalParameter[]	parameters;
@@ -2346,7 +2275,6 @@ jPointcutDefinition [int modifiers, CTypeVariable[] typeVariables]
   SEMI
 	{self = new CjPointcutDeclaration(sourceRef,
                                                modifiers,
-                                               typeVariables,
                                                factory.getVoidType(),
                                                name.getText(),
                                                parameters,

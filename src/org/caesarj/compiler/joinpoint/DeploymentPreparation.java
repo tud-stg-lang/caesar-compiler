@@ -42,7 +42,6 @@ import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
 
@@ -233,7 +232,6 @@ public class DeploymentPreparation implements CaesarConstants {
 		return new CjMethodDeclaration(
 			TokenReference.NO_REF,
 			ACC_PRIVATE | ACC_STATIC,
-			CTypeVariable.EMPTY,
 			typeFactory.getVoidType(),
 			AJC_CLINIT_METHOD,
 			JFormalParameter.EMPTY,
@@ -254,7 +252,6 @@ public class DeploymentPreparation implements CaesarConstants {
 		return new CjMethodDeclaration(
 			TokenReference.NO_REF,
 			ACC_PUBLIC | ACC_STATIC,
-			CTypeVariable.EMPTY,
 			singletonType,
 			ASPECT_OF_METHOD,
 			JFormalParameter.EMPTY,

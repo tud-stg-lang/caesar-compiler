@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBinaryTypeContext.java,v 1.1 2004-02-08 16:47:37 ostermann Exp $
+ * $Id: CBinaryTypeContext.java,v 1.2 2004-10-15 11:12:54 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -23,7 +23,6 @@ package org.caesarj.compiler.context;
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMember;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.SignatureParser;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
@@ -35,33 +34,30 @@ import org.caesarj.util.UnpositionedError;
 public class CBinaryTypeContext implements CTypeContext{
 
   public CBinaryTypeContext(ClassReader classReader, TypeFactory typeFactory) {
-    this(classReader, typeFactory, null, null, null, false);
+    this(classReader, typeFactory, null, null, false);
   }
 
   public CBinaryTypeContext(ClassReader classReader, TypeFactory typeFactory, CTypeContext parent, CMember owner) {
-    this(classReader, typeFactory, parent, owner, null, !owner.isStatic());
+    this(classReader, typeFactory, parent, owner, !owner.isStatic());
   }
 
   public CBinaryTypeContext(ClassReader classReader, 
                             TypeFactory typeFactory, 
                             CTypeContext parent, 
-                            CTypeVariable[] typeVariables, 
                             boolean parentLookup) {
 
-    this(classReader, typeFactory, parent, null, typeVariables, parentLookup);
+    this(classReader, typeFactory, parent, null, parentLookup);
   }
 
   private CBinaryTypeContext(ClassReader classReader, 
                              TypeFactory typeFactory, 
                              CTypeContext parent, 
                              CMember owner, 
-                             CTypeVariable[] typeVariables, 
                              boolean parentLookup) {
     this.classReader = classReader;
     this.typeFactory = typeFactory;
     this.parent = parent;
     this.owner = owner;
-    this.typeVariables = typeVariables;
     this.parentLookup = parentLookup;
   }
 
@@ -111,32 +107,6 @@ public class CBinaryTypeContext implements CTypeContext{
     parent.reportTrouble(trouble);
   }
 
-  /**
-   * Searches the class, interface and Method to locate declarations of TV's that are
-   * accessible.
-   * 
-   * @param	ident		the simple name of the field
-   * @return	the TV definition
-   * @exception UnpositionedError	this error will be positioned soon
-   */
-  public CTypeVariable lookupTypeVariable(String ident)
-    throws UnpositionedError
-  {
-    if (owner != null) {
-      return owner.lookupTypeVariable(ident);
-    } else if (typeVariables != null) {
-      for (int i = 0; i < typeVariables.length; i++) {
-        if (typeVariables[i].getIdent() == ident) {
-          return typeVariables[i];
-        }
-      }
-    }
-    if (parentLookup && (parent != null)) {
-      return parent.lookupTypeVariable(ident);
-    } else {
-      return null;
-    }
-  }
 
   public SignatureParser getSignatureParser() {
     return classReader.getSignatureParser();
@@ -146,6 +116,5 @@ public class CBinaryTypeContext implements CTypeContext{
   private ClassReader           classReader; 
   private CMember               owner;
   private CTypeContext          parent;
-  private CTypeVariable[]       typeVariables;
   private boolean               parentLookup;
 }

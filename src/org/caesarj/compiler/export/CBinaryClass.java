@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBinaryClass.java,v 1.7 2004-09-08 14:59:16 aracic Exp $
+ * $Id: CBinaryClass.java,v 1.8 2004-10-15 11:12:53 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -23,11 +23,17 @@ package org.caesarj.compiler.export;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import org.caesarj.classfile.*;
+import org.caesarj.classfile.Attribute;
+import org.caesarj.classfile.CaesarExtraAttributes;
+import org.caesarj.classfile.ClassInfo;
+import org.caesarj.classfile.ClassfileConstants2;
+import org.caesarj.classfile.FieldInfo;
+import org.caesarj.classfile.GenericAttribute;
+import org.caesarj.classfile.InnerClassInfo;
+import org.caesarj.classfile.MethodInfo;
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.SignatureParser;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.runtime.AdditionalCaesarTypeInformation;
@@ -64,14 +70,12 @@ public class CBinaryClass extends CClass {
 
     if (genericSignature == null) {
       setSuperClass(classInfo.getSuperClass() == null ? null : factory.createType(classInfo.getSuperClass(), true));
-      interfaces = loadInterfaces(factory, classInfo.getInterfaces());
-      setTypeVariables(CTypeVariable.EMPTY);
+      interfaces = loadInterfaces(factory, classInfo.getInterfaces());      
     } else {
       SignatureParser.ClassSignature    classSignature = signatureParser.parseClassSignature(factory, genericSignature);
 
       setSuperClass(classSignature.superType);
-      interfaces = classSignature.interfaces;
-      setTypeVariables(classSignature.typeVariables);      
+      interfaces = classSignature.interfaces;     
     }
 
     FieldInfo[]         fields = classInfo.getFields();
@@ -132,13 +136,7 @@ public class CBinaryClass extends CClass {
   }
 
   public void checkTypes(CBinaryTypeContext context) throws UnpositionedError {
-    CTypeVariable[]     typeVariables = getTypeVariables();
-    CBinaryTypeContext  self;
-
-    for (int i = 0; i < typeVariables.length; i++) {
-      typeVariables[i] = (CTypeVariable) typeVariables[i].checkType(context);
-    }
-    setTypeVariables(typeVariables);
+    CBinaryTypeContext  self;   
 
     self = new CBinaryTypeContext(context.getClassReader(), 
                                   context.getTypeFactory(),

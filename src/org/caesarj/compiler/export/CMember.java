@@ -15,14 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CMember.java,v 1.3 2004-07-21 08:28:33 aracic Exp $
+ * $Id: CMember.java,v 1.4 2004-10-15 11:12:54 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
 
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.InconsistencyException;
 
 /**
@@ -142,7 +141,6 @@ public abstract class CMember extends org.caesarj.util.Utils implements Constant
     throw new InconsistencyException();
   }
 
-  public abstract CTypeVariable lookupTypeVariable(String ident);
   // ----------------------------------------------------------------------
   // ACCESSORS (QUICK)
   // ----------------------------------------------------------------------

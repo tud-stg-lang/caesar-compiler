@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.22 2004-10-10 19:30:21 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.23 2004-10-15 11:12:52 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -38,7 +38,6 @@ import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.CWarning;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
@@ -72,7 +71,6 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         TokenReference where,
         int modifiers,
         String ident,
-        CTypeVariable[] typeVariables,
         CReferenceType[] interfaces,
         JFieldDeclaration[] fields,
         JMethodDeclaration[] methods,
@@ -84,7 +82,6 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
 
         this.modifiers = modifiers;
         this.ident = ident.intern();
-        this.typeVariables = typeVariables;
         this.interfaces = interfaces;
         this.fields = fields;
         this.methods = methods;
@@ -100,7 +97,6 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
             modifiers,
             ident,
             prefix + ident,
-            typeVariables,
             isDeprecated(),
             false,
             this);
@@ -252,14 +248,6 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
             self = constructContext(context);
         }
 
-        try {
-            for (int i = 0; i < typeVariables.length; i++) {
-                typeVariables[i].checkType(self);
-            }
-        }
-        catch (UnpositionedError e) {
-            throw e.addPosition(getTokenReference());
-        }
         //Walter: this method call was inserted instead of resolve 
         //the interfaces here.
         resolveInterfaces(context);
@@ -688,5 +676,4 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     protected boolean uniqueSourceClass = true;
     //andreas end
     protected CClassContext self;
-    protected CTypeVariable[] typeVariables;    
 }

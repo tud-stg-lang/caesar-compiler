@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JInitializerDeclaration.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
+ * $Id: JInitializerDeclaration.java,v 1.3 2004-10-15 11:12:52 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -44,7 +44,6 @@ import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
@@ -72,7 +71,6 @@ public class JInitializerDeclaration extends JMethodDeclaration {
   {
     super(where,
 	  ACC_PRIVATE | (isStatic ? ACC_STATIC : 0),
-          CTypeVariable.EMPTY,
 	  factory.getVoidType(),
 	  (isStatic ? JAV_STATIC_INIT : JAV_INIT),
 	  JFormalParameter.EMPTY,

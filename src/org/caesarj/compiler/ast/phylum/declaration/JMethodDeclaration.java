@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodDeclaration.java,v 1.6 2004-10-10 19:29:52 aracic Exp $
+ * $Id: JMethodDeclaration.java,v 1.7 2004-10-15 11:12:52 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -50,7 +50,6 @@ import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
@@ -81,7 +80,6 @@ public class JMethodDeclaration extends JMemberDeclaration {
     public JMethodDeclaration(
         TokenReference where,
         int modifiers,
-        CTypeVariable[] typeVariables,
         CType returnType,
         String ident,
         JFormalParameter[] parameters,
@@ -92,7 +90,6 @@ public class JMethodDeclaration extends JMemberDeclaration {
         super(where, javadoc, comments);
 
         this.modifiers = modifiers;
-        this.typeVariables = typeVariables;
         this.returnType = returnType;
         this.ident = ident.intern();
         this.body = body;
@@ -190,18 +187,12 @@ public class JMethodDeclaration extends JMemberDeclaration {
                 this.ident);
         }
         try {
-            for (int i = 0; i < typeVariables.length; i++) {
-                typeVariables[i].checkType(context);
-                typeVariables[i].setMethodTypeVariable(true);
-            }
-
             CType[] parameterTypes = new CType[parameters.length];
             CBinaryTypeContext typeContext =
                 new CBinaryTypeContext(
                     context.getClassReader(),
                     context.getTypeFactory(),
                     context,
-                    typeVariables,
                     (modifiers & ACC_STATIC) == 0);
 
             returnType = returnType.checkType(typeContext);
@@ -221,7 +212,6 @@ public class JMethodDeclaration extends JMemberDeclaration {
                 returnType,
                 parameterTypes,
                 exceptions,
-                typeVariables,
                 isDeprecated(),
                 false,
             // not synthetic
@@ -326,14 +316,6 @@ public class JMethodDeclaration extends JMemberDeclaration {
 
         bridgeType = method.getReturnType();
         //must not be a class (case !exactSignature)
-        if (bridgeType.isTypeVariable()) {
-            try {
-                bridgeType = bridgeType.getErasure(context);
-            }
-            catch (UnpositionedError e) {
-                e.addPosition(getTokenReference());
-            }
-        }
 
         JExpression[] args = new JExpression[parameters.length];
         CType[] superParams = method.getParameters();
@@ -406,7 +388,6 @@ public class JMethodDeclaration extends JMemberDeclaration {
             new JMethodDeclaration(
                 getTokenReference(),
                 ((modifiers | Constants.ACC_ABSTRACT) ^ Constants.ACC_ABSTRACT),
-                CTypeVariable.EMPTY,
                 bridgeType,
                 ident,
                 bridgeParameter,
@@ -549,7 +530,6 @@ public class JMethodDeclaration extends JMemberDeclaration {
     protected JFormalParameter[] parameters;
     protected CReferenceType[] exceptions;
     protected JBlock body;
-    protected CTypeVariable[] typeVariables;
     private ArrayList bridgesToPrint;
     
 

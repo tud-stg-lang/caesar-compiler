@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassOrInterfaceType.java,v 1.2 2004-02-08 20:28:00 ostermann Exp $
+ * $Id: CClassOrInterfaceType.java,v 1.3 2004-10-15 11:12:54 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -41,16 +41,7 @@ public class CClassOrInterfaceType extends CReferenceType {
    * @param	clazz		the class that will represent this type
    */
   public CClassOrInterfaceType(CClass clazz) {
-    this(clazz, CReferenceType.EMPTY_ARG);
-  }
-  /**
-   * Construct a class type
-   * @param	clazz		the class that will represent this type
-   */
-  public CClassOrInterfaceType(CClass clazz, CReferenceType[][] arguments) {
     super(clazz);
-
-    this.arguments = arguments;
     this.checked = false;
   }
 
@@ -74,10 +65,6 @@ public class CClassOrInterfaceType extends CReferenceType {
     buffer.append(';');
   }
 
-  public boolean isGenericType() {
-    return getCClass().isGenericClass();
-  }
-
   // ----------------------------------------------------------------------
   // INTERFACE CHECKING
   // ----------------------------------------------------------------------
@@ -93,11 +80,8 @@ public class CClassOrInterfaceType extends CReferenceType {
 
    if (arguments.length == 0) {
       arguments = new CReferenceType[][]{CReferenceType.EMPTY};
-      if (clazz.isGenericClass()) {
-        throw new UnpositionedError(KjcMessages.LESS_TYPEARG, this, String.valueOf(clazz.getTypeVariables().length));
-      } else {
-        return this;
-      }
+
+      return this;
     }
 
     for (int k = arguments.length-1; k  >= 0 ; k--) {
@@ -114,7 +98,7 @@ public class CClassOrInterfaceType extends CReferenceType {
           arguments[k][i] = (CReferenceType) arguments[k][i].checkType(context);
         }
         // is this type a correct instantiantion of this type?
-        clazz.checkInstantiation(context, arguments[k]);
+        //clazz.checkInstantiation(context, arguments[k]);
         clazz = clazz.getOwner();
       }
     }

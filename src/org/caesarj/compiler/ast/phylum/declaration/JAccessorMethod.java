@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JAccessorMethod.java,v 1.3 2004-09-06 13:31:34 aracic Exp $
+ * $Id: JAccessorMethod.java,v 1.4 2004-10-15 11:12:52 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -43,7 +43,6 @@ import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CClassOrInterfaceType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
@@ -105,7 +104,7 @@ public class JAccessorMethod extends JMemberDeclaration {
     if (useInstance != 0) {
       parameters[0] = new JFormalParameter(TokenReference.NO_REF,
                                                ACC_FINAL,
-                                               new CClassOrInterfaceType(target, new CReferenceType[][]{target.getTypeVariables()}), 
+                                               new CClassOrInterfaceType(target),
                                                "instance",
                                                true);
       parameters[0].setPosition(0);
@@ -193,7 +192,6 @@ public class JAccessorMethod extends JMemberDeclaration {
                                returnType,
                                parameterTypes,
                                throwables,
-                               CTypeVariable.EMPTY,
                                false,
                                true, // synthetic
                                body);

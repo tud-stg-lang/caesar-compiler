@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodCallExpression.java,v 1.7 2004-09-10 14:54:14 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.8 2004-10-15 11:12:53 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -37,7 +37,6 @@ import org.caesarj.compiler.types.CArrayType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CThrowableInfo;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.CWarning;
 import org.caesarj.util.PositionedError;
@@ -286,97 +285,6 @@ public class JMethodCallExpression extends JExpression
 		{
 			CType returnType = method.getReturnType();
 
-			if (returnType.isTypeVariable())
-			{
-				CReferenceType subType;
-				if (!((CTypeVariable) returnType).isMethodTypeVariable())
-				{
-					subType =
-						prefixType.getCClass().getSubstitution(
-							(CTypeVariable) returnType,
-							prefixType.getAllArguments());
-				}
-				else
-				{
-					subType = (CReferenceType) returnType;
-					// FIX with methodType sub
-				}
-				try
-				{
-					if (method.getReturnType().getErasure(context)
-						!= subType.getErasure(context))
-					{
-						analysed = true;
-						return new JCastExpression(
-							getTokenReference(),
-							new JCheckedExpression(getTokenReference(), this),
-							subType).analyse(
-							context);
-					}
-					else
-					{
-						type = subType;
-					}
-				}
-				catch (UnpositionedError e)
-				{
-					throw e.addPosition(getTokenReference());
-				}
-			}
-			else if (
-				returnType.isArrayType()
-					&& ((CArrayType) returnType).getBaseType().isTypeVariable())
-			{
-				CReferenceType subType =
-					prefixType.getCClass().getSubstitution(
-						(CTypeVariable) ((CArrayType) returnType).getBaseType(),
-						prefixType.getAllArguments());
-				subType =
-					new CArrayType(
-						subType,
-						((CArrayType) returnType).getArrayBound());
-				try
-				{
-					if (method.getReturnType().getErasure(context)
-						!= subType.getErasure(context))
-					{
-						analysed = true;
-						return new JCastExpression(
-							getTokenReference(),
-							new JCheckedExpression(getTokenReference(), this),
-							subType).analyse(
-							context);
-					}
-					else
-					{
-						type = subType;
-					}
-				}
-				catch (UnpositionedError e)
-				{
-					throw e.addPosition(getTokenReference());
-				}
-			}
-			else if (returnType.isGenericType())
-			{
-				type =
-					((CReferenceType) prefixType).createSubstitutedType(
-						local,
-						(CReferenceType) prefixType,
-						local.getAbstractType().getAllArguments());
-			}
-			else if (
-				returnType.isArrayType()
-					&& ((CArrayType) returnType).getBaseType().isGenericType())
-			{
-				type =
-					new CArrayType(
-						((CReferenceType) prefixType).createSubstitutedType(
-							local,
-							(CReferenceType) prefixType,
-							local.getAbstractType().getAllArguments()),
-						((CArrayType) returnType).getArrayBound());
-			}
 		}
 		// fixed lackner 18.03.2002 commment out because sometimes it is necessary to evaluate it twice.
 		//    analysed = true;
@@ -480,69 +388,18 @@ public class JMethodCallExpression extends JExpression
 
 			try
 			{
-				if (!prefix.getType(factory).isTypeVariable())
-				{
-					// FIX it lackner 19.11.01      used for internalInitLoadDefinition of PPage : prefix instanceof JSuperExpression
-					method =
-						prefix.getType(factory).getCClass().lookupMethod(
-							context,
-							local,
-							(prefix instanceof JThisExpression
-								|| prefix instanceof JSuperExpression)
-								? null
-								: prefix.getType(factory),
-							ident,
-							argTypes,
-							prefix.getType(factory).getArguments());
-					prefixType = prefix.getType(factory);
-				}
-				else
-				{
-					// find method in a type of the bound;
-					CReferenceType[] bound =
-						((CTypeVariable) prefix.getType(factory)).getBounds();
-
-					if (bound.length == 0)
-					{
-						// bound is java.lang.Object
-						method =
-							context
-								.getTypeFactory()
-								.createReferenceType(TypeFactory.RFT_OBJECT)
-								.getCClass()
-								.lookupMethod(
-									context,
-									local,
-									context
-										.getTypeFactory()
-										.createReferenceType(
-										TypeFactory.RFT_OBJECT),
-									ident,
-									argTypes,
-									CReferenceType.EMPTY);
-					}
-					else
-					{
-						for (int i = 0; i < bound.length; i++)
-						{
-							method =
-								bound[i].getCClass().lookupMethod(
-									context,
-									local,
-									bound[i],
-									ident,
-									argTypes,
-									bound[i].getArguments());
-							if (method != null)
-							{
-								prefixType = bound[i];
-								break;
-							}
-						}
-						// FIX !!! 
-						// if method is defined in more than one bound??
-					}
-				}
+				// FIX it lackner 19.11.01      used for internalInitLoadDefinition of PPage : prefix instanceof JSuperExpression
+				method =
+					prefix.getType(factory).getCClass().lookupMethod(
+						context,
+						local,
+						(prefix instanceof JThisExpression
+							|| prefix instanceof JSuperExpression)
+							? null
+							: prefix.getType(factory),
+						ident,
+						argTypes);
+				prefixType = prefix.getType(factory);
 			}
 			catch (UnpositionedError e)
 			{

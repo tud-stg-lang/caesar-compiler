@@ -1,10 +1,29 @@
 package org.caesarj.compiler.export;
 
-import org.caesarj.classfile.*;
+import org.caesarj.classfile.ClassFileFormatException;
+import org.caesarj.classfile.ClassRefInstruction;
+import org.caesarj.classfile.CodeInfo;
+import org.caesarj.classfile.Instruction;
+import org.caesarj.classfile.LocalVarInstruction;
+import org.caesarj.classfile.MethodInfo;
+import org.caesarj.classfile.PushLiteralInstruction;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
-import org.caesarj.compiler.types.*;
+import org.caesarj.compiler.types.CBooleanType;
+import org.caesarj.compiler.types.CByteType;
+import org.caesarj.compiler.types.CCharType;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CDoubleType;
+import org.caesarj.compiler.types.CFloatType;
+import org.caesarj.compiler.types.CIntType;
+import org.caesarj.compiler.types.CLongType;
+import org.caesarj.compiler.types.CPrimitiveType;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CShortType;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.compiler.types.CVoidType;
+import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.InconsistencyException;
 
 /**
@@ -43,7 +62,6 @@ public class CCjProceed extends CSourceMethod implements CaesarConstants {
 			returnType,
 			parameterTypes,
 			new CReferenceType[0],
-			new CTypeVariable[0],
 			false,
 			true,
 			null);

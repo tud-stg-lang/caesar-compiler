@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcSignatureParser.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: KjcSignatureParser.java,v 1.2 2004-10-15 11:12:54 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -86,9 +86,6 @@ public class KjcSignatureParser implements SignatureParser {
     case 'Z':
       type = factory.getPrimitiveType(TypeFactory.PRM_BOOLEAN);
       break;
-    case 'T': // JSR 14: TypeVariable
-      type = new CTypeVariableAlias(signature.substring(from + 1, to - 1));
-      break;
     default:
       throw new InconsistencyException("Unknown signature: " + signature.charAt(from));
     }
@@ -138,61 +135,17 @@ public class KjcSignatureParser implements SignatureParser {
     return (CReferenceType[])vect.toArray(new CReferenceType[vect.size()]); 
   }
 
-  protected CTypeVariable[] parseTypeParameter(TypeFactory factory, String signature, char[] sig) {
-    // '<' TypeVarName1 ':' bound1 ':' bound2 [...] TypeVarName2 : ... '>'
-    if (sig[current] == '<') {
-      ArrayList    tvVect = new ArrayList(10);
-      
-      current++;
-      while (sig[current] != '>') {
-        int             end = current; 
-        String          ident; // type var name
-
-        while (sig[end] != ':') {
-          end += 1;
-        }
-        ident = signature.substring(current, end);
-        current = ++end;
-
-        ArrayList          bounds = new ArrayList(5); // type bound
-
-        bounds.add(parseGenericTypeSignature(factory, signature, sig));
-        while (sig[current] == ':') { // another bound ?
-          current++;
-          bounds.add(parseGenericTypeSignature(factory, signature, sig));
-        }
-
-        CReferenceType[]    tvBound = (CReferenceType[])bounds.toArray(new CReferenceType[bounds.size()]);
-
-        tvVect.add(new CTypeVariable(ident, tvBound));
-      }
-
-      CTypeVariable[]   typeVariable = (CTypeVariable[])tvVect.toArray(new CTypeVariable[tvVect.size()]);
-
-      for (int i = 0; i < typeVariable.length; i++) {
-        typeVariable[i].setIndex(i);
-      }
-      current++;
-      return typeVariable;
-    } else {
-      return CTypeVariable.EMPTY;
-    }
-  }
-
   /**
    * Returns an object representing the types the signature of a class
    *
    * @returns an object enclosing the supertype, interfaces and tv
    */
  public ClassSignature parseClassSignature(TypeFactory factory, String signature) {
-   CTypeVariable[]      tvs;
    CReferenceType           superType;
    CReferenceType[]         inter;
    char[]               sig = signature.toCharArray();
 
    current = 0;
-   // typeVariable
-   tvs = parseTypeParameter(factory, signature, sig);
    // supertype
    superType = (CReferenceType) parseGenericTypeSignature(factory, signature, sig);
 
@@ -204,7 +157,7 @@ public class KjcSignatureParser implements SignatureParser {
    }
    inter = (CReferenceType[])interfaces.toArray(new CReferenceType[interfaces.size()]);
    
-   return new ClassSignature(superType, inter, tvs);
+   return new ClassSignature(superType, inter);
  }
 
   /**
@@ -212,15 +165,12 @@ public class KjcSignatureParser implements SignatureParser {
    * For methods, the return type is the last element of the array
    */
   public MethodSignature parseMethodSignature(TypeFactory factory, String signature) {
-    CTypeVariable[]     typeVariables; 
     CType[]             parameter;
     CType               returnType;
     CReferenceType[]    exceptions;
     char[]              sig = signature.toCharArray();
 
     current = 0;
-    // typeVariable
-    typeVariables = parseTypeParameter(factory, signature, sig);
 
     // parameter
     ArrayList	paramVec = new ArrayList();
@@ -249,7 +199,7 @@ public class KjcSignatureParser implements SignatureParser {
       exceptions = CReferenceType.EMPTY;
     }
 
-    return new MethodSignature(returnType, parameter, exceptions, typeVariables);
+    return new MethodSignature(returnType, parameter, exceptions);
   }
 
   private int current;

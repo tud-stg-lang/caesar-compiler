@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CNullType.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: CNullType.java,v 1.2 2004-10-15 11:12:54 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -75,9 +75,6 @@ public class CNullType extends CReferenceType {
   }
 
   public boolean equals(CType other, CReferenceType[] substitution) {
-    if (other.isTypeVariable()) {
-      other = substitution[((CTypeVariable) other).getIndex()];
-    }
     return equals(other);
   }
 

@@ -6,7 +6,6 @@ import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.TokenReference;
 
 /**
@@ -23,7 +22,6 @@ public class CjAdviceMethodDeclaration extends CjMethodDeclaration {
         CjAdviceDeclaration advice,
         TokenReference where,
         int modifiers,
-        CTypeVariable[] typeVariables,
         CType returnType,
         String ident,
         JFormalParameter[] parameters,
@@ -34,7 +32,6 @@ public class CjAdviceMethodDeclaration extends CjMethodDeclaration {
         super(
             where,
             modifiers,
-            typeVariables,
             returnType,
             ident,
             parameters,

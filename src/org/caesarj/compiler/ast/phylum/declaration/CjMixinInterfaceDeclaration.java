@@ -14,7 +14,6 @@ import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
 import org.caesarj.compiler.typesys.graph.FurtherboundFurtherbindingRelation;
@@ -40,7 +39,7 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
 		super(
 			where, 
 			modifiers | ACC_MIXIN_INTERFACE, 
-			ident, CTypeVariable.EMPTY, 
+			ident, 
 			interfaces, 
 			fields,
 			methods, 
@@ -164,7 +163,6 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
                 CjMethodDeclaration decl = new CjMethodDeclaration(
         			methods[i].getTokenReference(),
         			ACC_PUBLIC | ACC_ABSTRACT,
-        			CTypeVariable.EMPTY,
         			method.getReturnType(),
         			method.getIdent(),
         			methods[i].getParameters(),
@@ -185,7 +183,6 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
             			method.getReturnType(),
             			method.getParameters(),
             			method.getExceptions(),
-            			CTypeVariable.EMPTY,
             			false,
             			false,
             			null
@@ -221,7 +218,6 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
                 modifiers, 
                 ident, 
                 prefix + ident, 
-                typeVariables, 
                 isDeprecated(), 
                 false, 
                 this

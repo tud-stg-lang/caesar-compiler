@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.25 2004-09-10 23:31:19 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.26 2004-10-15 11:12:52 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -58,7 +58,6 @@ import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.CVoidType;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
@@ -94,7 +93,6 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
         TokenReference where,
         int modifiers,
         String ident,
-        CTypeVariable[] typeVariables,
         CReferenceType superClass,
         CReferenceType[] interfaces,
         JFieldDeclaration[] fields,
@@ -107,7 +105,6 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
             where,
             modifiers,
             ident,
-            typeVariables,
             superClass,
             null,
             interfaces,
@@ -126,7 +123,6 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
         TokenReference where,
         int modifiers,
         String ident,
-        CTypeVariable[] typeVariables,
         CReferenceType superClass,
         CReferenceType wrappee,
         CReferenceType[] interfaces,
@@ -140,7 +136,6 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
             where,
             modifiers,
             ident,
-            typeVariables,
             superClass,
             wrappee,
             interfaces,
@@ -159,7 +154,6 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
         TokenReference where,
         int modifiers,
         String ident,
-        CTypeVariable[] typeVariables,
         CReferenceType superClass,
         CReferenceType wrappee,
         CReferenceType[] interfaces,
@@ -176,7 +170,6 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
             where,
             modifiers,
             ident,
-            typeVariables,
             superClass,
             interfaces,
             fields,
@@ -215,7 +208,6 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
                 new JMethodDeclaration(
                     where,
                     ACC_PUBLIC,
-                    CTypeVariable.EMPTY,
                     new CVoidType(),
                     "$initWrappee",
                     new JFormalParameter[]{
@@ -401,7 +393,6 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
             modifiers,
             ident,
             prefix + ident,
-            typeVariables,
             isDeprecated(),
             false,
             this,

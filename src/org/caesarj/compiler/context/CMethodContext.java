@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CMethodContext.java,v 1.6 2004-09-17 15:17:20 gasiunas Exp $
+ * $Id: CMethodContext.java,v 1.7 2004-10-15 11:12:54 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -31,7 +31,6 @@ import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CThrowableInfo;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.CWarning;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
@@ -161,30 +160,6 @@ public class CMethodContext extends CContext {
 
   public int localsPosition() {
     return 0;
-  }
-
-  /**
-   * Searches the class, interface and Method to locate declarations of TV's that are
-   * accessible.
-   * 
-   * @param	ident		the simple name of the field
-   * @return	the TV definition
-   * @exception UnpositionedError	this error will be positioned soon
-   */
-  public CTypeVariable lookupTypeVariable(String ident)
-    throws UnpositionedError
-  {
-    CTypeVariable       tv = getCMethod().lookupTypeVariable(ident);
-
-    if (tv != null) {
-      return tv;
-    } else {
-      if (isStaticContext()) {
-        return null;
-      } else {
-        return getClassContext().lookupTypeVariable(ident);
-      }
-    }
   }
 
   // ----------------------------------------------------------------------

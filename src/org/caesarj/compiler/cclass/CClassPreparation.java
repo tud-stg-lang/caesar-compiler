@@ -44,7 +44,6 @@ import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.CVoidType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
@@ -176,7 +175,6 @@ public class CClassPreparation implements CaesarConstants {
         JMethodDeclaration facMethodDecl = new JMethodDeclaration(
                 decl.getTokenReference(),
                 ACC_PUBLIC,
-                CTypeVariable.EMPTY,
                 returnType.getAbstractType(),
                 "$new"+inner.getType().getQualifiedName().getIdent(),
                 JFormalParameter.EMPTY, // formal params
@@ -426,7 +424,6 @@ public class CClassPreparation implements CaesarConstants {
                 mixinClass.getModifiers(),
                 node.getQualifiedName().getIdent(),
                 node.getQualifiedName().toString(),
-                CTypeVariable.EMPTY,
                 false, // deprecated?
                 false, // synthetic?
                 null, // CTODO: declaration unit is null?
@@ -532,7 +529,6 @@ public class CClassPreparation implements CaesarConstants {
 	                    mixinMethods[i].getReturnType(),
 	                    mixinMethods[i].getParameters(),
 	                    mixinMethods[i].getThrowables(),
-	                    mixinMethods[i].getTypeVariables(),
 	                    mixinMethods[i].isDeprecated(),
 	                    mixinMethods[i].isSynthetic(),
 	                    null // CTODO JBlock is null?
@@ -551,7 +547,6 @@ public class CClassPreparation implements CaesarConstants {
 	            		context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT)
 	        		},
 	                CReferenceType.EMPTY,
-	                CTypeVariable.EMPTY,
 	                false,
 	                false,
 	                null

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CMethod.java,v 1.8 2004-10-10 19:20:08 aracic Exp $
+ * $Id: CMethod.java,v 1.9 2004-10-15 11:12:53 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -33,7 +33,6 @@ import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CThrowableInfo;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.UnpositionedError;
@@ -72,7 +71,6 @@ public abstract class CMethod extends CMember {
         CType returnType,
         CType[] parameters,
         CReferenceType[] exceptions,
-        CTypeVariable[] typeVariables,
         boolean deprecated,
         boolean synthetic) {
         super(owner, modifiers, ident, deprecated, synthetic);
@@ -80,7 +78,6 @@ public abstract class CMethod extends CMember {
         this.returnType = returnType;
         this.parameters = parameters;
         this.exceptions = exceptions;
-        this.typeVariables = typeVariables;
         this.accessors = null;
     }
 
@@ -148,21 +145,6 @@ public abstract class CMethod extends CMember {
         return parameters;
     }
 
-    /**
-     * @return the type of this field
-     */
-    public final CTypeVariable[] getTypeVariables() {
-        return typeVariables;
-    }
-
-    /**
-     * @return the type of this field
-     */
-    public boolean isGenericMethod() {
-        return typeVariables.length > 0;
-    }
-
-    
     public void setReturnType(CType returnType) {
         this.returnType = returnType;
     }
@@ -244,21 +226,7 @@ public abstract class CMethod extends CMember {
             accessors.put(target, accessor);
         }
         return accessor;
-    }
-
-    public CTypeVariable lookupTypeVariable(String ident) {
-        for (int i = 0; i < typeVariables.length; i++) {
-            if (ident == typeVariables[i].getIdent()) {
-                return typeVariables[i];
-            }
-        }
-        if (isStatic()) {
-            return null;
-        }
-        else {
-            return getOwner().lookupTypeVariable(ident);
-        }
-    }
+    }   
 
     // ----------------------------------------------------------------------
     // ACCESSORS (QUICK)
@@ -335,8 +303,7 @@ public abstract class CMethod extends CMember {
     public boolean isApplicableTo(
         CTypeContext context,
         String ident,
-        CType[] actuals,
-        CReferenceType[] substitution) {
+        CType[] actuals) {
         if (ident != getIdent()) {
             return false;
         }
@@ -351,8 +318,7 @@ public abstract class CMethod extends CMember {
                 // case
                 if (!actuals[i].isAssignableTo(
                     context,
-                    parameters[i],
-                    substitution)) {
+                    parameters[i])) {
                     return false;
                 }
             }
@@ -369,8 +335,7 @@ public abstract class CMethod extends CMember {
      */
     public boolean isMoreSpecificThan(
         CTypeContext context,
-        CMethod other,
-        CReferenceType[] substitution) throws UnpositionedError {
+        CMethod other) throws UnpositionedError {
         //    if (!getOwnerType().isAssignableTo(context,other.getOwnerType(),
         // substitution)) {
         if (!getOwner().descendsFrom(other.getOwner())) {
@@ -403,13 +368,13 @@ public abstract class CMethod extends CMember {
      * @param other
      *            the method to compare to
      */
-    public boolean hasSameSignature(CMethod other, CReferenceType[] substitution) {
+    public boolean hasSameSignature(CMethod other) {
         if (parameters.length != other.parameters.length) {
             return false;
         }
         else {
             for (int i = 0; i < parameters.length; i++) {
-                if (!parameters[i].equals(other.parameters[i], substitution)) {
+                if (!parameters[i].equals(other.parameters[i])) {
                     return false;
                 }
             }
@@ -765,8 +730,6 @@ public abstract class CMethod extends CMember {
     protected CType[] parameters;
 
     private CReferenceType[] exceptions;
-
-    private CTypeVariable[] typeVariables;
 
     private Hashtable accessors;
 

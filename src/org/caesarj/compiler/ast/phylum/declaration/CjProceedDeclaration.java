@@ -9,7 +9,6 @@ import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.export.CCjProceed;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -41,7 +40,6 @@ public class CjProceedDeclaration extends CjMethodDeclaration {
 		super(
 			where,
 			ACC_STATIC,
-			new CTypeVariable[0],
 			returnType,
 			ident,
 			parameters,
@@ -57,10 +55,6 @@ public class CjProceedDeclaration extends CjMethodDeclaration {
 		throws PositionedError {
 		
 		try {
-			for (int i = 0; i < typeVariables.length; i++) {
-				typeVariables[i].checkType(context);
-				typeVariables[i].setMethodTypeVariable(true);
-			}
 
 			CType[] parameterTypes = new CType[parameters.length];
 			CBinaryTypeContext typeContext =
@@ -68,7 +62,6 @@ public class CjProceedDeclaration extends CjMethodDeclaration {
 					context.getClassReader(),
 					context.getTypeFactory(),
 					context,
-					typeVariables,
 					(modifiers & ACC_STATIC) == 0);
 
 			returnType = returnType.checkType(typeContext);

@@ -11,7 +11,6 @@ import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
@@ -22,7 +21,6 @@ public class CjInterfaceDeclaration extends JInterfaceDeclaration {
 		TokenReference where,
 		int modifiers,
 		String ident,
-		CTypeVariable[] typeVariables,
 		CReferenceType[] interfaces,
 		JFieldDeclaration[] fields,
 		JMethodDeclaration[] methods,
@@ -34,7 +32,6 @@ public class CjInterfaceDeclaration extends JInterfaceDeclaration {
 			where,
 			modifiers,
 			ident,
-			typeVariables,
 			interfaces,
 			fields,
 			methods,
@@ -97,7 +94,7 @@ public class CjInterfaceDeclaration extends JInterfaceDeclaration {
         CClass owner,
         String prefix
     ) {
-        sourceClass = new CCjSourceClass(owner, getTokenReference(), modifiers, ident, prefix + ident, typeVariables, isDeprecated(), false, this); 
+    	sourceClass = new CCjSourceClass(owner, getTokenReference(), modifiers, ident, prefix + ident, isDeprecated(), false, this);
         setInterface(sourceClass);     
         
         CReferenceType[]    innerClasses = new CReferenceType[inners.length];

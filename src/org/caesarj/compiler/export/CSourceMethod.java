@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CSourceMethod.java,v 1.2 2004-03-15 11:56:53 aracic Exp $
+ * $Id: CSourceMethod.java,v 1.3 2004-10-15 11:12:53 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -33,7 +33,6 @@ import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.SimpleStringBuffer;
 
@@ -64,12 +63,11 @@ public class CSourceMethod extends CMethod {
 		       CType returnType,
 		       CType[] paramTypes,
 		       CReferenceType[] exceptions,
-                       CTypeVariable[] typeVariables,
 		       boolean deprecated,
-                       boolean synthetic,
+		       boolean synthetic,
 		       JBlock body)
   {
-    super(owner, modifiers, ident, returnType, paramTypes, exceptions, typeVariables, deprecated, synthetic);
+    super(owner, modifiers, ident, returnType, paramTypes, exceptions, deprecated, synthetic);
     this.body = body;
   }
 
@@ -266,19 +264,11 @@ public class CSourceMethod extends CMethod {
     CType[]             parameters = getParameters();
     CType               returntype = getReturnType();
     CReferenceType[]        exceptions = getThrowables();
-    CTypeVariable[]     typeVariables = getTypeVariables();
     SimpleStringBuffer	buffer;
     String		result;
 
     buffer = SimpleStringBuffer.request();
-    // type variable definitions
-    if (typeVariables.length > 0) {
-      buffer.append('<');
-      for (int i = 0; i < typeVariables.length; i++) {
-        typeVariables[i].appendDefinitionSignature(buffer);
-      }
-      buffer.append('>');
-    }
+    
     // parameter declaration
     buffer.append('(');
     for (int i = 0; i < parameters.length; i++) {

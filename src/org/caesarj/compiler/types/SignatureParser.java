@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: SignatureParser.java,v 1.1 2004-02-08 16:47:47 ostermann Exp $
+ * $Id: SignatureParser.java,v 1.2 2004-10-15 11:12:54 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -30,28 +30,24 @@ public interface SignatureParser {
   ClassSignature parseClassSignature(TypeFactory factory, String signature);
 
   class ClassSignature {
-    public ClassSignature(CReferenceType st, CReferenceType[] ifes, CTypeVariable[] tv) {
+    public ClassSignature(CReferenceType st, CReferenceType[] ifes) {
       superType = st;
       interfaces = ifes;
-      typeVariables = tv;
     }
 
     public final CReferenceType             superType;
     public final CReferenceType[]           interfaces;
-    public final CTypeVariable[]        typeVariables;
   }
 
   class MethodSignature {
-    public MethodSignature(CType retType, CType[] params, CReferenceType[] exceptns, CTypeVariable[] tv) {
+    public MethodSignature(CType retType, CType[] params, CReferenceType[] exceptns) {
       returnType = retType;
       parameterTypes = params;
       exceptions = exceptns;
-      typeVariables = tv;
     }
 
     public final CType                  returnType;
     public final CType[]                parameterTypes;
     public final CReferenceType[]           exceptions;
-    public final CTypeVariable[]        typeVariables;
   }
 }

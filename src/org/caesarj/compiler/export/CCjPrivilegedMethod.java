@@ -5,7 +5,6 @@ import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.TokenReference;
 
 /**
@@ -41,7 +40,6 @@ public class CCjPrivilegedMethod extends CSourceMethod {
 			baseMethod.getReturnType(),
 			baseMethod.getParameters(),
 			CReferenceType.EMPTY,
-			CTypeVariable.EMPTY,
 			false,
 			true,
 			new JBlock(

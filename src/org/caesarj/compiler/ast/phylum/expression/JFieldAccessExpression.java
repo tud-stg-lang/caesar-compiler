@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldAccessExpression.java,v 1.6 2004-09-08 19:50:28 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.7 2004-10-15 11:12:53 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -36,10 +36,8 @@ import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceField;
-import org.caesarj.compiler.types.CArrayType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.CWarning;
 import org.caesarj.util.InconsistencyException;
@@ -350,54 +348,16 @@ public class JFieldAccessExpression extends JExpression {
       }
     } else {    
       CType       fieldType = field.getType();
-
-      if (fieldType.isTypeVariable()) {
-        CReferenceType  subType = prefix.getType(factory).getCClass().getSubstitution((CTypeVariable) fieldType, 
-                                                                               prefix.getType(factory).getAllArguments());
-        try {
-          if (field.getType() != subType && field.getType().getErasure(context) != subType.getErasure(context) && !context.discardValue()) {
-            analysed = true;
-            return new JCastExpression(getTokenReference(), new JCheckedExpression(getTokenReference(), this), subType).analyse(context);
-          } else {
-            type = subType;
-          }
-        } catch (UnpositionedError e) {
-          throw e.addPosition(getTokenReference());
-        }
-      } else if (fieldType.isArrayType() && ((CArrayType) fieldType).getBaseType().isTypeVariable()) {
-        CReferenceType  subType = prefix.getType(factory).getCClass().getSubstitution((CTypeVariable) ((CArrayType) fieldType).getBaseType(), 
-                                                                              prefix.getType(factory).getAllArguments());
-        subType = new CArrayType(subType, ((CArrayType) fieldType).getArrayBound());
-        try {
-          if (field.getType().getErasure(context) != subType.getErasure(context) && !context.discardValue()) {
-            analysed = true;
-            return new JCastExpression(getTokenReference(), new JCheckedExpression(getTokenReference(), this), subType).analyse(context);
-          } else {
-            type = subType;
-          }
-        } catch (UnpositionedError e) {
-          throw e.addPosition(getTokenReference());
-        }
-
-      } else if (fieldType.isClassType() && (!field.isStatic() || fieldType.isGenericType())) {
+      
+       if (fieldType.isClassType() && (!field.isStatic())) {
         CReferenceType[][]      prefixArgs = prefix.getType(factory).getAllArguments(); 
 
         if (!fieldType.isArrayType()) {
-          if (fieldType.isGenericType() || prefixArgs.length > 0) {
+          if (prefixArgs.length > 0) {
             type = ((CReferenceType)fieldType).createSubstitutedType(local, 
                                                    (CReferenceType) prefix.getType(factory), 
                                                    local.getAbstractType().getAllArguments());
           }
-        } else if (((CReferenceType)fieldType).isArrayType() && ((CArrayType) fieldType).getBaseType().isGenericType()) {
-          CType                   baseType = ((CArrayType) fieldType).getBaseType();
-//           CReferenceType[][]      arguments = new CReferenceType[prefixArgs.length+1][];
-
-//           System.arraycopy(prefixArgs, 0, arguments, 0, prefixArgs.length);
-//           arguments[prefixArgs.length] = baseType.getArguments();
-          type = new CArrayType(((CReferenceType)baseType).createSubstitutedType(local,
-                                                               (CReferenceType) prefix.getType(factory),
-                                                               local.getAbstractType().getAllArguments()),
-                                ((CArrayType) fieldType).getArrayBound());
         }
       }
       return this;

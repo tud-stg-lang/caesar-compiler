@@ -6,7 +6,11 @@ import java.util.List;
 import org.caesarj.classfile.Attribute;
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.MethodInfo;
-import org.caesarj.compiler.aspectj.*;
+import org.caesarj.compiler.aspectj.AttributeAdapter;
+import org.caesarj.compiler.aspectj.CaesarAdviceKind;
+import org.caesarj.compiler.aspectj.CaesarFormalBinding;
+import org.caesarj.compiler.aspectj.CaesarPointcut;
+import org.caesarj.compiler.aspectj.CaesarScope;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.context.CContext;
@@ -14,7 +18,6 @@ import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
 
@@ -58,7 +61,6 @@ public class CCjAdvice extends CSourceMethod {
 		CType returnType,
 		CType[] paramTypes,
 		CReferenceType[] exceptions,
-		CTypeVariable[] typeVariables,
 		JBlock body,
 		CaesarPointcut pointcut,
 		CaesarAdviceKind kind,
@@ -70,7 +72,6 @@ public class CCjAdvice extends CSourceMethod {
 			returnType,
 			paramTypes,
 			exceptions,
-			typeVariables,
 			false,
 			false,
 			body);

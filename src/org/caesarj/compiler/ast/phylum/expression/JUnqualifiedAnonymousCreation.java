@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JUnqualifiedAnonymousCreation.java,v 1.5 2004-09-06 13:31:35 aracic Exp $
+ * $Id: JUnqualifiedAnonymousCreation.java,v 1.6 2004-10-15 11:12:53 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -115,7 +115,7 @@ public class JUnqualifiedAnonymousCreation extends JExpression {
 
         check(
             context,
-            !type.isTypeVariable(),
+            true,
             KjcMessages.NEW_TVPE_VARIABLE,
             type);
 
@@ -172,8 +172,7 @@ public class JUnqualifiedAnonymousCreation extends JExpression {
                     decl.getCClass(),
                     null,
                     JAV_CONSTRUCTOR,
-                    argsType,
-                    superClass.getArguments());
+                    argsType);
         }
         catch (UnpositionedError cue) {
             throw cue.addPosition(getTokenReference());

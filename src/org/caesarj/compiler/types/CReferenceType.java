@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CReferenceType.java,v 1.6 2004-06-15 16:42:04 aracic Exp $
+ * $Id: CReferenceType.java,v 1.7 2004-10-15 11:12:54 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -116,7 +116,7 @@ public class CReferenceType extends CType {
 	}
 
 	private String printArgs() {
-		if (arguments == null || !getCClass().isGenericClass()) {
+		if (arguments == null) {
 			return "";
 		}
 
@@ -260,33 +260,10 @@ public class CReferenceType extends CType {
 		if (!(dest.isClassType() && !dest.isArrayType())) {
 			return false;
 		}
-		if (dest.isTypeVariable()) {
-			if (!inst) {
-				return false;
-			}
-			else {
-				CReferenceType[] destBounds =
-					((CTypeVariable) dest).getBounds();
 
-				if (destBounds.length == 0) {
-					return true; // bound = java.lang.Object
-				}
-				for (int i = 0; i < destBounds.length; i++) {
-					if (!isAssignableTo(context,
-						destBounds[i],
-						substitution)) {
-						return false;
-					}
-				}
-				return true;
-			}
-		}
-		else {
-			return getCClass().descendsFrom(
-				((CReferenceType) dest),
-				arguments[arguments.length - 1],
-				substitution);
-		}
+		return getCClass().descendsFrom(
+			dest.getCClass());
+
 		//  return true;
 	}
 
@@ -295,12 +272,6 @@ public class CReferenceType extends CType {
 		CType dest,
 		CReferenceType[] substitution) {
 		if (!(dest.isClassType() && !dest.isArrayType())) {
-			return false;
-		}
-		if (dest.isTypeVariable()) {
-			dest = substitution[((CTypeVariable) dest).getIndex()];
-		}
-		if (dest.isTypeVariable()) {
 			return false;
 		}
 		else {
@@ -331,38 +302,6 @@ public class CReferenceType extends CType {
 
 		for (int i = 0; i < arguments[arguments.length - 1].length; i++) {
 			if (!otherArgs[i].equals(arguments[arguments.length - 1][i])) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public boolean equals(CType other, CReferenceType[] substitution) {
-		if (other.isTypeVariable()) {
-			other = substitution[((CTypeVariable) other).getIndex()];
-		}
-		if (other == this) {
-			return true;
-		}
-		if (!other.isClassType()
-			|| other.isArrayType()
-			|| other.isTypeVariable()
-			|| (other.isGenericType() != isGenericType())
-			|| ((CReferenceType) other).getCClass() != getCClass()) {
-			return false;
-		}
-		CReferenceType[] otherArgs = other.getArguments();
-
-		if (otherArgs.length != arguments[arguments.length - 1].length) {
-			return false;
-		}
-		for (int i = 0; i < arguments[arguments.length - 1].length; i++) {
-			CReferenceType arg = arguments[arguments.length - 1][i];
-
-			if (arg.isTypeVariable()) {
-				arg = substitution[((CTypeVariable) arg).getIndex()];
-			}
-			if (!arg.equals(otherArgs[i], substitution)) {
 				return false;
 			}
 		}
@@ -469,28 +408,13 @@ public class CReferenceType extends CType {
 			for (int i = 0; i < arguments[index].length; i++) {
 				CReferenceType type = arguments[index][i];
 
-				if (type.isTypeVariable()) {
-					subArgs[i] =
-						local.getSubstitution(
-							(CTypeVariable) type,
-							substitution);
-				}
-				else if (type.isGenericType()) {
-					subArgs[i] =
-						((CClassOrInterfaceType) type).createSubstitutedType(
-							local,
-							null,
-							substitution);
-				}
-				else {
-					subArgs[i] = type;
-				}
+				subArgs[i] = type;
 			}
 
 			arguments[index] = subArgs;
 		}
 		CClassOrInterfaceType type =
-			new CClassOrInterfaceType(getCClass(), arguments);
+			new CClassOrInterfaceType(getCClass());
 
 		type.setChecked(true);
 

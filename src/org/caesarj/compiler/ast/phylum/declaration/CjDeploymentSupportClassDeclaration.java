@@ -6,7 +6,6 @@ import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
@@ -25,7 +24,6 @@ public class CjDeploymentSupportClassDeclaration extends CjClassDeclaration {
         TokenReference where,
         int modifiers,
         String ident,
-        CTypeVariable[] typeVariables,
         CReferenceType superClass,
         CReferenceType[] interfaces,
         JFieldDeclaration[] fields,
@@ -40,7 +38,6 @@ public class CjDeploymentSupportClassDeclaration extends CjClassDeclaration {
             where,
             modifiers,
             ident,
-            typeVariables,
             superClass,
             interfaces,
             fields,
@@ -60,7 +57,6 @@ public class CjDeploymentSupportClassDeclaration extends CjClassDeclaration {
         TokenReference where,
         int modifiers,
         String ident,
-        CTypeVariable[] typeVariables,
         CReferenceType superClass,
         CReferenceType[] interfaces,
         JFieldDeclaration[] fields,
@@ -78,7 +74,6 @@ public class CjDeploymentSupportClassDeclaration extends CjClassDeclaration {
             where,
             modifiers,
             ident,
-            typeVariables,
             superClass,
             null,
             interfaces,
