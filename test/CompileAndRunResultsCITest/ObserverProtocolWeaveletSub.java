@@ -1,6 +1,6 @@
 package generated;
 
-public crosscutting clean class ObserverProtocolWeaveletSub
+public clean class ObserverProtocolWeaveletSub
 	extends ObserverProtocolWeavelet
 {
 //	public Object getNameParentExpected(String child)

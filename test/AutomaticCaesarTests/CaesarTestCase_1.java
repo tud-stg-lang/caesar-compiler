@@ -38,18 +38,21 @@ public class CaesarTestCase_1 extends TestCase {
 		result.append(":foo");
 	}
 
-	crosscutting class InnerAspect {
+	class InnerAspect {
 		pointcut fooCall() : call(* CaesarTestCase_1.foo());
+		before() : fooCall() {
+			System.out.println("just for testing");
+		}
 	}
 
-	crosscutting class InnerAspect_Sub extends InnerAspect {
+	class InnerAspect_Sub extends InnerAspect {
 		before() : fooCall() {
 			result.append(":before foo");	
 		}
 
 	}
 
-	crosscutting class InnerAspect_Sub_Sub extends InnerAspect_Sub {
+	class InnerAspect_Sub_Sub extends InnerAspect_Sub {
 		after() : fooCall() {
 			result.append(":after foo");
 		}

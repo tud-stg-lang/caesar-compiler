@@ -41,7 +41,7 @@ public class CaesarTestCase_12 extends TestCase {
 
 }
 
-crosscutting class Aspect_12 {
+class Aspect_12 {
 	public Aspect_12(int i) {
 		this.i = i;
 	}

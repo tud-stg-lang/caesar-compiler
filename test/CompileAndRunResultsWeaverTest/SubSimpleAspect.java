@@ -1,6 +1,6 @@
 package generated;
 
-crosscutting public class SubSimpleAspect extends SimpleAspect {
+public class SubSimpleAspect extends SimpleAspect {
 
 /*	before() : callMethod() {
 		System.out.println("SubSimpleAspect: Before " + thisJoinPoint.toString());

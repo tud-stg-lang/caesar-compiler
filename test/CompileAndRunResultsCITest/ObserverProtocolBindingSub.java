@@ -1,6 +1,6 @@
 package generated;
 
-public crosscutting clean class ObserverProtocolBindingSub extends ObserverProtocolBinding
+public clean class ObserverProtocolBindingSub extends ObserverProtocolBinding
 {
 	public ObserverProtocolBindingSub(String a)
 	{

@@ -31,14 +31,14 @@ public class CaesarTestCase_0 extends TestCase {
 		result.append(":foo");
 	}
 
-	crosscutting class InnerAspect {
+	class InnerAspect {
 	    pointcut fooCall() : call(* CaesarTestCase_0.foo());
 	
 	    before() : fooCall() {
 		result.append(":before foo");	
 	    }
 	}
-	crosscutting class InnerAspect_Sub extends InnerAspect {
+	class InnerAspect_Sub extends InnerAspect {
 before() : fooCall() {
 		    //			result.append(":subbefore foo");	
 		}

@@ -28,7 +28,7 @@ public class CaesarTestCase_3 extends TestCase {
 	}
 }
 
-abstract crosscutting class AbstractAspect_3 {
+abstract class AbstractAspect_3 {
 	abstract pointcut callFoo();
 	
 	before() : callFoo() {
@@ -36,6 +36,6 @@ abstract crosscutting class AbstractAspect_3 {
 	}
 }
 
-crosscutting class ConcreteAspect_3 extends AbstractAspect_3 {
+class ConcreteAspect_3 extends AbstractAspect_3 {
 	pointcut callFoo() : call(* CaesarTestCase_3.foo());
 }

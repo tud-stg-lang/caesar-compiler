@@ -33,7 +33,7 @@ public class CaesarTestCase_11 extends TestCase {
 
 }
 
-	abstract crosscutting class Aspect_11 {
+	abstract class Aspect_11 {
 		abstract pointcut execFoo(String s);
 	
 		before(String s) : execFoo(s) {
@@ -41,7 +41,7 @@ public class CaesarTestCase_11 extends TestCase {
 		}
 	}
 
-	crosscutting class Aspect_11a extends Aspect_11 {
+	class Aspect_11a extends Aspect_11 {
 		pointcut execFoo(String s) : execution(* CaesarTestCase_11.foo(String)) && args(s);
 	}
 

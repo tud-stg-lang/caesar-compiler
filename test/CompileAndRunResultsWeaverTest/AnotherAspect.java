@@ -1,6 +1,6 @@
 package generated;
 
-crosscutting public class AnotherAspect {
+public class AnotherAspect {
 
 	pointcut execMethod() : execution(* m(..));
 

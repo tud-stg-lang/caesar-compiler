@@ -19,7 +19,7 @@ public class KlausTest extends TestCase {
 
 
 
-crosscutting class FooAspect {
+class FooAspect {
 	private String s;
 	public FooAspect(String s) { 
 		this.s = s;
@@ -36,7 +36,7 @@ crosscutting class FooAspect {
  
 }
 
-crosscutting class FooAspect2 extends FooAspect {
+class FooAspect2 extends FooAspect {
 	public FooAspect2(String s) { 
 		super(s);
 	}

@@ -4,7 +4,7 @@ package generated;
  * A binding of MediatorProtocol
  * @author Walter Augusto Werner
  */
-public crosscutting class MediatorProtocolBinding 
+public class MediatorProtocolBinding 
   binds MediatorProtocol {
    
   public class MediatorBinding binds Mediator wraps Label

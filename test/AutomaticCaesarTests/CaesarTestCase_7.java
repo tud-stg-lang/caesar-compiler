@@ -56,7 +56,7 @@ class AnotherThread_7 extends Thread {
 	}
 }
 
-crosscutting class Aspect_7 {
+class Aspect_7 {
 
 	pointcut callFoo() : call(* CaesarTestCase_7.foo());
 

@@ -38,7 +38,7 @@ deployed class Ordering {
 }
 
 
-crosscutting class A_4 {
+class A_4 {
 
 	pointcut callFoo() : call(* CaesarTestCase_4.foo());
 
@@ -47,7 +47,7 @@ crosscutting class A_4 {
 	}
 }
 
-crosscutting class B_4 {
+class B_4 {
 
 	pointcut callFoo() : call(* CaesarTestCase_4.foo());
 
@@ -56,7 +56,7 @@ crosscutting class B_4 {
 	}
 }
 
-crosscutting class C_4 {
+class C_4 {
 
 	pointcut callFoo() : call(* CaesarTestCase_4.foo());
 

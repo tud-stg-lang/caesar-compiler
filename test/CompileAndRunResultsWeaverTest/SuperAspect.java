@@ -1,6 +1,6 @@
 package generated;
 
-crosscutting public class SuperAspect {
+public class SuperAspect {
 
 	pointcut execMethod() : execution(* m(..));
 

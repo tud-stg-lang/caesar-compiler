@@ -37,7 +37,7 @@ class World {
 
 }
 
-crosscutting class ReflectionAspect {
+class ReflectionAspect {
 	
 	pointcut methodCall(World w, StringBuffer b) : call(* m(..)) && target(w) && args(b);
 	

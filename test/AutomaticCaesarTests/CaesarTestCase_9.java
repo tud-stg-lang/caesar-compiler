@@ -53,7 +53,7 @@ class AnotherThread_9 extends CaesarThread {
 	}
 }
 
-crosscutting class Aspect_9 {
+class Aspect_9 {
 
 	pointcut callFoo() : call(* generated.CaesarTestCase_9.foo());
 

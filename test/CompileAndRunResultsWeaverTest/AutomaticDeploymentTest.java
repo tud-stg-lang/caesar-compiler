@@ -43,14 +43,14 @@ public class AutomaticDeploymentTest extends TestCase {
 	}
 }
 
-crosscutting class AutomaticDeploymentTestSuperAspect {
+class AutomaticDeploymentTestSuperAspect {
 	pointcut execMethod(StringBuffer buffer) : execution(
 		* automaticDeploymentTestMethod(..))
 		&& args(buffer);
 
 }
 
-crosscutting class AutomaticDeploymentTestAspect
+class AutomaticDeploymentTestAspect
 	extends AutomaticDeploymentTestSuperAspect {
 
 	pointcut callMethod(StringBuffer buffer) : call(
@@ -63,7 +63,7 @@ crosscutting class AutomaticDeploymentTestAspect
 
 }
 
-crosscutting class AutomaticDeploymentTestSubAspect extends AutomaticDeploymentTestAspect {
+class AutomaticDeploymentTestSubAspect extends AutomaticDeploymentTestAspect {
 	after(StringBuffer b) : execMethod(b) {
 		b.append("after : " + thisJoinPoint.toString());
 	}

@@ -48,7 +48,7 @@ public class CaesarTestCase_5 extends TestCase {
 
 }
 
-crosscutting class Aspect_5 {
+class Aspect_5 {
 
 	pointcut callFoo() : call(* CaesarTestCase_5.foo());
 

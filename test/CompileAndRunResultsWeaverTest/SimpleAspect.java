@@ -1,6 +1,6 @@
 package generated;
 
-public crosscutting class SimpleAspect /* extends SuperAspect*/ {
+public class SimpleAspect /* extends SuperAspect*/ {
 
 	pointcut callMethod(int i) : call(* m(..)) && args(i);
 

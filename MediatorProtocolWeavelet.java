@@ -1,5 +1,5 @@
 package generated;
 
-public crosscutting class MediatorProtocolWeavelet
+public class MediatorProtocolWeavelet
   extends MediatorProtocol(MediatorProtocolImpl, MediatorProtocolBinding) {
 }

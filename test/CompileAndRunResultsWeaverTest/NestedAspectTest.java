@@ -19,7 +19,7 @@ public class NestedAspectTest extends TestCase {
 		System.out.println("NestedAspectTest: m");
 	}
 
-	crosscutting public class NestedAspect {
+	public class NestedAspect {
 		pointcut callMethod() : call(* xyz(..));
 		
 		before() : callMethod() {
