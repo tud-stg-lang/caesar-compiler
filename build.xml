@@ -89,7 +89,7 @@
   				${libs}/caesarruntime.jar;
   				${libs}/junit.jar;
   				${libs}/cjbuildtools.jar"
-  		 destdir="bin" listfiles="true" failonerror="true">
+  		 destdir="bin" listfiles="true" failonerror="true" debug="on">
   		<exclude name="org/caesarj/test/**"/>
  	</javac>
  </target>
