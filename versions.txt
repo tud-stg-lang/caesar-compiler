@@ -1,3 +1,14 @@
+VC_11 - 13.08.2004
+- Aspect deployment
+    - Old "deploy" block translation restored. DeploySupport class used again. 
+      "deploy" blocks ignore null pointers as well as non-Caesar objects.
+    - "$deploy" method functionality of aspect classes is moved to "$delploy" of
+      Registry classes and ThreadMapper classes, because apect class cannot instantiate
+      correctly deployment support classes for all registries on which they are deployed.
+- Examples
+    - Pricing example ported to 0.3.0
+    - Observer example porter to 0.3.0
+
 VC_10 - 10.08.2004
 - Mixin generator
 	- Hardcoded output path for generated mixins is replaced by compiler destination path
