@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JReturnStatement.java,v 1.6 2005-02-12 17:57:20 aracic Exp $
+ * $Id: JReturnStatement.java,v 1.7 2005-02-21 15:18:27 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -37,6 +37,7 @@ import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CInitializerContext;
 import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.family.ContextExpression;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CReferenceType;
@@ -113,12 +114,17 @@ public class JReturnStatement extends JStatement {
 	    KjcMessages.RETURN_BADTYPE, expr.getType(factory), returnType);
       
 //    IVICA: check family, return type is a caesar type and we are not in the factory method
-      if(
-          returnType.isCaesarReference() 
-          && !context.getMethodContext().getMethodDeclaration().getMethod().isCaesarFactoryMethod()
-          && !context.getMethodContext().getMethodDeclaration().getMethod().isCaesarAccessorMethod()
-      ) {
-          try {
+      try {
+          
+          CMethod method = context.getMethodContext().getMethodDeclaration().getMethod();
+          
+	      if(
+	          // CRITICAL: better check if the method is synthetic
+	          returnType.isCaesarReference() 
+	          && !method.isCaesarFactoryMethod()
+	          && !method.isCaesarAccessorMethod()
+	          && !method.isCaesarWrapperSupportMethod()
+	      ) {
 	            Path rFam = expr.getFamily();
 	            Path lFam = ((CReferenceType)returnType).getPath();
 	            System.out.println("RETURN STATEMENT (line "+getTokenReference().getLine()+"):");
@@ -149,10 +155,10 @@ public class JReturnStatement extends JStatement {
 	                throw new InconsistencyException("(error required here)... trying to assign an object with family to an object without family");
 	            }
           }
-          catch (UnpositionedError e) {
-              throw e.addPosition(getTokenReference());
-          }
       }
+      catch (UnpositionedError e) {
+          throw e.addPosition(getTokenReference());
+      }      
       
       expr = expr.convertType(expressionContext, returnType);
     } else {
