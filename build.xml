@@ -1,44 +1,89 @@
 <?xml version="1.0"?>
-<project name="Caesar" default="generate" basedir=".">
-  <description>Caesar Collaboration Interfaces compiler</description>
-  <!-- set global properties for this build -->
-  <property name="compiler.files" location="cc"/>
-  <property name="kopi.home" location="${user.home}/java/kopi-2.1B"/>
-  <property name="kopi.classroot" location="${kopi.home}/classes"/>
-  <property name="java.sdk.home" location="${java.home}/.."/>
+<!-- 
+ Created on 07.01.2003, Karl Klose
+ NOTE: <Java-SDK dir>/lib/tools.jar must be in the classpath of this script in order
+ to find the java compiler. -->
+
+<project name="Caesar" default="complete" basedir=".">
+ <description>
+  Buildfile for the CaesarJ project. 
+  Generates scanner+parser and compiles the source.
+ </description>
+ 
+ <!-- Define global properties -->
+ <property name="source" location="src/org/caesarj"/>
+ <property name="packageBase" location="${basedir}/src"></property>
+ <property name="inputFiles" location="${basedir}/cc"></property>
+ <property name="libs" location="lib"/>
+ 
+ <!-- Compile-only target -->
+ <target name="compile" description="compile the source files"
+ 	depends="scanner, parser">
+  <javac srcdir="src"
+  		 classpath="${packageBase};
+  				lib/aspectjtools.jar;
+  				lib/java-getopt-1.0.9.jar;
+  				lib/bcel.jar;lib/aspectjrt.jar;
+  				lib/caesarruntime.jar;lib/junit.jar"
+  		 destdir="bin" listfiles="true"/>
+ </target>
+ 
+ <!-- Target for generating the scanner -->
+ <target name="scanner" description="Generate the scanner using JFlex">
+
+  <!-- 1. TOKDEF: Translates Caesar.t into CaesarTokenTypes.java & .txt.
+  		These files are then copied into the compiler dir.  -->
+  <echo message="TOKDEF"/>
+  <java 
+   		classname="org.caesarj.compiler.tools.lexgen.Main"
+        classpath="bin;${libs}/java-getopt-1.0.9.jar">
+   <arg value="-ditf"/>
+   <arg value="${inputFiles}/caesar.t"/>
+  </java>
+
+  <!-- 2. LEXINC: Creates the .flex file -->
+  <echo message="LEXINC"/>
+  <java classname="org.caesarj.compiler.tools.include.Main"
+         classpath="bin;${libs}/java-getopt-1.0.9.jar">
+   <arg value="${inputFiles}/Caesar.flex.in"/>
+   <arg value="-o"/>
+   <arg value="${inputFiles}/Caesar.flex"/>  
+  </java>  
   
-  <taskdef name="refreshLocal" 
-     classname="org.eclipse.core.resources.ant.RefreshLocalTask"/>
+  <!-- 3. JFLEX: Creates CaesarScanner.java&FlexRules.txt from Caesar.flex -->
+  <echo message="JFLEX"/>
+  <java classpath="lib/JFlex.jar" 
+ 		classname="JFlex.Main" 
+  		failonerror="false">
+  	<arg value="${inputFiles}/caesar.flex"/>
+ 	<arg value="-skel"/>
+ 	<arg value="${inputFiles}/skeleton.shared"/>
+   	<arg value="-d"/>
+  	<arg value="${source}/compiler"/>
+  </java>
+ </target>
+ 
+ <!-- Target for generating the parser -->
+ <target name="parser" description="Generating parser using ANTLR">
+  <!--  Translate Caesar.g into CaesarParsar.
+  		(The task is forced to set the working appropriate working directory because
+  		JFlex doesn't correctly handle a given output path)  -->
+  <java 
+  		fork="true"
+  		dir="${source}/compiler"
+  		classname="org.caesarj.compiler.tools.antlr.compiler.Main"
+ 		classpath="bin;${libs}/java-getopt-1.0.9.jar">
+   	<arg value="${inputFiles}/Caesar.g"/>
+  </java>
+  
 
-  <target name="generate" description="Generates the compiler files." >
-    <copy todir="${kopi.home}/src/caesar/">
-      <fileset dir="${compiler.files}" >
-        <include name="**/*.*"/>
-      </fileset>
-    </copy>  
-    <copy todir="${kopi.classroot}">
-      <fileset dir="${basedir}/bin">
-        <exclude name="*CVS*"/>
-      </fileset>
-    </copy>
-    <copy todir="${kopi.classroot}/org/caesarj/compiler" 
-          file="${compiler.files}/skeleton.shared" />
-    
-    <exec executable="make" dir="${kopi.home}/src" 
-          failonerror="true">
-      <env key="CLASSPATH" path="${kopi.classroot}:${basedir}/lib/JFlex.jar:${basedir}/lib/java-getopt-1.0.9.jar:${basedir}/lib/aspectjtools.jar"/>
-      <env key="CLASSROOT" path="${kopi.classroot}"/>
-      <env key="JAVA" path="${java.sdk.home}/bin/java"/>
-      <env key="JAVAC" path="${java.sdk.home}/bin/javac"/>
-    </exec>
-
-    <copy todir="${basedir}/src/org/caesarj/compiler">
-      <fileset dir="${kopi.home}/src/caesar" >
-        <include name="**/*.java"/>
-      </fileset>
-    </copy>
-    
-    <refreshLocal resource="Caesar/src"/>
-
-  </target>
+ </target>
+ 
+ <!-- The complete building target -->
+ <target name="complete" description="do complete build">
+  <!-- Compile will call the parser&scanner targets due to
+   		its depends-attribute -->
+  <antcall target="compile"/>
+ </target>
+ 
 </project>
