@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.40 2004-03-25 15:58:38 aracic Exp $
+ * $Id: Caesar.g,v 1.41 2004-04-05 15:14:30 aracic Exp $
  */
 
 /*
@@ -475,7 +475,7 @@ jSuperClassClause []
 
 
 jCSuperClassClause []
-  returns [CCompositeType self = null]
+  returns [CReferenceType self = null]
 {
   CReferenceType	name;
   ArrayList	container = new ArrayList();
@@ -487,10 +487,15 @@ jCSuperClassClause []
   	name = jTypeName[] { container.add(name); }
   )*
   {
-  	self = 
-  		new CCompositeType(
-	  		(CReferenceType[])container.toArray(new CReferenceType[container.size()])
-	  	);
+  	if(container.size() > 1) {
+	  	self = 
+	  		new CCompositeType(
+		  		(CReferenceType[])container.toArray(new CReferenceType[container.size()])
+		  	);
+	}
+	else {
+		self = (CReferenceType)container.get(0);
+	}
   }
 ;
 

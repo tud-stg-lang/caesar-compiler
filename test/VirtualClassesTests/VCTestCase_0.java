@@ -3,11 +3,8 @@ package generated;
 import junit.framework.TestCase;
 import java.util.LinkedList;
 
-/**
- * Simple Parser Test
- * Parsing A&B - Supertype
- */
-public cclass VCTestCase_0 extends TestCase & String & LinkedList {
+
+public class VCTestCase_0 extends TestCase {
 
 	public VCTestCase_0() {
 		super("test");
@@ -16,17 +13,33 @@ public cclass VCTestCase_0 extends TestCase & String & LinkedList {
 	public StringBuffer result = new StringBuffer();
 
 	public void test() {
-        // call String.length
-        int len = length();
+        B b = new B_Impl();
+        A a = b;
         
-        // call List add
-        add(0, new Object());
+        System.out.println(a.a());
+        System.out.println(b.a());
+        System.out.println(b.b());   
 	}
 
 }
 
-public class A {
+public cclass A {
+    public String a() {
+        return "A.a";
+    }
 }
 
-public class B extends A {
+public cclass B extends A {
+    public String b() {
+        return "B.b";
+    }
 }
+
+/*
+public cclass C extends A&B {
+    public void c() {
+        a();
+        b();
+    }
+}
+*/

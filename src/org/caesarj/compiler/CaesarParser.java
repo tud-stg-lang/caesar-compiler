@@ -1379,10 +1379,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		match(RCURLY);
 	}
 	
-	private final CCompositeType  jCSuperClassClause(
+	private final CReferenceType  jCSuperClassClause(
 		
 	) throws RecognitionException, TokenStreamException {
-		CCompositeType self = null;
+		CReferenceType self = null;
 		
 		
 		CReferenceType	name;
@@ -1414,10 +1414,15 @@ private static final int MAX_LOOKAHEAD = 2;
 		}
 		if ( inputState.guessing==0 ) {
 			
-				self = 
-					new CCompositeType(
-				  		(CReferenceType[])container.toArray(new CReferenceType[container.size()])
-				  	);
+				if(container.size() > 1) {
+				  	self = 
+				  		new CCompositeType(
+					  		(CReferenceType[])container.toArray(new CReferenceType[container.size()])
+					  	);
+				}
+				else {
+					self = (CReferenceType)container.get(0);
+				}
 			
 		}
 		return self;

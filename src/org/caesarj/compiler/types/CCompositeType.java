@@ -15,27 +15,27 @@ public class CCompositeType extends CClassNameType {
 
     // CTODO
     public CCompositeType(CReferenceType refType[]) {
-        super("<gen>");        
+        super("<gen>");
         this.refType = refType;
     }
     
-    public CType checkType(CTypeContext context) throws UnpositionedError {
+    
+	public CType checkType(CTypeContext context) throws UnpositionedError {
         CReferenceType refTypeCopy[] = new CReferenceType[refType.length];
         CClass classes[] = new CClass[refType.length];
         
+
+        /*        
         for(int i=0; i<refType.length; i++) {
             refTypeCopy[i] = (CReferenceType)refType[i].checkType(context);
             classes[i] = refTypeCopy[i].getCClass();            
         }
         
         // merge all classes here to one and map to final class name        
-		try {
-            CClass mixedClass = ExportMixer.instance().mix(classes);
-            return new CComposite2Type(mixedClass, refTypeCopy);
-		} 
-        catch (ExportMixerException e) {
-			throw new UnpositionedError(CaesarMessages.FORMATTED_ERROR, e.getMessage());
-		}               
+        CClass mixedClass = ExportMixer.instance().mix(classes);
+        return new CComposite2Type(mixedClass, refTypeCopy);
+        */
+        return null;
     }
 
     // --------------------------------------------------------------

@@ -12,6 +12,7 @@ import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
+import org.caesarj.compiler.cclass.CClassPreparation;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
@@ -98,6 +99,8 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 
         JCompilationUnit[] tree = parseFiles(environment);
         if (errorFound) return false;
+        
+        prepareCaesarClasses(environment, tree);
         
         prepareJoinpointReflection(tree);
         
@@ -210,6 +213,17 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
         for (int i = 0; i < tree.length; i++) {
             JCompilationUnit cu = tree[i];
             DeploymentPreparation.prepareForDynamicDeployment(environment, cu);
+
+        }
+    }
+
+    protected void prepareCaesarClasses(
+        KjcEnvironment environment,
+        JCompilationUnit[] tree) {
+        //Modify and generate support classes for dynamic deployment.
+        for (int i = 0; i < tree.length; i++) {
+            JCompilationUnit cu = tree[i];
+            CClassPreparation.instance().prepareCaesarClass(environment, cu);
 
         }
     }
