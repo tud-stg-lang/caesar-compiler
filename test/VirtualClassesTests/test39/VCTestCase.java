@@ -14,6 +14,8 @@ public class VCTestCase extends TestCase {
 		super("test");
 	}
 
+	public static final String expectedResult = "RoleB<RoleA[RoleA:0(ClassA)]; RoleA:0(ClassA)";
+
 	public void test() {
 		System.out.println("-------> VCTest 39: Wrapper test: start");
 
@@ -26,6 +28,8 @@ public class VCTestCase extends TestCase {
 		String result = db.getId() + "; " + db.getA().getId();
 		System.out.println(result);
 
+		assertEquals(expectedResult, result);
+
         System.out.println("-------> VCTest 39: end");
 	}
 }
@@ -34,7 +38,7 @@ public class ClassA
 {
 	public String getId()
 	{
-		return "A.A";
+		return "ClassA";
 	}
 }
 
@@ -49,7 +53,7 @@ public class ClassB
 
 	public String getId()
 	{
-		return "B.B";
+		return "ClassB";
 	}
 
 	public ClassA getA()
@@ -64,7 +68,7 @@ public cclass ModelA
 	{
 		public String getId()
 		{
-			return "A.A.A";
+			return "RoleA";
 		}
 	}
 
@@ -72,7 +76,7 @@ public cclass ModelA
 	{
 		public String getId()
 		{
-			return "A.B.A, " + super.getId();
+			return "RoleB<" + super.getId();
 		}
 
 		public ModelA.RoleA getA()
@@ -100,7 +104,7 @@ public cclass ModelB extends ModelA
 
 		public String getId()
 		{
-			return super.getId() + ":" + _id + ", " + $wrappee.getId();
+			return super.getId() + ":" + _id + "(" + $wrappee.getId() + ")";
 		}
 	}
 
@@ -119,8 +123,8 @@ public cclass ModelC extends ModelA
 	{
 		public String getId()
 		{
-			return super.getId() + ", "
-				   + getA().getId();
+			return super.getId() + "["
+				   + getA().getId() + "]";
 		}
 	}
 }
