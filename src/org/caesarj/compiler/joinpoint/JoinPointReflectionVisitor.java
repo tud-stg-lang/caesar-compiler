@@ -159,7 +159,7 @@ public class JoinPointReflectionVisitor implements IVisitor, CaesarConstants  {
 	 * Creates static initalization block:
 	 * 
 	 * {
-	 *    <field>.$deploySelf(java.lang.Thread.currentThread());
+	 *    DeploySupport.deployBlock(<field>);
 	 * }
 	 * 
 	 */
@@ -168,29 +168,19 @@ public class JoinPointReflectionVisitor implements IVisitor, CaesarConstants  {
 		CjClassDeclaration classDeclaration,
 		JFieldDeclaration fieldDeclaration) {
 
-		JExpression fieldExpr =
-			new JNameExpression(
-				where,
-				null,
-				fieldDeclaration.getVariable().getIdent());
+		JExpression prefix =
+            new JTypeNameExpression(
+                where,
+                new CClassNameType(CAESAR_DEPLOY_SUPPORT_CLASS));
 
-		JExpression threadPrefix =
-			new JTypeNameExpression(
-				where,
-				new CClassNameType(QUALIFIED_THREAD_CLASS));
+        JExpression deployStatementCall =
+            new JMethodCallExpression(
+                where,
+                prefix,
+                "deployBlock",
+                new JExpression[] {new JNameExpression(where, fieldDeclaration.getVariable().getIdent())});
 
-		JExpression[] args =
-			{
-				new JMethodCallExpression(
-					where,
-					threadPrefix,
-					"currentThread",
-					JExpression.EMPTY)};
-
-		JExpression expr =
-			new JMethodCallExpression(where, fieldExpr, DEPLOY_SELF_METHOD, args);
-
-		JStatement[] body = { new JExpressionStatement(where, expr, null)};
+		JStatement[] body = { new JExpressionStatement(where, deployStatementCall, null) };
 
 		return new JClassBlock(where, true, body);
 	}

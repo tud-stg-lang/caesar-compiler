@@ -61,8 +61,6 @@ public class DeploymentPreparation implements CaesarConstants {
 
 					//add the deployment support classes to the enclosing class							
 					newTypeDeclarations.add(utils.createAspectInterface());
-					newTypeDeclarations.add(utils.createMultiInstanceAspectClass());
-					newTypeDeclarations.add(utils.createMultiThreadAspectClass());
 					newTypeDeclarations.add(utils.createSingletonAspect());
 				}
 
@@ -103,8 +101,6 @@ public class DeploymentPreparation implements CaesarConstants {
 
 					//add the deployment support classes to the enclosing class
 					newInners.add(utils.createAspectInterface());
-					newInners.add(utils.createMultiInstanceAspectClass());
-					newInners.add(utils.createMultiThreadAspectClass());
 					newInners.add(utils.createSingletonAspect());
 				}
 

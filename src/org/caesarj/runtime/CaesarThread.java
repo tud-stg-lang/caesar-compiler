@@ -3,6 +3,11 @@ package org.caesarj.runtime;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.caesarj.runtime.aspects.AspectContainerIfc;
+import org.caesarj.runtime.aspects.AspectRegistryIfc;
+import org.caesarj.runtime.aspects.AspectThreadMapper;
+import org.caesarj.runtime.aspects.CompositeAspectContainer;
+
 /**
  * CaesarThread extends java.lang.Thread in order to make new threads
  * inherit the aspectual behaviour of the creating Thread instance.
@@ -55,23 +60,37 @@ public class CaesarThread extends Thread {
 		deployParentThreadInstances();
 	}
 
-
 	/**
 	 * Deploys all Instances of of the parent thread in the
 	 * new CaesarThread.
 	 */
 	protected void deployParentThreadInstances() {
 
-		Set activeRegistries = (Set) AspectRegistry.threadLocalRegistries.get();
+		/* iterate through all registries, which have deployed objects on the thread */
+		Set activeRegistries = (Set) AspectRegistryIfc.threadLocalRegistries.get();
 		Iterator iterator = activeRegistries.iterator();
 		while (iterator.hasNext()) {
-			AspectRegistry currentRegistry = (AspectRegistry) iterator.next();
-			Deployable parentThreadInstances =
-				currentRegistry.$getThreadLocalDeployedInstances();
-
-			currentRegistry.$deploy(parentThreadInstances, this);
+			AspectRegistryIfc currentRegistry = (AspectRegistryIfc) iterator.next();
+			
+			AspectContainerIfc cont = currentRegistry.$getAspectContainer();
+			AspectThreadMapper threadMapper = null;
+			
+			/* find thread mapper */
+			if (cont != null) {
+				if (cont.$getContainerType() == AspectContainerIfc.THREAD_MAPPER) {
+					threadMapper = (AspectThreadMapper)cont;
+				}
+				else if (cont.$getContainerType() == AspectContainerIfc.COMPOSITE_CONTAINER) {
+					CompositeAspectContainer composite = (CompositeAspectContainer)cont;
+					threadMapper = (AspectThreadMapper)composite.findContainer(AspectContainerIfc.THREAD_MAPPER);
+				}
+			}
+			
+			if (threadMapper != null) {
+				/* copy deployed instances of parent thread */
+				threadMapper.copyObjects(Thread.currentThread(), this);				
+			}
 		}
-
 	}
 
 }
