@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JClassDeclaration.java,v 1.25 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JClassDeclaration.java,v 1.26 2005-02-16 16:34:22 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -258,15 +258,15 @@ public class JClassDeclaration extends JTypeDeclaration {
                 KjcMessages.CLASS_CIRCULARITY,
                 ident);
         }
-        super.checkInterface(context, getSuperClass());
+        
+        super.checkInterface(context, getSuperClass());       
 
         // add outer this to innner types
         for (int k = 0; k < inners.length; k++) {
             if (!inners[k].getCClass().isStatic()) {
-                inners[k].addOuterThis();
+                inners[k].addOuterThis(context);
             }
         }
-        
     }
 
     /**
@@ -289,7 +289,7 @@ public class JClassDeclaration extends JTypeDeclaration {
             && getOwner().getCClass().isClass()
             && !getCClass().isStatic()
             && !context.isStaticContext()) {
-            addOuterThis();
+            addOuterThis(context);
         }
         try {
             CVariableInfo instanceInfo = null;

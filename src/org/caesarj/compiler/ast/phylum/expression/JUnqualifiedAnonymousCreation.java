@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JUnqualifiedAnonymousCreation.java,v 1.7 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JUnqualifiedAnonymousCreation.java,v 1.8 2005-02-16 16:33:13 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -236,7 +236,7 @@ public class JUnqualifiedAnonymousCreation extends JExpression {
                 decl.getCClass().getModifiers() | ACC_STATIC);
         }
         else {
-            decl.addOuterThis();
+            decl.addOuterThis(context);
         }
 
         decl.checkInitializers(context);
