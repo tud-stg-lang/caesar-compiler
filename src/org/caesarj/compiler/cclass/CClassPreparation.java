@@ -122,24 +122,37 @@ public class CClassPreparation implements CaesarConstants {
         
         Collection typesToGenerate = caesarTypeSystem.getJavaGraph().getTypesToGenerate();        
         
+        HashSet visited = new HashSet();
+        
         for (Iterator it = typesToGenerate.iterator(); it.hasNext();) {
             JavaTypeNode item = (JavaTypeNode) it.next();
             
-            if(!isAlreadyGenerated(item, context)) {
-                CClass clazz = generateCClass(item, context);
-                item.setCClass(clazz);
-            }
+            CClass clazz = generateCClass(visited, item, context);
+            item.setCClass(clazz);
         }
     }
     
-    public boolean isAlreadyGenerated(JavaTypeNode item, CContext context) {
-        return context.getClassReader().hasClassFile(item.getQualifiedName().toString());   
-    }
-    
-    public CClass generateCClass(JavaTypeNode node, CContext context) {
+    public CClass generateCClass(Set visited, JavaTypeNode node, CContext context) {
         // CTODO we need binary/source flag for CaesarTypeNode
         // for now consider everything as non-binary
-        try {
+        try {        
+            
+            if(node.getParent() == null) {
+                return 
+                    context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT).getCClass();
+            }
+            
+            if(visited.contains(node)) { 
+                return
+                    context.getClassReader().loadClass(
+                        context.getTypeFactory(),
+                        node.getQualifiedName().toString()
+                    );
+            }
+
+            visited.add(node);
+            
+            
             // get mixin export
             CReferenceType mixinType = 
                 context.getTypeFactory().createType(node.getMixin().getQualifiedImplName().toString(), false);
@@ -150,12 +163,8 @@ public class CClassPreparation implements CaesarConstants {
             // find owner
             CClass owner = null;
             JavaTypeNode outer = node.getOuter();
-            if(outer != null) {
-                CReferenceType ownerType = 
-                    context.getTypeFactory().createType(outer.getType().getQualifiedImplName().toString(), false);
-                
-                ownerType = (CReferenceType)ownerType.checkType(context);
-                owner = ownerType.getCClass();                
+            if(outer != null) {                
+                owner = generateCClass(visited, outer, context);
             }
                         
             CSourceClass sourceClass = new CSourceClass(
@@ -170,32 +179,17 @@ public class CClassPreparation implements CaesarConstants {
                 null // CTODO: declaration unit is null?
             );
 
+            
             // generate super type
             JavaTypeNode itemParent = node.getParent();
-            CReferenceType superClass = null;
-            if(itemParent != null) {
-                if(
-                    itemParent.isToBeGeneratedInBytecode() && 
-                    !isAlreadyGenerated(itemParent, context)
-                ) {
-                    superClass = 
-                        generateCClass(itemParent, context).getAbstractType();
-                }
-                else {
-                    superClass = 
-                        context.getTypeFactory().createType(
-                            itemParent.getQualifiedName().toString(), false
-                        );
-                }
-            }
-            else {
-                superClass = 
-                    context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT);
-            }
+
+            CReferenceType superClass = 
+                generateCClass(visited, itemParent, context).getAbstractType();
             
             superClass = (CReferenceType)superClass.checkType(context);
             
-
+            
+            // generate methods
             CMethod mixinMethods[] = mixinClass.getMethods();
             CMethod methods[] = new CMethod[mixinMethods.length];
             for (int i = 0; i < methods.length; i++) {

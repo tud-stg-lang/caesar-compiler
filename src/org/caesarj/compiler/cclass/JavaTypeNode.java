@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
@@ -71,10 +72,14 @@ public class JavaTypeNode {
     }
 
     public void debug(int level) {
-        for(int i=0; i<level; i++)
-            System.out.print('\t');
+
+        System.out.print("("+id+") ");
         
+        for(int i=0; i<level; i++)
+            System.out.print("  ");
+         
         System.out.println(this);
+        System.out.println();
         
         for (Iterator it = subNodes.values().iterator(); it.hasNext();) {
             JavaTypeNode item = (JavaTypeNode) it.next();
@@ -89,38 +94,36 @@ public class JavaTypeNode {
         
     public String toString() {
         StringBuffer res = new StringBuffer();
-        res.append('{');
-        res.append(id);        
-        res.append("}");
 
-        res.append(" [");
+        res.append(" [T:");
+        res.append(type!=null ? type.getQualifiedName().toString() : "---");
+        res.append("]"); 
+
+        res.append(" [M:");
+        res.append(!(type!=null && type.isImplicit()) ? getQualifiedMixinName().toString() : "---");
+        res.append("]");
+                       
+        res.append(" [QN:");
+        res.append(getQualifiedName());
+        res.append("]");
+
+        res.append(" [F:");
         res.append(isToBeGeneratedInBytecode() ? 'G' : '-');
         res.append(isToBeGeneratedInAst() ? 'I' : '-');
         res.append("]");
         
-        res.append(" [M:");
-        res.append(!(type!=null && type.isImplicit()) ? getQualifiedMixinName().toString() : "---");
-        res.append("]");
-        
-        res.append(" [T:");
-        res.append(type!=null ? type.getQualifiedName().toString() : "---");
-        res.append("]"); 
-               
         res.append(" [Orig:");
         if(original != null)
             res.append(original.getId());
         else
             res.append('-');
-        res.append("; Outer:");
+        res.append("] [Outer:");
         if(outer != null)
             res.append(outer.getId());
         else
             res.append('-');
         res.append("]");
-        
-        res.append(" QN: ");
-        res.append(getQualifiedName());
-        
+                
         
         return res.toString();
     }
@@ -130,7 +133,7 @@ public class JavaTypeNode {
     }
 
     public void setType(CaesarTypeNode type) {
-        this.compilationGraph.registerJavaType(type, this);
+        this.compilationGraph.registerJavaType(type, this);        
         this.type = type;
     }
     
@@ -142,7 +145,7 @@ public class JavaTypeNode {
         return type != null && type.isImplicit();
     }
 
-    public void calculateMixinCopyDependencies() {       
+    public void genMixinCopyDependencies() {       
         if(this.isToBeGeneratedInBytecode()) {
             JavaTypeNode compilationNode = 
                 compilationGraph.getOriginalMixin(getQualifiedMixinName());
@@ -154,7 +157,7 @@ public class JavaTypeNode {
 
         for (Iterator it = subNodes.values().iterator(); it.hasNext();) {
             JavaTypeNode compilationNode = (JavaTypeNode) it.next();
-            compilationNode.calculateMixinCopyDependencies();
+            compilationNode.genMixinCopyDependencies();
         }
     }
     
@@ -166,36 +169,72 @@ public class JavaTypeNode {
     public CaesarTypeNode getMixin() {
         return mixin;
     }
-
-    public void calculateOuterAndQualifiedName() {
-        
+    
+    public void genOuterAndQualifiedNames() {
         if(parent == null) {
             this.qualifiedName = new JavaQualifiedName("java/lang/Object");
+            this.outer = null;
         }
         else if(type != null) {
             this.qualifiedName = type.getQualifiedImplName();
             
             if(type.getOuter() != null)
-                this.outer = compilationGraph.getJavaTypeNode(type.getOuter()); 
+                this.outer = compilationGraph.getJavaTypeNode(type.getOuter());
         }
         else {
-            // calc outer
-            if(mixin.getOuter() != null) {
-                this.outer = compilationGraph.getJavaTypeNode(mixin.getOuter());                
+            this.qualifiedName = null;
+            this.outer = null;
+        }
+        
+        for (Iterator it = subNodes.values().iterator(); it.hasNext();) {
+            JavaTypeNode item = (JavaTypeNode) it.next();
+            item.genOuterAndQualifiedNames();
+        }
+    }
+
+    public void genOuterAndQNForGeneratedTypes(Set visited) {
+        
+        if(visited.contains(this))
+            return;
+        
+        if(isToBeGeneratedInBytecode()) {
+            /*
+             * calc outer
+             */ 
+            if(mixin.getOuter() != null) {   
+                this.outer = compilationGraph.getJavaTypeNode(mixin.getOuter());
                 this.outer = getMostSpecificOuter(this.outer);
+                
+                Collection leafs = new LinkedList();
+                this.collectLeafs(leafs);
+                
+                JavaTypeNode n = (JavaTypeNode)leafs.iterator().next();
+                JavaTypeNode nOuter = n.getOuter();
+                
+                while(nOuter != null) {
+                    if(outer.getMixin().equals(nOuter.getMixin())) {
+                        this.outer = nOuter;
+                        break;
+                    }
+                    nOuter = nOuter.getParent();
+                }
             }
             
-            // and then calc the qualified name
+            
+            /*
+             * calc the qualified name
+             */ 
             StringBuffer qualifiedName = new StringBuffer();
             if(this.outer != null) {
-                qualifiedName.append(this.outer.getType().getQualifiedImplName().toString());
+                this.outer.genOuterAndQNForGeneratedTypes(visited);
+                qualifiedName.append(this.outer.getQualifiedName().toString());
                 qualifiedName.append('$');
             }
             else {
                 qualifiedName.append(mixin.getQualifiedName().getPackagePrefix());
             }
             
-
+    
             String genHashCode = 
                 NameGenerator.generateHashCode(
                     parent.getQualifiedName().toString()+
@@ -207,10 +246,13 @@ public class JavaTypeNode {
             
             this.qualifiedName = new JavaQualifiedName(qualifiedName.toString());
         }
+    
+        
+        visited.add(this);
         
         for (Iterator it = subNodes.values().iterator(); it.hasNext();) {
             JavaTypeNode item = (JavaTypeNode) it.next();
-            item.calculateOuterAndQualifiedName();
+            item.genOuterAndQNForGeneratedTypes(visited);
         }
     }
     
@@ -246,22 +288,38 @@ public class JavaTypeNode {
         return parent;
     }
 
-    public void getTypesToGenerate(Collection res) {
+    public boolean isLeaf() {
+        return subNodes.size() == 0;
+    }
+    
+    public void collectLeafs(Collection res) {
+        if(isLeaf()) {
+            res.add(this);
+        }
+        else {
+            for (Iterator it = subNodes.values().iterator(); it.hasNext();) {
+                JavaTypeNode item = (JavaTypeNode) it.next();
+                item.collectLeafs(res);
+            }
+        }
+    }
+    
+    public void collectGeneratedTypes(Collection res) {
         if(isToBeGeneratedInBytecode())
             res.add(this);
         
         for (Iterator it = subNodes.values().iterator(); it.hasNext();) {
             JavaTypeNode item = (JavaTypeNode) it.next();
-            item.getTypesToGenerate(res);
+            item.collectGeneratedTypes(res);
         }
     }
 
-    public void getAllTypes(Collection res) {        
+    public void collectAllTypes(Collection res) {        
         res.add(this);
         
         for (Iterator it = subNodes.values().iterator(); it.hasNext();) {
             JavaTypeNode item = (JavaTypeNode) it.next();
-            item.getAllTypes(res);
+            item.collectAllTypes(res);
         }
     }
 

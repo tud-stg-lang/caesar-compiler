@@ -2,6 +2,7 @@ package org.caesarj.compiler.cclass;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,12 +64,10 @@ public class JavaTypeGraph {
                 current.setType(t);
             }
         }
-        
-        // add dependencies between mixin original and copies
-        root.calculateMixinCopyDependencies();
-
-        // calculate names        
-        root.calculateOuterAndQualifiedName();
+                
+        root.genMixinCopyDependencies();        
+        root.genOuterAndQualifiedNames();
+        root.genOuterAndQNForGeneratedTypes(new HashSet());
     }
     
     
@@ -93,7 +92,7 @@ public class JavaTypeGraph {
      */
     public Collection getTypesToGenerate() {
         Collection res = new LinkedList();
-        root.getTypesToGenerate(res);
+        root.collectGeneratedTypes(res);
         return res;
     }
 
@@ -102,7 +101,7 @@ public class JavaTypeGraph {
      */
     public Collection getAllTypes() {
         Collection res = new LinkedList();
-        root.getAllTypes(res);
+        root.collectAllTypes(res);
         return res;
     }
     
