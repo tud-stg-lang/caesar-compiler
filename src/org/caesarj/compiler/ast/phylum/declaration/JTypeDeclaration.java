@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.4 2004-04-15 15:06:40 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.5 2004-04-16 14:30:20 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -268,6 +268,15 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
 
         sourceClass.setInterfaces(interfaces);
     }
+
+    
+    // IVICA checkConstructorInterfaceOnly -> see CjClassDeclaration.checkConstructorInterfaceOnly for more Info
+    /**
+     * default impl. is empty for now
+     */
+    public void checkConstructorInterfaceOnly(CContext context) throws PositionedError {        
+    }
+
 
     /**
      * Second pass (quick), check interface looks good

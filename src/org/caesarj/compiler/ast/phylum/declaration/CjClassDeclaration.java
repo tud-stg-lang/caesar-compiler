@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.7 2004-04-15 15:06:40 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.8 2004-04-16 14:30:20 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -33,12 +33,14 @@ import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
 import org.caesarj.compiler.ast.visitor.KjcPrettyPrinter;
 import org.caesarj.compiler.ast.visitor.KjcVisitor;
 import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.*;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
+import org.caesarj.compiler.types.CCompositeType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.PositionedError;
@@ -499,6 +501,30 @@ public class CjClassDeclaration
     public String getOriginalIdent() {
         return originalIdent;
     }
+
+
+    // IVICA checkConstructorInterfaceOnly
+    /**
+     * this one generates only constructor information in 
+     * sourceClass, super type is set to Object
+     */    
+    public void checkConstructorInterfaceOnly(CContext context) throws PositionedError {
+        // TODO default constructor missing
+        CMethod methodList[] = new CMethod[methods.length];
+        for (int i = 0; i < methods.length; i++) {
+            methodList[i] = methods[i].checkInterface(self);
+            for (int j = 0; j < i; j++) {
+                check(
+                    context,
+                    !methodList[i].equals(methodList[j]),
+                    KjcMessages.METHOD_REDEFINE,
+                    methodList[i]);
+            }
+        }
+
+        sourceClass.close(this.interfaces, new Hashtable(), methodList);        
+    }
+
 
     /**
      * Resolves the binding and providing references. Of course it calls the

@@ -115,6 +115,8 @@ public class Main extends MainSuper implements Constants {
         joinAll(tree);                  
         if(errorFound) return false;
         
+        checkAllConstructorInterfaces(tree);
+        
         // CTODO prepareVirtualClasses: transform extends and generate factory methods
         
         
@@ -251,6 +253,19 @@ public class Main extends MainSuper implements Constants {
         }
         
         dependencyGraph.calculateLevels();
+    }
+
+    // IVICA 
+    protected void checkAllConstructorInterfaces(JCompilationUnit[] tree) {
+        try {
+            System.out.println("checkAllConstructorInterfaces");
+            for (int count = 0; count < tree.length; count++) {
+                tree[count].checkConstructorInterfaceOnly(this);        
+            }
+        }
+        catch (PositionedError e) {
+            reportTrouble(e);
+        }
     }
 
     /**
@@ -463,8 +478,7 @@ public class Main extends MainSuper implements Constants {
     }
 
     /**
-     * IVICA
-     * Performs weaving after compilation.
+     * IVICA Performs weaving after compilation.
      * 
      * @param factory
      */
