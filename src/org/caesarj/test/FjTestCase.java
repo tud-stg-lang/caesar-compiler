@@ -70,15 +70,30 @@ public class FjTestCase extends TestCase
 	 * Compiles and runs given test file in a separate package
 	 */
 	protected void compileAndRun(String pckgName, String testCaseName) throws Throwable {
-	    compileAndRun(pckgName, testCaseName, new String[0]);
+	    boolean success = compile(pckgName);
+	    
+	    assertTrue(success);
+
+	    log.info("Test starts: testing with Caesar compiled test");
+				
+		Object generatedTest = Class.forName( "generated." + pckgName + "."+ testCaseName ).newInstance();
+		((TestCase)generatedTest).runBare();
 	}
 	
-	protected void compileAndRun(String pckgName, String testCaseName, String compilerErrorsToCheck[]) throws Throwable 
-	{
+	protected void compileAndCheckErrors(String pckgName, String compilerErrorsToCheck[]) throws Throwable {
 	    // Clean up message list
 	    positionedErrorList.clear();
 	    unpositionedErrorList.clear();
 
+	    boolean success = compile(pckgName);
+	    
+	    log.info("Test starts: checking errors");
+	    
+	    assertTrue(!success);	    
+	}
+	
+	protected boolean compile(String pckgName) throws Throwable 
+	{
 		// Clean up output folder
 		removeClassFiles(pckgName);
 		
@@ -116,22 +131,7 @@ public class FjTestCase extends TestCase
 		String[] args = (String[])fileNames.toArray(new String[0]);
 		
 		// Compile test
-		boolean success = compiler.run(args);
-		
-		if(compilerErrorsToCheck.length > 0) {
-		    // test the errors here
-		    log.info("Test starts: checking errors");
-		    //checkErrors(compilerErrorsToCheck);
-		    assertTrue(!success);
-		}
-		else {
-		    assertTrue(success);
-			// Execute with Caesar compiled test itself
-		    log.info("Test starts: testing with Caesar compiled test");
-					
-			Object generatedTest = Class.forName( "generated." + pckgName + "."+ testCaseName ).newInstance();
-			((TestCase)generatedTest).runBare();
-		}
+		return compiler.run(args);
 	}	
 	
 	/**
