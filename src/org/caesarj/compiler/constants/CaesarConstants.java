@@ -21,8 +21,11 @@ public interface CaesarConstants extends Constants {
 	public static final String GET_DEPLOYMENT_THREAD_METHOD =
 		"$getDeploymentThread";
 
-	public static final String GET_SINGLETON_ASPECT_METHOD =
-		"$getSingletonAspect";
+	public static final String DEPLOY_SELF_METHOD =
+		"$deploySelf";
+	
+	public static final String UNDEPLOY_SELF_METHOD =
+		"$undeploySelf";
 
 	public static final String GET_DEPLOYED_INSTANCES_METHOD =
 		"$getDeployedInstances";
@@ -85,7 +88,7 @@ public interface CaesarConstants extends Constants {
 	public static final String JOIN_POINT_STATIC_PART_CLASS =
 		"org/aspectj/lang/JoinPoint$StaticPart";
 
-	public static final String CAESAR_ASPECT_IFC_CLASS =
+	public static final String CAESAR_DEPLOYABLE_IFC =
 		"org/caesarj/runtime/Deployable";
 
 	public static final String CAESAR_SINGLETON_ASPECT_IFC_CLASS =
@@ -96,6 +99,9 @@ public interface CaesarConstants extends Constants {
 
     public static final String CAESAR_ASPECT_IFC =  
         "org/caesarj/runtime/AspectIfc";
+    
+    public static final String CAESAR_OBJECT =  
+        "org/caesarj/runtime/CaesarObject";
 
 	//Caesar extension for the generated deployment support classes
 
