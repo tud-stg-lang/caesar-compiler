@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JCastExpression.java,v 1.5 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JCastExpression.java,v 1.6 2005-02-09 16:55:40 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -30,6 +30,7 @@ import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CNumericType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
@@ -83,6 +84,17 @@ public class JCastExpression extends JExpression {
 	dest = type;
   }
 
+  /**
+ *
+ */
+
+  public Path getFamily() {
+      return expr.getFamily();
+  }
+  public Path getThisAsFamily() {
+      return expr.getThisAsFamily();
+  }
+  
   // ----------------------------------------------------------------------
   // SEMANTIC ANALYSIS
   // ----------------------------------------------------------------------
