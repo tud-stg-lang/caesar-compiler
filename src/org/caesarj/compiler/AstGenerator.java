@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AstGenerator.java,v 1.5 2005-01-24 16:52:58 aracic Exp $
+ * $Id: AstGenerator.java,v 1.6 2005-02-21 15:15:57 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -108,6 +108,8 @@ public class AstGenerator {
 
 	        try {
 	            res = parser.jsMethodDefinition();
+	            buffer.close();
+	            f.delete();
 	        }
 	        catch (ParserException pe) {
 	            pe.printStackTrace();
@@ -145,6 +147,8 @@ public class AstGenerator {
 
 	        try {
 	            stmts = parser.jCompoundStatement();
+	            buffer.close();
+	            f.delete();
 	        }
 	        catch (ParserException pe) {
 	            pe.printStackTrace();
