@@ -20,13 +20,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarBcelWorld.java,v 1.8 2005-03-31 14:06:10 thiago Exp $
+ * $Id: CaesarBcelWorld.java,v 1.9 2005-04-05 16:51:43 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
 
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.caesarj.compiler.export.CClass;
 
@@ -36,6 +37,8 @@ import org.caesarj.compiler.export.CClass;
  * @author Jürgen Hallpap
  */
 public class CaesarBcelWorld /*extends BcelWorld */{
+	
+	private static final String REGISTRY_SUFFIX = "_Impl$Registry";
 
 	/* the wrapped instance */
 	private BcelWorldAdapter	theWorld;
@@ -114,6 +117,30 @@ public class CaesarBcelWorld /*extends BcelWorld */{
 	
 			return resolvedType;
 		}
+		
+
+		/**
+		 * Use declares to compare the precedence of two aspects
+		 */
+		public int compareByDominates(ResolvedTypeX aspect1, ResolvedTypeX aspect2) {
+			/* hack: try to take the original class name */
+			return super.compareByDominates(translateAspectType(aspect1), translateAspectType(aspect2));
+		}
+		
+		/**
+		 * Try to translate Registry class to the mixin name of the original aspect
+		 */
+		private ResolvedTypeX translateAspectType(ResolvedTypeX aspect) {
+			String regName = aspect.getName();
+			if (regName.endsWith(REGISTRY_SUFFIX)) {
+				String ifcName = regName.substring(0, regName.length() - REGISTRY_SUFFIX.length());
+				ResolvedTypeX ifcType = resolve(TypeX.forName(ifcName), true);
+				if (ifcType != ResolvedTypeX.MISSING) {
+					return ifcType;
+				}
+			}
+			return aspect;			
+		}
 	}
 
 	public void setXnoInline(boolean b) {
@@ -130,5 +157,4 @@ public class CaesarBcelWorld /*extends BcelWorld */{
 	public IMessageHandler getMessageHandler() {
 		return theWorld.getMessageHandler();
 	};
-
 }
