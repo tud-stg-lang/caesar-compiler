@@ -66,9 +66,9 @@ public class CjQualifiedInstanceCreation extends JExpression {
             );
             
             // convert to factory method
-            // a.new C() -> (STATIC_TYPE(a).C)a.$newC()
-            expr = new JMethodCallExpression(getTokenReference(), prefix, "$new"+ident, params);
-            expr = new JCastExpression(getTokenReference(), expr, returnClass.getAbstractType());
+            // a.new C() -> a.$newC()
+            expr = new CjMethodCallExpression(getTokenReference(), prefix, "$new"+ident, params);
+            //expr = new JCastExpression(getTokenReference(), expr, returnClass.getAbstractType());
         }
         else {
             // create normal qualified instance creation

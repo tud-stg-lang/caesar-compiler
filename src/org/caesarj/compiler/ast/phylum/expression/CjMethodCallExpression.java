@@ -98,8 +98,55 @@ public class CjMethodCallExpression extends JExpression implements CaesarConstan
             expr = new JMethodCallExpression(getTokenReference(), prefix, ident, args);
         }
 
-        return expr.analyse(context);
+        // analyse expression
+        expr = expr.analyse(context);
+        
+        
+        // cast the return type
+        CType returnType = expr.getType(factory);        
+        if(returnType.isClassType()) {
+            CClass returnClass = returnType.getCClass();
+            if(returnClass.isMixinInterface()) {
+                
+                String newReturnClassQn = null;
+                
+                if(prefix != null) {
+                    newReturnClassQn = 
+    	                context.getEnvironment().getCaesarTypeSystem().
+    	                	findInContextOf(
+	                	        returnClass.getQualifiedName(),
+	                	        prefix.getType(factory).getCClass().convertToIfcQn()
+    		                );
+                }
+                else if(context.getClassContext().getCClass().isMixin()) {
+                    newReturnClassQn = 
+    	                context.getEnvironment().getCaesarTypeSystem().
+    	                	findInContextOf(
+	                	        returnClass.getQualifiedName(),
+	                	        context.getClassContext().getCClass().convertToIfcQn()
+    		                );
+                    
+                }
+                
+                if(newReturnClassQn != null) {
+		            CClass newReturnClass = 
+		                context.getClassReader().loadClass(
+		                    factory,
+		                    newReturnClassQn
+		                );
+		            
+		            expr = new JCastExpression(
+	                    getTokenReference(),
+	                    expr,
+	                    newReturnClass.getAbstractType()
+		            );
+	            }
+            }
+        }
+        
+        return expr;
     }
+    
     
     public boolean isStatementExpression() {
         return true;
