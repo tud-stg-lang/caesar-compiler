@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.39 2004-03-22 17:21:43 aracic Exp $
+ * $Id: Caesar.g,v 1.40 2004-03-25 15:58:38 aracic Exp $
  */
 
 /*
@@ -434,7 +434,7 @@ jCClassDefinition [int modifiers]
   "cclass" ident:IDENT
   (typeVariables = kTypeVariableDeclarationList[])?
   //This is like this for prevent non-determinism
-  (superClass =  jSuperClassClause[])?
+  (superClass =  jCSuperClassClause[])?
 
   (interfaces = jImplementsClause[])?
   (wrappee = jWrapsClause[])?
@@ -470,20 +470,30 @@ jCClassDefinition [int modifiers]
 jSuperClassClause []
   returns [CReferenceType self = null]
 :
-  ("extends" self =  jSuperTypeName[])
+  ("extends" self =  jTypeName[])
 ;
 
 
-jSuperTypeName []
-  returns [CReferenceType self = null]
+jCSuperClassClause []
+  returns [CCompositeType self = null]
 {
-	CReferenceType collaborationInterface = null;
-	CReferenceType implementation = null;
-	CReferenceType binding = null;
+  CReferenceType	name;
+  ArrayList	container = new ArrayList();
 }
 :
-  ( self = jTypeName[] )?
+  ("extends" name =  jTypeName[]) { container.add(name); }
+  (
+  	BAND
+  	name = jTypeName[] { container.add(name); }
+  )*
+  {
+  	self = 
+  		new CCompositeType(
+	  		(CReferenceType[])container.toArray(new CReferenceType[container.size()])
+	  	);
+  }
 ;
+
 
 // Definition of a Java Interface
 jInterfaceDefinition [int modifiers]

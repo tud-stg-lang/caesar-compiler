@@ -23,9 +23,11 @@ public class FjTestCase extends TestCase {
  * of the executing test-file.
  */
 	protected String getWorkingDirectory() {
-		return "." + File.separator + "test" + File.separator 
+		String res = "." + File.separator + "test" + File.separator 
 			+ getClass().getName().substring(
 			getClass().getName().lastIndexOf( "." ) + 1 );
+            
+        return res;
 	}
 
 	protected void warn( String message ) {

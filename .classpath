@@ -15,5 +15,6 @@
     <classpathentry kind="lib" path="test/CompileAndRunResultsWeaverTest"/>
     <classpathentry kind="lib" path="test/UppercaseServer"/>
     <classpathentry kind="lib" path="lib/cjbuildtools.jar"/>
+    <classpathentry kind="lib" path="test/VirtualClassesTests"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
