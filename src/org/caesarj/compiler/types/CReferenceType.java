@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CReferenceType.java,v 1.12 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CReferenceType.java,v 1.13 2005-01-25 16:15:32 klose Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -75,6 +75,10 @@ public class CReferenceType extends CType {
             ctx = ctx.getOwner();
             k++;
         }
+//        while (ctx != null){
+//            k++;
+//            ctx = ctx.getOwner();
+//        }
         
         return k;
     }

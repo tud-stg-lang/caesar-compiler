@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Path.java,v 1.9 2005-01-24 16:52:59 aracic Exp $
+ * $Id: Path.java,v 1.10 2005-01-25 16:15:32 klose Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -35,6 +35,7 @@ import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
 import org.caesarj.compiler.ast.phylum.expression.JLocalVariableExpression;
 import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
+import org.caesarj.compiler.ast.phylum.expression.JQualifiedInstanceCreation;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
@@ -56,6 +57,7 @@ import org.caesarj.util.InconsistencyException;
  */
 public abstract class Path {       
     
+    private static final String ANONYMOUS_FIELD_ACCESS = "$".intern();
     Path prefix;
     CReferenceType type;
     
@@ -90,17 +92,29 @@ public abstract class Path {
      */
     public static Path createFrom(CContext context, JExpression expr){    	
         List 	l1 = new LinkedList();	// stores the field access identifiers (Strings)
-        List 	l2 = new LinkedList();	// stores the field access identifiers (Strings)
+        List 	l2 = new LinkedList();	// stores the corresponding types (CTypes)
         int 	k =0;
         JExpression tmp = expr;
         
         boolean done=false;
         
         while (!done){
-            if(tmp instanceof CjAccessorCallExpression) {
+            if(tmp instanceof JQualifiedInstanceCreation){
+                JQualifiedInstanceCreation qc = (JQualifiedInstanceCreation) tmp;
+                l1.add(0, ANONYMOUS_FIELD_ACCESS );
+                
+                CReferenceType type = (CReferenceType)qc.getType(context.getTypeFactory());
+                type.setDefCtx(context);
+                
+                l2.add(type);
+                done = true;
+                
+            } else if(tmp instanceof CjAccessorCallExpression) {
                 CjAccessorCallExpression ac = (CjAccessorCallExpression)tmp;
-                l1.add(0, ac.getFieldIdent());    
-                l2.add(0, ac.getType(context.getTypeFactory()));
+                l1.add(0, ac.getFieldIdent());
+                CType type = ac.getType(context.getTypeFactory()); 
+                
+                l2.add(0, type);
                 tmp = ac.getPrefix();
             }
             else if (tmp instanceof JFieldAccessExpression){
@@ -132,9 +146,6 @@ public abstract class Path {
                 }
                 done = true;
             }
-//            else if (tmp instanceof JThisExpression ){
-//                done = true;
-//            } 
             else if (tmp instanceof JLocalVariableExpression) {
                 JLocalVariableExpression local = (JLocalVariableExpression) tmp;
                 JLocalVariable var = local.getVariable();

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclaration.java,v 1.36 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.37 2005-01-25 16:15:32 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -490,7 +490,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
                 }
             }
             catch (UnpositionedError e) {
-                e.addPosition(fields[i].getTokenReference());
+                throw e.addPosition(fields[i].getTokenReference());
             }
         }
         

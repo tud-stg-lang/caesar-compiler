@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JQualifiedInstanceCreation.java,v 1.6 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JQualifiedInstanceCreation.java,v 1.7 2005-01-25 16:15:32 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -243,6 +243,10 @@ public class JQualifiedInstanceCreation extends JExpression {
       for (int i = 0; i < params.length; i++) {
           params[i].accept(s);
       }
+  }
+  
+  public String toString() {
+      return "JQualifiedInstanceCreation[" + prefix + "."+ident+"]";
   }
   
   // ----------------------------------------------------------------------

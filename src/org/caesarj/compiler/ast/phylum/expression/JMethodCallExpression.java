@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.14 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.15 2005-01-25 16:15:32 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -610,6 +610,11 @@ public class JMethodCallExpression extends JExpression
 	 */
 	public String getIdent(){
 	    return ident;
+	}
+	
+	
+	public String toString() {
+	    return "JMethodCallExpression["+ident+"]";
 	}
 	
 	// ----------------------------------------------------------------------
