@@ -4,11 +4,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.caesarj.compiler.ast.phylum.expression.CjAccessorCallExpression;
+import org.caesarj.compiler.ast.phylum.expression.JCastExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
 import org.caesarj.compiler.ast.phylum.expression.JLocalVariableExpression;
 import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
-import org.caesarj.compiler.ast.phylum.expression.JOwnerExpression;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
@@ -71,7 +72,13 @@ public abstract class Path {
         boolean done=false;
         
         while (!done){
-            if (tmp instanceof JFieldAccessExpression){
+            if(tmp instanceof CjAccessorCallExpression) {
+                CjAccessorCallExpression ac = (CjAccessorCallExpression)tmp;
+                l1.add(0, ac.getFieldIdent());    
+                l2.add(0, ac.getType(context.getTypeFactory()));
+                tmp = ac.getPrefix();
+            }
+            else if (tmp instanceof JFieldAccessExpression){
                 // if tmp is a field-access...
                 JFieldAccessExpression fa = (JFieldAccessExpression)tmp;
                 if ( fa.getIdent().equals(Constants.JAV_OUTER_THIS) ){
@@ -153,10 +160,25 @@ public abstract class Path {
                         }
                     }
                     done = true;
-                } else {
-                    throw new InconsistencyException("Path can not include method calls");
                 }
-            } else {
+                else /*if(tmp == expr)*/ {
+                    // method call is last in the chain
+                    // handle for now as a field
+                    // consider that we could have more than one method call
+                    // f1.f2.f3.m1().m2().m3()
+                    l1.add(0, me.getIdent());    
+                    l2.add(0, me.getType(context.getTypeFactory()));
+                    tmp = me.getPrefix();
+                }
+//                else {
+//                    throw new InconsistencyException("Path can not include method calls");
+//                }                
+            }
+            else if(tmp instanceof JCastExpression) {
+                // ignore for now
+                tmp = ((JCastExpression)tmp).getExpression();
+            }
+            else {
                 throw new InconsistencyException("Illegal expression in dependent type path: "+tmp);
             }
         }
