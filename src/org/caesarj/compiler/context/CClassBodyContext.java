@@ -1,16 +1,15 @@
 /*
  * Created on 19.11.2004
  */
-package org.caesarj.compiler.ast.phylum.declaration;
+package org.caesarj.compiler.context;
 
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
+import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
-import org.caesarj.compiler.context.CClassContext;
-import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
@@ -39,7 +38,7 @@ public class CClassBodyContext extends CMethodContext {
                 getClassContext().getCClass(),ACC_PRIVATE,METHOD_NAME,new CVoidType(),
                 new CType[0], new CReferenceType[0],false, false,
                 	new JBlock(
-                	        new TokenReference("",0),
+                	        TokenReference.NO_REF,
                 	        new JStatement[0],
                 	        new JavaStyleComment[0]
                 	)
@@ -48,14 +47,14 @@ public class CClassBodyContext extends CMethodContext {
     
     public JMethodDeclaration getMethodDeclaration() {
         return new JMethodDeclaration(
-                new TokenReference("",0),
+                TokenReference.NO_REF,
                 ACC_PUBLIC,
                 new CVoidType(),
                 METHOD_NAME,
                 new JFormalParameter[0],
                 new CReferenceType[0],
                	new JBlock(
-            	        new TokenReference("",0),
+               	     TokenReference.NO_REF,
             	        new JStatement[0],
             	        new JavaStyleComment[0]
             	),

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.29 2004-11-19 15:59:14 klose Exp $
+ * $Id: JTypeDeclaration.java,v 1.30 2004-11-19 16:09:01 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -34,6 +34,7 @@ import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
+import org.caesarj.compiler.context.CClassBodyContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
@@ -555,7 +556,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
 //                    }
                     
                     CBlockContext ctx = new CBlockContext(
-                            new CClassBodyContext(self,context.getEnvironment()),
+                            new CClassBodyContext(self,context.getEnvironment()), 
                             //                        new CMethodContext(
 //                            self, 
 //                            context.getEnvironment(),

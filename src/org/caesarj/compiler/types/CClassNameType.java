@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassNameType.java,v 1.9 2004-11-19 15:59:38 klose Exp $
+ * $Id: CClassNameType.java,v 1.10 2004-11-19 16:09:01 klose Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Vector;
 
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.declaration.CClassBodyContext;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
@@ -33,6 +32,7 @@ import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CBodyContext;
+import org.caesarj.compiler.context.CClassBodyContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
