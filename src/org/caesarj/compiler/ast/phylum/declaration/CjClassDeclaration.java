@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.23 2004-09-06 13:31:34 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.24 2004-09-10 22:41:00 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -52,6 +52,7 @@ import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 import org.caesarj.util.Utils;
 
 /**
@@ -183,6 +184,19 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
         // structural detection of crosscutting property
         if ((advices.length > 0) || (pointcuts.length > 0))
             this.modifiers |= ACC_CROSSCUTTING;
+    }
+    
+    public void join(CContext context) throws PositionedError {
+        super.join(context);
+        
+        if(wrappee != null) {
+            try {
+                wrappee = (CReferenceType)wrappee.checkType(self);
+            }
+            catch (UnpositionedError e) {
+                throw e.addPosition(getTokenReference());
+            }            
+        }
     }
 
     // ----------------------------------------------------------------------
@@ -520,6 +534,10 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
 
     public boolean isCrosscutting() {
         return CModifier.contains(modifiers, ACC_CROSSCUTTING);
+    }
+    
+    public boolean isWrapper() {
+        return wrappee != null;
     }
 
     public void append(JMethodDeclaration newMethod) {
