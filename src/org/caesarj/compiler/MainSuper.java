@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: MainSuper.java,v 1.2 2004-02-08 20:28:00 ostermann Exp $
+ * $Id: MainSuper.java,v 1.3 2004-02-09 16:04:40 ostermann Exp $
  */
 
 package org.caesarj.compiler;
@@ -184,7 +184,7 @@ public abstract class MainSuper extends CompilerBase {
    * creates the class hierarchie (superclass, interfaces, ...)
    * @param	cunit		the compilation unit
    */
-  protected void join(JCompilationUnit cunit) {
+  public void join(JCompilationUnit cunit) {
     try {
       cunit.join(this);
     } catch (PositionedError e) {

@@ -117,6 +117,6 @@ public class ResolveSuperClassFjVisitor extends FjVisitor {
 	protected void _override( FjOverrideable instance, CompilerBase compiler ) {
 		FjOverrideClassDeclaration.setOverridingSuperClass( instance, compiler );
 		JCompilationUnit unit = (JCompilationUnit) compilationUnitMap.get( instance );
-		((Main) compiler).reJoin( unit );
+		((Main) compiler).join( unit );
 	}
 }
