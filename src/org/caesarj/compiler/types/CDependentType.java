@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentType.java,v 1.12 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CDependentType.java,v 1.13 2005-01-26 16:11:58 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -30,6 +30,7 @@ import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.family.Path;
+import org.caesarj.util.UnpositionedError;
 
 
 /**
@@ -48,15 +49,15 @@ public class CDependentType extends CReferenceType {
                                     of the current context */
               
     public CDependentType(CContext ctx, int k, JExpression family, CType staticType) {
-        setDefCtx(ctx);
+        setDeclContext(ctx);
         this.k = k;
         this.family = family;
         this.plainType = staticType;
         System.out.println("new CDependentType: k="+k);
     }
     
-    public Path getPath() {
-        return Path.createFrom(defCtx, family);
+    public Path getPath() throws UnpositionedError {
+        return Path.createFrom(declContext, family);
     }
 
     public CClass getCClass() {
