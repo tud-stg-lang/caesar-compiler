@@ -15,16 +15,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CInitializerContext.java,v 1.2 2004-03-15 11:56:53 aracic Exp $
+ * $Id: CInitializerContext.java,v 1.3 2004-11-19 13:03:49 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
 
 import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
-import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * This class represents a method context during check
@@ -44,8 +44,8 @@ public class CInitializerContext extends CMethodContext {
    * @param	parent		the parent context
    * @param	self		the corresponding method interface
    */
-  public CInitializerContext(CClassContext parent, KjcEnvironment environment, CMethod self, JFormalParameter[] parameters) {
-    super(parent, environment, self, parameters);
+  public CInitializerContext(CClassContext parent, KjcEnvironment environment, JMethodDeclaration decl) {
+    super(parent, environment, decl);
   }
 
   /**

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JConstructorDeclaration.java,v 1.4 2004-10-15 11:12:52 aracic Exp $
+ * $Id: JConstructorDeclaration.java,v 1.5 2004-11-19 13:03:49 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -142,8 +142,7 @@ public class JConstructorDeclaration extends JMethodDeclaration {
 
     CMethodContext	self = new CConstructorContext(context, 
                                                        context.getEnvironment(), 
-                                                       getMethod(),
-                                                       parameters);
+                                                       this);
     CBlockContext	block = new CBlockContext(self, 
                                                   context.getEnvironment(), 
                                                   parameters.length);

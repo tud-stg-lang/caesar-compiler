@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JInitializerDeclaration.java,v 1.3 2004-10-15 11:12:52 aracic Exp $
+ * $Id: JInitializerDeclaration.java,v 1.4 2004-11-19 13:03:49 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -222,7 +222,7 @@ public class JInitializerDeclaration extends JMethodDeclaration {
     }
 
     // we want to do that at check intitializers time
-    CMethodContext	self = new CInitializerContext(context, context.getEnvironment(), getMethod(), parameters);
+    CMethodContext	self = new CInitializerContext(context, context.getEnvironment(), this);
     CBlockContext	block = new CBlockContext(self, context.getEnvironment(), parameters.length);
 
     if (!getMethod().isStatic()) {

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CMethodContext.java,v 1.7 2004-10-15 11:12:54 aracic Exp $
+ * $Id: CMethodContext.java,v 1.8 2004-11-19 13:03:49 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -26,6 +26,7 @@ import java.util.Hashtable;
 
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.export.CMethod;
@@ -60,11 +61,10 @@ public class CMethodContext extends CContext {
    */
   //Walter start
   //CMethodContext(CClassContext parent, KjcEnvironment environment, CMethod self, JFormalParameter[] parameters) {
-  public CMethodContext(CClassContext parent, KjcEnvironment environment, CMethod self, JFormalParameter[] parameters) {
+  public CMethodContext(CClassContext parent, KjcEnvironment environment, JMethodDeclaration decl) {
   //Walter end
     super(parent, environment);
-    this.self = self;
-    this.parameters = parameters;
+    this.decl = decl;
   }
 
   /**
@@ -74,7 +74,7 @@ public class CMethodContext extends CContext {
    */
   public void close(TokenReference ref) throws PositionedError {
     Enumeration		enum = throwables.elements();
-    CReferenceType[]	checked = self.getThrowables();
+    CReferenceType[]	checked = decl.getMethod().getThrowables();
     boolean[]		used = new boolean[checked.length];
   
   loop:
@@ -127,7 +127,7 @@ public class CMethodContext extends CContext {
    * @return true iff the context is static
    */
   public boolean isStaticContext() {
-    if (self.isStatic()) {
+    if (decl.getMethod().isStatic()) {
       return true;
     } else {
       return false;
@@ -147,7 +147,7 @@ public class CMethodContext extends CContext {
    * @return	the near parent of type CMethodContext
    */
   public CMethod getCMethod() {
-    return self;
+    return decl.getMethod();
   }
 
   /**
@@ -167,7 +167,11 @@ public class CMethodContext extends CContext {
   // ----------------------------------------------------------------------
 
   public JFormalParameter[] getFormalParameter() {
-    return parameters;
+    return decl.getParameters();
+  }
+  
+  public JMethodDeclaration getMethodDeclaration() {
+      return decl;
   }
 
   public int getNextStoreFieldIndex() {
@@ -215,8 +219,7 @@ public class CMethodContext extends CContext {
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------
-  private	CMethod                 self;
-  private final JFormalParameter[]      parameters;
+  private	JMethodDeclaration decl;
   private       int                     storeFieldIndex = 0;
   private       ArrayList               storeFields = null;
 

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.27 2004-11-17 18:08:10 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.28 2004-11-19 13:03:49 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -27,7 +27,6 @@ import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.KjcMessages;
@@ -44,6 +43,7 @@ import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.util.CWarning;
+import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -522,13 +522,21 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
                 refresh = true;
                 
                 try {
-                    CMethod m = getCClass().lookupMethod(context, getCClass(), null, "Block$", new CType[]{});
+                    JMethodDeclaration m = null;
+                    for (int j = methods.length-1; j >= 0; j--) {
+                        if(methods[j].getIdent().equals("Block$"))
+                            m = methods[i];
+                    }
+                    
+                    if(m == null) {
+                        throw new InconsistencyException();
+                    }
+                    
                     CBlockContext ctx = new CBlockContext(
                         new CMethodContext(
                             self, 
                             context.getEnvironment(),
-                            m,
-                            JFormalParameter.EMPTY
+                            m
                         ),
                         context.getEnvironment(),
                         0

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodDeclaration.java,v 1.8 2004-10-29 13:24:14 aracic Exp $
+ * $Id: JMethodDeclaration.java,v 1.9 2004-11-19 13:03:49 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -289,8 +289,7 @@ public class JMethodDeclaration extends JMemberDeclaration {
                 new CMethodContext(
                     context,
                     context.getEnvironment(),
-                    getMethod(),
-                    parameters);
+                    this);
             CBlockContext block =
                 new CBlockContext(
                     self,
