@@ -12,7 +12,6 @@ public class AspectLocalDeployer implements AspectDeployerIfc {
 
 	/**
 	 * Deploy the object on given registry 
-	 * Deploys the object on the current thread
 	 *  
 	 * @param reg			Registry instance
 	 * @param aspectObj		Aspect object
@@ -52,7 +51,6 @@ public class AspectLocalDeployer implements AspectDeployerIfc {
 
 	/**
 	 * Undeploy the object from the given registry
-	 * Assumes that the object is deployed on the current thread
 	 * 
 	 * @param reg			Registry instance
 	 * @param aspectObj		Aspect object
