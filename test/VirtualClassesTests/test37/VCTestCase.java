@@ -18,10 +18,13 @@ public class VCTestCase extends TestCase {
 	public void test() {
 		System.out.println("-------> VCTest 37: automatic casts: start");
 
-        CG cg = new CG();
-        CG.N n1 = cg.new N().init("n1", Color.BLACK);
-        CG.N n2 = cg.new N().init("n2", Color.RED);
-		CG.E e = cg.new E().init(n1, n2);
+		{
+		B b = new B();
+        B.CG cg = b.new CG();
+        B.CG.N n1 = cg.new N().init("n1", Color.BLACK);
+        B.CG.N n2 = cg.new N().init("n2", Color.RED);
+		B.CG.E e = cg.new E().init(n1, n2);
+		e.doSomethingWithNodes();
 		
 		System.out.println(n1);
 		System.out.println(n2);
@@ -30,6 +33,13 @@ public class VCTestCase extends TestCase {
 		e.getStartNode().getColor();
 		e.getEndNode().getColor();
 		System.out.println("E connecting same colors? "+e.isConnectingSameColors());
+		}
+		
+		{
+		Y bb = new Y();
+		Y.B b = bb.new B();
+		b.exec();
+		}
 
 		// just compile, no checks
 
@@ -37,63 +47,110 @@ public class VCTestCase extends TestCase {
 	}
 }
 
-
-public cclass G {
-	public cclass E {
-		protected G.N n1, n2;
-		
-		public G.E init(G.N n1, G.N n2) {
-			this.n1 = n1;
-			this.n2 = n2;
-			return this;
+public cclass A {
+	public cclass G {
+		public cclass E {
+			protected A.G.N n1, n2;
+			
+			public A.G.E init(A.G.N n1, A.G.N n2) {
+				this.n1 = n1;
+				this.n2 = n2;
+				return this;
+			}
+			
+			public A.G.N getStartNode() {return n1;}
+			public A.G.N getEndNode() {return n2;}
+			
+			public boolean isConnecting(A.G.N n1, A.G.N n2) {
+				return this.n1 == n1 && this.n2 == n2;
+			}
+			
+		     public String toString() {
+		     	return "[E:"+n1+"->"+n2+"]";
+		     }
 		}
 		
-		public G.N getStartNode() {return n1;}
-		public G.N getEndNode() {return n2;}
-		
-		public boolean isConnecting(G.N n1, G.N n2) {
-			return this.n1 == n1 && this.n2 == n2;
+		public cclass N {
+			protected String name;
+			
+			public A.G.N init(String name) {
+				this.name = name;
+				return this;
+			}
+	 
+			public String toString() {
+				return "[N:"+name+"]";
+			}
 		}
-		
-	     public String toString() {
-	     	return "[E:"+n1+"->"+n2+"]";
-	     }
 	}
 	
-	public cclass N {
-		protected String name;
-		
-		public G.N init(String name) {
-			this.name = name;
-			return this;
+	public cclass CG extends G {	
+		public cclass E {
+			public boolean isConnectingSameColors() {		
+			    return n1.getColor().equals(n2.getColor());
+			}
 		}
- 
-		public String toString() {
-			return "[N:"+name+"]";
+		
+		public cclass N {
+		    protected Color col;
+		    
+		    public Color getColor() {return col;}
+		    
+			public A.G.N init(String name, Color color) {
+				init(name);
+				this.col = color;
+				return this;
+			}
+			
+			public String toString() {		
+				return "[N:"+name+","+col+"]";
+			}
 		}
 	}
 }
 
-public cclass CG extends G {	
-	public cclass E {
-		public boolean isConnectingSameColors() {		
-		    return n1.getColor().equals(n2.getColor());
+public cclass B extends A {
+	public cclass CG {
+		public cclass E {
+			public void doSomethingWithNodes() {
+				n1.x();
+				n2.x();
+			}
+		}
+		
+		public cclass N {
+			public void x() {
+				System.out.println("B.CG.N.x");
+			}
+		}
+	}
+}
+
+
+
+
+public cclass X {
+	public cclass A {
+		public cclass A {
 		}
 	}
 	
-	public cclass N {
-	    protected Color col;
-	    
-	    public Color getColor() {return col;}
-	    
-		public G.N init(String name, Color color) {
-			init(name);
-			this.col = color;
-			return this;
+	public cclass B extends A {
+		protected X.A.A a;
+	}
+}
+
+public cclass Y extends X {
+	public cclass A {
+		public cclass A {
+			public void x() {}
 		}
-		
-		public String toString() {		
-			return "[N:"+name+","+col+"]";
+	}
+	
+	public cclass B {
+		public void exec() {
+			a = this.new A();
+			a.x();
 		}
 	}
 }
