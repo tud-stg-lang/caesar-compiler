@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.14 2004-01-12 11:07:26 klose Exp $
+ * $Id: Caesar.g,v 1.15 2004-02-05 20:07:49 ostermann Exp $
  */
 
 /*
@@ -707,7 +707,6 @@ jMember [ParseClassContext context]
   JVariableDefinition[]		vars;
   JStatement[]			body = null;
   TokenReference		sourceRef = buildTokenReference();
-  KopiInvariantDeclaration   invariant = null;
   JFormalParameter[] parameters;
   JFormalParameter extraParam = null;  
   CaesarAdviceKind kind = null;
@@ -717,23 +716,6 @@ jMember [ParseClassContext context]
   AdviceDeclaration adviceDecl;
 }
 :
-	INVARIANT body = jCompoundStatement[]
-  	{
-    	if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-      		invariant = new KopiInvariantDeclaration(sourceRef,
-                        	new KopiInvariantStatement(sourceRef,
-                            							new JBlock(sourceRef,
-                            							body,
-                                						null)),
-                            getJavadocComment(),
-                            getStatementComment(),
-                            environment.getTypeFactory());
-      		context.addAssertionDeclaration(invariant);
-    	} else {
-      		reportTrouble(new PositionedError(sourceRef, KjcMessages.UNSUPPORTED_INVARIANT, null));
-    	}
-  	}
-  	| 
   	(
    		modifiers = jModifiers[]
    		(
@@ -854,8 +836,6 @@ jConstructorDefinition [ParseClassContext context, int modifiers]
   JConstructorCall	constructorCall = null;
   ArrayList		body = new ArrayList();
   JStatement		stmt;
-  JStatement[]	    	ensure = null;
-  JStatement[]          require = null;
   TokenReference	sourceRef = buildTokenReference();
   JavadocComment	javadoc = getJavadocComment();
   JavaStyleComment[]	comments = getStatementComment();
@@ -864,7 +844,6 @@ jConstructorDefinition [ParseClassContext context, int modifiers]
   name : IDENT
   LPAREN parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN
   ( throwsList = jThrowsClause[] )?
-  ( REQUIRE require = jCompoundStatement[] )?
   LCURLY
   (
     ( ( "this" |  "super") LPAREN ) =>
@@ -885,58 +864,7 @@ jConstructorDefinition [ParseClassContext context, int modifiers]
       }
   )*
   RCURLY
-  ( ENSURE ensure = jCompoundStatement[] )?
     {
-      if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-        KopiPostconditionDeclaration            post = null;
-        KopiPreconditionDeclaration             pre = null;
-
-        if (ensure != null) {
-             context.addAssertionDeclaration(post = new KopiPostconditionDeclaration(sourceRef,
-                                                                                     modifiers,
-                                                                                     CTypeVariable.EMPTY,
-                                                                                     environment.getTypeFactory().getVoidType(),
-                                                                                     name.getText(),
-                                                                                     parameters,
-                                                                                     throwsList,
-                                                                                     new JBlock(sourceRef, ensure, null),
-                                                                                     getJavadocComment(),
-                                                                                     getStatementComment(),
-                                                                                     environment.getTypeFactory()));
-        }
-        if (require != null) {
-             context.addAssertionDeclaration(pre = new  KopiPreconditionDeclaration(sourceRef,
-                                                                                    modifiers | Constants.ACC_STATIC,
-                                                                                    CTypeVariable.EMPTY,
-                                                                                    environment.getTypeFactory().getVoidType(),
-                                                                                    name.getText(),
-                                                                                    parameters,
-                                                                                    throwsList,
-                                                                                    new JBlock(sourceRef, require, null),
-                                                                                    getJavadocComment(),
-                                                                                    getStatementComment(),
-                                                                                    environment.getTypeFactory()));
-        }
-        self = new KopiConstructorDeclaration(sourceRef,
-                                              modifiers,
-                                              name.getText(),
-                                              parameters,
-                                              throwsList,
-                                              new KopiConstructorBlock(sourceRef,
-                                                                       constructorCall,
-                                                                       (JStatement[]) body.toArray(new JStatement[body.size()])), //org.caesarj.util.Utils.toArray(body, JStatement.class)),
-                                              javadoc,
-                                              comments,
-                                              pre,
-                                              post,
-                                              environment.getTypeFactory());
-      } else {
-        if (require != null) {
-          reportTrouble(new PositionedError(sourceRef, KjcMessages.UNSUPPORTED_REQUIRE, null));
-        }
-        if (ensure != null) {
-          reportTrouble(new PositionedError(sourceRef, KjcMessages.UNSUPPORTED_ENSURE, null));
-        }
         self = new FjConstructorDeclaration(sourceRef,
                                            modifiers,
                                            name.getText(),
@@ -948,7 +876,6 @@ jConstructorDefinition [ParseClassContext context, int modifiers]
                                            javadoc,
                                            comments,
                                            environment.getTypeFactory());
-      }
     }
 ;
 
@@ -985,8 +912,6 @@ jMethodDefinition [ParseClassContext context, int modifiers, CType type, CTypeVa
   int			bounds = 0;
   CReferenceType[]		throwsList = CReferenceType.EMPTY;
   JStatement[]		body = null;
-  JStatement[]	    	ensure = null;
-  JStatement[]          require = null;
   TokenReference	sourceRef = buildTokenReference();
   JavadocComment	javadoc = getJavadocComment();
   JavaStyleComment[]	comments = getStatementComment();
@@ -1003,101 +928,14 @@ jMethodDefinition [ParseClassContext context, int modifiers, CType type, CTypeVa
     }
   ( throwsList = jThrowsClause[] )?
   (
-    ( REQUIRE require = jCompoundStatement[] )?
     (
-      body = jCompoundStatement[] ( ENSURE ensure = jCompoundStatement[] )?
+      body = jCompoundStatement[] 
     |
-      ( ENSURE ensure = jCompoundStatement[] )? SEMI
+       SEMI
     )
   )
 
     {
-      if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-        if (body != null) {
-          body = new JStatement[] {new KopiConstraintStatement(sourceRef,
-                                                               new JBlock(sourceRef, body, null),
-                                                               parameters)};
-        }
-        KopiMethodPostconditionDeclaration      postMethod = null;
-        KopiMethodPreconditionDeclaration       preMethod = null;
-
-        if (((modifiers & (Constants.ACC_NATIVE | Constants.ACC_PRIVATE | Constants.ACC_STATIC)) == 0)
-            || ensure != null) {
-          // native methods have no cond.
-          // if ensure != null and the method is native, a failure is raised later
-          KopiPostconditionStatement              postBody;
-
-          postBody = new KopiPostconditionStatement(sourceRef,
-                                                    parameters,
-                                                    type,
-                                                    ensure  == null ? null : new JBlock(sourceRef,
-                                                                                        ensure,
-                                                                                        null));
-
-          postMethod =
-            new KopiMethodPostconditionDeclaration(sourceRef,
-                                                   modifiers,
-                                                   CTypeVariable.cloneArray(typeVariables),
-                                                   type,
-                                                   name.getText(),
-                                                   parameters,
-                                                   throwsList,
-                                                   postBody,
-                                                   getJavadocComment(),
-                                                   getStatementComment(),
-                                                   environment.getTypeFactory());
-          // must be before constrained methed
-          context.addAssertionDeclaration(postMethod);
-        }
-        if (((modifiers & (Constants.ACC_NATIVE | Constants.ACC_PRIVATE | Constants.ACC_STATIC)) == 0)
-            || require != null) {
-          // native methods have no cond.
-          // if require != null and the method is native, a failure is raised later
-          KopiPreconditionStatement              preBody;
-
-          preBody = new KopiPreconditionStatement(sourceRef,
-                                                parameters,
-                                                type,
-                                                require == null ? null : new JBlock(sourceRef,
-                                                                                    require,
-                                                                                    null));
-
-          preMethod =
-            new  KopiMethodPreconditionDeclaration(sourceRef,
-                                                 modifiers,
-                                                 CTypeVariable.cloneArray(typeVariables),
-                                                 type,
-                                                 name.getText(),
-                                                 parameters,
-                                                 throwsList,
-                                                 preBody,
-                                                 getJavadocComment(),
-                                                 getStatementComment(),
-                                                 environment.getTypeFactory());
-          // must be before constrained methed
-          context.addAssertionDeclaration(preMethod);
-        }
-
-        self = new KopiMethodDeclaration(sourceRef,
-                                         modifiers,
-                                         typeVariables,
-                                         type,
-                                         name.getText(),
-                                         parameters,
-                                         throwsList,
-                                         body == null ? null : new JBlock(sourceRef, body, null),
-                                         javadoc,
-                                         comments,
-                                         preMethod,
-                                         postMethod);
-       } else {
-         if (require != null) {
-           reportTrouble(new PositionedError(sourceRef, KjcMessages.UNSUPPORTED_REQUIRE, null));
-         }
-         if (ensure != null) {
-           reportTrouble(new PositionedError(sourceRef, KjcMessages.UNSUPPORTED_ENSURE, null));
-         }
-
          // check if we have a clean method, i.e. a method that
          // could be taken into a clean class's interface
          if( (modifiers & Constants.ACC_PUBLIC) != 0
@@ -1137,7 +975,7 @@ jMethodDefinition [ParseClassContext context, int modifiers, CType type, CTypeVa
                                 : new JBlock(sourceRef, body, null),
                             javadoc, comments);
 
-      }
+      
     }
 ;
 
@@ -1331,8 +1169,6 @@ jStatement []
   TokenReference	sourceRef = buildTokenReference();
 }
 :
-  self = kAssertStatement[]
-|
   // A list of statements in curly braces -- start a new scope!
   stmts = jCompoundStatement[]
     { self = new JBlock(sourceRef, stmts, comments); }
@@ -1375,56 +1211,6 @@ jStatement []
     { self = new JEmptyStatement(sourceRef, comments); }
 ;
 
-kAssertStatement []  returns [JStatement self = null]
-{
-  JExpression		cond;
-  JExpression		expr = null;
-  TokenReference	sourceRef = buildTokenReference();
-  JavaStyleComment[]	comments = getStatementComment();
-}
-: (
-    ATASSERT cond = jExpression[]
-    (
-      COLON expr = jExpression[] SEMI
-    |
-      SEMI
-    )
-    {
-      if (environment.getAssertExtension() == KjcEnvironment.AS_ALL
-          || environment.getAssertExtension() ==  KjcEnvironment.AS_SIMPLE) {
-        self = new KopiAssertStatement(sourceRef, cond, expr, false, comments);
-      } else {
-        reportTrouble(new PositionedError(sourceRef, KjcMessages.UNSUPPORTED_ASSERT, null));
-      }
-    }
-  |
-    JAVAASSERT cond = jExpression[]
-    (
-      COLON expr = jExpression[] SEMI
-    |
-      SEMI
-    )
-    {
-      self = new KopiAssertStatement(sourceRef, cond, expr, true, comments);
-    }
-  |
-    ATFAIL
-    (
-      expr = jExpression[] SEMI
-    |
-      SEMI
-    )
-    {
-     if (environment.getAssertExtension() == KjcEnvironment.AS_ALL
-          || environment.getAssertExtension() ==  KjcEnvironment.AS_SIMPLE) {
-       self = new KopiFailStatement(sourceRef, expr, comments);
-      } else {
-        reportTrouble(new PositionedError(sourceRef, KjcMessages.UNSUPPORTED_FAIL, null));
-      }
-    }
-  )
-
-;
 
 
 jLabeledStatement []
@@ -2254,19 +2040,6 @@ jPrimaryExpression []
 |
    self = jWrapperDestructorExpression[null]
 |
-  ATAT LPAREN ( self = jExpression[] )? RPAREN
-   {
-     if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-       if (self == null) {
-         self = new KopiReturnValueExpression(sourceRef);
-       } else {
-         self = new KopiOldValueExpression(sourceRef,  self);
-       }
-     } else {
-	  reportTrouble(new PositionedError(sourceRef, KjcMessages.UNSUPPORTED_ATAT, null));
-     }
-   }
-|
   LPAREN self = jAssignmentExpression[] RPAREN
     { self = new FjParenthesedExpression(sourceRef, self); }
 |
@@ -2627,8 +2400,6 @@ jAdviceDeclaration  [CaesarAdviceKind kind, int modifiers, JFormalParameter[] pa
 {
   int			bounds = 0;
   JStatement[]		body = null;
-  JStatement[]	    	ensure = null;
-  JStatement[]          require = null;
   TokenReference	sourceRef = buildTokenReference();
   JavadocComment	javadoc = getJavadocComment();
   JavaStyleComment[]	comments = getStatementComment();

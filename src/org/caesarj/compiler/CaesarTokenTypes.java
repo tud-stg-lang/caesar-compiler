@@ -1,4 +1,4 @@
-// Generated from Caesar.t
+// Generated from C:\dev\eclipse\workspace\Caesar\cc/caesar.t
 package org.caesarj.compiler;
 
 public interface CaesarTokenTypes {
@@ -131,13 +131,6 @@ public interface CaesarTokenTypes {
   int	REAL_LITERAL = 128;
   int	STRING_LITERAL = 129;
   int	TYPE_PATTERN = 130;
-  int	ATAT = 131;
-  int	INVARIANT = 132;
-  int	ENSURE = 133;
-  int	REQUIRE = 134;
-  int	ATASSERT = 135;
-  int	JAVAASSERT = 136;
-  int	ATFAIL = 137;
   org.caesarj.compiler.tools.antlr.extra.CToken	TOKEN_LITERAL_abstract = new org.caesarj.compiler.tools.antlr.extra.CToken(LITERAL_abstract, "abstract");
   org.caesarj.compiler.tools.antlr.extra.CToken	TOKEN_LITERAL_boolean = new org.caesarj.compiler.tools.antlr.extra.CToken(LITERAL_boolean, "boolean");
   org.caesarj.compiler.tools.antlr.extra.CToken	TOKEN_LITERAL_break = new org.caesarj.compiler.tools.antlr.extra.CToken(LITERAL_break, "break");
@@ -259,11 +252,4 @@ public interface CaesarTokenTypes {
   org.caesarj.compiler.tools.antlr.extra.CToken	TOKEN_SR_ASSIGN = new org.caesarj.compiler.tools.antlr.extra.CToken(SR_ASSIGN, ">>=");
   org.caesarj.compiler.tools.antlr.extra.CToken	TOKEN_STAR = new org.caesarj.compiler.tools.antlr.extra.CToken(STAR, "*");
   org.caesarj.compiler.tools.antlr.extra.CToken	TOKEN_STAR_ASSIGN = new org.caesarj.compiler.tools.antlr.extra.CToken(STAR_ASSIGN, "*=");
-  org.caesarj.compiler.tools.antlr.extra.CToken	TOKEN_ATAT = new org.caesarj.compiler.tools.antlr.extra.CToken(ATAT, "@@");
-  org.caesarj.compiler.tools.antlr.extra.CToken	TOKEN_INVARIANT = new org.caesarj.compiler.tools.antlr.extra.CToken(INVARIANT, "@invariant");
-  org.caesarj.compiler.tools.antlr.extra.CToken	TOKEN_ENSURE = new org.caesarj.compiler.tools.antlr.extra.CToken(ENSURE, "@ensure");
-  org.caesarj.compiler.tools.antlr.extra.CToken	TOKEN_REQUIRE = new org.caesarj.compiler.tools.antlr.extra.CToken(REQUIRE, "@require");
-  org.caesarj.compiler.tools.antlr.extra.CToken	TOKEN_ATASSERT = new org.caesarj.compiler.tools.antlr.extra.CToken(ATASSERT, "@assert");
-  org.caesarj.compiler.tools.antlr.extra.CToken	TOKEN_JAVAASSERT = new org.caesarj.compiler.tools.antlr.extra.CToken(JAVAASSERT, "@assert");
-  org.caesarj.compiler.tools.antlr.extra.CToken	TOKEN_ATFAIL = new org.caesarj.compiler.tools.antlr.extra.CToken(ATFAIL, "@fail");
 }

@@ -138,10 +138,3 @@
 
 @token		TYPE_PATTERN "a type pattern for pointcut definition"
 
-@operator	ATAT            "@@"
-@keyword	INVARIANT       "@invariant"
-@keyword	ENSURE          "@ensure"
-@keyword	REQUIRE         "@require"
-@keyword	ATASSERT        "@assert"
-@keyword	JAVAASSERT      "@assert" 
-@keyword	ATFAIL          "@fail" 

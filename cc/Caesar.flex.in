@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.flex.in,v 1.2 2004-01-12 10:39:28 klose Exp $
+ * $Id: Caesar.flex.in,v 1.3 2004-02-05 20:07:49 ostermann Exp $
  */
 
 package org.caesarj.compiler;
@@ -104,16 +104,6 @@ E =	[eE] [+\-]? {D}+
 %%
 
 <YYINITIAL> {
-  "assert"			{ 
-				  if (getCompiler().getSourceVersion() >=  KjcEnvironment.SOURCE_1_4) { 
-				    return TOKEN_JAVAASSERT; 
-				  } else { 
-				    reportTrouble(new CWarning(getTokenReference(),
-					                       KjcMessages.ASSERT_AS_IDENTIFIER));
-				    return new CToken(IDENT, yytext().intern()); 
-				  } 
-				}
-				
    "pointcut" {typePatternExpected = true; return TOKEN_LITERAL_pointcut;}
    "before" {typePatternExpected = true; return TOKEN_LITERAL_before;}
    "after" {typePatternExpected = true; return TOKEN_LITERAL_after;}

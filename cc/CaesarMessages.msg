@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.9 2003-08-27 22:38:42 werner Exp $
+ * $Id: CaesarMessages.msg,v 1.10 2004-02-05 20:07:49 ostermann Exp $
  */
 
 package org.caesarj.compiler
@@ -30,7 +30,7 @@ error		FJ_IMPL_WITHOUT_FJ_PARSER
 		"WRONG PARSER"
 
 // FJLS messages
-error		CLEAN_CLASS_NO_INNER
+error		CLEAN_CLASS_NO_INNEZR
 		"clean classes may not be inners"
 		"FJLS 1.1"
 
