@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTest.java,v 1.1 2005-02-24 17:16:53 aracic Exp $
+ * $Id: CaesarTest.java,v 1.2 2005-04-01 12:11:43 klose Exp $
  */
 
 package org.caesarj.test.suite;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
 /**
@@ -62,6 +63,17 @@ public abstract class CaesarTest extends TestCase {
     
     public String getId() {
         return id;
+    }
+
+    public void failure(String message) {
+        String 	prefix = testSuite.getOutputPath(),
+				folder, name; 
+        String[] comps = prefix.split("\\\\");
+        int last = comps.length-1;
+
+        
+        String testFileName = "/caesar-compiler/tests/src/"+comps[last-1]+"/"+comps[last]+"."+id+".java";
+        Assert.fail(message+" <caesartest file=\""+testFileName+"\" line=\"1\"/>");
     }
     
     public abstract void test() throws Throwable; 

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CompileTest.java,v 1.2 2005-03-02 09:45:55 gasiunas Exp $
+ * $Id: CompileTest.java,v 1.3 2005-04-01 12:11:43 klose Exp $
  */
 
 package org.caesarj.test.suite;
@@ -106,7 +106,7 @@ public class CompileTest extends CaesarTest {
     }
     
     public void compilerFailed() {
-        fail("failed : "+getId()+" : "+getDescription());
+        failure("failed : "+getId()+" : "+getDescription());
     }
     
     public void compilerSuccess() {
