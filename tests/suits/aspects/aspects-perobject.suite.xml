@@ -1,0 +1,75 @@
+<testsuite name="Test perobject deployment in Caesar" package="suits.aspects.perobject">
+
+	<common-code-base>
+		abstract public cclass PerObjectDeployer implements AspectKeyIfc {
+    	    declare precedence: PerObjectDeployer+, *;
+		    
+		    protected Object _key;
+		    protected AspectPerObjectDeployer _support;
+		    
+		    public PerObjectDeployer() {
+		        _support =  new AspectPerObjectDeployer(this);
+		    }
+		    
+		    public Object getCurrentKey() {
+		        return _key;
+		    }
+		    
+		    public void deployAspect(Object asp, Object obj) {
+		        _support.deployOnObject((AspectIfc)asp, obj);
+		    }
+		    
+		    public void undeployAspect(Object asp, Object obj) {
+		        _support.undeployFromObject((AspectIfc)asp, obj);
+		    }
+		}
+	
+		abstract public cclass PerThisDeployer extends PerObjectDeployer {
+  		    abstract pointcut filter();
+		    	
+		    after(Object o) : execution(* *.*(..)) &amp;&amp; filter() &amp;&amp; this(o) {
+		    	_key = o;
+		   }    
+		}
+	</common-code-base>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="aspperobject001" description="Simple per object deployment">
+		<test>
+			Model m1 = new Model();
+			Model m2 = new Model();
+			View v = new View();
+			PerModelDeployer_Impl.aspect().deployAspect(v, m2);
+			m1.setA(3);
+			m2.setA(2);
+			assertEquals(res.toString(), ":model-2-changed");
+		</test>
+        <code>
+        	import org.caesarj.runtime.aspects.AspectIfc;
+			import org.caesarj.runtime.perobject.AspectKeyIfc;
+			import org.caesarj.runtime.perobject.AspectPerObjectDeployer;
+			
+        	public class Model {
+        		int a = 0;
+        		public int getA() {
+        		   return a;
+        		}
+        		public void setA(int a) {
+        		   this.a = a;
+        		}
+        		public String toString() {
+        			return ":model-" + a;
+        		}
+			}
+			public deployed cclass PerModelDeployer extends PerThisDeployer {
+				pointcut filter() : this(Model);
+			}
+			public cclass View {
+				after(Model m): execution(* Model.set*(..)) &amp;&amp; this(m) {
+					Test.res.append(m.toString() + "-changed");
+				}
+			}
+        </code>
+    </compile-run>	
+	    
+</testsuite>
