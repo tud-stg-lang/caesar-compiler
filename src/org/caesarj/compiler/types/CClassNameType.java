@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassNameType.java,v 1.6 2004-11-17 18:08:10 aracic Exp $
+ * $Id: CClassNameType.java,v 1.7 2004-11-18 15:09:45 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
@@ -195,18 +196,20 @@ public class CClassNameType extends CReferenceType
                 
                 expr = expr.analyse(ctx);
                 
-                String pathSegs[] = qualifiedName.split("/");
-                
-                CClass clazz = context.getClassReader().loadClass(
-                    context.getTypeFactory(),
-                    expr.getType(context.getTypeFactory()).getCClass().getQualifiedName()+"$"+pathSegs[pathSegs.length-1]
-                );
-                
-                return 
-                	new CDependentType(makePos(context), makePath(), clazz.getAbstractType());
+                if(expr instanceof JFieldAccessExpression) {
+	                String pathSegs[] = qualifiedName.split("/");
+	                
+	                CClass clazz = context.getClassReader().loadClass(
+	                    context.getTypeFactory(),
+	                    expr.getType(context.getTypeFactory()).getCClass().getQualifiedName()+"$"+pathSegs[pathSegs.length-1]
+	                );
+	                
+	                return 
+	                	new CDependentType(makePos(context), makePath(), clazz.getAbstractType());
+                }
             }
             catch (Exception e) {
-                System.out.println("couldn't find");
+                System.out.println("not dependent type");
             }            
 	    }
 	    
