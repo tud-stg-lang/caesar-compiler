@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodDeclaration.java,v 1.5 2004-09-06 13:31:34 aracic Exp $
+ * $Id: JMethodDeclaration.java,v 1.6 2004-10-10 19:29:52 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -497,6 +497,14 @@ public class JMethodDeclaration extends JMemberDeclaration {
     public JFormalParameter[] getArgs() {
         return parameters;
     }
+    
+    public void setReturnType(CType returnType) {
+        this.returnType = returnType;
+    }
+
+    public void setParameters(JFormalParameter[] newFormalParams) {
+        this.parameters = newFormalParams;
+    }
 
     public String getIdent() {
         return ident;
@@ -543,4 +551,6 @@ public class JMethodDeclaration extends JMemberDeclaration {
     protected JBlock body;
     protected CTypeVariable[] typeVariables;
     private ArrayList bridgesToPrint;
+    
+
 }
