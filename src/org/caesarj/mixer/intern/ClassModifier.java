@@ -91,9 +91,9 @@ public class ClassModifier
     	}
     	String[] outers = (String[])outerClasses.toArray( new String[0]);
     	
-    	System.out.println(
-    			" outer of old super: "+outerOfOldSuper+
-				"\n outer of new super: "+outerOfNewSuper);
+//    	System.out.println(
+//    			" outer of old super: "+outerOfOldSuper+
+//				"\n outer of new super: "+outerOfNewSuper);
     			
     	// tranform class
     	ClassModifyingVisitor visitor = 
