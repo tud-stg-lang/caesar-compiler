@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldAccessExpression.java,v 1.12 2004-11-16 10:43:01 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.13 2004-11-17 10:52:04 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -346,12 +346,8 @@ public class JFieldAccessExpression extends JExpression {
         accessor.analyse(context);
         return accessor;
       }
-    } else {    
-     
-        if(getIdent().equals("n1")) {
-            boolean stop = true;
-        }
-        
+    } 
+    else { 
       // IVICA: insert cast
         if(!context.isLeftSide()) {
 	      CType castType = 
