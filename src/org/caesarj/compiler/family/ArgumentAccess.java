@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ArgumentAccess.java,v 1.1 2005-02-07 18:23:54 aracic Exp $
+ * $Id: ArgumentAccess.java,v 1.2 2005-02-09 16:51:12 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -47,7 +47,7 @@ public class ArgumentAccess extends MemberAccess {
         return argPos;
     }
     
-    protected Path clonePath() {
+    public Path clonePath() {
         return new ArgumentAccess(prefix==null ? null : prefix.clonePath(), type, argPos);
     }
 }

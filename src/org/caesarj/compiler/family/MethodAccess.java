@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: MethodAccess.java,v 1.1 2005-02-07 18:23:54 aracic Exp $
+ * $Id: MethodAccess.java,v 1.2 2005-02-09 16:50:48 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -58,7 +58,7 @@ public class MethodAccess extends MemberAccess {
         return typePathHead._normalize(typePathHeadPred, typePath);
     }
     
-    protected Path clonePath() {
+    public Path clonePath() {
         return new MethodAccess(prefix==null ? null : prefix.clonePath(), name, type);
     }
 }

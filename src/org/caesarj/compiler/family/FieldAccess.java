@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: FieldAccess.java,v 1.11 2005-02-07 18:23:54 aracic Exp $
+ * $Id: FieldAccess.java,v 1.12 2005-02-09 16:50:54 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -39,7 +39,7 @@ public class FieldAccess extends MemberAccess {
         super(prefix, field, type);
     }
     
-    protected Path clonePath() {
+    public Path clonePath() {
         return new FieldAccess(prefix==null ? null : prefix.clonePath(), name, type);
     }
 }
