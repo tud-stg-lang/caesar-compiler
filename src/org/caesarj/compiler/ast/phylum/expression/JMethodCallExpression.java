@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodCallExpression.java,v 1.10 2004-10-18 15:00:12 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.11 2004-11-02 18:00:48 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -23,6 +23,7 @@ package org.caesarj.compiler.ast.phylum.expression;
 import org.caesarj.compiler.ast.CMethodNotFoundError;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.AdditionalGenerationContext;
@@ -132,17 +133,53 @@ public class JMethodCallExpression extends JExpression
 	{
 		TypeFactory factory = context.getTypeFactory();
 
-		if (analysed)
-		{
-			return this;
-		}
+		if (analysed) { return this; }
 		
 		//Walter: this method is called now 
 		//rather than analise the args directly
 		CType[] argTypes = getArgumentTypes(context, args, factory);
 		CClass local = context.getClassContext().getCClass();
 
-		findMethod(context, local, argTypes);
+		if(local.isMixin() && prefix == null) {
+		    // IVICA: this part is quite tricky :(
+		    // the problem is, when accessing a cclass method with prefix == null
+		    // but the searched method is in one of the outer classes, we have to search in
+		    // interfaces, but our context is mixin implementation itself
+		    // so we do the following:
+		    try {
+		        // start searching the method in this
+		        prefix = new JThisExpression(getTokenReference());
+		        findMethod(context, local, argTypes);
+		    }
+		    catch(PositionedError e) {
+		        // if there is no method in this, go to the mixin interface owner of 
+		        // the mixin implementation
+		        CClass clazz = local.getMixinInterface().getOwner();
+		        
+		        // successivelly append outer() calls
+		        // outer().m() ?
+		        // outer().outer().m() ?
+		        // etc.
+		        boolean found = false;
+		        while(!found && clazz != null) {
+		            prefix = new CjOuterExpression(getTokenReference(), clazz.getAbstractType());
+		            try {
+		                findMethod(context, local, argTypes);
+		                found = true;
+		            }
+		            catch (PositionedError e2) {
+		                clazz = clazz.getOwner();		                
+                    }
+		        }
+		        
+                if(!found)
+                    throw new PositionedError(getTokenReference(), CaesarMessages.FATAL_ERROR);
+            }
+		}
+		else {
+		    findMethod(context, local, argTypes);
+		}
+		
 
  		CReferenceType[] exceptions = method.getThrowables();
 
@@ -175,7 +212,13 @@ public class JMethodCallExpression extends JExpression
 			}
 			else
 			{
-				prefix = new JOwnerExpression(getTokenReference(), access);
+			    // IVICA    
+			    if(local.isMixin()) {
+			        prefix = new CjOuterExpression(getTokenReference(), access.getAbstractType());
+			    }			    
+			    else {
+			        prefix = new JOwnerExpression(getTokenReference(), access);
+			    }
 			}
 			prefix = prefix.analyse(context);
 		}
@@ -548,6 +591,10 @@ public class JMethodCallExpression extends JExpression
             args[i].accept(s);
         }
     }
+
+	public CType getPrefixType() {
+        return prefixType;
+    }
 	
 	// ----------------------------------------------------------------------
 	// DATA MEMBERS
@@ -560,4 +607,5 @@ public class JMethodCallExpression extends JExpression
 	protected CMethod method;
 	protected CType type;
 	protected CType prefixType;
+    
 }
