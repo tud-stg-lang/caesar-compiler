@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: FormattedException.java,v 1.5 2004-11-17 10:07:15 aracic Exp $
+ * $Id: FormattedException.java,v 1.6 2005-01-20 13:42:39 klose Exp $
  */
 
 package org.caesarj.util;
@@ -104,5 +104,10 @@ public class FormattedException extends Exception {
   // DATA MEMBERS
   // ----------------------------------------------------------------------
 
+  public Object[] getMessageParameters(){
+      return message.getParams();
+  }
+  
+  
   private final Message		message;
 }
