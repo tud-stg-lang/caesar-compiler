@@ -15,12 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CVirtualClassNameType.java,v 1.1 2004-10-28 13:11:48 aracic Exp $
+ * $Id: CVirtualClassNameType.java,v 1.2 2004-10-28 16:07:48 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
 
 import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.util.UnpositionedError;
@@ -36,7 +37,8 @@ public class CVirtualClassNameType extends CClassNameType {
 
 
 	public CType checkType(CTypeContext context) throws UnpositionedError {
-	    if(context.getClassContext().getCClass().isNested()) {
+	    CClassContext classContext = context.getClassContext(); 
+	    if(classContext != null && classContext.getCClass().isNested()) {
 	        
 	        if (qualifiedName.indexOf('/') >= 0)
 	            throw new UnpositionedError(CaesarMessages.CCLASS_EXTENDS_ONLY_IDENTIFIER_ALLOWED);
