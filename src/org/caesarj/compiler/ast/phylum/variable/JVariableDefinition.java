@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JVariableDefinition.java,v 1.8 2005-01-14 13:33:48 aracic Exp $
+ * $Id: JVariableDefinition.java,v 1.9 2005-01-14 17:46:25 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -28,6 +28,8 @@ import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.types.CArrayType;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CDependentNameType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
@@ -126,8 +128,15 @@ public class JVariableDefinition extends JLocalVariable {
 
         try {
             type = type.checkType(context);
-        } catch (UnpositionedError cue) {
-            throw cue.addPosition(getTokenReference());
+        } catch (UnpositionedError cue) {            
+            try {
+                type = 
+                    new CDependentNameType(((CClassNameType)type).getQualifiedName()) 
+                		.checkType(context);
+            }
+            catch (UnpositionedError cue2) {
+	            throw cue2.addPosition(getTokenReference());
+            }            
         }
         if (!type.isPrimitive()) {
             // JLS 6.6.1
