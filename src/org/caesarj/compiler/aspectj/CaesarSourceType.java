@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarSourceType.java,v 1.10 2005-03-31 14:06:10 thiago Exp $
+ * $Id: CaesarSourceType.java,v 1.11 2005-04-04 09:45:48 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -252,9 +252,10 @@ public class CaesarSourceType extends ConcreteName implements Constants {
 			for (int i = 0; i < decs.length; i++) {
 				declares.add(decs[i]);
 			}
-
 		}
-
 	}
-
+	
+	public boolean isExposedToWeaver() { 
+		return true; 
+	}
 }
