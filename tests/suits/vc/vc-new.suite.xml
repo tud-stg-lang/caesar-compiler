@@ -85,7 +85,7 @@
     </compile-check-error>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="METHOD_NOTFOUND"  id="vcnew007" description="constructing non-existing inner class">
+    <compile-check-error error="METHOD_NOT_FOUND"  id="vcnew007" description="constructing non-existing inner class">
         <code>
         	public cclass OuterA {
 				public cclass InnerA {
