@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.3 2004-07-09 10:11:18 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.4 2004-07-09 13:24:41 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -30,14 +30,14 @@ import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.statement.JBlock;
+import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
-import org.caesarj.compiler.ast.templates.TDefVirtualClassCtorDeclaration;
 import org.caesarj.compiler.cclass.CaesarTypeNode;
 import org.caesarj.compiler.cclass.CaesarTypeSystem;
 import org.caesarj.compiler.cclass.JavaQualifiedName;
 import org.caesarj.compiler.cclass.JavaTypeNode;
 import org.caesarj.compiler.constants.CaesarMessages;
-import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceField;
@@ -228,184 +228,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         
         javaTypeNode.setCClass(getCClass());
         javaTypeNode.setDeclaration(this);
-        
-        CClassContext cc = context.getClassContext();
-        
-        CType outerType = null;
-        
-        // add outer variable
-        if(getCClass().getOwner() != null) {
-            this.modifiers |= ACC_STATIC;
-            getCClass().setModifiers(this.modifiers);
-            
-            /*
-            outerType = 
-            	javaTypeNode.getOuter().getDeclaration().getMixinIfcDeclaration().getCClass().getAbstractType();
-    		*/
-                
-            String qn = new JavaQualifiedName(getCClass().getOwner().getQualifiedName()).convertToIfcName().toString();
-            outerType = context.getClassReader().loadClass(context.getTypeFactory(), qn).getAbstractType();
-            
-            JFieldDeclaration outerField = new JFieldDeclaration(
-        		getTokenReference(),
-				new JVariableDefinition(
-					getTokenReference(),
-					ACC_FINAL | ACC_PRIVATE,
-					outerType, // type
-					"$outer",
-					null
-				),
-				true,
-				null, null
-    		);
-            
-            addField(outerField);
-        }
-        
-        // add default ctor
-        addMethod(
-    		new TDefVirtualClassCtorDeclaration(
-				getTokenReference(),
-				ACC_PUBLIC,
-				getIdent(),
-				outerType,
-				context.getTypeFactory()
-			)
-		);
-        
-//      -------------------- cut here -------------------------------------
-        // CTODO move this outside of this method -> a separated step
-        /*
-         * check name clashes if we have more than one parent
-         */        
-        /*
-        if(typeNode.getParents().size() > 1) {            
 
-            CaesarTypeNode joinPoint = null;
-            
-            // check the class first
-            try {
-                typeNode.getTopmostNode();
-                
-                // search for the first inheritance join point
-                joinPoint = typeNode.findFirstInheritanceJoinPoint();
-            }
-            catch(Exception e) {
-                throw new PositionedError(
-                    getTokenReference(), 
-                    CaesarMessages.NAME_CLASH,
-                    typeNode.getQualifiedName()
-                );
-            }
-            
-            // now check the fields and methods
-            // they are compatible, when they exist in the joinPoint class with same signature
-            CClass joinPointClass = 
-                typeSystem.getJavaGraph().getJavaTypeNode(joinPoint).getCClass();               
-            
-            CClass typeNodeClass =
-                typeSystem.getJavaGraph().getJavaTypeNode(typeNode).getCClass();
-            
-            // methods                
-            HashMap sigMemberMap = new HashMap();
-            HashMap sigCollisionMap = new HashMap();
-            
-            for (Iterator it = typeNode.getParents().iterator(); it.hasNext();) {
-                CaesarTypeNode parent = (CaesarTypeNode) it.next();
-                JavaTypeNode parentJavaType = typeSystem.getJavaGraph().getJavaTypeNode(parent);
-                CClass parentCClass = parentJavaType.getCClass();
-                                    
-                for (int i = 0; i < parentCClass.getMethods().length; i++) {
-                    CMethod m = parentCClass.getMethods()[i];
-                    if(!m.isConstructor()) {
-                        String sig = m.getIdent()+m.getSignature();
-                        sigMemberMap.put(sig, m);
-                        Integer count = (Integer)sigCollisionMap.get(sig);
-                        count = count==null ? new Integer(1) : new Integer(count.intValue()+1);
-                        sigCollisionMap.put(sig, count);
-                    }
-                }
-                
-            }
-            
-            for (Iterator collisionIt = sigCollisionMap.entrySet().iterator(); collisionIt.hasNext();) {
-                Map.Entry item = (Map.Entry) collisionIt.next();
-                if(((Integer)item.getValue()).intValue() > 1) {
-                    CMethod m = (CMethod)sigMemberMap.get(item.getKey());
-                    
-                    try {
-                        CMethod res = joinPointClass.lookupMethod(
-                            context,
-                            typeNodeClass,
-                            null,
-                            m.getIdent(),
-                            m.getParameters(),
-                            CReferenceType.EMPTY
-                        );
-                    
-                        if(res == null)
-                            throw new Exception();
-                    }
-                    catch (Throwable e) {
-                        throw new PositionedError(
-                            getTokenReference(),
-                            CaesarMessages.NAME_CLASH,
-                            m.getIdent()
-                        );
-                    }
-                        
-                }
-            }               
-            
-            // fields
-            sigMemberMap.clear();
-            sigCollisionMap.clear();
-            
-            for (Iterator it = typeNode.getParents().iterator(); it.hasNext();) {
-                CaesarTypeNode parent = (CaesarTypeNode) it.next();
-                JavaTypeNode parentJavaType = typeSystem.getJavaGraph().getJavaTypeNode(parent);
-                CClass parentCClass = parentJavaType.getCClass();
-                                    
-                for (int i = 0; i < parentCClass.getFields().length; i++) {
-                    CField f = parentCClass.getFields()[i];
-                
-                    String sig = f.getIdent();
-                    sigMemberMap.put(sig, f);
-                    Integer count = (Integer)sigCollisionMap.get(sig);
-                    count = count==null ? new Integer(1) : new Integer(count.intValue()+1);
-                    sigCollisionMap.put(sig, count);                
-                }
-                
-            }
-            
-            for (Iterator collisionIt = sigCollisionMap.entrySet().iterator(); collisionIt.hasNext();) {
-                Map.Entry item = (Map.Entry) collisionIt.next();
-                if(((Integer)item.getValue()).intValue() > 1) {
-                    CField f = (CField)sigMemberMap.get(item.getKey());
-                    
-                    try {
-                        CField res = joinPointClass.lookupField(
-                            typeNodeClass,
-                            null,
-                            f.getIdent()
-                        );
-                    
-                        if(res == null)
-                            throw new Exception();
-                    }
-                    catch (Throwable e) {
-                        throw new PositionedError(
-                            getTokenReference(),
-                            CaesarMessages.NAME_CLASH,
-                            f.getIdent()
-                        );
-                    }
-                        
-                }
-            }                        
-        }
-//      -------------------- cut here -------------------------------------
-        */
         /*
          * add implicit subtypes
          */ 
@@ -487,7 +310,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         
         getMixinIfcDeclaration().addInners(
             (JTypeDeclaration[])newIfcs.toArray(new JTypeDeclaration[newIfcs.size()])
-        );
+        );        
     }   
     
     /**
@@ -545,7 +368,79 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
      * super implementation of the method also.
      */
     public void checkInterface(CContext context) throws PositionedError {
-		super.checkInterface(context);
+        // add outer variable
+    	CType outerType = null;
+    	
+        if(getCClass().getOwner() != null) {
+            this.modifiers |= ACC_STATIC;
+            getCClass().setModifiers(this.modifiers);
+            
+            outerType = context.getClassReader().loadClass(
+        		context.getTypeFactory(), 
+				getCClass().getOwner().convertToIfcQn()
+			).getAbstractType();
+            
+            JFieldDeclaration outerField = new JFieldDeclaration(
+        		getTokenReference(),
+				new JVariableDefinition(
+					getTokenReference(),
+					ACC_FINAL | ACC_PRIVATE,
+					outerType, // type
+					"$outer",
+					null
+				),
+				true,
+				null, null
+    		);
+            
+            addField(outerField);
+        }
+        
+        // search for default ctor
+        int ctorIndex = -1;
+        for (int i = 0; i < methods.length; i++) {
+			if(methods[i] instanceof JConstructorDeclaration) {
+				if(methods[i].getParameters().length == 0) {
+					ctorIndex = i;
+				}
+				else {
+					throw new PositionedError(
+						methods[i].getTokenReference(),
+						CaesarMessages.ONLY_DEF_CTOR_ALLOWED
+					);
+				}
+			}
+		}
+                
+        if(ctorIndex != -1) {
+        	// we've found def ctor and only the def ctor
+        	methods[ctorIndex] = new CjVirtualClassCtorDeclaration(
+				methods[ctorIndex].getTokenReference(),
+				ACC_PUBLIC,
+				getIdent(),
+				outerType,
+				new JBlock(
+					methods[ctorIndex].getTokenReference(), 
+					((JConstructorBlock)methods[ctorIndex].getBlockBody()).getBody(), 
+					null
+				),
+				context.getTypeFactory()
+			);
+        }
+        else {
+	        // add default ctor
+	        addMethod(
+	    		new CjVirtualClassCtorDeclaration(
+					getTokenReference(),
+					ACC_PUBLIC,
+					getIdent(),
+					outerType,
+					context.getTypeFactory()
+				)
+			);
+        }
+    	
+    	super.checkInterface(context);
 		
 		// CTODO: check inheritance of full throwable list on method redefinition
     }
