@@ -31,7 +31,14 @@ public class CClassPreparation implements CaesarConstants {
     private CClassPreparation() {
     }
 
-    
+    /* CLASS PREPARATION BLOCK
+     * 
+     * This step is done before joinAll step
+     * 
+     * - generate cclass interface
+     * - add implements cclass interface
+     * - rename types in extends to *_Impl
+     */    
     public void prepareCaesarClass(
         KjcEnvironment environment,
         JCompilationUnit cu
@@ -43,42 +50,6 @@ public class CClassPreparation implements CaesarConstants {
 		KjcEnvironment environment,
 		InnerAccessor innerAccessor
     ) {
-        /*
-		List newTypeDeclarations = new ArrayList();
-		JTypeDeclaration typeDeclarations[] = innerAccessor.getInners();
-		for (int i = 0; i < typeDeclarations.length; i++) {
-
-			newTypeDeclarations.add(typeDeclarations[i]);
-
-			if (typeDeclarations[i] instanceof CjClassDeclaration) {
-
-				CjClassDeclaration caesarClass =
-					(CjClassDeclaration) typeDeclarations[i];
-
-				CClassFactory utils =
-					new CClassFactory(caesarClass, environment);
-
-				// create class interface							
-				newTypeDeclarations.add(utils.createCaesarClassInterface());
-                
-                // rename the class, add implements and rename supertype  
-                utils.modifyCaesarClass();
-
-
-				if (caesarClass.getInners().length > 0) {
-					//consider nested types
-                    prepareCaesarClass(
-						environment, new ClassDeclarationInnerAccessor(caesarClass));
-				}
-			}
-		}
-        
-        
-		innerAccessor.setInners(
-			(JTypeDeclaration[]) newTypeDeclarations.toArray(
-				new JTypeDeclaration[0]));
-        */   
-        
         List newTypeDeclarations = new ArrayList();
         JTypeDeclaration typeDeclarations[] = innerAccessor.getInners();
         
@@ -88,14 +59,14 @@ public class CClassPreparation implements CaesarConstants {
                 CjClassDeclaration caesarClass =
                     (CjClassDeclaration) typeDeclarations[i];
 
-                CClassFactory utils =
+                CClassFactory factory =
                     new CClassFactory(caesarClass, environment);
 
                 // create class interface                           
-                newTypeDeclarations.add(utils.createCaesarClassInterface());
+                newTypeDeclarations.add(factory.createCaesarClassInterface());
         
                 // rename the class, add implements cclass interface and rename supertype  
-                utils.modifyCaesarClass();
+                factory.modifyCaesarClass();
 
                 if (caesarClass.getInners().length > 0) {
                     //consider nested types
@@ -105,7 +76,7 @@ public class CClassPreparation implements CaesarConstants {
                 
                 // this has to be called after inner types have been handled
                 // (for creating cclass interface inner source class exports)
-                utils.addCaesarClassInterfaceInners();
+                factory.addCaesarClassInterfaceInners();
             }
         }
 
@@ -115,6 +86,49 @@ public class CClassPreparation implements CaesarConstants {
                 new JTypeDeclaration[0]));             
 	}
 
+        
+    /* CLASS TRANSFORMATION BLOCK
+     * 
+     * This step is done after joinAll step
+     * 
+     * - generate factory methods <Type> $new<Type>(cp_1, ..., cp_n) {...}
+     * - ... more to come ...
+     */    
+    public void prepareVirtualClasses(
+        KjcEnvironment environment,
+        JCompilationUnit cu
+    ) {
+        prepareVirtualClasses(environment, new CompilationUnitInnerAccessor(cu));
+    }
+
+    private void prepareVirtualClasses(
+        KjcEnvironment environment,
+        InnerAccessor innerAccessor
+    ) {        
+        JTypeDeclaration typeDeclarations[] = innerAccessor.getInners();
+        
+        for (int i = 0; i < typeDeclarations.length; i++) {
+            if (typeDeclarations[i] instanceof CjClassDeclaration) {
+
+                CjClassDeclaration caesarClass =
+                    (CjClassDeclaration) typeDeclarations[i];
+
+                CClassFactory factory =
+                    new CClassFactory(caesarClass, environment);
+
+                factory.addNotExplicitDeclaredVirtualClasses();
+                factory.addCreateMethods();
+                factory.checkImplicitVirtualClassSuperType();
+
+                if(caesarClass.getInners().length > 0) {                    
+                    //consider nested types
+                    prepareVirtualClasses(
+                        environment, new ClassDeclarationInnerAccessor(caesarClass));
+                }        
+            }
+        }
+    }
+    
 
     /**
      * Offers common access interface for cu and class inners

@@ -104,7 +104,7 @@ public class Main extends MainSuper implements Constants {
             return false;
         }
 
-        
+
         JCompilationUnit[] tree = parseFiles(environment);    
         if(errorFound) return false;
         
@@ -119,23 +119,17 @@ public class Main extends MainSuper implements Constants {
         
         checkAllConstructorInterfaces(tree);
         
-        // CTODO prepareVirtualClasses: 
-        // - transform inner class supertype 
-        // - generate factory methods        
+        prepareVirtualClasses(environment, tree); // NOT IMPLEMENTED YET
         
-        generateSourceDependencyGraph(tree);
-        dependencyGraph.debug();
+        generateSourceDependencyGraph(tree);        
 
-        CompilerPass compilerPass = 
-            generateCompilerPassInfo();
+        CompilerPass compilerPass = generateCompilerPassInfo();
             
         while(compilerPass != null) {       
-            System.out.println("--- pass: "+environment.getCompilerPass());
+            System.out.println("--- pass: " + environment.getCompilerPass());
             compilerPass.begin();
             {
-                // CTODO mix classes
-                // - get all types which can be mixed from compilerPass
-                // - mix it (weaver! generated code also as input for weaver?)
+                mixTypes(compilerPass); // NOT IMPLEMENTED YET
                 
                 checkAllInterfaces(tree);
                 if(errorFound) return false;
@@ -156,13 +150,12 @@ public class Main extends MainSuper implements Constants {
 
         tree = null;
         
-        if(!noWeaveMode()) {        
+        if(!noWeaveMode())      
             weaveGeneratedCode(environment.getTypeFactory());
-        }
-                
-        if (verboseMode()) {
+        
+
+        if(verboseMode())
             inform(CaesarMessages.COMPILATION_ENDED);
-        }
 
         CodeSequence.endSession();
         return true;
@@ -170,6 +163,24 @@ public class Main extends MainSuper implements Constants {
 
 
     /**
+     * check which classes can be composed in this compiler pass
+     */
+    protected void mixTypes(CompilerPass compilerPass) {
+        System.out.println("mixClasses");
+	}
+
+	protected void prepareVirtualClasses(
+        KjcEnvironment environment,
+        JCompilationUnit[] tree) {
+        System.out.println("prepareVirtualClasses");
+        for (int i = 0; i < tree.length; i++) {
+            JCompilationUnit cu = tree[i];
+            CClassPreparation.instance().prepareVirtualClasses(environment, cu);
+        }
+    }
+
+
+	/**
      * Here CompilerPassInfo List gets created
      */
     protected CompilerPass generateCompilerPassInfo() {        
@@ -248,6 +259,8 @@ public class Main extends MainSuper implements Constants {
         }
         
         dependencyGraph.calculateLevels();
+        
+        dependencyGraph.debug();
     }
 
     // IVICA 

@@ -179,13 +179,7 @@ public class CClassFactory implements CaesarConstants {
 
 	}
 
-	/**
-	 * Modifes the aspect class.
-	 * Makes it implement the aspectInterface, adds the required methods 
-	 * and adds a private deploymentThread field.
-	 */
 	public void modifyCaesarClass() {
-
 		caesarClass.addInterface(
 			new CClassNameType(interfaceName));
             
@@ -214,4 +208,27 @@ public class CClassFactory implements CaesarConstants {
         return res.toString();
     }
 
+
+    /**
+     * adds virutal classes not explicite declared in SubHierarchy 
+     */
+    public void addNotExplicitDeclaredVirtualClasses() {
+        
+    }
+
+    /**
+     * for all constructos H.X.C_n(c_n1, ..., c_nm) 
+     * -> H {... H.X $newX(c_n1, ... c_nm) ...} 
+     */
+	public void addCreateMethods() {
+        
+	}
+    
+    /**
+     * if H.X exists then
+     * H'.X -> H'.X extends H.X  
+     */
+    public void checkImplicitVirtualClassSuperType() {
+        
+    }
 }
