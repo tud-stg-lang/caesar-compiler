@@ -18,8 +18,8 @@ VC_9 - 23.07.2004
 
 VC_8 - 08.07.2004
 - inner cclass always static ->
-	* outer passed as extra ctor parameter (work todo)
-	* outer accessed via interface (work todo)
+	* outer passed as extra ctor parameter
+	* outer accessed via interface
 
 
 VC_7 - ??.07.2004
