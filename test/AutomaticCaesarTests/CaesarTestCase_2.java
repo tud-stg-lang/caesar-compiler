@@ -13,11 +13,14 @@ public class CaesarTestCase_2 extends TestCase {
 	public String expectedResult =
 		":before foo:before exec foo:before exec foo:before exec foo:foo:after exec foo:after exec foo";
 
+    public void bar() {
+    	test();
+    }
 	public void test() {
 
-		deploy(new Aspect_2_Sub()) {
+//		deploy(new Aspect_2_Sub()) {
 			foo();
-		}
+//		}
 
 		assertEquals(expectedResult, result.toString());
 	}
@@ -29,12 +32,18 @@ public class CaesarTestCase_2 extends TestCase {
 
 deployed class StaticAspect_2 {
 
-	pointcut callFoo() : call(* CaesarTestCase_2.foo());
+	pointcut callFoo() : cflow(call(* CaesarTestCase_2.test())) && call(* CaesarTestCase_2.foo());
 
 	before() : callFoo() {
 		CaesarTestCase_2.result.append(":before foo");
 	}
 
+}
+/*
+deployed class StaticAspect_2_Sub extends StaticAspect_2 {
+	after() : callFoo() {
+		System.out.println("Hallo");
+	}
 }
 
 crosscutting class Aspect_2 {
@@ -56,3 +65,4 @@ crosscutting class Aspect_2_Sub extends Aspect_2 {
 		CaesarTestCase_2.result.append(":after exec foo");
 	}
 }
+*/
