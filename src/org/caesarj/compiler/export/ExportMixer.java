@@ -105,6 +105,7 @@ public class ExportMixer {
         
     /**
      * Generates Mixin List from a export object
+     * CTODO this doesn't work, cause we're working on interfaces
      */
     private List generateMixinList(CClass clazz) {
         List res = new ArrayList();

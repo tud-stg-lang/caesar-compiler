@@ -38,8 +38,8 @@ public class CCompositeNameType extends CClassNameType {
             String mixedClassName = ExportMixer.instance().generateClassName(mixinList);
             
             // CTODO
-            //return new CCompositeType("$gen."+mixedClassName, checkedInterfaceTypes, checkedImplTypes);
-            return checkedImplTypes[0];
+            return new CCompositeType("$gen/"+mixedClassName, checkedInterfaceTypes, checkedImplTypes);
+            //return checkedImplTypes[0];
         }
         catch (Exception e) {
             // CTODO create correct error message

@@ -1,12 +1,7 @@
 package org.caesarj.compiler.types;
 
-import java.security.MessageDigest;
-
-import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CTypeContext;
-import org.caesarj.compiler.export.CBadClass;
-import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.export.ExportMixer;
+import org.caesarj.compiler.export.CCjCompositeClassProxy;
 import org.caesarj.util.UnpositionedError;
 
 /**
@@ -20,17 +15,18 @@ public class CCompositeType extends CReferenceType {
         CReferenceType checkedInterfaceTypes[],
         CReferenceType checkedImplTypes[]
     ) {
-        super(new CBadClass(qualifiedName));
+        super(new CCjCompositeClassProxy(qualifiedName));
         this.qualifiedName = qualifiedName;
         this.checkedInterfaceTypes = checkedInterfaceTypes;
         this.checkedImplTypes = checkedImplTypes;        
     }
     
-    
-	public CType checkType() throws UnpositionedError {
-        // CTODO this one should return the final biary representation of the type
-        // return this for now
-        return this;        
+	public CType checkType(CTypeContext context) throws UnpositionedError {
+        // at this time point mixed type should be generated an ready to load
+        CReferenceType type = 
+            context.getTypeFactory().createType(getQualifiedName(), true);
+            
+        return type.checkType(context);
     }
     
 	public String getQualifiedName() {
@@ -42,7 +38,7 @@ public class CCompositeType extends CReferenceType {
     }
 
     public CReferenceType[] getClassList() {
-        return checkedInterfaceTypes; 
+        return checkedImplTypes; 
     }
 
     // --------------------------------------------------------------
