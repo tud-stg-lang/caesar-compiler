@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClass.java,v 1.33 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CClass.java,v 1.34 2005-01-27 15:20:34 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -1383,6 +1383,10 @@ public abstract class CClass extends CMember
         System.arraycopy(methods, 0, tmp, 0, methods.length);
         System.arraycopy(m, 0, tmp, methods.length, m.length);
         methods = tmp;
+    }
+    
+    public void setMethods(CSourceMethod m[]) {
+        methods = m;
     }
 
 	/**
