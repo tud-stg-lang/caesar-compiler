@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.48 2004-09-07 14:26:37 aracic Exp $
+ * $Id: Caesar.g,v 1.49 2004-09-08 19:49:25 aracic Exp $
  */
 
 /*
@@ -850,7 +850,7 @@ jExplicitConstructorInvocation []
   )
   LPAREN args = jArgList[] RPAREN
   SEMI
-    { self = new CjConstructorCall(sourceRef, functorIsThis, expr, args); }
+    { self = new JConstructorCall(sourceRef, functorIsThis, expr, args); }
 ;
 
 jMethodDefinition [ParseClassContext context, int modifiers, CType type, CTypeVariable[] typeVariables]
@@ -1545,7 +1545,7 @@ jAssignmentExpression []
   self = jConditionalExpression[]
   (
     ASSIGN right = jAssignmentExpression[]
-      { self = new CjAssignmentExpression(self.getTokenReference(), self, right); }
+      { self = new JAssignmentExpression(self.getTokenReference(), self, right); }
   |
     oper = jCompoundAssignmentOperator[] right = jAssignmentExpression[]
       { self = new JCompoundAssignmentExpression(self.getTokenReference(), oper, self, right); }
@@ -1892,7 +1892,7 @@ jPostfixExpression[]
 	} else if(((JNameExpression)self).getName().equals("proceed")) {
 	  self = new CjProceedExpression(sourceRef, args);	
 	} else {
-	  self = new CjMethodCallExpression(sourceRef,
+	  self = new JMethodCallExpression(sourceRef,
 					   ((JNameExpression)self).getPrefix(),
 					   ((JNameExpression)self).getName(),
 					   args);

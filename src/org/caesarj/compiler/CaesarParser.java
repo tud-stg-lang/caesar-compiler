@@ -2591,7 +2591,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			match(RPAREN);
 			match(SEMI);
 			if ( inputState.guessing==0 ) {
-				self = new CjConstructorCall(sourceRef, functorIsThis, expr, args);
+				self = new JConstructorCall(sourceRef, functorIsThis, expr, args);
 			}
 			return self;
 		}
@@ -4083,7 +4083,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			match(ASSIGN);
 			right=jAssignmentExpression();
 			if ( inputState.guessing==0 ) {
-				self = new CjAssignmentExpression(self.getTokenReference(), self, right);
+				self = new JAssignmentExpression(self.getTokenReference(), self, right);
 			}
 			break;
 		}
@@ -5042,7 +5042,7 @@ private static final int MAX_LOOKAHEAD = 2;
 						} else if(((JNameExpression)self).getName().equals("proceed")) {
 						  self = new CjProceedExpression(sourceRef, args);	
 						} else {
-						  self = new CjMethodCallExpression(sourceRef,
+						  self = new JMethodCallExpression(sourceRef,
 										   ((JNameExpression)self).getPrefix(),
 										   ((JNameExpression)self).getName(),
 										   args);

@@ -259,8 +259,7 @@ public class DeploymentPreparation implements CaesarConstants {
 				constrArgs);
 		return new JExpressionStatement(
 			TokenReference.NO_REF,
-			new CjAssignmentExpression(TokenReference.NO_REF, left, right),
-			null);
+			new JAssignmentExpression(TokenReference.NO_REF, left, right),			null);
 	}
 
 	protected JClassBlock createSingletonAspectClinit()
@@ -271,7 +270,7 @@ public class DeploymentPreparation implements CaesarConstants {
 		JExpression prefix = new JTypeNameExpression(cd.getTokenReference(), type);
 
 		JExpression expr =
-			new CjMethodCallExpression(
+			new JMethodCallExpression(
 				cd.getTokenReference(),
 				prefix,
 				AJC_CLINIT_METHOD,

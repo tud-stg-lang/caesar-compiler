@@ -8,16 +8,16 @@ import org.caesarj.compiler.ast.phylum.declaration.CjAdviceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMemberDeclaration;
-import org.caesarj.compiler.ast.phylum.expression.CjMethodCallExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
 import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
 import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
-import org.caesarj.compiler.ast.visitor.VisitorSupport;
 import org.caesarj.compiler.ast.visitor.IVisitor;
+import org.caesarj.compiler.ast.visitor.VisitorSupport;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.util.TokenReference;
@@ -181,14 +181,14 @@ public class JoinPointReflectionVisitor implements IVisitor, CaesarConstants  {
 
 		JExpression[] args =
 			{
-				new CjMethodCallExpression(
+				new JMethodCallExpression(
 					where,
 					threadPrefix,
 					"currentThread",
 					JExpression.EMPTY)};
 
 		JExpression expr =
-			new CjMethodCallExpression(where, fieldExpr, DEPLOY_SELF_METHOD, args);
+			new JMethodCallExpression(where, fieldExpr, DEPLOY_SELF_METHOD, args);
 
 		JStatement[] body = { new JExpressionStatement(where, expr, null)};
 

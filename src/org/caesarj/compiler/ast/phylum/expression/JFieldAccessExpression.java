@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldAccessExpression.java,v 1.5 2004-09-06 13:31:35 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.6 2004-09-08 19:50:28 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -258,12 +258,11 @@ public class JFieldAccessExpression extends JExpression {
 		CCjPrivilegedField privField = (CCjPrivilegedField) field;
 
 		JExpression[] args = { prefix };
-		CjMethodCallExpression methodCallExpr =
-			new CjMethodCallExpression(
+		JMethodCallExpression methodCallExpr =
+			new JMethodCallExpression(
 				getTokenReference(),
 				prefix,
 				privField.getAccessMethod(!context.isLeftSide()),
-				args,
 				args);
 
 		return methodCallExpr;
