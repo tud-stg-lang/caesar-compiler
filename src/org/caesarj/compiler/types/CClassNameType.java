@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassNameType.java,v 1.7 2004-11-18 15:09:45 aracic Exp $
+ * $Id: CClassNameType.java,v 1.8 2004-11-19 13:04:05 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -23,6 +23,7 @@ package org.caesarj.compiler.types;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
@@ -30,10 +31,11 @@ import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.export.CMember;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -129,20 +131,22 @@ public class CClassNameType extends CReferenceType
 	    return expr;
 	}
 	
-	private CMember[] makePos(CTypeContext context) {
+	private JPhylum[] makePos(CTypeContext context) {
         List list = new LinkedList();
         
-	    if(context instanceof CBlockContext) {
-            list.add(0, ((CBlockContext)context).getMethodContext().getCMethod());
-        } 
-	    else if(context instanceof CExpressionContext) {
-	        list.add(0, ((CExpressionContext)context).getMethodContext().getCMethod());
+        
+        
+	    if(context instanceof CContext) {
+	        CMethodContext methodCtx = ((CContext)context).getMethodContext();
+	        if(methodCtx != null) {
+	            list.add(0, methodCtx.getMethodDeclaration());
+	        }
         }
 	    
 	    CClassContext clsCtx = context.getClassContext();
 	    
 	    while(clsCtx != null) {
-	        list.add(0, clsCtx.getCClass());
+	        list.add(0, clsCtx.getTypeDeclaration());
 	        if(clsCtx.getParentContext() instanceof CClassContext) {
 	            clsCtx = (CClassContext)clsCtx.getParentContext();
 	        }
@@ -151,15 +155,8 @@ public class CClassNameType extends CReferenceType
 	        }
 	    }
 	    
-	    return (CMember[])list.toArray(new CMember[list.size()]);
-    }
-	
-	private String[] makePath() {
-	    String pathSegs[] = qualifiedName.split("/");
-	    String resPath[] = new String[pathSegs.length - 1];
-	    System.arraycopy(pathSegs, 0, resPath, 0, resPath.length);
-	    return resPath;
-    }
+	    return (JPhylum[])list.toArray(new JPhylum[list.size()]);
+    }	
 	
 	/**
 	 * check that type is valid
@@ -205,7 +202,7 @@ public class CClassNameType extends CReferenceType
 	                );
 	                
 	                return 
-	                	new CDependentType(makePos(context), makePath(), clazz.getAbstractType());
+	                	new CDependentType(makePos(context), expr, clazz.getAbstractType());
                 }
             }
             catch (Exception e) {
