@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import org.caesarj.compiler.Log;
 import org.caesarj.compiler.typesys.graph.CaesarTypeGraph;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
 import org.caesarj.compiler.typesys.graph.OuterInnerRelation;
@@ -16,8 +16,6 @@ import org.caesarj.compiler.typesys.graph.OuterInnerRelation;
  */
 public class DumpTypesVisitor implements ICaesarTypeVisitor {
 	
-    private static Logger log = Logger.getLogger(DumpTypesVisitor.class);
-    
 	private final CaesarTypeGraph g;
 	private final TreeSet s;
 	
@@ -53,7 +51,7 @@ public class DumpTypesVisitor implements ICaesarTypeVisitor {
 			sb.append(it.next()+"\n\n");			
 		}
     	
-    	log.debug("========== Caesar Type Graph ==========\n"+sb.toString()+"\n\n");
+    	Log.verbose("========== Caesar Type Graph ==========\n"+sb.toString()+"\n\n");
     	
     	s.clear();
 	}

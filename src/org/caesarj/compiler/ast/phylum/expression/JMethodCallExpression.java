@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodCallExpression.java,v 1.11 2004-11-02 18:00:48 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.12 2004-11-23 09:35:03 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -23,7 +23,6 @@ package org.caesarj.compiler.ast.phylum.expression;
 import org.caesarj.compiler.ast.CMethodNotFoundError;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
-import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.AdditionalGenerationContext;
@@ -173,7 +172,7 @@ public class JMethodCallExpression extends JExpression
 		        }
 		        
                 if(!found)
-                    throw new PositionedError(getTokenReference(), CaesarMessages.FATAL_ERROR);
+                    throw e;
             }
 		}
 		else {

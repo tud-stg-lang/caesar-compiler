@@ -15,26 +15,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassNameType.java,v 1.11 2004-11-19 16:24:18 aracic Exp $
+ * $Id: CClassNameType.java,v 1.12 2004-11-23 09:35:03 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CBodyContext;
-import org.caesarj.compiler.context.CClassBodyContext;
 import org.caesarj.compiler.context.CClassContext;
-import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
-import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.util.InconsistencyException;
@@ -132,35 +125,6 @@ public class CClassNameType extends CReferenceType
 	    return expr;
 	}
 	
-	private JPhylum[] makePos(CTypeContext context) {
-        List list = new LinkedList();
-        
-        
-        
-	    if(context instanceof CContext) {
-	        CMethodContext methodCtx = ((CContext)context).getMethodContext();
-	        if(methodCtx != null) {
-	            if(methodCtx.getMethodDeclaration().getIdent().equals(CClassBodyContext.METHOD_NAME)) {
-	                list.add(0, methodCtx.getMethodDeclaration());
-	            }
-	        }
-        }
-	    
-	    CClassContext clsCtx = context.getClassContext();
-	    
-	    while(clsCtx != null) {
-	        list.add(0, clsCtx.getTypeDeclaration());
-	        if(clsCtx.getParentContext() instanceof CClassContext) {
-	            clsCtx = (CClassContext)clsCtx.getParentContext();
-	        }
-	        else {
-	            clsCtx = null;
-	        }
-	    }
-	    
-	    return (JPhylum[])list.toArray(new JPhylum[list.size()]);
-    }	
-	
 	/**
 	 * check that type is valid
 	 * necessary to resolve String into java/lang/String
@@ -204,9 +168,7 @@ public class CClassNameType extends CReferenceType
 	                    expr.getType(context.getTypeFactory()).getCClass().getQualifiedName()+"$"+pathSegs[pathSegs.length-1]
 	                );
 	                
-	                JPhylum[] pos = makePos(context);
-	                
-	                return new CDependentType(pos, expr, clazz.getAbstractType());
+	                return new CDependentType(expr, clazz.getAbstractType());
                 }
             }
             catch (Exception e) {

@@ -1,6 +1,6 @@
 package org.caesarj.compiler.typesys;
 
-import org.apache.log4j.Logger;
+import org.caesarj.compiler.Log;
 import org.caesarj.compiler.typesys.graph.CaesarTypeGraph;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
@@ -16,8 +16,6 @@ import org.caesarj.compiler.typesys.visitor.MixinListVisitor;
  * @author Ivica Aracic
  */
 public class CaesarTypeSystem {
-    
-    private static Logger log = Logger.getLogger(CaesarTypeSystem.class); 
     
 	private CaesarTypeGraph caesarTypeGraph = new CaesarTypeGraph();
 	private JavaTypeGraph javaTypeGraph = new JavaTypeGraph();
@@ -42,8 +40,8 @@ public class CaesarTypeSystem {
         if(n != null)
             res = n.getQualifiedName().toString();
                     
-        log.debug(classQn+" in context of "+contextClassQn);
-        log.debug("\t->"+res);
+        Log.verbose(classQn+" in context of "+contextClassQn);
+        Log.verbose("\t->"+res);
         
         return res;
     }

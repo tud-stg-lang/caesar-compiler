@@ -32,7 +32,6 @@ import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarConstants;
-import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CCjMixinSourceClass;
@@ -47,10 +46,8 @@ import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CVoidType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
-import org.caesarj.compiler.typesys.CaesarTypeSystemException;
 import org.caesarj.compiler.typesys.java.JavaTypeNode;
 import org.caesarj.util.TokenReference;
-import org.caesarj.util.UnpositionedError;
 
 /**
  * ...
@@ -130,7 +127,7 @@ public class CClassPreparation implements CaesarConstants {
         KjcEnvironment environment,
 	    JavaTypeNode inner,
 	    CjVirtualClassDeclaration decl
-    ) throws CaesarTypeSystemException {
+    ) {
 	    TypeFactory typeFactory = environment.getTypeFactory();
         ClassReader classReader = environment.getClassReader();
         
@@ -316,45 +313,38 @@ public class CClassPreparation implements CaesarConstants {
     public void generateSupportMethods(
         CompilerBase compilerBase, 
         KjcEnvironment environment
-    ) throws UnpositionedError {
-        try {
-            CaesarTypeSystem caesarTypeSystem = environment.getCaesarTypeSystem();             
+    ) {
+        
+        CaesarTypeSystem caesarTypeSystem = environment.getCaesarTypeSystem();             
+                
+        Collection allTypes = caesarTypeSystem.getJavaTypeGraph().getAllTypes();        
+        
+        for (Iterator it = allTypes.iterator(); it.hasNext();) {
+            JavaTypeNode item = (JavaTypeNode)it.next();                        
+                       
+            CjVirtualClassDeclaration decl = item.getDeclaration();
+            if(decl != null) {                    
+                for (Iterator innerIt = item.getInners().iterator(); innerIt.hasNext();) {
+                    JavaTypeNode inner = (JavaTypeNode) innerIt.next();
                     
-            Collection allTypes = caesarTypeSystem.getJavaTypeGraph().getAllTypes();        
-            
-            for (Iterator it = allTypes.iterator(); it.hasNext();) {
-                JavaTypeNode item = (JavaTypeNode)it.next();                        
-                           
-                CjVirtualClassDeclaration decl = item.getDeclaration();
-                if(decl != null) {                    
-                    for (Iterator innerIt = item.getInners().iterator(); innerIt.hasNext();) {
-                        JavaTypeNode inner = (JavaTypeNode) innerIt.next();
+                    if(!inner.isToBeGeneratedInBytecode()) {
+                        generateFactoryMethod(
+                            environment,
+                            inner,
+                            decl
+                        );
                         
-                        if(!inner.isToBeGeneratedInBytecode()) {
-	                        generateFactoryMethod(
+                        if(inner.getDeclaration().isWrapper()) {
+	                        generateWrapperSupport(
 	                            environment,
 	                            inner,
 	                            decl
 	                        );
-	                        
-	                        if(inner.getDeclaration().isWrapper()) {
-		                        generateWrapperSupport(
-		                            environment,
-		                            inner,
-		                            decl
-		                        );
-	                        }
                         }
                     }
                 }
             }
-        }
-        catch (Exception e) {
-            // MSG
-        	e.printStackTrace();
-        	System.exit(0);
-            throw new UnpositionedError(CaesarMessages.FATAL_ERROR);
-        }
+        }        
     }
     
 

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: MainSuper.java,v 1.15 2004-10-17 20:59:36 aracic Exp $
+ * $Id: MainSuper.java,v 1.16 2004-11-23 09:35:03 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.ClassInfo;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
@@ -48,8 +47,6 @@ import org.caesarj.util.Utils;
  * This class implements the entry point of the Java compiler
  */
 public abstract class MainSuper extends CompilerBase {
-    
-    private static Logger log = Logger.getLogger(MainSuper.class);
 
     // ----------------------------------------------------------------------
     // ENTRY POINT
@@ -149,7 +146,7 @@ public abstract class MainSuper extends CompilerBase {
                 byteCodeMap.addSourceClass(classes[count], codeBuf);                
                 // IVICA:END
                 
-                log.debug("class file generated: "+classes[count].getQualifiedName());
+                //Log.verbose("class file generated: "+classes[count].getQualifiedName());
                 
                 classes[count] = null;
             }
@@ -250,12 +247,11 @@ public abstract class MainSuper extends CompilerBase {
     protected void checkBody(JCompilationUnit cunit) {
         try {
             cunit.checkBody(this, classes);
+            //Log.verbose("body checked: "+cunit.getFileName());
         }
-        catch (PositionedError e) {
+        catch (PositionedError e) {            
             reportTrouble(e);
-        }
-
-        log.debug("body checked: "+cunit.getFileName());
+        }        
     }
     /**
      * check the conditions
@@ -287,16 +283,16 @@ public abstract class MainSuper extends CompilerBase {
     public void reportTrouble(PositionedError trouble) {
         if (trouble instanceof CWarning) {
             if (options.warning != 0 && filterWarning((CWarning)trouble)) {
-                inform(trouble);
+                Log.warning(trouble.getMessage());
             }
         }
         else {
             if (trouble.getTokenReference() != TokenReference.NO_REF) {
-                inform(trouble);
+                Log.error(trouble.getMessage());
                 errorFound = true;
             }
             else {
-                inform(trouble);
+                Log.error(trouble.getMessage());
             }
         }
     }
@@ -307,7 +303,7 @@ public abstract class MainSuper extends CompilerBase {
      * @param	trouble		a description of the trouble to report.
      */
     public void reportTrouble(UnpositionedError trouble) {
-        inform(trouble);
+        Log.error(trouble.getMessage());
         errorFound = true;
     }
 
@@ -337,7 +333,7 @@ public abstract class MainSuper extends CompilerBase {
                             .newInstance();
                 }
                 catch (Exception e) {
-                    inform(KjcMessages.FILTER_NOT_FOUND, options.filter);
+                    Log.error(KjcMessages.FILTER_NOT_FOUND.format(new Object[]{options.filter}));
                 }
             }
             if (filter == null) {

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CompilerBase.java,v 1.2 2004-10-27 10:41:03 aracic Exp $
+ * $Id: CompilerBase.java,v 1.3 2004-11-23 09:35:04 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -27,8 +27,6 @@ import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.util.Vector;
 
-import org.caesarj.util.Message;
-import org.caesarj.util.MessageDescription;
 import org.caesarj.util.Messages;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.UnpositionedError;
@@ -60,8 +58,9 @@ public abstract class CompilerBase {
         }
         
         this.workingDirectory = workingDirectory;
-        this.diagnosticOutput = diagnosticOutput == null ? new PrintWriter(
-            System.err) : diagnosticOutput;
+        
+        if(diagnosticOutput != null)
+            Log.setOutput(diagnosticOutput);
     }
 
     // --------------------------------------------------------------------
@@ -73,14 +72,7 @@ public abstract class CompilerBase {
      */
     public String getWorkingDirectory() {
         return workingDirectory;
-    }
-
-    /**
-     * Returns the output stream for diagnostic messages.
-     */
-    public PrintWriter getDiagnosticOutput() {
-        return diagnosticOutput;
-    }
+    }   
 
     // --------------------------------------------------------------------
     // Language
@@ -299,112 +291,9 @@ public abstract class CompilerBase {
     public abstract boolean verboseMode();
 
     // --------------------------------------------------------------------
-    // DIAGNOSTIC OUTPUT
-    // --------------------------------------------------------------------
-
-    /**
-     * Write a message to the diagnostic output.
-     * 
-     * @param message
-     *            the formatted message
-     */
-    public void inform(UnpositionedError error) {
-        inform(error.getMessage());
-    }
-
-    /**
-     * Write a message to the diagnostic output.
-     * 
-     * @param message
-     *            the formatted message
-     */
-    public void inform(PositionedError error) {
-        inform(error.getMessage());
-    }
-
-    /**
-     * Write a message to the diagnostic output.
-     * 
-     * @param message
-     *            the formatted message
-     */
-    public void inform(Message message) {
-        inform(message.getMessage());
-    }
-
-    /**
-     * Write a message to the diagnostic output.
-     * 
-     * @param description
-     *            the message description
-     * @param parameters
-     *            the array of parameters
-     */
-    public void inform(MessageDescription description, Object[] parameters) {
-        inform(new Message(description, parameters));
-    }
-
-    /**
-     * Write a message to the diagnostic output.
-     * 
-     * @param description
-     *            the message description
-     * @param parameter1
-     *            the first parameter
-     * @param parameter2
-     *            the second parameter
-     */
-    public void inform(
-        MessageDescription description,
-        Object parameter1,
-        Object parameter2) {
-        inform(description, new Object[] {
-                parameter1, parameter2
-        });
-    }
-
-    /**
-     * Write a message to the diagnostic output.
-     * 
-     * @param description
-     *            the message description
-     * @param parameter
-     *            the parameter
-     */
-    public void inform(MessageDescription description, Object parameter) {
-        inform(description, new Object[] {
-            parameter
-        });
-    }
-
-    /**
-     * Write a message to the diagnostic output.
-     * 
-     * @param description
-     *            the message description
-     */
-    public void inform(MessageDescription description) {
-        inform(description, null);
-    }
-
-    /**
-     * Write a text to the diagnostic output.
-     * 
-     * @param message
-     *            the message text
-     */
-    private void inform(String message) {
-        diagnosticOutput.println(message);
-        diagnosticOutput.flush();
-    }
-
-    // --------------------------------------------------------------------
     // DATA MEMBERS
     // --------------------------------------------------------------------
 
     // the directory where to search source files
-    private final String workingDirectory;
-
-    // the output stream for diagnostic messages
-    private final PrintWriter diagnosticOutput;
+    private final String workingDirectory; 
 }

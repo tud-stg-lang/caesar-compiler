@@ -8,6 +8,7 @@ import org.aspectj.bridge.IMessage.Kind;
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.util.CWarning;
 import org.caesarj.util.Message;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
@@ -44,8 +45,8 @@ public class CaesarMessageHandler implements IMessageHandler, CaesarConstants {
 
 		if (message.getKind() == IMessage.WARNING) {
 
-			compiler.inform(
-				new PositionedError(
+			compiler.reportTrouble(
+				new CWarning(
 					new TokenReference(
 						location.getSourceFile().getPath(),
 						location.getSourceFile(),

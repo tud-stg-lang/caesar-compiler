@@ -248,7 +248,7 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
         catch (Throwable e) {
             // MSG
             e.printStackTrace();
-            throw new PositionedError(getTokenReference(), CaesarMessages.FATAL_ERROR);
+            throw new PositionedError(getTokenReference(), CaesarMessages.ERROR_ADJUSTING_MIXIN_SUPERTYPE);
         }
     }
     

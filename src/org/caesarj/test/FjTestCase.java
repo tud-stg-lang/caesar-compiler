@@ -10,7 +10,6 @@ import java.util.Vector;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.Logger;
 import org.caesarj.compiler.CaesarParser;
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcClassReader;
@@ -28,8 +27,6 @@ import org.caesarj.util.UnpositionedError;
 
 public class FjTestCase extends TestCase 
 {
-    private static Logger log = Logger.getLogger(FjTestCase.class);
-    
 	protected CompilerBase compiler;
 	
 	protected List positionedErrorList = new LinkedList();
@@ -63,8 +60,7 @@ public class FjTestCase extends TestCase
 	protected void warn( String message ) {
 		System.out.println( "warning - " + getClass().getName() + ": " + message );
 	}
-	
-	
+		
 	
 	/*
 	 * Compiles and runs given test file in a separate package
@@ -74,8 +70,6 @@ public class FjTestCase extends TestCase
 	    
 	    assertTrue(success);
 
-	    log.info("Test starts: testing with Caesar compiled test");
-				
 		Object generatedTest = Class.forName( "generated." + pckgName + "."+ testCaseName ).newInstance();
 		((TestCase)generatedTest).runBare();
 	}
@@ -87,8 +81,6 @@ public class FjTestCase extends TestCase
 
 	    boolean success = compile(pckgName);
 	    
-	    log.info("Test starts: checking errors");
-	    
 	    assertTrue(!success);	    
 	}
 	
@@ -98,7 +90,7 @@ public class FjTestCase extends TestCase
 		removeClassFiles(pckgName);
 		
 		// Create compiler
-		compiler = new CompilerMock(this, 
+		compiler = new CompilerMock(this,  
 			new PrintWriter(System.out) 
 			{
 				public void println() {
@@ -115,7 +107,9 @@ public class FjTestCase extends TestCase
 		List files = new LinkedList();
 		findAllFiles(workingDir, files);
 		
-		List fileNames = new LinkedList();
+		List argList = new LinkedList();
+		
+		argList.add("-v"); // verbose
 		
 		Iterator it = files.iterator();
 		while (it.hasNext()) 
@@ -124,11 +118,11 @@ public class FjTestCase extends TestCase
 			String fileName = file.getName();
 			if (fileName.endsWith( ".java" )) 
 			{
-				fileNames.add(file.getAbsolutePath());				
+				argList.add(file.getAbsolutePath());				
 			}
 		}
 		
-		String[] args = (String[])fileNames.toArray(new String[0]);
+		String[] args = (String[])argList.toArray(new String[0]);
 		
 		// Compile test
 		return compiler.run(args);

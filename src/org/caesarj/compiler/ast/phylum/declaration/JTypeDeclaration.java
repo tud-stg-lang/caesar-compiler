@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.31 2004-11-19 16:24:18 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.32 2004-11-23 09:35:03 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -718,6 +718,10 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
             body[i].accept(s);
         }
         */
+    }
+    
+    public String toString() {
+        return ident;
     }
     
     // ----------------------------------------------------------------------

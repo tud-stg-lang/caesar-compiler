@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JBlock.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
+ * $Id: JBlock.java,v 1.3 2004-11-23 09:35:04 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -127,6 +127,10 @@ public class JBlock extends JStatement {
     for (int i = 0; i < body.length; i++) {
       body[i].genCode(context);
     }
+  }
+  
+  public String toString() {
+    return "block";
   }
 
  // ----------------------------------------------------------------------

@@ -24,14 +24,21 @@ public class CDependentType extends CReferenceType {
     private int k = 0;          /** ctx(k); determines how many steps to go out 
                                     of the current context */
     
-    public CDependentType(JPhylum[] pos, JExpression family, CType staticType) {
-        this.pos = pos;
+    public CDependentType(JExpression family, CType staticType) {
         this.family = family;
         this.plainType = staticType;
     }
     
     public CClass getCClass() {
         return plainType.getCClass();
+    }
+    
+    public JPhylum[] getPos() {
+        return pos;
+    }
+    
+    public void setPos(JPhylum[] path) {
+        this.pos = path;
     }
     
     public boolean isAssignableTo(CTypeContext context, CType dest) {
@@ -49,7 +56,7 @@ public class CDependentType extends CReferenceType {
     
 
     public boolean isChecked() {
-        return plainType.isChecked();
+        return plainType.isChecked() && pos != null;
     }
 
     // not castable for now
