@@ -19,22 +19,22 @@ public class CompileAndRunResultsWeaverTest extends FjTestCase
 	}
 	
 	public void testNestedAspectTest() throws Throwable {
-		doGeneratedTest("NestedAspectTest");
+		compileAndRun("NestedAspectTest");
 	}
 
 	public void testJoinPointReflectionTest() throws Throwable {
-		doGeneratedTest("JoinPointReflectionTest");
+		compileAndRun("JoinPointReflectionTest");
 	}
 
 	public void testDeploymentTest() throws Throwable {
-		doGeneratedTest("DeploymentTest");
+		compileAndRun("DeploymentTest");
 	}
 
 	public void testAutomaticDeploymentTest() throws Throwable {
-		doGeneratedTest("AutomaticDeploymentTest");
+		compileAndRun("AutomaticDeploymentTest");
 	}
 
 	public void testPrivilegedAccessTest() throws Throwable {
-		doGeneratedTest("PrivilegedAccessTest");
+		compileAndRun("PrivilegedAccessTest");
 	}
 }
