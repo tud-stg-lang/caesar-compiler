@@ -1,14 +1,7 @@
 package org.caesarj.compiler.types;
 
-import java.util.StringTokenizer;
-
-import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.export.ExportMixer;
-import org.caesarj.mixer.Linearizator;
-import org.caesarj.mixer.Mixer;
-import org.caesarj.mixer.MixinList;
 import org.caesarj.util.UnpositionedError;
 
 /**

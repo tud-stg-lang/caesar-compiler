@@ -15,19 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.16 2004-06-08 14:06:43 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.17 2004-06-15 16:42:05 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
@@ -35,7 +29,13 @@ import org.caesarj.compiler.aspectj.CaesarScope;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JUnqualifiedInstanceCreation;
+import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
+import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
+import org.caesarj.compiler.ast.phylum.statement.JStatement;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.visitor.KjcPrettyPrinter;
 import org.caesarj.compiler.ast.visitor.KjcVisitor;
 import org.caesarj.compiler.cclass.CaesarTypeNode;
@@ -48,13 +48,7 @@ import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.context.FjClassContext;
-import org.caesarj.compiler.export.CCjAdvice;
-import org.caesarj.compiler.export.CCjSourceClass;
-import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.export.CMethod;
-import org.caesarj.compiler.export.CModifier;
-import org.caesarj.compiler.export.CSourceClass;
-import org.caesarj.compiler.export.CSourceField;
+import org.caesarj.compiler.export.*;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
@@ -369,26 +363,12 @@ public class CjClassDeclaration
             (JFieldDeclaration[])oldFields.toArray(
                 new JFieldDeclaration[oldFields.size()]);
     }
+    
     public void addMethods(ArrayList methodsToAdd) {
         addMethods(
             (JMethodDeclaration[])methodsToAdd.toArray(
                 new JMethodDeclaration[methodsToAdd.size()]));
 
-    }
-
-    public void addMethods(JMethodDeclaration[] methodsToAdd) {
-        JMethodDeclaration[] newMethods =
-            new JMethodDeclaration[methods.length + methodsToAdd.length];
-
-        System.arraycopy(methods, 0, newMethods, 0, methods.length);
-        System.arraycopy(
-            methodsToAdd,
-            0,
-            newMethods,
-            methods.length,
-            methodsToAdd.length);
-
-        methods = newMethods;
     }
 
     /* DEBUG
@@ -596,6 +576,56 @@ public class CjClassDeclaration
             getCorrespondingInterfaceDeclaration().addInners(
                 (JTypeDeclaration[])newIfcs.toArray(new JTypeDeclaration[newIfcs.size()])
             );
+            
+            
+            // generate factory methods
+            if(inners.length > 0) {
+                JMethodDeclaration factoryMethods[] = new JMethodDeclaration[inners.length];
+                JMethodDeclaration factoryIfcMethods[] = new JMethodDeclaration[inners.length];
+                for (int i = 0; i < inners.length; i++) {
+                    CjClassDeclaration inner = (CjClassDeclaration)inners[i];
+                    factoryMethods[i] = new JMethodDeclaration(
+                        getTokenReference(),
+                        ACC_PUBLIC,
+                        CTypeVariable.EMPTY,
+                        inner.getCorrespondingInterfaceDeclaration().getCClass().getTopmostHierarchyInterface().getAbstractType(),
+                        "$new"+inner.getCorrespondingInterfaceDeclaration().getCClass().getIdent(),
+                        JFormalParameter.EMPTY,
+                        CReferenceType.EMPTY,
+                        new JBlock(
+                            getTokenReference(),
+                            new JStatement[]{                                                               
+                                new JReturnStatement(
+                                    getTokenReference(),
+                                    new JUnqualifiedInstanceCreation(
+                                        getTokenReference(),
+                                        inner.getCClass().getAbstractType(),
+                                        JExpression.EMPTY
+                                    ),
+                                    null
+                                )
+                            },
+                            null
+                        ),
+                        null, null
+                    );                    
+                    
+                    factoryIfcMethods[i] = new JMethodDeclaration(
+                        getTokenReference(),
+                        ACC_PUBLIC,
+                        CTypeVariable.EMPTY,
+                        inner.getCorrespondingInterfaceDeclaration().getCClass().getTopmostHierarchyInterface().getAbstractType(),
+                        "$new"+inner.getCorrespondingInterfaceDeclaration().getCClass().getIdent(),
+                        JFormalParameter.EMPTY,
+                        CReferenceType.EMPTY,
+                        null, // block is empty 
+                        null, null
+                    );
+                }
+                
+                addMethods(factoryMethods);
+                getCorrespondingInterfaceDeclaration().addMethods(factoryIfcMethods);
+            }            
         }
         catch (Throwable e) {
             // MSG

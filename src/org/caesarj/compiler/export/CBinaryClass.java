@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBinaryClass.java,v 1.3 2004-06-04 10:57:12 klose Exp $
+ * $Id: CBinaryClass.java,v 1.4 2004-06-15 16:42:05 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -23,15 +23,7 @@ package org.caesarj.compiler.export;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import org.caesarj.classfile.Attribute;
-import org.caesarj.classfile.ClassInfo;
-import org.caesarj.classfile.ClassfileConstants2;
-import org.caesarj.classfile.ExtraModifiersAttribute;
-import org.caesarj.classfile.AdditionalTypeInformationAttribute;
-import org.caesarj.classfile.FieldInfo;
-import org.caesarj.classfile.GenericAttribute;
-import org.caesarj.classfile.InnerClassInfo;
-import org.caesarj.classfile.MethodInfo;
+import org.caesarj.classfile.*;
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.types.CReferenceType;
@@ -39,7 +31,6 @@ import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.SignatureParser;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.UnpositionedError;
-import org.eclipse.jdt.internal.core.builder.AdditionalTypeCollection;
 
 /**
  * This class represents the exported members of a binary class, i.e.

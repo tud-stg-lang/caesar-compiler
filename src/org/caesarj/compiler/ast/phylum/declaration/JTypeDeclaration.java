@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.13 2004-06-08 14:06:43 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.14 2004-06-15 16:42:05 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -148,12 +148,20 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
      * @param newMethod
      */
     public void addMethod(JMethodDeclaration newMethod) {
+        addMethods(new JMethodDeclaration[]{newMethod});
+    }
+    
+    public void addMethods(JMethodDeclaration[] methodsToAdd) {
         JMethodDeclaration[] newMethods =
-            new JMethodDeclaration[methods.length + 1];
+            new JMethodDeclaration[methods.length + methodsToAdd.length];
 
         System.arraycopy(methods, 0, newMethods, 0, methods.length);
-
-        newMethods[methods.length] = newMethod;
+        System.arraycopy(
+            methodsToAdd,
+            0,
+            newMethods,
+            methods.length,
+            methodsToAdd.length);
 
         methods = newMethods;
     }

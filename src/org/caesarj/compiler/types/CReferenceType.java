@@ -15,13 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CReferenceType.java,v 1.5 2004-04-21 14:21:02 aracic Exp $
+ * $Id: CReferenceType.java,v 1.6 2004-06-15 16:42:04 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
 
 import java.util.Hashtable;
-import java.util.StringTokenizer;
 
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.context.CTypeContext;

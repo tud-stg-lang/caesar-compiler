@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JCompilationUnit.java,v 1.5 2004-06-08 14:07:01 aracic Exp $
+ * $Id: JCompilationUnit.java,v 1.6 2004-06-15 16:41:29 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -26,9 +26,8 @@ import java.util.Vector;
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.Main;
-import org.caesarj.compiler.ast.phylum.declaration.*;
-import org.caesarj.compiler.ast.visitor.*;
+import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.ast.visitor.KjcVisitor;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.export.CClass;

@@ -6,37 +6,23 @@
  */
 package org.caesarj.compiler.cclass;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.Main;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
-import org.caesarj.compiler.ast.phylum.statement.JBlock;
-import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CField;
-import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.export.CMethod;
-import org.caesarj.compiler.export.CSourceClass;
-import org.caesarj.compiler.export.CSourceField;
-import org.caesarj.compiler.export.CSourceMethod;
+import org.caesarj.compiler.export.*;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
-
-import sun.rmi.runtime.GetThreadPoolAction;
 
 /**
  * ...
@@ -107,100 +93,7 @@ public class CClassPreparation implements CaesarConstants {
             (JTypeDeclaration[]) newTypeDeclarations.toArray(
                 new JTypeDeclaration[0]));             
 	}
-
-    
-    /*
-     *
-     * CTORS
-     *  
-     */
-    
-    public void handleConstructorInheritance(CompilerBase compilerBase, KjcEnvironment environment) {
-        CaesarTypeSystem caesarTypeSystem = environment.getCaesarTypeSystem(); 
-        TypeFactory typeFactory = environment.getTypeFactory();
-        ClassReader classReader = environment.getClassReader();
-                        
-        // CTODO it shouldn't be getAllTypes, but rather getAllSourceTypes
-        // ignoring for now
-        Collection sourceTypes = caesarTypeSystem.getJavaGraph().getAllTypes();
-        
-        for (Iterator it = sourceTypes.iterator(); it.hasNext();) {
-            JavaTypeNode item = (JavaTypeNode) it.next();
-            
-            if(item.getParent() != null) {                
-                CClass clazz = item.getCClass();
-                CClass superClass = clazz.getSuperClass();                
-                
-                CMethod[] clazzMethods = clazz.getMethods();
-                CMethod[] superClassMethods = superClass.getMethods();
-                
-                List superCtorList = new LinkedList();
-                List clazzCtorList = new LinkedList();
-                
-                for(int i=0; i<clazzMethods.length; i++)
-                    if(clazzMethods[i].isConstructor())
-                        clazzCtorList.add(clazzMethods[i]);
-
-                for(int i=0; i<superClassMethods.length; i++)
-                    if(superClassMethods[i].isConstructor())
-                        superCtorList.add(superClassMethods[i]);
-                    
-                CMethod clazzCtors[] = (CMethod[])clazzCtorList.toArray(new CMethod[clazzCtorList.size()]);
-                CMethod superCtors[] = (CMethod[])superCtorList.toArray(new CMethod[superCtorList.size()]);
-                
-                List newCtors = new LinkedList();
-                
-                for (int i = 0; i < superCtors.length; i++) {
-                    CMethod superCtor = superCtors[i];
-                    boolean methodFound = false;
-
-                    for (int j = 0; j < clazzCtors.length && !methodFound; j++) {
-                        CMethod clazzCtor = clazzCtors[j];
-                        
-                        if(clazzCtor.isEqualSignature(superCtor))
-                            methodFound = true;
-                    }
-                    
-                    if(!methodFound) {
-                        // inherit this ctor
-                        
-                        // CTODO insert super statement
-                        JBlock body = new JBlock(
-                            TokenReference.NO_REF,
-                            new JStatement[]{},
-                            null
-                        );
-
-                        
-                        CSourceMethod sourceMethod = new CSourceMethod(
-                            clazz,
-                            superCtor.getModifiers(),
-                            superCtor.getIdent(),
-                            superCtor.getReturnType(),
-                            superCtor.getParameters(),
-                            superCtor.getThrowables(),
-                            superCtor.getTypeVariables(),
-                            superCtor.isDeprecated(),
-                            superCtor.isSynthetic(),
-                            body
-                        );                        
-                        
-                        newCtors.add(sourceMethod);
-                        
-                        if(item.getDeclaration() != null) {
-                            // add default impl. to declaration (if not generated type)
-                        }
-                    }
-                }
-                
-                if(newCtors.size() > 0) {
-                    CSourceMethod ctors[] = 
-                        (CSourceMethod[])newCtors.toArray(new CSourceMethod[newCtors.size()]);
-                    clazz.addMethod(ctors);
-                }
-            }            
-        }
-    }
+   
 
         
     /*

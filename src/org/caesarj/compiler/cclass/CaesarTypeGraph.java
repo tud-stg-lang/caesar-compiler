@@ -1,15 +1,7 @@
 package org.caesarj.compiler.cclass;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.types.CCompositeType;
-import org.caesarj.mixer.MixinList;
 import org.caesarj.util.InconsistencyException;
 
 /**
