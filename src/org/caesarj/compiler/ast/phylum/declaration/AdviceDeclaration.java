@@ -11,7 +11,6 @@ import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.export.CaesarAdvice;
-import org.caesarj.compiler.family.FjFamily;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
@@ -190,7 +189,6 @@ public class AdviceDeclaration
 				exceptions,
 				typeVariables,
 				body,
-				new FjFamily[0],
 				pointcut,
 				kind,
 				extraArgumentFlags);

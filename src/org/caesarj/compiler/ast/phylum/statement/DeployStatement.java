@@ -1,9 +1,12 @@
 package org.caesarj.compiler.ast.phylum.statement;
 
 import org.caesarj.compiler.ast.JavaStyleComment;
-import org.caesarj.compiler.ast.phylum.expression.*;
+import org.caesarj.compiler.ast.phylum.expression.FjMethodCallExpression;
+import org.caesarj.compiler.ast.phylum.expression.FjNameExpression;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
-import org.caesarj.compiler.ast.phylum.variable.FjVariableDefinition;
+import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CBodyContext;
@@ -154,7 +157,7 @@ public class DeployStatement extends JStatement implements CaesarConstants {
 
         return new JVariableDeclarationStatement(
 			getTokenReference(),
-			new FjVariableDefinition(
+			new JVariableDefinition(
                 where,
 				0,
 				new CClassNameType(CAESAR_ASPECT_IFC),

@@ -3,7 +3,6 @@ package org.caesarj.compiler.export;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.context.CField;
-import org.caesarj.compiler.family.FjFamily;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
@@ -15,7 +14,7 @@ import org.caesarj.compiler.types.CVoidType;
  * 
  * @author Jürgen Hallpap
  */
-public class PrivilegedField extends FjSourceField {
+public class PrivilegedField extends CSourceField {
 
 	/** the encapsulated non-visible baseField.*/
 	private CField baseField;
@@ -39,16 +38,14 @@ public class PrivilegedField extends FjSourceField {
 	 */
 	public PrivilegedField(
 		CField baseField,
-		FjSourceClass aspect,
-		FjFamily family) {
+		FjSourceClass aspect) {
 		super(
 			baseField.getOwner(),
 			baseField.getModifiers(),
 			baseField.getIdent(),
 			baseField.getType(),
 			baseField.isDeprecated(),
-			baseField.isSynthetic(),
-			family);
+			baseField.isSynthetic());
 
 		this.baseField = baseField;
 

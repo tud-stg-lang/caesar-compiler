@@ -693,7 +693,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		} while (true);
 		}
 		if ( inputState.guessing==0 ) {
-			self = (JVariableDefinition[]) vars.toArray(new FjVariableDefinition[vars.size()]);
+			self = (JVariableDefinition[]) vars.toArray(new JVariableDefinition[vars.size()]);
 		}
 		return self;
 	}
@@ -2781,7 +2781,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				reportTrouble(new CWarning(sourceRef, KjcMessages.OLD_STYLE_ARRAY_BOUNDS, null));
 				type = new CArrayType(type, bounds);
 			}
-			self = new FjVariableDefinition(sourceRef, modifiers, type, ident.getText(), expr);
+			self = new JVariableDefinition(sourceRef, modifiers, type, ident.getText(), expr);
 			
 		}
 		return self;

@@ -2,13 +2,11 @@ package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.ast.FjFamilyContext;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
-import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.export.FjSourceField;
 import org.caesarj.compiler.family.FjFamily;
 import org.caesarj.compiler.family.FjLinkedFamily;
 import org.caesarj.compiler.family.FjTypeSystem;
@@ -61,10 +59,7 @@ public class FjNameExpression extends JNameExpression {
 				CClass currentClass = context.getClassContext().getCClass();
 				try {
 					CField field = context.lookupField( currentClass, currentClass, name.intern() );
-					if( field != null && field instanceof FjSourceField )
-						return ((FjSourceField)field).getFamily();
-					else
-						return null;
+					return null;
 				} catch( UnpositionedError err ) {
 					throw err.addPosition( getTokenReference() );
 				}
@@ -79,25 +74,6 @@ public class FjNameExpression extends JNameExpression {
 					getType( context.getTypeFactory() ).getCClass();
 			} catch( InconsistencyException e ) {
 				return null;
-			}
-
-			//Walter: Now it looks for the family of the accessed field.
-			CField field = prefixType.getField(ident);
-			if (field != null && field instanceof FjSourceField)
-			{
-				FjFamily fieldFamily = null;
-				FjFamily prefixFamily = null;
-				if ((ownType.getModifiers() & Constants.FJC_VIRTUAL) != 0)
-				{
-					fieldFamily = ((FjSourceField) field).getFamily();
-					prefixFamily = getPrefix().toFamily(context.getBlockContext());
-					if (prefixFamily != null)
-					{
-						if (fieldFamily != null) 
-							return new FjLinkedFamily(prefixFamily, fieldFamily);
-						return prefixFamily;
-			}
-				}
 			}
 
 			return null;

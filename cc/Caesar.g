@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.29 2004-03-15 17:04:14 aracic Exp $
+ * $Id: Caesar.g,v 1.30 2004-03-15 17:43:12 aracic Exp $
  */
 
 /*
@@ -826,7 +826,7 @@ jVariableDefinitions [int modifiers, CType type]
     COMMA decl = jVariableDeclarator[modifiers, type]
       { vars.add(decl); }
   )*
-  { self = (JVariableDefinition[]) vars.toArray(new FjVariableDefinition[vars.size()]); }
+  { self = (JVariableDefinition[]) vars.toArray(new JVariableDefinition[vars.size()]); }
 ;
 
 // JLS 8.3 Variable Declarator
@@ -846,7 +846,7 @@ jVariableDeclarator [int modifiers, CType type]
 	reportTrouble(new CWarning(sourceRef, KjcMessages.OLD_STYLE_ARRAY_BOUNDS, null));
 	type = new CArrayType(type, bounds);
       }
-      self = new FjVariableDefinition(sourceRef, modifiers, type, ident.getText(), expr);
+      self = new JVariableDefinition(sourceRef, modifiers, type, ident.getText(), expr);
     }
 ;
 

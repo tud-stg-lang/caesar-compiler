@@ -9,7 +9,6 @@ import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.FjSourceClass;
-import org.caesarj.compiler.export.FjSourceField;
 import org.caesarj.compiler.export.PrivilegedField;
 import org.caesarj.compiler.export.PrivilegedMethod;
 
@@ -50,8 +49,7 @@ public class PrivilegedAccessHandler {
 			priviligedField =
 				new PrivilegedField(
 					field,
-					aspect,
-					((FjSourceField) field).getFamily());
+					aspect);
 			privilegedFields.put(field, priviligedField);
 		}
 

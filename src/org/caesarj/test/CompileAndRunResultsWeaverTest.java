@@ -49,7 +49,6 @@ public class CompileAndRunResultsWeaverTest extends FjTestCase {
 						"SuperAspect.java",
 						"AutomaticDeploymentTest.java",
 						"PrivilegedAccessTest.java",
-						"KlausTest.java",
 						"StaticAspect.java",
 						"AnotherAspect.java"
 								};
@@ -104,11 +103,6 @@ public class CompileAndRunResultsWeaverTest extends FjTestCase {
 	public void testPrivilegedAccessTest() throws Throwable {
 		doGeneratedTest("PrivilegedAccessTest");
 	}
-
-	public void testKlausTest() throws Throwable {
-		doGeneratedTest("KlausTest");
-	}
-
 
 
 	class CompilerMock extends Main {

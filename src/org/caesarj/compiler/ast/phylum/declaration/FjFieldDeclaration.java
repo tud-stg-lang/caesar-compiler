@@ -2,7 +2,6 @@ package org.caesarj.compiler.ast.phylum.declaration;
 
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
-import org.caesarj.compiler.ast.phylum.variable.FjVariableDefinition;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CClassContext;
@@ -10,14 +9,10 @@ import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CMember;
 import org.caesarj.compiler.export.CSourceField;
-import org.caesarj.compiler.export.FjSourceField;
-import org.caesarj.compiler.family.FjFamily;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
 public class FjFieldDeclaration extends JFieldDeclaration {
-
-	protected FjFamily family;
 
 	public FjFieldDeclaration(
 		TokenReference where,
@@ -74,10 +69,11 @@ public class FjFieldDeclaration extends JFieldDeclaration {
 	{
 		if (context instanceof FjClassContext)
 			((FjClassContext)context).pushContextInfo(this);
-		
+
+/* FJRM		
 		if (getVariable() instanceof FjVariableDefinition)	
 			((FjVariableDefinition)getVariable()).initFamily(context);
-
+*/
 		if (context instanceof FjClassContext)
 			((FjClassContext)context).popContextInfo();
 			
@@ -94,14 +90,15 @@ public class FjFieldDeclaration extends JFieldDeclaration {
 	protected void setInterface(CMember export) {
 		CField oldField = (CField) export;
 		super.setInterface(
-			new FjSourceField(
+			new CSourceField(
 				oldField.getOwner(),
 				oldField.getModifiers(),
 				oldField.getIdent(),
 				oldField.getType(),
 				oldField.isDeprecated(),
-				oldField.isSynthetic(),
-				family));
+				oldField.isSynthetic()
+			)
+		);
 	}
 
 	private boolean isChecked;

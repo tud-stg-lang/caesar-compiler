@@ -13,7 +13,6 @@ import org.caesarj.compiler.ast.phylum.expression.literal.JIntLiteral;
 import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.phylum.expression.literal.JStringLiteral;
 import org.caesarj.compiler.ast.phylum.statement.*;
-import org.caesarj.compiler.ast.phylum.variable.FjVariableDefinition;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarConstants;
@@ -29,27 +28,18 @@ import org.caesarj.util.TokenReference;
 public class DeploymentClassFactory implements CaesarConstants {
 
 	private JClassDeclaration aspectClass;
-
+	
 	private String singletonAspectName;
-
 	private String aspectInterfaceName;
-
 	private String multiInstanceAspectClassName;
-
 	private String multiThreadAspectClassName;
-
 	private String qualifiedAspectInterfaceName;
-
 	private String qualifiedMultiInstanceAspectClassName;
-
 	private String qualifiedMultiThreadAspectClassName;
-
 	private String qualifiedSingletonAspectName;
-
 	private String packagePrefix;
 
 	private KjcEnvironment environment;
-
 	private TypeFactory typeFactory;
 
 	private TokenReference where;
@@ -192,8 +182,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		//add deploymentThread field
 		CType type = new CClassNameType(QUALIFIED_THREAD_CLASS);
-		FjVariableDefinition var =
-			new FjVariableDefinition(
+		JVariableDefinition var =
+			new JVariableDefinition(
 				where,
 				ACC_PRIVATE,
 				type,
@@ -371,8 +361,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 */
 	private JStatement createAspectClassDeployStatement_1() {
 		CType ifcType = new CClassNameType(qualifiedAspectInterfaceName);
-		FjVariableDefinition var =
-			new FjVariableDefinition(where, 0, ifcType, ASPECT_INSTANCE, null);
+		JVariableDefinition var =
+			new JVariableDefinition(where, 0, ifcType, ASPECT_INSTANCE, null);
 
 		return new JVariableDeclarationStatement(where, var, null);
 	}
@@ -652,16 +642,16 @@ public class DeploymentClassFactory implements CaesarConstants {
 				stackType,
 				JExpression.EMPTY);
 
-		FjVariableDefinition deployedInstances =
-			new FjVariableDefinition(
+		JVariableDefinition deployedInstances =
+			new JVariableDefinition(
 				where,
 				ACC_PRIVATE,
 				stackType,
 				DEPLOYED_INSTANCES,
 				stackInit);
 
-		FjVariableDefinition deploymentThread =
-			new FjVariableDefinition(
+		JVariableDefinition deploymentThread =
+			new JVariableDefinition(
 				where,
 				ACC_PRIVATE,
 				new CClassNameType(QUALIFIED_THREAD_CLASS),
@@ -834,8 +824,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		CType iteratorType = new CClassNameType(QUALIFIED_ITERATOR_CLASS);
 
-		FjVariableDefinition var =
-			new FjVariableDefinition(
+		JVariableDefinition var =
+			new JVariableDefinition(
 				where,
 				0,
 				iteratorType,
@@ -892,8 +882,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JExpression initializer = new JCastExpression(where, expr, ifcType);
 
-		FjVariableDefinition var =
-			new FjVariableDefinition(
+		JVariableDefinition var =
+			new JVariableDefinition(
 				where,
 				0,
 				ifcType,
@@ -1302,8 +1292,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 				multiThreadType,
 				JExpression.EMPTY);
 
-		FjVariableDefinition localVarDef =
-			new FjVariableDefinition(
+		JVariableDefinition localVarDef =
+			new JVariableDefinition(
 				where,
 				0,
 				ifcType,
@@ -1468,8 +1458,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		CType mapType = new CClassNameType("java/util/WeakHashMap");
 
-		FjVariableDefinition var =
-			new FjVariableDefinition(
+		JVariableDefinition var =
+			new JVariableDefinition(
 				where,
 				ACC_PRIVATE,
 				mapType,
@@ -1482,8 +1472,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 		
 		CType threadType = new CClassNameType(QUALIFIED_THREAD_CLASS);
 
-		FjVariableDefinition deploymentThreadVar =
-			new FjVariableDefinition(
+		JVariableDefinition deploymentThreadVar =
+			new JVariableDefinition(
 				where,
 				ACC_PRIVATE,
 				threadType,
@@ -1606,8 +1596,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression initializer =
 			new JCastExpression(where, getMethodCall, ifcType);
 
-		FjVariableDefinition var =
-			new FjVariableDefinition(
+		JVariableDefinition var =
+			new JVariableDefinition(
 				where,
 				0,
 				ifcType,
@@ -1796,8 +1786,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression initializer =
 			new JCastExpression(where, getMethodCall, type);
 
-		FjVariableDefinition var =
-			new FjVariableDefinition(
+		JVariableDefinition var =
+			new JVariableDefinition(
 				where,
 				0,
 				type,
@@ -1995,8 +1985,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression initializer =
 			new JCastExpression(where, getMethodCall, ifcType);
 
-		FjVariableDefinition var =
-			new FjVariableDefinition(
+		JVariableDefinition var =
+			new JVariableDefinition(
 				where,
 				0,
 				ifcType,
@@ -2322,8 +2312,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		//create the deployedInstances field
 		CType ifcType = new CClassNameType(qualifiedAspectInterfaceName);
-		FjVariableDefinition deployedInstancesVar =
-			new FjVariableDefinition(
+		JVariableDefinition deployedInstancesVar =
+			new JVariableDefinition(
 				where,
 				ACC_PRIVATE,
 				ifcType,
@@ -2346,8 +2336,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		//create the ajc$perSingletonInstance field
 		CType singletonType = new CClassNameType(qualifiedSingletonAspectName);
-		FjVariableDefinition aspectInstanceVar =
-			new FjVariableDefinition(
+		JVariableDefinition aspectInstanceVar =
+			new JVariableDefinition(
 				where,
 				ACC_PUBLIC | ACC_FINAL | ACC_STATIC,
 				singletonType,

@@ -11,7 +11,6 @@ import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.FjClassContext;
-import org.caesarj.compiler.family.FjFamily;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
@@ -61,7 +60,6 @@ public class CaesarAdvice extends FjSourceMethod {
 		CReferenceType[] exceptions,
 		CTypeVariable[] typeVariables,
 		JBlock body,
-		FjFamily[] families,
 		CaesarPointcut pointcut,
 		CaesarAdviceKind kind,
 		int extraArgumentFlags) {

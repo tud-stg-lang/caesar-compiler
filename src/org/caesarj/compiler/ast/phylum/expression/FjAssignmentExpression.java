@@ -76,7 +76,7 @@ public class FjAssignmentExpression extends JAssignmentExpression {
 		return result;
 	}
 	
-	/*
+	/* FJRM
 	public FjFamily getFamily(CExpressionContext context)
 		throws PositionedError {
 		return left.getFamily(context);

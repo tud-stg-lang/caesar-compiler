@@ -202,11 +202,12 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 			statements.length);
 		body = new JBlock(body.getTokenReference(), extendedStatements, null);
 	}
-	*/
+	
 
 	public FjMethodDeclaration[] getSelfContextMethods(CType selfType) {
 		return new FjMethodDeclaration[] { this };
 	}
+	*/
 	
 
 	/**

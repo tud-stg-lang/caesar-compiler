@@ -15,8 +15,8 @@ import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.declaration.*;
 import org.caesarj.compiler.ast.phylum.expression.*;
 import org.caesarj.compiler.ast.phylum.statement.*;
-import org.caesarj.compiler.ast.phylum.variable.FjVariableDefinition;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
+import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.types.*;
@@ -147,8 +147,8 @@ public class DeploymentPreparation implements CaesarConstants {
 		}
 
 		CType singletonType = new CClassNameType(cd.getIdent());
-		FjVariableDefinition aspectInstanceVar =
-			new FjVariableDefinition(
+		JVariableDefinition aspectInstanceVar =
+			new JVariableDefinition(
 				TokenReference.NO_REF,
 				ACC_PUBLIC | ACC_FINAL | ACC_STATIC,
 				singletonType,
