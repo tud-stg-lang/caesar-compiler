@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.14 2004-06-15 16:42:05 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.15 2004-06-17 21:10:21 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -513,6 +513,8 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     // ----------------------------------------------------------------------
 
     /**
+     * IVICA: changed owner type to cclass interface (if we have a cclass)
+     * -> getOwner().getCorrespondingCClass().getAbstractType()
      */
     public void addOuterThis() {
         if (outerThis == null) {
@@ -523,6 +525,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
                     new JVariableDefinition(
                         getTokenReference(),
                         ACC_PRIVATE | ACC_FINAL,
+                        //getOwner().getCorrespondingCClass().getAbstractType(),
                         getOwner().getAbstractType(),
                         JAV_OUTER_THIS,
                         null),
@@ -533,6 +536,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
                     getCClass(),
                     ACC_PRIVATE | ACC_FINAL,
                     JAV_OUTER_THIS,
+                    //getOwner().getCorrespondingCClass().getAbstractType(),
                     getOwner().getAbstractType(),
                     false,
                     true));

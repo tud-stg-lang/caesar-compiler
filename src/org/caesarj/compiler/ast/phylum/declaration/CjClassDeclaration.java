@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.17 2004-06-15 16:42:05 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.18 2004-06-17 21:10:21 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -687,7 +687,12 @@ public class CjClassDeclaration
      * super implementation of the method also.
      */
     public void checkInterface(CContext context) throws PositionedError {
-                
+
+        // link cclass with cclass interface
+        getCClass().setCorrespondingCClass(getCorrespondingInterfaceDeclaration().getCClass());
+        getCorrespondingInterfaceDeclaration().getCClass().setCorrespondingCClass(getCClass());
+
+        
         //statically deployed classes are considered as aspects
         if (isStaticallyDeployed()) {
             DeploymentPreparation.prepareForStaticDeployment(
