@@ -55,10 +55,12 @@ public class CaesarTypeGraphGenerator implements CaesarConstants {
                 
         if(superTypes.length > 0) {
             for(int i=0; i<superTypes.length; i++) {
-                CaesarTypeNode superNode = g.getTypeCreateIfNotExsistent(
-                    new JavaQualifiedName(superTypes[i].getCClass().getQualifiedName()), false
-                );
-                superNode.addSubType(thisNode);
+                if((superTypes[i].getCClass().getModifiers() & ACC_CCLASS_INTERFACE) != 0) {
+                    CaesarTypeNode superNode = g.getTypeCreateIfNotExsistent(
+                        new JavaQualifiedName(superTypes[i].getCClass().getQualifiedName()), false
+                    );
+                    superNode.addSubType(thisNode);
+                }
             }
         }
         else {

@@ -1,8 +1,10 @@
 package org.caesarj.compiler.cclass;
 
-import java.util.*;
-
-import org.caesarj.util.InconsistencyException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Caesar Type Graph.  

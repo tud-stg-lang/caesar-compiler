@@ -3,7 +3,12 @@ package generated;
 import junit.framework.TestCase;
 import java.util.LinkedList;
 
-
+/**
+ * Purpose: Test factory methods late bound new
+ * TODO
+ *
+ * @author Ivica Aracic
+ */
 public class VCTestCase_0 extends TestCase {
 
 	public VCTestCase_0() {
@@ -13,27 +18,30 @@ public class VCTestCase_0 extends TestCase {
 	public StringBuffer result = new StringBuffer();
 
 	public void test() {
-        D d = new D();
-        A a = d;
-        B b = d;
-        
-        System.out.println(a.a());
-        System.out.println(b.a());
-        System.out.println(b.b());
-        System.out.println(d.a());
-        System.out.println(d.b());
-        System.out.println(d.c());
-        System.out.println(d.d());
+        TestCase0 testCase = new TestCase0();
+        TestCase0.A a = testCase.$newA();
+        TestCase0.B b = testCase.$newB();
+		TestCase0.A.X x1 = a.$newX();
+		TestCase0.A.X x2 = b.$newX();
+		assertEquals(x1.toString()+'-'+x2.toString(), "A.X-B.X");
 	}
 }
 
-public cclass D extends B & C {
-    public D() {        
-        System.out.println("hohoho D");
-    }
-    
-    public String d() {
-        return a()+'-'+b()+'-'+c();
-    }    
+public cclass TestCase0 {
+	public cclass A {
+		public cclass X {	
+			public String toString() {
+				return "A.X";
+			}
+		}
+	}
+	
+	public cclass B extends A {
+		public cclass X {
+			public String toString() {
+				return "B.X";
+			}
+		}
+	}
 }
 

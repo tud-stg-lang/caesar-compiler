@@ -42,10 +42,9 @@ public class VirtualClassesTests extends FjTestCase {
 				// these files should not raise errors
 				String[] args =
 					new String[] {
-                        //"A.java",
 						//"VCTestCase_0.java",
-                        "VCTestCase_1.java",
-                        //"VCTestCase_2.java"
+                        //"VCTestCase_1.java",
+                        "VCTestCase_2.java"
                     };
 
 				compiler = new CompilerMock(this, new PrintWriter(System.out) {
@@ -77,20 +76,19 @@ public class VirtualClassesTests extends FjTestCase {
 
 	public void testCompilation() {		
 	}
-
 /*
     public void testCaesarTestCase_0() throws Throwable {
         doGeneratedTest("VCTestCase_0");
     }
-*/
+
     public void testCaesarTestCase_1() throws Throwable {
         doGeneratedTest("VCTestCase_1");
     }
-/*
+*/
     public void testCaesarTestCase_2() throws Throwable {
         doGeneratedTest("VCTestCase_2");
     }
-*/
+
 
 	class CompilerMock extends Main {
 

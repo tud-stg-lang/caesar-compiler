@@ -15,13 +15,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.20 2004-06-25 14:50:54 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.21 2004-06-29 13:31:49 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
 
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
@@ -29,38 +35,32 @@ import org.caesarj.compiler.aspectj.CaesarScope;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.expression.JConstructorCall;
-import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.phylum.expression.JSuperExpression;
-import org.caesarj.compiler.ast.phylum.expression.JUnqualifiedInstanceCreation;
-import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
-import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
-import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
-import org.caesarj.compiler.ast.phylum.statement.JStatement;
-import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.visitor.KjcPrettyPrinter;
 import org.caesarj.compiler.ast.visitor.KjcVisitor;
 import org.caesarj.compiler.cclass.CaesarTypeNode;
 import org.caesarj.compiler.cclass.CaesarTypeSystem;
 import org.caesarj.compiler.cclass.JavaQualifiedName;
 import org.caesarj.compiler.cclass.JavaTypeNode;
-import org.caesarj.compiler.cclass.CaesarTypeSystemException;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.context.FjClassContext;
-import org.caesarj.compiler.export.*;
+import org.caesarj.compiler.export.CCjAdvice;
+import org.caesarj.compiler.export.CCjSourceClass;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.export.CModifier;
+import org.caesarj.compiler.export.CSourceClass;
+import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
-import org.caesarj.util.UnpositionedError;
 import org.caesarj.util.Utils;
 
 /**
@@ -504,6 +504,7 @@ public class CjClassDeclaration
         /*
          * check name clashes if we have more than one parent
          */        
+        /*
         if(typeNode.getParents().size() > 1) {            
 
             CaesarTypeNode joinPoint = null;
@@ -593,13 +594,12 @@ public class CjClassDeclaration
                                     
                 for (int i = 0; i < parentCClass.getFields().length; i++) {
                     CField f = parentCClass.getFields()[i];
-                    /*if((f.getModifiers() & ACC_PRIVATE) == 0)*/ {
-                        String sig = f.getIdent();
-                        sigMemberMap.put(sig, f);
-                        Integer count = (Integer)sigCollisionMap.get(sig);
-                        count = count==null ? new Integer(1) : new Integer(count.intValue()+1);
-                        sigCollisionMap.put(sig, count);
-                    }
+                
+                    String sig = f.getIdent();
+                    sigMemberMap.put(sig, f);
+                    Integer count = (Integer)sigCollisionMap.get(sig);
+                    count = count==null ? new Integer(1) : new Integer(count.intValue()+1);
+                    sigCollisionMap.put(sig, count);                
                 }
                 
             }
@@ -631,7 +631,7 @@ public class CjClassDeclaration
             }                        
         }
 //      -------------------- cut here -------------------------------------
-        
+        */
         /*
          * add implicit subtypes
          */ 
@@ -962,16 +962,6 @@ public class CjClassDeclaration
         System.arraycopy(body, 0, newBody, 0, body.length);
         newBody[body.length] = initializerDeclaration;
         body = newBody;
-    }
-
-    public void addInterface(CReferenceType newInterface) {
-        CReferenceType[] newInterfaces =
-            new CReferenceType[interfaces.length + 1];
-
-        System.arraycopy(interfaces, 0, newInterfaces, 0, interfaces.length);
-        newInterfaces[interfaces.length] = newInterface;
-
-        interfaces = newInterfaces;
     }
 
     /**

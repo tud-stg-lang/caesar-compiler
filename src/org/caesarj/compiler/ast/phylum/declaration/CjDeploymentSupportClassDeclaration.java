@@ -113,6 +113,10 @@ public class CjDeploymentSupportClassDeclaration extends CjClassDeclaration {
         // do nothing here
     }
     
+    public void adjustSuperType(CContext context) throws PositionedError {
+		// do nothing here
+	}
+    
     /**
      * Sets the superclass of this deployment class if needed.
      */

@@ -1,17 +1,9 @@
 package org.caesarj.compiler.ast.phylum.declaration;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.cclass.CaesarTypeNode;
-import org.caesarj.compiler.cclass.CaesarTypeSystem;
-import org.caesarj.compiler.cclass.JavaQualifiedName;
-import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CContext;
@@ -103,6 +95,7 @@ public class CjInterfaceDeclaration
     
     
     public void adjustSuperType(CContext context) throws PositionedError {
+        /*
         try {
             JavaQualifiedName qualifiedName =
                 new JavaQualifiedName(
@@ -112,9 +105,7 @@ public class CjInterfaceDeclaration
             CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
             CaesarTypeNode typeNode = typeSystem.getCompleteGraph().getType(qualifiedName);
                                   
-            /*
-             * adjust supertype 
-             */
+
             List ifcList = new ArrayList(typeNode.getParents().size());
             
             for (Iterator it = typeNode.getParents().iterator(); it.hasNext();) {
@@ -142,6 +133,7 @@ public class CjInterfaceDeclaration
             e.printStackTrace();
             throw new PositionedError(getTokenReference(), CaesarMessages.CANNOT_CREATE);
         }
+        */
     }
 
     public void generateInterface(

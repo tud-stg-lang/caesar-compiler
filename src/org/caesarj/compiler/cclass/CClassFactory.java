@@ -5,20 +5,28 @@ import java.util.StringTokenizer;
 
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.declaration.*;
+import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjMethodDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JConstructorDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JMemberDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.expression.JConstructorCall;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
-import org.caesarj.compiler.ast.phylum.expression.JUnqualifiedInstanceCreation;
-import org.caesarj.compiler.ast.phylum.statement.JBlock;
-import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
+import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.types.*;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CCompositeNameType;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
-import org.caesarj.util.UnpositionedError;
 
 /**
  * ...
@@ -118,6 +126,15 @@ public class CClassFactory implements CaesarConstants {
             superInterfaces = new CReferenceType[]{superType};
         }
         
+        CReferenceType ifcs[] = caesarClass.getInterfaces();
+        
+        if(ifcs.length > 0) {
+            CReferenceType tmp[] = new CReferenceType[superInterfaces.length+ifcs.length];
+            System.arraycopy(superInterfaces, 0, tmp, 0, superInterfaces.length);
+            System.arraycopy(ifcs, 0, tmp, superInterfaces.length, ifcs.length);
+            superInterfaces = tmp;
+        }
+        
 
 		CjInterfaceDeclaration cclassInterface =
 			new CjInterfaceDeclaration(
@@ -182,14 +199,52 @@ public class CClassFactory implements CaesarConstants {
 
 	}
     
-	public void modifyCaesarClass() {        
-		//caesarClass.addInterface(new CClassNameType(interfaceName));
-            
-        CReferenceType superType = caesarClass.getSuperClass();
+	public void modifyCaesarClass() {    
+
+        {
+            CReferenceType superType = caesarClass.getSuperClass();
+             
+            if(superType != null && !(superType instanceof CCompositeNameType)) {
+                CClassNameType newSuperType = new CClassNameType(mapToImplClassName(superType.getQualifiedName()));
+                caesarClass.setSuperClass(newSuperType);
+            }
+        }
+        
+         JMethodDeclaration methodDecls[] = caesarClass.getMethods();
+         boolean defCtorFound = false;
+         for (int i = 0; i < methodDecls.length; i++) {             
+            if(methodDecls[i] instanceof JConstructorDeclaration) {
+                if(methodDecls[i].getParameters().length == 0) {
+                    defCtorFound = true;
+                    break;
+                }
+            }
+        }
          
-        if(superType != null && !(superType instanceof CCompositeNameType)) {
-            CClassNameType newSuperType = new CClassNameType(mapToImplClassName(superType.getQualifiedName()));
-            caesarClass.setSuperClass(newSuperType);
+        if(!defCtorFound) {
+            // create def. ctor -> public CTOR() {super();}
+            JConstructorDeclaration defCtor = new JConstructorDeclaration(
+                caesarClass.getTokenReference(),
+                ACC_PUBLIC,
+                caesarClass.getIdent(),
+                JFormalParameter.EMPTY,
+                CReferenceType.EMPTY,
+                new JConstructorBlock(
+                    caesarClass.getTokenReference(),
+                    new JConstructorCall(
+                        caesarClass.getTokenReference(),
+                        false,
+                        null,
+                        JExpression.EMPTY
+                    ),
+                    JStatement.EMPTY
+                ),
+                null,
+                null,
+                environment.getTypeFactory()
+            );
+            
+            caesarClass.addMethod(defCtor);
         }
 	}
 
