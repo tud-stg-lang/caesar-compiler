@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodDeclaration.java,v 1.7 2004-10-15 11:12:52 aracic Exp $
+ * $Id: JMethodDeclaration.java,v 1.8 2004-10-29 13:24:14 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -36,6 +36,7 @@ import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.visitor.IVisitor;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBinaryTypeContext;
@@ -114,6 +115,19 @@ public class JMethodDeclaration extends JMemberDeclaration {
      */
     public CSourceMethod checkInterface(CClassContext context)
         throws PositionedError {
+
+        // in a mixin a method may not be package-visible
+        if(context.getCClass().isMixin()) {
+		    check(
+		        context,
+		        CModifier.contains(
+		            getModifiers(),
+		            ACC_PUBLIC | ACC_PROTECTED | ACC_PRIVATE
+	            ),
+		        CaesarMessages.CCLASS_PACKAGE_VISIBILITY);
+        }
+
+        
         boolean inInterface = context.getCClass().isInterface();
         boolean isExported = !(this instanceof JInitializerDeclaration);
         String ident =

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldDeclaration.java,v 1.3 2004-10-15 11:12:52 aracic Exp $
+ * $Id: JFieldDeclaration.java,v 1.4 2004-10-29 13:24:07 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -26,6 +26,7 @@ import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CClassContext;
@@ -139,6 +140,14 @@ public class JFieldDeclaration extends JMemberDeclaration {
 		TypeFactory factory = context.getTypeFactory();
 
 		classContext = context;
+		
+		// IVICA: field in a cclass may not be public or package-visible
+		if(context.getCClass().isMixin()) {
+		    check(
+    	        context,
+    	        CModifier.contains(modifiers, ACC_PRIVATE | ACC_PROTECTED | ACC_PUBLIC),
+    	        CaesarMessages.CCLASS_PACKAGE_VISIBILITY);		    
+		}
 
 		if (!context.getCClass().isInterface()) {
 			// JLS 8.3.1 : Class Field Modifiers
