@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.17 2004-10-28 08:00:46 aracic Exp $
+ * $Id: CaesarMessages.msg,v 1.18 2004-10-28 13:06:26 aracic Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -60,8 +60,8 @@ error	DESCENDANT_OF_CROSSCUTTING_CLASS_NOT_DECLARED_CROSSCUTTING
 
 // VIRTUAL CLASSES
 
-caution	ONLY_PUBLIC_CCLASS
-		"Current Caesar version allows only a public cclass. Class modifier automatically set to public."
+error	ONLY_PUBLIC_CCLASS
+		"Current Caesar version allows only a public cclass."
 
 error	ONLY_DEF_CTOR_ALLOWED 
 		"A virtual class may have only a default constructor."
@@ -72,9 +72,14 @@ error	NAME_CLASH
 error	CLASS_GENERATOR
 		"Class Generator failed on \"{0}\": {1}."
 
-
 error	CCLASS_ARRAYS_NOT_ALLOWED
 		"Currently arrays of Caesar classes are not supported."
+
+error	CCLASS_EXTENDS_ONLY_IDENTIFIER_ALLOWED
+		"Only single identifier allowed in the extends clause of an inner cclass."
+
+error	CCLASS_SUPER_NOT_FOUND
+		"Can not find the super cclass in the direct enclosing class. If you are inheriting from an implicit Caesar type, please provide an empty redefinition in the direct enclosing class."
 
 
 // MISC

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.55 2004-10-27 17:23:00 aracic Exp $
+ * $Id: Caesar.g,v 1.56 2004-10-28 13:06:26 aracic Exp $
  */
 
 /*
@@ -418,7 +418,7 @@ jClassDefinition [int modifiers]
 jCClassDefinition [int modifiers]
   returns [CjClassDeclaration self = null]
 {
-  CReferenceType     superClass = null;
+  CReferenceType[]   superClasses = CReferenceType.EMPTY;
   CReferenceType[]   interfaces = CReferenceType.EMPTY;
   CReferenceType     wrappee = null;
   ParseClassContext  context = ParseClassContext.getInstance();
@@ -429,7 +429,7 @@ jCClassDefinition [int modifiers]
 :
   "cclass" ident:IDENT
   //This is like this for prevent non-determinism
-  (superClass =  jCSuperClassClause[])?
+  (superClasses =  jCSuperClassClause[])?
 
   (interfaces = jImplementsClause[])?
   (wrappee = jWrapsClause[])?
@@ -443,7 +443,7 @@ jCClassDefinition [int modifiers]
           self = new CjVirtualClassDeclaration(sourceRef,
 				   modifiers,
 				   ident.getText(),
-				   superClass,
+				   superClasses,
 				   wrappee,			   
 				   interfaces,
 				   context.getFields(),
@@ -470,27 +470,19 @@ jSuperClassClause []
 
 
 jCSuperClassClause []
-  returns [CReferenceType self = null]
+  returns [CReferenceType[] self = null]
 {
   CReferenceType name;
   ArrayList	container = new ArrayList();
 }
 :
-  ("extends" name =  jTypeName[]) { container.add(name); }
+  ("extends" name =  jTypeName[]) { container.add(new CVirtualClassNameType(name.getQualifiedName())); }
   (
   	BAND
-  	name = jTypeName[] { container.add(name); }
+  	name = jTypeName[] { container.add(new CVirtualClassNameType(name.getQualifiedName())); }
   )*
   {
-  	if(container.size() > 1) {
-	  	self = 
-	  		new CCompositeNameType(
-		  		(CClassNameType[])container.toArray(new CClassNameType[container.size()])
-		  	);
-	}
-	else {
-		self = (CReferenceType)container.get(0);
-	}
+  	self = (CClassNameType[])container.toArray(new CClassNameType[container.size()]);
   }
 ;
 
