@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CompileAndCheckErrorTest.java,v 1.3 2005-03-02 17:41:42 gasiunas Exp $
+ * $Id: CompileAndCheckErrorTest.java,v 1.4 2005-03-02 17:44:24 gasiunas Exp $
  */
 
 package org.caesarj.test.suite;
@@ -96,16 +96,17 @@ public class CompileAndCheckErrorTest extends CompileTest {
         		fail("failed : undefined message: " + getId() + " : "+getDescription());
         	}
         }
-        
-        if(found.length == 0)
-            fail("No errors found : "+getId()+" : "+getDescription());
-        
-        if(expected.length != found.length)
-            fail("More ("+errors.size()+") errors found than expected: "+getId()+" : "+getDescription());
-        
-        for (int i = 0; i < found.length; i++) {
-            if(!(expected[i] == found[i].getFormattedMessage().getDescription()))
-                fail("Unexpected error occured : "+found[i].getMessage()+" : "+getId()+" : "+getDescription()); 
+        else {
+	        if(found.length == 0)
+	            fail("No errors found : "+getId()+" : "+getDescription());
+	        
+	        if(expected.length != found.length)
+	            fail("More ("+errors.size()+") errors found than expected: "+getId()+" : "+getDescription());
+	        
+	        for (int i = 0; i < found.length; i++) {
+	            if(!(expected[i] == found[i].getFormattedMessage().getDescription()))
+	                fail("Unexpected error occured : "+found[i].getMessage()+" : "+getId()+" : "+getDescription()); 
+	        }
         }
     }
 }
