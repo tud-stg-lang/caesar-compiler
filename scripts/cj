@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ "$CAESAR_HOME" = "" ]; then 
+	echo "please set CAESAR_HOME environment variable"
+	exit
+fi
+
+export CAESAR_RUNTIME="$CAESAR_HOME/lib/caesar-runtime.jar:$CAESAR_HOME/lib/aspectjrt.jar"
+
+java -classpath $CLASSPATH:$CAESAR_RUNTIME:. $*
