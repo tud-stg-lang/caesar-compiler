@@ -8,9 +8,7 @@ import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjMixinInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JConstructorDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JMemberDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.constants.CaesarConstants;
@@ -90,14 +88,17 @@ public class CClassFactory implements CaesarConstants {
         ArrayList interfaceMethods = new ArrayList(cclassMethods.length);
 
         // copy all public, non-static class methods to interface
+        /*
 		for (int i = 0; i < cclassMethods.length; i++) {      
             if(
                 !(cclassMethods[i] instanceof JConstructorDeclaration)
                 && ((cclassMethods[i].getModifiers() & JMemberDeclaration.ACC_PUBLIC) != 0)
                 && ((cclassMethods[i].getModifiers() & JMemberDeclaration.ACC_STATIC) == 0)
-            )      
+            ) { 
                 interfaceMethods.add(createInterfaceMethod(cclassMethods[i]));
+            }
 		}
+		*/
 
         // default is our interface has no superinterface
         CReferenceType[] superInterfaces = new CReferenceType[]{};
