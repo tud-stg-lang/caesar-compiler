@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JVariableDefinition.java,v 1.10 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JVariableDefinition.java,v 1.11 2005-02-09 16:52:56 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -32,11 +32,14 @@ import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CArrayType;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CDependentNameType;
+import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -181,6 +184,30 @@ public class JVariableDefinition extends JLocalVariable {
             check(context, expr.isAssignableTo(context, type),
                     KjcMessages.VAR_INIT_BADTYPE, getIdent(), expr
                             .getType(factory));
+            
+            // IVICA: check family
+            if(getType().isCaesarReference()) {
+                try {
+		            Path rFam = expr.getFamily();
+		            Path lFam = ((CReferenceType)getType()).getPath();
+		            System.out.println("ASSIGNEMENT (line "+getTokenReference().getLine()+"):");
+		            System.out.println("\t"+lFam+" <= "+rFam);
+		            if(lFam != null && rFam != null) {
+		                System.out.println();
+		                check(context,
+		          	      rFam.isAssignableTo( lFam ),
+		          	      KjcMessages.ASSIGNMENT_BADTYPE, 	rFam+"."+expr.getType(factory).getCClass().getIdent(),   
+		          	      lFam+"."+getType().getCClass().getIdent() );
+		            }
+		            else if(lFam!=null ^ rFam!=null) {
+		                throw new InconsistencyException("(error required here)... trying to assign an object with family to an object without family");
+		            }
+                }
+                catch (UnpositionedError e) {
+                    throw e.addPosition(getTokenReference());
+                }
+            }
+            
             expr = expr.convertType(expressionContext, type);
         }
     }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JReturnStatement.java,v 1.3 2005-01-24 16:52:59 aracic Exp $
+ * $Id: JReturnStatement.java,v 1.4 2005-02-09 16:52:56 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -35,10 +35,14 @@ import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CInitializerContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.family.Path;
+import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * JLS 14.16: Return Statement
@@ -104,6 +108,33 @@ public class JReturnStatement extends JStatement {
       check(context,
 	    expr.isAssignableTo(expressionContext, returnType),
 	    KjcMessages.RETURN_BADTYPE, expr.getType(factory), returnType);
+      
+//    IVICA: check family, return type is a caesar type and we are not in the factory method
+      if(
+          returnType.isCaesarReference() 
+          && !context.getMethodContext().getMethodDeclaration().getMethod().isCaesarFactoryMethod()
+      ) {
+          try {
+	            Path rFam = expr.getFamily();
+	            Path lFam = ((CReferenceType)returnType).getPath();
+	            System.out.println("ASSIGNEMENT (line "+getTokenReference().getLine()+"):");
+	            System.out.println("\t"+lFam+" <= "+rFam);
+	            if(lFam != null && rFam != null) {
+	                System.out.println();
+	                check(context,
+	          	      rFam.isAssignableTo( lFam ),
+	          	      KjcMessages.ASSIGNMENT_BADTYPE, 	rFam+"."+expr.getType(factory).getCClass().getIdent(),   
+	          	      lFam+"."+returnType.getCClass().getIdent() );
+	            }
+	            else if(lFam!=null ^ rFam!=null) {
+	                throw new InconsistencyException("(error required here)... trying to assign an object with family to an object without family");
+	            }
+          }
+          catch (UnpositionedError e) {
+              throw e.addPosition(getTokenReference());
+          }
+      }
+      
       expr = expr.convertType(expressionContext, returnType);
     } else {
       check(context, returnType.getTypeID() == TID_VOID, KjcMessages.RETURN_EMPTY_NONVOID);
