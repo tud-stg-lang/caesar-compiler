@@ -59,17 +59,20 @@ public class Main extends MainSuper implements Constants {
      * 
      */
     public Main(String workingDirectory, PrintWriter diagnosticOutput) {
-        super(workingDirectory, new Outputter(diagnosticOutput));
-        //		super(workingDirectory, diagnosticOutput  );
+        super(workingDirectory, diagnosticOutput);
     }
 
     public static void main(String[] args) {
         try {
 	    	boolean success;
 	        success = compile(args);
+	        
+	        if(!success)
+	            System.exit(1);    
 		}
         catch (Exception e) {
-        	e.printStackTrace();
+        	e.printStackTrace(System.err);
+        	System.exit(1);
 		}        
     }
 
@@ -648,51 +651,4 @@ public class Main extends MainSuper implements Constants {
                 new LinkedList())
         );
     }
-
-    /**
-     * used to redirect System.out for tests.
-     *
-     */
-    protected static class Outputter extends PrintWriter {
-        protected PrintWriter otherPrinter;
-        public Outputter(PrintWriter otherPrinter) {
-            super(System.out);
-            this.otherPrinter = otherPrinter;
-        }
-        public void println() {
-            if (otherPrinter != null) {
-                otherPrinter.println();
-                //super.println();
-            }
-            else
-                super.println();
-        }
-
-        /**
-         * if otherPrinter is set, write s to otherPrinter, else to System.out
-         * 
-         * @param s the String to be written
-         */
-        public void write(String s) {
-            if (otherPrinter != null) {
-                otherPrinter.write(s);
-                //super.write( s );
-            }
-            else
-                super.write(s);
-        }
-        /**
-         * This was inserted because it was not working well
-         * when the otherPrinter was present.
-         * @author Walter Augusto Werner
-         */
-        public void flush() {
-            if (otherPrinter != null)
-                otherPrinter.flush();
-            else
-                super.flush();
-        }
-
-    }
-
 }
