@@ -92,28 +92,51 @@ public class CjInterfaceDeclaration
 			setModifiers(modifiers | ACC_STATIC | ACC_PUBLIC);
 		}
 	}
-	
-	public void generateInterface(
+
+
+    public void generateInterface(
+        ClassReader classReader,
+        CClass owner,
+        String prefix
+    ) {
+        sourceClass = new CCjSourceClass(owner, getTokenReference(), modifiers, ident, prefix + ident, typeVariables, isDeprecated(), false, this); 
+        setInterface(sourceClass);     
+        
+        CReferenceType[]    innerClasses = new CReferenceType[inners.length];
+        for (int i = 0; i < inners.length; i++) {
+          inners[i].generateInterface(classReader, sourceClass, sourceClass.getQualifiedName() + "$");
+          innerClasses[i] = inners[i].getCClass().getAbstractType();
+        }
+
+        sourceClass.setInnerClasses(innerClasses);
+        uniqueSourceClass = classReader.addSourceClass(sourceClass);    
+    }
+    
+    
+    // IVICA generateInterface method has been splited into
+    // generating sourceClass and addding inners to sourceClass as needed by CClassFactory
+	public void _generateInterface(
 		ClassReader classReader,
 		CClass owner,
-		String prefix) {
+		String prefix
+    ) {
 	    sourceClass = new CCjSourceClass(owner, getTokenReference(), modifiers, ident, prefix + ident, typeVariables, isDeprecated(), false, this); 
-	
-	    setInterface(sourceClass);
-	
-	    CReferenceType[]	innerClasses = new CReferenceType[inners.length];
-	    for (int i = 0; i < inners.length; i++) {
-	      inners[i].generateInterface(classReader, sourceClass, sourceClass.getQualifiedName() + "$");
-	      innerClasses[i] = inners[i].getCClass().getAbstractType();
-	    }
-	
-	    sourceClass.setInnerClasses(innerClasses);
-	    uniqueSourceClass = classReader.addSourceClass(sourceClass);
+	    setInterface(sourceClass);		   
 	}
+    
+    public void generateInterfaceInners(
+        ClassReader classReader,
+        String prefix
+    ) {
+        CReferenceType[]    innerClasses = new CReferenceType[inners.length];
+        for (int i = 0; i < inners.length; i++) {
+          //inners[i].generateInterface(classReader, sourceClass, sourceClass.getQualifiedName() + "$");
+          innerClasses[i] = inners[i].getCClass().getAbstractType();
+        }
 
-	public JTypeDeclaration[] getInners() {
-		return inners;
-	}
+        sourceClass.setInnerClasses(innerClasses);
+        uniqueSourceClass = classReader.addSourceClass(sourceClass);
+    }
 
 	/**
 	 * Walter
@@ -150,4 +173,15 @@ public class CjInterfaceDeclaration
 		System.out.println();
 		
 	}
+    
+    // IVICA added reference to corresponding CjClassDeclaration    
+    public void setCorrespondingClassDeclaration(CjClassDeclaration caesarClassDeclaration)  {
+        this.caesarClassDeclaration = caesarClassDeclaration;
+    }
+    
+    public CjClassDeclaration getCorrespondingClassDeclaration() {
+        return caesarClassDeclaration;
+    }
+    
+    private CjClassDeclaration caesarClassDeclaration = null;
 }
