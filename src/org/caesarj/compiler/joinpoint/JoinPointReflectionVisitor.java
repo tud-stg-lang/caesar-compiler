@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JoinPointReflectionVisitor.java,v 1.21 2005-03-29 09:47:01 gasiunas Exp $
+ * $Id: JoinPointReflectionVisitor.java,v 1.22 2005-03-30 14:23:47 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -31,7 +31,6 @@ import java.util.List;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.declaration.CjAdviceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMemberDeclaration;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
@@ -80,19 +79,7 @@ public class JoinPointReflectionVisitor implements IVisitor, CaesarConstants  {
 
 	// except CjClassDeclaration
     public boolean visit(CjClassDeclaration self) {
-        for (int i = 0; i < self.getBody().length; i++) {
-    		if (self.getBody()[i] instanceof JFieldDeclaration) {
-    			JFieldDeclaration field = (JFieldDeclaration) self.getBody()[i];
-    			if ((field.getVariable().getModifiers() & ACC_DEPLOYED) != 0) {
-    				((CjClassDeclaration) self).addClassBlock(
-    					StaticDeploymentPreparation.createStaticFieldDeployBlock(
-    						field.getTokenReference(),
-    						(CjClassDeclaration) self,
-    						field));
-    			}
-    		}
-    	}	        
-        return true;
+       return true;
     }
 
     // ... and CjAdviceDeclaration ...

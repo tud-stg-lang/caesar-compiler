@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.91 2005-03-30 07:22:43 gasiunas Exp $
+ * $Id: Main.java,v 1.92 2005-03-30 14:24:59 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -53,6 +53,7 @@ import org.caesarj.compiler.joinpoint.GenerateDeploymentSupport;
 import org.caesarj.compiler.joinpoint.JoinDeploymentSupport;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.joinpoint.StaticDeploymentPreparation;
+import org.caesarj.compiler.joinpoint.StaticFieldDeploymentVisitor;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.compiler.typesys.graph.CaesarTypeGraphGenerator;
 import org.caesarj.compiler.typesys.java.JavaTypeGraph;
@@ -164,93 +165,125 @@ public class Main extends MainSuper implements Constants {
         }
 
 
+        // KOPI step - parsing
         JCompilationUnit[] tree = parseFiles(environment);    
         if(errorFound) return false;
         
+        // CJ general: collects externalized classes
         new JoinCollaborations(environment, this).joinAll(tree);
         if(errorFound) return false;
-                
+               
+        // CJ VC: separate interface from implementation
         prepareCaesarClasses(environment, tree);
         
+        // CJ Aspects: prepare the advices, which use joinpoint reflection
         prepareJoinpointReflection(tree);
         
+        // KOPI step - resolves inheritance hierarchy
         joinAll(tree);                  
         if(errorFound) return false;
         
+        // CJ VC 
         generateCaesarTypeSystem(environment, tree);
         if(errorFound) return false;
         
+        // need Caesar type system
+        // CJ Aspects: generate aspect deployment support classes and methods
         prepareAspectDeployment(environment, tree);
+        if(errorFound) return false;
         
+        // CJ VC 
         createMixinCloneTypeInfo(environment, tree[0]);
         
+        // CJ VC
         createImplicitCaesarTypes(tree);
         if(errorFound) return false;
         
+        // CJ VC
         adjustSuperTypes(tree);
         if(errorFound) return false;
-        
+  
+        // CJ VC / Binding
         // this one generates factory and wrapper recycling methods
         generateSupportMembers(environment);
         if(errorFound) return false;
         
+        // CJ Aspects:
+        // must be called before check interfaces, but
+        // lookup in type context must already work
+        prepareStaticFieldDeployment(environment, tree);
+        if(errorFound) return false;
+        
+        // KOPI step - check the interfaces of type declarations
         // this one adds type info about fields and methods
         checkAllInterfaces(tree); 
         if(errorFound) return false;
-
+        
+        // CJ VC
         // complete mixin interfaces here with infos we have till now
         // this step is necessary since access to fields defined in the enclosing cclass
         // work via accessor method which has to be declared in the interface
         completeCClassInterfaces(tree);
         if(errorFound) return false;        
         
+        // CJ VC
         // start second check on all fields and signatures containing dependent types
         // note: these are all the types not resolved in the checkAllInterface pass
         checkDependentTypesInAllInterfaces(tree); 
         if(errorFound) return false;
         
+        // CJ VC
         // this step generates missing mixin chain parts
         // (these are all the classes where the statically 
         // known super class parameter has been changed due to the linearization process) 
         // the temporary info generated is used in checkVirtualClassMethodSignatures
         completeMixinCloneTypeInfo(environment, tree[0]);
         
+        // CJ VC 
         // check overridding in virtual classes
         // we have to keep the signature of a overridding method having virtual classes as
         // parameters equal to the first declaration introduced in one of the super-collaborations
         checkVirtualClassMethodSignatures(tree);
         if(errorFound) return false;
         
+        // CJ VC
         // repeat the process here again
         // re-export the cclass interface (some signatures may have changed since last time)
         completeCClassInterfaces(tree);
         if(errorFound) return false;
 
+        // CJ VC
         // repeat the process 
         completeMixinCloneTypeInfo(environment, tree[0]);
         
+        // KOPI step - check class initialization, constructors? 
         checkAllInitializers(tree);
         if(errorFound) return false;
-                        
+        
+        // KOPI step - check inside the bodies of the methods 
         checkAllBodies(tree);
         if(errorFound) return false;
                 
         byteCodeMap = new ByteCodeMap(options.destination);
+        // KOPI step - generate byte code 
         genCode(environment.getTypeFactory());
          
+        // CJ VC
         genMixinCopies(environment);
         if(errorFound) return false;
-               
         
+        // CJ Aspect: structure model preprocessing
         preWeaveProcessing(tree);
         
         tree = null;
         
+        // CJ Aspect: Weaving
         if(!noWeaveMode())
             weaveGeneratedCode(environment.getTypeFactory());               
                
         CodeSequence.endSession();
         
+        // CJ Aspect: structure model postprocessing
         if(Main.buildAsm){
         	CaesarAsmBuilder.postBuild(model);
         	if(Main.printAsm){
@@ -489,24 +522,28 @@ public class Main extends MainSuper implements Constants {
     protected void prepareAspectDeployment(
         KjcEnvironment environment,
         JCompilationUnit[] tree) {
-        Log.verbose("prepareDynamicDeployment");
-        
-        //Modify and generate support classes for dynamic deployment.
+    	
+        Log.verbose("prepare dynamic deployment");
+        // Modify and generate support classes for dynamic deployment.
         GenerateDeploymentSupport genDeplSupport = new GenerateDeploymentSupport(this, environment);
         genDeplSupport.generateSupportClasses();
         
+        Log.verbose("join deployment support classes");
         //Join generated deployment support declarations 
         for (int i = 0; i < tree.length; i++) {
             JCompilationUnit cu = tree[i];
             JoinDeploymentSupport.prepareForDynamicDeployment(this, cu);
         }
         
-        // Prepare for static deployment
+        Log.verbose("prepare static class deployment");
+        // Prepare for static class deployment
         StaticDeploymentPreparation statDeplPrep = new StaticDeploymentPreparation(this, environment);
         for (int i = 0; i < tree.length; i++) {
             JCompilationUnit cu = tree[i];
             statDeplPrep.prepareForStaticDeployment(cu);
         }
+        
+        
     }
 
     /**
@@ -525,6 +562,17 @@ public class Main extends MainSuper implements Constants {
         }
     }
 
+    protected void prepareStaticFieldDeployment(KjcEnvironment environment,
+    		JCompilationUnit[] tree) {
+    	Log.verbose("prepare static field deployment");
+        // Prepare for static field deployment
+        StaticFieldDeploymentVisitor statFieldDepl = 
+            new StaticFieldDeploymentVisitor(this, environment);
+        for (int i = 0; i < tree.length; i++) {            
+            tree[i].accept(statFieldDepl);
+        }
+    }
+    
     protected void prepareJoinpointReflection(JCompilationUnit[] tree) {
         Log.verbose("prepareJoinpointReflection");
         //Handle Join Point Reflection.
