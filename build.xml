@@ -17,6 +17,15 @@
  <property name="libs" location="lib"/>
  <property name="dist" location="dist"/>
 
+ <!-- Create CaesarMessages.java -->
+ <target name="msggen" description="Generate CaesarMessages.java">
+  <java fork="true" dir="${source}/compiler"
+  		classname="org.caesarj.tools.msggen.Main"
+  		classpath="bin;${libs}/java-getopt-1.0.9.jar;${libs}/cjantlr.jar">
+   <arg value="${inputFiles}/CaesarMessages.msg"/>
+  </java>
+ </target>
+
  <!-- pack for distribution -->
  <target name="dist" depends="compile">
  	<delete dir="${dist}"/>
@@ -37,11 +46,14 @@
  <target name="compile" description="compile the source files">
   <javac srcdir="src"
   		 classpath="${packageBase};
-  				lib/aspectjtools.jar;
-  				lib/java-getopt-1.0.9.jar;
-  				lib/bcel.jar;lib/aspectjrt.jar;
-  				lib/caesarruntime.jar;lib/junit.jar"
-  		 destdir="bin" listfiles="true"/>
+  				${libs}/aspectjtools.jar;
+  				${libs}/java-getopt-1.0.9.jar;
+  				${libs}/bcel.jar;
+  				${libs}/aspectjrt.jar;
+  				${libs}/caesarruntime.jar;
+  				${libs}/junit.jar;
+  				${libs}/cjantlr.jar"
+  		 destdir="bin" listfiles="true" failonerror="true"/>
  </target>
  
  <!-- Target for generating the scanner -->
@@ -51,19 +63,19 @@
 		(The task is forced to set the working directory to the directory where
 		the output files should be placed because lexgen drops the output just
 		into the workling directory of the VM). -->  
-  <echo message="TOKDEF"/>
-  <java fork="true"
-  		dir="${source}/compiler"
+  <echo message="1st step: TOKDEF"/>
+  <java fork="true"	dir="${source}/compiler"
+  		failonerror="true"
    		classname="org.caesarj.tools.lexgen.Main"
-        classpath="bin;${libs}/java-getopt-1.0.9.jar">
+        classpath="${libs}/cjantlr.jar;bin;${libs}/java-getopt-1.0.9.jar">
    <arg value="-ditf"/>
    <arg value="${inputFiles}/caesar.t"/>
   </java>
 
   <!-- 2. LEXINC: Creates the .flex file -->
-  <echo message="LEXINC"/>
-  <java fork="true"
-  		dir="${source}/compiler"
+  <echo message="2nd step: LEXINC"/>
+  <java fork="true"	dir="${source}/compiler"
+  		failonerror="true"
   		classname="org.caesarj.tools.include.Main"
         classpath="bin;${libs}/java-getopt-1.0.9.jar">
    <arg value="${inputFiles}/Caesar.flex.in"/>
@@ -72,7 +84,7 @@
   </java>  
   
   <!-- 3. JFLEX: Creates CaesarScanner.java&FlexRules.txt from Caesar.flex -->
-  <echo message="JFLEX"/>
+  <echo message="3rd step: JFLEX"/>
   <java classpath="lib/JFlex.jar" 
  		classname="JFlex.Main" 
   		failonerror="false">
@@ -91,8 +103,8 @@
   		the ouput files should be placed because
   		ANTLR doesn't correctly handle a given output path)  -->
   <java 
-  		fork="true"
-  		dir="${source}/compiler"
+  		fork="true" dir="${source}/compiler"
+  		failonerror="true"
   		classname="org.caesarj.tools.antlr.compiler.Main"
  		classpath="${libs}/cjantlr.jar;${libs}/java-getopt-1.0.9.jar">
  		 
@@ -101,7 +113,7 @@
  </target>
  
  <!-- The complete building target -->
- <target name="complete" depends="scanner, parser, compile" description="do complete build">
+ <target name="complete" depends="msggen, scanner, parser, compile" description="do complete build">
  </target>
  
 </project>
