@@ -3,7 +3,7 @@ package org.caesarj.compiler.ast.phylum.expression;
 import org.caesarj.util.TokenReference;
 
 /**
- * ...
+ * handles read only field access to public caesar fields
  * 
  * @author Ivica Aracic
  */
