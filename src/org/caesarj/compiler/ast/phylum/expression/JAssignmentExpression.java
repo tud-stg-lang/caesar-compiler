@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JAssignmentExpression.java,v 1.5 2005-01-17 18:09:24 aracic Exp $
+ * $Id: JAssignmentExpression.java,v 1.6 2005-01-18 12:19:13 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -130,10 +130,10 @@ public class JAssignmentExpression extends JBinaryExpression {
     
     check(context,
       rPathNorm.equals(lPathNorm),
-  	  KjcMessages.ASSIGNMENT_BADTYPE, right.getType(factory), left.getType(factory));
-  	
-    
-    
+//		KjcMessages.ASSIGNMENT_BADTYPE, right.getType(factory), left.getType(factory));
+      KjcMessages.ASSIGNMENT_BADTYPE, 	rPathNorm+","+right.getType(factory).getCClass().getIdent(), 
+      									lPathNorm+","+left.getType(factory).getCClass().getIdent() );
+
     
     if (right instanceof JTypeNameExpression) {
       check(context, false, KjcMessages.VAR_UNKNOWN, ((JTypeNameExpression)right).getQualifiedName());
