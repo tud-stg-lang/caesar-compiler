@@ -13,16 +13,15 @@ import org.caesarj.compiler.srcgraph.TypeNode;
 public class CompilerPass {
 
     public CompilerPass() {
-        this(new Vector(), new Vector(), null);
+        this(new Vector(), null);
     }
     
     public CompilerPass(CompilerPass nextPass) {
-        this(new Vector(), new Vector(), nextPass);
+        this(new Vector(), nextPass);
     }
     
-    public CompilerPass(Vector typesToMix, Vector typesToCompile, CompilerPass nextPass) {        
+    public CompilerPass(Vector typesToMix, CompilerPass nextPass) {        
         this.typesToMix = typesToMix;
-        this.typesToCompile = typesToCompile;
         this.nextPass = nextPass;
     }
 
@@ -31,9 +30,6 @@ public class CompilerPass {
      * - enable types to compile in this pass
      */
     public void begin() {
-        for(Iterator it=typesToCompile.iterator(); it.hasNext();) {
-            ((TypeNode)it.next()).setEnabled(true);
-        }
     }
 
     /**
@@ -41,9 +37,6 @@ public class CompilerPass {
      * - disables all types that has been compiled in this pass
      */
     public void end() {
-        for(Iterator it=typesToCompile.iterator(); it.hasNext();) {
-            ((TypeNode)it.next()).setEnabled(false);
-        }
     }
 
     public void setNextPass(CompilerPass nextPass) {
@@ -54,18 +47,13 @@ public class CompilerPass {
         return nextPass;
     }
 
-    public Vector getTypesToCompile() {
-        return typesToCompile;
-    }
-
     public Vector getTypesToMix() {
         return typesToMix;
     }    
 
     // -----------------------------------------------------
     
-    private Vector typesToMix; // of CCompositeType
-    private Vector typesToCompile; // of JTypeDeclaration
+    private Vector typesToMix; // of CCompositeType    
     private CompilerPass nextPass;
 
 }
