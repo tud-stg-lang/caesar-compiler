@@ -20,21 +20,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentNameType.java,v 1.18 2005-03-06 13:48:53 aracic Exp $
+ * $Id: CDependentNameType.java,v 1.19 2005-03-06 14:11:20 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
 
 
 import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.ast.phylum.expression.CjAccessorCallExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
-import org.caesarj.compiler.ast.phylum.expression.JLocalVariableExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
-import org.caesarj.compiler.ast.phylum.expression.JOwnerExpression;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
-import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
@@ -140,36 +135,27 @@ public class CDependentNameType extends CClassNameType
         try{
             expr = expr.analyse(ectx);
         
-            if(
-                expr instanceof JFieldAccessExpression 
-                || expr instanceof JLocalVariableExpression 
-                || expr instanceof JOwnerExpression
-                || expr instanceof CjAccessorCallExpression
-                || expr instanceof JTypeNameExpression
-            ) {                    
-                TypeFactory factory = context.getTypeFactory();              
-                CClass clazz;
-                
-                String pathSegs[] = qualifiedName.split("/");
+            TypeFactory factory = context.getTypeFactory();              
+            CClass clazz;
+            
+            String pathSegs[] = qualifiedName.split("/");
 
-                // calculate the plain type of this dependent type
-                clazz = context.getClassReader().loadClass(
-                    context.getTypeFactory(),
-                    expr.getType(context.getTypeFactory()).getCClass().getQualifiedName()+"$"+pathSegs[pathSegs.length-1]
-                );
-                
-                if(clazz == null) {
-                    throw new UnpositionedError(KjcMessages.TYPE_UNKNOWN, pathSegs[pathSegs.length-1]);
-                }
-
-                // create and return new CDependentType
-                CType t = clazz.getAbstractType().checkType(context);
-                                
-                CDependentType dt = new CDependentType((CContext)context, ectx, expr, t);                               
-                
-                return dt.checkType(context);
+            // calculate the plain type of this dependent type
+            clazz = context.getClassReader().loadClass(
+                context.getTypeFactory(),
+                expr.getType(context.getTypeFactory()).getCClass().getQualifiedName()+"$"+pathSegs[pathSegs.length-1]
+            );
+            
+            if(clazz == null) {
+                throw new UnpositionedError(KjcMessages.TYPE_UNKNOWN, pathSegs[pathSegs.length-1]);
             }
 
+            // create and return new CDependentType
+            CType t = clazz.getAbstractType().checkType(context);
+                            
+            CDependentType dt = new CDependentType((CContext)context, ectx, expr, t);                               
+            
+            return dt.checkType(context);            
         } 
         catch (PositionedError e){
             // If the message of a positioned error is in passThrough, the
