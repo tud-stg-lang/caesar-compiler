@@ -4,7 +4,7 @@ import junit.framework.*;
 import java.util.*;
 
 /**
- * Test &-Operator and linearization
+ * Expression Problem
  * 
  * @author Ivica Aracic
  */
@@ -17,84 +17,34 @@ public class VCTestCase_4 extends TestCase {
 	public StringBuffer result = new StringBuffer();
 
 	public void test() {
-        System.out.println("-------> VCTestCase_4: start");
-        
-        /*
-        DrawApp drawApp = new DrawApp();
-	    
-	    DrawApp.Rectangle rect = drawApp.$newRectangle();
-	    DrawApp.Circle circle = drawApp.$newCircle();
+        System.out.println("-------> VCTestCase_4: start");        	
 		
-		DrawApp.Composite composite = (DrawApp.Composite)drawApp.$newComposite();		
-		
-		composite.addChild(rect);
-		composite.addChild(circle);	    
-		
-		for(Iterator it=composite.iterator(); it.hasNext(); ) {
-			DrawApp.Component item = (DrawApp.Component)it.next();
-			System.out.println("** "+item);
-		}
-		*/
-		
-		/*
-		PrettyPrintEvalAST evalAst = new PrettyPrintEvalAST();
-		PrettyPrintEvalAST.Literal l1 = 
-			(PrettyPrintEvalAST.Literal)((PrettyPrintEvalAST.Literal)evalAst.$newLiteral()).init(5);
-		PrettyPrintEvalAST.Literal l2 = 
-			(PrettyPrintEvalAST.Literal)((PrettyPrintEvalAST.Literal)evalAst.$newLiteral()).init(4);
-		PrettyPrintEvalAST.Expression exp = 
-			(PrettyPrintEvalAST.Expression)((PrettyPrintEvalAST.Expression)evalAst.$newExpression()).init(l1,l2);
+		EvalNegAST ast = new EvalNegAST();
+		EvalNegAST.Literal l1 = (EvalNegAST.Literal)ast.$newLiteral();
+		EvalNegAST.Literal l2 = (EvalNegAST.Literal)ast.$newLiteral();
+		EvalNegAST.AddExpression add = (EvalNegAST.AddExpression)ast.$newAddExpression();
+		EvalNegAST.NegExpression neg = (EvalNegAST.NegExpression)ast.$newNegExpression();
 
-		exp.print();
-		System.out.println(" = "+exp.eval());
-		*/
-		
-		PrettyPrintAST evalAst = new PrettyPrintAST();
-		PrettyPrintAST.Literal l1 = 
-			(PrettyPrintAST.Literal)((PrettyPrintAST.Literal)evalAst.$newLiteral()).init(5);
-		PrettyPrintAST.Literal l2 = 
-			(PrettyPrintAST.Literal)((PrettyPrintAST.Literal)evalAst.$newLiteral()).init(4);
-		PrettyPrintAST.Expression exp = 
-			(PrettyPrintAST.Expression)((PrettyPrintAST.Expression)evalAst.$newExpression()).init(l1,l2);
-		
-		exp.print();		
-		System.out.println();
-	    
+		l1.init(5);
+		l2.init(4);
+		add.init(l1, l2);
+		neg.init(add);
+
+		System.out.println("-(5+4) = "+neg.eval());
+			    
 	    
         System.out.println("-------> VCTestCase_4: end");
 	}       
 }
 
 //=========================================================
-/*
-public cclass CompositePattern {
-
-	public cclass Component {
-	}
-	
-	public cclass Composite extends Component {
-		private List children = new LinkedList();
-		
-		public void addChild(CompositePattern.Component child) {
-			children.add(child);
-		}
-		
-		public void removeChild(CompositePattern.Component child) {
-			children.remove(child);
-		}
-		
-		public Iterator iterator() {
-			return children.iterator();
-		}
-	}
-}
-*/
-
-//=========================================================
 public cclass AST  {			
 	public cclass Expression {		
-		protected Expression r;
-		protected Expression l;
+	}
+
+	public cclass AddExpression extends Expression {		
+		protected AST.Expression r;
+		protected AST.Expression l;
 		
 		public AST.Expression init(AST.Expression l, AST.Expression r) {
 			this.r = r;
@@ -116,6 +66,10 @@ public cclass AST  {
 //=========================================================
 public cclass EvalAST extends AST {
 	public cclass Expression {
+		public int eval() {return 0;}
+	}
+
+	public cclass AddExpression {
 		public int eval() {
 			return
 				((EvalAST.Expression)l).eval() +
@@ -131,64 +85,22 @@ public cclass EvalAST extends AST {
 }
 
 //=========================================================
-public cclass PrettyPrintAST extends AST {
-	public cclass Expression {
-		public void print() {
-			((PrettyPrintAST.Expression)l).print();
-			System.out.print(" + ( ");	
-			((PrettyPrintAST.Expression)r).print();
-			System.out.print(" ) ");
+public cclass NegAST extends AST {
+	public cclass NegExpression extends Expression {		
+		protected NegAST.Expression expr;
+		public void init(NegAST.Expression expr) {
+			this.expr = expr;
 		}
 	}
-
-	public cclass Literal {
-		public void print() {
-			System.out.print(val);
-		}
-	}	
 }
 
 //=========================================================
-public cclass PrettyPrintEvalAST extends PrettyPrintAST & EvalAST {	
-}
-
-//=========================================================
-/*
-public cclass DrawApp extends CompositePattern {
-	public cclass Component {		
-		private int x,y;
-		
-		public void setX(int x) {this.x=x;}
-		public int getX() {return x;}
-		public void setY(int y) {this.y=y;}
-		public int getY() {return y;}
-		
-		public String toString() {
-			return "pos("+x+"; "+y+")";
+public cclass EvalNegAST extends EvalAST & NegAST {	
+	public cclass NegExpression {
+		public int eval() {
+			return -((EvalNegAST.Expression)expr).eval();
 		}
 	}
-	
-	public cclass Rectangle extends Component {
-		private int w,h;
-		public void setW(int w) {this.w=w;}
-		public int getW() {return w;}
-		public void setH(int h) {this.h=h;}
-		public int getH() {return h;}
-		
-		public String toString() {
-			return "Rectangle: "+super.toString()+", w:"+w+" ,h:"+h;
-		}
-	}
-	
-	public cclass Circle extends Component {
-		private int r;
-		public int getR() {return r;}
-		public void setR(int r) {this.r=r;}
-
-		public String toString() {
-			return "Circle: "+super.toString()+", r:"+r;
-		}
-	}	
 }
-*/
+
 //=========================================================

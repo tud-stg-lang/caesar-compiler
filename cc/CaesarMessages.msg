@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.13 2004-07-02 10:36:02 aracic Exp $
+ * $Id: CaesarMessages.msg,v 1.14 2004-07-02 16:23:06 aracic Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -106,6 +106,9 @@ error	VIRTUAL_CALLING_OUTER_OUTER
 				
 error	NAME_CLASH
 		"Name clash for member \"{0}\" detected."
+
+error	CLASS_GENERATOR
+		"Class Generator failed on \"{0}\": {1}."
 
 error	FATAL_ERROR
 		"Fatal error! Everything is going to explode. Panic! Women and children first!"		
