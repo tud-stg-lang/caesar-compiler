@@ -9,7 +9,6 @@ import org.aspectj.weaver.patterns.PerSingleton;
 import org.caesarj.compiler.CaesarConstants;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.ast.AdviceDeclaration;
-import org.caesarj.compiler.ast.CciInternalUnqualifiedInstanceCreation;
 import org.caesarj.compiler.ast.DeploymentSupportClassDeclaration;
 import org.caesarj.compiler.ast.FjAssignmentExpression;
 import org.caesarj.compiler.ast.FjCastExpression;
@@ -22,34 +21,53 @@ import org.caesarj.compiler.ast.FjMethodCallExpression;
 import org.caesarj.compiler.ast.FjMethodDeclaration;
 import org.caesarj.compiler.ast.FjNameExpression;
 import org.caesarj.compiler.ast.FjThisExpression;
+import org.caesarj.compiler.ast.FjUnqualifiedInstanceCreation;
 import org.caesarj.compiler.ast.FjVariableDefinition;
 import org.caesarj.compiler.ast.PointcutDeclaration;
 import org.caesarj.compiler.ast.ProceedDeclaration;
+import org.caesarj.kjc.CArrayType;
+import org.caesarj.kjc.CBooleanType;
+import org.caesarj.kjc.CByteType;
+import org.caesarj.kjc.CCharType;
 import org.caesarj.kjc.CClassNameType;
+import org.caesarj.kjc.CDoubleType;
+import org.caesarj.kjc.CFloatType;
+import org.caesarj.kjc.CIntType;
+import org.caesarj.kjc.CLongType;
 import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
+import org.caesarj.kjc.CShortType;
 import org.caesarj.kjc.CType;
 import org.caesarj.kjc.CTypeVariable;
+import org.caesarj.kjc.JAssignmentExpression;
 import org.caesarj.kjc.JBlock;
+import org.caesarj.kjc.JCastExpression;
 import org.caesarj.kjc.JCatchClause;
 import org.caesarj.kjc.JClassBlock;
+import org.caesarj.kjc.JConstructorBlock;
+import org.caesarj.kjc.JConstructorCall;
+import org.caesarj.kjc.JConstructorDeclaration;
 import org.caesarj.kjc.JEqualityExpression;
 import org.caesarj.kjc.JExpression;
 import org.caesarj.kjc.JExpressionStatement;
+import org.caesarj.kjc.JFieldDeclaration;
 import org.caesarj.kjc.JFormalParameter;
 import org.caesarj.kjc.JIfStatement;
 import org.caesarj.kjc.JIntLiteral;
 import org.caesarj.kjc.JMethodCallExpression;
 import org.caesarj.kjc.JMethodDeclaration;
+import org.caesarj.kjc.JNameExpression;
 import org.caesarj.kjc.JNullLiteral;
 import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JRelationalExpression;
 import org.caesarj.kjc.JReturnStatement;
 import org.caesarj.kjc.JStatement;
 import org.caesarj.kjc.JStringLiteral;
+import org.caesarj.kjc.JThisExpression;
 import org.caesarj.kjc.JTryCatchStatement;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.JTypeNameExpression;
+import org.caesarj.kjc.JUnqualifiedInstanceCreation;
 import org.caesarj.kjc.JVariableDeclarationStatement;
 import org.caesarj.kjc.JVariableDefinition;
 import org.caesarj.kjc.JWhileStatement;
@@ -59,7 +77,7 @@ import org.caesarj.kjc.TypeFactory;
 /**
  * This factory creates the support classes for dynamic deployment.
  * 
- * @author J?rgen Hallpap
+ * @author Jürgen Hallpap
  */
 public class DeploymentClassFactory implements CaesarConstants {
 
@@ -116,22 +134,20 @@ public class DeploymentClassFactory implements CaesarConstants {
 			aspectClass.getCClass().getQualifiedName() + ASPECT_IFC_EXTENSION;
 
 		this.multiInstanceAspectClassName =
-			aspectClass.getIdent() + MULTI_INSTANCE_ASPECT_EXTENSION;
+			aspectClass.getIdent() + MULTI_INSTANCE_CONTAINER_EXTENSION;
 		this.qualifiedMultiInstanceAspectClassName =
 			aspectClass.getCClass().getQualifiedName()
-				+ MULTI_INSTANCE_ASPECT_EXTENSION;
+				+ MULTI_INSTANCE_CONTAINER_EXTENSION;
 
 		this.multiThreadAspectClassName =
-			aspectClass.getIdent() + MULTI_THREAD_ASPECT_EXTENSION;
+			aspectClass.getIdent() + THREAD_MAPPER_EXTENSION;
 		this.qualifiedMultiThreadAspectClassName =
 			aspectClass.getCClass().getQualifiedName()
-				+ MULTI_THREAD_ASPECT_EXTENSION;
+				+ THREAD_MAPPER_EXTENSION;
 
-		this.singletonAspectName =
-			aspectClass.getIdent() + SINGLETON_ASPECT_EXTENSION;
+		this.singletonAspectName = aspectClass.getIdent() + REGISTRY_EXTENSION;
 		this.qualifiedSingletonAspectName =
-			aspectClass.getCClass().getQualifiedName()
-				+ SINGLETON_ASPECT_EXTENSION;
+			aspectClass.getCClass().getQualifiedName() + REGISTRY_EXTENSION;
 
 		AdviceDeclaration[] advices = aspectClass.getAdvices();
 		for (int i = 0; i < advices.length; i++) {
@@ -467,7 +483,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CReferenceType multiInstanceType =
 			new CClassNameType(qualifiedMultiInstanceAspectClassName);
 		JExpression right =
-			new CciInternalUnqualifiedInstanceCreation(
+			new FjUnqualifiedInstanceCreation(
 				where,
 				multiInstanceType,
 				JExpression.EMPTY);
@@ -507,8 +523,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CReferenceType type =
 			new CClassNameType(qualifiedMultiThreadAspectClassName);
 		JExpression right =
-			new CciInternalUnqualifiedInstanceCreation(
-				where, type, JExpression.EMPTY);
+			new FjUnqualifiedInstanceCreation(where, type, JExpression.EMPTY);
 		JExpression expr = new FjAssignmentExpression(where, left, right);
 
 		return new JExpressionStatement(where, expr, null);
@@ -675,7 +690,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CClassNameType stackType = new CClassNameType("java/util/Stack");
 
 		JExpression stackInit =
-			new CciInternalUnqualifiedInstanceCreation(
+			new FjUnqualifiedInstanceCreation(
 				where,
 				stackType,
 				JExpression.EMPTY);
@@ -714,9 +729,14 @@ public class DeploymentClassFactory implements CaesarConstants {
 		methods.add(createGetThreadLocalDeployedInstancesMethod());
 
 		AdviceDeclaration[] adviceMethods = aspectClass.getAdvices();
+		List inners = new ArrayList();
 
 		for (int i = 0; i < adviceMethods.length; i++) {
 			methods.add(createMultiInstanceAdviceMethod(adviceMethods[i]));
+			if (adviceMethods[i].isAroundAdvice()) {
+				inners.add(createAroundClosure(adviceMethods[i]));
+				methods.add(createDoAroundMethod(adviceMethods[i]));
+			}
 		}
 
 		CReferenceType[] interfaces =
@@ -735,12 +755,12 @@ public class DeploymentClassFactory implements CaesarConstants {
 				fields,
 				(JMethodDeclaration[]) methods.toArray(
 					new JMethodDeclaration[0]),
-				new JTypeDeclaration[0],
+				(JTypeDeclaration[]) inners.toArray(new JTypeDeclaration[0]),
 				initializers,
 				null,
 				null,
 				aspectClass,
-				MULTI_INSTANCE_ASPECT_EXTENSION);
+				MULTI_INSTANCE_CONTAINER_EXTENSION);
 
 		multiInstanceAspectClass.generateInterface(
 			environment.getClassReader(),
@@ -754,17 +774,10 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 *  Creates the advice method (for the given advice) for the multi instance aspect.
 	 */
 	private FjMethodDeclaration createMultiInstanceAdviceMethod(AdviceDeclaration advice) {
-		List statements = new ArrayList();
-		statements.add(createMultiInstanceAdviceStatement_1(advice));
-		if (advice.isAroundAdvice()) {
-			statements.add(createMultiInstanceAdviceStatement_2(advice));
-		}
+		JStatement[] statements =
+			{ createMultiInstanceAdviceStatement_1(advice)};
 
-		JBlock body =
-			new JBlock(
-				where,
-				(JStatement[]) statements.toArray(new JStatement[0]),
-				null);
+		JBlock body = new JBlock(where, statements, null);
 
 		FjMethodDeclaration adviceMethod =
 			new FjMethodDeclaration(
@@ -788,7 +801,14 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * if (getDeploymentThread() == Thread.currentThread()) {
 	 * 		->createMultiInstanceSimpleAdviceStatement_1_1
 	 * 		->createMultiInstanceSimpleAdviceStatement_1_2
-	 * } 
+	 * }
+	 * 
+	 * for around advices:
+	 * if (getDeploymentThread() == Thread.currentThread()) {
+	 * 		->createMultiInstanceSimpleAdviceStatement_1_3
+	 * } else {
+	 * 		->createMultiInstanceSimpleAdviceStatement_1_4
+	 * }	 
 	 */
 	private JStatement createMultiInstanceAdviceStatement_1(AdviceDeclaration advice) {
 		JExpression left =
@@ -808,16 +828,29 @@ public class DeploymentClassFactory implements CaesarConstants {
 				JExpression.EMPTY);
 		JExpression cond = new JEqualityExpression(where, true, left, right);
 
-		JStatement[] thenClause =
-			{
-				createMultiInstanceAdviceStatement_1_1(advice),
-				createMultiInstanceAdviceStatement_1_2(advice)};
+		List thenClause = new ArrayList();
+		List elseClause = new ArrayList();
+
+		if (!advice.isAroundAdvice()) {
+			thenClause.add(createMultiInstanceAdviceStatement_1_1(advice));
+			thenClause.add(createMultiInstanceAdviceStatement_1_2(advice));
+		} else {
+			thenClause.add(createMultiInstanceAdviceStatement_1_3(advice));
+			elseClause.add(createMultiInstanceAdviceStatement_1_4(advice));
+
+		}
 
 		return new JIfStatement(
 			where,
 			cond,
-			new JBlock(where, thenClause, null),
-			null,
+			new JBlock(
+				where,
+				(JStatement[]) thenClause.toArray(new JStatement[0]),
+				null),
+			new JBlock(
+				where,
+				(JStatement[]) elseClause.toArray(new JStatement[0]),
+				null),
 			null);
 	}
 	/**
@@ -851,7 +884,6 @@ public class DeploymentClassFactory implements CaesarConstants {
 				initializer);
 
 		return new JVariableDeclarationStatement(where, var, null);
-
 	}
 
 	/**
@@ -942,7 +974,42 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * 
 	 * (return) proceed();
 	 */
-	private JStatement createMultiInstanceAdviceStatement_2(AdviceDeclaration advice) {
+	private JStatement createMultiInstanceAdviceStatement_1_3(AdviceDeclaration advice) {
+		JFormalParameter[] params = advice.getParameters();
+
+		List args = new ArrayList();
+
+		for (int i = 0; i < params.length; i++) {
+			args.add(new FjNameExpression(where, params[i].getIdent()));
+		}
+		//		args.add(new JNameExpression(where, DEPLOYED_INSTANCES));
+		args.add(
+			new FjMethodCallExpression(
+				where,
+				null,
+				GET_DEPLOYED_INSTANCES_METHOD,
+				JExpression.EMPTY));
+
+		JExpression doAroundExpr =
+			new JMethodCallExpression(
+				where,
+				null,
+				("do" + advice.getIdent()).intern(),
+				(JExpression[]) args.toArray(new JExpression[0]));
+
+		if (advice.getReturnType() == typeFactory.getVoidType()) {
+			return new JExpressionStatement(where, doAroundExpr, null);
+		} else {
+			return new JReturnStatement(where, doAroundExpr, null);
+		}
+	}
+
+	/**
+	 * Create the following statement:
+	 * 
+	 * (return) proceed();
+	 */
+	private JStatement createMultiInstanceAdviceStatement_1_4(AdviceDeclaration advice) {
 		JFormalParameter[] params = advice.getProceedParameters();
 
 		List args = new ArrayList();
@@ -966,6 +1033,153 @@ public class DeploymentClassFactory implements CaesarConstants {
 			return new JReturnStatement(where, proceedCallExpr, null);
 		}
 
+	}
+
+	private FjMethodDeclaration createDoAroundMethod(AdviceDeclaration advice) {
+		JFormalParameter[] adviceParams = advice.getParameters();
+
+		FjFormalParameter[] params =
+			new FjFormalParameter[advice.getParameters().length + 1];
+
+		for (int i = 0; i < adviceParams.length; i++) {
+			params[i] =
+				new FjFormalParameter(
+					where,
+					FjFormalParameter.DES_PARAMETER,
+					adviceParams[i].getType(),
+					adviceParams[i].getIdent(),
+					false);
+		}
+
+		CType stack = new CClassNameType("java/util/Stack");
+		params[adviceParams.length] =
+			new FjFormalParameter(
+				where,
+				FjFormalParameter.DES_PARAMETER,
+				stack,
+				"stack",
+				false);
+
+		JStatement[] body = { createAdviceDoAroundMethodStatement_0(advice)};
+
+		return new FjMethodDeclaration(
+			where,
+			ACC_PROTECTED | ACC_SYNCHRONIZED,
+			CTypeVariable.EMPTY,
+			advice.getReturnType(),
+			("do" + advice.getIdent()).intern(),
+			params,
+			advice.getExceptions(),
+			new JBlock(where, body, null),
+			null,
+			null);
+
+	}
+
+	/**
+	 * 
+	 * if (list.empty()) 
+	 *  -> createAdviceDoAroundMethodStatement_1
+	 * else 
+	 * 	-> createAdviceDoAroundMethodStatement_2
+	 */
+	private JStatement createAdviceDoAroundMethodStatement_0(AdviceDeclaration advice) {
+		JNameExpression list = new JNameExpression(where, null, "stack");
+		JExpression cond =
+			new FjMethodCallExpression(where, list, "empty", JExpression.EMPTY);
+
+		JStatement thenClause = createAdviceDoAroundMethodStatement_1(advice);
+		JStatement elseClause = createAdviceDoAroundMethodStatement_2(advice);
+
+		return new JIfStatement(where, cond, thenClause, elseClause, null);
+	}
+
+	private JStatement createAdviceDoAroundMethodStatement_1(AdviceDeclaration advice) {
+		JFormalParameter[] params = advice.getProceedParameters();
+
+		List args = new ArrayList();
+		for (int i = 0; i < params.length; i++) {
+			args.add(new FjNameExpression(where, params[i].getIdent()));
+		}
+
+		CReferenceType singletonType =
+			new CClassNameType(qualifiedSingletonAspectName);
+
+		JExpression proceedCallExpr =
+			new FjMethodCallExpression(
+				where,
+				new JTypeNameExpression(where, singletonType),
+				advice.getIdent() + PROCEED_METHOD,
+				(JExpression[]) args.toArray(new JExpression[0]));
+
+		if (advice.getReturnType() == typeFactory.getVoidType()) {
+			return new JExpressionStatement(where, proceedCallExpr, null);
+		} else {
+			return new JReturnStatement(where, proceedCallExpr, null);
+		}
+	}
+
+	/**
+	 * list.get(0).around(
+	 * 
+	 */
+	private JStatement createAdviceDoAroundMethodStatement_2(AdviceDeclaration advice) {
+		JExpression list = new FjNameExpression(where, null, "stack");
+		JFormalParameter[] params = advice.getParameters();
+
+		JExpression[] getArgs = { new JIntLiteral(where, 0)};
+
+		JExpression get =
+			new FjMethodCallExpression(where, list, "get", getArgs);
+
+		CReferenceType type =
+			new CClassNameType(
+				(advice.getIdent() + "$MultiInstanceAroundClosure").intern());
+
+		//	JClassDeclaration decl = createAnonymousAroundClosure(advice);
+
+		List creationArgs = new ArrayList();
+		for (int i = 0; i < advice.getParameters().length; i++) {
+			creationArgs.add(
+				new JNameExpression(
+					where,
+					advice.getParameters()[i].getIdent()));
+		}
+		creationArgs.add(list);
+		creationArgs.add(new JThisExpression(where));
+
+		List args = new ArrayList();
+		int aroundClosurePos = advice.getProceedParameters().length - 1;
+
+		for (int i = 0; i < params.length; i++) {
+			if (i == aroundClosurePos) {
+				args.add(
+					new JUnqualifiedInstanceCreation(
+						where,
+						type,
+						(JExpression[]) creationArgs.toArray(
+							new JExpression[0])));
+			} else {
+				args.add(new FjNameExpression(where, params[i].getIdent()));
+			}
+
+		}
+
+		JExpression aroundCall =
+			new FjMethodCallExpression(
+				where,
+				new FjCastExpression(
+					where,
+					get,
+					new CClassNameType(qualifiedAspectInterfaceName)),
+				advice.getIdent(),
+				(JExpression[]) args.toArray(new JExpression[0]));
+
+		if (advice.getReturnType() == typeFactory.getVoidType()) {
+			return new JExpressionStatement(where, aroundCall, null);
+		} else {
+			return new JReturnStatement(where, aroundCall, null);
+		}
 	}
 
 	/**
@@ -1124,7 +1338,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
 
 		JExpression initializer =
-			new CciInternalUnqualifiedInstanceCreation(
+			new FjUnqualifiedInstanceCreation(
 				where,
 				multiThreadType,
 				JExpression.EMPTY);
@@ -1288,7 +1502,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new CClassNameType("java/util/WeakHashMap");
 
 		JExpression initializer =
-			new CciInternalUnqualifiedInstanceCreation(
+			new FjUnqualifiedInstanceCreation(
 				where,
 				hashMapType,
 				JExpression.EMPTY);
@@ -1361,7 +1575,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				null,
 				null,
 				aspectClass,
-				MULTI_THREAD_ASPECT_EXTENSION);
+				THREAD_MAPPER_EXTENSION);
 
 		multiThreadClassDeclaration.generateInterface(
 			environment.getClassReader(),
@@ -2219,7 +2433,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				modifiedAdvices,
 				aspectClass.getDeclares(),
 				aspectClass,
-				SINGLETON_ASPECT_EXTENSION);
+				REGISTRY_EXTENSION);
 
 		singletonAspect.setPerClause(new PerSingleton());
 
@@ -2295,14 +2509,16 @@ public class DeploymentClassFactory implements CaesarConstants {
 				? createSingletonAdviceStatement_1_2(advice)
 				: null,
 			null);
-	} /**
-																																																																															 * Returns the following statement:
-																																																																															 * 
-																																																																															 * In case of advice.getReturnType() == void
-																																																																															 * 	getDeployedInstances().adviceMethod(); 
-																																																																															 * else
-																																																																															 * 	return getDeployedInstances().adviceMethod();
-																																																																															 */
+	}
+
+	/**
+	* Returns the following statement:
+	* 
+	* In case of advice.getReturnType() == void
+	* 	getDeployedInstances().adviceMethod(); 
+	* else
+	* 	return getDeployedInstances().adviceMethod();
+	*/
 	private JStatement createSingletonAdviceStatement_1_1(AdviceDeclaration advice) {
 		JFormalParameter[] params = advice.getParameters();
 		JExpression[] args = new JExpression[params.length];
@@ -2327,14 +2543,16 @@ public class DeploymentClassFactory implements CaesarConstants {
 			return new JReturnStatement(where, expr, null);
 		}
 
-	} /**
-																																																																														 * Returns the following statement:
-																																																																														 * 
-																																																																														 * In case of advice.getReturnType() == void
-																																																																														 * 	proceed(); 
-																																																																														 * else
-																																																																														 * 	return proceed();
-																																																																														 */
+	}
+
+	/**
+	* Returns the following statement:
+	* 
+	* In case of advice.getReturnType() == void
+	* 	proceed(); 
+	* else
+	* 	return proceed();
+	*/
 	private JStatement createSingletonAdviceStatement_1_2(AdviceDeclaration advice) {
 		JFormalParameter[] params = advice.getProceedParameters();
 		JExpression[] args = new JExpression[params.length];
@@ -2372,16 +2590,18 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JBlock(where, body, null),
 			null,
 			null);
-	} /**
-																																																																															 * Creates the following statement:
-																																																																															 * 
-																																																																															 * ajc$perSingletonInstance = new AnAspect$SingletonAspect();
-																																																																															 */
+	}
+
+	/**
+	* Creates the following statement:
+	* 
+	* ajc$perSingletonInstance = new AnAspect$SingletonAspect();
+	*/
 	private JStatement createSingletonClinitMethodStatement_1() {
 		JExpression left =
 			new FjNameExpression(where, PER_SINGLETON_INSTANCE_FIELD);
 		JExpression right =
-			new CciInternalUnqualifiedInstanceCreation(
+			new FjUnqualifiedInstanceCreation(
 				where,
 				new CClassNameType(singletonAspectName),
 				JExpression.EMPTY);
@@ -2389,14 +2609,16 @@ public class DeploymentClassFactory implements CaesarConstants {
 			where,
 			new FjAssignmentExpression(where, left, right),
 			null);
-	} /**
-																																																																															 * Creates the following statement:
-																																																																															 * 
-																																																																															 * try {
-																																																																															 * 	->createSingletonClinitMethodStatement_2_1
-																																																																															 * } catch(ClassNotFoundException e) {
-																																																																															 * }
-																																																																															 */
+	}
+
+	/**
+	* Creates the following statement:
+	* 
+	* try {
+	* 	->createSingletonClinitMethodStatement_2_1
+	* } catch(ClassNotFoundException e) {
+	* }
+	*/
 	private JStatement createSingletonClinitMethodStatement_2() {
 		JStatement[] tryBody = { createSingletonClinitMethodStatement_2_1()};
 		JBlock tryBlock = new JBlock(where, tryBody, null);
@@ -2411,11 +2633,13 @@ public class DeploymentClassFactory implements CaesarConstants {
 				false);
 		JCatchClause[] catchClauses = { new JCatchClause(where, e, catchBlock)};
 		return new JTryCatchStatement(where, tryBlock, catchClauses, null);
-	} /**
-																																																																															 * Creates the following statement:
-																																																																															 * 
-																																																																															 * Class.forName("AnAspect");
-																																																																															 */
+	}
+
+	/**
+	* Creates the following statement:
+	* 
+	* Class.forName("AnAspect");
+	*/
 	private JStatement createSingletonClinitMethodStatement_2_1() {
 		JExpression[] args =
 			{
@@ -2429,9 +2653,11 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression expr =
 			new JMethodCallExpression(where, prefix, "forName", args);
 		return new JExpressionStatement(where, expr, null);
-	} /**
-																																																																															 * Creates the getDeployedInstances() method for the singleton aspect.
-																																																																															 */
+	}
+
+	/**
+	* Creates the getDeployedInstances() method for the singleton aspect.
+	*/
 	private FjMethodDeclaration createSingletonGetDeployedInstancesMethod() {
 		JStatement[] body =
 			{
@@ -2450,9 +2676,11 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JBlock(where, body, null),
 			null,
 			null);
-	} /**
-																																																																															 * Creates the deploy method for the singleton aspect.
-																																																																															 */
+	}
+
+	/**
+	* Creates the deploy method for the singleton aspect.
+	*/
 	private FjMethodDeclaration createSingletonAspectDeployMethod() {
 
 		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
@@ -2601,11 +2829,13 @@ public class DeploymentClassFactory implements CaesarConstants {
 			createSingletonDeployStatement_4_1(),
 			createSingletonDeployStatement_4_2(),
 			null);
-	} /**
-																																																																															 * Returns the following statement:
-																																																																															 * 
-																																																																															 * deployedInstances = (AnAspectIfc) instanceToDeploy;
-																																																																															 */
+	}
+
+	/**
+	* Returns the following statement:
+	*
+	* deployedInstances = (AnAspectIfc) instanceToDeploy;
+	*/
 	private JStatement createSingletonDeployStatement_4_1() {
 
 		JExpression left =
@@ -2616,11 +2846,13 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression right = new FjCastExpression(where, varExpr, ifcType);
 		JExpression expr = new FjAssignmentExpression(where, left, right);
 		return new JExpressionStatement(where, expr, null);
-	} /**
-																																																																															 * Returns the following statement:
-																																																																															 * 
-																																																																															 * deployedInstances = (AnAspectIfc) deployedInstances._deploy(instanceToDeploy);
-																																																																															 */
+	}
+
+	/**
+	* Returns the following statement:
+	* 
+	* deployedInstances = (AnAspectIfc) deployedInstances._deploy(instanceToDeploy);
+	*/
 	private JStatement createSingletonDeployStatement_4_2() {
 
 		JExpression deployedInstancesField =
@@ -2640,9 +2872,11 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression expr =
 			new FjAssignmentExpression(where, deployedInstancesField, right);
 		return new JExpressionStatement(where, expr, null);
-	} /**
-																																																																															 * Creates the undeploy method for singleton aspect.
-																																																																															 */
+	}
+
+	/**
+	* Creates the undeploy method for singleton aspect.
+	*/
 	private FjMethodDeclaration createSingletonAspectUndeployMethod() {
 
 		JStatement[] body = { createSingletonUndeployStatement_2()};
@@ -2657,11 +2891,13 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JBlock(where, body, null),
 			null,
 			null);
-	} /**
-																																																																															 * Returns the following statement:
-																																																																															 * 
-																																																																															 * deployedInstances = (AnAspectIfc) deployedInstances._undeploy();
-																																																																															 */
+	}
+
+	/**
+	* Returns the following statement:
+	* 
+	* deployedInstances = (AnAspectIfc) deployedInstances._undeploy();
+	*/
 	private JStatement createSingletonUndeployStatement_2() {
 
 		JExpression left =
@@ -2832,92 +3068,10 @@ public class DeploymentClassFactory implements CaesarConstants {
 	}
 
 	//also implement the other support method here, instead of in CaesarSourceClass
+
 	/**
-	 * Only used for debugging..
-	 */
-	private JStatement createTestStatement1() {
-
-		JExpression[] args =
-			{
-				 new FjMethodCallExpression(
-					where,
-					new FjThisExpression(where),
-					"toString",
-					JExpression.EMPTY)};
-		CReferenceType systemType = new CClassNameType("java/lang/System");
-		JExpression outPrefix = new JTypeNameExpression(where, systemType);
-		JExpression prefix =
-			new FjFieldAccessExpression(where, outPrefix, "out");
-		JExpression expr =
-			new FjMethodCallExpression(where, prefix, "println", args);
-		return new JExpressionStatement(where, expr, null);
-	} /**
-																																																																															 * Only used for debugging..
-																																																																															 */
-	private JStatement createTestStatement2() {
-
-		JExpression[] args =
-			{ new FjMethodCallExpression(
-				where,
-				new FjNameExpression(
-					where,
-					null,
-					PER_THREAD_DEPLOYED_INSTANCES) /*new FjThisExpression(where)*/
-			, "toString", JExpression.EMPTY)};
-		CReferenceType systemType = new CClassNameType("java/lang/System");
-		JExpression outPrefix = new JTypeNameExpression(where, systemType);
-		JExpression prefix =
-			new FjFieldAccessExpression(where, outPrefix, "out");
-		JExpression expr =
-			new FjMethodCallExpression(where, prefix, "println", args);
-		return new JExpressionStatement(where, expr, null);
-	}
-
-	private JStatement createTestStatement3() {
-
-		JExpression[] args =
-			{ new JEqualityExpression(
-				where,
-				true,
-				new FjNameExpression(
-					where,
-					null,
-					DEPLOYED_INSTANCES) /*			new FjMethodCallExpression(
-																																																																																																																																																														where,
-																																																																																																																																																														null,
-																																																																																																																																																														GET_DEPLOYED_INSTANCES_METHOD,
-																																																																																																																																																														JExpression.EMPTY)*/
-			, new JNullLiteral(where))};
-		CReferenceType systemType = new CClassNameType("java/lang/System");
-		JExpression outPrefix = new JTypeNameExpression(where, systemType);
-		JExpression prefix =
-			new FjFieldAccessExpression(where, outPrefix, "out");
-		JExpression expr =
-			new FjMethodCallExpression(where, prefix, "println", args);
-		return new JExpressionStatement(where, expr, null);
-	}
-
-	private JStatement createTestStatement4() {
-
-		JExpression[] args =
-			{ new FjMethodCallExpression(
-				where,
-				new FjNameExpression(
-					where,
-					null,
-					DEPLOYED_INSTANCES) /*new FjThisExpression(where)*/
-			, "toString", JExpression.EMPTY)};
-		CReferenceType systemType = new CClassNameType("java/lang/System");
-		JExpression outPrefix = new JTypeNameExpression(where, systemType);
-		JExpression prefix =
-			new FjFieldAccessExpression(where, outPrefix, "out");
-		JExpression expr =
-			new FjMethodCallExpression(where, prefix, "println", args);
-		return new JExpressionStatement(where, expr, null);
-	}
-	/**
-																																 * Creates the proceed method for the given around advice.
-																																 */
+	* Creates the proceed method for the given around advice.
+	*/
 	private JMethodDeclaration createProceedMethod(AdviceDeclaration advice) {
 		ProceedDeclaration proceedMethodDeclaration =
 			new ProceedDeclaration(
@@ -2929,9 +3083,11 @@ public class DeploymentClassFactory implements CaesarConstants {
 		//attach proceed-method to the adviceDeclaration
 		advice.setProceedMethodDeclaration(proceedMethodDeclaration);
 		return proceedMethodDeclaration;
-	} /**
-																																																																															 * Changes the name of the given advice.
-																																																																															 */
+	}
+
+	/**
+		* Changes the name of the given advice.
+		*/
 	private void createAdviceMethodName(AdviceDeclaration adviceDeclaration) {
 		String ident =
 			NameMangler.adviceName(
@@ -2939,6 +3095,327 @@ public class DeploymentClassFactory implements CaesarConstants {
 				adviceDeclaration.getKind(),
 				adviceDeclaration.getTokenReference().getLine());
 		adviceDeclaration.setIdent(ident);
+	}
+
+	private FjClassDeclaration createAroundClosure(AdviceDeclaration advice) {
+		CReferenceType superClass =
+			new CClassNameType("org/aspectj/runtime/internal/AroundClosure");
+
+		List fields = new ArrayList();
+		JFormalParameter[] params = advice.getParameters();
+		for (int i = 0; i < params.length; i++) {
+			JExpression init = new JNullLiteral(where);
+
+			CType type = params[i].getType();
+			JVariableDefinition var =
+				new JVariableDefinition(
+					where,
+					ACC_PRIVATE,
+					type,
+					params[i].getIdent(),
+					init);
+			fields.add(new FjFieldDeclaration(where, var, true, null, null));
+		}
+
+		CType stack = new CClassNameType("java/util/Stack");
+		JVariableDefinition var =
+			new JVariableDefinition(
+				where,
+				ACC_PRIVATE,
+				stack,
+				"stack",
+				new JNullLiteral(where));
+		fields.add(new FjFieldDeclaration(where, var, true, null, null));
+
+		CType multiInstanceType =
+			new CClassNameType(qualifiedMultiInstanceAspectClassName);
+		var =
+			new JVariableDefinition(
+				where,
+				ACC_PRIVATE,
+				multiInstanceType,
+				"multiInstanceContainer",
+				new JNullLiteral(where));
+		fields.add(new FjFieldDeclaration(where, var, true, null, null));
+
+		JMethodDeclaration[] methods =
+			{ createClosureConstructor(advice), createRunMethod(advice)};
+
+		FjClassDeclaration closure =
+			new FjClassDeclaration(
+				where,
+				0,
+				(advice.getIdent() + "$MultiInstanceAroundClosure").intern(),
+				CTypeVariable.EMPTY,
+				superClass,
+				null,
+				null,
+				null,
+				CReferenceType.EMPTY,
+				(JFieldDeclaration[]) fields.toArray(new FjFieldDeclaration[0]),
+				methods,
+				new JTypeDeclaration[0],
+				new JPhylum[0],
+				null,
+				null);
+
+		return closure;
+	}
+
+	private JConstructorDeclaration createClosureConstructor(AdviceDeclaration advice) {
+		JFormalParameter[] adviceParameters = advice.getParameters();
+
+		FjFormalParameter[] params =
+			new FjFormalParameter[adviceParameters.length + 2];
+
+		for (int i = 0; i < adviceParameters.length; i++) {
+			params[i] =
+				new FjFormalParameter(
+					where,
+					FjFormalParameter.DES_PARAMETER,
+					adviceParameters[i].getType(),
+					adviceParameters[i].getIdent(),
+					false);
+		}
+
+		CType stack = new CClassNameType("java/util/Stack");
+		params[adviceParameters.length] =
+			new FjFormalParameter(
+				where,
+				FjFormalParameter.DES_PARAMETER,
+				stack,
+				"stack",
+				false);
+
+		CType multiInstanceType =
+			new CClassNameType(qualifiedMultiInstanceAspectClassName);
+		params[adviceParameters.length + 1] =
+			new FjFormalParameter(
+				where,
+				FjFormalParameter.DES_PARAMETER,
+				multiInstanceType,
+				"multiInstanceContainer",
+				false);
+
+		List statements = new ArrayList();
+		for (int i = 0; i < params.length; i++) {
+			JExpression left =
+				new JNameExpression(
+					where,
+					new JThisExpression(where),
+					params[i].getIdent());
+
+			JExpression right =
+				new JNameExpression(where, params[i].getIdent());
+
+			JExpression expr = new JAssignmentExpression(where, left, right);
+
+			statements.add(new JExpressionStatement(where, expr, null));
+		}
+
+		JConstructorBlock body =
+			new JConstructorBlock(
+				where,
+				new JConstructorCall(where, false, JExpression.EMPTY),
+				(JStatement[]) statements.toArray(new JStatement[0]));
+
+		return new JConstructorDeclaration(
+			where,
+			ACC_PUBLIC,
+			(advice.getIdent() + "$MultiInstanceAroundClosure").intern(),
+			params,
+			CReferenceType.EMPTY,
+			body,
+			null,
+			null,
+			typeFactory);
+	}
+
+	/**
+	 * 
+	 * Creates the run method for the AroundClosure.
+	 */
+	private FjMethodDeclaration createRunMethod(AdviceDeclaration advice) {
+		CReferenceType objectType = new CClassNameType("java/lang/Object");
+		CArrayType arrayType = new CArrayType(objectType, 1);
+		FjFormalParameter[] objArray =
+			{
+				 new FjFormalParameter(
+					where,
+					FjFormalParameter.DES_PARAMETER,
+					arrayType,
+					"arg",
+					false)};
+
+		CReferenceType[] exc = { new CClassNameType("java/lang/Throwable")};
+
+		List statements = new ArrayList();
+		statements.add(createRunStatement_1());
+		statements.add(createRunStatement_2());
+		statements.add(createRunStatement_3(advice));
+
+		if (advice.getReturnType() == typeFactory.getVoidType()) {
+			statements.add(
+				new JReturnStatement(where, new JNullLiteral(where), null));
+		}
+
+		return new FjMethodDeclaration(
+			where,
+			ACC_PUBLIC,
+			CTypeVariable.EMPTY,
+			objectType,
+			"run",
+			objArray,
+			exc,
+			new JBlock(
+				where,
+				(JStatement[]) statements.toArray(new JStatement[0]),
+				null),
+			null,
+			null);
+	}
+
+	/**
+	 * Stack clone = stack.clone();
+	 * 
+	 */
+	private JStatement createRunStatement_1() {
+		CType type = new CClassNameType("java/util/Stack");
+
+		JExpression prefix = new FjNameExpression(where, null, "stack");
+		JExpression init =
+			new FjMethodCallExpression(
+				where,
+				prefix,
+				"clone",
+				JExpression.EMPTY);
+
+		CReferenceType dest = new CClassNameType("java/util/Stack");
+		JExpression cast = new JCastExpression(where, init, dest);
+
+		JVariableDefinition var =
+			new JVariableDefinition(where, 0, type, "clone", cast);
+
+		return new JVariableDeclarationStatement(where, var, null);
+	}
+
+	/**
+	 * clone.remove(0);
+	 */
+	private JStatement createRunStatement_2() {
+		JExpression prefix = new FjNameExpression(where, null, "clone");
+
+		JExpression[] args = { new JIntLiteral(where, 0)};
+		JExpression methodCall =
+			new FjMethodCallExpression(where, prefix, "remove", args);
+
+		return new JExpressionStatement(where, methodCall, null);
+
+	}
+
+	/**
+	 * multiInstanceContainer.doaround..();
+	 */
+	private JStatement createRunStatement_3(AdviceDeclaration advice) {
+		JFormalParameter[] params = advice.getParameters();
+
+		List args = new ArrayList();
+
+		for (int i = 0; i < params.length; i++) {
+			args.add(new FjNameExpression(where, params[i].getIdent()));
+		}
+		args.add(new JNameExpression(where, "clone"));
+
+		JExpression prefix =
+			new FjNameExpression(where, "multiInstanceContainer");
+
+		JExpression doAroundExpr =
+			new JMethodCallExpression(
+				where,
+				prefix,
+				("do" + advice.getIdent()).intern(),
+				(JExpression[]) args.toArray(new JExpression[0]));
+
+		if (advice.getReturnType() == typeFactory.getVoidType()) {
+			return new JExpressionStatement(where, doAroundExpr, null);
+		} else if (advice.getReturnType().isPrimitive()) {
+			return new JReturnStatement(
+				where,
+				createWrapper(advice, doAroundExpr),
+				null);
+		} else {
+			return new JReturnStatement(where, doAroundExpr, null);
+		}
+
+	}
+
+	/**
+	 * Wraps the primitive value of the expr in a ReferenceType.
+	 */
+	private JExpression createWrapper(
+		AdviceDeclaration advice,
+		JExpression expr) {
+		CType returnType = advice.getReturnType();
+		JExpression[] args = { expr };
+
+		if (returnType instanceof CIntType) {
+			return new JUnqualifiedInstanceCreation(
+				where,
+				new CClassNameType("java/lang/Integer"),
+				args);
+		}
+
+		if (returnType instanceof CFloatType) {
+			return new JUnqualifiedInstanceCreation(
+				where,
+				new CClassNameType("java/lang/Float"),
+				args);
+		}
+
+		if (returnType instanceof CDoubleType) {
+			return new JUnqualifiedInstanceCreation(
+				where,
+				new CClassNameType("java/lang/Double"),
+				args);
+		}
+
+		if (returnType instanceof CByteType) {
+			return new JUnqualifiedInstanceCreation(
+				where,
+				new CClassNameType("java/lang/Byte"),
+				args);
+		}
+
+		if (returnType instanceof CCharType) {
+			return new JUnqualifiedInstanceCreation(
+				where,
+				new CClassNameType("java/lang/Character"),
+				args);
+		}
+
+		if (returnType instanceof CBooleanType) {
+			return new JUnqualifiedInstanceCreation(
+				where,
+				new CClassNameType("java/lang/Boolean"),
+				args);
+		}
+
+		if (returnType instanceof CLongType) {
+			return new JUnqualifiedInstanceCreation(
+				where,
+				new CClassNameType("java/lang/Long"),
+				args);
+		}
+
+		if (returnType instanceof CShortType) {
+			return new JUnqualifiedInstanceCreation(
+				where,
+				new CClassNameType("java/lang/Short"),
+				args);
+		}
+
+		return null;
+
 	}
 
 }

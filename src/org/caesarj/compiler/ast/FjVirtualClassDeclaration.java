@@ -113,7 +113,8 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 	public void checkTypeBody(CContext context) 
 		throws PositionedError
 	{
-		
+		//If it is a binding class, it cannot be declared with the same
+		//as a collaboration interface
 		if (ownerDecl instanceof FjCleanClassDeclaration)
 		{
 				

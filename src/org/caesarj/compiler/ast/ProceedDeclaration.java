@@ -16,7 +16,7 @@ import org.caesarj.kjc.JFormalParameter;
 /**
  * Type comment.
  * 
- * @author J?rgen Hallpap
+ * @author Jürgen Hallpap
  */
 public class ProceedDeclaration extends FjMethodDeclaration {
 

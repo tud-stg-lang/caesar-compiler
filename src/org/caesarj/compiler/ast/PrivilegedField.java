@@ -19,7 +19,7 @@ import org.caesarj.compiler.aspectj.CaesarBcelWorld;
  * 
  * @author Jürgen Hallpap
  */
-public class PrivilegedField extends CField {
+public class PrivilegedField extends FjSourceField {
 
 	/** the encapsulated non-visible baseField.*/
 	private CField baseField;
@@ -41,14 +41,18 @@ public class PrivilegedField extends CField {
 	 * @param baseField
 	 * @param aspect
 	 */
-	public PrivilegedField(CField baseField, FjSourceClass aspect) {
+	public PrivilegedField(
+		CField baseField,
+		FjSourceClass aspect,
+		FjFamily family) {
 		super(
 			baseField.getOwner(),
 			baseField.getModifiers(),
 			baseField.getIdent(),
 			baseField.getType(),
 			baseField.isDeprecated(),
-			baseField.isSynthetic());
+			baseField.isSynthetic(),
+			family);
 
 		this.baseField = baseField;
 
@@ -68,6 +72,8 @@ public class PrivilegedField extends CField {
 			AjcMemberMaker.privilegedAccessMethodForFieldGet(aspectType, field);
 
 		CType[] readerParameterTypes = { getOwnerType()};
+		FjFamily[] parameterFamilies = { getFamily()};
+
 		reader =
 			new FjSourceMethod(
 				owner,
@@ -80,7 +86,7 @@ public class PrivilegedField extends CField {
 				false,
 				true,
 				null,
-				new FjFamily[0]);
+				parameterFamilies);
 
 		ResolvedMember writerMember =
 			AjcMemberMaker.privilegedAccessMethodForFieldSet(aspectType, field);

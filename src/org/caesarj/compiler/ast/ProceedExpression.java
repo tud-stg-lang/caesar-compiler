@@ -1,8 +1,5 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.CaesarConstants;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
 import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CExpressionContext;
@@ -13,12 +10,15 @@ import org.caesarj.kjc.CType;
 import org.caesarj.kjc.JExpression;
 import org.caesarj.kjc.JMethodCallExpression;
 import org.caesarj.kjc.JTypeNameExpression;
+import org.caesarj.compiler.CaesarConstants;
+import org.caesarj.compiler.PositionedError;
+import org.caesarj.compiler.TokenReference;
 
 /**
  * The proceed expression.
  * Usage is restricted to around advices.
  * 
- * @author J?rgen Hallpap
+ * @author Jürgen Hallpap
  */
 public class ProceedExpression
 	extends JMethodCallExpression
@@ -75,7 +75,7 @@ public class ProceedExpression
 			CReferenceType singletonType =
 				new CClassNameType(
 					context.getClassContext().getCClass().getQualifiedName()
-						+ SINGLETON_ASPECT_EXTENSION);
+						+ REGISTRY_EXTENSION);
 
 			typePrefix =
 				new JTypeNameExpression(getTokenReference(), singletonType);

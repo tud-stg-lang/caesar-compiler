@@ -235,7 +235,9 @@ public class FjCleanClassDeclaration
 					new CClassNameType(
 						FjConstants.cleanInterfaceName(
 							getSuperClass().getQualifiedName()));
-				cleanInterface.addInterface(superIfcType);
+				cleanInterface.addInterface(
+					superIfcType, 
+					CciConstants.SUPER_TYPE_INDEX);
 			}
 		}
 		return cleanInterface;
@@ -547,8 +549,8 @@ public class FjCleanClassDeclaration
 		CClass superClass;
 		//If it is an interface the second interface is its super type.
 		if (clazz.isInterface() && clazz.getInterfaces().length > 1)
-			//WALTER INTERFACE&
-			superClass = clazz.getInterfaces()[0].getCClass();
+			superClass = clazz.getInterfaces()
+				[CciConstants.SUPER_TYPE_INDEX].getCClass();
 		else
 			superClass = clazz.getSuperClass();
 					

@@ -1,6 +1,7 @@
 package org.caesarj.compiler.ast;
 
 import org.caesarj.compiler.CaesarMessages;
+import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.UnpositionedError;
@@ -630,7 +631,8 @@ public class FjTypeSystem
 		CClass superClass;
 		//If it is an interface the second interface is its super type.
 		if (clazz.isInterface() && clazz.getInterfaces().length > 1)
-			superClass = clazz.getInterfaces()[1].getCClass();
+			superClass = clazz.getInterfaces()
+				[CciConstants.SUPER_TYPE_INDEX].getCClass();
 		else
 			superClass = clazz.getSuperClass();
 

@@ -24,9 +24,10 @@ import org.caesarj.kjc.JClassImport;
 import org.caesarj.kjc.JPackageImport;
 
 /**
+ * Provides access to the ClassContext.
+ * Important for pointcut checking.
  * 
- * 
- * @author J?rgen Hallpap
+ * @author Jürgen Hallpap
  */
 public class CaesarScope implements IScope, CaesarConstants {
 
@@ -65,7 +66,7 @@ public class CaesarScope implements IScope, CaesarConstants {
 		if (cclass != null
 			&& CModifier.contains(cclass.getModifiers(), ACC_CROSSCUTTING)) {
 			cclass =
-				lookupClass((typeName + SINGLETON_ASPECT_EXTENSION).intern());
+				lookupClass((typeName + REGISTRY_EXTENSION).intern());
 		}
 
 		if (cclass == null) {
@@ -82,7 +83,7 @@ public class CaesarScope implements IScope, CaesarConstants {
 	protected CClass lookupClass(String typeName) {
 		//convert qualified names to internal representation
 		typeName = typeName.replace('.', '/');
-		
+
 		String outerClassName = typeName;
 		String innerClassName = "";
 

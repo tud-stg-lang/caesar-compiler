@@ -10,14 +10,14 @@ package org.caesarj.runtime;
  */
 public interface Deployable {
 	
-	public Deployable _deploy(Deployable aspectToDeploy);
+	public Deployable $deploy(Deployable aspectToDeploy);
 	
-	public Deployable _undeploy();
+	public Deployable $undeploy();
 	
-	public Thread _getDeploymentThread();
+	public Thread $getDeploymentThread();
 	
-	public void _setDeploymentThread(Thread deploymentThread);
+	public void $setDeploymentThread(Thread deploymentThread);
 	
-	public Deployable _getThreadLocalDeployedInstances();
+	public Deployable $getThreadLocalDeployedInstances();
 
 }

@@ -33,9 +33,7 @@ import org.caesarj.compiler.CaesarConstants;
  * 
  * @author Jürgen Hallpap
  */
-public class Proceed
-	extends FjSourceMethod
-	implements CaesarConstants {
+public class Proceed extends FjSourceMethod implements CaesarConstants {
 
 	private String adviceName;
 
@@ -60,8 +58,11 @@ public class Proceed
 		CType[] parameterTypes,
 		String adviceName,
 		FjFamily[] families) {
-		super(owner, ACC_STATIC, ident, //adviceName + "proceed",
-		returnType,
+		super(
+			owner,
+			ACC_STATIC,
+			ident,
+			returnType,
 			parameterTypes,
 			new CReferenceType[0],
 			new CTypeVariable[0],
@@ -85,7 +86,7 @@ public class Proceed
 	}
 
 	/**
-	 * Generates the MethodInfo for the proceedMethod.
+	 * Generates the MethodInfo for the proceedMethod.	
 	 * 
 	 * @return MethodInfo
 	 */

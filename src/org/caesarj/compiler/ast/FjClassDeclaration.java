@@ -634,8 +634,8 @@ public class FjClassDeclaration
 		CReferenceType[] newInterfaces =
 			new CReferenceType[interfaces.length + 1];
 
-		System.arraycopy(interfaces, 0, newInterfaces, 1, interfaces.length);
-		newInterfaces[0] = newInterface;
+		System.arraycopy(interfaces, 0, newInterfaces, 0, interfaces.length);
+		newInterfaces[interfaces.length] = newInterface;
 
 		interfaces = newInterfaces;
 	}

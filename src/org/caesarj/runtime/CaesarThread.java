@@ -67,9 +67,9 @@ public class CaesarThread extends Thread {
 		while (iterator.hasNext()) {
 			AspectRegistry currentRegistry = (AspectRegistry) iterator.next();
 			Deployable parentThreadInstances =
-				currentRegistry._getThreadLocalDeployedInstances();
+				currentRegistry.$getThreadLocalDeployedInstances();
 
-			currentRegistry._deploy(parentThreadInstances, this);
+			currentRegistry.$deploy(parentThreadInstances, this);
 		}
 
 	}

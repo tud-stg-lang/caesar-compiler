@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Vector;
 
 import org.caesarj.compiler.CaesarMessages;
+import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
@@ -51,7 +52,9 @@ public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 				false,
 				false),
 			new JavaStyleComment[0]);
-		addInterface(new CClassNameType(FjConstants.CHILD_TYPE_NAME));
+		addInterface(new CClassNameType(
+			FjConstants.CHILD_TYPE_NAME), 
+			CciConstants.CHILD_TYPE_INDEX);
 		this.baseDecl = baseDecl;
 	}
 
@@ -150,13 +153,25 @@ public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 	}
 	public void addInterface(CReferenceType newInterface)
 	{
+		addInterface(newInterface, interfaces.length);
+	}
+	
+	public void addInterface(CReferenceType newInterface, int index)
+	{
 		CReferenceType[] newInterfaces =
 			new CReferenceType[interfaces.length + 1];
 
-		System.arraycopy(interfaces, 0, newInterfaces, 1, interfaces.length);
-		newInterfaces[0] = newInterface;
+		System.arraycopy(interfaces, 0, newInterfaces, 0, index);
+		newInterfaces[index] = newInterface;
+		System.arraycopy(
+			interfaces, 
+			index, 
+			newInterfaces, 
+			index + 1, 
+			interfaces.length - index);
 
 		interfaces = newInterfaces;
+		
 	}
 
 

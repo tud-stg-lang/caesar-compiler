@@ -35,7 +35,7 @@ import org.caesarj.kjc.JTypeNameExpression;
  * It extends the interface of advice methods, if they make use of Join Point Reflection.
  * It also determines the corresponding extraArgumentFlags for the advice.
  * 
- * @author J?rgen Hallpap
+ * @author Jürgen Hallpap
  */
 public class JoinPointReflectionVisitor
 	extends CaesarVisitor

@@ -20,7 +20,7 @@ import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.Constants;
 
 /**
- * @author J?rgen Hallpap
+ * @author Jürgen Hallpap
  *
  */
 public class CaesarSourceType extends ConcreteName implements Constants {

@@ -12,6 +12,7 @@ import org.aspectj.weaver.TypeX;
 import org.caesarj.kjc.CField;
 import org.caesarj.kjc.CMethod;
 import org.caesarj.compiler.ast.FjSourceClass;
+import org.caesarj.compiler.ast.FjSourceField;
 import org.caesarj.compiler.ast.PrivilegedField;
 import org.caesarj.compiler.ast.PrivilegedMethod;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
@@ -43,13 +44,18 @@ public class PrivilegedAccessHandler {
 	 * Gets to the given CField the corresponding PrivilegedField.
 	 * 
 	 * @param field
-	 * @return CField
+	 * @return PrivilegedField
 	 */
-	public CField getPrivilegedAccessField(CField field) {
-		CField priviligedField = (CField) privilegedFields.get(field);
+	public PrivilegedField getPrivilegedAccessField(CField field) {
+		PrivilegedField priviligedField =
+			(PrivilegedField) privilegedFields.get(field);
 
 		if (priviligedField == null) {
-			priviligedField = new PrivilegedField(field, aspect);
+			priviligedField =
+				new PrivilegedField(
+					field,
+					aspect,
+					((FjSourceField) field).getFamily());
 			privilegedFields.put(field, priviligedField);
 		}
 
@@ -72,7 +78,8 @@ public class PrivilegedAccessHandler {
 		}
 
 		TypeX aspectType = CaesarBcelWorld.getInstance().resolve(aspect);
-		TypeX declaringType = CaesarBcelWorld.getInstance().resolve(method.getOwner());
+		TypeX declaringType =
+			CaesarBcelWorld.getInstance().resolve(method.getOwner());
 
 		ResolvedMember member =
 			new ResolvedMember(
@@ -106,8 +113,7 @@ public class PrivilegedAccessHandler {
 		Iterator iterator = privilegedFields.values().iterator();
 		int i = 0;
 		for (; iterator.hasNext(); i++) {
-			PrivilegedField privField =
-				(PrivilegedField) iterator.next();
+			PrivilegedField privField = (PrivilegedField) iterator.next();
 
 			accessedMembers[i] = privField.getResolvedMember();
 
@@ -115,8 +121,7 @@ public class PrivilegedAccessHandler {
 
 		iterator = privilegedMethods.values().iterator();
 		for (; iterator.hasNext(); i++) {
-			PrivilegedMethod privMethod =
-				(PrivilegedMethod) iterator.next();
+			PrivilegedMethod privMethod = (PrivilegedMethod) iterator.next();
 
 			accessedMembers[i] = privMethod.getResolvedMember();
 

@@ -1,9 +1,15 @@
 package org.caesarj.compiler.ast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.aspectj.weaver.ResolvedPointcutDefinition;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.Pointcut;
 
 import org.caesarj.kjc.CBinaryTypeContext;
+import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CClassContext;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CSourceMethod;
@@ -15,6 +21,7 @@ import org.caesarj.kjc.JStatement;
 import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
+import org.caesarj.compiler.aspectj.CaesarScope;
 
 /**
  * A Pointcut declaration.
@@ -68,10 +75,6 @@ public class PointcutDeclaration extends FjMethodDeclaration {
 		this.pointcut = pointcut;
 	}
 
-	public CaesarPointcut getSourcePointcut() {
-		return (CaesarPointcut) getMethod();
-	}
-
 	/**
 	 * @see org.caesarj.kjc.JMethodDeclaration#checkInterface(CClassContext)
 	 */
@@ -79,9 +82,7 @@ public class PointcutDeclaration extends FjMethodDeclaration {
 		throws PositionedError {
 
 		FjClassContext caesarContext = (FjClassContext) context;
-
-		//		CSourceMethod result = super.checkInterface(context);
-
+	
 		CBinaryTypeContext typeContext =
 			new CBinaryTypeContext(
 				context.getClassReader(),
@@ -97,36 +98,65 @@ public class PointcutDeclaration extends FjMethodDeclaration {
 			parameterTypes[i] = parameters[i].checkInterface(typeContext);
 		}
 
-		CaesarPointcut pointcutMethod =
-			new CaesarPointcut(
-				context.getCClass(),
-				modifiers,
-				ident,
-				context.getTypeFactory().getVoidType(),
-				parameterTypes,
-				exceptions,
-				typeVariables,
-				false,
-				false,
-				body,
-				pointcut,
-				new FjFamily[0]);
-
-		FjSourceClass crosscuttingClass =
-			(FjSourceClass) context.getCClass();
+		FjSourceClass crosscuttingClass = (FjSourceClass) context.getCClass();
 
 		ResolvedPointcutDefinition rpd =
-			pointcutMethod.resolve(
+			resolve(
 				context,
-				pointcutMethod.getOwner(),
+				context.getCClass(),
 				parameters,
 				getTokenReference());
 
 		crosscuttingClass.addResolvedPointcut(rpd);
-
-		setInterface(pointcutMethod);
-
-		return pointcutMethod;
+			
+		return null;
 	}
 
+	public ResolvedPointcutDefinition resolve(
+		CClassContext context,
+		CClass caller,
+		JFormalParameter[] formalParameters,
+		TokenReference tokenReference) {
+
+		List parameterTypes = new ArrayList();
+		List formalBindings = new ArrayList();
+
+		for (int i = 0; i < parameters.length; i++) {
+
+			if (!formalParameters[i].isGenerated()) {
+
+				TypeX type =
+					TypeX.forSignature(parameters[i].getType().getSignature());
+
+				parameterTypes.add(type);
+
+				formalBindings.add(
+					new FormalBinding(
+						type,
+						formalParameters[i].getIdent(),
+						i,
+						tokenReference.getLine(),
+						tokenReference.getLine(),
+						tokenReference.getFile()));
+			}
+		}
+
+		FjClassContext classContext = (FjClassContext) context;
+		classContext.setBindings(
+			(FormalBinding[]) formalBindings.toArray(new FormalBinding[0]));
+
+		if ((modifiers & ACC_ABSTRACT) == 0) {
+			pointcut.resolve(new CaesarScope((FjClassContext) context, caller));
+		}
+
+		ResolvedPointcutDefinition rpd =
+			new ResolvedPointcutDefinition(
+				TypeX.forName(context.getCClass().getQualifiedName()),
+				modifiers,
+				getIdent(),
+				(TypeX[]) parameterTypes.toArray(new TypeX[0]),
+				pointcut);
+
+		return rpd;
+	}
 }

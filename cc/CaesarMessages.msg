@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.7 2003-08-26 10:15:12 werner Exp $
+ * $Id: CaesarMessages.msg,v 1.8 2003-08-26 14:45:05 werner Exp $
  */
 
 package org.caesarj.compiler
@@ -210,7 +210,7 @@ error   PROVIDING_OTHER_CI
 		"\"{0}\" does not provide the collaboration interface \"{1}\"."
 
 error   BINDING_CI_WITH_SAME_NAME
-		"\"{0}\" cannot be declared with the same name of aspect interface \"{1}\"."
+		"\"{0}\" cannot be declared with the same name of collaboration interface \"{1}\"."
 		
 error   PROVIDING_DEFINES_CONSTRUCTOR
 		"Providing class \"{0}\" cannot define constructors with parameters."
@@ -222,7 +222,7 @@ error   WRAPPER_DEFINES_CONSTRUCTOR
 		"Explicity declared wrapper class \"{0}\" cannot define constructors with parameters."
 
 error   NON_BINDING_WRAPPER
-		"Class \"{0}\" cannot define \"wraps\" clause because it does not bind an aspect interface."
+		"Class \"{0}\" cannot define \"wraps\" clause because it does not bind a collaboration interface."
 
 error   SUPER_CLASS_WRAPS
 		"Class \"{0}\" cannot define \"wraps\" clause because its super class already wraps a class."

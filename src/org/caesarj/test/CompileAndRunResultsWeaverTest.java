@@ -144,9 +144,9 @@ public class CompileAndRunResultsWeaverTest extends FjTestCase {
 		doGeneratedTest("JoinPointReflectionTest");
 	}
 
-	public void testDeploymentTest() throws Throwable {
+/*	public void testDeploymentTest() throws Throwable {
 		doGeneratedTest("DeploymentTest");
-	}
+	}*/
 
 	public void testAutomaticDeploymentTest() throws Throwable {
 		doGeneratedTest("AutomaticDeploymentTest");

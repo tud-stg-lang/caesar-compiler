@@ -10,13 +10,13 @@ import java.util.HashSet;
  */
 public interface AspectRegistry {
 
-	public void _deploy(Deployable aspectToDeploy, Thread thread);
+	public void $deploy(Deployable aspectToDeploy, Thread thread);
 
-	public void _undeploy();
+	public void $undeploy();
 
-	public Deployable _getDeployedInstances();
+	public Deployable $getDeployedInstances();
 	
-	public Deployable _getThreadLocalDeployedInstances();
+	public Deployable $getThreadLocalDeployedInstances();
 	
 	
 

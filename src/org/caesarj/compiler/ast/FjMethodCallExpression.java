@@ -74,6 +74,20 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		cachedWhere = where;
 	}
 
+	public FjMethodCallExpression(
+		TokenReference where,
+		JExpression prefix,
+		CMethod method,
+		JExpression[] args,
+		JExpression[] unanalysedArgs) {
+		super(where, prefix, method, args);
+		cachedWhere = where;
+		this.unanalysedArgs = new JExpression[unanalysedArgs.length];
+		for (int i = 0; i < unanalysedArgs.length; i++) {
+			this.unanalysedArgs[i] = unanalysedArgs[i];
+		}
+	}
+
 	public JExpression getPrefix() {
 		return prefix;
 	}
@@ -90,10 +104,10 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		JExpression expression;
 		if (isWithinImplementationMethod(context) && ! isWrapperRecycling() 
 			&& isSuperMethodCall())
-			expression = handleSuperCall( context );
+			expression = handleSuperCall(context);
 		else if (isWithinImplementationMethod(context) && ! isWrapperRecycling()
 				&& isThisMethodCall(context))
-			expression = handleThisCall( context );
+			expression = handleThisCall(context);
 		else 
 		{
 			assertPrefixIsSet(context);

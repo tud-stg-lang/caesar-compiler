@@ -21,7 +21,6 @@ import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.KjcEnvironment;
 
-import com.sun.corba.se.internal.core.Constant;
 
 public class ClassTransformationFjVisitor extends FjVisitor
 {
