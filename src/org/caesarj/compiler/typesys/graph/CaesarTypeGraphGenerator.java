@@ -70,10 +70,6 @@ public class CaesarTypeGraphGenerator {
                     // super class can only be from the direct enclosing parent
                     JavaQualifiedName superQn = null;
 
-                    if(thisNode.getQualifiedName().toString().endsWith("InnerB")) {
-                        boolean stop = true;
-                    }
-                    
                     if(!thisNode.isTopLevelClass()) {
 	                    superQn = new JavaQualifiedName(
 	                        thisNode.getQualifiedName().getPrefix()

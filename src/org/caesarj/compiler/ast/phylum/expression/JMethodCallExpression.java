@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodCallExpression.java,v 1.8 2004-10-15 11:12:53 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.9 2004-10-15 15:34:26 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -465,11 +465,6 @@ public class JMethodCallExpression extends JExpression
 	 */
 	public void genCode(GenerationContext context, boolean discardValue)
 	{
-	    
-	    if(prefix == null) {
-	        System.out.println();
-	    }
-	    
 		CodeSequence code = context.getCodeSequence();
 		TypeFactory factory = context.getTypeFactory();
 

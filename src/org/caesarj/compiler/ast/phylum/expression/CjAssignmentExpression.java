@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjAssignmentExpression.java,v 1.3 2004-09-09 14:35:56 aracic Exp $
+ * $Id: CjAssignmentExpression.java,v 1.4 2004-10-15 15:34:25 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -55,10 +55,6 @@ public class CjAssignmentExpression extends JBinaryExpression {
         expr = new JAssignmentExpression(getTokenReference(), left, right);
 	                
         CClass contextClass = context.getClassContext().getCClass();
-        
-        if(contextClass.getQualifiedName().startsWith("generated/test3/")) {
-            System.out.println("stop here");
-        }
         
         CType rightType = right.getType(factory);
         
