@@ -1,11 +1,14 @@
 package org.caesarj.compiler.cclass;
 
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.declaration.*;
 import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.compiler.export.CCjSourceClass;
+import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CCompositeNameType;
 import org.caesarj.compiler.types.CReferenceType;
@@ -23,7 +26,8 @@ public class CClassFactory implements CaesarConstants {
 	private CjClassDeclaration caesarClass;
 	
 	private String interfaceName;
-	private String packagePrefix;
+	private String prefix;
+    CClass interfaceOwner;
 
 	private KjcEnvironment environment;
 	private TypeFactory typeFactory;
@@ -43,12 +47,28 @@ public class CClassFactory implements CaesarConstants {
 		this.typeFactory = environment.getTypeFactory();
 		this.environment = environment;
 
-		initNames();
+		initState();
 	}
 
-	private void initNames() {
-		String packageName = caesarClass.getCClass().getPackage();
-		this.packagePrefix = packageName.length() > 0 ? packageName + "/" : "";
+	private void initState() {              
+        CCjSourceClass caesarClassOwner = (CCjSourceClass)caesarClass.getOwner();
+
+        if(caesarClassOwner != null) {
+            CjClassDeclaration ownerClassDeclaration = 
+                (CjClassDeclaration)caesarClassOwner.getTypeDeclaration();
+            interfaceOwner = 
+                ownerClassDeclaration.getCorrespondingInterfaceDeclaration().getCClass();
+        }
+
+        if(interfaceOwner != null) {
+            prefix = interfaceOwner.getQualifiedName()+'$';
+        }
+        else {
+            prefix = caesarClass.getCClass().getPackage();
+            if(prefix.length() > 0) {
+                prefix += '/';
+            }
+        }
 
 		//Intialize some class and interface identifiers
 		interfaceName = caesarClass.getOriginalIdent();
@@ -63,6 +83,7 @@ public class CClassFactory implements CaesarConstants {
 
         ArrayList interfaceMethods = new ArrayList(cclassMethods.length);
 
+        // copy all public, non-static class methods to interface
 		for (int i = 0; i < cclassMethods.length; i++) {      
             if(
                 !(cclassMethods[i] instanceof JConstructorDeclaration)
@@ -107,15 +128,41 @@ public class CClassFactory implements CaesarConstants {
 				new JTypeDeclaration[0],
 				new JPhylum[0],
 				null,
-				null);
+				null);                  
 
-		cclassInterface.generateInterface(
-			environment.getClassReader(),
-			caesarClass.getOwner(),
-			packagePrefix);
+        cclassInterface._generateInterface(
+            environment.getClassReader(), interfaceOwner, prefix
+        );
+
+        // link this two AST elements
+        caesarClass.setCorrespondingInterfaceDeclaration(cclassInterface);
+        cclassInterface.setCorrespondingClassDeclaration(caesarClass);
 
 		return cclassInterface;
 	}
+        
+    private String getPrefix(String qualifiedName) {
+        String res = "";
+
+        int i = qualifiedName.lastIndexOf('$');
+        
+        if(i < 0) {
+            i = qualifiedName.lastIndexOf('/'); 
+        }
+        
+        if(i >= 0) {
+            res = qualifiedName.substring(0, i+1);
+        }
+        
+		return res;
+	}
+
+	public void addCaesarClassInterfaceInners() {
+        CjInterfaceDeclaration cclassInterface = caesarClass.getCorrespondingInterfaceDeclaration();
+        cclassInterface.generateInterfaceInners(
+            environment.getClassReader(),            
+            prefix);            
+    }
 
 	private JMethodDeclaration createInterfaceMethod(JMethodDeclaration m) {
 		return new CjMethodDeclaration(
@@ -145,9 +192,24 @@ public class CClassFactory implements CaesarConstants {
         CReferenceType superType = caesarClass.getSuperClass();
          
         if(superType != null && !(superType instanceof CCompositeNameType)) {
-            CClassNameType newSuperType = new CClassNameType(superType.getQualifiedName()+"_Impl");
+            CClassNameType newSuperType = new CClassNameType(mapToImplClassName(superType.getQualifiedName()));
             caesarClass.setSuperClass(newSuperType);
         }
 	}
+
+    private String mapToImplClassName(String fullQualifiedName) {
+        StringBuffer res = new StringBuffer();
+        StringTokenizer tok = new StringTokenizer(fullQualifiedName, "/");
+        
+        while(tok.hasMoreTokens()) {
+            String token = tok.nextToken();
+            res.append(token);
+            res.append("_Impl");
+            if(tok.hasMoreTokens())
+                res.append('/');
+        }
+        
+        return res.toString();
+    }
 
 }

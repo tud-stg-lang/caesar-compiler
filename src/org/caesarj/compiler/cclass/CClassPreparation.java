@@ -43,6 +43,7 @@ public class CClassPreparation implements CaesarConstants {
 		KjcEnvironment environment,
 		InnerAccessor innerAccessor
     ) {
+        /*
 		List newTypeDeclarations = new ArrayList();
 		JTypeDeclaration typeDeclarations[] = innerAccessor.getInners();
 		for (int i = 0; i < typeDeclarations.length; i++) {
@@ -71,9 +72,47 @@ public class CClassPreparation implements CaesarConstants {
 				}
 			}
 		}
+        
+        
 		innerAccessor.setInners(
 			(JTypeDeclaration[]) newTypeDeclarations.toArray(
 				new JTypeDeclaration[0]));
+        */   
+        
+        List newTypeDeclarations = new ArrayList();
+        JTypeDeclaration typeDeclarations[] = innerAccessor.getInners();
+        
+        for (int i = 0; i < typeDeclarations.length; i++) {
+            if (typeDeclarations[i] instanceof CjClassDeclaration) {
+
+                CjClassDeclaration caesarClass =
+                    (CjClassDeclaration) typeDeclarations[i];
+
+                CClassFactory utils =
+                    new CClassFactory(caesarClass, environment);
+
+                // create class interface                           
+                newTypeDeclarations.add(utils.createCaesarClassInterface());
+        
+                // rename the class, add implements cclass interface and rename supertype  
+                utils.modifyCaesarClass();
+
+                if (caesarClass.getInners().length > 0) {
+                    //consider nested types
+                    prepareCaesarClass(
+                        environment, new ClassDeclarationInnerAccessor(caesarClass));
+                }
+                
+                // this has to be called after inner types have been handled
+                // (for creating cclass interface inner source class exports)
+                utils.addCaesarClassInterfaceInners();
+            }
+        }
+
+
+        innerAccessor.addInners(
+            (JTypeDeclaration[]) newTypeDeclarations.toArray(
+                new JTypeDeclaration[0]));             
 	}
 
 
@@ -84,7 +123,7 @@ public class CClassPreparation implements CaesarConstants {
      */
     interface InnerAccessor {
         JTypeDeclaration[] getInners();
-        void setInners(JTypeDeclaration[] inners);
+        void addInners(JTypeDeclaration[] inners);
     }
     
     
@@ -99,8 +138,8 @@ public class CClassPreparation implements CaesarConstants {
 			return cd.getInners();
 		}
 
-        public void setInners(JTypeDeclaration[] inners) {
-            cd.setInners(inners);
+        public void addInners(JTypeDeclaration[] inners) {
+            cd.getCorrespondingInterfaceDeclaration().setInners(inners);
         }
     }
     
@@ -116,8 +155,17 @@ public class CClassPreparation implements CaesarConstants {
             return cu.getInners();
         }
 
-        public void setInners(JTypeDeclaration[] inners) {
-            cu.setInners(inners);
+        public void addInners(JTypeDeclaration[] inners) {
+            JTypeDeclaration cuInners[] = cu.getInners(); 
+            JTypeDeclaration newInners[] = new JTypeDeclaration[cuInners.length + inners.length];
+            
+            for(int i=0; i<cuInners.length; i++)
+                newInners[i] = cuInners[i];
+            
+            for(int i=0; i<inners.length; i++)
+                newInners[cuInners.length+i] = inners[i];
+            
+            cu.setInners(newInners);
         }
     }
 }
