@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<project name="CaesarCi" default="generate" basedir=".">
+  <description>Caesar Collaboration Interfaces compiler</description>
+  <!-- set global properties for this build -->
+  <property name="compiler.files" location="cc"/>
+  <property name="kopi.home" location="${user.home}/java/kopi-2.1B"/>
+  <property name="kopi.classroot" location="${kopi.home}/classes"/>
+  <property name="java.sdk.home" location="${java.home}/.."/>
+  
+  <taskdef name="refreshLocal" 
+     classname="org.eclipse.core.resources.ant.RefreshLocalTask"/>
+
+  <target name="generate" description="Generates the compiler files." >
+    <copy todir="${kopi.home}/src/caesar/">
+      <fileset dir="${compiler.files}" >
+        <include name="**/*.*"/>
+      </fileset>
+    </copy>  
+    <copy todir="${kopi.classroot}">
+      <fileset dir="${basedir}/bin">
+        <exclude name="*CVS*"/>
+      </fileset>
+    </copy>
+    <copy todir="${kopi.classroot}/at/dms/compiler" 
+          file="${compiler.files}/skeleton.shared" />
+    
+    <exec executable="make" dir="${kopi.home}/src" 
+          failonerror="true">
+      <env key="CLASSPATH" path="${kopi.classroot}:${basedir}/lib/JFlex.jar:${basedir}/lib/java-getopt-1.0.9.jar"/>
+      <env key="CLASSROOT" path="${kopi.classroot}"/>
+      <env key="JAVA" path="${java.sdk.home}/bin/java"/>
+      <env key="JAVAC" path="${java.sdk.home}/bin/javac"/>
+    </exec>
+
+    <copy todir="${basedir}/src/caesar/ci/compiler">
+      <fileset dir="${kopi.home}/src/caesar" >
+        <include name="**/*.java"/>
+      </fileset>
+    </copy>
+    
+    <refreshLocal resource="CaesarCI/src"/>
+
+  </target>
+</project>
