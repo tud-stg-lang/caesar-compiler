@@ -234,6 +234,11 @@ public class VirtualClassesTests extends FjTestCase {
         compileAndRun("test41", "VCTestCase");
     }
 	
+	/* Accessing public cclass fields */
+	public void testCaesarTestCase_50() throws Throwable {
+        compileAndRun("test50", "VCTestCase");
+    }
+	
 	/* Test subject oriented programming. */
 	public void testCaesarTestCase_99() throws Throwable {
         compileAndRun("test99", "VCTestCase");
