@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CCompilationUnitContext;
@@ -201,25 +202,43 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
             getCClass().setAdditionalTypeInformation(
                 constructAdditionalTypeInformation(typeNode));
             
-            
-            List ifcList = new LinkedList();
-            
-            for (Iterator it = typeNode.implicitParents(); it.hasNext();) {
-                CaesarTypeNode parentNode = ((SuperSubRelation)it.next()).getSuperNode();
-                
+            if(typeNode.inheritsFromCaesarObject()) {
                 CReferenceType superTypeRef = 
                     context.getTypeFactory().createType(
-                		parentNode.getQualifiedName().toString(), 
+                        CaesarConstants.CAESAR_OBJECT_IFC, 
 						true
 					);
                 
-                superTypeRef = (CReferenceType)superTypeRef.checkType(context);
+                try {
+                    superTypeRef = (CReferenceType)superTypeRef.checkType(context);
+                }
+                catch (UnpositionedError e) {
+                    throw e.addPosition(getTokenReference());
+                }
                 
-                ifcList.add(superTypeRef);
+                addMixinInterfaces(new CReferenceType[]{superTypeRef});
+            }
+            else {   
+	            List ifcList = new LinkedList();
+	            
+	            for (Iterator it = typeNode.implicitParents(); it.hasNext();) {
+	                CaesarTypeNode parentNode = ((SuperSubRelation)it.next()).getSuperNode();
+	                
+	                CReferenceType superTypeRef = 
+	                    context.getTypeFactory().createType(
+	                		parentNode.getQualifiedName().toString(), 
+							true
+						);
+	                
+	                superTypeRef = (CReferenceType)superTypeRef.checkType(context);
+	                
+	                ifcList.add(superTypeRef);
+	            }
+	            
+	            // add missing implicit relations 
+	            addMixinInterfaces((CReferenceType[])ifcList.toArray(new CReferenceType[ifcList.size()]));	            
             }
             
-            // add missing implicit relations 
-            addMixinInterfaces((CReferenceType[])ifcList.toArray(new CReferenceType[ifcList.size()]));
             getCClass().setInterfaces(this.interfaces);
             
             for(int i=0; i<inners.length; i++) {
