@@ -111,25 +111,30 @@ public class CjInterfaceDeclaration
             
             CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
             CaesarTypeNode typeNode = typeSystem.getCompleteGraph().getType(qualifiedName);
-                                  
+                       
+            // return if we have a dynamic deployment support interface
+            if(typeNode == null)
+            	return;
 
             List ifcList = new ArrayList(typeNode.getParents().size());
             
-            for (Iterator it = typeNode.getParents().iterator(); it.hasNext();) {
+            for (Iterator it = typeNode.getImplictParentsSubSet().iterator(); it.hasNext();) {
                 CaesarTypeNode parentNode = (CaesarTypeNode) it.next();
                 
                 CReferenceType superTypeRef = 
-                    context.getTypeFactory().createType(parentNode.getQualifiedName().toString(), true);
+                    context.getTypeFactory().createType(
+                		parentNode.getQualifiedName().toString(), 
+						true
+					);
                 
                 superTypeRef = (CReferenceType)superTypeRef.checkType(context);
                 
                 ifcList.add(superTypeRef);
             }
             
-            this.interfaces = (CReferenceType[])ifcList.toArray(new CReferenceType[ifcList.size()]);
+            // add missing implicit relations 
+            addInterface((CReferenceType[])ifcList.toArray(new CReferenceType[ifcList.size()]));
             getCClass().setInterfaces(this.interfaces);
-            
-            
             
             for(int i=0; i<inners.length; i++) {
                 inners[i].adjustSuperType(context);
@@ -138,7 +143,7 @@ public class CjInterfaceDeclaration
         catch (Throwable e) {
             // MSG
             e.printStackTrace();
-            throw new PositionedError(getTokenReference(), CaesarMessages.CANNOT_CREATE);
+            throw new PositionedError(getTokenReference(), CaesarMessages.FATAL_ERROR);
         }
     }
 
