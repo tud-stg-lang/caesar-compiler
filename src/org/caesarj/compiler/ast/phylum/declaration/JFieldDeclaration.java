@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldDeclaration.java,v 1.4 2004-10-29 13:24:07 aracic Exp $
+ * $Id: JFieldDeclaration.java,v 1.5 2004-11-17 10:52:10 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -141,7 +141,7 @@ public class JFieldDeclaration extends JMemberDeclaration {
 
 		classContext = context;
 		
-		// IVICA: field in a cclass may not be public or package-visible
+		// IVICA: field in a cclass may not be package-visible
 		if(context.getCClass().isMixin()) {
 		    check(
     	        context,
