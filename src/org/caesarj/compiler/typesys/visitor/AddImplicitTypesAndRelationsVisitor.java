@@ -25,7 +25,7 @@ public class AddImplicitTypesAndRelationsVisitor implements ICaesarTypeVisitor {
 	}
 	
 	public void visitCaesarTypeNode(CaesarTypeNode n) {
-		if(visited.contains(this)) return;
+		if(visited.contains(n)) return;
         
         visited.add(n);
         
