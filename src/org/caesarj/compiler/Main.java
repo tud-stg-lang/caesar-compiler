@@ -132,7 +132,9 @@ public class Main extends MainSuper implements Constants {
         adjustSuperTypes(tree);
         if(errorFound) return false;
         
-        generateFactoryMethods(environment);
+        // TODO support methods for wrappee has to be directly after joinAll
+        // otherwise problems when composing with &
+        generateSupportMembers(environment);
         if(errorFound) return false;
         
         checkAllInterfaces(tree); 
@@ -163,9 +165,10 @@ public class Main extends MainSuper implements Constants {
     }
 
 
-    private void generateFactoryMethods(KjcEnvironment environment) {
+    // generates factory methods and wrappee recycling    
+    private void generateSupportMembers(KjcEnvironment environment) {
         try {
-            CClassPreparation.instance().generateFactoryMethods(
+            CClassPreparation.instance().generateSupportMethods(
                 this,
                 environment
             );
@@ -279,7 +282,7 @@ public class Main extends MainSuper implements Constants {
      * generates dependency graph on source types
      */
     protected void generateCaesarTypeSystem(KjcEnvironment environment, JCompilationUnit[] tree) {
-        System.out.println("generateDependencyGraph");        
+        System.out.println("generateCaesarTypeSystem");        
         for (int i=0; i<tree.length; i++) {        	
             CaesarTypeGraphGenerator.instance().generateGraph(
         		environment.getCaesarTypeSystem().getCaesarTypeGraph(), tree[i]
@@ -295,7 +298,7 @@ public class Main extends MainSuper implements Constants {
      */  
     protected void generateCaesarExports(JCompilationUnit[] tree) {
         try {
-            System.out.println("checkAllConstructorInterfaces");
+            System.out.println("generateCaesarExports");
             for (int count = 0; count < tree.length; count++) {
                 tree[count].generateExport(this);        
             }
