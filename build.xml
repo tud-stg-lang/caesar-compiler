@@ -19,7 +19,7 @@
 
  <!-- Create CaesarMessages.java -->
  <target name="msggen" description="Generate CaesarMessages.java">
-  <java fork="true" dir="${source}/compiler"
+  <java fork="true" dir="${source}/compiler/constants"
   		classname="org.caesarj.tools.msggen.Main"
   		classpath="${libs}/java-getopt-1.0.9.jar;
   				   ${libs}/cjbuildtools.jar">

@@ -53,12 +53,8 @@ public class CjProceedDeclaration extends CjMethodDeclaration {
 		this.adviceName = adviceName;
 	}
 
-	/**
-	 * @see familyj.compiler.FjMethodDeclaration#checkInterface1(CClassContext)
-	 */
-	public CSourceMethod checkInterface1(CClassContext context)
+	public CSourceMethod checkInterface(CClassContext context)
 		throws PositionedError {
-
 		
 		try {
 			for (int i = 0; i < typeVariables.length; i++) {

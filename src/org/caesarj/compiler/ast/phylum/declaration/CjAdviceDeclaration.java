@@ -19,284 +19,228 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
-// FJCLEANUP
 /**
  * Represents an AdviceDeclaration in the Source Code.
  * 
  * @author Jürgen Hallpap
  */
 public class CjAdviceDeclaration
-	extends CjMethodDeclaration
-	implements CaesarConstants {
+    extends CjMethodDeclaration
+    implements CaesarConstants {
 
-	public static final CjAdviceDeclaration[] EMPTY = new CjAdviceDeclaration[0];
+    public static final CjAdviceDeclaration[] EMPTY =
+        new CjAdviceDeclaration[0];
 
-	/** Pointcut */
-	private CaesarPointcut pointcut;
+    /** Pointcut */
+    private CaesarPointcut pointcut;
 
-	/** Kind of Advice (Before,After,AfterReturning,AfterThrowing,Around).*/
-	private CaesarAdviceKind kind;
+    /** Kind of Advice (Before,After,AfterReturning,AfterThrowing,Around).*/
+    private CaesarAdviceKind kind;
 
-	/** The proceed method for around advices.*/
-	private CjProceedDeclaration proceedMethodDeclaration;
+    /** The proceed method for around advices.*/
+    private CjProceedDeclaration proceedMethodDeclaration;
 
-	/** Flags, that show which extraArgument are needed (e.g. AroundClosure).*/
-	private int extraArgumentFlags = 0;
+    /** Flags, that show which extraArgument are needed (e.g. AroundClosure).*/
+    private int extraArgumentFlags = 0;
 
-	/** The parameters for the proceed-method which will be created later on for around-advices.*/
-	private JFormalParameter[] proceedParameters;
+    /** The parameters for the proceed-method which will be created later on for around-advices.*/
+    private JFormalParameter[] proceedParameters;
 
-	/**
-	 * Constructor for AdviceDeclaration.
-	 * 
-	 * @param where
-	 * @param modifiers
-	 * @param typeVariables
-	 * @param returnType
-	 * @param parameters
-	 * @param exceptions
-	 * @param body
-	 * @param javadoc
-	 * @param comments
-	 */
-	public CjAdviceDeclaration(
-		TokenReference where,
-		int modifiers,
-		CTypeVariable[] typeVariables,
-		CType returnType,
-		JFormalParameter[] parameters,
-		CReferenceType[] exceptions,
-		JBlock body,
-		JavadocComment javadoc,
-		JavaStyleComment[] comments,
-		CaesarPointcut pointcut,
-		CaesarAdviceKind kind,
-		boolean hasExtraParameter) {
-		super(
-			where,
-			modifiers,
-			typeVariables,
-			returnType,
-			ADVICE_METHOD,
-			parameters,
-			exceptions,
-			body,
-			javadoc,
-			comments);
+    public CjAdviceDeclaration(
+        TokenReference where,
+        int modifiers,
+        CTypeVariable[] typeVariables,
+        CType returnType,
+        JFormalParameter[] parameters,
+        CReferenceType[] exceptions,
+        JBlock body,
+        JavadocComment javadoc,
+        JavaStyleComment[] comments,
+        CaesarPointcut pointcut,
+        CaesarAdviceKind kind,
+        boolean hasExtraParameter) {
+        super(
+            where,
+            modifiers,
+            typeVariables,
+            returnType,
+            ADVICE_METHOD,
+            parameters,
+            exceptions,
+            body,
+            javadoc,
+            comments);
 
-		this.pointcut = pointcut;
-		this.kind = kind;
+        this.pointcut = pointcut;
+        this.kind = kind;
 
-		if (kind == CaesarAdviceKind.Around) {
-			addAroundClosureParameter();
-		}
+        if (kind == CaesarAdviceKind.Around) {
+            addAroundClosureParameter();
+        }
 
-		if (hasExtraParameter) {
-			extraArgumentFlags |= CaesarConstants.ExtraArgument;
-		}
-	}
+        if (hasExtraParameter) {
+            extraArgumentFlags |= CaesarConstants.ExtraArgument;
+        }
+    }
 
-	/**
-	 * Adds an aroundClosure parameter to around advices.
-	 */
-	private void addAroundClosureParameter() {
+    /**
+     * Adds an aroundClosure parameter to around advices.
+     */
+    private void addAroundClosureParameter() {
 
-		JFormalParameter[] newParameters =
-			new JFormalParameter[parameters.length + 1];
+        JFormalParameter[] newParameters =
+            new JFormalParameter[parameters.length + 1];
 
-		System.arraycopy(parameters, 0, newParameters, 0, parameters.length);
+        System.arraycopy(parameters, 0, newParameters, 0, parameters.length);
 
-		CType aroundClosureType = new CClassNameType(AROUND_CLOSURE_CLASS);
+        CType aroundClosureType = new CClassNameType(AROUND_CLOSURE_CLASS);
 
-		newParameters[newParameters.length - 1] =
-			new JFormalParameter(
-				TokenReference.NO_REF,
-				JFormalParameter.DES_GENERATED,
-				aroundClosureType,
-				AROUND_CLOSURE_PARAMETER,
-				false);
+        newParameters[newParameters.length - 1] =
+            new JFormalParameter(
+                TokenReference.NO_REF,
+                JFormalParameter.DES_GENERATED,
+                aroundClosureType,
+                AROUND_CLOSURE_PARAMETER,
+                false);
 
-		parameters = newParameters;
+        parameters = newParameters;
 
-		//needed for proceed-method creation
-		proceedParameters = newParameters;
+        //needed for proceed-method creation
+        proceedParameters = newParameters;
 
-	}
+    }
 
-	public CSourceMethod checkInterface(CClassContext context)
-		throws PositionedError {
+    public CSourceMethod checkInterface(CClassContext context)
+        throws PositionedError {
 
-		try {
-			if (returnType.isReference()) {
-				returnType = returnType.checkType(context);
-			}
-		} catch (UnpositionedError e) {
-			// FJTODO what to do with exception
-		}
+        try {
+            if (returnType.isReference()) {
+                returnType = returnType.checkType(context);
+            }
+        }
+        catch (UnpositionedError e) {
+            // FJTODO what to do with exception
+        }
 
-		CBinaryTypeContext typeContext =
-			new CBinaryTypeContext(
-				context.getClassReader(),
-				context.getTypeFactory(),
-				context,
-				typeVariables,
-				(modifiers & ACC_STATIC) == 0);
+        CBinaryTypeContext typeContext =
+            new CBinaryTypeContext(
+                context.getClassReader(),
+                context.getTypeFactory(),
+                context,
+                typeVariables,
+                (modifiers & ACC_STATIC) == 0);
 
-		CType[] parameterTypes = new CType[parameters.length];
-		String[] parameterNames = new String[parameters.length];
-		for (int i = 0; i < parameters.length; i++) {
-			parameterTypes[i] = parameters[i].checkInterface(typeContext);
-			parameterNames[i] = parameters[i].getIdent();
-		}
+        CType[] parameterTypes = new CType[parameters.length];
+        String[] parameterNames = new String[parameters.length];
+        for (int i = 0; i < parameters.length; i++) {
+            parameterTypes[i] = parameters[i].checkInterface(typeContext);
+            parameterNames[i] = parameters[i].getIdent();
+        }
 
-		CCjAdvice adviceMethod =
-			new CCjAdvice(
-				context.getCClass(),
-				ACC_PUBLIC,
-				ident,
-				returnType,
-				parameterTypes,
-				exceptions,
-				typeVariables,
-				body,
-				pointcut,
-				kind,
-				extraArgumentFlags);
+        CCjAdvice adviceMethod =
+            new CCjAdvice(
+                context.getCClass(),
+                ACC_PUBLIC,
+                ident,
+                returnType,
+                parameterTypes,
+                exceptions,
+                typeVariables,
+                body,
+                pointcut,
+                kind,
+                extraArgumentFlags);
 
-		setInterface(adviceMethod);
+        setInterface(adviceMethod);
 
-		return adviceMethod;
-	}
+        return adviceMethod;
+    }
 
-	/**
-	 * Returns whether this is an around advice.
-	 */
-	public boolean isAroundAdvice() {
-		return kind.equals(CaesarAdviceKind.Around);
-	}
+    public boolean isAroundAdvice() {
+        return kind.equals(CaesarAdviceKind.Around);
+    }
 
-	/**
-	 * Returns the proceedMethodDeclaration.
-	 * @return CaesarProceedMethodDeclaration
-	 */
-	public CjProceedDeclaration getProceedMethodDeclaration() {
-		return proceedMethodDeclaration;
-	}
+    public CjProceedDeclaration getProceedMethodDeclaration() {
+        return proceedMethodDeclaration;
+    }
 
-	/**
-	 * Sets the proceedMethodDeclaration.
-	 * @param proceedMethodDeclaration The proceedMethodDeclaration to set
-	 */
-	public void setProceedMethodDeclaration(CjProceedDeclaration proceedMethodDeclaration) {
-		this.proceedMethodDeclaration = proceedMethodDeclaration;
-	}
+    public void setProceedMethodDeclaration(CjProceedDeclaration proceedMethodDeclaration) {
+        this.proceedMethodDeclaration = proceedMethodDeclaration;
+    }
 
-	/**
-	 * Method setIdent.
-	 * @param ident
-	 */
-	public void setIdent(String ident) {
-		this.ident = ident;
-	}
+    public void setIdent(String ident) {
+        this.ident = ident;
+    }
 
-	/**
-	 * Returns the kind.
-	 * 
-	 * @return AdviceKind
-	 */
-	public CaesarAdviceKind getKind() {
-		return kind;	
-	}
+    public CaesarAdviceKind getKind() {
+        return kind;
+    }
 
-	/**
-	 * Sets the parameters.
-	 */
-	public void setParameters(JFormalParameter[] parameters) {
-		this.parameters = parameters;
-	}
+    public void setParameters(JFormalParameter[] parameters) {
+        this.parameters = parameters;
+    }
 
-	/**
-	 * Returns the parameters.
-	 */
-	public JFormalParameter[] getParameters() {
-		return parameters;
-	}
+    public JFormalParameter[] getParameters() {
+        return parameters;
+    }
 
-	/**
-	 * Returns the returnType.
-	 */
-	public CType getReturnType() {
-		return returnType;
-	}
+    public CType getReturnType() {
+        return returnType;
+    }
 
-	public CReferenceType[] getExceptions() {
-		return exceptions;
-	}
+    public CReferenceType[] getExceptions() {
+        return exceptions;
+    }
 
-	/**
-	 * Returns the pointcut.
-	 * 
-	 * @return Pointcut
-	 */
-	public CaesarPointcut getPointcut() {
-		return pointcut;
-	}
+    public CaesarPointcut getPointcut() {
+        return pointcut;
+    }
 
-	/**
-	 * Returns the body.
-	 */
-	public JBlock getBody() {
-		return body;
-	}
+    public JBlock getBody() {
+        return body;
+    }
 
-	/**
-	 * Sets the body.
-	 */
-	public void setBody(JBlock body) {
-		this.body = body;
-	}
+    public void setBody(JBlock body) {
+        this.body = body;
+    }
 
-	/**
-	 * Sets the corresponding bit in the extraArgumentFlag.
-	 * 
-	 * @param extraArgumentFlags The extraArgumentFlags to set
-	 */
-	public void setExtraArgumentFlag(int extraArgumentFlag) {
-		this.extraArgumentFlags |= extraArgumentFlag;
-	}
+    /**
+     * Sets the corresponding bit in the extraArgumentFlag.
+     * 
+     * @param extraArgumentFlags The extraArgumentFlags to set
+     */
+    public void setExtraArgumentFlag(int extraArgumentFlag) {
+        this.extraArgumentFlags |= extraArgumentFlag;
+    }
 
-	/**
-	 * Returns the proceedParameters.
-	 * 
-	 * @return JFormalParameter[]
-	 */
-	public JFormalParameter[] getProceedParameters() {
+    public JFormalParameter[] getProceedParameters() {
 
-		if (isAroundAdvice()) {
-			return proceedParameters;
-		} else {
-			return JFormalParameter.EMPTY;
-		}
+        if (isAroundAdvice()) {
+            return proceedParameters;
+        }
+        else {
+            return JFormalParameter.EMPTY;
+        }
 
-	}
+    }
 
-	/**
-	 * @see org.caesarj.kjc.JMethodDeclaration#checkBody1(CClassContext)
-	 */
-	public void checkBody1(CClassContext context) throws PositionedError {
-		super.checkBody1(context);
+    /**
+     * @see org.caesarj.kjc.JMethodDeclaration#checkBody1(CClassContext)
+     */
+    public void checkBody1(CClassContext context) throws PositionedError {
+        super.checkBody1(context);
 
-		//create a method attribute for the advice
-		// this has to be done after the pointcut declarations are resolved	
-		getCaesarAdvice().createAttribute(
-			context,
-			context.getCClass(),
-			parameters,
-			getTokenReference());
-	}
+        //create a method attribute for the advice
+        // this has to be done after the pointcut declarations are resolved	
+        getCaesarAdvice().createAttribute(
+            context,
+            context.getCClass(),
+            parameters,
+            getTokenReference());
+    }
 
-	public CCjAdvice getCaesarAdvice() {
-		return (CCjAdvice) getMethod();
-	}
+    public CCjAdvice getCaesarAdvice() {
+        return (CCjAdvice)getMethod();
+    }
 
 }

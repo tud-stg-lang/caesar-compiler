@@ -35,95 +35,104 @@ import org.caesarj.util.Utils;
  * 
  * @author Jürgen Hallpap
  */
-public class Main extends org.caesarj.compiler.MainSuper implements  Constants  {
+public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 
-	private CaesarMessageHandler messageHandler;
-	private Set errorMessages;
+    private CaesarMessageHandler messageHandler;
+    private Set errorMessages;
 
+    // The used weaver. An instance ist created when it's needed in generateAndWeaveCode
+    private CaesarWeaver weaver;
 
-	// The used weaver. An instance ist created when it's needed in generateAndWeaveCode
-	private CaesarWeaver weaver; 
-	
-	/**
-	 * @param workingDirectory the working directory
-	 * @param diagnosticOutput where to put stderr
-	 * 
-	 */
-	public Main(String workingDirectory, PrintWriter diagnosticOutput) {
-		super(workingDirectory, new Outputter(diagnosticOutput));
-		//		super(workingDirectory, diagnosticOutput  );
-	}
+    /**
+     * @param workingDirectory the working directory
+     * @param diagnosticOutput where to put stderr
+     * 
+     */
+    public Main(String workingDirectory, PrintWriter diagnosticOutput) {
+        super(workingDirectory, new Outputter(diagnosticOutput));
+        //		super(workingDirectory, diagnosticOutput  );
+    }
 
-	public static void main(String[] args) {
-		boolean success;
-		success = compile(args);
-		System.exit(success ? 0 : 1);
-	}
+    public static void main(String[] args) {
+        boolean success;
+        success = compile(args);
+        System.exit(success ? 0 : 1);
+    }
 
-	public static boolean compile(String[] args) {
-		return new Main(null, null).run(args);
-	}
+    public static boolean compile(String[] args) {
+        return new Main(null, null).run(args);
+    }
 
-	/**
-	 * Overriden in order to introduce some additional passes in the
-	 * compiler control flow.
-	 */
-	public boolean run(String[] args) {
-		errorFound = false;
+    /**
+     * Overriden in order to introduce some additional passes in the
+     * compiler control flow.
+     */
+    public boolean run(String[] args) {
+        errorFound = false;
 
+        if (!parseArguments(args)) {
+            return false;
+        }
+        KjcEnvironment environment = createEnvironment(options);
+        setSourceVersion(environment.getSourceVersion());
+        initialize(environment);
+        if (infiles.size() == 0) {
+            options.usage();
+            inform(KjcMessages.NO_INPUT_FILE);
+            return false;
+        }
+        options.destination = checkDestination(options.destination);
+        if (verboseMode()) {
+            inform(
+                CaesarMessages.COMPILATION_STARTED,
+                new Integer(infiles.size()));
+        }
 
-		if (!parseArguments(args)) {
-			return false;
-		}
-		KjcEnvironment environment = createEnvironment(options);
-		setSourceVersion(environment.getSourceVersion());
-		initialize(environment);
-		if (infiles.size() == 0) {
-			options.usage();
-			inform(KjcMessages.NO_INPUT_FILE);
-			return false;
-		}
-		options.destination = checkDestination(options.destination);		
-		if (verboseMode()) {
-			inform(
-				CaesarMessages.COMPILATION_STARTED,
-				new Integer(infiles.size()));
-		}
+        try {
+            infiles = verifyFiles(infiles);
+        }
+        catch (UnpositionedError e) {
+            reportTrouble(e);
+            return false;
+        }
 
-		try {
-			infiles = verifyFiles(infiles);
-		} catch (UnpositionedError e) {
-			reportTrouble(e);
-			return false;
-		}
-		
+        JCompilationUnit[] tree = parseFiles(environment);
 
-		JCompilationUnit[] tree = parseFiles(environment);
+        if (errorFound) {
+            return false;
+        }
+        prepareJoinpointReflection(tree);
+        prepareDynamicDeployment(environment, tree);
+        joinAll(tree);
+        if (errorFound) {
+            return false;
+        }
+        checkAllInterfaces(tree);
+        if (errorFound) {
+            return false;
+        }
+        checkAllInitializers(tree);
+        if (errorFound) {
+            return false;
+        }
+        checkAllBodies(tree);
+        if (errorFound) {
+            return false;
+        }
+        if (noWeaveMode()) {
+            genCode(environment.getTypeFactory());
+        }
+        else {
+            generateAndWeaveCode(environment.getTypeFactory());
+        }
 
-		if (errorFound) {return false;}
-		prepareJoinpointReflection(tree);
-		prepareDynamicDeployment(environment, tree);
-		joinAll(tree);
-		if (errorFound) { return false; }
-		checkAllInterfaces(tree);
-		if (errorFound) { return false;	}			
-		checkAllInitializers(tree);
-		if (errorFound) { return false;	}
-		checkAllBodies(tree);
-		if (errorFound) { return false;	}
-		if (noWeaveMode()) {
-			genCode(environment.getTypeFactory());
-		} else {
-			generateAndWeaveCode(environment.getTypeFactory());
-		}
+        if (verboseMode()) {
+            inform(CaesarMessages.COMPILATION_ENDED);
+        }
 
-		if (verboseMode()) {
-			inform(CaesarMessages.COMPILATION_ENDED);
-		}
-
-		CodeSequence.endSession();
-		return true;
-	}
+        CodeSequence.endSession();
+        return true;
+    }
 
     /**
      * - create advice attribute for AspectJ weaver if necessary
@@ -145,370 +154,380 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
      *   Notion of bridge methods not yet clear
      *   Probably related to support for Generics a la GJ
      */
-	protected void checkAllBodies(JCompilationUnit[] tree) {
-		for (int count = 0; count < tree.length; count++) {
-			checkBody(tree[count]);
-			if (!options._java && !options.beautify) {
-				tree[count] = null;
-			}
-		}
-	}
+    protected void checkAllBodies(JCompilationUnit[] tree) {
+        for (int count = 0; count < tree.length; count++) {
+            checkBody(tree[count]);
+            if (!options._java && !options.beautify) {
+                tree[count] = null;
+            }
+        }
+    }
 
-	/**
-	 * tasks: 
-	 * - check all final fields are initialized
-	 * - check for inheritance circularity
-	 * - check interfaces not implemented by superclasses
-	 * - more (TBD)
-	 */
-	protected void checkAllInitializers(JCompilationUnit[] tree) {
-		for (int count = 0; count < tree.length; count++) {
-			checkInitializers(tree[count]);
-		}
-	}
+    /**
+     * tasks: 
+     * - check all final fields are initialized
+     * - check for inheritance circularity
+     * - check interfaces not implemented by superclasses
+     * - more (TBD)
+     */
+    protected void checkAllInitializers(JCompilationUnit[] tree) {
+        for (int count = 0; count < tree.length; count++) {
+            checkInitializers(tree[count]);
+        }
+    }
 
-	/**
-	 * A lot happens in this phase. We should divide this
-	 * into small steps.
-	 * 
-	 * - create self-enabled methods in clean classes
-	 * - create factory methods for virtual classes
-	 * - create wrapper creater/destructor methods
-	 * - register type at CaesarBCEL world
-	 * - prepare for static deployment if necessary (create advice-, aspectOf-method etc.)
-	 * - check modifiers of classes
-	 * - collect static initializers and create initializer method
-	 * - collect instance initializers and create instance initializer method
-	 * - create default constructor if necessary
-	 * - traverse AST:
-	 * 		- check field and method modifiers
-	 * 		- check field and method signature
-	 * 		- create CSourceMethod/CSourceField for every field/method and enter them in corresponding CClass
-	 * - create perSingleton clause if necessary
-	 * - check pointcuts if necessary 
-	 */
-	protected void checkAllInterfaces(JCompilationUnit[] tree) {
-		for (int count = 0; count < tree.length; count++) {
-			checkInterface(tree[count]);
-			//tree[count].accept(new DebugVisitor());
-		}
-	}
+    /**
+     * A lot happens in this phase. We should divide this
+     * into small steps.
+     * 
+     * - create self-enabled methods in clean classes
+     * - create factory methods for virtual classes
+     * - create wrapper creater/destructor methods
+     * - register type at CaesarBCEL world
+     * - prepare for static deployment if necessary (create advice-, aspectOf-method etc.)
+     * - check modifiers of classes
+     * - collect static initializers and create initializer method
+     * - collect instance initializers and create instance initializer method
+     * - create default constructor if necessary
+     * - traverse AST:
+     * 		- check field and method modifiers
+     * 		- check field and method signature
+     * 		- create CSourceMethod/CSourceField for every field/method and enter them in corresponding CClass
+     * - create perSingleton clause if necessary
+     * - check pointcuts if necessary 
+     */
+    protected void checkAllInterfaces(JCompilationUnit[] tree) {
+        for (int count = 0; count < tree.length; count++) {
+            checkInterface(tree[count]);
+            //tree[count].accept(new DebugVisitor());
+        }
+    }
 
-	protected void prepareDynamicDeployment(
-		KjcEnvironment environment,
-		JCompilationUnit[] tree) {
-		//Modify and generate support classes for dynamic deployment.
-		for (int i = 0; i < tree.length; i++) {
-			JCompilationUnit cu =  tree[i];
-			DeploymentPreparation.prepareForDynamicDeployment(environment,cu);
+    protected void prepareDynamicDeployment(
+        KjcEnvironment environment,
+        JCompilationUnit[] tree) {
+        //Modify and generate support classes for dynamic deployment.
+        for (int i = 0; i < tree.length; i++) {
+            JCompilationUnit cu = tree[i];
+            DeploymentPreparation.prepareForDynamicDeployment(environment, cu);
 
-		}
-	}
+        }
+    }
 
-	protected void prepareJoinpointReflection(JCompilationUnit[] tree) {
-		//Handle Join Point Reflection.
-		for (int i = 0; i < tree.length; i++) {
-			tree[i].accept(new JoinPointReflectionVisitor());
-		}
-	}
+    protected void prepareJoinpointReflection(JCompilationUnit[] tree) {
+        //Handle Join Point Reflection.
+        for (int i = 0; i < tree.length; i++) {
+            tree[i].accept(new JoinPointReflectionVisitor());
+        }
+    }
 
-	protected JCompilationUnit[] parseFiles(KjcEnvironment environment) {
-		JCompilationUnit[] tree = new JCompilationUnit[infiles.size()];
-		for (int count = 0; count < tree.length; count++) {
-			tree[count] =
-				parseFile((File) infiles.elementAt(count), environment);
-		}
-		return tree;
-	}
+    protected JCompilationUnit[] parseFiles(KjcEnvironment environment) {
+        JCompilationUnit[] tree = new JCompilationUnit[infiles.size()];
+        for (int count = 0; count < tree.length; count++) {
+            tree[count] =
+                parseFile((File)infiles.elementAt(count), environment);
+        }
+        return tree;
+    }
 
-	
-	protected void checkInterface(JCompilationUnit cunit) {
-		super.checkInterface(cunit);
-	}
+    protected void checkInterface(JCompilationUnit cunit) {
+        super.checkInterface(cunit);
+    }
 
-	/**
-	 * In this phase the following things happen:
-	 * - load all imported classes via classloader
-	 * - create CClass object for each imported class
-	 * - register loaded classes in CompilationUnit.allLoadedClasses
-	 * - add type declarations in compilation units in "allLoadedClasses"
-	 * - resolve superclasses and create CClassOrInterface type for superclass
-	 * - check conditions on superclasses like accessibility, superclass not final, superclass not interface
-	 * - similarly for implemented interfaces: resolve, create CClassOrInterface type, check for "is interface", accessiblity, circularity
-	 */
+    /**
+     * In this phase the following things happen:
+     * - load all imported classes via classloader
+     * - create CClass object for each imported class
+     * - register loaded classes in CompilationUnit.allLoadedClasses
+     * - add type declarations in compilation units in "allLoadedClasses"
+     * - resolve superclasses and create CClassOrInterface type for superclass
+     * - check conditions on superclasses like accessibility, superclass not final, superclass not interface
+     * - similarly for implemented interfaces: resolve, create CClassOrInterface type, check for "is interface", accessiblity, circularity
+     */
 
-	protected void joinAll(JCompilationUnit[] tree) {
-		JCompilationUnit cunit;
+    protected void joinAll(JCompilationUnit[] tree) {
+        JCompilationUnit cunit;
 
-		for (int i = 0; i < tree.length; i++) {
-			cunit = tree[i];
-			// perform a first join pass to resolve all
-			// directly known (i.e. specified) superclasses
-			join(cunit);
-		}
-		if (errorFound)
-			return;
-	}
+        for (int i = 0; i < tree.length; i++) {
+            cunit = tree[i];
+            // perform a first join pass to resolve all
+            // directly known (i.e. specified) superclasses
+            join(cunit);
+        }
+        if (errorFound)
+            return;
+    }
 
-	
-	public void inform(PositionedError error) {
-		if (errorMessages == null)
-			errorMessages = new HashSet();
+    public void inform(PositionedError error) {
+        if (errorMessages == null)
+            errorMessages = new HashSet();
 
-		// report every messages once only
-		if (errorMessages.contains(error.getMessage()))
-			return;
-		else
-			errorMessages.add(error.getMessage());
+        // report every messages once only
+        if (errorMessages.contains(error.getMessage()))
+            return;
+        else
+            errorMessages.add(error.getMessage());
 
-		super.inform(error);
-	}
+        super.inform(error);
+    }
 
-	/**
-	 * Create AST via parser/scanner
-	 * In addition, the following actions are performed:
-	 * - create empty CClass placeholder for every class (to be filled later)
-	 * - register types in classreader/allLoadedClasses 
-	 */
-	protected JCompilationUnit parseFile(
-		File file,
-		KjcEnvironment environment) {
-		InputBuffer buffer;
+    /**
+     * Create AST via parser/scanner
+     * In addition, the following actions are performed:
+     * - create empty CClass placeholder for every class (to be filled later)
+     * - register types in classreader/allLoadedClasses 
+     */
+    protected JCompilationUnit parseFile(
+        File file,
+        KjcEnvironment environment) {
+        InputBuffer buffer;
 
-		try {
-			buffer = new InputBuffer(file, options.encoding);
-		} catch (UnsupportedEncodingException e) {
-			reportTrouble(
-				new UnpositionedError(
-					Messages.UNSUPPORTED_ENCODING,
-					options.encoding));
-			return null;
-		} catch (IOException e) {
-			reportTrouble(
-				new UnpositionedError(
-					Messages.IO_EXCEPTION,
-					file.getPath(),
-					e.getMessage()));
-			return null;
-		}
+        try {
+            buffer = new InputBuffer(file, options.encoding);
+        }
+        catch (UnsupportedEncodingException e) {
+            reportTrouble(
+                new UnpositionedError(
+                    Messages.UNSUPPORTED_ENCODING,
+                    options.encoding));
+            return null;
+        }
+        catch (IOException e) {
+            reportTrouble(
+                new UnpositionedError(
+                    Messages.IO_EXCEPTION,
+                    file.getPath(),
+                    e.getMessage()));
+            return null;
+        }
 
-		//create the Caesar parser
-		CaesarParser parser;
-		JCompilationUnit unit;
-		long lastTime = System.currentTimeMillis();
+        //create the Caesar parser
+        CaesarParser parser;
+        JCompilationUnit unit;
+        long lastTime = System.currentTimeMillis();
 
-		parser = new CaesarParser(this, buffer, environment);
+        parser = new CaesarParser(this, buffer, environment);
 
-		try {
-			unit = getJCompilationUnit(parser);
+        try {
+            unit = getJCompilationUnit(parser);
 
-		} catch (ParserException e) {
-			reportTrouble(parser.beautifyParseError(e));
-			unit = null;
-		} catch (Exception e) {
-			e.printStackTrace();
-			errorFound = true;
-			unit = null;
-		}
+        }
+        catch (ParserException e) {
+            reportTrouble(parser.beautifyParseError(e));
+            unit = null;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            errorFound = true;
+            unit = null;
+        }
 
-		if (verboseMode()) {
-			inform(
-			CaesarMessages.FILE_PARSED,
-				file.getPath(),
-				new Long(System.currentTimeMillis() - lastTime));
-		}
+        if (verboseMode()) {
+            inform(
+                CaesarMessages.FILE_PARSED,
+                file.getPath(),
+                new Long(System.currentTimeMillis() - lastTime));
+        }
 
-		try {
-			buffer.close();
-		} catch (IOException e) {
-			reportTrouble(
-				new UnpositionedError(
-					Messages.IO_EXCEPTION,
-					file.getPath(),
-					e.getMessage()));
-		}
+        try {
+            buffer.close();
+        }
+        catch (IOException e) {
+            reportTrouble(
+                new UnpositionedError(
+                    Messages.IO_EXCEPTION,
+                    file.getPath(),
+                    e.getMessage()));
+        }
 
-		return unit;
-	}
+        return unit;
+    }
 
-	protected JCompilationUnit getJCompilationUnit(CaesarParser parser)
-		throws ParserException {
-		return parser.jCompilationUnit();
-	}
+    protected JCompilationUnit getJCompilationUnit(CaesarParser parser)
+        throws ParserException {
+        return parser.jCompilationUnit();
+    }
 
-	/**
-	 * Performs weaving after compilation.
-	 * 
-	 * @param factory
-	 */
-	public void generateAndWeaveCode(TypeFactory factory) {
-		CSourceClass[] classes = getClasses();
-		BytecodeOptimizer optimizer = new BytecodeOptimizer(options.optimize);
-		byte[] classBuffer;
-		String filename;
+    /**
+     * Performs weaving after compilation.
+     * 
+     * @param factory
+     */
+    public void generateAndWeaveCode(TypeFactory factory) {
+        CSourceClass[] classes = getClasses();
+        BytecodeOptimizer optimizer = new BytecodeOptimizer(options.optimize);
+        byte[] classBuffer;
+        String filename;
 
-		this.classes.setSize(0);
+        this.classes.setSize(0);
 
-		weaver = new CaesarWeaver();
-		try {
-			for (int count = 0; count < classes.length; count++) {
-				long lastTime = System.currentTimeMillis();
+        weaver = new CaesarWeaver();
+        try {
+            for (int count = 0; count < classes.length; count++) {
+                long lastTime = System.currentTimeMillis();
 
-				classBuffer =
-					((CCjSourceClass) classes[count]).genCodeToBuffer(
-						optimizer,
-						options.destination,
-						factory);
+                classBuffer =
+                    ((CCjSourceClass)classes[count]).genCodeToBuffer(
+                        optimizer,
+                        options.destination,
+                        factory);
 
-				weaver.addUnwovenClassFile(
-					getFileName(classes[count]), classBuffer);
-				
-				if (verboseMode() && !classes[count].isNested()) {
-					inform(
-					CaesarMessages.CLASSFILE_GENERATED,
-						classes[count].getQualifiedName().replace('/', '.'),
-						new Long(System.currentTimeMillis() - lastTime));
-				}
+                weaver.addUnwovenClassFile(
+                    getFileName(classes[count]),
+                    classBuffer);
 
-				classes[count] = null;
-			}
+                if (verboseMode() && !classes[count].isNested()) {
+                    inform(
+                        CaesarMessages.CLASSFILE_GENERATED,
+                        classes[count].getQualifiedName().replace('/', '.'),
+                        new Long(System.currentTimeMillis() - lastTime));
+                }
 
-			weaveClasses();
+                classes[count] = null;
+            }
 
-		} catch (PositionedError e) {
-			reportTrouble(e);
-		} catch (ClassFileFormatException e) {
-			e.printStackTrace();
-			reportTrouble(
-				new UnpositionedError(
-					Messages.FORMATTED_ERROR,
-					e.getMessage()));
-		} catch (IOException e) {
-			reportTrouble(new UnpositionedError(
-				Messages.IO_EXCEPTION,
-				"classfile",
-			//!!!FIXME !!!
-			e.getMessage()));
-		}
-	}
+            weaveClasses();
 
-	/**
-	 * Weaves the given classes.
-	 * The weaver is also responsible for file output.
-	 * 
-	 * @param unwovenClassFiles
-	 */
-	protected void weaveClasses() {
-		CaesarBcelWorld bcelWorld = CaesarBcelWorld.getInstance();
+        }
+        catch (PositionedError e) {
+            reportTrouble(e);
+        }
+        catch (ClassFileFormatException e) {
+            e.printStackTrace();
+            reportTrouble(
+                new UnpositionedError(
+                    Messages.FORMATTED_ERROR,
+                    e.getMessage()));
+        }
+        catch (IOException e) {
+            reportTrouble(new UnpositionedError(
+                Messages.IO_EXCEPTION,
+                "classfile",
+            //!!!FIXME !!!
+            e.getMessage()));
+        }
+    }
 
-		//tells the weaver whether it should inline the around advices in the calling code,
-		//leads to better performance
-		bcelWorld.setXnoInline(true);
+    /**
+     * Weaves the given classes.
+     * The weaver is also responsible for file output.
+     * 
+     * @param unwovenClassFiles
+     */
+    protected void weaveClasses() {
+        CaesarBcelWorld bcelWorld = CaesarBcelWorld.getInstance();
 
-		if (verboseMode()) {
-			inform(CaesarMessages.WEAVING_STARTED);
-		}
+        //tells the weaver whether it should inline the around advices in the calling code,
+        //leads to better performance
+        bcelWorld.setXnoInline(true);
 
-		try {
+        if (verboseMode()) {
+            inform(CaesarMessages.WEAVING_STARTED);
+        }
 
-			//perform weaving
-			weaver.performWeaving(bcelWorld);
+        try {
 
-			if (verboseMode()) {
-				for (int i = 0; i < weaver.fileCount(); i++) {
-					inform(
-						CaesarMessages.WROTE_CLASS_FILE,
-						weaver.getFileName(i));
-				}
-				inform(CaesarMessages.WEAVING_ENDED);
-			}
+            //perform weaving
+            weaver.performWeaving(bcelWorld);
 
-		} catch (IOException e) {
-			reportTrouble(new UnpositionedError(CaesarMessages.WEAVING_FAILED));
-		} catch( CaesarWeaver.WeavingException we ) {
-			reportTrouble( we.getError() );
-		}
-	}
+            if (verboseMode()) {
+                for (int i = 0; i < weaver.fileCount(); i++) {
+                    inform(
+                        CaesarMessages.WROTE_CLASS_FILE,
+                        weaver.getFileName(i));
+                }
+                inform(CaesarMessages.WEAVING_ENDED);
+            }
 
-	protected String getFileName(CSourceClass sourceClass) {
-		String destination = options.destination;
-		String[] classPath =
-			Utils.splitQualifiedName(sourceClass.getQualifiedName());
-		if (destination == null || destination.equals("")) {
-			destination = System.getProperty("user.dir");
-		}
+        }
+        catch (IOException e) {
+            reportTrouble(new UnpositionedError(CaesarMessages.WEAVING_FAILED));
+        }
+        catch (CaesarWeaver.WeavingException we) {
+            reportTrouble(we.getError());
+        }
+    }
 
-		if (classPath[0] != null && !classPath[0].equals("")) {
-			// the class is part of a package
-			destination += File.separator
-				+ classPath[0].replace('/', File.separatorChar);
-		}
+    protected String getFileName(CSourceClass sourceClass) {
+        String destination = options.destination;
+        String[] classPath =
+            Utils.splitQualifiedName(sourceClass.getQualifiedName());
+        if (destination == null || destination.equals("")) {
+            destination = System.getProperty("user.dir");
+        }
 
-		String filename =
-			destination
-				+ File.separatorChar
-				+ classPath[classPath.length
-				- 1]
-				+ ".class";
-		return filename;
-	}
+        if (classPath[0] != null && !classPath[0].equals("")) {
+            // the class is part of a package
+            destination += File.separator
+                + classPath[0].replace('/', File.separatorChar);
+        }
 
-	public boolean noWeaveMode() {
-		//XXX Should be determined by the compiler options.
-		return false;
-	}
+        String filename =
+            destination
+                + File.separatorChar
+                + classPath[classPath.length
+                - 1]
+                + ".class";
+        return filename;
+    }
 
-	protected void initialize(KjcEnvironment environment) {
-		super.initialize(environment);
+    public boolean noWeaveMode() {
+        //XXX Should be determined by the compiler options.
+        return false;
+    }
 
-		messageHandler = new CaesarMessageHandler(this);
-		CaesarBcelWorld world = CaesarBcelWorld.getInstance();
-		world.setMessageHandler(messageHandler);
-	}
+    protected void initialize(KjcEnvironment environment) {
+        super.initialize(environment);
 
-/**
- * used to redirect System.out for tests.
- *
- */
-	protected static class Outputter extends PrintWriter {
-		protected PrintWriter otherPrinter;
-		public Outputter(PrintWriter otherPrinter) {
-			super(System.out);
-			this.otherPrinter = otherPrinter;
-		}
-		public void println() {
-			if (otherPrinter != null) {
-				otherPrinter.println();
-				//super.println();
-			} else
-				super.println();
-		}
-		
-		/**
-		 * if otherPrinter is set, write s to otherPrinter, else to System.out
-		 * 
-		 * @param s the String to be written
-		 */
-		public void write(String s) {
-			if (otherPrinter != null) {
-				otherPrinter.write(s);
-				//super.write( s );
-			} else
-				super.write(s);
-		}
-		/**
-		 * This was inserted because it was not working well
-		 * when the otherPrinter was present.
-		 * @author Walter Augusto Werner
-		 */
-		public void flush()
-		{
-			if (otherPrinter != null)
-				otherPrinter.flush();
-			else
-				super.flush();
-		}		
-		
-	}
+        messageHandler = new CaesarMessageHandler(this);
+        CaesarBcelWorld world = CaesarBcelWorld.getInstance();
+        world.setMessageHandler(messageHandler);
+    }
+
+    /**
+     * used to redirect System.out for tests.
+     *
+     */
+    protected static class Outputter extends PrintWriter {
+        protected PrintWriter otherPrinter;
+        public Outputter(PrintWriter otherPrinter) {
+            super(System.out);
+            this.otherPrinter = otherPrinter;
+        }
+        public void println() {
+            if (otherPrinter != null) {
+                otherPrinter.println();
+                //super.println();
+            }
+            else
+                super.println();
+        }
+
+        /**
+         * if otherPrinter is set, write s to otherPrinter, else to System.out
+         * 
+         * @param s the String to be written
+         */
+        public void write(String s) {
+            if (otherPrinter != null) {
+                otherPrinter.write(s);
+                //super.write( s );
+            }
+            else
+                super.write(s);
+        }
+        /**
+         * This was inserted because it was not working well
+         * when the otherPrinter was present.
+         * @author Walter Augusto Werner
+         */
+        public void flush() {
+            if (otherPrinter != null)
+                otherPrinter.flush();
+            else
+                super.flush();
+        }
+
+    }
 
 }

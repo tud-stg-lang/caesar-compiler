@@ -1,6 +1,6 @@
 package org.caesarj.compiler;
 
-public interface CaesarTokenTypes {
+public strictfp interface CaesarTokenTypes {
   int	EOF = 1;
   int	NULL_TREE_LOOKAHEAD = 3;
   int	LITERAL_abstract = 4;

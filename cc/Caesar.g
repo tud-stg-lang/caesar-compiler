@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.37 2004-03-17 18:43:50 aracic Exp $
+ * $Id: Caesar.g,v 1.38 2004-03-22 12:59:12 aracic Exp $
  */
 
 /*
@@ -2245,7 +2245,7 @@ jPointcut []
 ;
 
 jDeployStatement []
-  returns [DeployStatement self = null]
+  returns [CjDeployStatement self = null]
 {
   JExpression	aspectToDeploy;
   JStatement	body;
