@@ -89,15 +89,15 @@
   <!--  Translate Caesar.g into CaesarParsar.
   		(The task is forced to set the working directory to the directory where
   		the ouput files should be placed because
-  		JFlex doesn't correctly handle a given output path)  -->
+  		ANTLR doesn't correctly handle a given output path)  -->
   <java 
   		fork="true"
   		dir="${source}/compiler"
   		classname="org.caesarj.tools.antlr.compiler.Main"
- 		classpath="bin;${libs}/java-getopt-1.0.9.jar">
+ 		classpath="${libs}/cjantlr.jar;${libs}/java-getopt-1.0.9.jar">
+ 		 
    	<arg value="${inputFiles}/Caesar.g"/>
   </java>
-
  </target>
  
  <!-- The complete building target -->

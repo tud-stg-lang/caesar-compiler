@@ -16,5 +16,6 @@
     <classpathentry kind="lib" path="test/CompileAndRunResultsTest"/>
     <classpathentry kind="lib" path="test/CompileAndRunResultsWeaverTest"/>
     <classpathentry kind="lib" path="test/UppercaseServer"/>
+    <classpathentry kind="lib" path="C:/Programme/eclipse/workspace/Caesar/lib/cjantlr.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
