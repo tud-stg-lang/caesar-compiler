@@ -22,7 +22,9 @@ public class ADTestCase extends TestCase
     public static StringBuffer result = new StringBuffer();
 
 	public String expectedResult =
-    	":before cutDA:before cutCA:before cutBA:before cutAA:A.A";
+		":before cutDA:before cutBA:before cutCA:before cutAA:A.A";
+	
+
 
     public void test()
     {

@@ -20,30 +20,32 @@ public class ADTestCase extends TestCase
         super("test");
     }
 
+
+
     public static StringBuffer result = new StringBuffer();
 
 	public String expectedResult =
-		":cutDA-a:cutCA-a:cutBA-a:cutAA-a:A.A-1" +
-    	":cutDA-a:cutDA-b:cutCA-a:cutCA-b:cutBA-a:cutBA-b:cutAA-a:cutAA-b:A.A-1" +
+		":cutDA-a:cutBA-a:cutCA-a:cutAA-a:A.A-1" +
+    	":cutDA-a:cutDA-b:cutBA-a:cutBA-b:cutCA-a:cutCA-b:cutAA-a:cutAA-b:A.A-1" +
 
     	// 1st checkpoint -> thread A
 
-    	":cutDA-c:cutCA-c:cutBA-c:cutAA-c:A.A-2" +
-    	":cutDA-c:cutDA-d:cutCA-c:cutCA-d:cutBA-c:cutBA-d:cutAA-c:cutAA-d:A.A-2" +
+    	":cutDA-c:cutBA-c:cutCA-c:cutAA-c:A.A-2" +
+    	":cutDA-c:cutDA-d:cutBA-c:cutBA-d:cutCA-c:cutCA-d:cutAA-c:cutAA-d:A.A-2" +
 
     	// 2nd checkpoint -> main thread
 
-    	":cutDA-a:cutDA-b:cutCA-a:cutCA-b:cutBA-a:cutBA-b:cutAA-a:cutAA-b:A.A-1" +
+    	":cutDA-a:cutDA-b:cutBA-a:cutBA-b:cutCA-a:cutCA-b:cutAA-a:cutAA-b:A.A-1" +
 
     	// 3rd checkpoint -> thread A
 
-    	":cutDA-c:cutCA-c:cutBA-c:cutAA-c:A.A-2" +
+    	":cutDA-c:cutBA-c:cutCA-c:cutAA-c:A.A-2" +
     	":A.A-2" +
 
     	// 4th checkpoint -> main thread
 
-    	":cutDA-a:cutDA-b:cutCA-a:cutCA-b:cutBA-a:cutBA-b:cutAA-a:cutAA-b:A.A-1" +
-    	":cutDA-a:cutCA-a:cutBA-a:cutAA-a:A.A-1" +
+    	":cutDA-a:cutDA-b:cutBA-a:cutBA-b:cutCA-a:cutCA-b:cutAA-a:cutAA-b:A.A-1" +
+    	":cutDA-a:cutBA-a:cutCA-a:cutAA-a:A.A-1" +
     	":A.A-1";
 
     public void test()
