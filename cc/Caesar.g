@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.45 2004-06-23 13:05:05 aracic Exp $
+ * $Id: Caesar.g,v 1.46 2004-07-02 12:34:29 aracic Exp $
  */
 
 /*
@@ -445,7 +445,7 @@ jCClassDefinition [int modifiers]
 
       methods = context.getMethods();
       
-          self = new CjClassDeclaration(sourceRef,
+          self = new CjVirtualClassDeclaration(sourceRef,
 				   modifiers,
 				   ident.getText(),
                    typeVariables,

@@ -7,7 +7,7 @@
 package org.caesarj.compiler.cclass;
 
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
-import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjMixinInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.export.CClass;
@@ -36,14 +36,14 @@ public class CaesarTypeGraphGenerator implements CaesarConstants {
     ) {
         JTypeDeclaration inners[] = cu.getInners();
         for(int i=0; i<inners.length; i++)
-            if((inners[i].getModifiers() & ACC_CCLASS_INTERFACE) != 0)
-                generateGraph(g, (CjInterfaceDeclaration)inners[i]);
+            if((inners[i].getModifiers() & ACC_MIXIN_INTERFACE) != 0)
+                generateGraph(g, (CjMixinInterfaceDeclaration)inners[i]);
     }
     
 
     private void generateGraph(
         CaesarTypeGraph g,
-        CjInterfaceDeclaration decl
+        CjMixinInterfaceDeclaration decl
     ) {
         CClass thisClass   = decl.getCClass();
         CType[] superTypes = decl.getInterfaces();
@@ -55,7 +55,7 @@ public class CaesarTypeGraphGenerator implements CaesarConstants {
                 
         if(superTypes.length > 0) {
             for(int i=0; i<superTypes.length; i++) {
-                if((superTypes[i].getCClass().getModifiers() & ACC_CCLASS_INTERFACE) != 0) {
+                if((superTypes[i].getCClass().getModifiers() & ACC_MIXIN_INTERFACE) != 0) {
                     CaesarTypeNode superNode = g.getTypeCreateIfNotExsistent(
                         new JavaQualifiedName(superTypes[i].getCClass().getQualifiedName()), false
                     );
@@ -82,7 +82,7 @@ public class CaesarTypeGraphGenerator implements CaesarConstants {
         // recurse into inners (here we can be sure all inners has ACC_CCLASS_INTERFACE)
 		JTypeDeclaration inners[] = decl.getInners();        
         for(int i=0; i<inners.length; i++)
-            generateGraph(g, (CjInterfaceDeclaration)inners[i]);
+            generateGraph(g, (CjMixinInterfaceDeclaration)inners[i]);
 	}
 
 }

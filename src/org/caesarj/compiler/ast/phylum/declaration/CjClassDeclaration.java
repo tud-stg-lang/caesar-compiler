@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.21 2004-06-29 13:31:49 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.22 2004-07-02 12:33:40 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -24,8 +24,6 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
@@ -38,12 +36,7 @@ import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
 import org.caesarj.compiler.ast.visitor.KjcPrettyPrinter;
 import org.caesarj.compiler.ast.visitor.KjcVisitor;
-import org.caesarj.compiler.cclass.CaesarTypeNode;
-import org.caesarj.compiler.cclass.CaesarTypeSystem;
-import org.caesarj.compiler.cclass.JavaQualifiedName;
-import org.caesarj.compiler.cclass.JavaTypeNode;
 import org.caesarj.compiler.constants.CaesarConstants;
-import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
@@ -58,7 +51,6 @@ import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
-import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.Utils;
@@ -66,9 +58,7 @@ import org.caesarj.util.Utils;
 /**
  * This class represents a cclass in the syntax tree.  
  */
-public class CjClassDeclaration
-    extends JClassDeclaration
-    implements CaesarConstants {
+public class CjClassDeclaration extends JClassDeclaration implements CaesarConstants {
 
     // ----------------------------------------------------------------------
     // CONSTRUCTORS
@@ -153,57 +143,7 @@ public class CjClassDeclaration
             CjPointcutDeclaration.EMPTY,
             CjAdviceDeclaration.EMPTY,
             null);
-    }
-    
-    public CjClassDeclaration(
-        TokenReference where,
-        int modifiers,
-        String ident,
-        CTypeVariable[] typeVariables,
-        CReferenceType superClass,
-        CReferenceType wrappee,
-        CReferenceType[] interfaces,
-        JFieldDeclaration[] fields,
-        JMethodDeclaration[] methods,
-        JTypeDeclaration[] inners,
-        JPhylum[] initializers,
-        JavadocComment javadoc,
-        JavaStyleComment[] comment,
-        CjPointcutDeclaration[] pointcuts,
-        CjAdviceDeclaration[] advices,
-        CaesarDeclare[] declares,
-        boolean implClass) {
-        this(
-            where,
-            modifiers,
-            implClass ? ident+"_Impl" : ident, // IVICA,
-            typeVariables,
-            superClass,
-            wrappee,
-            interfaces,
-            fields,
-            methods,
-            inners,
-            initializers,
-            javadoc,
-            comment,
-            pointcuts,
-            advices,
-            declares);
-              
-        // IVICA 
-        if(implClass) {                    
-            originalIdent = ident;
-            
-            //rename constructors
-            for(int i=0; i<this.methods.length; i++) {
-                JMethodDeclaration method = this.methods[i];
-                if(method instanceof JConstructorDeclaration) {
-                    method.ident = (method.ident + "_Impl").intern();
-                }
-            }
-        }        
-    }
+    }   
 
     public CjClassDeclaration(
         TokenReference where,
@@ -403,8 +343,6 @@ public class CjClassDeclaration
      * Integration of FjClassDeclaration (Karl Klose)
      */
 
-    protected String originalIdent;
-
     /** The declared advices */
     protected CjAdviceDeclaration[] advices;
 
@@ -443,331 +381,7 @@ public class CjClassDeclaration
 
     public CTypeContext getTypeContext() {
         return self;
-    }
-
-    public String getOriginalIdent() {
-        return originalIdent;
-    }
-
-    
-    /**
-     * IVICA
-     * this one generates temporary unchecked export information  of the source class
-     * we need this one in order to be able to generate exports for mixin copies
-     */    
-    public void generateExport(CContext context) throws PositionedError {
-        
-        List methodList = new ArrayList(methods.length);
-        for (int i = 0; i < methods.length; i++) {
-            CMethod m = methods[i].checkInterface(self);            
-            methodList.add(m);
-        }
-        
-        Hashtable hashFieldMap = new Hashtable();
-        for (int i = fields.length - 1; i >= 0; i--) {
-            CSourceField field = fields[i].checkInterface(self);
-            field.setPosition(i);
-            hashFieldMap.put(field.getIdent(), field);
-        }
-        
-        sourceClass.close(
-            this.interfaces, 
-            hashFieldMap, 
-            (CMethod[])methodList.toArray(new CMethod[methodList.size()])
-        );
-        
-        // Check inners
-        for(int k = 0; k < inners.length; k++) {
-            inners[k].generateExport(context);
-        }
-    }
-    
-    /**
-     * IVICA
-     */
-    public void createImplicitCaesarTypes(CContext context) throws PositionedError {
-        JavaQualifiedName qualifiedName =
-            new JavaQualifiedName(
-                getCorrespondingInterfaceDeclaration().getCClass().getQualifiedName()
-            );
-        
-        CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
-
-        CaesarTypeNode typeNode = typeSystem.getCompleteGraph().getType(qualifiedName);
-        JavaTypeNode javaTypeNode = typeSystem.getJavaGraph().getJavaTypeNode(typeNode);
-        
-        javaTypeNode.setCClass(getCClass());
-        javaTypeNode.setDeclaration(this);
-        
-//      -------------------- cut here -------------------------------------
-        // CTODO move this outside of this method -> a separated step
-        /*
-         * check name clashes if we have more than one parent
-         */        
-        /*
-        if(typeNode.getParents().size() > 1) {            
-
-            CaesarTypeNode joinPoint = null;
-            
-            // check the class first
-            try {
-                typeNode.getTopmostNode();
-                
-                // search for the first inheritance join point
-                joinPoint = typeNode.findFirstInheritanceJoinPoint();
-            }
-            catch(Exception e) {
-                throw new PositionedError(
-                    getTokenReference(), 
-                    CaesarMessages.NAME_CLASH,
-                    typeNode.getQualifiedName()
-                );
-            }
-            
-            // now check the fields and methods
-            // they are compatible, when they exist in the joinPoint class with same signature
-            CClass joinPointClass = 
-                typeSystem.getJavaGraph().getJavaTypeNode(joinPoint).getCClass();               
-            
-            CClass typeNodeClass =
-                typeSystem.getJavaGraph().getJavaTypeNode(typeNode).getCClass();
-            
-            // methods                
-            HashMap sigMemberMap = new HashMap();
-            HashMap sigCollisionMap = new HashMap();
-            
-            for (Iterator it = typeNode.getParents().iterator(); it.hasNext();) {
-                CaesarTypeNode parent = (CaesarTypeNode) it.next();
-                JavaTypeNode parentJavaType = typeSystem.getJavaGraph().getJavaTypeNode(parent);
-                CClass parentCClass = parentJavaType.getCClass();
-                                    
-                for (int i = 0; i < parentCClass.getMethods().length; i++) {
-                    CMethod m = parentCClass.getMethods()[i];
-                    if(!m.isConstructor()) {
-                        String sig = m.getIdent()+m.getSignature();
-                        sigMemberMap.put(sig, m);
-                        Integer count = (Integer)sigCollisionMap.get(sig);
-                        count = count==null ? new Integer(1) : new Integer(count.intValue()+1);
-                        sigCollisionMap.put(sig, count);
-                    }
-                }
-                
-            }
-            
-            for (Iterator collisionIt = sigCollisionMap.entrySet().iterator(); collisionIt.hasNext();) {
-                Map.Entry item = (Map.Entry) collisionIt.next();
-                if(((Integer)item.getValue()).intValue() > 1) {
-                    CMethod m = (CMethod)sigMemberMap.get(item.getKey());
-                    
-                    try {
-                        CMethod res = joinPointClass.lookupMethod(
-                            context,
-                            typeNodeClass,
-                            null,
-                            m.getIdent(),
-                            m.getParameters(),
-                            CReferenceType.EMPTY
-                        );
-                    
-                        if(res == null)
-                            throw new Exception();
-                    }
-                    catch (Throwable e) {
-                        throw new PositionedError(
-                            getTokenReference(),
-                            CaesarMessages.NAME_CLASH,
-                            m.getIdent()
-                        );
-                    }
-                        
-                }
-            }               
-            
-            // fields
-            sigMemberMap.clear();
-            sigCollisionMap.clear();
-            
-            for (Iterator it = typeNode.getParents().iterator(); it.hasNext();) {
-                CaesarTypeNode parent = (CaesarTypeNode) it.next();
-                JavaTypeNode parentJavaType = typeSystem.getJavaGraph().getJavaTypeNode(parent);
-                CClass parentCClass = parentJavaType.getCClass();
-                                    
-                for (int i = 0; i < parentCClass.getFields().length; i++) {
-                    CField f = parentCClass.getFields()[i];
-                
-                    String sig = f.getIdent();
-                    sigMemberMap.put(sig, f);
-                    Integer count = (Integer)sigCollisionMap.get(sig);
-                    count = count==null ? new Integer(1) : new Integer(count.intValue()+1);
-                    sigCollisionMap.put(sig, count);                
-                }
-                
-            }
-            
-            for (Iterator collisionIt = sigCollisionMap.entrySet().iterator(); collisionIt.hasNext();) {
-                Map.Entry item = (Map.Entry) collisionIt.next();
-                if(((Integer)item.getValue()).intValue() > 1) {
-                    CField f = (CField)sigMemberMap.get(item.getKey());
-                    
-                    try {
-                        CField res = joinPointClass.lookupField(
-                            typeNodeClass,
-                            null,
-                            f.getIdent()
-                        );
-                    
-                        if(res == null)
-                            throw new Exception();
-                    }
-                    catch (Throwable e) {
-                        throw new PositionedError(
-                            getTokenReference(),
-                            CaesarMessages.NAME_CLASH,
-                            f.getIdent()
-                        );
-                    }
-                        
-                }
-            }                        
-        }
-//      -------------------- cut here -------------------------------------
-        */
-        /*
-         * add implicit subtypes
-         */ 
-        List newImpls = new LinkedList();
-        List newIfcs  = new LinkedList();           
-        
-        for(Iterator it = typeNode.getInners().values().iterator(); it.hasNext(); ) {
-            CaesarTypeNode subNode = (CaesarTypeNode)it.next();
-
-            if(subNode.isImplicit()) {
-                // generate here
-                CjInterfaceDeclaration ifcDecl = 
-                    new CjInterfaceDeclaration(
-                        getTokenReference(),
-                        ACC_PUBLIC | ACC_CCLASS_INTERFACE,
-                        subNode.getQualifiedName().getIdent(),
-                        new CTypeVariable[0],
-                        new CReferenceType[0],
-                        new JFieldDeclaration[0],
-                        new JMethodDeclaration[0],
-                        new JTypeDeclaration[0],
-                        new JPhylum[0],
-                        null,
-                        null
-                    ); 
-                
-                ifcDecl.generateInterface(
-                    context.getClassReader(), 
-                    getCorrespondingInterfaceDeclaration().getCClass(), 
-                    subNode.getQualifiedName().getPrefix()
-                );
-                
-                CjClassDeclaration implDecl =
-                    new CjClassDeclaration(
-                        getTokenReference(),
-                        ACC_PUBLIC,
-                        subNode.getQualifiedImplName().getIdent(),
-                        new CTypeVariable[0],
-                        context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT),
-                        null, // wrappee
-                        new CReferenceType[]{ifcDecl.getCClass().getAbstractType()}, // CTODO ifcs
-                        new JFieldDeclaration[0],
-                        new JMethodDeclaration[0],
-                        new JTypeDeclaration[0],
-                        new JPhylum[0],
-                        null,
-                        null
-                    );
-                
-                implDecl.generateInterface(
-                    context.getClassReader(),   
-                    this.getCClass(), 
-                    subNode.getQualifiedImplName().getPrefix()
-                );
-                
-                implDecl.join(context); // CTODO do we need this join here?
-                
-                implDecl.getCClass().close(
-                    implDecl.getInterfaces(),
-                    new Hashtable(),
-                    CMethod.EMPTY
-                );
-                
-                implDecl.setCorrespondingInterfaceDeclaration(ifcDecl);
-                ifcDecl.setCorrespondingClassDeclaration(implDecl);
-                
-                newImpls.add(implDecl);
-                newIfcs.add(ifcDecl);
-                
-                // and recurse into
-                implDecl.createImplicitCaesarTypes(context);
-            }
-        }
-        
-        // recurse in original inners
-        for(int i=0; i<inners.length; i++) {
-            inners[i].createImplicitCaesarTypes(context);
-        }
-        
-        // add inners
-        addInners(
-            (JTypeDeclaration[])newImpls.toArray(new JTypeDeclaration[newImpls.size()])
-        );
-        
-        getCorrespondingInterfaceDeclaration().addInners(
-            (JTypeDeclaration[])newIfcs.toArray(new JTypeDeclaration[newIfcs.size()])
-        );
-    }   
-    
-    /**
-     * IVICA
-     */
-    public void adjustSuperType(CContext context) throws PositionedError {
-        try {
-            JavaQualifiedName qualifiedName =
-                new JavaQualifiedName(
-                    getCorrespondingInterfaceDeclaration().getCClass().getQualifiedName()
-                );
-            
-            CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
-
-            CaesarTypeNode typeNode = typeSystem.getCompleteGraph().getType(qualifiedName);
-            JavaTypeNode javaTypeNode = typeSystem.getJavaGraph().getJavaTypeNode(typeNode);
-            
-            
-            /*
-             * adjust supertype 
-             */
-            
-            JavaTypeNode superType = javaTypeNode.getParent();
-            
-            CReferenceType superTypeRef = 
-                context.getTypeFactory().createType(superType.getQualifiedName().toString(), true);
-            
-            superTypeRef = (CReferenceType)superTypeRef.checkType(context);
-            
-            getCClass().setSuperClass(superTypeRef);
-            setSuperClass(superTypeRef);
-            
-            setInterfaces(
-                new CReferenceType[]{
-                    getCorrespondingInterfaceDeclaration().getCClass().getAbstractType()
-                }
-            );
-            
-            for(int i=0; i<inners.length; i++) {
-                inners[i].adjustSuperType(context);
-            }
-        }
-        catch (Throwable e) {
-            // MSG
-            e.printStackTrace();
-            throw new PositionedError(getTokenReference(), CaesarMessages.CANNOT_CREATE);
-        }
-    }   
-    
+    } 
     
     /**
      * Resolves the binding and providing references. Of course it calls the
@@ -1005,17 +619,4 @@ public class CjClassDeclaration
     protected int getInternalModifiers() {
         return ACC_PRIVILEGED | ACC_CROSSCUTTING | ACC_DEPLOYED;
     }
-
-    
-    // IVICA added reference to corresponding CjInterfaceDeclaration    
-    public void setCorrespondingInterfaceDeclaration(CjInterfaceDeclaration caesarInterfaceDeclaration)  {
-        this.caesarInterfaceDeclaration = caesarInterfaceDeclaration;
-    }
-    
-    public CjInterfaceDeclaration getCorrespondingInterfaceDeclaration() {
-        return caesarInterfaceDeclaration;
-    }
-    
-    private CjInterfaceDeclaration caesarInterfaceDeclaration = null;
-
 }

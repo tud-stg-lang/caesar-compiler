@@ -43,10 +43,10 @@ public class DeploymentPreparation implements CaesarConstants {
 			
 			newTypeDeclarations.add(typeDeclarations[i]);
 
-			if (typeDeclarations[i] instanceof CjClassDeclaration) {
+			if (typeDeclarations[i] instanceof CjVirtualClassDeclaration) {
 
-				CjClassDeclaration caesarClass =
-					(CjClassDeclaration) typeDeclarations[i];
+				CjVirtualClassDeclaration caesarClass =
+					(CjVirtualClassDeclaration) typeDeclarations[i];
 
 				if (caesarClass.isCrosscutting() && (!caesarClass.isStaticallyDeployed()) ) {
 
@@ -87,8 +87,8 @@ public class DeploymentPreparation implements CaesarConstants {
 			{
 
 				//create support classes for each crosscutting inner class
-				CjClassDeclaration innerCaesarClass =
-					(CjClassDeclaration) cd.getInners()[i];
+				CjVirtualClassDeclaration innerCaesarClass =
+					(CjVirtualClassDeclaration) cd.getInners()[i];
 				if (innerCaesarClass.isCrosscutting())
 				{
 

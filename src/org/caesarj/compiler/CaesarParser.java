@@ -654,10 +654,10 @@ private static final int MAX_LOOKAHEAD = 2;
 			
 			methods = context.getMethods();
 			
-			self = new CjClassDeclaration(sourceRef,
+			self = new CjVirtualClassDeclaration(sourceRef,
 							   modifiers,
 							   ident.getText(),
-			typeVariables,
+							   typeVariables,
 							   superClass,
 							   wrappee,			   
 							   interfaces,

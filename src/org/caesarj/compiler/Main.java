@@ -186,8 +186,13 @@ public class Main extends MainSuper implements Constants {
                 );
             }
             catch (MixerException e) {
-                System.out.println("ERROR in mixer:");
-                //reportTrouble(new UnpositionedError(CaesarMessages......));
+                reportTrouble(
+            		new UnpositionedError(
+        				CaesarMessages.CLASS_GENERATOR,
+						item.getQualifiedName(),
+						e.getMessage()
+					)
+				);
             }
         }
         

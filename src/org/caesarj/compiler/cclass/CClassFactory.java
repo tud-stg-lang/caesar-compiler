@@ -4,9 +4,10 @@ import java.util.ArrayList;
 
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjMethodDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjMixinInterfaceDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JConstructorDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMemberDeclaration;
@@ -34,7 +35,7 @@ import org.caesarj.util.TokenReference;
  */
 public class CClassFactory implements CaesarConstants {
 
-	private CjClassDeclaration caesarClass;
+	private CjVirtualClassDeclaration caesarClass;
 	
 	private String interfaceName;
 	private String prefix;
@@ -49,7 +50,7 @@ public class CClassFactory implements CaesarConstants {
 	 * Constructor for CaesarDeploymentUtils.
 	 */
 	public CClassFactory(
-		CjClassDeclaration caesarClass,
+		CjVirtualClassDeclaration caesarClass,
 		KjcEnvironment environment
     ) {
 		this.caesarClass = caesarClass;
@@ -64,10 +65,10 @@ public class CClassFactory implements CaesarConstants {
         CCjSourceClass caesarClassOwner = (CCjSourceClass)caesarClass.getOwner();
 
         if(caesarClassOwner != null) {
-            CjClassDeclaration ownerClassDeclaration = 
-                (CjClassDeclaration)caesarClassOwner.getTypeDeclaration();
+            CjVirtualClassDeclaration ownerClassDeclaration = 
+                (CjVirtualClassDeclaration)caesarClassOwner.getTypeDeclaration();
             interfaceOwner = 
-                ownerClassDeclaration.getCorrespondingInterfaceDeclaration().getCClass();
+                ownerClassDeclaration.getMixinIfcDeclaration().getCClass();
         }
 
         if(interfaceOwner != null) {
@@ -135,26 +136,23 @@ public class CClassFactory implements CaesarConstants {
         }
         
 
-		CjInterfaceDeclaration cclassInterface =
-			new CjInterfaceDeclaration(
+		CjMixinInterfaceDeclaration cclassInterface =
+			new CjMixinInterfaceDeclaration(
 				caesarClass.getTokenReference(),
-				ACC_PUBLIC | ACC_CCLASS_INTERFACE,
+				ACC_PUBLIC,
 				interfaceName,
-				CTypeVariable.EMPTY,
 				superInterfaces,
 				JFieldDeclaration.EMPTY,
 				(JMethodDeclaration[])interfaceMethods.toArray(new JMethodDeclaration[]{}),
 				new JTypeDeclaration[0],
-				new JPhylum[0],
-				null,
-				null);                  
+				new JPhylum[0]);                  
 
         cclassInterface._generateInterface(
             environment.getClassReader(), interfaceOwner, prefix
         );
 
         // link this two AST elements
-        caesarClass.setCorrespondingInterfaceDeclaration(cclassInterface);
+        caesarClass.setMixinIfcDeclaration(cclassInterface);
         cclassInterface.setCorrespondingClassDeclaration(caesarClass);
         
 		return cclassInterface;
@@ -176,9 +174,8 @@ public class CClassFactory implements CaesarConstants {
 		return res;
 	}
 
-	public void addCaesarClassInterfaceInners() {
-        CjInterfaceDeclaration cclassInterface = caesarClass.getCorrespondingInterfaceDeclaration();
-        cclassInterface.generateInterfaceInners(
+	public void addCaesarClassInterfaceInners() {        
+		caesarClass.getMixinIfcDeclaration().generateInterfaceInners(
             environment.getClassReader(),            
             prefix);            
     }

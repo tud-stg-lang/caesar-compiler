@@ -7,8 +7,6 @@ package org.caesarj.classfile;
 import java.io.DataInput;
 import java.io.IOException;
 
-import org.eclipse.jdt.internal.core.builder.AdditionalTypeCollection;
-
 /**
  * This class is the base class for all attributes that
  * caesar elements need to preserve in classfiles. It serves as a factory 

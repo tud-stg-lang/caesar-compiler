@@ -16,8 +16,8 @@ import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
-import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
@@ -80,10 +80,10 @@ public class CClassPreparation implements CaesarConstants {
         JTypeDeclaration typeDeclarations[] = innerAccessor.getInners();
         
         for (int i = 0; i < typeDeclarations.length; i++) {
-            if (typeDeclarations[i] instanceof CjClassDeclaration) {
+            if (typeDeclarations[i] instanceof CjVirtualClassDeclaration) {
 
-                CjClassDeclaration caesarClass =
-                    (CjClassDeclaration) typeDeclarations[i];
+            	CjVirtualClassDeclaration caesarClass =
+                    (CjVirtualClassDeclaration) typeDeclarations[i];
 
                 CClassFactory factory =
                     new CClassFactory(caesarClass, environment);
@@ -134,9 +134,9 @@ public class CClassPreparation implements CaesarConstants {
             for (Iterator it = allTypes.iterator(); it.hasNext();) {
                 JavaTypeNode item = (JavaTypeNode)it.next();                        
                             
-                CjClassDeclaration decl = item.getDeclaration();
+                CjVirtualClassDeclaration decl = item.getDeclaration();
                 if(decl != null) {
-                    CjInterfaceDeclaration ifcDecl = decl.getCorrespondingInterfaceDeclaration();
+                    CjInterfaceDeclaration ifcDecl = decl.getMixinIfcDeclaration();
                     for (Iterator innerIt = item.getInners().iterator(); innerIt.hasNext();) {
                         JavaTypeNode inner = (JavaTypeNode) innerIt.next();
                         
@@ -364,9 +364,9 @@ public class CClassPreparation implements CaesarConstants {
     
     
     class ClassDeclarationInnerAccessor implements InnerAccessor {        
-        CjClassDeclaration cd;        
+        CjVirtualClassDeclaration cd;        
         
-        ClassDeclarationInnerAccessor(CjClassDeclaration cd) {
+        ClassDeclarationInnerAccessor(CjVirtualClassDeclaration cd) {
             this.cd = cd;
         }
         
@@ -375,7 +375,7 @@ public class CClassPreparation implements CaesarConstants {
 		}
 
         public void addInners(JTypeDeclaration[] inners) {
-            cd.getCorrespondingInterfaceDeclaration().setInners(inners);
+            cd.getMixinIfcDeclaration().setInners(inners);
         }
     }
     

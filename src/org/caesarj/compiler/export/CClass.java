@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.16 2004-06-23 15:30:13 aracic Exp $
+ * $Id: CClass.java,v 1.17 2004-07-02 12:33:40 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -245,7 +245,7 @@ public abstract class CClass extends CMember
      */
     public boolean isCaesarClassInterface()
     {
-        return CModifier.contains(getModifiers(), ACC_CCLASS_INTERFACE);
+        return CModifier.contains(getModifiers(), ACC_MIXIN_INTERFACE);
     }
 
 	/**

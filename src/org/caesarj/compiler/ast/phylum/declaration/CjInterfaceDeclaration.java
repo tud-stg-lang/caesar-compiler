@@ -1,17 +1,9 @@
 package org.caesarj.compiler.ast.phylum.declaration;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.cclass.CaesarTypeNode;
-import org.caesarj.compiler.cclass.CaesarTypeSystem;
-import org.caesarj.compiler.cclass.JavaQualifiedName;
-import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CContext;
@@ -24,9 +16,7 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
 // FJKEEP 
-public class CjInterfaceDeclaration 
-	extends JInterfaceDeclaration 
-{
+public class CjInterfaceDeclaration extends JInterfaceDeclaration {
 
 	public CjInterfaceDeclaration(
 		TokenReference where,
@@ -100,52 +90,7 @@ public class CjInterfaceDeclaration
 			setModifiers(modifiers | ACC_STATIC | ACC_PUBLIC);
 		}
 	}
-    
-    
-    public void adjustSuperType(CContext context) throws PositionedError {
-        try {
-            JavaQualifiedName qualifiedName =
-                new JavaQualifiedName(
-                    getCClass().getQualifiedName()
-                );
-            
-            CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
-            CaesarTypeNode typeNode = typeSystem.getCompleteGraph().getType(qualifiedName);
-                       
-            // return if we have a dynamic deployment support interface
-            if(typeNode == null)
-            	return;
 
-            List ifcList = new ArrayList(typeNode.getParents().size());
-            
-            for (Iterator it = typeNode.getImplictParentsSubSet().iterator(); it.hasNext();) {
-                CaesarTypeNode parentNode = (CaesarTypeNode) it.next();
-                
-                CReferenceType superTypeRef = 
-                    context.getTypeFactory().createType(
-                		parentNode.getQualifiedName().toString(), 
-						true
-					);
-                
-                superTypeRef = (CReferenceType)superTypeRef.checkType(context);
-                
-                ifcList.add(superTypeRef);
-            }
-            
-            // add missing implicit relations 
-            addInterface((CReferenceType[])ifcList.toArray(new CReferenceType[ifcList.size()]));
-            getCClass().setInterfaces(this.interfaces);
-            
-            for(int i=0; i<inners.length; i++) {
-                inners[i].adjustSuperType(context);
-            }
-        }
-        catch (Throwable e) {
-            // MSG
-            e.printStackTrace();
-            throw new PositionedError(getTokenReference(), CaesarMessages.FATAL_ERROR);
-        }
-    }
 
     public void generateInterface(
         ClassReader classReader,
@@ -164,50 +109,12 @@ public class CjInterfaceDeclaration
         sourceClass.setInnerClasses(innerClasses);
         uniqueSourceClass = classReader.addSourceClass(sourceClass);    
     }
-    
-    
-    // IVICA generateInterface method has been splited into
-    // generating sourceClass and addding inners to sourceClass as needed by CClassFactory
-	public void _generateInterface(
-		ClassReader classReader,
-		CClass owner,
-		String prefix
-    ) {
-	    sourceClass = 
-            new CCjSourceClass(
-                owner, 
-                getTokenReference(), 
-                modifiers, 
-                ident, 
-                prefix + ident, 
-                typeVariables, 
-                isDeprecated(), 
-                false, 
-                this
-            ); 
-	    setInterface(sourceClass);		   
-	}
-    
-    public void generateInterfaceInners(
-        ClassReader classReader,
-        String prefix
-    ) {
-        CReferenceType[]    innerClasses = new CReferenceType[inners.length];
-        for (int i = 0; i < inners.length; i++) {
-          //inners[i].generateInterface(classReader, sourceClass, sourceClass.getQualifiedName() + "$");
-          innerClasses[i] = inners[i].getCClass().getAbstractType();
-        }
-
-        sourceClass.setInnerClasses(innerClasses);
-        uniqueSourceClass = classReader.addSourceClass(sourceClass);
-    }
 
 	/**
 	 * Walter
 	 * Returns the modifiers that are allowed in this definition.
 	 */
-	protected int getAllowedModifiers()
-	{
+	protected int getAllowedModifiers()	{
 		return 	ACC_PUBLIC 
 			| ACC_PROTECTED
 			| ACC_PRIVATE
@@ -218,19 +125,15 @@ public class CjInterfaceDeclaration
 			//Jurgen's
 			| ACC_PRIVILEGED 
 			| ACC_CROSSCUTTING 
-			| ACC_DEPLOYED
-            // Ivica's
-            | ACC_CCLASS_INTERFACE;
+			| ACC_DEPLOYED;
 	}	
 	
-	public void print()
-	{
+	public void print()	{
 		System.out.print(CModifier.toString(modifiers));
 		System.out.print("interface ");
 		super.print();
 		System.out.print(" extends ");
-		for (int i = 0; i < interfaces.length; i++)
-		{
+		for (int i = 0; i < interfaces.length; i++)	{
 			if (i > 0)
 				System.out.print(", ");
 			System.out.print(interfaces[i]);
@@ -238,16 +141,5 @@ public class CjInterfaceDeclaration
 		
 		System.out.println();
 		
-	}
-    
-    // IVICA added reference to corresponding CjClassDeclaration    
-    public void setCorrespondingClassDeclaration(CjClassDeclaration caesarClassDeclaration)  {
-        this.caesarClassDeclaration = caesarClassDeclaration;
-    }
-    
-    public CjClassDeclaration getCorrespondingClassDeclaration() {
-        return caesarClassDeclaration;
-    }
-    
-    private CjClassDeclaration caesarClassDeclaration = null;
+	}    
 }

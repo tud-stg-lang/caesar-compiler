@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.export.CClass;
 
 
@@ -38,7 +38,7 @@ public class JavaTypeNode {
     private List inners = new LinkedList();
     private Set mixinCopies = new HashSet();
     
-    private CjClassDeclaration declaration = null;
+    private CjVirtualClassDeclaration declaration = null;
     private CClass clazz = null;
     
     JavaTypeGraph compilationGraph;
@@ -355,11 +355,11 @@ public class JavaTypeNode {
         this.clazz = clazz;
     }
 
-    public void setDeclaration(CjClassDeclaration declaration) {
+    public void setDeclaration(CjVirtualClassDeclaration declaration) {
         this.declaration = declaration;
     }
     
-    public CjClassDeclaration getDeclaration() {
+    public CjVirtualClassDeclaration getDeclaration() {
         return declaration;
     }
 

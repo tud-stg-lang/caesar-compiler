@@ -27,7 +27,7 @@ import org.caesarj.util.TokenReference;
  */
 public class DeploymentClassFactory implements CaesarConstants {
 
-	private CjClassDeclaration aspectClass;
+	private CjVirtualClassDeclaration aspectClass;
 	
 	private String singletonAspectName;
 	private String aspectInterfaceName;
@@ -48,7 +48,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * Constructor for CaesarDeploymentUtils.
 	 */
 	public DeploymentClassFactory(
-		CjClassDeclaration aspectClass,
+		CjVirtualClassDeclaration aspectClass,
 		KjcEnvironment environment) {
 		super();
 
@@ -158,10 +158,10 @@ public class DeploymentClassFactory implements CaesarConstants {
 	public void modifyAspectClass() {
 
 		//IVICA: implement the aspect interface
-		aspectClass.getCorrespondingInterfaceDeclaration().addInterface(
+		aspectClass.getMixinIfcDeclaration().addInterface(
 			new CClassNameType(qualifiedAspectInterfaceName));
         
-        aspectClass.getCorrespondingInterfaceDeclaration().addInterface(            
+        aspectClass.getMixinIfcDeclaration().addInterface(            
             new CClassNameType("org/caesarj/runtime/AspectIfc"));
         
 		//add support methods
