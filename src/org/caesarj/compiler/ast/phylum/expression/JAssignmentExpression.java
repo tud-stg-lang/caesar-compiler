@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JAssignmentExpression.java,v 1.11 2005-01-26 16:08:48 aracic Exp $
+ * $Id: JAssignmentExpression.java,v 1.12 2005-01-27 15:18:30 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -129,8 +129,8 @@ public class JAssignmentExpression extends JBinaryExpression {
 	    CType 	rType = right.getType(factory),
 	    		lType = left.getType(factory);
 	    
-	    boolean rDepType = rType instanceof CDependentType || rType.getCClass().isMixinInterface() && rType.getCClass().isNested(),	
-	    		lDepType = lType instanceof CDependentType || lType.getCClass().isMixinInterface() && lType.getCClass().isNested();
+	    boolean rDepType = rType instanceof CDependentType || (/*lType.isClassType() &&*/ rType.getCClass().isMixinInterface() && rType.getCClass().isNested()),	
+	    		lDepType = lType instanceof CDependentType || (/*lType.isClassType() &&*/ lType.getCClass().isMixinInterface() && lType.getCClass().isNested());
 	        
 	    check(
 	        context,
@@ -186,7 +186,13 @@ public class JAssignmentExpression extends JBinaryExpression {
     type = left.getType(factory);
     right = right.convertType(context, type);
 
-    if (left.requiresAccessor()) {
+    /* no setter
+    if(left instanceof CjAccessorCallExpression) {
+        CjAccessorCallExpression accessor = (CjAccessorCallExpression)left;
+        accessor.setArgument(right);
+        return accessor.analyse(context);
+    }
+    else*/ if (left.requiresAccessor()) {
       JExpression accessorExpr = left.getAccessor(new JExpression[]{right}, OPE_SIMPLE);
       accessorExpr.analyse(context);
       return accessorExpr;
