@@ -1,3 +1,35 @@
+VC_10 - 10.08.2004
+- Mixin generator
+	- Hardcoded output path for generated mixins is replaced by compiler destination path
+    - Removed dependency of mixin generator on CLASSPATH variable. The input class files are now 
+	  retrieved only from the compiler destination folder.
+	- "abstract" modifier is set for generated mixin classes. Mixin classes must be abstract, 
+	  because they do not implement factory methods.
+	- Generated mixin classes are included to weaving process.
+- Aspect deployment
+	- Earlier registry deployment support classes were responsible for deploying objects
+	  to all parent registries. Now object is responsible itself for registering to all
+	  appropriate registry classes. The new implementation relies on Caesar type system for 
+	  correct resolution of suppor calls. For the new implementation following changes were
+	  required
+		- Runtime interface AspectIfc was modified so that it contains methods for
+	      object deployment and undeployment
+	    - Runtime class CaesarObject inherits from AspectIfc and contains empty implementations
+	      of deployment methods
+	    - Deployment method implementation for crosscutting classes are generated
+	    - Runtime class DeploymentSupport removed
+	    - Changed "deploy" block translation so that it uses new deployment methods
+	    - Changed static deployment so that it uses new deployment methods
+	    - Registry classes do not contain anymore deploy calls to their parents	     
+	- The inheritance relationships between deployment support classes are not generated.
+	  They cannot be generated correctly, unless the deployment support classes are 
+	  treated as virtual classes and participate in Caesar type system. The inheritance
+	  relationships are essential for inheriting advices, which depend on abstract pointcuts.
+	  Other purposes of such relationships were not identified
+	- Pointcut resolution for mixin classes was implemented. They lookup pointcuts in their
+	  origin classes.
+- BCEL World singleton instance is reset before compilation
+
 VC_9 - 23.07.2004
 - ACC_MIXIN modifier added for cclass
 - CaesarObject as root for all cclass types has been introduced
