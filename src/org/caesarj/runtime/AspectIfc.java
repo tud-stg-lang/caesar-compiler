@@ -5,6 +5,9 @@ package org.caesarj.runtime;
  * 
  * @author Ivica Aracic
  */
-public interface AspectIfc extends Deployable {
-    public AspectRegistry $getSingletonAspect();
+public interface AspectIfc 
+{
+	public void $deploySelf(Thread thread);
+	
+	public void $undeploySelf();
 }
