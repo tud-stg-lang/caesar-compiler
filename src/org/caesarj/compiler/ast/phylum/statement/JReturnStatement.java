@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JReturnStatement.java,v 1.5 2005-02-11 18:45:22 aracic Exp $
+ * $Id: JReturnStatement.java,v 1.6 2005-02-12 17:57:20 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -32,9 +32,12 @@ import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
+import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CInitializerContext;
+import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.family.ContextExpression;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
@@ -118,10 +121,25 @@ public class JReturnStatement extends JStatement {
           try {
 	            Path rFam = expr.getFamily();
 	            Path lFam = ((CReferenceType)returnType).getPath();
-	            System.out.println("ASSIGNEMENT (line "+getTokenReference().getLine()+"):");
+	            System.out.println("RETURN STATEMENT (line "+getTokenReference().getLine()+"):");
 	            System.out.println("\t"+lFam+" <= "+rFam);
 	            if(lFam != null && rFam != null) {
-	                System.out.println();
+	                
+	                // k ^= number of steps to the method context
+	                int k = 0;
+	                CMethodContext mctx = context.getMethodContext();
+	                CContext ctx = context;
+	                while(ctx != mctx) {
+	                    ctx = ctx.getParentContext();
+	                    k++;
+	                }
+	                
+	                // adapt the path of the return expression
+	                Path head = rFam.getHead();
+	                if(head instanceof ContextExpression)
+	                    ((ContextExpression)head).adaptK(-k);
+	                
+	                // check the equivalence
 	                check(context,
 	          	      rFam.isAssignableTo( lFam ),
 	          	      KjcMessages.ASSIGNMENT_BADTYPE, 	rFam+"."+expr.getType(factory).getCClass().getIdent(),   
