@@ -18,9 +18,7 @@ import org.caesarj.util.TokenReference;
  */
 public class CjMethodCallExpression extends JExpression implements CaesarConstants {
     
-    protected JExpression prefix;
-	protected String ident;
-	protected JExpression[] args;
+    private JMethodCallExpression expr;
     
     public CjMethodCallExpression(
 		TokenReference where,
@@ -29,10 +27,8 @@ public class CjMethodCallExpression extends JExpression implements CaesarConstan
 		JExpression[] args
 	) {
 		super(where);
-
-		this.prefix = prefix;
-		this.ident = ident.intern();
-		this.args = args;
+		
+		expr = new JMethodCallExpression(getTokenReference(), prefix, ident, args);
 	}
     
     public CType getType(TypeFactory factory) {
@@ -40,64 +36,32 @@ public class CjMethodCallExpression extends JExpression implements CaesarConstan
     }
     
     public JExpression analyse(CExpressionContext context) throws PositionedError {        
-        TypeFactory factory = context.getTypeFactory();       
-
-        JExpression expr;
-                
-        /*
-        if(prefix != null) {
-	        prefix = prefix.analyse(context);
-	                
-	        CType prefixType = prefix.getType(factory);
-	        
-	        CClass contextClass = context.getClassContext().getCClass();
-	        
-	        expr = new JMethodCallExpression(getTokenReference(), prefix, ident, args);
-	        
-	        CType castType = CastUtils.instance().castFrom(context, prefixType, contextClass);
-	        
-	        if(castType != null) {
-	            expr = new JMethodCallExpression(
-	                getTokenReference(),
-	                new JCastExpression(
-	                    getTokenReference(),
-	                    prefix,
-	                    castType
-	                ),
-	                ident, args
-	            );
-	        }
-        }  
-        else {
-            expr = new JMethodCallExpression(getTokenReference(), prefix, ident, args);
-        }
-        */
-        
-        if(prefix != null) {
-            prefix = prefix.analyse(context);
-        }
-        expr = new JMethodCallExpression(getTokenReference(), prefix, ident, args);
+        TypeFactory factory = context.getTypeFactory();              
 
         // analyse expression
-        expr = expr.analyse(context);
+        expr = (JMethodCallExpression)expr.analyse(context);
         
         
         // cast the return type
         CType returnType = expr.getType(factory);        
+        
         if(returnType.isClassType()) {
+            
             CClass returnClass = returnType.getCClass();
+            
             if(returnClass.isMixinInterface()) {
                 
                 String contextClassName = null;
                 
-                if(prefix instanceof JSuperExpression) {
-                    contextClassName = context.getClassContext().getCClass().convertToIfcQn(); 		        
+                CClass prefixClass = expr.getPrefixType().getCClass();
+                
+                if(prefixClass.isMixin()) {
+                    // in this case we have this or super;
+                    // in both cases the context class is the local class
+                    contextClassName = context.getClassContext().getCClass().convertToIfcQn();
                 }
-                else if(prefix != null) {
-                    contextClassName = prefix.getType(factory).getCClass().convertToIfcQn();    		        
-                }
-                else if(context.getClassContext().getCClass().isMixin()) {
-        	        contextClassName = context.getClassContext().getCClass().convertToIfcQn();                    
+                else {
+                    contextClassName = prefixClass.getQualifiedName();
                 }
                 
                 String newReturnClassQn = 
@@ -114,11 +78,13 @@ public class CjMethodCallExpression extends JExpression implements CaesarConstan
 		                    newReturnClassQn
 		                );
 		            
-		            expr = new JCastExpression(
+		            JExpression res = new JCastExpression(
 	                    getTokenReference(),
 	                    expr,
 	                    newReturnClass.getAbstractType()
 		            );
+		            
+		            return res.analyse(context);
 	            }
             }
         }
@@ -133,13 +99,13 @@ public class CjMethodCallExpression extends JExpression implements CaesarConstan
     
     public void genCode(GenerationContext context, boolean discardValue) {
         throw new InconsistencyException();
-    }
-    
-    public void recurse(IVisitor p) {
-        if(prefix != null)
-            prefix.accept(p);
-        for (int i = 0; i < args.length; i++) {
-            args[i].accept(p);
-        }
     }    
+    
+    /**
+     * note: this one is important for join point reflection visitor,
+     * which searches for the usage of thisJoinPoint* variables
+     */
+    public void recurse(IVisitor p) {
+        expr.accept(p);
+    }
 }
