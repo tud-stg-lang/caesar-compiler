@@ -19,25 +19,26 @@ public class ClassGenerator {
     }
 
     public void generateClass(
-            JavaQualifiedName mixinQN,
-            JavaQualifiedName newClassQN,
-            JavaQualifiedName newSuperQN,
-            JavaQualifiedName newOuterQN,
-			CaesarTypeSystem	typeSystem
-        ) throws MixerException {
-           System.out.println("Mixing "+newClassQN);
-           System.out.println("\tmixin: "+mixinQN);
-           System.out.println("\tsuper: "+newSuperQN);
-           System.out.println("\touter: "+newOuterQN);
-        	    	   				
-           createModifiedClass(
-               mixinQN.toString(), 
-               newClassQN.toString(), 
-               newSuperQN == null? "" : newSuperQN.toString(), 
-               newOuterQN == null? "" : newOuterQN.toString(),
-               typeSystem
-           );		
-        }
+	    JavaQualifiedName mixinQN,
+	    JavaQualifiedName newClassQN,
+	    JavaQualifiedName newSuperQN,
+		JavaQualifiedName newOuterQN,
+		CaesarTypeSystem	typeSystem
+	) throws MixerException {    	
+    	/*
+    	System.out.println("Mixing "+newClassQN);
+        System.out.println("\tmixin: "+mixinQN);
+        System.out.println("\tsuper: "+newSuperQN);
+        System.out.println("\touter: "+newOuterQN);
+        */
+        createModifiedClass(
+        	mixinQN.toString(), 
+            newClassQN.toString(), 
+            newSuperQN == null? "" : newSuperQN.toString(), 
+            newOuterQN == null? "" : newOuterQN.toString(),
+            typeSystem
+        );		
+    }
    
      
    

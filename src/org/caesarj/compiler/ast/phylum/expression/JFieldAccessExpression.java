@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldAccessExpression.java,v 1.3 2004-03-17 12:44:23 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.4 2004-07-21 08:45:10 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -27,7 +27,6 @@ import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CConstructorContext;
 import org.caesarj.compiler.context.CExpressionContext;
-import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.context.CInitializerContext;
 import org.caesarj.compiler.context.CVariableInfo;
 import org.caesarj.compiler.context.GenerationContext;

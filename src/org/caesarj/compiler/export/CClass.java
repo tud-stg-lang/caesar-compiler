@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.21 2004-07-21 08:28:33 aracic Exp $
+ * $Id: CClass.java,v 1.22 2004-07-21 08:45:11 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -113,7 +113,12 @@ public abstract class CClass extends CMember
 
     // CTODO use name from constant pool 
     public boolean isObjectClass() {
-        return getQualifiedName().equals("java/lang/Object");
+        return getQualifiedName().equals(JAV_OBJECT);
+    }
+
+    // CTODO use name from constant pool 
+    public boolean isMixin() {
+        return CModifier.contains(getModifiers(), ACC_MIXIN);
     }
 
 	/**
@@ -243,7 +248,7 @@ public abstract class CClass extends CMember
     /**
      * @return true if this class is an interface
      */
-    public boolean isCaesarClassInterface()
+    public boolean isMixinInterface()
     {
         return CModifier.contains(getModifiers(), ACC_MIXIN_INTERFACE);
     }

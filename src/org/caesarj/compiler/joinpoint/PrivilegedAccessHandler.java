@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMember;
-import org.caesarj.compiler.context.CField;
+import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CCjPrivilegedField;

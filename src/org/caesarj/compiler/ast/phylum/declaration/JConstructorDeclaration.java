@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JConstructorDeclaration.java,v 1.1 2004-03-15 11:56:48 aracic Exp $
+ * $Id: JConstructorDeclaration.java,v 1.2 2004-07-21 08:45:11 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -29,11 +29,11 @@ import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CConstructorContext;
-import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.context.CVariableInfo;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.export.CSourceMethod;

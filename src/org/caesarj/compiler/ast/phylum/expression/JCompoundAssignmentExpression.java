@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JCompoundAssignmentExpression.java,v 1.1 2004-03-15 11:56:51 aracic Exp $
+ * $Id: JCompoundAssignmentExpression.java,v 1.2 2004-07-21 08:45:10 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -24,9 +24,9 @@ import org.caesarj.compiler.ast.visitor.KjcVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
-import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.context.CInitializerContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.types.CNumericType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;

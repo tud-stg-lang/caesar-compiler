@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.6 2004-07-15 15:15:55 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.7 2004-07-21 08:45:11 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -75,7 +75,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
 		boolean implClass) {
         super(
             where,
-            modifiers,
+            modifiers | ACC_MIXIN,
             implClass ? ident+"_Impl" : ident,
             typeVariables,
             superClass,
@@ -120,7 +120,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
 	) {
     	super(
 	        where,
-	        modifiers,
+	        modifiers | ACC_MIXIN,
 	        ident,
 	        typeVariables,
 	        superClass,
@@ -154,7 +154,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         CaesarDeclare[] declares) {
     	super(
 	        where,
-	        modifiers,
+	        modifiers | ACC_MIXIN,
 	        ident,
 	        typeVariables,
 	        superClass,
@@ -444,6 +444,10 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     	super.checkInterface(context);
 		
 		// CTODO: check inheritance of full throwable list on method redefinition
+    }
+    
+    protected int getAllowedModifiers() {
+        return super.getAllowedModifiers() | ACC_MIXIN;
     }
     
     /**

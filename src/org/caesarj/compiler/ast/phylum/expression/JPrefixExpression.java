@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JPrefixExpression.java,v 1.1 2004-03-15 11:56:51 aracic Exp $
+ * $Id: JPrefixExpression.java,v 1.2 2004-07-21 08:45:10 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -26,9 +26,9 @@ import org.caesarj.compiler.ast.visitor.KjcVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
-import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.context.CVariableInfo;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;

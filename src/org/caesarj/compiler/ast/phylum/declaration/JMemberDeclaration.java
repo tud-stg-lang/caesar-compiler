@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMemberDeclaration.java,v 1.1 2004-03-15 11:56:48 aracic Exp $
+ * $Id: JMemberDeclaration.java,v 1.2 2004-07-21 08:45:11 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -24,8 +24,8 @@ import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.visitor.KjcVisitor;
-import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CMember;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.util.TokenReference;

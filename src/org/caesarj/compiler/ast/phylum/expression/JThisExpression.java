@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JThisExpression.java,v 1.3 2004-04-21 14:19:56 aracic Exp $
+ * $Id: JThisExpression.java,v 1.4 2004-07-21 08:45:10 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -116,7 +116,7 @@ public class JThisExpression extends JExpression {
             JExpression analysedPrefix = prefix.analyse(exprContext);                        
             CClass selfClass = analysedPrefix.getType(factory).getCClass();
             
-            if(selfClass.isCaesarClassInterface()) {
+            if(selfClass.isMixinInterface()) {
                 try {                
                     CReferenceType type = factory.createType(selfClass.getImplQualifiedName(), false);
                     type = (CReferenceType)type.checkType(context);
