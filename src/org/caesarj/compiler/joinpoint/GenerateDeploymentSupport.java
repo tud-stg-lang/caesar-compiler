@@ -98,6 +98,7 @@ public class GenerateDeploymentSupport {
 		 	}		 	
 		 	if (node.declaredCrosscutting()) {
 		 		CjVirtualClassDeclaration caesarClass = node.getTypeDecl().getCorrespondingClassDeclaration();
+		 		caesarClass.sortAdvicesByOrderNr();
 				
 		 		DeploymentClassFactory utils =
 					new DeploymentClassFactory(
@@ -200,36 +201,24 @@ public class GenerateDeploymentSupport {
  			CaesarTypeNode mixin = (CaesarTypeNode)it.next();
  			CjVirtualClassDeclaration classDecl = mixin.getTypeDecl().getCorrespondingClassDeclaration();
  			
- 			/* add all after advices to the list */
+ 			/* add all before and around advices to the list */
  			CjAdviceDeclaration declAdv[] = classDecl.getAdvices();
  			for (int i1 = 0; i1 < declAdv.length; i1++) {
  				CjAdviceDeclaration advCopy = new CjAdviceDeclaration(declAdv[i1]);
  				
- 				/* generate name so that advices are in correct precedence
- 				 * the precedence depends on the alphabetical order of names
- 				 */
- 				String ident;
- 				if (declAdv[i1].getKind() == CaesarAdviceKind.After ||
- 	 				declAdv[i1].getKind() == CaesarAdviceKind.AfterThrowing ||
- 					declAdv[i1].getKind() == CaesarAdviceKind.AfterReturning) 
+ 				/* put advice at the order of correct precedence */
+ 				if (declAdv[i1].getKind() != CaesarAdviceKind.After &&
+ 	 				declAdv[i1].getKind() != CaesarAdviceKind.AfterThrowing &&
+ 					declAdv[i1].getKind() != CaesarAdviceKind.AfterReturning) 
  				{
- 					ident = CaesarNameMangler.adviceName(
- 	 					"" + (mixinCount * 2 - counter),
- 	 					advCopy.getKind(),
- 	 					advCopy.getTokenReference().getLine());
- 	 			}
- 				else {
- 					ident = CaesarNameMangler.adviceName(
- 						"" + counter,
- 						advCopy.getKind(),
- 						advCopy.getTokenReference().getLine());
- 	 				
- 				}
- 				advCopy.setIdent(ident);
- 				
- 				advices.add(advCopy);
+ 					String ident = CaesarNameMangler.adviceName(
+ 	 						"" + counter,
+ 	 						advCopy.getKind(),
+ 	 						advCopy.getTokenReference().getLine());
+ 	 				advCopy.setIdent(ident);
+ 					advices.add(advCopy);
+ 	 			} 								
  			}
- 			
  			
  			/* add unique pointcuts to the list */
  			CjPointcutDeclaration declPct[] = classDecl.getPointcuts();
@@ -246,6 +235,39 @@ public class GenerateDeploymentSupport {
  			for (int i1 = 0; i1 < declArr.length; i1++) {
  				declares.add(declArr[i1]);
  			}
- 		}	
+ 		}
+ 		
+ 		/* add all after advices to the list in reverse order */
+		counter = 0;
+		for (int mixinNr = ccLst.size()-1; mixinNr >= 0; mixinNr--) {
+ 			counter++;
+ 			CaesarTypeNode mixin = (CaesarTypeNode)ccLst.get(mixinNr);
+ 			CjVirtualClassDeclaration classDecl = mixin.getTypeDecl().getCorrespondingClassDeclaration();
+ 			
+ 			/* add all after advices to the list */
+ 			CjAdviceDeclaration declAdv[] = classDecl.getAdvices();
+ 			for (int i1 = 0; i1 < declAdv.length; i1++) {
+ 				CjAdviceDeclaration advCopy = new CjAdviceDeclaration(declAdv[i1]);
+ 				
+ 				/* put advice at the order of correct precedence */
+ 				if (declAdv[i1].getKind() == CaesarAdviceKind.After ||
+ 	 				declAdv[i1].getKind() == CaesarAdviceKind.AfterThrowing ||
+ 					declAdv[i1].getKind() == CaesarAdviceKind.AfterReturning) 
+ 				{
+ 					String ident = CaesarNameMangler.adviceName(
+ 	 						"" + (mixinCount + counter),
+ 	 						advCopy.getKind(),
+ 	 						advCopy.getTokenReference().getLine());
+ 	 				advCopy.setIdent(ident); 	 				
+ 					advices.add(advCopy);
+ 	 			} 				 				
+ 			} 	
+ 		}
+ 		
+ 		counter = 0;
+ 		/* go through all advices once again and set order number */
+ 		for (Iterator it = advices.iterator(); it.hasNext();) {
+ 			((CjAdviceDeclaration)it.next()).setOrderNr(counter++);
+ 		}
 	}
 }
