@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentType.java,v 1.19 2005-02-25 13:44:44 aracic Exp $
+ * $Id: CDependentType.java,v 1.20 2005-02-25 16:49:23 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -58,8 +58,12 @@ public class CDependentType extends CReferenceType {
     }
     
     public Path getPath() throws UnpositionedError {
+        
+        if(family == null)
+            return ((CReferenceType)plainType).getPath();
+        
         // CRITICAL: no caching, this has caused errors, reason is unkown
-        //if(path != null) return path.clonePath();  
+        //if(path != null) return path.clonePath();                 
         
         //path = family.getThisAsFamily();
         path = Path.createFrom(declContext, family);
@@ -87,7 +91,7 @@ public class CDependentType extends CReferenceType {
             throw new UnpositionedError(CaesarMessages.PLAINTYPE_WITH_PATH);
         }                               
         
-        if(family.getThisAsFamily() == null) {
+        if(family != null && family.getThisAsFamily() == null) {
             throw new UnpositionedError(CaesarMessages.ILLEGAL_PATH);
         }
         
