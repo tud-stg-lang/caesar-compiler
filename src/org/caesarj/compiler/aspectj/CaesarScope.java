@@ -132,7 +132,7 @@ public class CaesarScope implements IScope, CaesarConstants {
 	 * @return World
 	 */
 	public World getWorld() {
-		return world;
+		return world.getWorld();
 	}
 
 	/**

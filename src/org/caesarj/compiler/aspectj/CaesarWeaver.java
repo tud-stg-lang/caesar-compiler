@@ -79,7 +79,7 @@ public class CaesarWeaver {
 			// Create an array containing the unwoven files...
 			UnwovenClassFile unwovenClassFiles[] = 
 				(UnwovenClassFile[])unwovenClasses.toArray(new UnwovenClassFile[0]);
-			BcelWeaver	weaver = new BcelWeaver(world);
+			BcelWeaver	weaver = new BcelWeaver(world.getWorld());
 			// ... and feed it into the waever ...
 			for (int i = 0; i < unwovenClassFiles.length; i++)
 				weaver.addClassFile(unwovenClassFiles[i]);
