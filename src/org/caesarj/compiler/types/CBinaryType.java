@@ -15,62 +15,77 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBinaryType.java,v 1.2 2004-10-17 20:59:36 aracic Exp $
+ * $Id: CBinaryType.java,v 1.3 2004-10-18 14:58:43 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
 
 import org.caesarj.compiler.ClassReader;
+import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
-
+import org.caesarj.util.UnpositionedError;
 
 /**
- * This class represents class type load from a binary class file 
- * The class of this type is only loaded if necessary. This type need no check
+ * This class represents class type load from a binary class file The class of
+ * this type is only loaded if necessary. This type need no check
  */
 public class CBinaryType extends CReferenceType {
 
-  // ----------------------------------------------------------------------
-  // CONSTRUCTORS
-  // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // CONSTRUCTORS
+    // ----------------------------------------------------------------------
 
-  /**
-   * Constructs a class or interface type from binary class
-   */
-  public CBinaryType(String qualifiedName, ClassReader classReader, TypeFactory typeFactory) {
-    super();
-    this.qualifiedName = qualifiedName;
-    this.classReader = classReader;
-    this.typeFactory = typeFactory;
-  }
-
-  /**
-   * Returns the class object associated with this type
-   *
-   * If this type was never checked (read from class files)
-   * check it!
-   *
-   * @return the class object associated with this type
-   */
-  public CClass getCClass() {
-    if (!isChecked()) {
-      setClass(classReader.loadClass(typeFactory, qualifiedName));
-      qualifiedName = null;
-      classReader = null;
-      typeFactory = null;
+    /**
+     * Constructs a class or interface type from binary class
+     */
+    public CBinaryType(
+        String qualifiedName,
+        ClassReader classReader,
+        TypeFactory typeFactory) {
+        super();
+        this.qualifiedName = qualifiedName;
+        this.classReader = classReader;
+        this.typeFactory = typeFactory;
     }
 
-    return super.getCClass();
-  }
+    /**
+     * Returns the class object associated with this type
+     * 
+     * If this type was never checked (read from class files) check it!
+     * 
+     * @return the class object associated with this type
+     */
+    public CClass getCClass() {
+        if (!isChecked()) {
+            setClass(classReader.loadClass(typeFactory, qualifiedName));
+            qualifiedName = null;
+            classReader = null;
+            typeFactory = null;
+        }
 
-  /**
-   *
-   */
-  public String getQualifiedName() {
-    return qualifiedName == null ? super.getQualifiedName() : qualifiedName;
-  }
+        return super.getCClass();
+    }
 
-  private String qualifiedName; 
-  private ClassReader classReader; 
-  private TypeFactory typeFactory;
+    public CType checkType(CTypeContext context) throws UnpositionedError {
+        // IVICA make call to getCClass in order to load the class via the class reader.
+        // looks like somebody very smart has developed this lazy loading mechanism,
+        // but forgot to implement the checkType method. This has caused crashes with arrays 
+        // as method return type.
+        // buuuuuh! ;p
+        getCClass();
+        return super.checkType(context);
+    }
+
+    /**
+     *  
+     */
+    public String getQualifiedName() {
+        return qualifiedName == null ? super.getQualifiedName() : qualifiedName;
+    }
+
+    private String qualifiedName;
+
+    private ClassReader classReader;
+
+    private TypeFactory typeFactory;
 }
