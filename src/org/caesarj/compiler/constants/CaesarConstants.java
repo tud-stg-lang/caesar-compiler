@@ -86,6 +86,12 @@ public interface CaesarConstants extends Constants {
     public static final String ASPECT_CONTAINER_IFC =  
     	"org/caesarj/runtime/aspects/AspectContainerIfc";
 
+    public static final String
+    	WRAPPER_WRAPPEE_FIELD = "$wrappee",
+    	WRAPPER_WRAPPEE_INIT  = "$initWrappee",
+    	
+    	OUTER_FIELD           = "$outer";
+    
 	//Caesar extension for the generated deployment support classes
 
 	public static final String ASPECT_IFC_EXTENSION = "$Ifc";
