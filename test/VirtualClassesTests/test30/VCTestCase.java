@@ -247,6 +247,8 @@ public cclass OuterB extends OuterA
 
 public cclass OuterC extends OuterA
 {
+    public cclass InnerA {}
+    
 	public cclass InnerO
 	{
 		public String queryO()

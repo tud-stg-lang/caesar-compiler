@@ -20,7 +20,7 @@ public class VCTestCase extends TestCase {
         
         B.U.Y buy = new B().new U().new Y();	
 		String result = buy.queryB();
-		assertEquals(expectedResult, result);
+		assertEquals(expectedResult, result);		
 
         System.out.println("-------> VCTest 33b: end");
 	}
@@ -37,7 +37,7 @@ public cclass A {
 }
 
 public cclass B extends A {
-    public cclass U {
+    public cclass U {       
     	public cclass Y extends X {
 		    public String queryB() {
 				return queryA()+", B.U.Y";

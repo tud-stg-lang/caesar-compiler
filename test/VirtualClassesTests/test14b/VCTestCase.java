@@ -82,6 +82,8 @@ public cclass OuterB extends _synth
 // [C, A, B, 0]
 public cclass OuterC extends OuterA & OuterB
 {
+	public cclass Cat1 {}
+
 	// [C.C2, O.C2, C.C1, A.C1, B.C1, O.C1]
 	public cclass Cat2 extends Cat1 {
 		public String queryA() {

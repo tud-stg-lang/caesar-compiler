@@ -86,6 +86,8 @@ public cclass OuterB extends OuterA
 			return super.queryA() + ", B.B.A";
 		}
 	}
+	
+	public cclass InnerC {}
 
 	public cclass InnerD extends InnerC
 	{
@@ -98,6 +100,8 @@ public cclass OuterB extends OuterA
 
 public cclass OuterC extends OuterB
 {
+    public cclass InnerA {}
+    
 	public cclass InnerB
 	{
 		public String queryA()

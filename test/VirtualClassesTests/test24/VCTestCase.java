@@ -73,7 +73,7 @@ public cclass OuterA
 		}
 	}
 
-	public OuterA.InnerA createDefaultA()
+	public InnerA createDefaultA()
 	{
 		InnerA[] arr = new InnerA[2];
 		arr[0] = this.new InnerA().init("a1");
@@ -95,7 +95,7 @@ public cclass OuterB extends OuterA
 		}
 	}
 
-	public OuterA.InnerA createDefaultA()
+	public InnerA createDefaultA()
 	{
 		OuterB.InnerA a = (OuterB.InnerA)super.createDefaultA();
 		OuterA.InnerA[] arr = a.getArr();

@@ -149,6 +149,9 @@ public cclass WoodmanSubject extends Forest {
 }
 
 public cclass WoodmanEagleSubject extends WoodmanSubject & EagleSubject {
+    
+    public cclass Plant {}
+    
 	public cclass Tree extends Plant {
 		public void chopDown() {
 			super.chopDown(); 
