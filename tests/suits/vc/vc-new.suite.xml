@@ -1,0 +1,137 @@
+<testsuite name="Test new operator with Caesar classes" package="suits.vc.newop">
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="UNDEF_MESSAGE"  id="vcnew001" description="new operator with parameter">
+        <code>
+        	public class Test {
+				public void test() {
+					ClassA a = new ClassA(1);
+				}
+			}
+			public cclass ClassA { }
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="CCLASS_ARRAYS_NOT_ALLOWED"  id="vcnew002" description="new array on cclass">
+        <code>
+        	public class Test {
+				public void test() {
+					Object a = new ClassA[2];
+				}
+			}
+			public cclass ClassA { }
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="UNDEF_MESSAGE"  id="vcnew003" description="direct construction of inner class">
+        <code>
+        	public class Test {
+				public void test() {
+					OuterA.InnerA a = new OuterA.InnerA();
+				}
+			}
+			public cclass OuterA {
+				public cclass InnerA {
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="UNDEF_MESSAGE"  id="vcnew004" description="constructing external inner class">
+        <code>
+        	public cclass OuterA {
+				public cclass InnerA {
+				}
+			}
+			public cclass OuterB {
+				public cclass InnerA {
+				}
+				public void m() {
+					InnerA a = new OuterA.InnerA();
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="INSTANCE_METHOD_CALL_IN_STATIC_CONTEXT"  id="vcnew005" description="statically qualified new operator">
+        <code>
+        	public class Test {
+				public void test() {
+					OuterA.InnerA a = OuterA.new InnerA();
+				}
+			}
+			public cclass OuterA {
+				public cclass InnerA {
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="INSTANCE_METHOD_CALL_IN_STATIC_CONTEXT"  id="vcnew006" description="qualified new operator inside cclass">
+        <code>
+        	public cclass OuterA {
+				public cclass InnerA {
+				}
+				public void m() {
+					InnerA a = OuterA.new InnerA();
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="METHOD_NOTFOUND"  id="vcnew007" description="constructing non-existing inner class">
+        <code>
+        	public cclass OuterA {
+				public cclass InnerA {
+				}
+			}
+			public cclass OuterB extends OuterA {
+				public cclass InnerB {
+				}
+				public void m() {
+					OuterB.InnerB a = new OuterA().new InnerB();
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="BAD_THIS_STATIC"  id="vcnew008" description="construction of virtual class in static context">
+        <code>
+        	public cclass OuterA {
+				public cclass InnerA {
+				}
+				static public void m() {
+					InnerA a = new InnerA();
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ONLY_DEF_CTOR_ALLOWED"  id="vcnew009" description="constructor with parameter">
+        <code>
+        	public cclass ClassA {
+				public ClassA(int a) {
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="CONSTRUCTOR_BAD_NAME"  id="vcnew010" description="constructor with wrong name">
+        <code>
+        	public cclass OuterA {
+				public foo() {
+				}
+			}
+        </code>
+    </compile-check-error>
+	    
+</testsuite>
