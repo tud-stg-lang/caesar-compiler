@@ -172,16 +172,17 @@ public class Main extends MainSuper implements Constants {
         }
     }
     
-    private void genMixinCopies(KjcEnvironment environment) {
-        
+    private void genMixinCopies(KjcEnvironment environment) 
+    {
         JavaTypeGraph javaTypeGraph = environment.getCaesarTypeSystem().getJavaTypeGraph();
         Collection typesToGenerate = javaTypeGraph.getTypesToGenerate();
+        ClassGenerator generator = new ClassGenerator(options.destination, options.destination);
+        
         for (Iterator it = typesToGenerate.iterator(); it.hasNext();) {
             JavaTypeNode item = (JavaTypeNode) it.next();
 
             try {
-            	ClassGenerator.setOutputDir("test/VirtualClassesTests/");
-                ClassGenerator.instance().generateClass(
+            	generator.generateClass(
                     item.getMixin().getQualifiedImplName(),
                     item.getQualifiedName(),
                     item.getParent().getQualifiedName(),

@@ -4,11 +4,9 @@
  */
 package org.caesarj.mixer.intern;
 
-import java.io.IOException;
 import java.util.Vector;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
@@ -28,11 +26,8 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
-import org.caesarj.compiler.typesys.CaesarTypeSystem;
-import org.caesarj.compiler.typesys.java.JavaQualifiedName;
-import org.caesarj.compiler.typesys.java.JavaTypeNode;
-import org.caesarj.mixer.MixerException;
 
+import org.caesarj.mixer.MixerException;
 
 /**
  * Modify a <code>JavaClass</code> to have a different class, superclass and outerclass.
@@ -52,76 +47,15 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 
 	protected String[]	outerClasses;
 	
-	protected static String	outputDirectory = "bin/";
-	
-	public static void setOutputDirectory( String outputDirectory ){
-		ClassModifyingVisitor.outputDirectory = outputDirectory;
-	}
-	
-	
-	protected String 	oldClassName, 
-						newClassName, 
-						newSuperclassName,
-						newOuterClassName,
-						oldOuterClassName,
-						oldSuperclassName,
-						outerOfOldSuper, 
-						outerOfNewSuper;
-	
-	public static	void modify( 
-			String className, 
-			String newClassName, 
-			String newSuperclassName, 
-			String outerClassName,
-			CaesarTypeSystem typeSystem) throws MixerException{
-
-		// Load the class
-		JavaClass	clazz = Repository.lookupClass(className);
+	protected String 	oldClassName; 
+	protected String 	newClassName; 
+	protected String 	newSuperclassName;
+	protected String 	newOuterClassName;
+	protected String 	oldOuterClassName;
+	protected String 	oldSuperclassName;
+	protected String 	outerOfOldSuper; 
+	protected String 	outerOfNewSuper;
 		
-		if (clazz == null) {
-			throw new MixerException("Class not found "+ className);
-		}
-		
-		String oldSuperclassName = clazz.getSuperclassName().replace('.','/');
-		
-		// use the typesystem to calculate some missing information
-		JavaTypeNode	oldSuperClass = typeSystem.getJavaTypeGraph().getNode(new JavaQualifiedName(oldSuperclassName));
-		String outerOfOldSuper = null;
-		if (oldSuperClass != null && oldSuperClass.getOuter() != null)
-			outerOfOldSuper = oldSuperClass.getOuter().getQualifiedName().toString();
-		
-		JavaTypeNode	newSuperClass = typeSystem.getJavaTypeGraph().getNode(new JavaQualifiedName(newSuperclassName));
-		String outerOfNewSuper = null;
-		if (newSuperClass != null && newSuperClass.getOuter() != null)
-			outerOfNewSuper = newSuperClass.getOuter().getQualifiedName().toString();
-		
-		// collect all outer classes for this mixin
-    	Vector	outerClasses = new Vector();
-    	
-    	JavaTypeNode mixinType = typeSystem.getJavaTypeGraph().getNode(new JavaQualifiedName(newClassName)),
-					outerType = mixinType.getOuter();
-    	while ( outerType != null){
-       	  outerClasses.add( outerType.getQualifiedName().getIdent() );  		
-		  outerType = outerType.getOuter();
-    	}
-    	String[] outers = (String[])outerClasses.toArray( new String[0]);
-    	
-    	System.out.println(
-    			" outer of old super: "+outerOfOldSuper+
-				"\n outer of new super: "+outerOfNewSuper);
-    			
-    	// run the algorithm
-		new ClassModifyingVisitor( 
-				className, 
-				newClassName, 
-				newSuperclassName, 
-				outerClassName, 
-				outerOfOldSuper,
-				outerOfNewSuper,
-				outers ).run(clazz);
-	}
-	
-	
 	/**
 	 * Create a visitor to modify a class file
 	 * @param oldClassName	The original class name
@@ -144,11 +78,9 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 		this.outerOfOldSuper = outerOfOldSuper;
 		this.outerOfNewSuper = outerOfNewSuper;
 		outerClasses = outers;
-	
 	}
-	
-	
-	protected void run(JavaClass clazz) throws MixerException {
+		
+	protected JavaClass transform(JavaClass clazz) throws MixerException {
 		oldOuterClassName =  Tools.getOuterClass(clazz,oldClassName);
 		oldSuperclassName = clazz.getSuperclassName();
 		
@@ -223,9 +155,8 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 			}
 		}
 */
-		// at last, write the classfile
-		writeClass( newClass );
-	
+		// return generated class
+		return newClass;	
 	}
 
 	/**
@@ -306,21 +237,6 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 			}
 		}
 	}
-
-
-	/**
-	 * Write the class to file system 
-	 * @param clazz
-	 * @throws MixerException
-	 */
-	protected void writeClass( JavaClass clazz ) throws MixerException{
-		try {
-			clazz.dump(outputDirectory+newClassName+".class");
-		} catch (IOException e) {
-			throw new MixerException( "Unable to write classfile:" + e);
-		}
-	}
-	
 	
 	public void visitLocalVariable(LocalVariable variable) {
 		// Change the type of the local variable this

@@ -2,22 +2,26 @@ package org.caesarj.mixer;
 
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
-import org.caesarj.mixer.intern.ClassModifyingVisitor;
+import org.caesarj.mixer.intern.ClassModifier;
 
 public class ClassGenerator {
-	public static void setOutputDir( String dir ){
-		ClassModifyingVisitor.setOutputDirectory( dir );
-	}
 	
-    private static ClassGenerator singleton = new ClassGenerator();
-   
-    public static ClassGenerator instance() {
-        return singleton;
+	/*
+	 * State variables
+	 */
+	private ClassModifier _modifier;
+	
+	/*
+	 * Construction
+	 */
+    public ClassGenerator(String inputDir, String outputDir) 
+    {
+    	_modifier = new ClassModifier(inputDir, outputDir);    	
     }
 
-    private ClassGenerator() {
-    }
-
+    /*
+     * Operations
+     */
     public void generateClass(
 	    JavaQualifiedName mixinQN,
 	    JavaQualifiedName newClassQN,
@@ -39,8 +43,10 @@ public class ClassGenerator {
             typeSystem
         );		
     }
-   
-     
+    
+    /*
+     * Implementation
+     */
    
     /**
      * This method creates a new class <code>newClass</code> which extends <code>newSuperClass</code> by
@@ -52,7 +58,7 @@ public class ClassGenerator {
 			String newSuperclass, 
 			String newOuterClass,
 			CaesarTypeSystem typeSystem ) throws MixerException {
-		ClassModifyingVisitor.modify(originalClass,newClass,newSuperclass,newOuterClass, typeSystem);
+		_modifier.modify(originalClass,newClass,newSuperclass,newOuterClass, typeSystem);
 	}
 	
 }
