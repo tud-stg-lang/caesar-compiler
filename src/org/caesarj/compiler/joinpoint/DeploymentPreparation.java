@@ -97,7 +97,7 @@ public class DeploymentPreparation implements CaesarConstants {
 					{
 						FjClassDeclaration currentInnerInner =
 							(FjClassDeclaration) innersInners[j];
-						prepareForDynamicDeployment(environment);
+						new DeploymentPreparation(currentInnerInner).prepareForDynamicDeployment(environment);
 					}
 				}
 			}
