@@ -76,51 +76,51 @@ public class CciInterfaceDeclaration
 	}
 	
 
-	/**
-	 * Adds the self context methods to the interface. It is done only
-	 * for collaboration interfaces and their inner interfaces. 
-	 * @param factory
-	 */
-	public void addSelfContextMethods(TypeFactory factory)
-	{
-		ArrayList allMethods = new ArrayList(methods.length * 2);
-		
-		allMethods.addAll(Arrays.asList(methods));
-
-		CReferenceType type = factory.createType(ident, false);
-		
-		for (int i = 0; i < methods.length; i++)
-		{
-			if (methods[i] instanceof CciMethodDeclaration)
-				allMethods.add(((CciMethodDeclaration)methods[i])
-					.getSelfContextMethod(type));
-		}
-		methods = (JMethodDeclaration[])allMethods.toArray(
-			new JMethodDeclaration[allMethods.size()]);
-		
-		for (int i = 0; i < inners.length; i++)
-			if (inners[i] instanceof CciInterfaceDeclaration)
-				((CciInterfaceDeclaration)inners[i]).addSelfContextMethods(
-					factory);
-	}
+//	/**
+//	 * Adds the self context methods to the interface. It is done only
+//	 * for collaboration interfaces and their inner interfaces. 
+//	 * @param factory
+//	 */
+//	public void addSelfContextMethods(TypeFactory factory)
+//	{
+//		ArrayList allMethods = new ArrayList(methods.length * 2);
+//		
+//		allMethods.addAll(Arrays.asList(methods));
+//
+//		CReferenceType type = factory.createType(ident, false);
+//		
+//		for (int i = 0; i < methods.length; i++)
+//		{
+//			if (methods[i] instanceof CciMethodDeclaration)
+//				allMethods.add(((CciMethodDeclaration)methods[i])
+//					.getSelfContextMethod(type));
+//		}
+//		methods = (JMethodDeclaration[])allMethods.toArray(
+//			new JMethodDeclaration[allMethods.size()]);
+//		
+//		for (int i = 0; i < inners.length; i++)
+//			if (inners[i] instanceof CciInterfaceDeclaration)
+//				((CciInterfaceDeclaration)inners[i]).addSelfContextMethods(
+//					factory);
+//	}
 	
-	/**
-	 * Adds the modifier CCI_COLLABORATION and FJC_VIRTUAL to inner interfaces. 
-	 * This is added for interfaces that are defined inside collaboration 
-	 * interfaces. 
-	 */
-	public void initInnersAsCollaboration()
-	{
-		for (int i = 0; i < inners.length; i++)
-		{
-			if (inners[i] instanceof CciInterfaceDeclaration)
-			{
-				inners[i].setModifiers(inners[i].getModifiers() 
-					| CCI_COLLABORATION | FJC_VIRTUAL);
-				((CciInterfaceDeclaration)inners[i]).initInnersAsCollaboration();
-			}
-		}
-	}
+//	/**
+//	 * Adds the modifier CCI_COLLABORATION and FJC_VIRTUAL to inner interfaces. 
+//	 * This is added for interfaces that are defined inside collaboration 
+//	 * interfaces. 
+//	 */
+//	public void initInnersAsCollaboration()
+//	{
+//		for (int i = 0; i < inners.length; i++)
+//		{
+//			if (inners[i] instanceof CciInterfaceDeclaration)
+//			{
+//				inners[i].setModifiers(inners[i].getModifiers() 
+//					| CCI_COLLABORATION | FJC_VIRTUAL);
+//				((CciInterfaceDeclaration)inners[i]).initInnersAsCollaboration();
+//			}
+//		}
+//	}
 	
 	/**
 	 * Returns the modifiers that are allowed for interfaces.
@@ -128,8 +128,7 @@ public class CciInterfaceDeclaration
 	protected int getAllowedModifiers()
 	{
 		return 	super.getAllowedModifiers()	
-			| CCI_COLLABORATION 
-			| FJC_VIRTUAL;
+			| CCI_COLLABORATION;
 	}
 	
 	/**
@@ -171,7 +170,7 @@ public class CciInterfaceDeclaration
 						new CClassNameType(ident)},
 					createProxyFields(ownerName),
 					createProxyMethods(),
-					createInnerProxies(ownerName, typeFactory),
+					new JTypeDeclaration[0],
 					ident);
 					
 		}
@@ -210,25 +209,70 @@ public class CciInterfaceDeclaration
 	 * @return if it does not have inners it returns an empty array, 
 	 * otherwise it returns the proxy declaration of the its nested types.
 	 */
-	protected JTypeDeclaration[] createInnerProxies(String ownerName, 
-		TypeFactory typeFactory)
+	public JTypeDeclaration[] transformInnerInterfaces()
 	{
-		String owner = ownerName == null 
-			? ident
-			: ownerName + "$" + ident;
-
 		ArrayList innerProxies = new ArrayList(inners.length);
 		for (int i = 0; i < inners.length; i++)
+		{
 			if (inners[i] instanceof CciInterfaceDeclaration)
-				innerProxies.add(
-					((CciInterfaceDeclaration)inners[i]).getProxyDeclaration(
-						owner, hasSuper(), typeFactory));
+				inners[i] =
+					((CciInterfaceDeclaration)inners[i])
+						.createEmptyVirtualDeclaration(hasSuper());
+		}
 
-		return innerProxies.size() > 0 
-			? (JTypeDeclaration[])innerProxies.toArray(
-				new JTypeDeclaration[innerProxies.size()])
-			: new JTypeDeclaration[0];
+		return inners;
 		
+	}
+	
+	public FjVirtualClassDeclaration createEmptyVirtualDeclaration(
+		boolean hasSuper)
+	{
+		if (hasSuper)
+			return 
+				new FjOverrideClassDeclaration(
+					getTokenReference(), 
+					~ACC_ABSTRACT & ~ACC_INTERFACE & modifiers,
+					ident,
+					typeVariables,
+					null,
+					CReferenceType.EMPTY,
+					null,
+					new JFieldDeclaration[0],
+					createEmptyMethods(),
+					transformInnerInterfaces(),
+					new JPhylum[0],
+					null,
+					null);
+		else
+			return 
+				new FjVirtualClassDeclaration(
+					getTokenReference(), 
+					~ACC_ABSTRACT & ~ACC_INTERFACE & modifiers,
+					ident,
+					typeVariables,
+					null,
+					CReferenceType.EMPTY,
+					null,
+					new JFieldDeclaration[0],
+					createEmptyMethods(),
+					transformInnerInterfaces(),
+					new JPhylum[0],
+					null,
+					null);
+		
+	}
+	
+	protected JMethodDeclaration[] createEmptyMethods()
+	{
+		ArrayList returnMethods = new ArrayList(methods.length);
+		for (int i = 0; i < methods.length; i++)
+		{
+			if (methods[i] instanceof CciMethodDeclaration)
+				returnMethods.add(
+					((CciMethodDeclaration)methods[i]).createEmptyMethod());
+		}
+		return (JMethodDeclaration[])returnMethods.toArray(
+			new JMethodDeclaration[returnMethods.size()]);
 	}
 	/**
 	 * It creates the two fields that are needed in the proxies: implementation
@@ -286,11 +330,11 @@ public class CciInterfaceDeclaration
 		{
 			if (methods[i] instanceof CciProvidedMethodDeclaration)
 				proxyMethods.add(((CciMethodDeclaration)methods[i])
-					.createMethodImplementation(
+					.createDelegationMethod(
 						CciConstants.IMPLEMENTATION_FIELD_NAME));
 			else if (methods[i] instanceof CciExpectedMethodDeclaration)
 				proxyMethods.add(((CciMethodDeclaration)methods[i])
-					.createMethodImplementation(
+					.createDelegationMethod(
 						CciConstants.BINDING_FIELD_NAME));
 			
 		}
@@ -298,16 +342,16 @@ public class CciInterfaceDeclaration
 			proxyMethods.toArray(new JMethodDeclaration[proxyMethods.size()]);
 	}
 
-	/**
-	 * Sets the super type of the proxy declaration of this interface.
-	 * @param superClassType
-	 */
-	public void setProxyDeclarationSuperType(CReferenceType superClassType)
-	{
-		proxyDeclaration.setSuperClass(superClassType);
-	}
-	
-	
+//	/**
+//	 * Sets the super type of the proxy declaration of this interface.
+//	 * @param superClassType
+//	 */
+//	public void setProxyDeclarationSuperType(CReferenceType superClassType)
+//	{
+//		proxyDeclaration.setSuperClass(superClassType);
+//	}
+//	
+//	
 	
 //	/**
 //	 * Creates a constructor for the proxy. This constructor has two parameters:

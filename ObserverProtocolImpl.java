@@ -11,7 +11,7 @@ public class ObserverProtocolImpl implements ObserverProtocol
 		return "ObserverProtocolImpl";
 	}
 	
-	virtual public class Subject
+	override public class Subject
 	{
 		private ArrayList observers = new ArrayList();
 		public void addObserver(Observer o)
@@ -34,7 +34,7 @@ public class ObserverProtocolImpl implements ObserverProtocol
 
 	}
 	
-	virtual public class Observer
+	override public class Observer
 	{
 		public void setSubject(Subject s)
 		{

@@ -72,7 +72,7 @@ public class FjOverrideClassDeclaration extends FjVirtualClassDeclaration implem
 	}
 
 	public static void setOverridingSuperClass( FjOverrideable instance, Compiler compiler ) {
-
+//TODO: procurar na ci tb
 		CClass owner = instance.getCClass().getOwner().getCClass();
 		CClass ownerSuper = owner;
 		CReferenceType superClass = null;

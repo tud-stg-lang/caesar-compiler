@@ -1,5 +1,6 @@
 package org.caesarj.compiler.ast;
 
+import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
@@ -13,15 +14,19 @@ import org.caesarj.kjc.CType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.CVoidType;
 import org.caesarj.kjc.JBlock;
+import org.caesarj.kjc.JBooleanLiteral;
 import org.caesarj.kjc.JExpression;
 import org.caesarj.kjc.JExpressionStatement;
 import org.caesarj.kjc.JFieldAccessExpression;
 import org.caesarj.kjc.JFormalParameter;
+import org.caesarj.kjc.JIntLiteral;
 import org.caesarj.kjc.JLocalVariable;
 import org.caesarj.kjc.JMethodCallExpression;
 import org.caesarj.kjc.JMethodDeclaration;
+import org.caesarj.kjc.JNullLiteral;
 import org.caesarj.kjc.JReturnStatement;
 import org.caesarj.kjc.JStatement;
+import org.caesarj.kjc.TypeFactory;
 
 /**
  * AST element for a method declared in the collaboration 
@@ -132,7 +137,7 @@ public abstract class CciMethodDeclaration
 	 * in collaboration interfaces and their nested interfaces.
 	 * @param fieldNameToDelegate The name of the field that it shall delegate.   
 	 */
-	public JMethodDeclaration createMethodImplementation(
+	public JMethodDeclaration createDelegationMethod(
 		String fieldNameToDelegate)
 	{
 		//New parameters to the new method definition
@@ -201,6 +206,45 @@ public abstract class CciMethodDeclaration
 			parameters,
 			exceptions,
 			body,
+			null,
+			null);
+	}
+	
+	public JMethodDeclaration createEmptyMethod()
+	{
+		TokenReference ref = getTokenReference();
+		JStatement[] statements;
+		if (returnType instanceof CVoidType)
+			statements = new JStatement[0];
+		else
+		{
+			JExpression expression;
+			if (returnType.isNumeric())
+				expression = new JIntLiteral(ref, 
+					CciConstants.DEFAULT_NUMERIC_RETURN);
+			else if (returnType.isPrimitive())
+				expression = new JBooleanLiteral(ref, 
+					CciConstants.DEFAULT_BOOLEAN_RETURN);
+			else
+				expression = new JNullLiteral(ref);
+			
+			statements = new JStatement[]
+			{
+				new FjReturnStatement(ref, expression, null)
+			};
+		}
+		
+		JBlock body = new JBlock(ref, statements, null);
+		
+		return new FjCleanMethodDeclaration(
+			ref,
+			~ ACC_ABSTRACT & modifiers,
+			typeVariables,
+			returnType,
+			ident,
+			parameters,
+			exceptions,
+			body, 
 			null,
 			null);
 	}

@@ -79,68 +79,76 @@ public class CciCollaborationInterfaceDeclaration
 		return true;
 	}
 
-	
-	/**
-	 * It calls for the super implementation of it and after adds the modifier
-	 * OVERRIDE for the inner interfaces that are already defined in the super
-	 * interface, being the interfaces overridings of the virtual types, 
-	 * it also sets the super class of the proxy. 
-	 */
-	public void checkInterface(CContext context) 
-		throws PositionedError
+	public void append(JTypeDeclaration type)
 	{
-		super.checkInterface(context);
-		FjTypeSystem typeSystem = new FjTypeSystem();
-		for (int i = 0; i < interfaces.length; i++)
-		{
-			if (CModifier.contains(interfaces[i].getCClass().getModifiers(), 
-				CCI_COLLABORATION))
-			{
-				JTypeDeclaration[] inners = getInners();
-				for (int j = 0; j < inners.length; j++)
-				{
-					//It is done only for interfaces
-					if (inners[j] instanceof CciInterfaceDeclaration)
-					{
-						//If the super class declares the inner with the same
-						//name as my inner interface, then the modifier 
-						//OVERRIDEN is added and the super type of the proxy
-						//is seted.  
-						CReferenceType superType = typeSystem.declaresInner(
-							interfaces[i].getCClass(), 
-							inners[j].getCClass().getIdent());
-
-						if (superType != null)
-						{
-							inners[j].setModifiers(
-								inners[j].getModifiers() | FJC_OVERRIDE);
-							//The proxy super type is calculated now
-							String innerSuperTypeName = 
-								CciConstants.toCollaborationInterfaceImplName(
-									interfaces[i].getIdent()) 
-								+ "$" +
-								CciConstants.toCollaborationInterfaceImplName(
-									superType.getIdent());
-							try
-							{
-
-								CReferenceType innerSuperType = (CReferenceType)
-									new CClassNameType(innerSuperTypeName)
-										.checkType(context);  
-								 
-								((CciInterfaceDeclaration)inners[j])
-									.setProxyDeclarationSuperType(
-										innerSuperType);
-							}
-							catch (UnpositionedError e)
-							{
-								throw e.addPosition(getTokenReference());
-							}
-							
-						}
-					}
-				}
-			}
-		}
+		JTypeDeclaration[] newInners = new JTypeDeclaration[inners.length + 1];
+		System.arraycopy(inners, 0, newInners, 0, inners.length);
+		newInners[inners.length] = type;
+		inners = newInners;
 	}
+
+	
+//	/**
+//	 * It calls for the super implementation of it and after adds the modifier
+//	 * OVERRIDE for the inner interfaces that are already defined in the super
+//	 * interface, being the interfaces overridings of the virtual types, 
+//	 * it also sets the super class of the proxy. 
+//	 */
+//	public void checkInterface(CContext context) 
+//		throws PositionedError
+//	{
+//		super.checkInterface(context);
+//		FjTypeSystem typeSystem = new FjTypeSystem();
+//		for (int i = 0; i < interfaces.length; i++)
+//		{
+//			if (CModifier.contains(interfaces[i].getCClass().getModifiers(), 
+//				CCI_COLLABORATION))
+//			{
+//				JTypeDeclaration[] inners = getInners();
+//				for (int j = 0; j < inners.length; j++)
+//				{
+//					//It is done only for interfaces
+//					if (inners[j] instanceof CciInterfaceDeclaration)
+//					{
+//						//If the super class declares the inner with the same
+//						//name as my inner interface, then the modifier 
+//						//OVERRIDEN is added and the super type of the proxy
+//						//is seted.  
+//						CReferenceType superType = typeSystem.declaresInner(
+//							interfaces[i].getCClass(), 
+//							inners[j].getCClass().getIdent());
+//
+//						if (superType != null)
+//						{
+//							inners[j].setModifiers(
+//								inners[j].getModifiers() | FJC_OVERRIDE);
+//							//The proxy super type is calculated now
+//							String innerSuperTypeName = 
+//								CciConstants.toCollaborationInterfaceImplName(
+//									interfaces[i].getIdent()) 
+//								+ "$" +
+//								CciConstants.toCollaborationInterfaceImplName(
+//									superType.getIdent());
+//							try
+//							{
+//
+//								CReferenceType innerSuperType = (CReferenceType)
+//									new CClassNameType(innerSuperTypeName)
+//										.checkType(context);  
+//								 
+//								((CciInterfaceDeclaration)inners[j])
+//									.setProxyDeclarationSuperType(
+//										innerSuperType);
+//							}
+//							catch (UnpositionedError e)
+//							{
+//								throw e.addPosition(getTokenReference());
+//							}
+//							
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
 }

@@ -6,6 +6,8 @@ package org.caesarj.compiler;
 public class CciConstants
 	extends FjConstants
 {
+	public static final int DEFAULT_NUMERIC_RETURN = 0;
+	public static final boolean DEFAULT_BOOLEAN_RETURN = false;
 	public static final String IMPLEMENTATION_FIELD_NAME = "_implementation";	 
 	public static final String BINDING_FIELD_NAME = "_binding";
 	public static final String ACCESSOR_PREFIX = "_get";

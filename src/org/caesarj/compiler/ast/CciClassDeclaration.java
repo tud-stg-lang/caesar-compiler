@@ -55,7 +55,7 @@ public class CciClassDeclaration
 	 * The CIs that the class implements.
 	 */
 	protected CReferenceType implementation;
-
+	
 	/**
 	 * @param where
 	 * @param modifiers
@@ -153,8 +153,8 @@ public class CciClassDeclaration
 	 * a collaboration interface, otherwise it does not.
 	 * @throws PositionedError
 	 */
-	protected CReferenceType resolveInterface(CContext context, String ciName, 
-		CType interfaceType, boolean checkCollaboration) 
+	protected CReferenceType resolveInterface(CContext context, 
+		CType interfaceType) 
 		throws PositionedError
 	{
 		CReferenceType type;
@@ -164,20 +164,7 @@ public class CciClassDeclaration
 		}
 		catch (UnpositionedError e)
 		{
-			if (ciName != null)
-			{
-				try
-				{
-					type = (CReferenceType) new CClassNameType(
-						ciName + "$" + interfaceType).checkType(context);
-				}
-				catch (UnpositionedError e1)
-				{
-					throw e.addPosition(getTokenReference());
-				}
-			}
-			else
-				throw e.addPosition(getTokenReference());
+			throw e.addPosition(getTokenReference());
 		}
 
 		CClass clazz = type.getCClass();
@@ -199,14 +186,13 @@ public class CciClassDeclaration
 			KjcMessages.CIRCULAR_INTERFACE,
 			type.getQualifiedName());
 
-		if (checkCollaboration)
-		{
-			check(
-				context,
-				CModifier.contains(clazz.getModifiers(), CCI_COLLABORATION),
-				CaesarMessages.NON_CI,
-				type.getQualifiedName());
-		}
+		check(
+			context,
+			CModifier.contains(clazz.getModifiers(), CCI_COLLABORATION)
+			| CModifier.contains(clazz.getModifiers(), FJC_VIRTUAL),
+			CaesarMessages.NON_CI,
+			type.getQualifiedName());
+
 		return type;
 	}
 	
@@ -235,7 +221,7 @@ public class CciClassDeclaration
 			CReferenceType ownerCi = ownerClass.getBinding();
 			if (ownerCi != null)
 				ciName = ownerCi.getQualifiedName();
-			else
+/*			else
 			{
 				//Now the implementations, adding the implementation interfaces
 				//to the inners.
@@ -270,16 +256,18 @@ public class CciClassDeclaration
 					}
 				}
 			}
+*/			
 		}
 		
 		//Resolve the interfaces
-		for (int i = 0; i < interfaces.length; i++)
+/*		for (int i = 0; i < interfaces.length; i++)
 		{
 			interfaces[i] = resolveInterface(
 				context, ciName, interfaces[i], false);
 			
 		}
-		
+*/
+		super.resolveInterfaces(context);
 		//After resolving the interfaces initializes the implementations
 		initImplemetation(context);
 		
@@ -290,11 +278,9 @@ public class CciClassDeclaration
 			//And it is added the name of the owner CI on it.
 			binding = resolveInterface(
 				context,
-				ciName, 
 				ciName != null 
 					? new CClassNameType(ciName + "$" + binding)
-					: binding, 
-				true);
+					: binding);
 			
 			addCrossReferenceField(binding.getQualifiedName(), 
 				CciConstants.IMPLEMENTATION_FIELD_NAME);
@@ -315,9 +301,7 @@ public class CciClassDeclaration
 				context.getTypeFactory());
 
 		}
-	
 		sourceClass.setInterfaces(getAllInterfaces());
-
 	}
 	
 	/**
@@ -419,6 +403,7 @@ public class CciClassDeclaration
 	{
 		addMethod(createSettingMethod(ciType, fieldName, typeFactory));
 	}
+	
 	public boolean hasSuperClass()
 	{
 		return getSuperClass() != null
@@ -428,135 +413,48 @@ public class CciClassDeclaration
 					Constants.JAV_OBJECT));
 	}
 	
+
 //	/**
-//	 * Updates the cosntructors for call the super constructors of the proxies.
-//	 * If it does not have one, it adds a constructor that will call the super
-//	 * one.
+//	 * This method is used to insert the collaboration interaface when the 
+//	 * class is nested and shall implement the collaboration interface that 
+//	 * is nested on the super collaboration interface. The class shall 
+//	 * implement it if it has the same name of a nested interface of the 
+//	 * collaboration interface of its owner. 
+//	 * 
+//	 * @param ownerCi
 //	 */
-//	protected void updateConstructors(
-//		String collaborationInterface, 
-//		String fieldName,
-//		TypeFactory typefactory)
+//	protected void addImplementation(CReferenceType ownerCi)
 //	{
-//		boolean hasConstructor = false;
-//		for (int i = 0; i < methods.length; i++)
+//		FjTypeSystem typeSystem = new FjTypeSystem();
+//		CReferenceType[] ownerInners = ownerCi.getCClass().getInnerClasses();					
+//		for (int i = 0; i < interfaces.length; i++)
 //		{
-//			if (methods[i] instanceof FjConstructorDeclaration)
+//			String interfaceIdent = interfaces[i].getQualifiedName();
+//			interfaceIdent = interfaceIdent.substring(
+//				interfaceIdent.lastIndexOf("$") + 1);
+//			
+//			CReferenceType ownerInnerType = typeSystem.declaresInner(
+//				ownerCi.getCClass(), interfaceIdent);
+//			if (ownerInnerType != null)
 //			{
-//				((FjConstructorDeclaration)methods[i])
-//					.updateConstructor(
-//						collaborationInterface, 
-//						fieldName);
-//				hasConstructor = true;
+//				CReferenceType[] newInterfaces = 
+//					new CReferenceType[interfaces.length + 1];
+//					
+//				System.arraycopy(interfaces, 0, newInterfaces, 
+//					0, interfaces.length);
+//					
+//				newInterfaces[interfaces.length] = 
+//					new CClassNameType(ownerInnerType.getQualifiedName());
+//					
+//				interfaces = newInterfaces;
+//				
+//				//It will override the super virtual type.
+//				modifiers = modifiers | FJC_OVERRIDE;
+//				sourceClass.setModifiers(modifiers);
+//				return;
 //			}
 //		}
-//		
-//		if (! hasConstructor)
-//		{
-//			addMethod(
-//				createConstructor(
-//					collaborationInterface, 
-//					fieldName, 
-//					typefactory));
-//		}
-//
 //	}
-//	
-//	/**
-//	 * Creates a constructor without parameters that calls the super type 
-//	 * constructor. The super constructor has to receive two parameters: the
-//	 * implementation and the binding, so it creates two fresh objects and 
-//	 * passes for the super constructor.
-//	 */
-//	protected JMethodDeclaration createConstructor(
-//		String collaborationInterface, 
-//		String fieldName,
-//		TypeFactory typeFactory)
-//	{
-//		JFormalParameter[] parameters = 
-//			new JFormalParameter[]
-//			{
-//				new FjFormalParameter(
-//					getTokenReference(), 
-//					JFormalParameter.DES_PARAMETER, 
-//					new CClassNameType(collaborationInterface), 
-//					fieldName, 
-//					false)
-//			};
-//		
-//		// ver se tem super, dae insira um coinstructor call.
-//		
-//		JStatement[] statements = new JStatement[]
-//		{
-//			new JExpressionStatement(
-//				getTokenReference(),
-//				new FjAssignmentExpression(
-//					getTokenReference(), 
-//					new FjFieldAccessExpression(
-//						getTokenReference(), 
-//						new FjThisExpression(getTokenReference()), 
-//						fieldName), 
-//					new FjNameExpression(
-//						getTokenReference(), 
-//						fieldName)),
-//				null)			
-//		};
-//		
-//		FjConstructorBlock body = 
-//			new FjConstructorBlock(getTokenReference(), null, statements);
-//		
-//		return new FjConstructorDeclaration(
-//			getTokenReference(), 
-//			ACC_PUBLIC, 
-//			ident, 
-//			parameters, 
-//			new CReferenceType[0], 
-//			body, 
-//			null, 
-//			null, 
-//			typeFactory);
-//	}	
-	/**
-	 * This method is used to insert the collaboration interaface when the 
-	 * class is nested and shall implement the collaboration interface that 
-	 * is nested on the super collaboration interface. The class shall 
-	 * implement it if it has the same name of a nested interface of the 
-	 * collaboration interface of its owner. 
-	 * 
-	 * @param ownerCi
-	 */
-	protected void addImplementation(CReferenceType ownerCi)
-	{
-		FjTypeSystem typeSystem = new FjTypeSystem();
-		CReferenceType[] ownerInners = ownerCi.getCClass().getInnerClasses();					
-		for (int i = 0; i < interfaces.length; i++)
-		{
-			String interfaceIdent = interfaces[i].getQualifiedName();
-			interfaceIdent = interfaceIdent.substring(
-				interfaceIdent.lastIndexOf("$") + 1);
-			
-			CReferenceType ownerInnerType = typeSystem.declaresInner(
-				ownerCi.getCClass(), interfaceIdent);
-			if (ownerInnerType != null)
-			{
-				CReferenceType[] newInterfaces = 
-					new CReferenceType[interfaces.length + 1];
-					
-				System.arraycopy(interfaces, 0, newInterfaces, 
-					0, interfaces.length);
-					
-				newInterfaces[interfaces.length] = 
-					new CClassNameType(ownerInnerType.getQualifiedName());
-					
-				interfaces = newInterfaces;
-				
-				//It will override the super virtual type.
-				modifiers = modifiers | FJC_OVERRIDE;
-				sourceClass.setModifiers(modifiers);
-				return;
-			}
-		}
-	}
 	
 	/**
 	 * @return the Collaboration Interface which it binds.
@@ -683,10 +581,10 @@ public class CciClassDeclaration
 	{
 		if (binding != null)
 		{
-			checkInnerTypeImplementation(context, 
-				binding.getCClass().getInnerClasses(), 
-				binding, 
-				CaesarMessages.NESTED_TYPE_NOT_BOUND);
+//			checkInnerTypeImplementation(context, 
+//				binding.getCClass().getInnerClasses(), 
+//				binding, 
+//				CaesarMessages.NESTED_TYPE_NOT_BOUND);
 			
 			checkCIMethods(context, binding, CCI_PROVIDED, 
 				CaesarMessages.PROVIDED_METHOD_IN_BINDING);
@@ -697,10 +595,10 @@ public class CciClassDeclaration
 		}
 		else if (implementation != null)
 		{
-			checkInnerTypeImplementation(context, 
-				implementation.getCClass().getInnerClasses(), 
-				implementation, 
-				CaesarMessages.NESTED_TYPE_NOT_IMPLEMENTED);
+//			checkInnerTypeImplementation(context, 
+//				implementation.getCClass().getInnerClasses(), 
+//				implementation, 
+//				CaesarMessages.NESTED_TYPE_NOT_IMPLEMENTED);
 
 			checkCIMethods(context, implementation, CCI_EXPECTED, 
 				CaesarMessages.EXPECTED_METHOD_IN_IMPLEMENTATION);
@@ -1040,6 +938,11 @@ public class CciClassDeclaration
 		super.checkInterface(context);
 		sourceClass.setInterfaces(getAllInterfaces());
 	}
+	
+	public void setBinding(CReferenceType binding)
+	{
+		this.binding = binding;
+	}
 
 	/* (non-Javadoc)
 	 * @see at.dms.kjc.JTypeDeclaration#print()
@@ -1080,4 +983,92 @@ public class CciClassDeclaration
 		System.out.println();
 	}
 
+//	/**
+//	 * Updates the cosntructors for call the super constructors of the proxies.
+//	 * If it does not have one, it adds a constructor that will call the super
+//	 * one.
+//	 */
+//	protected void updateConstructors(
+//		String collaborationInterface, 
+//		String fieldName,
+//		TypeFactory typefactory)
+//	{
+//		boolean hasConstructor = false;
+//		for (int i = 0; i < methods.length; i++)
+//		{
+//			if (methods[i] instanceof FjConstructorDeclaration)
+//			{
+//				((FjConstructorDeclaration)methods[i])
+//					.updateConstructor(
+//						collaborationInterface, 
+//						fieldName);
+//				hasConstructor = true;
+//			}
+//		}
+//		
+//		if (! hasConstructor)
+//		{
+//			addMethod(
+//				createConstructor(
+//					collaborationInterface, 
+//					fieldName, 
+//					typefactory));
+//		}
+//
+//	}
+//	
+//	/**
+//	 * Creates a constructor without parameters that calls the super type 
+//	 * constructor. The super constructor has to receive two parameters: the
+//	 * implementation and the binding, so it creates two fresh objects and 
+//	 * passes for the super constructor.
+//	 */
+//	protected JMethodDeclaration createConstructor(
+//		String collaborationInterface, 
+//		String fieldName,
+//		TypeFactory typeFactory)
+//	{
+//		JFormalParameter[] parameters = 
+//			new JFormalParameter[]
+//			{
+//				new FjFormalParameter(
+//					getTokenReference(), 
+//					JFormalParameter.DES_PARAMETER, 
+//					new CClassNameType(collaborationInterface), 
+//					fieldName, 
+//					false)
+//			};
+//		
+//		// ver se tem super, dae insira um coinstructor call.
+//		
+//		JStatement[] statements = new JStatement[]
+//		{
+//			new JExpressionStatement(
+//				getTokenReference(),
+//				new FjAssignmentExpression(
+//					getTokenReference(), 
+//					new FjFieldAccessExpression(
+//						getTokenReference(), 
+//						new FjThisExpression(getTokenReference()), 
+//						fieldName), 
+//					new FjNameExpression(
+//						getTokenReference(), 
+//						fieldName)),
+//				null)			
+//		};
+//		
+//		FjConstructorBlock body = 
+//			new FjConstructorBlock(getTokenReference(), null, statements);
+//		
+//		return new FjConstructorDeclaration(
+//			getTokenReference(), 
+//			ACC_PUBLIC, 
+//			ident, 
+//			parameters, 
+//			new CReferenceType[0], 
+//			body, 
+//			null, 
+//			null, 
+//			typeFactory);
+//	}	
 }

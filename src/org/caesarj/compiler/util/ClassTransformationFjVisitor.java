@@ -10,11 +10,13 @@ import org.caesarj.compiler.ast.FjCleanClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassIfcImplDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassInterfaceDeclaration;
 import org.caesarj.compiler.ast.FjCompilationUnit;
+import org.caesarj.compiler.ast.FjTypeSystem;
 import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
 import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CTypeVariable;
+import org.caesarj.kjc.JClassDeclaration;
 import org.caesarj.kjc.JClassImport;
 import org.caesarj.kjc.JCompilationUnit;
 import org.caesarj.kjc.JInterfaceDeclaration;
@@ -75,10 +77,14 @@ public class ClassTransformationFjVisitor extends FjVisitor {
 		// classes need to know their
 		// owners in order to be able to access
 		// fields when inheriting
-		if( owner.get() instanceof FjClassDeclaration )
-			self.setOwnerDeclaration( owner.get() );
+		Object myOwner = owner.get();
+		if (myOwner instanceof FjClassDeclaration
+			|| myOwner instanceof CciCollaborationInterfaceDeclaration)
 
-		super.visitFjClassDeclaration( self, modifiers, ident, typeVariables, superClass, interfaces, body, methods, decls );	}
+			self.setOwnerDeclaration(myOwner);
+	
+		super.visitFjClassDeclaration( self, modifiers, ident, typeVariables, superClass, interfaces, body, methods, decls );	
+	}
 
 	public void visitFjCleanClassDeclaration(
 		FjCleanClassDeclaration self,
@@ -167,13 +173,16 @@ public class ClassTransformationFjVisitor extends FjVisitor {
 			CciInterfaceDeclaration collaborationInterface = 
 				(CciInterfaceDeclaration)self;
 
-			collaborationInterface.initInnersAsCollaboration();
+			//collaborationInterface.initInnersAsCollaboration();
 			
 			CciCollaborationInterfaceProxyDeclaration ciProxy =
 				collaborationInterface.getProxyDeclaration(
 					environment.getTypeFactory());
-
 			owner.append(ciProxy);
+					
+			collaborationInterface.transformInnerInterfaces();
+			
+			
 		}
 
 		super.visitInterfaceDeclaration(
@@ -185,4 +194,45 @@ public class ClassTransformationFjVisitor extends FjVisitor {
 			methods);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.caesarj.kjc.KjcVisitor#visitClassDeclaration(org.caesarj.kjc.JClassDeclaration, int, java.lang.String, org.caesarj.kjc.CTypeVariable[], java.lang.String, org.caesarj.kjc.CReferenceType[], org.caesarj.kjc.JPhylum[], org.caesarj.kjc.JMethodDeclaration[], org.caesarj.kjc.JTypeDeclaration[])
+	 */
+	public void visitClassDeclaration(
+		JClassDeclaration self,
+		int modifiers,
+		String ident,
+		CTypeVariable[] typeVariables,
+		String superClass,
+		CReferenceType[] interfaces,
+		JPhylum[] body,
+		JMethodDeclaration[] methods,
+		JTypeDeclaration[] decls)
+	{
+		Object myOwner = owner.get();
+		if (myOwner instanceof FjClassDeclaration)
+		{		
+			FjClassDeclaration ownerClass = (FjClassDeclaration) myOwner;
+			FjClassDeclaration fjSelf = (FjClassDeclaration) self;
+			if (ownerClass.getBinding() != null
+				&& fjSelf.getBinding() != null)
+			{
+				self.setSuperClass(new CClassNameType(
+					ownerClass.getBinding().getQualifiedName() 
+					+ "$" + fjSelf.getBinding().toString()));
+				fjSelf.setBinding(null);
+			}
+		}
+		// TODO Auto-generated method stub
+		super.visitClassDeclaration(
+			self,
+			modifiers,
+			ident,
+			typeVariables,
+			superClass,
+			interfaces,
+			body,
+			methods,
+			decls);
+	}
+
 }

@@ -3,6 +3,8 @@ package org.caesarj.compiler.util;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.PositionedError;
+import org.caesarj.compiler.ast.CciCollaborationInterfaceDeclaration;
+import org.caesarj.compiler.ast.CciInterfaceDeclaration;
 import org.caesarj.compiler.ast.CciWeaveletClassDeclaration;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
@@ -100,9 +102,10 @@ public abstract class FjVisitor implements KjcVisitor {
 	protected class Owner {
 		Object reference;
 		public void set( Object o ) {
-			if( o == null
+			if (o == null
+				|| o instanceof CciCollaborationInterfaceDeclaration
 				|| o instanceof FjClassDeclaration
-				|| o instanceof FjCompilationUnit )
+				|| o instanceof FjCompilationUnit)
 				reference = o;
 			else
 				throw new IllegalArgumentException( "illegal owner: " + o.getClass().getName() );
@@ -111,12 +114,17 @@ public abstract class FjVisitor implements KjcVisitor {
 			return reference;
 		}
 		public void append( JTypeDeclaration decl ) {
-			if( reference instanceof FjClassDeclaration )
+			if (reference instanceof CciCollaborationInterfaceDeclaration)
+				((CciCollaborationInterfaceDeclaration) reference).append(decl);
+			else if( reference instanceof FjClassDeclaration )
 				((FjClassDeclaration) reference).append( decl );
 			else if( reference instanceof FjCompilationUnit )
 				((FjCompilationUnit) reference).append( decl );
 		}
 		public String getQualifiedName() {
+			if (reference instanceof CciCollaborationInterfaceDeclaration)
+			return ((CciCollaborationInterfaceDeclaration) reference)
+				.getCClass().getQualifiedName() + "$";
 			if( reference instanceof FjClassDeclaration )
 				return ((FjClassDeclaration) reference).getCClass().getQualifiedName() + "$";
 			else if( reference instanceof FjCompilationUnit )
@@ -363,7 +371,19 @@ public abstract class FjVisitor implements KjcVisitor {
 		String ident,
 		CReferenceType[] interfaces,
 		JPhylum[] body,
-		JMethodDeclaration[] methods) {
+		JMethodDeclaration[] methods)
+	{
+		if (self instanceof CciCollaborationInterfaceDeclaration)
+		{
+			Object oldOwner = owner.get();
+			owner.set(self);
+			JTypeDeclaration[] inners = 
+				((CciCollaborationInterfaceDeclaration)self).getInners();
+			for( int i = 0; i < inners.length; i++ ) 
+				inners[i].accept( this );
+				
+			owner.set(oldOwner);
+		}
 	}
 
 	public void visitFieldDeclaration(

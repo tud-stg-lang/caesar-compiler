@@ -174,7 +174,7 @@ public class DebugVisitor extends FjVisitor
 		System.out.print(CModifier.toString(modifiers));
 		System.out.print(((CReferenceType)type).getQualifiedName());
 		System.out.print(" " + ident + ";");
-		System.out.println(((FjSourceField)self.getField()).getFamily());
+		//System.out.println(((FjSourceField)self.getField()).getFamily());
 	}
 
 	/* (non-Javadoc)
