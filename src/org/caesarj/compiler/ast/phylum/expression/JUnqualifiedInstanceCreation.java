@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JUnqualifiedInstanceCreation.java,v 1.9 2005-02-11 18:45:22 aracic Exp $
+ * $Id: JUnqualifiedInstanceCreation.java,v 1.10 2005-02-15 18:33:51 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -33,7 +33,6 @@ import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
-import org.caesarj.compiler.family.ContextExpression;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CThrowableInfo;
 import org.caesarj.compiler.types.CType;
@@ -239,11 +238,6 @@ public class JUnqualifiedInstanceCreation extends JExpression {
         if( type.getCClass().isMixin() && !context.getMethodContext().getMethodDeclaration().getMethod().isCaesarFactoryMethod()) {
 	        try {
 	            family = type.getPath();
-	            if(context.getInitializerContext() != null) {
-	                // we are in the intializer context, but the new takes actually place at the class context
-	                // hence, substitute 3 levels from k
-	                ((ContextExpression)family.getHead()).adaptK(-3);
-	            }
 	        }
 	        catch (UnpositionedError e) {
                 throw e.addPosition(getTokenReference());
