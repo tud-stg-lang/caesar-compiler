@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JLocalVariableExpression.java,v 1.6 2005-02-09 16:56:28 aracic Exp $
+ * $Id: JLocalVariableExpression.java,v 1.7 2005-02-15 18:33:30 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -173,7 +173,7 @@ public class JLocalVariableExpression extends JExpression {
 	                context, variable.getType(), context.getClassContext().getCClass());
 	        
 	        if(castType != null) {
-	            return new JCastExpression(
+	            return new CjCastExpression(
 	                getTokenReference(),
 	                this,
 	                castType

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JFieldAccessExpression.java,v 1.23 2005-02-12 17:56:59 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.24 2005-02-15 18:30:47 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -506,7 +506,7 @@ public class JFieldAccessExpression extends JExpression {
 	              context, field.getType(), context.getClassContext().getCClass());
 	      
 	      if(castType != null) {
-	          return new JCastExpression(
+	          return new CjCastExpression(
 	              getTokenReference(),
 	              this,
 	              castType
