@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: VirtualClassesTests.java,v 1.42 2005-01-24 16:52:59 aracic Exp $
+ * $Id: VirtualClassesTests.java,v 1.43 2005-01-27 10:42:19 aracic Exp $
  */
 
 package org.caesarj.test;
@@ -262,6 +262,11 @@ public class VirtualClassesTests extends FjTestCase {
 	/* Accessing public cclass fields */
 	public void testCaesarTestCase_50() throws Throwable {
         compileAndRun("test50", "VCTestCase");
+    }
+	
+	/* Accessing public cclass fields from an inner class*/
+	public void testCaesarTestCase_51() throws Throwable {
+        compileAndRun("test51", "VCTestCase");
     }
 	
 	/* Test subject oriented programming. */
