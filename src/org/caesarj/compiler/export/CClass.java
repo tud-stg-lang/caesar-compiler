@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClass.java,v 1.34 2005-01-27 15:20:34 aracic Exp $
+ * $Id: CClass.java,v 1.35 2005-02-16 13:24:18 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -122,6 +122,10 @@ public abstract class CClass extends CMember
 
     public boolean isObjectClass() {
         return getQualifiedName().equals(JAV_OBJECT);
+    }
+    
+    public boolean isCaesarObjectClass() {
+        return getQualifiedName().equals(CaesarConstants.CAESAR_OBJECT);
     }
     
     public boolean isWrapper() {
