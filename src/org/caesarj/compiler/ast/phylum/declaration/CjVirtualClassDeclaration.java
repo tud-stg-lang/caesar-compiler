@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.11 2004-09-28 15:13:59 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.12 2004-10-04 21:05:46 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -307,14 +307,16 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
             
             superTypeRef = (CReferenceType)superTypeRef.checkType(context);
             
-            getCClass().setSuperClass(superTypeRef);
-            setSuperClass(superTypeRef);
-            
-            setInterfaces(
+            CReferenceType ifcs[] =
                 new CReferenceType[]{
                     getMixinIfcDeclaration().getCClass().getAbstractType()
-                }
-            );
+                };
+            
+            setInterfaces(ifcs);            
+            setSuperClass(superTypeRef);
+            
+            getCClass().setSuperClass(superTypeRef);            
+            getCClass().setInterfaces(ifcs);
             
             for(int i=0; i<inners.length; i++) {
                 inners[i].adjustSuperType(context);

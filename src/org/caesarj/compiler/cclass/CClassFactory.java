@@ -191,8 +191,9 @@ public class CClassFactory implements CaesarConstants {
 	}
     
 	public void modifyCaesarClass() {    	
-				
 		caesarClass.setInterfaces(CReferenceType.EMPTY);
-		caesarClass.setSuperClass(null);		
+		caesarClass.setSuperClass(null);				
+		caesarClass.getCClass().setInterfaces(CReferenceType.EMPTY);
+		caesarClass.getCClass().setSuperClass(null);
 	}
 }
