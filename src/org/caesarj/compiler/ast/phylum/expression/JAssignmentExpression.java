@@ -15,16 +15,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JAssignmentExpression.java,v 1.6 2005-01-18 12:19:13 klose Exp $
+ * $Id: JAssignmentExpression.java,v 1.7 2005-01-18 13:14:16 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.family.Path;
+import org.caesarj.compiler.types.CDependentType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.CWarning;
@@ -114,26 +116,37 @@ public class JAssignmentExpression extends JBinaryExpression {
                                                  context.getEnvironment(), 
                                                  false, 
                                                  false));
+    CType 	rType = right.getType(factory),
+    		lType = left.getType(factory);
     
-    // CTODO mach hier weiter
-    Path rPath = Path.createFrom(context.getBlockContext(), right);
-    Path lPath = Path.createFrom(context.getBlockContext(), left);
-    System.out.println("assignment at line: "+getTokenReference().getLine());
-    System.out.println("\trPath = "+rPath);
-    System.out.println("\tlPath = "+lPath);
+    boolean rDepType = rType instanceof CDependentType,	
+    		lDepType = lType instanceof CDependentType;
     
-    Path rPathNorm = rPath.normalize();
-    System.out.println("\trPathNorm = "+rPathNorm);
-    Path lPathNorm = lPath.normalize();    
-    System.out.println("\tlPathNorm = "+lPathNorm);
-
+    if ( rDepType != lDepType ){
+        check(context, false, CaesarMessages.ASSIGNMENT_MIXEDTYPES );
+    }
     
-    check(context,
-      rPathNorm.equals(lPathNorm),
-//		KjcMessages.ASSIGNMENT_BADTYPE, right.getType(factory), left.getType(factory));
-      KjcMessages.ASSIGNMENT_BADTYPE, 	rPathNorm+","+right.getType(factory).getCClass().getIdent(), 
-      									lPathNorm+","+left.getType(factory).getCClass().getIdent() );
-
+    if (rDepType == true){
+	    
+	    // CTODO mach hier weiter
+	    Path rPath = Path.createFrom(context.getBlockContext(), right);
+	    Path lPath = Path.createFrom(context.getBlockContext(), left);
+	    System.out.println("assignment at line: "+getTokenReference().getLine());
+	    System.out.println("\trPath = "+rPath);
+	    System.out.println("\tlPath = "+lPath);
+	    
+	    Path rPathNorm = rPath.normalize();
+	    System.out.println("\trPathNorm = "+rPathNorm);
+	    Path lPathNorm = lPath.normalize();    
+	    System.out.println("\tlPathNorm = "+lPathNorm);
+	
+	    
+	    check(context,
+	      rPathNorm.equals(lPathNorm),
+	//		KjcMessages.ASSIGNMENT_BADTYPE, right.getType(factory), left.getType(factory));
+	      KjcMessages.ASSIGNMENT_BADTYPE, 	rPathNorm+","+right.getType(factory).getCClass().getIdent(), 
+	      									lPathNorm+","+left.getType(factory).getCClass().getIdent() );
+    }
     
     if (right instanceof JTypeNameExpression) {
       check(context, false, KjcMessages.VAR_UNKNOWN, ((JTypeNameExpression)right).getQualifiedName());
