@@ -2383,7 +2383,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				singletonAspect=
 				new CjDeploymentSupportClassDeclaration(
 					aspectClass.getTokenReference(),
-					modifiers | ACC_STATIC,
+					(modifiers | ACC_STATIC) & (~ACC_MIXIN),
 					singletonAspectName,
 					CTypeVariable.EMPTY,
 					null,
@@ -2415,7 +2415,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				 singletonAspect =
 				new CjDeploymentSupportClassDeclaration(
 					aspectClass.getTokenReference(),
-					modifiers | ACC_STATIC,
+					(modifiers | ACC_STATIC) & (~ACC_MIXIN),
 					singletonAspectName,
 					CTypeVariable.EMPTY,
 					null,

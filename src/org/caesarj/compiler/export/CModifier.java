@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CModifier.java,v 1.6 2004-03-22 12:59:13 aracic Exp $
+ * $Id: CModifier.java,v 1.7 2004-07-21 14:56:05 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -203,6 +203,10 @@ public class CModifier implements Constants {
                 return "crosscutting";
             case ACC_DEPLOYED :
                 return "deploy";
+            case ACC_MIXIN_INTERFACE:
+                return "mixinifc";
+            case ACC_MIXIN:
+                return "mixin";
             default :
                 throw new InconsistencyException();
         }
@@ -228,7 +232,9 @@ public class CModifier implements Constants {
             "strictfp",
             "privileged",
             "crosscutting",
-            "deploy" };
+            "deploy",
+            "mixinifc",
+            "mixin"};
 
     private static final int[] CODES =
         {
@@ -246,5 +252,7 @@ public class CModifier implements Constants {
             ACC_STRICT,
             ACC_PRIVILEGED,
             ACC_CROSSCUTTING,
-            ACC_DEPLOYED };
+            ACC_DEPLOYED,
+            ACC_MIXIN_INTERFACE,
+            ACC_MIXIN};
 }
