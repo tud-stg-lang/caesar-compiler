@@ -1,6 +1,7 @@
 package org.caesarj.mixer2;
 
 import java.util.Stack;
+import java.util.Vector;
 
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantPool;
@@ -11,59 +12,6 @@ import org.caesarj.compiler.cclass.JavaTypeNode;
 import org.caesarj.mixer2.intern.ClassModifyingVisitor;
 
 public class ClassGenerator {
-	public static String OBJECT_CLASS = "java/lang/Object";
-	
-	protected Stack	classStack = new Stack();
-	
-	public	String getContext(){
-		if (classStack.size()==0)	return "";
-		return (String)classStack.peek();
-	}
-	
-	public static String	implementationName( String interfaceName ){
-		String packageName, components[];
-		String [] parts = interfaceName.replace('.','/').split("/");
-		if (parts.length < 2){
-			packageName = ""; 
-			components = parts[0].split("\\$");
-		}
-		else{
-			packageName = parts[0];
-			components = parts[1].split("\\$");
-		}
-		
-		String result = packageName.equals("")? "" : packageName + "/";
-		for (int i=0;i<components.length-1;i++){
-			result = result+components[i]+"_Impl$";
-		}
-		result = result + components[ components.length-1 ]+"_Impl";
-		return result;
-	} 
-	
-	static String removeImpl( String name ){
-		return name.substring(0, name.length()-5);
-	}
-	
-	public static String	interfaceName( String implementationName ){
-		String packageName, components[];
-		String [] parts = implementationName.replace('.','/').split("/");
-		if (parts.length < 2){
-			packageName = ""; 
-			components = parts[0].split("\\$");
-		}
-		else{
-			packageName = parts[0];
-			components = parts[1].split("\\$");
-		}
-		
-		String result = packageName.equals("")? "" : packageName + "/";
-		for (int i=0;i<components.length-1;i++){
-			result = result+removeImpl(components[i])+"$";
-		}
-		result = result + removeImpl( components[ components.length-1 ] );
-		return result;
-	}
-	
 	public static void setOutputDir( String dir ){
 		ClassModifyingVisitor.setOutputDirectory( dir );
 	}
@@ -78,27 +26,62 @@ public class ClassGenerator {
     }
     
     public void generateClass(
-        JavaQualifiedName mixinQN,
-        JavaQualifiedName newClassQN,
-        JavaQualifiedName newSuperQN,
-        JavaQualifiedName newOuterQN,
-		CaesarTypeSystem	typeSystem
-    ) throws MixerException {
-       System.out.println("Mixing "+newClassQN);
-       System.out.println("\tmixin: "+mixinQN);
-       System.out.println("\tsuper: "+newSuperQN);
-       System.out.println("\touter: "+newOuterQN);
-    	    	   				
-       createModifiedClass(
-           mixinQN.toString(), 
-           newClassQN.toString(), 
-           newSuperQN == null? "" : newSuperQN.toString(), 
-           newOuterQN == null? "" : newOuterQN.toString() 
-       );		
-    }
+            JavaQualifiedName mixinQN,
+            JavaQualifiedName newClassQN,
+            JavaQualifiedName newSuperQN,
+            JavaQualifiedName newOuterQN,
+//    		CaesarTypeSystem	typeSystem
+    		String[]	outers
+        ) throws MixerException {
+            System.out.println("Mixing "+newClassQN);
+           System.out.println("\tmixin: "+mixinQN);
+           System.out.println("\tsuper: "+newSuperQN);
+           System.out.println("\touter: "+newOuterQN);
+        	    	   				
+           createModifiedClass(
+               mixinQN.toString(), 
+               newClassQN.toString(), 
+               newSuperQN == null? "" : newSuperQN.toString(), 
+               newOuterQN == null? "" : newOuterQN.toString(),
+               outers
+           );		
+        }
 
 
-    
+    public void generateClass(
+            JavaQualifiedName mixinQN,
+            JavaQualifiedName newClassQN,
+            JavaQualifiedName newSuperQN,
+            JavaQualifiedName newOuterQN,
+			CaesarTypeSystem	typeSystem
+        ) throws MixerException {
+        
+        	// collect all outer classes for this mixin
+        	Vector	outerClasses = new Vector();
+        	
+        	JavaTypeNode mixinType = typeSystem.getJavaGraph().getNode(newClassQN),
+    					outerType = mixinType.getOuter();
+        	while ( outerType != null){
+           	  outerClasses.add( outerType.getQualifiedName().getIdent() );  		
+    		  outerType = outerType.getOuter();
+        	}
+        	
+        	String[] outers = (String[])outerClasses.toArray( new String[0]);
+        	
+           System.out.println("Mixing "+newClassQN);
+           System.out.println("\tmixin: "+mixinQN);
+           System.out.println("\tsuper: "+newSuperQN);
+           System.out.println("\touter: "+newOuterQN);
+        	    	   				
+           createModifiedClass(
+               mixinQN.toString(), 
+               newClassQN.toString(), 
+               newSuperQN == null? "" : newSuperQN.toString(), 
+               newOuterQN == null? "" : newOuterQN.toString(),
+               outers
+           );		
+        }
+   
      
    
     /**
@@ -109,8 +92,9 @@ public class ClassGenerator {
 			String originalClass, 
 			String newClass, 
 			String newSuperclass, 
-			String newOuterClass ) throws MixerException {
-		ClassModifyingVisitor.modify(originalClass,newClass,newSuperclass,newOuterClass);
+			String newOuterClass,
+			String [] outers ) throws MixerException {
+		ClassModifyingVisitor.modify(originalClass,newClass,newSuperclass,newOuterClass, outers);
 	}
 	
     
