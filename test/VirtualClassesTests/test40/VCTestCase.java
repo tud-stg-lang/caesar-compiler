@@ -19,15 +19,15 @@ public class VCTestCase extends TestCase {
 	public void test() {
 		System.out.println("-------> VCTest 40: Type scoping with arrays");
 
-		BoardIfc boardComp = new BoardImpl();
+		final BoardIfc boardComp = new BoardImpl();
 
-		BoardIfc.Board board = boardComp.makeBoard(2, 2);
-		BoardIfc.BoardItem newItem = boardComp.new BoardItem();
+		boardComp.Board board = boardComp.makeBoard(2, 2);
+		boardComp.BoardItem newItem = boardComp.new BoardItem();
 
 		board.putAt(1, 1, newItem);
 		newItem.moveTo(0, 1);
 
-		BoardIfc.BoardItem item = board.itemAt(0, 1);
+		boardComp.BoardItem item = board.itemAt(0, 1);
 
 		String result = "(" + item.getX() + ", " + item.getY() + ")";
 		System.out.println(result);
@@ -80,7 +80,7 @@ public cclass BoardImpl extends BoardIfc
 
 	public cclass Board
 	{
-		BoardItem[][] _matrix = null;
+	    protected BoardItem[][] _matrix = null;
 
 		public BoardItem[] getBoardItems(BoardItem[] items) 
 		{
@@ -125,9 +125,9 @@ public cclass BoardImpl extends BoardIfc
 
 	public cclass BoardItem
 	{
-		Board _board = null;
-		int _x = 0;
-		int _y = 0;
+	    protected Board _board = null;
+		protected int _x = 0;
+		protected int _y = 0;
 
 		public void positionAt(Board board, int x, int y)
 		{

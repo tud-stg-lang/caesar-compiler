@@ -18,7 +18,8 @@ public class VCTestCase extends TestCase {
 	public void test() {
 		System.out.println("-------> VCTest 41: Accessing field within nested mixin copies");
 
-		OuterD.InnerD a = new OuterD().new InnerD();
+		final OuterD od = new OuterD();
+		od.InnerD a = od.new InnerD();
 
 		String result = "" + a.getF();
 		System.out.println(result);

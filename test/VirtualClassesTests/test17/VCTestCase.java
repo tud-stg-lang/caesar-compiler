@@ -97,7 +97,7 @@ public cclass OuterA
 
 		public cclass DeepestB
 		{
-			protected OuterA.InnerA.DeepestA _child2 = null;
+			protected DeepestA _child2 = null;
 
 			public void setChild2(DeepestA child)
 			{

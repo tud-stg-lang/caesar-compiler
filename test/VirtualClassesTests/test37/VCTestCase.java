@@ -20,11 +20,11 @@ public class VCTestCase extends TestCase {
 		System.out.println("-------> VCTest 37: automatic casts: start");
 
 		{
-		B b = new B();
-        B.CG cg = b.new CG();
-        B.CG.N n1 = cg.new N().init("n1", Color.BLACK);
-        B.CG.N n2 = cg.new N().init("n2", Color.RED);
-		B.CG.E e = cg.new E().init(n1, n2);
+		final B b = new B();
+        final b.CG cg = b.new CG();
+        cg.N n1 = cg.new N().init("n1", Color.BLACK);
+        cg.N n2 = cg.new N().init("n2", Color.RED);
+		cg.E e = cg.new E().init(n1, n2);
 		e.doSomethingWithNodes();
 		
 		System.out.println(n1);
@@ -37,8 +37,8 @@ public class VCTestCase extends TestCase {
 		}
 		
 		{
-		Y bb = new Y();
-		Y.B b = bb.new B();
+		final Y bb = new Y();
+		bb.B b = bb.new B();
 		b.exec();
 		}
 

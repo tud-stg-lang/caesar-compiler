@@ -27,7 +27,8 @@ public class VCTestCase extends TestCase
 	{
 		System.out.println("-------> VCTest 33: Inheritance from Implicit Type: start");
         
-        OuterE.InnerB cb = new OuterE().new InnerB();
+		final OuterE oe = new OuterE();
+        oe.InnerB cb = oe.new InnerB();
 	
 		String result = cb.queryA() + ", " + cb.queryB() + ", " + cb.queryC();
 

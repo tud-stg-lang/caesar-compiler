@@ -23,7 +23,7 @@ public class VCTestCase extends TestCase {
 
 		ModelD d = new ModelD();
 
-		ModelD.RoleB db = d.RoleB(b);
+		d.RoleB db = d.RoleB(b);
 
 		String result = db.getId() + "; " + db.getA().getId();
 		System.out.println(result);

@@ -18,8 +18,7 @@ public class VCTestCase extends TestCase {
 	public void test() {
 		System.out.println("-------> VCTest 33b: Inheritance from Implicit Type with deeper nesting: start");
         
-        B.U.Y buy = new B().new U().new Y();	
-		String result = buy.queryB();
+		String result = new B().new U().new Y().queryB();
 		assertEquals(expectedResult, result);		
 
         System.out.println("-------> VCTest 33b: end");

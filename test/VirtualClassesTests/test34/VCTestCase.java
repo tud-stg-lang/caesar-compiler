@@ -23,8 +23,13 @@ public class VCTestCase extends TestCase
 	{
 		System.out.println("-------> VCTest 34: Mixin factory methods: start");
 
-        OuterB.InnerB db = new OuterD().newB();
-        OuterC.InnerC dc = new OuterD().newC();
+		final OuterD od1 = new OuterD();
+		final OuterD od2 = new OuterD();
+		final OuterB ob = od1;
+		final OuterC oc = od2;
+		
+        ob.InnerB db = (ob.InnerB)od1.newB();
+        oc.InnerC dc = (oc.InnerC)od2.newC();
 
 		String result = db.queryB() + ", " + dc.queryC();
 

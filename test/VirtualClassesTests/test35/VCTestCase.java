@@ -21,8 +21,8 @@ public class VCTestCase extends TestCase
 		System.out.println("-------> VCTest 35: Object methods: start");
 
         IfcB b = new ClassB();
-        OuterA a = new OuterA();
-        OuterA.InnerA aa = a.new InnerA();
+        final OuterA a = new OuterA();
+        a.InnerA aa = a.new InnerA();
 
 		/* test normal interface */
         String result1 = "[" + b.toString() + "][" + b.equals(aa) + "][" + b.hashCode() + "]";

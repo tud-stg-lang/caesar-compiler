@@ -16,8 +16,8 @@ public class VCTestCase extends TestCase {
 	public void test() {
 		System.out.println("-------> VCTest 51: Accessing fields defined in enclosing");
 
-		OuterA a = new OuterA();
-		OuterA.InnerA ia = a.new InnerA();		
+		final OuterA a = new OuterA();
+		a.InnerA ia = a.new InnerA();		
 		
 		System.out.println(ia.getI());		
 				

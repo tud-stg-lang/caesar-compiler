@@ -26,12 +26,12 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 25: Test Default Constructors: start");
 
-		OuterA oa = new OuterA();
-		OuterA.InnerA ia = oa.new InnerA();
+		final OuterA oa = new OuterA();
+		oa.InnerA ia = oa.new InnerA();
 
-		OuterB ob = new OuterB();
-		OuterB.InnerB ib = ob.new InnerB();
-		OuterA.InnerD id = oa.new InnerD();
+		final OuterB ob = new OuterB();
+		ob.InnerB ib = ob.new InnerB();
+		oa.InnerD id = oa.new InnerD();
 
 		String result = oa.queryA() + "; " + ia.queryA() + "; " + ob.queryA() + "; " + ib.queryA() + "; " + id.queryA();
 

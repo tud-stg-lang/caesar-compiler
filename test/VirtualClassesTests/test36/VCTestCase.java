@@ -25,9 +25,9 @@ public class VCTestCase extends TestCase
 	{
 		System.out.println("-------> VCTest 36: Inheritance cross package boundaries: start");
 
-		OuterD d = new OuterD();
-        OuterD.InnerE e = d.new InnerE();
-        OuterD.InnerF f = d.new InnerF();
+		final OuterD d = new OuterD();
+        d.InnerE e = d.new InnerE();
+        d.InnerF f = d.new InnerF();
 
         String resultE = e.getA();
         String resultF = f.getA();
