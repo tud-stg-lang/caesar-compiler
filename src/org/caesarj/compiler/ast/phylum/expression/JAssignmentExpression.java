@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JAssignmentExpression.java,v 1.14 2005-02-11 18:45:22 aracic Exp $
+ * $Id: JAssignmentExpression.java,v 1.15 2005-02-12 17:56:37 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -124,18 +124,20 @@ public class JAssignmentExpression extends JBinaryExpression {
     /**
      * family check
      */
-    Path rFam = right.getFamily();
-    Path lFam = left.getFamily();
-    System.out.println("ASSIGNEMENT (line "+getTokenReference().getLine()+"):");
-    System.out.println("\t"+lFam+" <= "+rFam);
-    if(lFam != null && rFam != null) {        
-        check(context,
-  	      rFam.isAssignableTo( lFam ),
-  	      KjcMessages.ASSIGNMENT_BADTYPE, 	right.getFamily()+"."+right.getType(factory).getCClass().getIdent(),   
-  	      left.getFamily()+"."+left.getType(factory).getCClass().getIdent() );
-    }
-    else if(lFam!=null ^ rFam!=null) {
-        throw new InconsistencyException("(error required here)... trying to assign an object with family to an object without family");
+    if(right.getType(context.getTypeFactory()).isCaesarReference()) {
+	    Path rFam = right.getFamily();
+	    Path lFam = left.getFamily();
+	    System.out.println("ASSIGNEMENT (line "+getTokenReference().getLine()+"):");
+	    System.out.println("\t"+lFam+" <= "+rFam);
+	    if(lFam != null && rFam != null) {        
+	        check(context,
+	  	      rFam.isAssignableTo( lFam ),
+	  	      KjcMessages.ASSIGNMENT_BADTYPE, 	right.getFamily()+"."+right.getType(factory).getCClass().getIdent(),   
+	  	      left.getFamily()+"."+left.getType(factory).getCClass().getIdent() );
+	    }
+	    else if(lFam!=null ^ rFam!=null) {
+	        throw new InconsistencyException("(error required here)... trying to assign an object with family to an object without family");
+	    }
     }
 	    
     
