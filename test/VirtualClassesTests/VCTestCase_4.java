@@ -19,7 +19,7 @@ public class VCTestCase_4 extends TestCase {
 	public void test() {
         System.out.println("-------> VCTestCase_4: start");        	
 
-		EvalNegAST ast = new EvalNegAST_Impl();
+		EvalNegAST ast = new EvalNegAST_Impl(null);
 		EvalNegAST.Literal l1 = (EvalNegAST.Literal)ast.$newLiteral();
 		EvalNegAST.Literal l2 = (EvalNegAST.Literal)ast.$newLiteral();
 		EvalNegAST.AddExpression add = (EvalNegAST.AddExpression)ast.$newAddExpression();
@@ -29,6 +29,8 @@ public class VCTestCase_4 extends TestCase {
 		l2.init(4);
 		add.init(l1, l2);
 		neg.init(add);
+		
+		neg.doSomething();
 
 		System.out.println("-(5+4) = "+neg.eval());
 	    
@@ -37,8 +39,21 @@ public class VCTestCase_4 extends TestCase {
 }
 
 //=========================================================
-public cclass AST  {			
-	public cclass Expression {
+public cclass AST  {		
+
+	private int x = 10;
+	
+	public int getX() {return x;}
+	
+	
+	public cclass Expression {		
+		
+		public Expression() {
+		}
+	
+		public void doSomething() {
+			System.out.println("*** "+$outer.getX());
+		}
 	}
 
 	public cclass AddExpression extends Expression {		
@@ -68,7 +83,7 @@ public cclass EvalAST extends AST {
 		public int eval() {return 0;}
 	}
 
-	public cclass AddExpression {
+	public cclass AddExpression {	
 		public int eval() {
 			return
 				((EvalAST.Expression)l).eval() +

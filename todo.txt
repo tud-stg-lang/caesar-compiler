@@ -4,13 +4,15 @@ HIGH PRIORITY
 - Substitution of new calls
 - Name clashes -> compiler error
 - checkInterface -> redefined cclass methods have to keep complete parents throwable list
+- ~~~ allowing extends clause for furtherbindings ~~~
 - typesystem -> casts, family variables
+- outer and deep nesting -> access of outer of outer, in java: static accessor methods
 
 
 LOW PRIORITY
 
 - incremental compilation
-- mixins with support classes for dynamic deployement
+- mixins with support classes for dynamic deployment
 
 
 WORK DONE
