@@ -181,4 +181,44 @@ public class CompilerErrorsTests extends FjTestCase {
 	public void testCaesarTestCase_240() throws Throwable {
         compileAndRun("test240", "CETestCase", new String[]{""});
     }
+	
+	public void testCaesarTestCase_241() throws Throwable {
+        compileAndRun("test241", "CETestCase", new String[]{""});
+    }
+	
+	public void testCaesarTestCase_242() throws Throwable {
+        compileAndRun("test242", "CETestCase", new String[]{""});
+    }
+	
+	public void testCaesarTestCase_243() throws Throwable {
+        compileAndRun("test243", "CETestCase", new String[]{""});
+    }
+	
+	public void testCaesarTestCase_244() throws Throwable {
+        compileAndRun("test244", "CETestCase", new String[]{""});
+    }
+	
+	public void testCaesarTestCase_245() throws Throwable {
+        compileAndRun("test245", "CETestCase", new String[]{""});
+    }
+	
+	public void testCaesarTestCase_246() throws Throwable {
+        compileAndRun("test246", "CETestCase", new String[]{""});
+    }
+	
+	public void testCaesarTestCase_247() throws Throwable {
+        compileAndRun("test247", "CETestCase", new String[]{""});
+    }
+	
+	public void testCaesarTestCase_248() throws Throwable {
+        compileAndRun("test248", "CETestCase", new String[]{""});
+    }
+	
+	public void testCaesarTestCase_249() throws Throwable {
+        compileAndRun("test249", "CETestCase", new String[]{""});
+    }
+	
+	public void testCaesarTestCase_250() throws Throwable {
+        compileAndRun("test250", "CETestCase", new String[]{""});
+    }
 }
