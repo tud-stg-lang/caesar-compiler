@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JLocalVariable.java,v 1.5 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JLocalVariable.java,v 1.6 2005-01-27 15:20:11 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -222,6 +222,10 @@ public abstract class JLocalVariable extends JPhylum {
     code.plantLocalVar(type.getStoreOpcode(), this);
   }
 
+  public void setType(CType type) {
+      this.type = type;
+  }
+  
   public void recurse(IVisitor s) {
     if(expr != null) expr.accept(s);
   }
