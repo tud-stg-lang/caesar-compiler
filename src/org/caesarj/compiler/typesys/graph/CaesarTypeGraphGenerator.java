@@ -3,7 +3,6 @@ package org.caesarj.compiler.typesys.graph;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.declaration.CjMixinInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
-import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
@@ -13,7 +12,7 @@ import org.caesarj.compiler.typesys.java.JavaQualifiedName;
  * 
  * @author Ivica Aracic
  */
-public class CaesarTypeGraphGenerator implements CaesarConstants {
+public class CaesarTypeGraphGenerator {
 
     private static CaesarTypeGraphGenerator singleton = new CaesarTypeGraphGenerator();
     
@@ -31,7 +30,7 @@ public class CaesarTypeGraphGenerator implements CaesarConstants {
     ) {
         JTypeDeclaration inners[] = cu.getInners();
         for(int i=0; i<inners.length; i++)
-            if((inners[i].getModifiers() & ACC_MIXIN_INTERFACE) != 0)
+            if(inners[i].getCClass().isMixinInterface())
                 generateGraph(g, (CjMixinInterfaceDeclaration)inners[i]);
     }
     
@@ -51,10 +50,27 @@ public class CaesarTypeGraphGenerator implements CaesarConstants {
                 
         if(superTypes.length > 0) {
             for(int i=0; i<superTypes.length; i++) {
-                if((superTypes[i].getCClass().getModifiers() & ACC_MIXIN_INTERFACE) != 0) {
+                if(superTypes[i].getCClass().isMixinInterface()) {
+                    
+                    // super class can only be from the direct enclosing parent
+                    JavaQualifiedName superQn = null;
+
+                    if(!thisNode.isTopLevelClass()) {
+	                    superQn = new JavaQualifiedName(
+	                        thisNode.getQualifiedName().getPrefix()
+	                        +superTypes[i].getCClass().getIdent()
+	                    );
+                	}
+                    else {
+                        superQn = new JavaQualifiedName(	                        
+                            superTypes[i].getCClass().getQualifiedName()
+	                    ); 
+                    }
+                    
                     CaesarTypeNode superNode = g.getTypeCreateIfNotExsistent(
-                        new JavaQualifiedName(superTypes[i].getCClass().getQualifiedName()), 
-						CaesarTypeNode.DECLARED
+                        superQn, 
+						superQn.toString().equals(superTypes[i].getCClass().getQualifiedName()) ?                        
+						    CaesarTypeNode.DECLARED : CaesarTypeNode.IMPLICIT
                     );
                     new SuperSubRelation(superNode, thisNode);
                 }
