@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodDeclaration.java,v 1.10 2004-11-23 09:35:03 aracic Exp $
+ * $Id: JMethodDeclaration.java,v 1.11 2005-01-21 17:04:45 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -39,7 +39,6 @@ import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
-import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CMethodContext;
@@ -202,22 +201,48 @@ public class JMethodDeclaration extends JMemberDeclaration {
         }
         try {
             CType[] parameterTypes = new CType[parameters.length];
+            
+            /*
             CBinaryTypeContext typeContext =
                 new CBinaryTypeContext(
                     context.getClassReader(),
                     context.getTypeFactory(),
                     context,
-                    (modifiers & ACC_STATIC) == 0);
-
-            returnType = returnType.checkType(typeContext);
+                    (modifiers & ACC_STATIC) == 0);	
+            
+            returnType = returnType.checkType(typeContext);            
             for (int i = 0; i < parameterTypes.length; i++) {
                 parameterTypes[i] = parameters[i].checkInterface(typeContext);
-            }
+            }            
 
             for (int i = 0; i < exceptions.length; i++) {
                 exceptions[i] =
                     (CReferenceType)exceptions[i].checkType(typeContext);
             }
+            */
+            
+            // CRITICAL: CBinaryTypeContext replaced with the passed context
+            // the reason was that CClassNameType has to store the context in which the type
+            // was resolved. The stored context has to be of type CContext
+            // !!!impact of this change is unkown!!!   
+            try {
+                returnType = returnType.checkType(context);
+            }
+            catch (UnpositionedError e) {
+                // ignore for now, it could be a dependent type
+                // this will be cheked in the next step
+                // also there the exception will be thrown
+            }
+            for (int i = 0; i < parameterTypes.length; i++) {
+                parameterTypes[i] = parameters[i].checkInterface(context);
+            }            
+
+            for (int i = 0; i < exceptions.length; i++) {
+                exceptions[i] =
+                    (CReferenceType)exceptions[i].checkType(context);
+            }
+            
+            // --------
 
             setInterface(new CSourceMethod(
                 context.getCClass(),
