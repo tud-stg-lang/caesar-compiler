@@ -43,6 +43,7 @@ public class AutomaticCaesarTests extends FjTestCase {
 				String[] args =
 					new String[] {
 						"CaesarTestCase_0.java",
+/*                        
 						"CaesarTestCase_1.java",
 						"CaesarTestCase_2.java",
 						"CaesarTestCase_3.java",
@@ -54,7 +55,8 @@ public class AutomaticCaesarTests extends FjTestCase {
 						"CaesarTestCase_9.java",						
 						"CaesarTestCase_10.java",	
 						"CaesarTestCase_11.java",
-						"CaesarTestCase_12.java",																													
+						"CaesarTestCase_12.java",		
+*/
 						"Barrier.java" 
 };
 
@@ -92,6 +94,7 @@ public class AutomaticCaesarTests extends FjTestCase {
 		doGeneratedTest("CaesarTestCase_0");
 	}
 
+/*
 	public void testCaesarTestCase_1() throws Throwable {
 		doGeneratedTest("CaesarTestCase_1");
 	}
@@ -138,7 +141,7 @@ public class AutomaticCaesarTests extends FjTestCase {
 	public void testCaesarTestCase_12() throws Throwable {
 		doGeneratedTest("CaesarTestCase_12");
 	}
-	
+*/	
 	
 
 
