@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.24 2005-02-25 16:50:39 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.25 2005-02-28 14:30:11 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -434,19 +434,19 @@ public class JMethodCallExpression extends JExpression
 	}
 	
 	protected void doFamilyCheck(CExpressionContext context, int i, CType[] argTypes) throws PositionedError {
-	    try {			    			   	        
-		    if(argTypes[i].isDependentType()) {
-		        
+	    try {	
+
+//		    argPaths[i] = Path.createFrom(context.getBlockContext(), args[i]);			    
+//		    argTypePaths[i] = argPaths[i].normalize();
+
+	        argPaths[i] = args[i].getThisAsFamily();
+	        argTypePaths[i] = args[i].getFamily();
+
+		    if(argTypes[i].isDependentType()) {		       
 		        CReferenceType refType = (CReferenceType)argTypes[i];
 		        
 		        Log.verbose("handling parameter "+i);
-		        		        
-//			    argPaths[i] = Path.createFrom(context.getBlockContext(), args[i]);			    
-//			    argTypePaths[i] = argPaths[i].normalize();
-			    
-		        argPaths[i] = args[i].getThisAsFamily();
-		        argTypePaths[i] = args[i].getFamily();
-			    
+		        		        			    			    
 			    Log.verbose("expr:"+argPaths[i]+" -> fam:"+argTypePaths[i]);
 			    
 			    //if(argTypes[i].isDependentType())
@@ -777,7 +777,7 @@ public class JMethodCallExpression extends JExpression
 	}
 
 	public String toString() {
-	    return "JMethodCallExpression["+ident+"]";
+	    return "JMethodCallExpression["+ident+"] "+super.toString();
 	}
 	
 	// ----------------------------------------------------------------------
