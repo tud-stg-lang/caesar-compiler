@@ -78,7 +78,7 @@ public class CClassFactory implements CaesarConstants {
 	}
 
 	/**
-	 * Creates the Aspect Interface.
+	 * Creates the cclass Interface.
 	 */
 	public CjInterfaceDeclaration createCaesarClassInterface() {
 
