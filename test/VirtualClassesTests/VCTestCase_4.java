@@ -25,8 +25,6 @@ public class VCTestCase_4 extends TestCase {
 	    DrawApp.Rectangle rect = drawApp.$newRectangle();
 	    DrawApp.Circle circle = drawApp.$newCircle();
 		
-		
-		
 		DrawApp.Composite composite = (DrawApp.Composite)drawApp.$newComposite();		
 		
 		composite.addChild(rect);
@@ -38,17 +36,29 @@ public class VCTestCase_4 extends TestCase {
 		}
 		*/
 		
+		/*
 		PrettyPrintEvalAST evalAst = new PrettyPrintEvalAST();
-		PrettyPrintEvalAST.Literal l1 = (PrettyPrintEvalAST.Literal)evalAst.$newLiteral();
-		PrettyPrintEvalAST.Literal l2 = (PrettyPrintEvalAST.Literal)evalAst.$newLiteral();
-		PrettyPrintEvalAST.Expression exp = (PrettyPrintEvalAST.Expression)evalAst.$newExpression();
-		
-		l1.init(5);
-		l2.init(4);
-		exp.init(l1, l2);
-		
+		PrettyPrintEvalAST.Literal l1 = 
+			(PrettyPrintEvalAST.Literal)((PrettyPrintEvalAST.Literal)evalAst.$newLiteral()).init(5);
+		PrettyPrintEvalAST.Literal l2 = 
+			(PrettyPrintEvalAST.Literal)((PrettyPrintEvalAST.Literal)evalAst.$newLiteral()).init(4);
+		PrettyPrintEvalAST.Expression exp = 
+			(PrettyPrintEvalAST.Expression)((PrettyPrintEvalAST.Expression)evalAst.$newExpression()).init(l1,l2);
+
 		exp.print();
 		System.out.println(" = "+exp.eval());
+		*/
+		
+		PrettyPrintAST evalAst = new PrettyPrintAST();
+		PrettyPrintAST.Literal l1 = 
+			(PrettyPrintAST.Literal)((PrettyPrintAST.Literal)evalAst.$newLiteral()).init(5);
+		PrettyPrintAST.Literal l2 = 
+			(PrettyPrintAST.Literal)((PrettyPrintAST.Literal)evalAst.$newLiteral()).init(4);
+		PrettyPrintAST.Expression exp = 
+			(PrettyPrintAST.Expression)((PrettyPrintAST.Expression)evalAst.$newExpression()).init(l1,l2);
+		
+		exp.print();		
+		System.out.println();
 	    
 	    
         System.out.println("-------> VCTestCase_4: end");
@@ -86,17 +96,19 @@ public cclass AST  {
 		protected Expression r;
 		protected Expression l;
 		
-		public void init(AST.Expression l, AST.Expression r) {
+		public AST.Expression init(AST.Expression l, AST.Expression r) {
 			this.r = r;
 			this.l = l;
+			return this;
 		}
 	}
 	
 	public cclass Literal extends Expression {
 		protected int val;
 		
-		public void init(int val) {
+		public AST.Literal init(int val) {
 			this.val = val;
+			return this;
 		}	
 	}	
 }
