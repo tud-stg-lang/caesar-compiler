@@ -53,8 +53,6 @@
 "collaboration"		{ return TOKEN_LITERAL_collaboration; }
 "provided"		{ return TOKEN_LITERAL_provided; }
 "expected"		{ return TOKEN_LITERAL_expected; }
-"binds"		{ return TOKEN_LITERAL_binds; }
-"provides"		{ return TOKEN_LITERAL_provides; }
 "wraps"		{ return TOKEN_LITERAL_wraps; }
 "wrappee"		{ return TOKEN_LITERAL_wrappee; }
 "~"		{ return TOKEN_WDESTRUCTOR; }

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodDeclaration.java,v 1.2 2004-02-08 20:27:58 ostermann Exp $
+ * $Id: JMethodDeclaration.java,v 1.3 2004-03-03 17:08:19 aracic Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -106,7 +106,7 @@ public class JMethodDeclaration extends JMemberDeclaration
 	public CSourceMethod checkInterface(CClassContext context)
 		throws PositionedError
 	{
-		boolean inInterface = context.getCClass().isInterface();
+		boolean isInterface = context.getCClass().isInterface();
 		boolean isExported = !(this instanceof JInitializerDeclaration);
 		String ident =
 			(this instanceof JConstructorDeclaration)
@@ -114,7 +114,7 @@ public class JMethodDeclaration extends JMemberDeclaration
 				: this.ident;
 
 		// Collect all parsed data
-		if (inInterface && isExported)
+		if (isInterface && isExported)
 		{
 			modifiers |= ACC_PUBLIC | ACC_ABSTRACT;
 		}
@@ -186,7 +186,7 @@ public class JMethodDeclaration extends JMemberDeclaration
 			(modifiers & ACC_ABSTRACT) == 0 || (modifiers & ACC_STRICT) == 0,
 			KjcMessages.METHOD_ABSTRACT_STRICT);
 
-		if (inInterface && isExported)
+		if (isInterface && isExported)
 		{
 			check(
 				context,

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.6 2004-02-29 21:37:24 ostermann Exp $
+ * $Id: JClassDeclaration.java,v 1.7 2004-03-03 17:08:19 aracic Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -45,7 +45,6 @@ import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.context.CVariableInfo;
-import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
@@ -92,7 +91,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 	public JClassDeclaration(TokenReference where,
 			   int modifiers,
 			   String ident,
-                           CTypeVariable[] typeVariables,
+               CTypeVariable[] typeVariables,
 			   CReferenceType superClass,
 			   CReferenceType[] interfaces,
 			   JFieldDeclaration[] fields,
@@ -450,15 +449,6 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
    */
    
   /** 
-   * The CI that the class binds.
-   */
-  protected CReferenceType binding;
-  /** 
-   * The CIs that the class provides.
-   */
-  protected CReferenceType providing;
-
-  /** 
    * The reference of the wrappee.
    */
   protected CReferenceType wrappee;
@@ -481,21 +471,6 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 				  Constants.JAV_OBJECT));
   }
 
-  /**
-   * @return CReferenceType the Collaboration Interface which it binds.
-   */
-  public CReferenceType getBinding()
-  {
-	  return binding;
-  }
-
-  /**
-   * @return CReferenceType the Collaboration Interface which it implements.
-   */
-  public CReferenceType getProviding()
-  {
-	  return providing;
-  }
 
   /**
    * @return CReferenceType the Wrappee type.
@@ -537,18 +512,6 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 	  return (JConstructorDeclaration[]) Utils.toArray(
 		  contructors,
 		  JConstructorDeclaration.class);
-  }
-
-  /**
-   * Returns the qualified type name of the binding.
-   * @return String
-   */
-  public String getBindingTypeName()
-  {
-	  return ownerDecl != null 
-			  ? ownerDecl.getBindingTypeName() + 
-				  (binding == null ? "" : "$" + binding.toString())
-			  : binding == null ? "" : binding.toString();
   }
   
 
@@ -1056,7 +1019,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 	 */
 	protected CClassContext constructContext(CContext context)
 	{
-		return new FjClassContext(
+		return new CClassContext(
 			context,
 			context.getEnvironment(),
 			sourceClass,

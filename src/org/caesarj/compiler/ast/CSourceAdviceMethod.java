@@ -11,8 +11,8 @@ import org.caesarj.compiler.aspectj.CaesarAdviceKind;
 import org.caesarj.compiler.aspectj.CaesarFormalBinding;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.aspectj.CaesarScope;
+import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
@@ -130,11 +130,8 @@ public class CSourceAdviceMethod extends CSourceMethod {
 		}
 
 		//set formal bindings
-		FjClassContext classContext = (FjClassContext) context;
+		CClassContext classContext = (CClassContext)context;
 		//classContext.setBindings((FormalBinding[]) formalBindings.toArray(new FormalBinding[0]));
-		classContext.setBindings(
-			//CaesarFormalBinding.wrappees(
-			(CaesarFormalBinding[]) formalBindings.toArray(new CaesarFormalBinding[0]));
 		//resolve the pointcut
 		pointcut.resolve(new CaesarScope(classContext, caller));
 

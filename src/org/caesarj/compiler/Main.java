@@ -23,12 +23,6 @@ import org.caesarj.compiler.constants.CciConstants;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.export.CSourceClass;
-import org.caesarj.compiler.family.CollaborationInterfaceTransformation;
-import org.caesarj.compiler.family.CollectClassesFjVisitor;
-import org.caesarj.compiler.family.FamiliesInitializerFjVisitor;
-import org.caesarj.compiler.family.InheritConstructorsFjVisitor;
-import org.caesarj.compiler.family.MethodTransformationFjVisitor;
-import org.caesarj.compiler.family.ResolveSuperClassFjVisitor;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
@@ -50,7 +44,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 
 	private CaesarMessageHandler messageHandler;
 	private Set errorMessages;
-	private CollectClassesFjVisitor inherritConstructors;
 
 
 	// The used weaver. An instance ist created when it's needed in generateAndWeaveCode
@@ -121,8 +114,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 		if (errorFound) { return false; }
 		checkAllInterfaces(tree);
 		if (errorFound) { return false;	}
-		initAllFamilies(tree);
-		if (errorFound) { return false; }
 		checkAllInitializers(tree);
 		if (errorFound) { return false;	}
 		checkAllBodies(tree);
@@ -185,16 +176,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 		}
 	}
 
-	/**
-	 * tasks: upcast overridden types
-	 * do something with family parameters (not yet quite clear)
-	 */
-	protected void initAllFamilies(JCompilationUnit[] tree) {
-		for (int count = 0; count < tree.length; count++) {
-			initFamilies(tree[count]);
-			//tree[count].accept(new DebugVisitor());
-		}
-	}
 
 	/**
 	 * A lot happens in this phase. We should divide this
@@ -255,7 +236,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 
 	
 	protected void checkInterface(JCompilationUnit cunit) {
-		cunit.accept(getMethodTransformation(cunit.getEnvironment()));
+		//cunit.accept(getMethodTransformation(cunit.getEnvironment()));
 		super.checkInterface(cunit);
 	}
 
@@ -274,6 +255,9 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 	 */
 
 	protected void joinAll(JCompilationUnit[] tree) {
+        // TODO !!!
+        /*
+
 		JCompilationUnit cunit;
 
 		for (int i = 0; i < tree.length; i++) {
@@ -300,60 +284,10 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 		} catch (PositionedError e) {
 			reportTrouble(e);
 		}
+        */
 	}
 
-	
-	/**
-	 * Initializes the families of the compilation unit passed.
-	 * 
-	 * @param cunit
-	 */
-	protected void initFamilies(JCompilationUnit cunit)
-	{
-		cunit.accept(getFamiliesInitializer(cunit.getEnvironment()));
-	}
-
-
-	
-	/**
-	 * Returns the visitor instance for transforms the CIs.
-	 * @param environment
-	 * @return
-	 */
-	protected DeclarationVisitor getCollaborationInteraceTransformation(
-		KjcEnvironment environment) 
-	{
-		return new CollaborationInterfaceTransformation(environment, this);
-	}
-	
-	
-	/**
-	 *
-	 * @param environment
-	 * @return the visitor instance for initializes the families.
-	 */
-	protected DeclarationVisitor getFamiliesInitializer(KjcEnvironment environment)
-	{
-		return new FamiliesInitializerFjVisitor(this, environment);
-	}
-
-	protected CollectClassesFjVisitor getInheritConstructors(JCompilationUnit[] compilationUnits) {
-		if (inherritConstructors == null)
-			inherritConstructors =
-				new InheritConstructorsFjVisitor(compilationUnits);
-		return inherritConstructors;
-	}
-
-	protected DeclarationVisitor getMethodTransformation(KjcEnvironment environment) {
-		return new MethodTransformationFjVisitor(environment);
-	}
-
-	protected ResolveSuperClassFjVisitor getResolveSuperClass(
-		CompilerBase compiler,
-		JCompilationUnit compilationUnits[]) {
-		return new ResolveSuperClassFjVisitor(compiler, compilationUnits);
-	}
-
+		
 	public void inform(PositionedError error) {
 		if (errorMessages == null)
 			errorMessages = new HashSet();

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: ParseClassContext.java,v 1.5 2004-02-29 21:37:24 ostermann Exp $
+ * $Id: ParseClassContext.java,v 1.6 2004-03-03 17:08:18 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -30,7 +30,7 @@ import org.caesarj.compiler.ast.JFieldDeclaration;
 import org.caesarj.compiler.ast.JMethodDeclaration;
 import org.caesarj.compiler.ast.JPhylum;
 import org.caesarj.compiler.ast.JTypeDeclaration;
-import org.caesarj.compiler.ast.PointcutDeclaration;
+import org.caesarj.compiler.ast.JPointcutDeclaration;
 
 
 public class ParseClassContext {
@@ -91,7 +91,7 @@ public class ParseClassContext {
 		body.add(block);
 	}
 
-	public void addPointcutDeclaration(PointcutDeclaration pointcut) {
+	public void addPointcutDeclaration(JPointcutDeclaration pointcut) {
 		pointcuts.add(pointcut);
 	}
 
@@ -131,9 +131,9 @@ public class ParseClassContext {
 		return (JPhylum[]) body.toArray(new JPhylum[body.size()]);
 	}
 
-	public PointcutDeclaration[] getPointcuts() {
-		return (PointcutDeclaration[]) pointcuts.toArray(
-			new PointcutDeclaration[0]);
+	public JPointcutDeclaration[] getPointcuts() {
+		return (JPointcutDeclaration[]) pointcuts.toArray(
+			new JPointcutDeclaration[0]);
 	}
 
 	public JAdviceDeclaration[] getAdvices() {

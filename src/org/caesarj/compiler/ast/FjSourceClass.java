@@ -617,6 +617,7 @@ public class FjSourceClass extends CSourceClass
 		resolvedPointcuts.add(rpd);
 	}
 	
+    /*
 	public CReferenceType getOwnerType()
 	{
 		CClass owner = getOwner();
@@ -629,9 +630,7 @@ public class FjSourceClass extends CSourceClass
 		}
 		return super.getOwnerType();
 	}
-	/**
-	 * 
-	 */
+
 	public boolean isDefinedInside(CClass outer)
 	{
 		if (this == outer || typeSystem.cleanInterface(this) == outer)
@@ -647,5 +646,5 @@ public class FjSourceClass extends CSourceClass
 			return getOwner().isDefinedInside(outer);
 		}		
 	}
-
+    */
 }

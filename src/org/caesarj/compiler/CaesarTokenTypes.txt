@@ -1,6 +1,6 @@
 Caesar // output vocabulary
 
-// Definitions from C:\dev\eclipse\workspace\Caesar\cc/caesar.t
+// Definitions from C:\ivica\eclipse.workspace\Caesar\cc/caesar.t
 LITERAL_abstract = "abstract" = 4
 LITERAL_boolean = "boolean" = 5
 LITERAL_break = "break" = 6
@@ -56,72 +56,70 @@ LITERAL_cclass = "cclass" = 55
 LITERAL_collaboration = "collaboration" = 56
 LITERAL_provided = "provided" = 57
 LITERAL_expected = "expected" = 58
-LITERAL_binds = "binds" = 59
-LITERAL_provides = "provides" = 60
-LITERAL_wraps = "wraps" = 61
-LITERAL_wrappee = "wrappee" = 62
-WDESTRUCTOR("~") = 63
-PATHMARKER("#") = 64
-LITERAL_after = "after" = 65
-LITERAL_around = "around" = 66
-LITERAL_before = "before" = 67
-LITERAL_declare = "declare" = 68
-LITERAL_deploy = "deploy" = 69
-LITERAL_deployed = "deployed" = 70
-LITERAL_pointcut = "pointcut" = 71
-LITERAL_precedence = "precedence" = 72
-LITERAL_privileged = "privileged" = 73
-LITERAL_returning = "returning" = 74
-LITERAL_throwing = "throwing" = 75
-ASSIGN("=") = 76
-BAND("&") = 77
-BAND_ASSIGN("&=") = 78
-BNOT("~") = 79
-BOR("|") = 80
-BOR_ASSIGN("|=") = 81
-BSR(">>>") = 82
-BSR_ASSIGN(">>>=") = 83
-BXOR("^") = 84
-BXOR_ASSIGN("^=") = 85
-COLON(":") = 86
-COMMA(",") = 87
-DEC("--") = 88
-DOT(".") = 89
-EQUAL("==") = 90
-GE(">=") = 91
-GT(">") = 92
-INC("++") = 93
-LAND("&&") = 94
-LBRACK("[") = 95
-LCURLY("{") = 96
-LE("<=") = 97
-LNOT("!") = 98
-LOR("||") = 99
-LPAREN("(") = 100
-LT("<") = 101
-MINUS("-") = 102
-MINUS_ASSIGN("-=") = 103
-NOT_EQUAL("!=") = 104
-PERCENT("%") = 105
-PERCENT_ASSIGN("%=") = 106
-PLUS("+") = 107
-PLUS_ASSIGN("+=") = 108
-QUESTION("?") = 109
-RBRACK("]") = 110
-RCURLY("}") = 111
-RPAREN(")") = 112
-SEMI(";") = 113
-SL("<<") = 114
-SLASH("/") = 115
-SLASH_ASSIGN("/=") = 116
-SL_ASSIGN("<<=") = 117
-SR(">>") = 118
-SR_ASSIGN(">>=") = 119
-STAR("*") = 120
-STAR_ASSIGN("*=") = 121
-CHARACTER_LITERAL("a character literal (inside simple quote)") = 122
-IDENT("an identifier") = 123
-INTEGER_LITERAL("an integer literal") = 124
-REAL_LITERAL("a real literal") = 125
-STRING_LITERAL("a string literal (inside double quote)") = 126
-TYPE_PATTERN("a type pattern for pointcut definition") = 127
+LITERAL_wraps = "wraps" = 59
+LITERAL_wrappee = "wrappee" = 60
+WDESTRUCTOR("~") = 61
+PATHMARKER("#") = 62
+LITERAL_after = "after" = 63
+LITERAL_around = "around" = 64
+LITERAL_before = "before" = 65
+LITERAL_declare = "declare" = 66
+LITERAL_deploy = "deploy" = 67
+LITERAL_deployed = "deployed" = 68
+LITERAL_pointcut = "pointcut" = 69
+LITERAL_precedence = "precedence" = 70
+LITERAL_privileged = "privileged" = 71
+LITERAL_returning = "returning" = 72
+LITERAL_throwing = "throwing" = 73
+ASSIGN("=") = 74
+BAND("&") = 75
+BAND_ASSIGN("&=") = 76
+BNOT("~") = 77
+BOR("|") = 78
+BOR_ASSIGN("|=") = 79
+BSR(">>>") = 80
+BSR_ASSIGN(">>>=") = 81
+BXOR("^") = 82
+BXOR_ASSIGN("^=") = 83
+COLON(":") = 84
+COMMA(",") = 85
+DEC("--") = 86
+DOT(".") = 87
+EQUAL("==") = 88
+GE(">=") = 89
+GT(">") = 90
+INC("++") = 91
+LAND("&&") = 92
+LBRACK("[") = 93
+LCURLY("{") = 94
+LE("<=") = 95
+LNOT("!") = 96
+LOR("||") = 97
+LPAREN("(") = 98
+LT("<") = 99
+MINUS("-") = 100
+MINUS_ASSIGN("-=") = 101
+NOT_EQUAL("!=") = 102
+PERCENT("%") = 103
+PERCENT_ASSIGN("%=") = 104
+PLUS("+") = 105
+PLUS_ASSIGN("+=") = 106
+QUESTION("?") = 107
+RBRACK("]") = 108
+RCURLY("}") = 109
+RPAREN(")") = 110
+SEMI(";") = 111
+SL("<<") = 112
+SLASH("/") = 113
+SLASH_ASSIGN("/=") = 114
+SL_ASSIGN("<<=") = 115
+SR(">>") = 116
+SR_ASSIGN(">>=") = 117
+STAR("*") = 118
+STAR_ASSIGN("*=") = 119
+CHARACTER_LITERAL("a character literal (inside simple quote)") = 120
+IDENT("an identifier") = 121
+INTEGER_LITERAL("an integer literal") = 122
+REAL_LITERAL("a real literal") = 123
+STRING_LITERAL("a string literal (inside double quote)") = 124
+TYPE_PATTERN("a type pattern for pointcut definition") = 125

@@ -51,7 +51,7 @@ public class DeploymentSupportClassDeclaration extends JCaesarClassDeclaration {
 			initializers,
 			javadoc,
 			comment,
-			PointcutDeclaration.EMPTY,
+			JPointcutDeclaration.EMPTY,
 			JAdviceDeclaration.EMPTY,
 			null,
 			crosscuttingClass,
@@ -71,7 +71,7 @@ public class DeploymentSupportClassDeclaration extends JCaesarClassDeclaration {
 		JPhylum[] initializers,
 		JavadocComment javadoc,
 		JavaStyleComment[] comment,
-		PointcutDeclaration[] pointcuts,
+		JPointcutDeclaration[] pointcuts,
 		JAdviceDeclaration[] advices,
 		CaesarDeclare[] declares,
 	    JCaesarClassDeclaration crosscuttingClass,
@@ -83,8 +83,6 @@ public class DeploymentSupportClassDeclaration extends JCaesarClassDeclaration {
 			ident,
 			typeVariables,
 			superClass,
-			null,
-			null,
 			null,
 			interfaces,
 			fields,
@@ -136,8 +134,8 @@ public class DeploymentSupportClassDeclaration extends JCaesarClassDeclaration {
 				if(isRegistry()&&(!CModifier.contains(crosscuttingClass.getSuperClass().getCClass().getModifiers(),ACC_ABSTRACT))){
 				
 //					//setPointcuts(crosscuttingClass.getPointcuts());
-					crosscuttingClass.setPointcuts(new PointcutDeclaration[0]);
-					this.pointcuts=new PointcutDeclaration[0];
+					crosscuttingClass.setPointcuts(new JPointcutDeclaration[0]);
+					this.pointcuts=new JPointcutDeclaration[0];
 				}							
 				if(isRegistry()&&
 					(!CModifier.contains(

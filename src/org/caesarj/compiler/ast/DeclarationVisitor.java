@@ -168,7 +168,7 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 
 
 	public void visitFjVirtualClassDeclaration(
-		VirtualClassDeclaration self,
+		JVirtualClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,
@@ -177,17 +177,8 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 		JPhylum[] body,
 		JMethodDeclaration[] methods,
 		JTypeDeclaration[] decls) {
-		visitFjCleanClassDeclaration(
-			self,
-			modifiers,
-			ident,
-			typeVariables,
-			superClass,
-			interfaces,
-			body,
-			methods,
-			decls
-		);
+        
+
 	}
 	
 	/**

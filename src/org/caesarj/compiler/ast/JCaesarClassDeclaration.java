@@ -7,14 +7,10 @@ import java.util.Vector;
 import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
-import org.caesarj.compiler.aspectj.CaesarScope;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.CciConstants;
 import org.caesarj.compiler.constants.FjConstants;
-import org.caesarj.compiler.constants.KjcMessages;
-import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
@@ -45,7 +41,7 @@ public class JCaesarClassDeclaration
 	protected CaesarPointcut perClause;
 
 	/** The declared pointcuts */
-	protected PointcutDeclaration[] pointcuts;
+	protected JPointcutDeclaration[] pointcuts;
 
 	
 	public JCaesarClassDeclaration(
@@ -54,8 +50,6 @@ public class JCaesarClassDeclaration
 		String ident,
 		CTypeVariable[] typeVariables,
 		CReferenceType superClass,
-		CReferenceType binding,
-		CReferenceType providing,
 		CReferenceType wrappee,
 		CReferenceType[] interfaces,
 		JFieldDeclaration[] fields,
@@ -64,7 +58,7 @@ public class JCaesarClassDeclaration
 		JPhylum[] initializers,
 		JavadocComment javadoc,
 		JavaStyleComment[] comment,
-		PointcutDeclaration[] pointcuts,
+		JPointcutDeclaration[] pointcuts,
 		JAdviceDeclaration[] advices,
 		CaesarDeclare[] declares) {
 			super(
@@ -81,8 +75,6 @@ public class JCaesarClassDeclaration
 				javadoc,
 				comment);
 
-			this.providing = providing;
-			this.binding = binding;
 			this.wrappee = wrappee;
 			this.advices = advices;
 			this.declares = declares;
@@ -219,59 +211,9 @@ public class JCaesarClassDeclaration
 		return typeFactory;
 	}
 
-	private JGeneratedInterfaceDeclaration cleanInterface;
-
-	public JGeneratedInterfaceDeclaration getCleanInterface()
-	{
-		return cleanInterface;
-	}
-	
 	protected JMethodDeclaration[] getInterfaceMethods() {
 		// TODO
 		return this.methods;
-	}
-	public JGeneratedInterfaceDeclaration createClassInterface(JClassDeclaration owner)
-	{
-
-		//createAccessorsForPrivateMethods();
-
-		if (cleanInterface == null)
-		{
-			cleanInterface = newInterfaceDeclaration(
-				getTokenReference(),
-				FjConstants.cleanInterfaceName( ident ),
-				interfaces,
-				getInterfaceMethods()
-			);
-
-			if (getSuperClass() != null)
-			{
-				CClassNameType superIfcType =
-					new CClassNameType(
-						FjConstants.cleanInterfaceName(
-							getSuperClass().getQualifiedName()));
-				cleanInterface.addInterface(
-					superIfcType, 
-					CciConstants.SUPER_TYPE_INDEX);
-			}
-		}
-		return cleanInterface;
-	}
-
-	protected JGeneratedInterfaceDeclaration newInterfaceDeclaration(
-		TokenReference tokenReference,
-		String ident,
-		CReferenceType[] interfaces,
-		JMethodDeclaration[] methods)
-	{
-
-		return new JGeneratedInterfaceDeclaration(
-			getTokenReference(),
-			ident,
-			(modifiers & getInternalModifiers()),
-			interfaces,
-			methods,
-			this);
 	}
 
 	private JMethodDeclaration[] append(
@@ -298,11 +240,6 @@ public class JCaesarClassDeclaration
 	public JCaesarClassDeclaration getBaseClass()
 	{
 		return this;
-	}
-
-	public void append(JTypeDeclaration type)
-	{
-		getCleanInterface().append(type);
 	}
 
 	public void addInterface(CReferenceType ifc)
@@ -390,30 +327,6 @@ public class JCaesarClassDeclaration
 		return null;		
 	}	
 
-	/**
-	 * @param declaration
-	 * @param superArg
-	 */
-	protected void setSuperConstructorArgument(
-		FjConstructorDeclaration constructor, 
-		JExpression superArg)
-	{
-		constructor.setSuperArg(superArg);
-	}
-
-	protected FjConstructorDeclaration createStandardBaseClassConstructor(
-		FjConstructorDeclaration constructor, CReferenceType superType)
-	{
-		return constructor.getStandardBaseClassConstructor(
-			superType);
-	}
-	
-
-	protected JTypeDeclaration getCleanInterfaceOwner()
-	{
-		return getCleanInterface();
-	}
-
 
 	public void setIdent(String ident)
 	{
@@ -421,14 +334,14 @@ public class JCaesarClassDeclaration
 
 		for (int i = 0; i < methods.length; i++)
 		{
-			if (methods[i] instanceof FjConstructorDeclaration)
-				 ((FjConstructorDeclaration) methods[i]).setIdent(ident);
+			if (methods[i] instanceof JConstructorDeclaration)
+				 ((JConstructorDeclaration) methods[i]).setIdent(ident);
 		}
 	}
 
-	public FjConstructorDeclaration[] getConstructors()
+	public JConstructorDeclaration[] getConstructors()
 	{
-		FjConstructorDeclaration[] constructors = super.getConstructors();
+		JConstructorDeclaration[] constructors = super.getConstructors();
 
 		// assure one constructor is there
 		if (constructors.length != 0)
@@ -437,16 +350,16 @@ public class JCaesarClassDeclaration
 		}
 		else
 		{
-			FjConstructorDeclaration noArgsConstructor =
-				new FjConstructorDeclaration(
+			JConstructorDeclaration noArgsConstructor =
+				new JConstructorDeclaration(
 					getTokenReference(),
 					ClassfileConstants2.ACC_PUBLIC,
 					ident,
 					JFormalParameter.EMPTY,
 					CReferenceType.EMPTY,
-					new FjConstructorBlock(
+					new JConstructorBlock(
 						getTokenReference(),
-						new FjConstructorCall(
+						new JConstructorCall(
 							getTokenReference(),
 							false,
 							JExpression.EMPTY),
@@ -455,7 +368,7 @@ public class JCaesarClassDeclaration
 					null,
 					typeFactory);
 			append(noArgsConstructor);
-			return new FjConstructorDeclaration[] { noArgsConstructor };
+			return new JConstructorDeclaration[] { noArgsConstructor };
 		}
 
 	}
@@ -494,23 +407,6 @@ public class JCaesarClassDeclaration
 		
 	}
 
-	/**
-	 * Checks if the the class defines a constructor with parameters.
-	 * It must be checked only for providing classes.
-	 * @param context
-	 * @throws PositionedError
-	 */
-	protected void checkProvidingConstructors(CContext context)
-		throws PositionedError
-	{
-		FjConstructorDeclaration[] constructors = getConstructors();
-		for (int i = 0; i < constructors.length; i++)
-		{
-			check(context, 
-				(constructors[i].getParameters().length <= 1), 
-				CaesarMessages.PROVIDING_DEFINES_CONSTRUCTOR, ident);
-		}
-	}
 
 	/**
 	 * This method checks if the class implements or binds all nested 
@@ -670,9 +566,9 @@ public class JCaesarClassDeclaration
 		TokenReference ref = getTokenReference();
 
 		return
-			new FjFieldDeclaration(
+			new JFieldDeclaration(
 				ref, 
-				new FjVariableDefinition(
+				new JVariableDefinition(
 					ref, 
 					ACC_PRIVATE | ACC_FINAL,
 					CciConstants.WRAPPER_MAP_TYPE,
@@ -689,17 +585,10 @@ public class JCaesarClassDeclaration
 	 * @see org.caesarj.compiler.ast.JClassDeclaration#accept(org.caesarj.compiler.ast.KjcVisitor)
 	 */
 	public void accept(KjcVisitor p) {
-		p.visitFjCleanClassDeclaration(this,
-					modifiers,
-					ident,
-					typeVariables,
-					superClass != null ? superClass.toString() : null,
-					interfaces,
-					body,
-					methods,
-					inners);
+		
 	}
-	public PointcutDeclaration[] getPointcuts()
+    
+	public JPointcutDeclaration[] getPointcuts()
 	{
 		return pointcuts;
 	}
@@ -709,7 +598,7 @@ public class JCaesarClassDeclaration
 		return advices;
 	}
 
-	public void setPointcuts(PointcutDeclaration[] pointcuts)
+	public void setPointcuts(JPointcutDeclaration[] pointcuts)
 	{
 		this.pointcuts = pointcuts;
 	}
@@ -755,6 +644,8 @@ public class JCaesarClassDeclaration
 	   return (modifiers & ACC_DEPLOYED) != 0;
    }
 
+// TODO !!!
+/*
    public void initFamilies(CClassContext context) throws PositionedError
    {
    	   super.initFamilies(context);
@@ -782,5 +673,5 @@ public class JCaesarClassDeclaration
 		   getFjSourceClass().setDeclares(declares);
 	   }		
    }
-
+*/
 }

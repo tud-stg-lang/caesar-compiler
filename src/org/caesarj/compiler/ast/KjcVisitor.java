@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcVisitor.java,v 1.6 2004-02-29 21:37:23 ostermann Exp $
+ * $Id: KjcVisitor.java,v 1.7 2004-03-03 17:08:19 aracic Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -60,7 +60,8 @@ public interface KjcVisitor {
 			     JMethodDeclaration[] methods,
 			     JTypeDeclaration[] decls);
 			     
-	void visitFjOverrideClassDeclaration(FjOverrideClassDeclaration self,
+
+	void visitFjVirtualClassDeclaration(JVirtualClassDeclaration self,
 				int modifiers,
 				String ident,
 				CTypeVariable[] typeVariables,
@@ -70,26 +71,6 @@ public interface KjcVisitor {
 				JMethodDeclaration[] methods,
 				JTypeDeclaration[] decls);
 
-	void visitFjVirtualClassDeclaration(VirtualClassDeclaration self,
-				int modifiers,
-				String ident,
-				CTypeVariable[] typeVariables,
-				String superClass,
-				CReferenceType[] interfaces,
-				JPhylum[] body,
-				JMethodDeclaration[] methods,
-				JTypeDeclaration[] decls);
-
-
-	void visitFjCleanClassDeclaration(JCaesarClassDeclaration self,
-				int modifiers,
-				String ident,
-				CTypeVariable[] typeVariables,
-				String superClass,
-				CReferenceType[] interfaces,
-				JPhylum[] body,
-				JMethodDeclaration[] methods,
-				JTypeDeclaration[] decls);
     
   /**
    * visits a class body

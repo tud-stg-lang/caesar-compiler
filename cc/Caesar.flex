@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.flex,v 1.2 2004-02-28 17:58:06 ostermann Exp $
+ * $Id: Caesar.flex,v 1.3 2004-03-03 17:11:53 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -177,8 +177,6 @@ E =	[eE] [+\-]? {D}+
 "collaboration"		{ return TOKEN_LITERAL_collaboration; }
 "provided"		{ return TOKEN_LITERAL_provided; }
 "expected"		{ return TOKEN_LITERAL_expected; }
-"binds"		{ return TOKEN_LITERAL_binds; }
-"provides"		{ return TOKEN_LITERAL_provides; }
 "wraps"		{ return TOKEN_LITERAL_wraps; }
 "wrappee"		{ return TOKEN_LITERAL_wrappee; }
 "~"		{ return TOKEN_WDESTRUCTOR; }

@@ -49,7 +49,7 @@ import org.caesarj.compiler.ast.JVariableDefinition;
 import org.caesarj.compiler.ast.JWhileStatement;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
-import org.caesarj.compiler.ast.PointcutDeclaration;
+import org.caesarj.compiler.ast.JPointcutDeclaration;
 import org.caesarj.compiler.ast.ProceedDeclaration;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.export.CModifier;
@@ -2446,7 +2446,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 						//in concrete Aspects, COPY the pointcuts to the singleton. 
 						// Only the Pointcutresolver complains.
 					//aspectClass.getPointcuts(),
-					new PointcutDeclaration[0],
+					new JPointcutDeclaration[0],
 					modifiedAdvices,
 					aspectClass.getDeclares(),
 					aspectClass,
@@ -2486,7 +2486,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				CaesarPointcut.createPerSingleton());
 
 			
-			aspectClass.setPointcuts(new PointcutDeclaration[0]);
+			aspectClass.setPointcuts(new JPointcutDeclaration[0]);
 			}
 		
 		aspectClass.setAdvices(new JAdviceDeclaration[0]);
