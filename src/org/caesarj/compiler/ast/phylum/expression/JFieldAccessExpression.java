@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldAccessExpression.java,v 1.14 2004-11-23 18:28:19 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.15 2005-01-14 13:33:48 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -456,8 +456,11 @@ public class JFieldAccessExpression extends JExpression {
                     ident);
                 
                 //prefix = new JOwnerExpression(getTokenReference(), field.getOwner());
-                //IVICA: this as target for the field call
-                prefix = new JOwnerExpression(getTokenReference(), context.getClassContext().getCClass());
+                //IVICA: use "this" as target for the field calls within a cclass                
+                prefix = context.getClassContext().getCClass().isMixin() ?
+                    new JOwnerExpression(getTokenReference(), context.getClassContext().getCClass())
+                    : new JOwnerExpression(getTokenReference(), field.getOwner());
+                
             }
             else {
                 prefix = new JTypeNameExpression(getTokenReference(), field.getOwnerType());

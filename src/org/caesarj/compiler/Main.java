@@ -23,7 +23,6 @@ import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
-import org.caesarj.compiler.family.FamilyCheckVisitor;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.types.TypeFactory;
@@ -152,6 +151,9 @@ public class Main extends MainSuper implements Constants {
         checkAllInterfaces(tree); 
         if(errorFound) return false;
         
+        checkDependentTypesInAllInterfaces(tree); 
+        if(errorFound) return false;
+        
         completeMixinCloneTypeInfo(environment, tree[0]);
         
         checkVirtualClassMethodSignatures(tree);
@@ -168,11 +170,6 @@ public class Main extends MainSuper implements Constants {
         checkAllBodies(tree);
         if(errorFound) return false;
                 
-        FamilyCheckVisitor v = new FamilyCheckVisitor();
-        for (int i = 0; i < tree.length; i++) {
-            tree[i].accept(v);
-        }        
-
         byteCodeMap = new ByteCodeMap(options.destination);
         genCode(environment.getTypeFactory());
          
@@ -409,6 +406,18 @@ public class Main extends MainSuper implements Constants {
         for (int count = 0; count < tree.length; count++) {
             checkInterface(tree[count]);
             //tree[count].accept(new DebugVisitor());
+        }
+    }
+
+    protected void checkDependentTypesInAllInterfaces(JCompilationUnit[] tree) {
+        Log.verbose("checkDependentTypesInAllInterfaces");
+        for (int count = 0; count < tree.length; count++) {
+            try {
+                tree[count].checkDependentTypes(this);
+            }
+            catch (PositionedError e) {
+                reportTrouble(e);
+            }
         }
     }
 

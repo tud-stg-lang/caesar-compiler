@@ -3,11 +3,11 @@ package org.caesarj.compiler.family;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
 import org.caesarj.compiler.ast.phylum.expression.JLocalVariableExpression;
 import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
-import org.caesarj.compiler.ast.phylum.expression.JOwnerExpression;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
@@ -18,7 +18,6 @@ import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.types.CDependentType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.util.InconsistencyException;
 

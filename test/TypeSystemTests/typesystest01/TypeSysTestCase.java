@@ -15,22 +15,21 @@ public class TypeSysTestCase extends TestCase {
 	
 	public static StringBuffer res = new StringBuffer();
 
-	public X x1 = new X();	
-	public X x2 = new X();	
+	public X x = new X();	
 	
-	public x1.g.N n1;
-	public x2.g.N n2;
-	
+	public final G g = new G();
+	public g.N n;	// DT: [pos=TypeSysTestCase, k=0, fam=x1.g, PT=G.N]		
+		
 	class X {
-		public final G g = new G();		
-		public g.N n;
-	}
+	    Y y = new Y();
+	    class Y {
+		    public g.N n;
+	    }
+	}	
 	
 	public void test() {	
-		x1.n = n1;
-		//x2.n = n1;
-		
-		x2.n = x2.g.new N2();
+		x.y.n = n; // this(1).x1.n = this(1).n1
+		//x2.n = n1;		
 	}
 	
 	/*

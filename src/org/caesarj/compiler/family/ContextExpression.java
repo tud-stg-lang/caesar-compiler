@@ -4,9 +4,6 @@ import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.util.InconsistencyException;
-import org.caesarj.util.Message;
-import org.caesarj.util.PositionedError;
-import org.caesarj.util.UnpositionedError;
 
 /**
  * ctx(k)

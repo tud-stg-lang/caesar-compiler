@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.33 2004-11-23 18:28:01 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.34 2005-01-14 13:33:48 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -38,6 +38,7 @@ import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CDependentNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.util.CWarning;
@@ -450,6 +451,34 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         }
         sourceClass.close(this.interfaces, superClass, hashField, methodList);
     }
+    
+    
+    public void checkDependentTypes(CContext ctx) throws PositionedError {
+        
+        for (int i = 0; i < fields.length; i++) {
+            CType t = fields[i].getType(ctx.getTypeFactory());
+            try {
+                if(t instanceof CClassNameType) {
+                    CClassNameType nt = (CClassNameType)t;
+                    if(nt.getQualifiedName().equals("g/N") && getIdent().equals("Y"))
+                        t = new CDependentNameType("TypeSysTestCase/this/g/N").checkType(self);
+                    else 
+                        t = new CDependentNameType(nt.getQualifiedName()).checkType(self);
+                    
+                    fields[i].getField().setType(t);
+                    fields[i].getVariable().setType(t);
+                }
+            }
+            catch (UnpositionedError e) {
+                e.addPosition(fields[i].getTokenReference());
+            }
+        }
+        
+        // Check inners        
+        for (int i = inners.length - 1; i >= 0; i--) {
+            inners[i].checkDependentTypes(self);
+        }               
+    }
 
     /**
      * Checks that same interface is not specified more than once
@@ -509,6 +538,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         
         // IVICA: check the dependent types
         //**********************************************************************
+        /*
         boolean refresh = false;
         
         boolean remaining = false;
@@ -538,6 +568,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
             
             }
         }
+        */
         //**********************************************************************
         
     }

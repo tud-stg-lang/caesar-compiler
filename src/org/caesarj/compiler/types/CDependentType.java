@@ -1,12 +1,10 @@
 package org.caesarj.compiler.types;
 
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
-import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.family.Path;
-import org.caesarj.compiler.family.StaticObject;
 
 
 /**
@@ -17,14 +15,6 @@ import org.caesarj.compiler.family.StaticObject;
  */
 public class CDependentType extends CReferenceType {
     
-///    private CClassContext pos;         /** position of this type */
-  
-    private CContext pos; 
-    
-    public CContext getContext(){
-        return pos;
-    }
-    
     private CType plainType;    /** static type of the */
     
     private JFieldAccessExpression family; /** family expression */
@@ -34,8 +24,7 @@ public class CDependentType extends CReferenceType {
               
     
 ///    public CDependentType(CClassContext pos, int k, JFieldAccessExpression family, CType staticType) {
-    public CDependentType(CContext pos, int k, JFieldAccessExpression family, CType staticType) {
-        this.pos = pos;
+    public CDependentType(int k, JFieldAccessExpression family, CType staticType) {
         this.k = k;
         this.family = family;
         this.plainType = staticType;
@@ -91,11 +80,15 @@ public class CDependentType extends CReferenceType {
                 
                 Path 	rightPath  = Path.createFrom(ctx, rightType.getFamily() ),
                 		leftPath   = Path.createFrom(ctx, this.getFamily() );
-                
+               
+                /*
                 StaticObject 	rightSO = rightPath.type(ctx),
                 				leftSO = leftPath.type(ctx);
-                
+                                
                 return leftSO.hasSameFamiliy(rightSO);
+                */
+                
+                return true;
             }
         }
         

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JCompilationUnit.java,v 1.9 2004-10-10 19:28:51 aracic Exp $
+ * $Id: JCompilationUnit.java,v 1.10 2005-01-14 13:33:48 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -253,6 +253,16 @@ public class JCompilationUnit extends JPhylum {
 
         for (int i = 0; i < typeDeclarations.length; i++) {
             typeDeclarations[i].checkInterface(context);
+        }
+    }
+
+    public void checkDependentTypes(CompilerBase compiler) throws PositionedError {
+        CCompilationUnitContext context;
+
+        context = new CCompilationUnitContext(compiler, environment, export);
+
+        for (int i = 0; i < typeDeclarations.length; i++) {
+            typeDeclarations[i].checkDependentTypes(context);
         }
     }
 

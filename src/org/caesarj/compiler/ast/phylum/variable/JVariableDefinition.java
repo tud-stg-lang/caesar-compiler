@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JVariableDefinition.java,v 1.7 2005-01-07 13:20:10 klose Exp $
+ * $Id: JVariableDefinition.java,v 1.8 2005-01-14 13:33:48 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -100,14 +100,15 @@ public class JVariableDefinition extends JLocalVariable {
      *            the current context
      * @return true iff sub tree is correct enought to check code
      */
-    public void checkInterface(CClassContext context) {
+    public void checkInterface(CClassContext context) throws PositionedError {
         try {
             type = type.checkType(context);
-        } catch (UnpositionedError cue) {
-            /* checkbody will do it */
+        } 
+        catch (UnpositionedError cue) {
+            // checkBody will handle it
         }
-    }
-
+    }    
+    
     // ----------------------------------------------------------------------
     // SEMANTIC ANALYSIS
     // ----------------------------------------------------------------------

@@ -15,22 +15,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassNameType.java,v 1.15 2005-01-07 13:20:10 klose Exp $
+ * $Id: CClassNameType.java,v 1.16 2005-01-14 13:33:48 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
 
 
-import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.constants.KjcMessages;
-import org.caesarj.compiler.context.CBlockContext;
-import org.caesarj.compiler.context.CClassBodyContext;
 import org.caesarj.compiler.context.CClassContext;
-import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.util.InconsistencyException;
@@ -134,87 +128,8 @@ public class CClassNameType extends CReferenceType
 	 * @param	context		the context (may be be null)
 	 * @exception UnpositionedError	this error will be positioned soon
 	 */
-	public CType checkType(CTypeContext context) throws UnpositionedError
+	public CType checkType(CTypeContext context) throws UnpositionedError 
 	{
-	    /*************************************/	    
-	    // IVICA: try to lookup the path first	    
-	    
-	    JExpression expr = convertToExpression();
-	    
-	    if (expr != null){
-            try {
-                
-                int k=0;
-                
-                CContext ctx = (CContext)context;
-                CExpressionContext ectx = null;
-                //CClassContext classContext;
-                KjcEnvironment env;
-
-                // create expression context
-                if (context instanceof CClassContext){
-                    CClassContext classContext = (CClassContext)context;
-                    env = classContext.getEnvironment();
-	                ectx =
-	                    new CExpressionContext(
-		                    new CBlockContext(
-		                        new CClassBodyContext(classContext, env), env, 0 
-	                        ),
-		                    env
-	                    );
-                } else if (context instanceof CBlockContext){
-                    env = ((CBlockContext)context).getEnvironment();
-                    ectx = new CExpressionContext( (CBlockContext)context, env );
-                } else {
-                    throw new Exception();
-                }
-                
-                // try to anylse the fieldaccess
-                try{
-                    expr = expr.analyse(ectx);
-                } catch (Exception e){
-                    // TODO just for debugging
- //                   e.printStackTrace();
-                    throw e;
-                }
-                
-                if(expr instanceof JFieldAccessExpression) {                    
-	                String pathSegs[] = qualifiedName.split("/");
-	                
-	                CClass clazz = context.getClassReader().loadClass(
-	                    context.getTypeFactory(),
-	                    expr.getType(context.getTypeFactory()).getCClass().getQualifiedName()+"$"+pathSegs[pathSegs.length-1]
-	                );
-	                
-	                //
-	                // find the first field access in the chain... x.y.z -> x
-	                //
-	                JFieldAccessExpression fieldAccessExpr = (JFieldAccessExpression)expr;
-	                while(fieldAccessExpr.getPrefix() instanceof JFieldAccessExpression) {
-	                    fieldAccessExpr = (JFieldAccessExpression)fieldAccessExpr.getPrefix();
-	                } 
-	                
-	                //
-	                // create and return new CDependentType
-	                //
-	                CType t = clazz.getAbstractType().checkType(context);
-	                CDependentType dt = new CDependentType( 
-	                        					(CContext)context, 
-	                        					k, 
-	                        					(JFieldAccessExpression)expr, 
-	                        					t);
-//	                System.out.println("Resolved dp "+dt);
-	                return dt;
-                }
-            }
-            catch (Exception e) {
-                //e.printStackTrace();
-                System.out.println("not dependent type");
-            }            
-	    }
-	    
-	    /*************************************/
-	    
 		if (binary && qualifiedName.indexOf('/') >= 0)
 		{
 			return new CBinaryType(
