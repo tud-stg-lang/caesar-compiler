@@ -191,6 +191,14 @@ public class JoinPointReflectionVisitor
 
 	}
 
+	/*
+	 * Creates static initalization block:
+	 * 
+	 * {
+	 *    <field>.$deploySelf(java.lang.Thread.currentThread());
+	 * }
+	 * 
+	 */
 	private JClassBlock createStaticDeployBlock(
 		TokenReference where,
 		CjClassDeclaration classDeclaration,
@@ -202,13 +210,6 @@ public class JoinPointReflectionVisitor
 				null,
 				fieldDeclaration.getVariable().getIdent());
 
-		JExpression prefix =
-			new CjMethodCallExpression(
-				where,
-				fieldExpr,
-				GET_SINGLETON_ASPECT_METHOD,
-				JExpression.EMPTY);
-
 		JExpression threadPrefix =
 			new JTypeNameExpression(
 				where,
@@ -216,7 +217,6 @@ public class JoinPointReflectionVisitor
 
 		JExpression[] args =
 			{
-				fieldExpr,
 				new CjMethodCallExpression(
 					where,
 					threadPrefix,
@@ -224,7 +224,7 @@ public class JoinPointReflectionVisitor
 					JExpression.EMPTY)};
 
 		JExpression expr =
-			new CjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
+			new CjMethodCallExpression(where, fieldExpr, DEPLOY_SELF_METHOD, args);
 
 		JStatement[] body = { new JExpressionStatement(where, expr, null)};
 

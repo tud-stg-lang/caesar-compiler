@@ -133,7 +133,7 @@ public class CjDeployStatement extends JStatement implements CaesarConstants {
 	/**
 	 * Returns the following statement:
 	 *
-	 * AspectIfc <deployVariableName> = DeploySupport.isDeployable(<DEPLOY_EXPRESSION>); 
+	 * CaesarObject <deployVariableName> = <DEPLOY_EXPRESSION>; 
 	 */
 	private JStatement createVarDec(CBodyContext context) {
 		//consider deploy(null), otherwise compilation error
@@ -143,18 +143,6 @@ public class CjDeployStatement extends JStatement implements CaesarConstants {
 
         TokenReference where = getTokenReference();
 
-        JExpression prefix =
-            new JTypeNameExpression(
-                where,
-                new CClassNameType(CAESAR_DEPLOY_SUPPORT_CLASS));
-
-        JExpression checkIfAspectCall =
-            new CjMethodCallExpression(
-                where,
-                prefix,
-                "checkIfDeployable",
-                new JExpression[] {aspectExpression});
-
         return new JVariableDeclarationStatement(
 			getTokenReference(),
 			new JVariableDefinition(
@@ -162,7 +150,7 @@ public class CjDeployStatement extends JStatement implements CaesarConstants {
 				0,
 				new CClassNameType(CAESAR_ASPECT_IFC),
 				deployVariableName,
-                checkIfAspectCall),
+				aspectExpression),
 			null);
 
 	}
@@ -170,7 +158,7 @@ public class CjDeployStatement extends JStatement implements CaesarConstants {
 	/**
 	 * Returns the following statement:
 	 *
-	 * DeploySupport.deployBlock(<deployVariableName>)
+	 * <deployVariableName>.$deploySelf(Thread.currentThread())
 	 */
 	private JStatement createDeployStatement(CBodyContext context) {
 		//consider deploy(null), otherwise compilation error
@@ -181,45 +169,47 @@ public class CjDeployStatement extends JStatement implements CaesarConstants {
         TokenReference where = getTokenReference();
 
         JExpression prefix =
-            new JTypeNameExpression(
-                where,
-                new CClassNameType(CAESAR_DEPLOY_SUPPORT_CLASS));
+        	new JNameExpression(where, deployVariableName);
+        	
+    	JExpression threadPrefix =
+			new JTypeNameExpression(
+				where,
+				new CClassNameType(QUALIFIED_THREAD_CLASS));
 
-        JExpression deployStatementCall =
-            new CjMethodCallExpression(
-                where,
-                prefix,
-                "deployBlock",
-                new JExpression[] {new JNameExpression(getTokenReference(), deployVariableName)});
+		JExpression[] args =
+		{
+			new CjMethodCallExpression(
+				where,
+				threadPrefix,
+				"currentThread",
+				JExpression.EMPTY)
+		};
+
+        JExpression deploySelfCall =
+            new CjMethodCallExpression(where, prefix, DEPLOY_SELF_METHOD, args);
         
-		return new JExpressionStatement(where, deployStatementCall, null);
+		return new JExpressionStatement(where, deploySelfCall, null);
 	}
 
 	/**
 	 * Returns the following statement:
 	 * 
-	 * DeploySupport.undeployBlock(<deployVariableName>)
+	 * <deployVariableName>.$undeploySelf()
 	 */
 	private JStatement createUndeployStatement() { //not needed, but should faster
 		if (aspectExpression instanceof JNullLiteral) {
 			return new JEmptyStatement(getTokenReference(), null);
 		}
 
-        TokenReference where = getTokenReference();
+		TokenReference where = getTokenReference();
 
         JExpression prefix =
-            new JTypeNameExpression(
-                where,
-                new CClassNameType(CAESAR_DEPLOY_SUPPORT_CLASS));
+        	new JNameExpression(where, deployVariableName);
         
-        JExpression deployStatementCall =
-            new CjMethodCallExpression(
-                where,
-                prefix,
-                "undeployBlock",
-                new JExpression[] {new JNameExpression(getTokenReference(), deployVariableName)});
-                
-        return new JExpressionStatement(where, deployStatementCall, null);
+        JExpression undeploySelfCall =
+            new CjMethodCallExpression(where, prefix, UNDEPLOY_SELF_METHOD, JExpression.EMPTY);
+        
+		return new JExpressionStatement(where, undeploySelfCall, null);
 
 	}
 

@@ -108,7 +108,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		}
 
 		CReferenceType[] superInterfaces =
-			{ new CClassNameType(CAESAR_ASPECT_IFC_CLASS)};
+			{ new CClassNameType(CAESAR_DEPLOYABLE_IFC)};
 
 		CjInterfaceDeclaration aspectInterface =
 			new CjInterfaceDeclaration(
@@ -162,7 +162,10 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new CClassNameType(qualifiedAspectInterfaceName));
         
         aspectClass.getMixinIfcDeclaration().addInterface(            
-            new CClassNameType("org/caesarj/runtime/AspectIfc"));
+            new CClassNameType(CAESAR_ASPECT_IFC));
+        
+        aspectClass.getMixinIfcDeclaration().addInterface(            
+            new CClassNameType(CAESAR_DEPLOYABLE_IFC));
         
 		//add support methods
 		List newMethods = new ArrayList();
@@ -171,9 +174,15 @@ public class DeploymentClassFactory implements CaesarConstants {
 		newMethods.add(createAspectClassUndeployMethod());
 		newMethods.add(createGetDeploymentThreadMethod());
 		newMethods.add(createSetDeploymentThreadMethod());
-		newMethods.add(createGetSingletonAspectMethod());
 		newMethods.add(createGetThreadLocalDeployedInstancesMethod());
 
+		// abstract aspect classes cannot be deployed
+		if (!CModifier.contains(aspectClass.getModifiers(), ACC_ABSTRACT))
+		{
+			newMethods.add(createDeploySelfMethod());
+			newMethods.add(createUndeploySelfMethod());
+		}	
+		
 		aspectClass.addMethods(
 			(JMethodDeclaration[]) newMethods.toArray(
 				new JMethodDeclaration[0]));
@@ -317,7 +326,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * Creates the deploy method for single instance aspects.
 	 */
 	private JMethodDeclaration createAspectClassDeployMethod() {
-		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
+		CType ifcType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
 
 		JFormalParameter param =
 			new JFormalParameter(
@@ -522,7 +531,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JBlock body = new JBlock(where, statements, null);
 
-		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
+		CType ifcType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
 		return 
 			new JMethodDeclaration(
 				where,
@@ -592,34 +601,125 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		return new JExpressionStatement(where, methodCall, null);
 	}
-
+	
 	/**
-	 * Creates the getSingletonAspectMethod.
+	 * Creates the $deploySelf(Thread) method for aspect class.
 	 * 
-	 * return singletonAspectType.ajc$perSingletonInstance
-	 */
-	private JMethodDeclaration createGetSingletonAspectMethod() {
+	 * public synchronized void $deploySelf(Thread thread)
+     * {
+ 	 *     Registry.ajc.perSingletonInstance.$deploy(this, thread);
+ 	 *     super.$deploySelf(thread);
+     * }
+ 	 *
+ 	 **/
+	private JMethodDeclaration createDeploySelfMethod() {
 
-		CReferenceType singletonType =
-			new CClassNameType(qualifiedSingletonAspectName);
+		/* "Registry.ajc.perSingletonInstance" expression */
+		JExpression registryPrefix = 
+			new JTypeNameExpression(where, 
+				new CClassNameType(qualifiedSingletonAspectName)
+			);
 
-		JExpression prefix = new JTypeNameExpression(where, singletonType);
+		JExpression singletonPrefix =
+			new JNameExpression(where, registryPrefix, PER_SINGLETON_INSTANCE_FIELD);
+		
+		/* "*.$deploy(this, thread)" expression */
+		JExpression[] deployArgs =
+		{
+			new JThisExpression(where),
+			new JNameExpression(where, "thread")
+		};
+		
+		JExpression deployCall = 
+			new CjMethodCallExpression(where, singletonPrefix, DEPLOY_METHOD, deployArgs);
+		
+		/* "super.$deploySelf(thread)" expression */
+		JExpression superPrefix = new JSuperExpression(where);
+		
+		JExpression[] superArgs =
+		{
+			new JNameExpression(where, "thread")
+		};
+		
+		JExpression superCall = 
+			new CjMethodCallExpression(where, superPrefix, DEPLOY_SELF_METHOD, superArgs);
 
-		JExpression expr =
-			new JNameExpression(where, prefix, PER_SINGLETON_INSTANCE_FIELD);
+		/* create method body */
+		JStatement[] body = { 
+				new JExpressionStatement(where, deployCall, null),
+				new JExpressionStatement(where, superCall, null)				
+		};
+		
+		/* create method declaration */
+		CType threadType = new CClassNameType(QUALIFIED_THREAD_CLASS);
 
-		JStatement[] body = { new JReturnStatement(where, expr, null)};
+		JFormalParameter[] params =
+		{
+			new JFormalParameter(
+					where,
+					JFormalParameter.DES_GENERATED,
+					threadType,
+					"thread",
+					false)
+		};
 
-		CReferenceType ifcType =
-			new CClassNameType(CAESAR_SINGLETON_ASPECT_IFC_CLASS);
-
-		return 
-			new JMethodDeclaration(
+		return new CjMethodDeclaration(
 				where,
 				ACC_PUBLIC | ACC_SYNCHRONIZED,
 				CTypeVariable.EMPTY,
-				ifcType,
-				GET_SINGLETON_ASPECT_METHOD,
+				typeFactory.getVoidType(),
+				DEPLOY_SELF_METHOD,
+				params,
+				CReferenceType.EMPTY,
+				new JBlock(where, body, null),
+				null,
+				null);
+	}
+	
+	/**
+	 * Creates the $undeploySelf() method for aspect class.
+	 * 
+	 * public synchronized void $undeploySelf(Thread thread)
+     * {
+ 	 *     Registry.ajc.perSingletonInstance.$undeploy();
+ 	 *     super.$undeploySelf();
+     * }
+ 	 *
+ 	 **/
+	private JMethodDeclaration createUndeploySelfMethod() {
+
+		/* "Registry.ajc.perSingletonInstance" expression */
+		JExpression registryPrefix = 
+			new JTypeNameExpression(where, 
+				new CClassNameType(qualifiedSingletonAspectName)
+			);
+
+		JExpression singletonPrefix =
+			new JNameExpression(where, registryPrefix, PER_SINGLETON_INSTANCE_FIELD);
+		
+		/* "*.$undeploy()" expression */
+		JExpression deployCall = 
+			new CjMethodCallExpression(where, singletonPrefix, UNDEPLOY_METHOD, JExpression.EMPTY);
+		
+		/* "super.$undeploySelf()" expression */
+		JExpression superPrefix = new JSuperExpression(where);
+				
+		JExpression superCall = 
+			new CjMethodCallExpression(where, superPrefix, UNDEPLOY_SELF_METHOD, JExpression.EMPTY);
+
+		/* create method body */
+		JStatement[] body = { 
+				new JExpressionStatement(where, deployCall, null),
+				new JExpressionStatement(where, superCall, null)				
+		};
+		
+		/* create method declaration */
+		return new CjMethodDeclaration(
+				where,
+				ACC_PUBLIC | ACC_SYNCHRONIZED,
+				CTypeVariable.EMPTY,
+				typeFactory.getVoidType(),
+				UNDEPLOY_SELF_METHOD,
 				JFormalParameter.EMPTY,
 				CReferenceType.EMPTY,
 				new JBlock(where, body, null),
@@ -1166,7 +1266,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 */
 	private CjMethodDeclaration createMultiInstanceDeployMethod() {
 
-		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
+		CType ifcType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
 
 		JFormalParameter[] params =
 			{
@@ -1289,7 +1389,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CReferenceType multiThreadType =
 			new CClassNameType(qualifiedMultiThreadAspectClassName);
 
-		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
+		CType ifcType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
 
 		JExpression initializer =
 			new JUnqualifiedInstanceCreation(
@@ -1359,7 +1459,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * Creates the undeploy method for multi instance aspects.
 	 */
 	private CjMethodDeclaration createMultiInstanceUndeployMethod() {
-		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
+		CType ifcType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
 
 		JStatement[] statements =
 			{
@@ -1425,7 +1525,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CjMethodCallExpression pop =
 			new CjMethodCallExpression(where, prefix, "pop", JExpression.EMPTY);
 
-		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
+		CType ifcType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
 
 		JExpression cast = new JCastExpression(where, pop, ifcType);
 
@@ -1733,7 +1833,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 */
 	private CjMethodDeclaration createMultiThreadDeployMethod() {
 
-		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
+		CType ifcType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
 
 		JFormalParameter[] params =
 			{
@@ -1794,7 +1894,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression getMethodCall =
 			new CjMethodCallExpression(where, prefix, "get", args);
 
-		CType type = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
+		CType type = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
 		JExpression initializer =
 			new JCastExpression(where, getMethodCall, type);
 
@@ -1942,7 +2042,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * Creates the undeploy method for the multi thread aspect.
 	 */
 	private CjMethodDeclaration createMultiThreadUndeployMethod() {
-		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
+		CType ifcType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
 
 		JStatement[] statements =
 			{
@@ -1992,7 +2092,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression getMethodCall =
 			new CjMethodCallExpression(where, prefix, "get", args);
 
-		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
+		CType ifcType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
 
 		JExpression initializer =
 			new JCastExpression(where, getMethodCall, ifcType);
@@ -2159,7 +2259,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				"next",
 				JExpression.EMPTY);
 
-		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
+		CType ifcType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
 
 		JExpression castExpr = new JCastExpression(where, returnExpr, ifcType);
 
@@ -2690,7 +2790,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			where,
 			ACC_PUBLIC | ACC_SYNCHRONIZED,
 			CTypeVariable.EMPTY,
-			new CClassNameType(CAESAR_ASPECT_IFC_CLASS),
+			new CClassNameType(CAESAR_DEPLOYABLE_IFC),
 			GET_DEPLOYED_INSTANCES_METHOD,
 			JFormalParameter.EMPTY,
 			CReferenceType.EMPTY,
@@ -2704,7 +2804,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	*/
 	private CjMethodDeclaration createSingletonAspectDeployMethod() {
 
-		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
+		CType ifcType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
 		CType threadType = new CClassNameType(QUALIFIED_THREAD_CLASS);
 
 		JFormalParameter[] params =
@@ -2961,7 +3061,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 	private JMethodDeclaration createGetThreadLocalDeployedInstancesMethod() {
 
-		CType deployableType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
+		CType deployableType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
 
 		JStatement[] body =
 			{ new JReturnStatement(where, new JThisExpression(where), null)};
@@ -2982,7 +3082,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 	private JMethodDeclaration createMultiThreadGetThreadLocalDeployedInstancesMethod() {
 
-		CType deployableType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
+		CType deployableType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
 		JExpression[] args =
 			{
 				 new CjMethodCallExpression(
@@ -3035,7 +3135,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 */
 	private JMethodDeclaration createSingletonGetThreadLocalDeployedInstancesMethod() {
 
-		CType deployableType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
+		CType deployableType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
 
 		JStatement[] body =
 			{ createSingletonGetThreadLocalDeployedInstancesStatement_1()};
