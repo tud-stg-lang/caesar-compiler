@@ -9,7 +9,6 @@ import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
-import org.caesarj.compiler.family.FjTypeSystem;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
@@ -621,6 +620,8 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 							? local 
 							: prefix.getType(context.getTypeFactory())
 								.getCClass();
+								
+/* FJRM wrappee								
 			while (wrapperType == null)
 			{
 				try
@@ -640,11 +641,13 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 						throw e2.addPosition(getTokenReference());
 				}
 			}
+*/	
 		}
 		catch (PositionedError e)
 		{
 			throw handleMethodNotFoundError(context, e);
 		}
+	
 	}
 	protected void setMethod(CExpressionContext context)
 		throws PositionedError {
@@ -663,7 +666,10 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 			&& CModifier.contains(methodOwner.getModifiers(), 
 				(FJC_CLEAN | FJC_VIRTUAL | FJC_OVERRIDE)))
 		{
+			/* FJRM
 			CClass cleanLocal = new FjTypeSystem().cleanInterface(methodOwner);
+			*/
+			CClass cleanLocal = methodOwner; // FJADDED
 			try 
 			{
 				method = cleanLocal.lookupMethod(

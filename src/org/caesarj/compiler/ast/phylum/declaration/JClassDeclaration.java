@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.4 2004-03-15 17:52:05 aracic Exp $
+ * $Id: JClassDeclaration.java,v 1.5 2004-03-17 09:16:33 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -44,9 +44,10 @@ import org.caesarj.compiler.ast.visitor.KjcVisitor;
 import org.caesarj.compiler.constants.*;
 import org.caesarj.compiler.context.*;
 import org.caesarj.compiler.export.*;
-import org.caesarj.compiler.family.FjTypeSystem;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
-import org.caesarj.compiler.types.*;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.*;
 
 /**
@@ -1086,6 +1087,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 		}
 		catch (PositionedError e)
 		{
+			/* FJRM
 			// non clean classes may not inherrit
 			// clean, virtual or override classes
 			if (e.getFormattedMessage().getDescription()
@@ -1156,6 +1158,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 					}
 				}
 			}
+			*/
 			throw e;
 		} 
 

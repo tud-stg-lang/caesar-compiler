@@ -7,7 +7,6 @@ import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.export.Proceed;
-import org.caesarj.compiler.family.FjFamily;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
@@ -86,8 +85,8 @@ public class ProceedDeclaration extends FjMethodDeclaration {
 					(CReferenceType) exceptions[i].checkType(typeContext);
 			}
 
-			FjFamily[] families = new FjFamily[parameterTypes.length];
 			/* FJRM
+			FjFamily[] families = new FjFamily[parameterTypes.length];			
 			for (int i = 0; i < families.length; i++) {
 				families[i] = ((FjFormalParameter) parameters[i]).getFamily();
 			}

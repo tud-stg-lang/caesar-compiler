@@ -3,8 +3,6 @@ package org.caesarj.compiler.ast.phylum.declaration;
 import java.util.Hashtable;
 
 import org.caesarj.compiler.ClassReader;
-import org.caesarj.compiler.ast.FjAdditionalContext;
-import org.caesarj.compiler.ast.FjInterfaceContext;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
@@ -12,13 +10,7 @@ import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.context.FjClassContext;
-import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.export.CMethod;
-import org.caesarj.compiler.export.CModifier;
-import org.caesarj.compiler.export.CSourceClass;
-import org.caesarj.compiler.export.CSourceField;
-import org.caesarj.compiler.export.FjSourceClass;
+import org.caesarj.compiler.export.*;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.PositionedError;
@@ -101,6 +93,7 @@ public class FjInterfaceDeclaration
 		}
 	}
 	
+	/* FJRM
 	protected CClassContext constructContext(CContext context) {
 		return new FjInterfaceContext(
 			context,
@@ -108,6 +101,7 @@ public class FjInterfaceDeclaration
 			sourceClass,
 			this);
 	}
+	
 	
 	public void checkInterface(CContext context) throws PositionedError {
 
@@ -141,6 +135,7 @@ public class FjInterfaceDeclaration
 		((FjInterfaceContext) self).popContextInfo();
 		((FjInterfaceContext) self).popContextInfo();
 	}
+	*/
 
 	/**
 	 * I just copied it here, after I will see if everything is needed.
@@ -149,8 +144,7 @@ public class FjInterfaceDeclaration
 	 * @author Walter Augusto Werner
 	 */
 	public void initFamilies(CClassContext context) 
-		throws PositionedError
-		
+		throws PositionedError		
 	{
 		//Initializes the families of the fields.
 		Hashtable hashField = new Hashtable(fields.length + 1);
@@ -182,17 +176,19 @@ public class FjInterfaceDeclaration
 			
 		for (int j = 0; j < inners.length; j++)
 		{
+			/* FJRM
 			FjClassContext innerContext = new FjClassContext(context, 
 				context.getEnvironment(), 
 				(CSourceClass)inners[j].getCClass(), 
 				this);
 				
 			((FjAdditionalContext)innerContext).pushContextInfo(this);
+			*/
 			
 			if (inners[j] instanceof JClassDeclaration)
-				((JClassDeclaration)inners[j]).initFamilies(innerContext);
+				((JClassDeclaration)inners[j]).initFamilies(null);
 			else if (inners[j] instanceof FjInterfaceDeclaration)
-				((FjInterfaceDeclaration)inners[j]).initFamilies(innerContext);
+				((FjInterfaceDeclaration)inners[j]).initFamilies(null);
 							
 		}
 	}
