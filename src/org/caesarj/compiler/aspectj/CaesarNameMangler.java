@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarNameMangler.java,v 1.2 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CaesarNameMangler.java,v 1.3 2005-03-31 14:06:10 thiago Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -45,6 +45,6 @@ public class CaesarNameMangler {
 	public static String adviceName(
 		String name, CaesarAdviceKind kind, int position) 
 	{
-		return NameMangler.adviceName(TypeX.forName(name), kind.wrappee(), position);
+		return NameMangler.adviceName(TypeX.forName(name), kind.wrappee(), position, 0);
 	}
 }

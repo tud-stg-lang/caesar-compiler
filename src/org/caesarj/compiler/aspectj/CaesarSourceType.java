@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarSourceType.java,v 1.9 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CaesarSourceType.java,v 1.10 2005-03-31 14:06:10 thiago Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -34,14 +34,15 @@ import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.ResolvedTypeX.ConcreteName;
 import org.aspectj.weaver.ResolvedTypeX.Name;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 import org.caesarj.compiler.constants.Constants;
+import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
-import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.types.CReferenceType;
 
 /**
@@ -78,6 +79,14 @@ public class CaesarSourceType extends ConcreteName implements Constants {
 		this.cclass = cclass;
 	}
 
+	/**
+	 * Return null. Only to be compatible with the ConcreteName.
+	 * thiago
+	 */
+	public WeaverStateInfo getWeaverState() {
+	    return null;
+	}
+	
 	/**
 	 * @see org.aspectj.weaver.ResolvedTypeX.ConcreteName#isAspect()
 	 */

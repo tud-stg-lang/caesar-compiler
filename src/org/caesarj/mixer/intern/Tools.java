@@ -20,20 +20,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Tools.java,v 1.6 2005-01-24 16:52:58 aracic Exp $
+ * $Id: Tools.java,v 1.7 2005-03-31 14:06:10 thiago Exp $
  */
 
 package org.caesarj.mixer.intern;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Attribute;
-import org.apache.bcel.classfile.ConstantClass;
-import org.apache.bcel.classfile.ConstantPool;
-import org.apache.bcel.classfile.ConstantUtf8;
-import org.apache.bcel.classfile.InnerClass;
-import org.apache.bcel.classfile.InnerClasses;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.Attribute;
+import org.aspectj.apache.bcel.classfile.ConstantClass;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.ConstantUtf8;
+import org.aspectj.apache.bcel.classfile.InnerClass;
+import org.aspectj.apache.bcel.classfile.InnerClasses;
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.util.InconsistencyException;
 

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.92 2005-03-30 14:24:59 gasiunas Exp $
+ * $Id: Main.java,v 1.93 2005-03-31 14:06:10 thiago Exp $
  */
 
 package org.caesarj.compiler;
@@ -35,10 +35,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.StructureModel;
-import org.caesarj.compiler.asm.CaesarAsmBuilder;
-import org.caesarj.compiler.asm.StructureModelDump;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
@@ -86,7 +82,7 @@ public class Main extends MainSuper implements Constants {
      * be used, for example, by the Eclipse Plug-in, in order to get information and 
      * display for the user.
      */
-    protected StructureModel model;
+    //protected StructureModel model;
 
     protected static boolean buildAsm = false;
     protected static boolean printAsm = false;
@@ -123,6 +119,7 @@ public class Main extends MainSuper implements Constants {
      * compiler control flow.
      */
     public boolean run(String[] args) {   
+        /*
 	    // Make sure we have an instance of the structure model
     	if (model == null) {
     		model = new StructureModel();
@@ -133,7 +130,8 @@ public class Main extends MainSuper implements Constants {
     		CaesarAsmBuilder.preBuild(model);
     		//System.out.println("after preBuid");
     	}
-    	
+    	*/
+        
     	errorFound = false;
 
         if (!parseArguments(args)) {
@@ -282,7 +280,7 @@ public class Main extends MainSuper implements Constants {
             weaveGeneratedCode(environment.getTypeFactory());               
                
         CodeSequence.endSession();
-        
+        /*
         // CJ Aspect: structure model postprocessing
         if(Main.buildAsm){
         	CaesarAsmBuilder.postBuild(model);
@@ -293,7 +291,7 @@ public class Main extends MainSuper implements Constants {
                 System.out.println("======================================");
         	}
         }
-        
+        */
         Log.verbose("compilation ended");
         
         return true;
@@ -320,7 +318,7 @@ public class Main extends MainSuper implements Constants {
 	        	// iterating over the compilationunits and adding appropriate Nodes to 
 	        	// the StructureModel.
 	        	//System.out.println("before AsmBuilder.build");
-	        	CaesarAsmBuilder.build(cu[i], model);
+	        	//CaesarAsmBuilder.build(cu[i], model);
 	        	//System.out.println("after AsmBuilder.build");
 	        }
 		}
@@ -705,7 +703,7 @@ public class Main extends MainSuper implements Constants {
 
         this.classes.setSize(0);
 
-        weaver = new CaesarWeaver();
+        weaver = new CaesarWeaver(options.destination);
         
         for(Iterator it=byteCodeMap.iterator(); it.hasNext(); ) {
             Map.Entry entry = (Map.Entry)it.next();
@@ -772,7 +770,8 @@ public class Main extends MainSuper implements Constants {
         
         CaesarBcelWorld world = CaesarBcelWorld.getInstance();
         world.setMessageHandler(messageHandler);
-                
+        
+        /*
         // TODO make this optional, as command line argument
         CaesarBcelWorld.getInstance().getWorld().setModel(model);
         
@@ -782,5 +781,6 @@ public class Main extends MainSuper implements Constants {
                 ProgramElementNode.Kind.FILE_JAVA, 
                 new LinkedList())
         );
+        */
     }
 }

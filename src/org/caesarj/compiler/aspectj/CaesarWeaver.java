@@ -20,16 +20,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarWeaver.java,v 1.5 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CaesarWeaver.java,v 1.6 2005-03-31 14:06:10 thiago Exp $
  */
 
 package org.caesarj.compiler.aspectj;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.bridge.AbortException;
+import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.IClassFileProvider;
+import org.aspectj.weaver.IWeaveRequestor;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.caesarj.compiler.constants.CaesarMessages;
@@ -44,6 +50,9 @@ import org.caesarj.util.TokenReference;
  * on command.
  */
 public class CaesarWeaver {
+    
+    private String destination;
+    
 	/*
 	 * This class wrapps the AbortException. It is generated and thrown by 
 	 * performWeaving in the case that an AbortException is theown by the
@@ -64,10 +73,10 @@ public class CaesarWeaver {
 							new TokenReference(
 								e
 									.getIMessage()
-									.getISourceLocation()
+									.getSourceLocation()
 									.getSourceFile()
 									.getName(),
-								e.getIMessage().getISourceLocation().getLine()),
+								e.getIMessage().getSourceLocation().getLine()),
 							new Message(CaesarMessages.WEAVER_ERROR, e.getMessage()));	
 		}
 	}
@@ -76,9 +85,10 @@ public class CaesarWeaver {
 	// list of UnwovenClassFile objects to weave	
 	private List unwovenClasses;
 // Construction
-	public CaesarWeaver()
+	public CaesarWeaver(String destination)
 	{
 		unwovenClasses  = new ArrayList();
+		this.destination = destination;
 	}
 // Functionality
 	public int fileCount()
@@ -98,6 +108,7 @@ public class CaesarWeaver {
 	public void	performWeaving(CaesarBcelWorld world) throws IOException
 	{
 		try{
+		    /*
 			// Create an array containing the unwoven files...
 			UnwovenClassFile unwovenClassFiles[] = 
 				(UnwovenClassFile[])unwovenClasses.toArray(new UnwovenClassFile[0]);
@@ -106,7 +117,51 @@ public class CaesarWeaver {
 			for (int i = 0; i < unwovenClassFiles.length; i++)
 				weaver.addClassFile(unwovenClassFiles[i]);
 			// ... to do the weaving!
-			weaver.weave();
+			weaver.weave(); */
+
+		   
+		    // Changed for version 1.2.1 of aspectj weaver
+		    
+			BcelWeaver	weaver = new BcelWeaver(world.getWorld());
+			
+			for (int i = 0; i < unwovenClasses.size(); i++)
+				weaver.addClassFile((UnwovenClassFile) unwovenClasses.get(i));
+			weaver.prepareForWeave();
+			IClassFileProvider provider = new IClassFileProvider() {
+
+				public Iterator getClassFileIterator() {
+					return unwovenClasses.iterator();
+				}
+
+				public IWeaveRequestor getRequestor() {
+					return new IWeaveRequestor() {
+						public void acceptResult(UnwovenClassFile result) {
+
+						    String className = result.getClassName().replace('.', '/');
+							 try {
+								BufferedOutputStream os = FileUtil.makeOutputStream(new File(destination + "/" + className + ".class"));
+								os.write(result.getBytes());
+								os.close();
+							} catch(IOException ex) {
+							    ex.printStackTrace();
+							}
+							
+						}
+						public void processingReweavableState() {
+						}
+						public void addingTypeMungers() {
+						}
+						public void weavingAspects() {
+						}
+						public void weavingClasses() {
+						}
+						public void weaveCompleted() {
+						}
+					};
+				}
+			};
+			weaver.weave(provider);
+			
 		}
 		catch( AbortException e )
 		{

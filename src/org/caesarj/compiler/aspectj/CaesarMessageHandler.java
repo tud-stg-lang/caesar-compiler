@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarMessageHandler.java,v 1.7 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CaesarMessageHandler.java,v 1.8 2005-03-31 14:06:10 thiago Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -66,7 +66,7 @@ public class CaesarMessageHandler implements IMessageHandler, CaesarConstants {
 			return true;
 		}
 
-		ISourceLocation location = message.getISourceLocation();
+		ISourceLocation location = message.getSourceLocation();
 
 		if (message.getKind() == IMessage.WARNING) {
 

@@ -20,34 +20,33 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ClassModifyingVisitor.java,v 1.15 2005-03-10 10:42:58 gasiunas Exp $
+ * $Id: ClassModifyingVisitor.java,v 1.16 2005-03-31 14:06:10 thiago Exp $
  */
 
 package org.caesarj.mixer.intern;
 
 import java.util.Vector;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Attribute;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantClass;
-import org.apache.bcel.classfile.ConstantMethodref;
-import org.apache.bcel.classfile.ConstantNameAndType;
-import org.apache.bcel.classfile.ConstantPool;
-import org.apache.bcel.classfile.ConstantUtf8;
-import org.apache.bcel.classfile.DescendingVisitor;
-import org.apache.bcel.classfile.EmptyVisitor;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.InnerClass;
-import org.apache.bcel.classfile.InnerClasses;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.LocalVariable;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ClassGen;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.Type;
-
+import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.Attribute;
+import org.aspectj.apache.bcel.classfile.Code;
+import org.aspectj.apache.bcel.classfile.Constant;
+import org.aspectj.apache.bcel.classfile.ConstantClass;
+import org.aspectj.apache.bcel.classfile.ConstantMethodref;
+import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.ConstantUtf8;
+import org.aspectj.apache.bcel.classfile.DescendingVisitor;
+import org.aspectj.apache.bcel.classfile.EmptyVisitor;
+import org.aspectj.apache.bcel.classfile.Field;
+import org.aspectj.apache.bcel.classfile.InnerClass;
+import org.aspectj.apache.bcel.classfile.InnerClasses;
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.LocalVariable;
+import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.generic.ClassGen;
+import org.aspectj.apache.bcel.generic.ObjectType;
+import org.aspectj.apache.bcel.generic.Type;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.mixer.MixerException;
 
@@ -130,7 +129,7 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 		Vector	v = new Vector();
 		for (int i = 0; i < atts.length; i++) {
 			Attribute attribute = atts[i];
-			if (attribute.getTag() == org.apache.bcel.Constants.ATTR_INNER_CLASSES){
+			if (attribute.getTag() == Constants.ATTR_INNER_CLASSES){
 				InnerClasses ic = (InnerClasses)attribute;
 				ic.setInnerClasses(new InnerClass[0]);
 				ic.setLength(2);
