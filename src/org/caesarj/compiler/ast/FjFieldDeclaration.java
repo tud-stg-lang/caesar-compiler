@@ -73,8 +73,9 @@ public class FjFieldDeclaration extends JFieldDeclaration {
 	{
 		if (context instanceof FjClassContext)
 			((FjClassContext)context).pushContextInfo(this);
-			
-		((FjVariableDefinition)getVariable()).initFamily(context);
+		
+		if (getVariable() instanceof FjVariableDefinition)	
+			((FjVariableDefinition)getVariable()).initFamily(context);
 
 		if (context instanceof FjClassContext)
 			((FjClassContext)context).popContextInfo();

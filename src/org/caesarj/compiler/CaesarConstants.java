@@ -11,37 +11,37 @@ public interface CaesarConstants extends Constants {
 
 	//Caesar names for generated methods, fields and parameters
 
-	public static final String DEPLOY_METHOD = "_deploy";
+	public static final String DEPLOY_METHOD = "$deploy";
 
-	public static final String UNDEPLOY_METHOD = "_undeploy";
+	public static final String UNDEPLOY_METHOD = "$undeploy";
 
 	public static final String SET_DEPLOYMENT_THREAD_METHOD =
-		"_setDeploymentThread";
+		"$setDeploymentThread";
 
 	public static final String GET_DEPLOYMENT_THREAD_METHOD =
-		"_getDeploymentThread";
+		"$getDeploymentThread";
 
 	public static final String GET_SINGLETON_ASPECT_METHOD =
-		"_getSingletonAspect";
+		"$getSingletonAspect";
 
 	public static final String GET_DEPLOYED_INSTANCES_METHOD =
-		"_getDeployedInstances";
+		"$getDeployedInstances";
 
 	public static final String GET_THREAD_LOCAL_DEPLOYED_INSTANCES_METHOD =
-		"_getThreadLocalDeployedInstances";
+		"$getThreadLocalDeployedInstances";
 
-	public static final String INSTANCE_TO_DEPLOY = "_instanceToDeploy";
+	public static final String INSTANCE_TO_DEPLOY = "$instanceToDeploy";
 
-	public static final String DEPLOYMENT_THREAD = "_deploymentThread";
+	public static final String DEPLOYMENT_THREAD = "$deploymentThread";
 
-	public static final String DEPLOYED_INSTANCES = "_deployedInstances";
+	public static final String DEPLOYED_INSTANCES = "$deployedInstances";
 
-	public static final String ASPECT_INTANCE = "_aspectInstance";
+	public static final String ASPECT_INTANCE = "$aspectInstance";
 
-	public static final String ASPECT_TO_DEPLOY = "_aspectToDeploy";
+	public static final String ASPECT_TO_DEPLOY = "$aspectToDeploy";
 
 	public static final String PER_THREAD_DEPLOYED_INSTANCES =
-		"_perThreadDeployedInstances";
+		"$perThreadDeployedInstances";
 
 	public static final String ADVICE_METHOD = "ADVICE METHOD";
 
@@ -93,13 +93,13 @@ public interface CaesarConstants extends Constants {
 
 	//Caesar extension for the generated deployment support classes
 
-	public static final String ASPECT_IFC_EXTENSION = "_Ifc";
+	public static final String ASPECT_IFC_EXTENSION = "$Ifc";
 
-	public static final String MULTI_INSTANCE_ASPECT_EXTENSION =
-		"_MultiInstances";
+	public static final String MULTI_INSTANCE_CONTAINER_EXTENSION =
+		"$MultiInstanceContainer";
 
-	public static final String MULTI_THREAD_ASPECT_EXTENSION = "_MultiThreads";
+	public static final String THREAD_MAPPER_EXTENSION = "$ThreadMapper";
 
-	public static final String SINGLETON_ASPECT_EXTENSION = "_AspectRegistry";
+	public static final String REGISTRY_EXTENSION = "$Registry";
 
 }

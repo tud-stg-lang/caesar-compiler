@@ -148,14 +148,17 @@ public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 		newInners[inners.length] = type;
 		inners = newInners;
 	}
-
-	public void addInterface(CReferenceType ifc)
+	public void addInterface(CReferenceType newInterface)
 	{
-		Vector interfaces = new Vector(Arrays.asList(this.interfaces));
-		interfaces.add(ifc);
-		this.interfaces =
-			(CReferenceType[]) Utils.toArray(interfaces, CReferenceType.class);
+		CReferenceType[] newInterfaces =
+			new CReferenceType[interfaces.length + 1];
+
+		System.arraycopy(interfaces, 0, newInterfaces, 1, interfaces.length);
+		newInterfaces[0] = newInterface;
+
+		interfaces = newInterfaces;
 	}
+
 
 	public String getIdent()
 	{

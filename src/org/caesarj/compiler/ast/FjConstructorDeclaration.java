@@ -867,9 +867,9 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 							ref,
 							new FjMethodCallExpression(
 								ref,
-								new JFieldAccessExpression(
+								new FjFieldAccessExpression(
 									ref, 
-									new JThisExpression(ref), 
+									null, 
 									mapName),
 								CciConstants.WRAPPER_MAP_PUT,
 								new JExpression[]

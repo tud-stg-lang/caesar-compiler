@@ -9,6 +9,7 @@ import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
+import org.caesarj.kjc.CBinaryTypeContext;
 import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CClassContext;
 import org.caesarj.kjc.CClassNameType;
@@ -121,6 +122,74 @@ public class AdviceDeclaration
 		//needed for proceed-method creation
 		proceedParameters = newParameters;
 
+	}
+
+	public CSourceMethod checkInterface(CClassContext context)
+		throws PositionedError {
+
+		// when checking single parameters we need the list of
+		// all parameters and the method, so pass them here
+		 ((FjAdditionalContext) context).pushContextInfo(this);
+		((FjAdditionalContext) context).pushContextInfo(parameters);
+
+		// we have to work on the returntype here:
+		// if it's an overridden class cast upwards
+		FjTypeSystem fjts = new FjTypeSystem();
+		try {
+			if (returnType.isReference()) {
+				returnType = returnType.checkType(context);
+				returnType =
+					fjts.upperBound(context, (CReferenceType) returnType);
+			}
+		} catch (UnpositionedError e) {
+			if (e.getFormattedMessage().getDescription()
+				== KjcMessages.CLASS_AMBIGUOUS) {
+				CClass[] candidates =
+					(CClass[]) e.getFormattedMessage().getParams()[1];
+				try {
+					returnType = fjts.commonOverrideType(context, candidates);
+				} catch (UnpositionedError e2) {
+					// will be handled later
+				}
+			}
+		}
+		// pop parameters and method name from the stack again
+		 ((FjAdditionalContext) context).popContextInfo();
+		((FjAdditionalContext) context).popContextInfo();
+
+		CBinaryTypeContext typeContext =
+			new CBinaryTypeContext(
+				context.getClassReader(),
+				context.getTypeFactory(),
+				context,
+				typeVariables,
+				(modifiers & ACC_STATIC) == 0);
+
+		CType[] parameterTypes = new CType[parameters.length];
+		String[] parameterNames = new String[parameters.length];
+		for (int i = 0; i < parameters.length; i++) {
+			parameterTypes[i] = parameters[i].checkInterface(typeContext);
+			parameterNames[i] = parameters[i].getIdent();
+		}
+
+		CaesarAdvice adviceMethod =
+			new CaesarAdvice(
+				context.getCClass(),
+				ACC_PUBLIC,
+				ident,
+				returnType,
+				parameterTypes,
+				exceptions,
+				typeVariables,
+				body,
+				new FjFamily[0],
+				pointcut,
+				kind,
+				extraArgumentFlags);
+
+		setInterface(adviceMethod);
+
+		return adviceMethod;
 	}
 
 	/**
@@ -252,63 +321,6 @@ public class AdviceDeclaration
 
 	public CaesarAdvice getCaesarAdvice() {
 		return (CaesarAdvice) getMethod();
-	}
-
-	public CSourceMethod checkInterface(CClassContext context)
-		throws PositionedError {
-
-		// when checking single parameters we need the list of
-		// all parameters and the method, so pass them here
-		 ((FjAdditionalContext) context).pushContextInfo(this);
-		((FjAdditionalContext) context).pushContextInfo(parameters);
-
-		// we have to work on the returntype here:
-		// if it's an overridden class cast upwards
-		FjTypeSystem fjts = new FjTypeSystem();
-		try {
-			if (returnType.isReference()) {
-				returnType = returnType.checkType(context);
-				returnType =
-					fjts.upperBound(context, (CReferenceType) returnType);
-			}
-		} catch (UnpositionedError e) {
-			if (e.getFormattedMessage().getDescription()
-				== KjcMessages.CLASS_AMBIGUOUS) {
-				CClass[] candidates =
-					(CClass[]) e.getFormattedMessage().getParams()[1];
-				try {
-					returnType = fjts.commonOverrideType(context, candidates);
-				} catch (UnpositionedError e2) {
-					// will be handled later
-				}
-			}
-		}
-		// pop parameters and method name from the stack again
-		 ((FjAdditionalContext) context).popContextInfo();
-		((FjAdditionalContext) context).popContextInfo();
-
-		CType[] parameterTypes = new CType[parameters.length];
-		for (int i = 0; i < parameterTypes.length; i++)
-			parameterTypes[i] = parameters[i].getType();
-
-		CaesarAdvice adviceMethod =
-			new CaesarAdvice(
-				context.getCClass(),
-				ACC_PUBLIC,
-				ident,
-				returnType,
-				parameterTypes,
-				exceptions,
-				typeVariables,
-				body,
-				new FjFamily[0],
-				pointcut,
-				kind,
-				extraArgumentFlags);
-
-		setInterface(adviceMethod);
-
-		return adviceMethod;
 	}
 
 }

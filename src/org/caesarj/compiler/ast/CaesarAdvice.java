@@ -73,7 +73,7 @@ public class CaesarAdvice extends FjSourceMethod {
 		int extraArgumentFlags) {
 		super(
 			owner,
-			modifiers,
+			modifiers | ACC_FINAL,
 			ident,
 			returnType,
 			paramTypes,

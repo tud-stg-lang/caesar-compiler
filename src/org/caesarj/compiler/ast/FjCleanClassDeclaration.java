@@ -547,7 +547,8 @@ public class FjCleanClassDeclaration
 		CClass superClass;
 		//If it is an interface the second interface is its super type.
 		if (clazz.isInterface() && clazz.getInterfaces().length > 1)
-			superClass = clazz.getInterfaces()[1].getCClass();
+			//WALTER INTERFACE&
+			superClass = clazz.getInterfaces()[0].getCClass();
 		else
 			superClass = clazz.getSuperClass();
 					
