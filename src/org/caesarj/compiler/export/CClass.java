@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.8 2004-04-16 14:29:08 aracic Exp $
+ * $Id: CClass.java,v 1.9 2004-04-21 14:20:42 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.StringTokenizer;
 
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
@@ -231,13 +232,21 @@ public abstract class CClass extends CMember
 		this.hasOuterThis = hasOuterThis;
 	}
 
-	/**
-	 * @return true if this class is an interface
-	 */
-	public boolean isInterface()
-	{
-		return CModifier.contains(getModifiers(), ACC_INTERFACE);
-	}
+    /**
+     * @return true if this class is an interface
+     */
+    public boolean isInterface()
+    {
+        return CModifier.contains(getModifiers(), ACC_INTERFACE);
+    }
+
+    /**
+     * @return true if this class is an interface
+     */
+    public boolean isCaesarClassInterface()
+    {
+        return CModifier.contains(getModifiers(), ACC_CCLASS_INTERFACE);
+    }
 
 	/**
 	 * @return true if this class is a class
@@ -1852,6 +1861,39 @@ public abstract class CClass extends CMember
 			false,
 			true,
 			null);
+
+
+
+    // IVICA maps from qualified name to impl qualified name
+    // for example generated/G$Edge -> generated/G_Impl$Edge
+    public String getImplQualifiedName() {
+        StringBuffer strBuf = new StringBuffer();
+        String qualifiedName = getQualifiedName();
+        String packagePrefix = "";
+        String type = qualifiedName;
+        
+        int i = qualifiedName.lastIndexOf('/');
+        
+        if(i >= 0) {
+            packagePrefix = qualifiedName.substring(0, i+1);
+            type = qualifiedName.substring(i+1, qualifiedName.length());
+        }
+        
+        strBuf.append(packagePrefix);
+        
+        StringTokenizer tok = new StringTokenizer(type, "$");
+        while(tok.hasMoreTokens()) {
+            strBuf.append(tok.nextToken()+"_Impl");
+            
+            if(tok.hasMoreTokens())
+                strBuf.append('$');
+        }
+        
+        String res = strBuf.toString();
+        
+        return res;
+    }
+
 
 	// ----------------------------------------------------------------------
 	// DATA MEMBERS
