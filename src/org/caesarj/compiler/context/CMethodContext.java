@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CMethodContext.java,v 1.5 2004-09-06 13:31:36 aracic Exp $
+ * $Id: CMethodContext.java,v 1.6 2004-09-17 15:17:20 gasiunas Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -27,10 +27,12 @@ import java.util.Hashtable;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CThrowableInfo;
 import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.util.CWarning;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -75,9 +77,6 @@ public class CMethodContext extends CContext {
     Enumeration		enum = throwables.elements();
     CReferenceType[]	checked = self.getThrowables();
     boolean[]		used = new boolean[checked.length];
-/*		V.G. Exception checking temporarily switched off,
- *           because current implementation does not take 
- *           to account exception softening 
   
   loop:
     while (enum.hasMoreElements()) {
@@ -113,7 +112,6 @@ public class CMethodContext extends CContext {
 				   null));
       }
     }
-*/
   }
 
   // ----------------------------------------------------------------------
