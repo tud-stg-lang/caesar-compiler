@@ -211,13 +211,24 @@ public class CClassFactory implements CaesarConstants {
             }
         }
          
-        if(!defCtorFound) {
+        // CTODO
+        //if(!defCtorFound) {
             // create def. ctor -> public CTOR() {super();}
             JConstructorDeclaration defCtor = new JConstructorDeclaration(
                 caesarClass.getTokenReference(),
                 ACC_PUBLIC,
                 caesarClass.getIdent(),
-                JFormalParameter.EMPTY,
+                new JFormalParameter[] {
+                	/*
+            		new JFormalParameter(
+        				caesarClass.getTokenReference(),
+						JFormalParameter.DES_PARAMETER,
+						environment.getTypeFactory().getPrimitiveType(TypeFactory.RFT_OBJECT),						
+						"$outer",
+						false    				
+    				)
+    				*/
+        		},
                 CReferenceType.EMPTY,
                 new JConstructorBlock(
                     caesarClass.getTokenReference(),
@@ -235,6 +246,6 @@ public class CClassFactory implements CaesarConstants {
             );
             
             caesarClass.addMethod(defCtor);
-        }
+        //}
 	}
 }

@@ -1,12 +1,6 @@
 package org.caesarj.compiler.cclass;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.export.CClass;
@@ -32,11 +26,9 @@ public class JavaTypeNode {
     private CaesarTypeNode mixin = null;
     
     private JavaTypeNode outer = null;
-    private JavaTypeNode original = null;
     private JavaTypeNode parent = null;
     private HashMap subNodes = new HashMap();
     private List inners = new LinkedList();
-    private Set mixinCopies = new HashSet();
     
     private CjVirtualClassDeclaration declaration = null;
     private CClass clazz = null;
@@ -113,12 +105,7 @@ public class JavaTypeNode {
         res.append(isToBeGeneratedInAst() ? 'I' : '-');
         res.append("]");
         
-        res.append(" [Orig:");
-        if(original != null)
-            res.append(original.getId());
-        else
-            res.append('-');
-        res.append("] [Outer:");
+        res.append("[Outer:");
         if(outer != null)
             res.append(outer.getId());
         else
@@ -144,27 +131,6 @@ public class JavaTypeNode {
     
     public boolean isToBeGeneratedInAst() {
         return type != null && type.isImplicit();
-    }
-
-    public void genMixinCopyDependencies() {       
-        if(this.isToBeGeneratedInBytecode()) {
-            JavaTypeNode compilationNode = 
-                compilationGraph.getOriginalMixin(getQualifiedMixinName());
-            
-            if(compilationNode != null) {
-                compilationNode.addMixinCopy(this);
-            }
-        }
-
-        for (Iterator it = subNodes.values().iterator(); it.hasNext();) {
-            JavaTypeNode compilationNode = (JavaTypeNode) it.next();
-            compilationNode.genMixinCopyDependencies();
-        }
-    }
-    
-    private void addMixinCopy(JavaTypeNode node) {
-        mixinCopies.add(node);
-        node.original = this;
     }
 
     public CaesarTypeNode getMixin() {

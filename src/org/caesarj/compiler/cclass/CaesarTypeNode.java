@@ -289,6 +289,12 @@ public class CaesarTypeNode {
         if(!mixinListCreated) throw new InconsistencyException("mixin list has to be created first");
         return mixinList;
     }
+
+    public CaesarTypeNode[] getMixinListAsArray() {
+        return 
+            (CaesarTypeNode[])mixinList.
+                toArray(new CaesarTypeNode[mixinList.size()]);
+    }
     
     public HashMap getInners() {
         return inners;
@@ -428,7 +434,7 @@ public class CaesarTypeNode {
         thisMatchs = 
             thisMatchs == null ? 
                 new Integer(1) : 
-                new Integer(thisMatchs.intValue()+1);            
+                new Integer(thisMatchs.intValue()+1);
         
         node2MatchMap.put(this, thisMatchs);
             
@@ -450,4 +456,12 @@ public class CaesarTypeNode {
 	public List getImplictParentsSubSet() {
 		return implictParentsSubSet;
 	}
+    
+    public boolean isTopLevel() {
+        return outer == null;
+    }
+    
+    public boolean isRoot() {
+        return parents.size() == 0;
+    }
 }

@@ -15,26 +15,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.1 2004-07-02 12:33:40 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.2 2004-07-05 20:10:40 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.cclass.CaesarTypeNode;
 import org.caesarj.compiler.cclass.CaesarTypeSystem;
 import org.caesarj.compiler.cclass.JavaQualifiedName;
 import org.caesarj.compiler.cclass.JavaTypeNode;
 import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceField;
@@ -188,12 +186,12 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         }
         
         Hashtable hashFieldMap = new Hashtable();
-        for (int i = fields.length - 1; i >= 0; i--) {
+        for (int i = 0; i < fields.length; i++) {
             CSourceField field = fields[i].checkInterface(self);
             field.setPosition(i);
             hashFieldMap.put(field.getIdent(), field);
         }
-        
+
         sourceClass.close(
             this.interfaces, 
             hashFieldMap, 
@@ -222,6 +220,28 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         
         javaTypeNode.setCClass(getCClass());
         javaTypeNode.setDeclaration(this);
+        
+        CClassContext cc = context.getClassContext();
+        
+        if(getCClass().getOwner() != null) {
+            this.modifiers |= ACC_STATIC;
+            getCClass().setModifiers(this.modifiers);
+            
+            JFieldDeclaration outerField = new JFieldDeclaration(
+        		getTokenReference(),
+				new JVariableDefinition(
+					getTokenReference(),
+					ACC_FINAL | ACC_PRIVATE,
+					javaTypeNode.getOuter().getDeclaration().getMixinIfcDeclaration().getCClass().getAbstractType(), // type
+					"$outer",
+					null
+				),
+				true,
+				null, null
+    		);
+            
+            addField(outerField);
+        }
         
 //      -------------------- cut here -------------------------------------
         // CTODO move this outside of this method -> a separated step

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.17 2004-07-02 12:33:40 aracic Exp $
+ * $Id: CClass.java,v 1.18 2004-07-05 20:10:40 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -1947,4 +1947,8 @@ public abstract class CClass extends CMember
 	public boolean isGenerated() {
 		return generatedClass;
 	}
+
+    public void setOwner(CClass owner) {
+        this.owner = owner;
+    }
 }

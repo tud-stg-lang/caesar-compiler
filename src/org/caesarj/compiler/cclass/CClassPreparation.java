@@ -153,6 +153,11 @@ public class CClassPreparation implements CaesarConstants {
                                             decl.getTokenReference(),
                                             innerClass.getAbstractType(),
                                             JExpression.EMPTY
+											/*
+											new JExpression[]{
+                                        		new JThisExpression(decl.getTokenReference())
+                                    		}
+                                    		*/
                                         ),
                                         null
                                     )
@@ -261,7 +266,7 @@ public class CClassPreparation implements CaesarConstants {
             CClass owner = null;
             JavaTypeNode outer = node.getOuter();
             if(outer != null) {                
-                owner = generateCClass(outer, context);
+                owner = generateCClass(outer, context);                
             }
                         
             CSourceClass sourceClass = new CSourceClass(
@@ -276,8 +281,12 @@ public class CClassPreparation implements CaesarConstants {
                 null // CTODO: declaration unit is null?
             );
             
-            if(owner != null)
-            	sourceClass.setHasOuterThis(true);
+            if(owner != null) {
+            	//sourceClass.setHasOuterThis(true);
+                sourceClass.setModifiers(sourceClass.getModifiers() | ACC_STATIC);
+                
+                
+            }
 
             
             // generate super type
@@ -311,7 +320,8 @@ public class CClassPreparation implements CaesarConstants {
             // generate fields
             Hashtable fields = new Hashtable();
             CField mixinFields[] = mixinClass.getFields();
-            for(int i=0; i<mixinFields.length; i++) {
+            int i;
+            for(i=0; i<mixinFields.length; i++) {
                 CSourceField clone = new CSourceField(
                     sourceClass,
                     mixinFields[i].getModifiers(),
