@@ -2087,7 +2087,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				name.getText(),
 				parameters,
 				throwsList,
-				new CjConstructorBlock(sourceRef,
+				new JConstructorBlock(sourceRef,
 				constructorCall,
 				(JStatement[]) body.toArray(new JStatement[body.size()])),
 				javadoc,

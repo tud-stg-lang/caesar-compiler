@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.46 2004-07-02 12:34:29 aracic Exp $
+ * $Id: Caesar.g,v 1.47 2004-09-06 13:30:42 aracic Exp $
  */
 
 /*
@@ -818,7 +818,7 @@ jConstructorDefinition [ParseClassContext context, int modifiers]
                                            name.getText(),
                                            parameters,
                                            throwsList,
-                                           new CjConstructorBlock(sourceRef,
+                                           new JConstructorBlock(sourceRef,
                                                                  constructorCall,
                                                                  (JStatement[]) body.toArray(new JStatement[body.size()])),
                                            javadoc,
