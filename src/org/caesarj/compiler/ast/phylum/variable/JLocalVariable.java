@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JLocalVariable.java,v 1.3 2004-11-23 18:28:56 aracic Exp $
+ * $Id: JLocalVariable.java,v 1.4 2005-01-07 13:20:10 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -248,4 +248,9 @@ public abstract class JLocalVariable extends JPhylum {
 
   // position in method local vars
   private int			position;
+  
+  
+  public String toString() {
+    return "JLocalVariable["+name+":"+type+"]";
+  }
 }

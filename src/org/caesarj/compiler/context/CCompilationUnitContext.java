@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CCompilationUnitContext.java,v 1.4 2004-10-15 11:12:54 aracic Exp $
+ * $Id: CCompilationUnitContext.java,v 1.5 2005-01-07 13:20:10 klose Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -49,6 +49,10 @@ import org.caesarj.util.UnpositionedError;
  */
 public class CCompilationUnitContext extends CContext {
 
+    public int getDepth(){
+        return 0;
+    }
+    
 	// ----------------------------------------------------------------------
 	// CONSTRUCTORS
 	// ----------------------------------------------------------------------

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBlockContext.java,v 1.3 2004-03-15 11:56:53 aracic Exp $
+ * $Id: CBlockContext.java,v 1.4 2005-01-07 13:20:10 klose Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -217,6 +217,18 @@ public class CBlockContext extends CBodyContext {
     return parent.lookupLocalVariable(ident);
   }
 
+  public boolean containsVariable(String ident){
+      if (localVars != null) {
+            for (int i = 0; i < localsIndex; i++) {
+                JLocalVariable var = (JLocalVariable) localVars.get(i);
+                if (var.getIdent().equals(ident)) {
+                    return true;
+                }
+            }
+        }
+      return false;
+  }
+  
   /**
    * addLocal variable
    * @param	var		the name of the variable

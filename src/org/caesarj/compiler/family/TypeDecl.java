@@ -1,5 +1,7 @@
 package org.caesarj.compiler.family;
 
+import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.util.InconsistencyException;
 
@@ -27,10 +29,13 @@ public class TypeDecl extends Path {
         this.type = type;
     }
     
-    public StaticObject type(CClass context) {
+//    public StaticObject type(CClass context) {
+//    public StaticObject type(StaticPath sp){
+    public StaticObject type(CContext context) {
         try {
-            StaticObject so = prefix.type(context);    
-            CClass clazz = so.getType().lookupClass(context, type);
+            StaticObject so = prefix.type(context );    
+            CClass contextClass = ((CClassContext)context).getCClass(); //sp.current().getType().getCClass();
+            CClass clazz = so.getType().lookupClass( contextClass, type);
             return new StaticObject(prefix, clazz);
         }
         catch (Throwable e) {

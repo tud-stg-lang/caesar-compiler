@@ -3,14 +3,17 @@ package org.caesarj.compiler.family;
 import java.util.Stack;
 
 import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.ast.phylum.expression.JAssignmentExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
+import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.ast.visitor.VisitorSupport;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.types.CDependentType;
 import org.caesarj.util.InconsistencyException;
 
 /**
@@ -52,7 +55,22 @@ public class FamilyCheckVisitor implements IVisitor, CaesarConstants  {
 	public void endVisit(JTypeDeclaration self) {
 	    pos.pop();
 	}
-		
+
+	public boolean visit(JMethodDeclaration self){
+	    return true;
+	}
+	
+	public void endVisit(JMethodDeclaration self){
+	    
+	}
+	
+	public boolean visit(JBlock self){
+	    return true; 
+	}
+	
+	public void endVisit(JBlock self){
+	}
+
     public boolean visit(JAssignmentExpression self) {
         JExpression left = self.getLeft();
         JExpression right = self.getRight();
@@ -72,22 +90,22 @@ public class FamilyCheckVisitor implements IVisitor, CaesarConstants  {
             
             CClass contextClass = getCurrentCClass();
             
-            Path leftExpr = 
-                Path.createFrom(contextClass, (JFieldAccessExpression)left);
-
-            Path rightExpr = 
-                Path.createFrom(contextClass, (JFieldAccessExpression)right);
+            Path leftExpr = null; 
+//                Path.createFrom(contextClass, (JFieldAccessExpression)left);
+                	
+            Path rightExpr = null;
+//                Path.createFrom(contextClass, (JFieldAccessExpression)right);
+                
+//            StaticObject leftSO = leftExpr.type(contextClass);
             
-            StaticObject leftSO = leftExpr.type(contextClass);
+//            StaticObject rightSO = rightExpr.type(contextClass);
             
-            StaticObject rightSO = rightExpr.type(contextClass);
+//            System.out.println("~~~ leftSO: "+leftSO+"     rightSO: "+rightSO);
             
-            System.out.println("~~~ leftSO: "+leftSO+"     rightSO: "+rightSO);
-            
-            if(!leftSO.hasSameFamiliy(rightSO)) {
-                System.out.println("!!!incompatible families at line "+self.getTokenReference().getLine());
-                System.exit(1);
-            }
+//            if(!leftSO.hasSameFamiliy(rightSO)) {
+//                System.out.println("!!!incompatible families at line "+self.getTokenReference().getLine());
+//                System.exit(1);
+//            }
         }
             
         return false;

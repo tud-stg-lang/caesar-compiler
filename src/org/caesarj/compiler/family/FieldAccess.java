@@ -3,6 +3,7 @@ package org.caesarj.compiler.family;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.types.CDependentType;
@@ -36,7 +37,9 @@ public class FieldAccess extends Path {
         return prefix;
     }
     
-    public StaticObject type(CClass context) {
+//    public StaticObject type(CClass context) {
+//    public StaticObject type(StaticPath sp){
+    public StaticObject type(CContext context) {
         try {
 	        Path path = prefix;
 	        
@@ -49,7 +52,9 @@ public class FieldAccess extends Path {
 	        
 	        if(fType.isDependentType()) {
 	            CDependentType dependType = (CDependentType)fType;
-	            Path memDefPath = Path.createFrom( f.getOwner(), dependType.getFamily() );
+	            
+	            Path memDefPath = Path.createFrom( context, dependType.getFamily() );
+//	            Path memDefPath = Path.createFrom(dependType);
 	            typeDecl = new TypeDecl(memDefPath, dependType.getIdent());
 	        }
 	        else {

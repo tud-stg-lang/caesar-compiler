@@ -15,10 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassNameType.java,v 1.14 2004-11-24 11:44:34 klose Exp $
+ * $Id: CClassNameType.java,v 1.15 2005-01-07 13:20:10 klose Exp $
  */
 
 package org.caesarj.compiler.types;
+
 
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
@@ -28,10 +29,10 @@ import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CClassBodyContext;
 import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.export.CField;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -140,23 +141,42 @@ public class CClassNameType extends CReferenceType
 	    
 	    JExpression expr = convertToExpression();
 	    
-	    // dependent type declarations only allowed in the class body
-        if(expr != null && (context instanceof CClassContext)) {
+	    if (expr != null){
             try {
                 
-                CClassContext classContext = (CClassContext)context;
-                        
-                KjcEnvironment env = classContext.getEnvironment();
+                int k=0;
                 
-                CExpressionContext ctx =
-                    new CExpressionContext(
-	                    new CBlockContext(
-	                        new CClassBodyContext(classContext, env), env, 0 
-                        ),
-	                    env
-                    );
+                CContext ctx = (CContext)context;
+                CExpressionContext ectx = null;
+                //CClassContext classContext;
+                KjcEnvironment env;
+
+                // create expression context
+                if (context instanceof CClassContext){
+                    CClassContext classContext = (CClassContext)context;
+                    env = classContext.getEnvironment();
+	                ectx =
+	                    new CExpressionContext(
+		                    new CBlockContext(
+		                        new CClassBodyContext(classContext, env), env, 0 
+	                        ),
+		                    env
+	                    );
+                } else if (context instanceof CBlockContext){
+                    env = ((CBlockContext)context).getEnvironment();
+                    ectx = new CExpressionContext( (CBlockContext)context, env );
+                } else {
+                    throw new Exception();
+                }
                 
-                expr = expr.analyse(ctx);
+                // try to anylse the fieldaccess
+                try{
+                    expr = expr.analyse(ectx);
+                } catch (Exception e){
+                    // TODO just for debugging
+ //                   e.printStackTrace();
+                    throw e;
+                }
                 
                 if(expr instanceof JFieldAccessExpression) {                    
 	                String pathSegs[] = qualifiedName.split("/");
@@ -173,32 +193,18 @@ public class CClassNameType extends CReferenceType
 	                while(fieldAccessExpr.getPrefix() instanceof JFieldAccessExpression) {
 	                    fieldAccessExpr = (JFieldAccessExpression)fieldAccessExpr.getPrefix();
 	                } 
-
-	                //
-	                // determine k
-	                //
-	                int k = 0;
-	                CClass contextClass = classContext.getCClass();	                
-	                CField field ;
-	                try {
-	                    field = contextClass.lookupField( contextClass, null, fieldAccessExpr.getIdent() );
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        throw new InconsistencyException();
-                    }
-	                
-	                CClass tmp = field.getOwner();
-	                
-	                while(contextClass != tmp && tmp != null) {
-	                    tmp = tmp.getOwner();
-	                    k++;
-	                }
 	                
 	                //
 	                // create and return new CDependentType
 	                //
 	                CType t = clazz.getAbstractType().checkType(context);
-	                return new CDependentType(classContext, k, (JFieldAccessExpression)expr, t);
+	                CDependentType dt = new CDependentType( 
+	                        					(CContext)context, 
+	                        					k, 
+	                        					(JFieldAccessExpression)expr, 
+	                        					t);
+//	                System.out.println("Resolved dp "+dt);
+	                return dt;
                 }
             }
             catch (Exception e) {

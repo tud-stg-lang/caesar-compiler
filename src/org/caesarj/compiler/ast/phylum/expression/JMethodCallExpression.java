@@ -15,10 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodCallExpression.java,v 1.12 2004-11-23 09:35:03 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.13 2005-01-07 13:20:10 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
+
 
 import org.caesarj.compiler.ast.CMethodNotFoundError;
 import org.caesarj.compiler.ast.visitor.IVisitor;
@@ -594,6 +595,17 @@ public class JMethodCallExpression extends JExpression
 	public CType getPrefixType() {
         return prefixType;
     }
+	
+	public JExpression getPrefix(){
+	    return prefix;
+	}
+	
+	/*
+	 * TODO Check if this is called outside of Path
+	 */
+	public String getIdent(){
+	    return ident;
+	}
 	
 	// ----------------------------------------------------------------------
 	// DATA MEMBERS

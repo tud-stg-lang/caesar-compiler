@@ -22,44 +22,53 @@ import org.caesarj.util.TokenReference;
  */
 public class CClassBodyContext extends CMethodContext {
 
+    public int getDepth(){
+        return parent.getDepth();
+    }
+    
     public static final String METHOD_NAME = "$TEMPORARY_METHOD_ENTRY"; 
+    
+    CMethod method;
+    JMethodDeclaration	decl;
     
     public CClassBodyContext( CClassContext cctx, KjcEnvironment env ){
         super(cctx, env, null);
-    }
+        method =         new CSourceMethod(
+			                getClassContext().getCClass(),ACC_PRIVATE,METHOD_NAME,new CVoidType(),
+			                new CType[0], new CReferenceType[0],false, false,
+			                	new JBlock(
+			                	        TokenReference.NO_REF,
+			                	        new JStatement[0],
+			                	        new JavaStyleComment[0]
+			                	)
+			            	);
+
+		decl  =        new JMethodDeclaration(
+			                TokenReference.NO_REF,
+			                ACC_PUBLIC,
+			                new CVoidType(),
+			                METHOD_NAME,
+			                new JFormalParameter[0],
+			                new CReferenceType[0],
+			               	new JBlock(
+			               	     TokenReference.NO_REF,
+			            	        new JStatement[0],
+			            	        new JavaStyleComment[0]
+			            	),
+			            	new JavadocComment("",false,false),
+			            	new JavaStyleComment[0]
+			        );
+			    }
+
+    
+    
     
     public CMethod getCMethod() {
-//        System.err.println("Invalid call: CClassBodyContext.getCMethod");
-//        throw new InconsistencyException();
-        
-        
-        return new CSourceMethod(
-                getClassContext().getCClass(),ACC_PRIVATE,METHOD_NAME,new CVoidType(),
-                new CType[0], new CReferenceType[0],false, false,
-                	new JBlock(
-                	        TokenReference.NO_REF,
-                	        new JStatement[0],
-                	        new JavaStyleComment[0]
-                	)
-            	);
+        return method;
     }
     
     public JMethodDeclaration getMethodDeclaration() {
-        return new JMethodDeclaration(
-                TokenReference.NO_REF,
-                ACC_PUBLIC,
-                new CVoidType(),
-                METHOD_NAME,
-                new JFormalParameter[0],
-                new CReferenceType[0],
-               	new JBlock(
-               	     TokenReference.NO_REF,
-            	        new JStatement[0],
-            	        new JavaStyleComment[0]
-            	),
-            	new JavadocComment("",false,false),
-            	new JavaStyleComment[0]
-        );
+        return decl;
      }
     
     

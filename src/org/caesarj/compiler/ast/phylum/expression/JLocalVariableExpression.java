@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JLocalVariableExpression.java,v 1.3 2004-10-27 17:22:45 aracic Exp $
+ * $Id: JLocalVariableExpression.java,v 1.4 2005-01-07 13:18:50 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -285,6 +285,14 @@ public class JLocalVariableExpression extends JExpression {
         variable.accept(s);
     }
 
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("JLocalVariableExpression[");
+        buffer.append(variable);
+        buffer.append("]");
+        return buffer.toString();
+    }
+    
     // ----------------------------------------------------------------------
     // DATA MEMBERS
     // ----------------------------------------------------------------------

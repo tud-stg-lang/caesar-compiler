@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFormalParameter.java,v 1.3 2004-09-06 13:31:34 aracic Exp $
+ * $Id: JFormalParameter.java,v 1.4 2005-01-07 13:20:10 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -108,7 +108,17 @@ public class JFormalParameter extends JLocalVariable {
     }
     context.setVariableInfo(getIndex(), CVariableInfo.INITIALIZED);
   }
-  
+
+  public String toString() {
+      StringBuffer buffer = new StringBuffer();
+      buffer.append("JFormalParameter[");
+      if (isFinal()) buffer.append("final ");
+      
+      buffer.append(getIdent());
+      buffer.append("]");
+      return buffer.toString();
+  }
+
   // ----------------------------------------------------------------------
   // PUBLIC CONSTANTS
   // ----------------------------------------------------------------------

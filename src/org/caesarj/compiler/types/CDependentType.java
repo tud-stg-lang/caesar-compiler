@@ -2,8 +2,11 @@ package org.caesarj.compiler.types;
 
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
 import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.family.Path;
+import org.caesarj.compiler.family.StaticObject;
 
 
 /**
@@ -14,7 +17,13 @@ import org.caesarj.compiler.export.CClass;
  */
 public class CDependentType extends CReferenceType {
     
-    private CClassContext pos;         /** position of this type */
+///    private CClassContext pos;         /** position of this type */
+  
+    private CContext pos; 
+    
+    public CContext getContext(){
+        return pos;
+    }
     
     private CType plainType;    /** static type of the */
     
@@ -24,7 +33,8 @@ public class CDependentType extends CReferenceType {
                                     of the current context */
               
     
-    public CDependentType(CClassContext pos, int k, JFieldAccessExpression family, CType staticType) {
+///    public CDependentType(CClassContext pos, int k, JFieldAccessExpression family, CType staticType) {
+    public CDependentType(CContext pos, int k, JFieldAccessExpression family, CType staticType) {
         this.pos = pos;
         this.k = k;
         this.family = family;
@@ -74,15 +84,18 @@ public class CDependentType extends CReferenceType {
             // check if plain types are subtypes
             if( plainType.isAssignableTo(context, other.plainType) ) {
                 
-                /*
-                String p1 = makePath();
-                String p2 = other.makePath();
-                System.out.println("this: "+p1+"    other: "+p2);
+                CContext ctx = (CContext) context;
                 
-                return p1.equals(p2);
-                */
+                // TODO create static objects and compare
+                CDependentType rightType = (CDependentType) dest;
                 
-                return true;
+                Path 	rightPath  = Path.createFrom(ctx, rightType.getFamily() ),
+                		leftPath   = Path.createFrom(ctx, this.getFamily() );
+                
+                StaticObject 	rightSO = rightPath.type(ctx),
+                				leftSO = leftPath.type(ctx);
+                
+                return leftSO.hasSameFamiliy(rightSO);
             }
         }
         

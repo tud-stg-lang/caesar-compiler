@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CContext.java,v 1.7 2004-10-15 11:12:54 aracic Exp $
+ * $Id: CContext.java,v 1.8 2005-01-07 13:20:10 klose Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -51,6 +51,14 @@ import org.caesarj.util.UnpositionedError;
  */
 public abstract class CContext extends org.caesarj.util.Utils implements CTypeContext, Constants {
 
+    public int getDepth(){
+        if (parent==null){
+            return 1;
+        } else {
+            return parent.getDepth() +1;
+        }
+    }
+    
   // ----------------------------------------------------------------------
   // CONSTRUCTORS
   // ----------------------------------------------------------------------

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JOwnerExpression.java,v 1.2 2004-03-15 13:04:29 aracic Exp $
+ * $Id: JOwnerExpression.java,v 1.3 2005-01-07 13:20:10 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -201,6 +201,18 @@ public class JOwnerExpression extends JThisExpression
 		return this;
 	}
 
+	public String toString() {
+	    StringBuffer	buffer = new StringBuffer();
+
+	    buffer.append("JOwnerExpression[");
+	    buffer.append(prefix);
+	    buffer.append(", ");
+	    buffer.append(self);
+	    buffer.append("]");
+	    return buffer.toString();
+	    
+	}
+	
 	// ----------------------------------------------------------------------
 	// CODE GENERATION
 	// ----------------------------------------------------------------------
