@@ -3968,7 +3968,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			match(ASSIGN);
 			right=jAssignmentExpression();
 			if ( inputState.guessing==0 ) {
-				self = new JAssignmentExpression(self.getTokenReference(), self, right);
+				self = new CjAssignmentExpression(self.getTokenReference(), self, right);
 			}
 			break;
 		}
