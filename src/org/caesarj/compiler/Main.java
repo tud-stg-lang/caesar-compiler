@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.94 2005-03-31 14:10:50 gasiunas Exp $
+ * $Id: Main.java,v 1.95 2005-04-04 09:44:05 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -723,6 +723,8 @@ public class Main extends MainSuper implements Constants {
      * @param unwovenClassFiles
      */
     protected void weaveClasses() {
+    	/* Reset the world for the weaver, so that it does not see source files */
+    	CaesarBcelWorld.createInstance();
         CaesarBcelWorld bcelWorld = CaesarBcelWorld.getInstance();
 
         //tells the weaver whether it should inline the around advices in the calling code,
@@ -733,7 +735,7 @@ public class Main extends MainSuper implements Constants {
 
         try {            
             //perform weaving
-            weaver.performWeaving(bcelWorld);
+        	weaver.performWeaving(bcelWorld);
 
             /*
             for (int i = 0; i < weaver.fileCount(); i++) {
