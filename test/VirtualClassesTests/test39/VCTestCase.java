@@ -24,6 +24,7 @@ public class VCTestCase extends TestCase {
 		ModelD.RoleB db = d.RoleB(b);
 
 		String result = db.getId() + "; " + db.getA().getId();
+		System.out.println(result);
 
         System.out.println("-------> VCTest 39: end");
 	}
@@ -31,7 +32,7 @@ public class VCTestCase extends TestCase {
 
 public class ClassA
 {
-	public String getA()
+	public String getId()
 	{
 		return "A.A";
 	}
@@ -118,7 +119,7 @@ public cclass ModelC extends ModelA
 	{
 		public String getId()
 		{
-			return super.getId() + ", " + $wrappee.getId() + ", "
+			return super.getId() + ", "
 				   + getA().getId();
 		}
 	}
