@@ -122,17 +122,15 @@ public class CClassPreparation implements CaesarConstants {
         
         Collection typesToGenerate = caesarTypeSystem.getJavaGraph().getTypesToGenerate();        
         
-        HashSet visited = new HashSet();
-        
         for (Iterator it = typesToGenerate.iterator(); it.hasNext();) {
             JavaTypeNode item = (JavaTypeNode) it.next();
-            
-            CClass clazz = generateCClass(visited, item, context);
-            item.setCClass(clazz);
+                        
+            CClass clazz = generateCClass(item, context);
+            item.setCClass(clazz);            
         }
     }
     
-    public CClass generateCClass(Set visited, JavaTypeNode node, CContext context) {
+    public CClass generateCClass(JavaTypeNode node, CContext context) {
         // CTODO we need binary/source flag for CaesarTypeNode
         // for now consider everything as non-binary
         try {        
@@ -142,16 +140,14 @@ public class CClassPreparation implements CaesarConstants {
                     context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT).getCClass();
             }
             
-            if(visited.contains(node)) { 
+            
+            if(context.getClassReader().hasClassFile(node.getQualifiedName().toString())) {
                 return
                     context.getClassReader().loadClass(
                         context.getTypeFactory(),
                         node.getQualifiedName().toString()
                     );
             }
-
-            visited.add(node);
-            
             
             // get mixin export
             CReferenceType mixinType = 
@@ -164,7 +160,7 @@ public class CClassPreparation implements CaesarConstants {
             CClass owner = null;
             JavaTypeNode outer = node.getOuter();
             if(outer != null) {                
-                owner = generateCClass(visited, outer, context);
+                owner = generateCClass(outer, context);
             }
                         
             CSourceClass sourceClass = new CSourceClass(
@@ -184,7 +180,7 @@ public class CClassPreparation implements CaesarConstants {
             JavaTypeNode itemParent = node.getParent();
 
             CReferenceType superClass = 
-                generateCClass(visited, itemParent, context).getAbstractType();
+                generateCClass(itemParent, context).getAbstractType();
             
             superClass = (CReferenceType)superClass.checkType(context);
             
