@@ -15,5 +15,21 @@
 			}
         </code>
     </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ASPECTJ_ERROR"  id="aspresolve002" description="referencing non-existing pointcut">
+        <code>
+        	public class ClsA {
+        		public void m() {
+        		}			    
+			}
+			public cclass AspectA {
+				pointcut methM() : unknown() &amp;&amp; execution(* ClsA.m());
+				after() : methM() {
+					System.out.println("Msg");
+				}
+			}
+        </code>
+    </compile-check-error>
 
 </testsuite>
