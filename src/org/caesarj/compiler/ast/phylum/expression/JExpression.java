@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JExpression.java,v 1.4 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JExpression.java,v 1.5 2005-02-09 16:56:01 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -34,6 +34,7 @@ import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.InconsistencyException;
@@ -67,6 +68,22 @@ public abstract class JExpression extends JPhylum {
    * Returns the type of this expression (call after parsing only)
    */
   public abstract CType getType(TypeFactory factory);
+  
+  
+  /**
+   * @return the family of this expression
+   * CTODO this should be abstract
+   */
+  public Path getFamily() {
+      return family;
+  }
+  
+  /**
+   * @return this expression as family
+   */
+  public Path getThisAsFamily() {
+      return thisAsFamily;
+  }
 
   /**
    * Tests whether this expression denotes a compile-time constant (JLS 15.28).
@@ -368,5 +385,8 @@ public abstract class JExpression extends JPhylum {
   // PUBLIC CONSTANTS
   // ----------------------------------------------------------------------
 
+  protected Path family = null;
+  protected Path thisAsFamily = null;
+  
   public static final JExpression[]		EMPTY = new JExpression[0];
 }

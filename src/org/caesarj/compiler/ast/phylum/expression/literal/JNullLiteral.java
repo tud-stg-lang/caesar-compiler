@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JNullLiteral.java,v 1.3 2005-01-24 16:53:02 aracic Exp $
+ * $Id: JNullLiteral.java,v 1.4 2005-02-09 16:54:01 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression.literal;
@@ -29,6 +29,7 @@ import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
@@ -81,6 +82,7 @@ public class JNullLiteral extends JLiteral {
     return false;
   }
 
+  
   // ----------------------------------------------------------------------
   // SEMANTIC ANALYSIS
   // ----------------------------------------------------------------------
@@ -92,6 +94,7 @@ public class JNullLiteral extends JLiteral {
    * @exception	PositionedError	the analysis detected an error
    */
   public JExpression analyse(CExpressionContext context) {
+      family = Path.NULL;
     return this;
   }
 
