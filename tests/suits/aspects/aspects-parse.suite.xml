@@ -1,0 +1,73 @@
+<testsuite name="Test parsing crosscutting declarations" package="suits.aspects.parse">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="POINTCUT_SYNTAX_ERROR"  id="aspparse001" description="Symbols after pointcut">
+        <code>
+        	public class ClsA {
+        		public void m() {
+        		}			    
+			}
+			public cclass AspectA {
+				pointcut methM() : execution(* ClsA.m())) aaa;
+				after() : methM() {
+					System.out.println("Msg");
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="POINTCUT_SYNTAX_ERROR"  id="aspparse002" description="Syntax error in atomic pointcut">
+        <code>
+        	public class ClsA {
+        		public void m() {
+        		}			    
+			}
+			public cclass AspectA {
+				after() : execution(* ClsA.m()())) {
+					System.out.println("Msg");
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="POINTCUT_SYNTAX_ERROR"  id="aspparse003" description="Syntax error in complex pointcut">
+        <code>
+        	public class ClsA {
+        		public void m() {
+        		}			    
+			}
+			public cclass AspectA {
+				after() : &amp;&amp; execution(* ClsA.m())) {
+					System.out.println("Msg");
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="POINTCUT_SYNTAX_ERROR"  id="pointcuts003" description="Syntax error in complex pointcut">
+        <code>
+        	public class ClsA {
+        		public void m() {
+        		}			    
+			}
+			public cclass AspectA {
+				after() : &amp;&amp; execution(* ClsA.m())) {
+					System.out.println("Msg");
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="DECLARE_SYNTAX_ERROR"  id="pointcuts003" description="Syntax error in declaration">
+        <code>
+			public cclass AspectA {
+				declare : blabla;
+			}
+        </code>
+    </compile-check-error>
+	    
+</testsuite>
