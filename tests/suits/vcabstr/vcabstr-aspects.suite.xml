@@ -1,0 +1,52 @@
+<testsuite name="Tests for abstract crosscutting classes" package="suits.vcabstr.aspects">
+	
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="abstrasp001" description="Test pointcuts in abstract classes">
+		<test>
+			new TestA().test();
+			System.out.println(TestA.result.toString());
+			assertEquals(TestA.result.toString(),
+				":before call foo:before call foo:before exec foo:before exec foo:foo:after exec foo:after exec foo" + 
+				":before call foo:before call foo:before exec foo:foo:after exec foo");
+		</test>
+        <code>
+        	public class TestA {
+        		public static StringBuffer result = new StringBuffer();
+        	   	public void test() {
+					deploy(new AspectB()) {
+						foo();
+					}			
+					foo();
+				}			
+				public void foo() {
+					result.append(":foo");
+				}
+			}
+        	abstract public cclass StaticAspectA {
+				pointcut callFoo() : cflow(call(* TestA.test())) &amp;&amp; call(* TestA.foo());
+				before() : callFoo() {
+					TestA.result.append(":before call foo");
+				}
+			}
+			public deployed cclass StaticAspectB extends StaticAspectA {
+				pointcut callFoo() : cflow(call(* TestA.test())) &amp;&amp; call(* TestA.foo());
+				before() : callFoo() {
+					TestA.result.append(":before call foo");
+				}
+			}
+			abstract public cclass AspectA {
+				pointcut execFoo() : execution(* TestA.foo());
+				before() : execFoo() {
+					TestA.result.append(":before exec foo");
+				}
+			}
+			public cclass AspectB extends AspectA {
+			    protected final static deployed AspectB THIS = new AspectB();
+				after() : execFoo()	{
+					TestA.result.append(":after exec foo");
+				}
+			}
+        </code>
+    </compile-run>	
+    
+</testsuite>

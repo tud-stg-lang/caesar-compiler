@@ -1,0 +1,259 @@
+<testsuite name="Miscelaneous tests for abstract Caesar classes" package="suits.vcabstr.misc">
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="NEW_ABSTRACT"  id="abstrmisc001" description="Test instantiating abstract outer class">
+        <code>
+        	public class Test {
+        		public void test() {
+        			ClassA a = new ClassA();
+        		}
+        	}
+        	public abstract cclass ClassA { }
+        </code>
+    </compile-check-error>		  	
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="METHOD_NOT_FOUND"  id="abstrmisc002" description="Instantiate inner abstract class">
+		<code>
+        	public class Test {
+        		public void test() {
+        			final OuterA oa = new OuterA();
+					oa.InnerA ia = oa.new InnerA(); 
+        		}
+        	}
+        	public cclass OuterA {
+				public abstract cclass InnerA {		
+				}	
+			}        	
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="abstrmisc003" description="Instantiate polymorphically through abstract collaboration">
+		<test>			
+		    final OuterA oa = new OuterB();
+			oa.InnerA ia = oa.new InnerA();
+		</test>
+        <code>
+        	public abstract cclass OuterA {
+				public cclass InnerA {		
+				}	
+			}
+			public cclass OuterB extends OuterA {
+				public cclass InnerA {		
+				}	
+			}
+        </code>
+    </compile-run>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="METHOD_NOT_FOUND" id="abstrmisc004" description="Polymorphically instantiating abstract inner class">
+		<code>
+        	public class Test {
+        		public void test() {
+        			final OuterA oa = new OuterB();
+					oa.InnerA ia = oa.new InnerA(); 
+        		}
+        	}
+        	public abstract cclass OuterA {
+				public abstract cclass InnerA {		
+				}	
+			}
+			public cclass OuterB extends OuterA {
+				public cclass InnerA {		
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="abstrmisc005" description="Test concrete class inside abstract class">
+		<code>
+        	public abstract cclass OuterA {
+				public cclass InnerA {		
+				}	
+			}
+        </code>
+    </compile>		
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="abstrmisc006" description="Test abstract class inside concrete class">
+		<code>
+        	public cclass OuterA {
+				public abstract cclass InnerA {		
+				}	
+			}
+        </code>
+    </compile>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ABSTRACT_CANNOT_OVERRIDE_CONCRETE" id="abstrmisc007" description="Override concrete inner class with an abstract class">
+		<code>
+        	public abstract cclass OuterA {
+				public cclass InnerA {		
+				}	
+			}
+			public cclass OuterB extends OuterA {
+				public abstract cclass InnerA {		
+				}	
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="abstrmisc008" description="Inheriting concrete inner class from abstract collaboration">
+		<test>			
+		    final OuterA oa = new OuterB();
+			oa.InnerA ia = oa.new InnerA();
+		</test>
+        <code>
+        	public abstract cclass OuterA {
+				public cclass InnerA {		
+				}	
+			}
+			public cclass OuterB extends OuterA {		
+			}
+        </code>
+    </compile-run>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="abstrmisc008" description="Inheriting concrete inner class from abstract collaboration">
+		<test>			
+		    final OuterA oa = new OuterB();
+			oa.InnerA ia = oa.new InnerA();
+		</test>
+        <code>
+        	public abstract cclass OuterA {
+				public cclass InnerA {		
+				}	
+			}
+			public cclass OuterB extends OuterA {		
+			}
+        </code>
+    </compile-run>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="abstrmisc009" description="Test abstract methods in abstract classes">
+		<code>
+        	public abstract cclass OuterA {
+				public abstract void m();
+				
+				public cclass InnerA {
+					public abstract void m();
+				}	
+			}
+			
+			public cclass OuterB {
+				
+				public abstract cclass InnerB {
+					public abstract void m();
+				}	
+			}
+        </code>
+    </compile>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="CLASS_MUST_IMPLEMENT" id="abstrmisc010" description="Inheriting concrete class with abstract methods in concrete collaboration">
+		<code>
+        	public abstract cclass OuterA {
+				public cclass InnerA {
+					public abstract void m();
+				}	
+			}
+			public cclass OuterB extends OuterA {
+			}
+        </code>
+    </compile-check-error>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="CLASS_MUST_IMPLEMENT" id="abstrmisc011" description="Implicit concrete class inheriting abstract method">
+		<code>
+        	public abstract cclass OuterA {
+				public abstract cclass InnerA {
+					public abstract void m();
+				}
+				
+				public cclass InnerB extends InnerA {		
+				}
+			}
+			
+			public cclass OuterB extends OuterA {
+			}
+        </code>
+    </compile-check-error>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="abstrmisc012" description="Test inherited abstract class with abstract methods">
+		<code>
+        	public abstract cclass OuterA {
+				public abstract cclass InnerA {
+					public abstract void m();
+				}	
+			}
+			
+			public cclass OuterB extends OuterA {
+			}
+        </code>
+    </compile>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="abstrmisc013" description="Test abstract mixin copies">
+		<code>
+        	public abstract cclass OuterA {
+				public abstract cclass InnerA {
+					public abstract void m();
+				}	
+			}
+			
+			public abstract cclass OuterB extends OuterA {
+				public abstract cclass InnerB {
+					public abstract void m();
+				}
+			}
+			
+			public abstract cclass OuterC extends OuterA {
+				public abstract cclass InnerC {
+					public abstract void m();
+				}
+			}
+			
+			public cclass OuterD extends OuterB &amp; OuterC {	
+			}
+        </code>
+    </compile>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="abstrmisc014" description="Test inheriting implicit abstract classes">
+		<code>
+        	public abstract cclass OuterA {
+				public abstract cclass InnerA {
+					public abstract void m();
+				}	
+			}
+			
+			public abstract cclass OuterB extends OuterA {	
+			}
+			
+			public cclass OuterC extends OuterB {	
+			}
+        </code>
+    </compile>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="CLASS_MUST_IMPLEMENT" id="abstrmisc015" description="Test inheriting implicit concrete classes">
+		<code>
+        	public abstract cclass OuterA {
+				public cclass InnerA {
+					public abstract void m();
+				}	
+			}
+			
+			public abstract cclass OuterB extends OuterA {	
+			}
+			
+			public cclass OuterC extends OuterB {	
+			}
+        </code>
+    </compile-check-error>   
+    
+</testsuite>
