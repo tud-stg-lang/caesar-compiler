@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.14 2004-06-02 15:04:22 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.15 2004-06-04 15:12:45 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -493,7 +493,7 @@ public class CjClassDeclaration
     /**
      * IVICA
      */
-    public void initCaesarType(CContext context) throws PositionedError {
+    public void createImplicitCaesarTypes(CContext context) throws PositionedError {
         try {   
             
             JavaQualifiedName qualifiedName =
@@ -505,23 +505,6 @@ public class CjClassDeclaration
 
             CaesarTypeNode typeNode = typeSystem.getCompleteGraph().getType(qualifiedName);
             JavaTypeNode javaTypeNode = typeSystem.getJavaGraph().getJavaTypeNode(typeNode);
-            
-            
-            /*
-             * adjust supertype 
-             */
-            
-            JavaTypeNode superType = javaTypeNode.getParent();
-            
-            CReferenceType superTypeRef = 
-                context.getTypeFactory().createType(superType.getQualifiedName().toString(), true);
-            
-            superTypeRef = (CReferenceType)superTypeRef.checkType(context);
-            
-            getCClass().setSuperClass(superTypeRef);
-            setSuperClass(superTypeRef);
-            
-                       
             
             /*
              * add implicit subtypes
@@ -559,7 +542,7 @@ public class CjClassDeclaration
                         new CjClassDeclaration(
                             getTokenReference(),
                             ACC_PUBLIC,
-                            subNode.getQualifiedName().getIdent()+"_Impl",
+                            subNode.getQualifiedImplName().getIdent(),
                             new CTypeVariable[0],
                             context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT),
                             null, // wrappee
@@ -587,13 +570,13 @@ public class CjClassDeclaration
                     newIfcs.add(ifcDecl);
                     
                     // and recurse into
-                    implDecl.initCaesarType(context);
+                    implDecl.createImplicitCaesarTypes(context);
                 }
             }
             
             // recurse in original inners
             for(int i=0; i<inners.length; i++) {
-                inners[i].initCaesarType(context);
+                inners[i].createImplicitCaesarTypes(context);
             }
             
             // add inners
@@ -611,6 +594,50 @@ public class CjClassDeclaration
             throw new PositionedError(getTokenReference(), CaesarMessages.CANNOT_CREATE);
         }
     }   
+    
+    /**
+     * IVICA
+     */
+    public void adjustSuperType(CContext context) throws PositionedError {
+        try {
+            JavaQualifiedName qualifiedName =
+                new JavaQualifiedName(
+                    getCorrespondingInterfaceDeclaration().getCClass().getQualifiedName()
+                );
+            
+            CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
+
+            CaesarTypeNode typeNode = typeSystem.getCompleteGraph().getType(qualifiedName);
+            JavaTypeNode javaTypeNode = typeSystem.getJavaGraph().getJavaTypeNode(typeNode);
+            
+            
+            /*
+             * adjust supertype 
+             */
+            
+            JavaTypeNode superType = javaTypeNode.getParent();
+            
+            CReferenceType superTypeRef = 
+                context.getTypeFactory().createType(superType.getQualifiedName().toString(), true);
+            
+            superTypeRef = (CReferenceType)superTypeRef.checkType(context);
+            
+            getCClass().setSuperClass(superTypeRef);
+            setSuperClass(superTypeRef);
+            
+            
+            for(int i=0; i<inners.length; i++) {
+                inners[i].adjustSuperType(context);
+            }
+        }
+        catch (Throwable e) {
+            // MSG
+            e.printStackTrace();
+            throw new PositionedError(getTokenReference(), CaesarMessages.CANNOT_CREATE);
+        }
+    }   
+    
+    
 
     /**
      * Resolves the binding and providing references. Of course it calls the

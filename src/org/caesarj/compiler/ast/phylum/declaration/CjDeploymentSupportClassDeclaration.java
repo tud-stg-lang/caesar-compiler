@@ -108,6 +108,11 @@ public class CjDeploymentSupportClassDeclaration extends CjClassDeclaration {
         this.postfix = postfix;
     }
 
+    
+    public void createImplicitCaesarTypes(CContext context) {
+        // do nothing here
+    }
+    
     /**
      * Sets the superclass of this deployment class if needed.
      */

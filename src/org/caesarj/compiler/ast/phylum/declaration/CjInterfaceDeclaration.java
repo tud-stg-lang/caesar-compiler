@@ -1,5 +1,9 @@
 package org.caesarj.compiler.ast.phylum.declaration;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
@@ -7,6 +11,7 @@ import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.cclass.CaesarTypeNode;
 import org.caesarj.compiler.cclass.CaesarTypeSystem;
 import org.caesarj.compiler.cclass.JavaQualifiedName;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CContext;
@@ -95,6 +100,49 @@ public class CjInterfaceDeclaration
 			setModifiers(modifiers | ACC_STATIC | ACC_PUBLIC);
 		}
 	}
+    
+    
+    public void adjustSuperType(CContext context) throws PositionedError {
+        try {
+            JavaQualifiedName qualifiedName =
+                new JavaQualifiedName(
+                    getCClass().getQualifiedName()
+                );
+            
+            CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
+            CaesarTypeNode typeNode = typeSystem.getCompleteGraph().getType(qualifiedName);
+                                  
+            /*
+             * adjust supertype 
+             */
+            List ifcList = new ArrayList(typeNode.getParents().size());
+            
+            for (Iterator it = typeNode.getParents().iterator(); it.hasNext();) {
+                CaesarTypeNode parentNode = (CaesarTypeNode) it.next();
+                
+                CReferenceType superTypeRef = 
+                    context.getTypeFactory().createType(parentNode.getQualifiedName().toString(), true);
+                
+                superTypeRef = (CReferenceType)superTypeRef.checkType(context);
+                
+                ifcList.add(superTypeRef);
+            }
+            
+            this.interfaces = (CReferenceType[])ifcList.toArray(new CReferenceType[ifcList.size()]);
+            getCClass().setInterfaces(this.interfaces);
+            
+            
+            
+            for(int i=0; i<inners.length; i++) {
+                inners[i].adjustSuperType(context);
+            }
+        }
+        catch (Throwable e) {
+            // MSG
+            e.printStackTrace();
+            throw new PositionedError(getTokenReference(), CaesarMessages.CANNOT_CREATE);
+        }
+    }
 
     public void generateInterface(
         ClassReader classReader,

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JCompilationUnit.java,v 1.3 2004-06-02 15:03:46 aracic Exp $
+ * $Id: JCompilationUnit.java,v 1.4 2004-06-04 15:12:50 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -26,6 +26,7 @@ import java.util.Vector;
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
+import org.caesarj.compiler.Main;
 import org.caesarj.compiler.ast.phylum.declaration.*;
 import org.caesarj.compiler.ast.visitor.*;
 import org.caesarj.compiler.constants.KjcMessages;
@@ -212,14 +213,25 @@ public class JCompilationUnit extends JPhylum {
 	}
 	
     // IVICA
-    public void initCaesarTypes(CompilerBase compiler) throws PositionedError {
+    public void createImplicitCaesarTypes(CompilerBase compiler) throws PositionedError {
         CCompilationUnitContext context =
             new CCompilationUnitContext(compiler, environment, export);
         
         for (int i = 0; i < typeDeclarations.length; i++) {
-            typeDeclarations[i].initCaesarType(context);
+            typeDeclarations[i].createImplicitCaesarTypes(context);
         }
     }
+
+    // IVICA
+    public void adjustSuperTypes(CompilerBase compiler) throws PositionedError {
+        CCompilationUnitContext context =
+            new CCompilationUnitContext(compiler, environment, export);
+        
+        for (int i = 0; i < typeDeclarations.length; i++) {
+            typeDeclarations[i].adjustSuperType(context);
+        }
+    }
+
     
     // IVICA 
 	public void generateExport(CompilerBase compiler) throws PositionedError {

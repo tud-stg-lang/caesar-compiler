@@ -120,17 +120,20 @@ public class Main extends MainSuper implements Constants {
         
         generateCaesarTypeSystem(environment, tree);        
 
-        // CTODO generate exports for missing mixin chain parts
+        generateMissingMixinChainParts(environment, tree[0]);
         
-        initCaesarTypes(tree);
-        if(errorFound) return false;               
+        createImplicitCaesarTypes(tree);
+        if(errorFound) return false;
         
-        // CTODO adjust super types
-                
-        checkAllInterfaces(tree); // CTODO handle c'tor inheritance for virtual types here
-        if(errorFound) return false;       
+        adjustSuperTypes(tree);
+        if(errorFound) return false;
         
-        checkAllInitializers(tree);     
+        // CTODO handle c'tor inheritance for virtual types here
+        
+        checkAllInterfaces(tree); 
+        if(errorFound) return false;
+        
+        checkAllInitializers(tree);
         if(errorFound) return false;
                 
         checkAllBodies(tree);
@@ -142,7 +145,7 @@ public class Main extends MainSuper implements Constants {
 
         tree = null;
         
-        if(!noWeaveMode())      
+        if(!noWeaveMode())
             weaveGeneratedCode(environment.getTypeFactory());
         
         if(verboseMode())
@@ -152,16 +155,39 @@ public class Main extends MainSuper implements Constants {
         return true;
     }
 
+    
+    /**
+     * - generate export information for missing mixin chain parts 
+     */
+    protected void generateMissingMixinChainParts(KjcEnvironment environment, JCompilationUnit cu) {
+        CClassPreparation.instance().generateMissingMixinChainParts(
+            this,
+            environment,
+            cu
+        );
+    }
+    
+
     /**
      * - create implicit types
      * - join created types
-     * - adjust super types
      * - ...
      */
-	private void initCaesarTypes(JCompilationUnit[] tree) {
+    protected void createImplicitCaesarTypes(JCompilationUnit[] tree) {
         try {
             for (int i=0; i<tree.length; i++) {
-                tree[i].initCaesarTypes(this);
+                tree[i].createImplicitCaesarTypes(this);
+            }
+        }
+        catch (PositionedError e) {
+            reportTrouble(e);
+        }
+    }
+
+    protected void adjustSuperTypes(JCompilationUnit[] tree) {
+        try {
+            for (int i=0; i<tree.length; i++) {
+                tree[i].adjustSuperTypes(this);
             }
         }
         catch (PositionedError e) {
@@ -282,10 +308,7 @@ public class Main extends MainSuper implements Constants {
      * Following things happen here:
      * - create interface for cclass with original cclass name
      * - set the superinterface of interface to original cclass name
-     * - append _Impl to superclass of each cclass
-     * 
-     * CTODO prepareCaesarClasses
-     * - binary supertype of cclass has to be cclass (needs integration of karl's work)
+     * - append _Impl to superclass of each cclass 
      */
     protected void prepareCaesarClasses(
         KjcEnvironment environment,

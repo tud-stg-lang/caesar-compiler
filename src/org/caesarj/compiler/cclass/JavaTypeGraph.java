@@ -1,7 +1,9 @@
 package org.caesarj.compiler.cclass;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -84,5 +86,11 @@ public class JavaTypeGraph {
     
     public JavaTypeNode getJavaTypeNode(CaesarTypeNode type) {
         return (JavaTypeNode)caesar2javaMap.get(type);
+    }
+
+    public Collection getTypesToGenerate() {
+        Collection res = new LinkedList();
+        root.getTypesToGenerate(res);
+        return res;
     }
 }

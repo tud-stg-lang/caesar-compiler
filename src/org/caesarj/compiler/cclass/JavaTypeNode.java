@@ -1,5 +1,6 @@
 package org.caesarj.compiler.cclass;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -163,8 +164,11 @@ public class JavaTypeNode {
 
     public void calculateOuterAndQualifiedName() {
         
-        if(type != null) {
-            this.qualifiedName = type.getQualifiedName();
+        if(parent == null) {
+            this.qualifiedName = new JavaQualifiedName("java/lang/Object");
+        }
+        else if(type != null) {
+            this.qualifiedName = type.getQualifiedImplName();
             
             if(type.getOuter() != null)
                 this.outer = compilationGraph.getJavaTypeNode(type.getOuter()); 
@@ -179,7 +183,7 @@ public class JavaTypeNode {
             // and then calc the qualified name
             StringBuffer qualifiedName = new StringBuffer();
             if(this.outer != null) {
-                qualifiedName.append(this.outer.getType().getQualifiedName().toString());
+                qualifiedName.append(this.outer.getType().getQualifiedImplName().toString());
                 qualifiedName.append('$');
             }
             else {
@@ -235,5 +239,19 @@ public class JavaTypeNode {
 
     public JavaTypeNode getParent() {
         return parent;
+    }
+
+    public void getTypesToGenerate(Collection res) {
+        if(isToBeGeneratedInBytecode())
+            res.add(this);
+        
+        for (Iterator it = subNodes.values().iterator(); it.hasNext();) {
+            JavaTypeNode item = (JavaTypeNode) it.next();
+            item.getTypesToGenerate(res);
+        }
+    }
+
+    public JavaTypeNode getOuter() {
+        return outer;
     }
 }

@@ -53,9 +53,8 @@ public class CClassFactory implements CaesarConstants {
 	 */
 	public CClassFactory(
 		CjClassDeclaration caesarClass,
-		KjcEnvironment environment) {
-		super();
-
+		KjcEnvironment environment
+    ) {
 		this.caesarClass = caesarClass;
 		this.where = caesarClass.getTokenReference();
 		this.typeFactory = environment.getTypeFactory();
@@ -222,12 +221,6 @@ public class CClassFactory implements CaesarConstants {
     }
 
 
-
-    public void addImplictTypes() {
-        
-    }
-    
-    
     /**
      * for all constructos C_n(c_n1, ..., c_nm) {...} 
      * -> $newX(c_n1, ... c_nm) to owner class

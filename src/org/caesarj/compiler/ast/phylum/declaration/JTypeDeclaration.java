@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.11 2004-06-02 15:04:22 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.12 2004-06-04 15:12:45 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -306,7 +306,10 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     public void generateExport(CContext context) throws PositionedError {        
     }
     
-    public void initCaesarType(CContext context) throws PositionedError {
+    public void createImplicitCaesarTypes(CContext context) throws PositionedError {
+    }
+    
+    public void adjustSuperType(CContext context) throws PositionedError {
     }
 
 
