@@ -7,9 +7,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import org.aspectj.asm.ProgramElementNode;
 import org.aspectj.asm.StructureModelManager;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
@@ -137,7 +139,15 @@ public class Main extends MainSuper implements Constants {
         if(errorFound) return false;
         
         completeMixinCloneTypeInfo(environment, tree[0]);
-                
+        
+        checkVirtualClassMethodSignatures(tree);
+        if(errorFound) return false;
+        
+        completeCClassInterfaces(tree);
+        if(errorFound) return false;
+
+        completeMixinCloneTypeInfo(environment, tree[0]);
+        
         checkAllInitializers(tree);
         if(errorFound) return false;
                 
@@ -191,12 +201,37 @@ public class Main extends MainSuper implements Constants {
     }
 
 
+    protected void completeCClassInterfaces(JCompilationUnit[] tree) {
+        System.out.println("completeCClassInterfaces");
+        for (int count = 0; count < tree.length; count++) {    
+            try {
+                tree[count].completeCClassInterfaces(this);
+            }
+            catch (PositionedError e) {
+                reportTrouble(e);
+            }
+        }
+    }
+
     protected void preWeaveProcessing(JCompilationUnit[] cu) {
         // redefine in subclass
     }
 
+    // checks that the plain method redefinition mechanism still works with VCs 
+    protected void checkVirtualClassMethodSignatures(JCompilationUnit[] tree) {
+        System.out.println("checkVirtualClassMethodSignatures");
+        for (int count = 0; count < tree.length; count++) {    
+            try {
+                tree[count].checkVirtualClassMethodSignatures(this);
+            }
+            catch (PositionedError e) {
+                reportTrouble(e);
+            }
+        }
+    }
+    
     // generates factory methods and wrappee recycling    
-    private void generateSupportMembers(KjcEnvironment environment) {
+    protected void generateSupportMembers(KjcEnvironment environment) {
         try {
             CClassPreparation.instance().generateSupportMethods(
                 this,
@@ -678,9 +713,17 @@ public class Main extends MainSuper implements Constants {
         
         CaesarBcelWorld world = CaesarBcelWorld.getInstance();
         world.setMessageHandler(messageHandler);
-        
+                
+        // TODO make this optional, as command line argument
         CaesarBcelWorld.getInstance().getWorld().setModel(
             StructureModelManager.INSTANCE.getStructureModel());
+        
+        StructureModelManager.INSTANCE.getStructureModel().setRoot(
+            new ProgramElementNode(
+                "<root>", 
+                ProgramElementNode.Kind.FILE_JAVA, 
+                new LinkedList())
+        );
     }
 
     /**
