@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Path.java,v 1.12 2005-02-04 17:13:55 klose Exp $
+ * $Id: Path.java,v 1.13 2005-02-04 19:09:07 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -87,28 +87,17 @@ public abstract class Path {
         return ((ContextExpression)p.getHead()).getK(); 
     }
 
-    public Path substitute(String ident, Path path){
-        Path p = null;
-        
-        Path head = getHead(),
-        	 pred = getHeadPred();
-        
-        if (head instanceof ContextExpression){
-            ContextExpression ce = (ContextExpression) head;
-            if (ce.getK()==0){
-                if (pred instanceof FieldAccess){
-                    FieldAccess fa = (FieldAccess)pred;
-                    if (fa.getName().equals(ident)){
-                        Path ppath = clonePath();
-                        Path third = ppath.getPredOf(getHeadPred());
-                        third.prefix = path.clonePath();
-                        return ppath;
-                    }
-                }
-            }
+    public Path substituteFirstAccess(Path path){
+        Path p = clonePath();
+        Path pred = p.getPredOf( p.getHeadPred() );        
+
+        if(pred != null) {            
+            pred.prefix = path;
+            return p;
         }
-        
-        return p;
+        else {
+            return path;
+        }
     }
     
     /**
@@ -182,8 +171,17 @@ public abstract class Path {
                 JLocalVariableExpression local = (JLocalVariableExpression) tmp;
                 JLocalVariable var = local.getVariable();
                 
-                nameList.add(0, var.getIdent());
+                int pos = local.getVariable().getPosition();
+                
+                if(var instanceof JFormalParameter) {
+                    nameList.add(0, "#"+(pos-1));
+                }
+                else {
+                    nameList.add(0, var.getIdent());
+                }
+                
                 typeList.add(0, var.getType());
+
                 
                 if (var instanceof JFormalParameter) {
                     // find next MethodContext
@@ -260,7 +258,7 @@ public abstract class Path {
         
         Iterator it1, it2;
         for (it1 = nameList.iterator(), it2=typeList.iterator(); it1.hasNext();) {
-            String field = (String) it1.next();
+            String name = (String) it1.next();
             CReferenceType refType = (CReferenceType)it2.next();
 
             /*
@@ -275,7 +273,18 @@ public abstract class Path {
                 throw new UnpositionedError(CaesarMessages.INNER_PLAIN_JAVA_OBJECTS_IN_PATH);
             }            
             
-            result = new FieldAccess(result, field, refType);            
+            try {
+	            if(name.startsWith("#")) {
+	                int pos = Integer.parseInt( name.substring(1) );                    
+	                result = new FieldAccess(result, name, refType, pos);
+	            }
+	            else { 
+	                result = new FieldAccess(result, name, refType);
+	        	}
+            }
+            catch (Exception e) {
+                throw new InconsistencyException("invalid identifier for a parameter: "+name);
+            }
         }        
         return result;        
     }
@@ -284,14 +293,14 @@ public abstract class Path {
         return other.toString().equals(this.toString());
     }
     
-    Path getHead() {
+    public Path getHead() {
         if(prefix != null)
             return prefix.getHead();
         else 
             return this;
     }
     
-    Path getHeadPred() {
+    public Path getHeadPred() {
         if(prefix == null) return null;
         if(prefix.prefix != null)
             return prefix.getHeadPred();
@@ -299,7 +308,7 @@ public abstract class Path {
             return this;
     }
 
-    Path getPredOf(Path p){
+    public Path getPredOf(Path p){
         if (prefix == null) return null;
         if (prefix == p) return this;
         return prefix.getPredOf(p);
