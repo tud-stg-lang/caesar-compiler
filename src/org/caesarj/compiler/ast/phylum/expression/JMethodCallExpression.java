@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.31 2005-03-06 14:12:00 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.32 2005-03-06 14:48:18 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -390,7 +390,7 @@ public class JMethodCallExpression extends JExpression
                         context,
                         !(ctx == null || ctx.getClassContext() == null ),                        
                         CaesarMessages.ILLEGAL_PATH_ELEMENT, 
-                        "accessor method not returning a outer reference"
+                        "accessor method not returning an outer reference"
                     );
                     
                     // this is necessary for nested classes
