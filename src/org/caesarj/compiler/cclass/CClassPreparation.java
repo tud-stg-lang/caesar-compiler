@@ -87,50 +87,6 @@ public class CClassPreparation implements CaesarConstants {
                 new JTypeDeclaration[0]));             
 	}
 
-        
-    /* CLASS TRANSFORMATION BLOCK
-     * 
-     * This step is done after joinAll step
-     * 
-     * - generate factory methods <Type> $new<Type>(cp_1, ..., cp_n) {...}
-     * - ... more to come ...
-     */    
-    public void prepareVirtualClasses(
-        KjcEnvironment environment,
-        JCompilationUnit cu
-    ) throws UnpositionedError {
-        prepareVirtualClasses(environment, new CompilationUnitInnerAccessor(cu));
-    }
-
-    private void prepareVirtualClasses(
-        KjcEnvironment environment,
-        InnerAccessor innerAccessor
-    ) throws UnpositionedError {        
-        JTypeDeclaration typeDeclarations[] = innerAccessor.getInners();
-        
-        for (int i = 0; i < typeDeclarations.length; i++) {
-            if (typeDeclarations[i] instanceof CjClassDeclaration) {
-
-                CjClassDeclaration caesarClass =
-                    (CjClassDeclaration) typeDeclarations[i];
-
-                CClassFactory factory =
-                    new CClassFactory(caesarClass, environment);
-
-                factory.addNotExplicitDeclaredVirtualClasses();
-                factory.addCreateMethodsToOwnerClass();
-                factory.checkImplicitVirtualClassSuperType();
-
-                if(caesarClass.getInners().length > 0) {                    
-                    //consider nested types
-                    prepareVirtualClasses(
-                        environment, new ClassDeclarationInnerAccessor(caesarClass));
-                }        
-            }
-        }
-    }
-    
-
     /**
      * Offers common access interface for cu and class inners
      *  

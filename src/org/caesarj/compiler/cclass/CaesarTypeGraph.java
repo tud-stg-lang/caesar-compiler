@@ -18,14 +18,14 @@ import org.caesarj.util.InconsistencyException;
  * 
  * @author Ivica Aracic 
  */
-public class TypeGraph {
+public class CaesarTypeGraph {
 
     /** root of inner and inheritance hierarchy */
     private Set topClassRoot    = new HashSet();
     private Set inheritanceRoot = new HashSet();
     private HashMap typeMap = new HashMap();
     
-    public TypeGraph() {
+    public CaesarTypeGraph() {
     }
     
     public Iterator iterator() {
@@ -36,24 +36,30 @@ public class TypeGraph {
         return typeMap.containsKey(qualifiedName);
     }
     
-    public CaesarTypeNode getType(String qualifiedName) {
-        CaesarTypeNode res = (CaesarTypeNode)typeMap.get(qualifiedName);
+    public CaesarTypeNode getTypeCreateIfNotExsistent(JavaQualifiedName qualifiedName, boolean implicit) {
+        CaesarTypeNode res = getType(qualifiedName);
+        
         if(res == null) {
-            res = new CaesarTypeNode(this, qualifiedName);
+            res = new CaesarTypeNode(this, qualifiedName, implicit);
             typeMap.put(qualifiedName, res);
         }
         
         return res;
     }
     
-    public void checkFurtherbindings(TypeGraph completeGraph) {
+    public CaesarTypeNode getType(JavaQualifiedName qualifiedName) {
+        CaesarTypeNode res = (CaesarTypeNode)typeMap.get(qualifiedName);
+        return res;
+    }
+    
+    public void checkFurtherbindings(CaesarTypeGraph completeGraph) {
         for (Iterator it = typeMap.entrySet().iterator(); it.hasNext();) {
             CaesarTypeNode t = (CaesarTypeNode)((Map.Entry)it.next()).getValue();
             
             t.setFurtherbinding(false);
             
             CaesarTypeNode tInCompleteGraph =
-                completeGraph.getType(t.getQualifiedName().toString());
+                completeGraph.getType(t.getQualifiedName());
             
             if(tInCompleteGraph == null)
                 throw new InconsistencyException("explicit graph should be subgraph of complete graph");
@@ -73,7 +79,7 @@ public class TypeGraph {
         }
     }
     
-    public void generateMixinLists(TypeGraph explicitTypeGraph) {
+    public void generateMixinLists(CaesarTypeGraph explicitTypeGraph) {
         for (Iterator it = typeMap.entrySet().iterator(); it.hasNext();) {
             CaesarTypeNode type = (CaesarTypeNode)((Map.Entry)it.next()).getValue();
             

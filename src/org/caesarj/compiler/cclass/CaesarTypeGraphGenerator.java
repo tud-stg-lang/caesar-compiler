@@ -25,20 +25,20 @@ import org.caesarj.util.InconsistencyException;
  * 
  * @author Ivica Aracic
  */
-public class TypeGraphGenerator implements CaesarConstants {
+public class CaesarTypeGraphGenerator implements CaesarConstants {
 
-    private static TypeGraphGenerator singleton = new TypeGraphGenerator();
+    private static CaesarTypeGraphGenerator singleton = new CaesarTypeGraphGenerator();
     
-    public static TypeGraphGenerator instance() {
+    public static CaesarTypeGraphGenerator instance() {
         return singleton; 
     }
     
-    private TypeGraphGenerator() {
+    private CaesarTypeGraphGenerator() {
     }
 
     
     public void generateGraph(
-        TypeGraph g,
+        CaesarTypeGraph g,
         JCompilationUnit cu
     ) {
         JTypeDeclaration inners[] = cu.getInners();
@@ -49,18 +49,22 @@ public class TypeGraphGenerator implements CaesarConstants {
     
 
     private void generateGraph(
-        TypeGraph g,
+        CaesarTypeGraph g,
         CjInterfaceDeclaration decl
     ) {
         CClass thisClass   = decl.getCClass();
         CType[] superTypes = decl.getInterfaces();
         CClass ownerClass  = thisClass.getOwner();
         
-        CaesarTypeNode thisNode  = g.getType(thisClass.getQualifiedName());
+        CaesarTypeNode thisNode  = g.getTypeCreateIfNotExsistent(
+            new JavaQualifiedName(thisClass.getQualifiedName()), false
+        );
                 
         if(superTypes.length > 0) {
             for(int i=0; i<superTypes.length; i++) {
-                CaesarTypeNode superNode = g.getType( superTypes[i].getCClass().getQualifiedName() );
+                CaesarTypeNode superNode = g.getTypeCreateIfNotExsistent(
+                    new JavaQualifiedName(superTypes[i].getCClass().getQualifiedName()), false
+                );
                 superNode.addSubType(thisNode);
             }
         }
@@ -69,13 +73,17 @@ public class TypeGraphGenerator implements CaesarConstants {
         }
 
         if(ownerClass != null) {
-            CaesarTypeNode ownerNode = g.getType(ownerClass.getQualifiedName());
+            CaesarTypeNode ownerNode = g.getTypeCreateIfNotExsistent(
+                new JavaQualifiedName(ownerClass.getQualifiedName()), false
+            );
             ownerNode.addInner(thisNode);
         }
         else {
             g.getTopClassRoot().add(thisNode);
         }
 
+        thisNode.setDeclaration(decl);
+        
         // recurse into inners (here we can be sure all inners has ACC_CCLASS_INTERFACE)
 		JTypeDeclaration inners[] = decl.getInners();        
         for(int i=0; i<inners.length; i++)

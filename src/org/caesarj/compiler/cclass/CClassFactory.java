@@ -222,13 +222,12 @@ public class CClassFactory implements CaesarConstants {
     }
 
 
-    /**
-     * adds virutal classes not explicite declared in SubHierarchy will be added here
-     */
-    public void addNotExplicitDeclaredVirtualClasses() {
+
+    public void addImplictTypes() {
         
     }
-
+    
+    
     /**
      * for all constructos C_n(c_n1, ..., c_nm) {...} 
      * -> $newX(c_n1, ... c_nm) to owner class
@@ -328,57 +327,5 @@ public class CClassFactory implements CaesarConstants {
 		}
 	}
     
-    /**
-     * Adds implicite extends caluse to the type declaration
-     */
-    public void checkImplicitVirtualClassSuperType() throws UnpositionedError {
-        CClass clazz      = caesarClass.getCClass();
-        CClass owner      = clazz.getOwner();
-        CClass superClass = clazz.getSuperClass();
-        
-        if(owner == null) return;
-           
-        CClass ownerSuperClass = owner.getSuperClass();         
-        
-        if(ownerSuperClass == null) return;
-                        
-        CClass overriddenClass = ownerSuperClass.lookupClass(ownerSuperClass, clazz.getIdent());        
-        
-        // Is this furtherbouding class?
-        if(overriddenClass != null) {           
-            CClass overriddenClassSuper = overriddenClass.getSuperClass();
-            
-            CClass overriddenThisClassSuper = 
-                owner.lookupClass(owner, overriddenClassSuper.getIdent());
 
-            CReferenceType newSuperType = null;
-            if(superClass.isObjectClass() && overriddenThisClassSuper==null) {
-                newSuperType = overriddenClass.getAbstractType();
-            }
-            else if(superClass.isObjectClass() && overriddenThisClassSuper!=null) {
-                newSuperType = CCompositeType.createCompositeType(
-                    new CReferenceType[]{
-                        overriddenThisClassSuper.getAbstractType(),
-                        overriddenClass.getAbstractType(),
-                    }
-                );
-            }
-            else if(!superClass.isObjectClass() && overriddenThisClassSuper!=null) {
-                newSuperType = CCompositeType.createCompositeType(
-                    new CReferenceType[]{
-                        clazz.getSuperType(),
-                        overriddenThisClassSuper.getAbstractType(),
-                        overriddenClass.getAbstractType(),
-                    }
-                );                
-            }
-            else {
-                // CTODO correct error message
-                throw new UnpositionedError(CaesarMessages.CANNOT_CREATE);
-            }
-            
-            caesarClass.setSuperClass(newSuperType);
-            clazz.setSuperClass(newSuperType);
-        }
-    }
 }

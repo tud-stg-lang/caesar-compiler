@@ -1,5 +1,6 @@
 package org.caesarj.compiler.cclass;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -10,16 +11,21 @@ import java.util.Map;
  * 
  * @author Ivica Aracic
  */
-public class CompilationGraph {
+public class JavaTypeGraph {
     
-    private CompilationNode root = new CompilationNode(this, new CaesarTypeNode(null, "java/lang/Object"));
+    private HashMap nodes = new HashMap();
+    private JavaTypeNode root;
     
-    public CompilationGraph() {
+    public JavaTypeGraph() {
+        CaesarTypeNode typeNode = new CaesarTypeNode(null, "java/lang/Object", false);
+        root = new JavaTypeNode(this, typeNode);
+        root.setType(typeNode);
     }
     
-    public void generateFrom(TypeGraph completeGraph) {
+    public void generateFrom(CaesarTypeGraph completeGraph) {
         Map typeMap = completeGraph.getTypeMap();
         
+        // generate graph
         for (Iterator it = typeMap.entrySet().iterator(); it.hasNext();) {
             CaesarTypeNode t = (CaesarTypeNode) ((Map.Entry)it.next()).getValue();
             
@@ -29,14 +35,14 @@ public class CompilationGraph {
             CaesarTypeNode[] mixins = new CaesarTypeNode[mixinList.size()];
             mixins = (CaesarTypeNode[])mixinList.toArray(mixins);
             
-            CompilationNode current = root;
+            JavaTypeNode current = root;
             
             for (int i=mixins.length-1; i>=0; i--) {
                 CaesarTypeNode mixin = mixins[i];
-                CompilationNode next = current.getSubNode(mixin.getQualifiedName().toString());
+                JavaTypeNode next = current.getSubNode(mixin.getQualifiedName().toString());
                 
                 if(next == null) {
-                    next = new CompilationNode(this, mixin);
+                    next = new JavaTypeNode(this, mixin);
                     current.addSubNode(next);
                 }
                                 
@@ -45,21 +51,32 @@ public class CompilationGraph {
             
             if(t.isImplicit()) {
                 // append as leaf
-                CompilationNode next = new CompilationNode(this, t);
+                JavaTypeNode next = new JavaTypeNode(this, t);
                 next.setType(t);
                 current.addSubNode(next);
             }
             else {
+                nodes.put(t.getQualifiedName().toString(), current);
                 current.setType(t);
             }
         }
+        
+        // add dependencies between mixin original and copies
+        root.calculateMixinCopyDependencies();
+
+        // calculate
+        root.calculateCompilationLevel(0, false);
+
+        // calculate names        
+        root.calculateQualifiedNames();
     }
     
+    
+    public JavaTypeNode getOriginalMixin(JavaQualifiedName qualifiedName) {
+        return (JavaTypeNode)nodes.get(qualifiedName.toString());
+    }
+        
     public void debug() {
         root.debug(0);
-    }
-    
-    public void calculateCompilationLevels() {
-        root.calculateCompilationLevel(0, false);
-    }
+    }    
 }

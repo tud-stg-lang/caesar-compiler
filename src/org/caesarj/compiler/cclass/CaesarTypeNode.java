@@ -9,6 +9,8 @@ import java.util.Set;
 
 import javax.naming.ldap.HasControls;
 
+import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.mixer.Linearizator;
 import org.caesarj.mixer.MixerException;
@@ -22,7 +24,7 @@ import org.caesarj.util.InconsistencyException;
  */
 public class CaesarTypeNode {
     
-    private TypeGraph typeGraph;
+    private CaesarTypeGraph typeGraph;
     
     private JavaQualifiedName qualifiedName;
     private HashMap inners = new HashMap();
@@ -37,18 +39,20 @@ public class CaesarTypeNode {
     private CaesarTypeNode outer = null;
     private List parents = new LinkedList(); // of CaesarType
     
-    private JTypeDeclaration declaration = null; // TODO    
+    private CjInterfaceDeclaration declaration = null;
        
     private boolean binary = false;
+    private boolean implicit;
     
     
-    public CaesarTypeNode(TypeGraph typeGraph, String qualifiedName) {
-        this(typeGraph, new JavaQualifiedName(qualifiedName));
+    public CaesarTypeNode(CaesarTypeGraph typeGraph, String qualifiedName, boolean implicit) {
+        this(typeGraph, new JavaQualifiedName(qualifiedName), implicit);
     }  
     
-    public CaesarTypeNode(TypeGraph typeGraph, JavaQualifiedName qualifiedName) {
+    public CaesarTypeNode(CaesarTypeGraph typeGraph, JavaQualifiedName qualifiedName, boolean implicit) {
         this.typeGraph = typeGraph;
         this.qualifiedName = qualifiedName;
+        this.implicit = implicit;
     }  
     
     public void addSubType(CaesarTypeNode subType) {
@@ -77,7 +81,7 @@ public class CaesarTypeNode {
         }
     }   
     
-    public void createMixinList(TypeGraph explicitGraph) {
+    public void createMixinList(CaesarTypeGraph explicitGraph) {
         if(mixinListCreated) return;
         
         List outerMixinList = null;
@@ -93,7 +97,7 @@ public class CaesarTypeNode {
     }
         
     private void createMixinList(
-        TypeGraph explicitGraph,
+        CaesarTypeGraph explicitGraph,
         List mixinListToAppend,
         List outerMixinList, 
         int m,         
@@ -107,7 +111,7 @@ public class CaesarTypeNode {
             t = currentMixin.lookupInner(qualifiedName.getIdent());
         }
         else {
-            t = explicitGraph.getType(qualifiedName.toString());
+            t = explicitGraph.getType(qualifiedName);
         }
         
         if(t != null) {
@@ -190,7 +194,8 @@ public class CaesarTypeNode {
                     // type doesn't exist -> create
                     furtherbindingType = new CaesarTypeNode(
                         typeGraph,
-                        qualifiedName.toString()+JavaQualifiedName.innerSep+(virtualType.getQualifiedName().getIdent())
+                        qualifiedName.toString()+JavaQualifiedName.innerSep+(virtualType.getQualifiedName().getIdent()),
+                        true
                     );                        
                     this.addInner(furtherbindingType);
                     added.add(furtherbindingType);
@@ -264,11 +269,15 @@ public class CaesarTypeNode {
         return qualifiedName;
     }
 
-    public JTypeDeclaration getDeclaration() {
+    public CjInterfaceDeclaration getIfcDeclaration() {
         return declaration;
     }
 
-    public void setDeclaration(JTypeDeclaration declaration) {        
+    public CjClassDeclaration getImplDeclaration() {
+        return declaration!=null ? declaration.getCorrespondingClassDeclaration() : null;
+    }
+
+    public void setDeclaration(CjInterfaceDeclaration declaration) {        
         this.declaration = declaration;
     }
     
@@ -304,6 +313,8 @@ public class CaesarTypeNode {
         else
             res.append(outer.getQualifiedName());
         
+        res.append("; implicit = "+implicit);
+        
         res.append('\n');
         
         res.append("\t[");
@@ -326,13 +337,12 @@ public class CaesarTypeNode {
         this.binary = binary;
     }
 
-    public TypeGraph getTypeGraph() {
+    public CaesarTypeGraph getTypeGraph() {
         return typeGraph;
     }
 
     public boolean isImplicit() {
-        return 
-            !((CaesarTypeNode)mixinList.get(0)).getQualifiedName().equals(qualifiedName);
+        return implicit;
     }
     
     

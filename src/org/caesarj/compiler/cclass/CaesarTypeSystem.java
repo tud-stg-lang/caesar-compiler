@@ -7,15 +7,15 @@ package org.caesarj.compiler.cclass;
  * @author Ivica Aracic
  */
 public class CaesarTypeSystem {
-    private TypeGraph explicitGraph = new TypeGraph();
-    private TypeGraph completeGraph = new TypeGraph();
-    private CompilationGraph compilationGraph = new CompilationGraph(); 
+    private CaesarTypeGraph explicitGraph = new CaesarTypeGraph();
+    private CaesarTypeGraph completeGraph = new CaesarTypeGraph();
+    private JavaTypeGraph compilationGraph = new JavaTypeGraph(); 
     
-    public TypeGraph getCompleteGraph() {
+    public CaesarTypeGraph getCompleteGraph() {
         return completeGraph;
     }
 
-    public TypeGraph getExplicitGraph() {
+    public CaesarTypeGraph getExplicitGraph() {
         return explicitGraph;
     }
     
@@ -28,7 +28,6 @@ public class CaesarTypeSystem {
         completeGraph.debug();
         System.out.println("----------------------------------");
         compilationGraph.generateFrom(completeGraph);
-        compilationGraph.calculateCompilationLevels();
         compilationGraph.debug();
     }
 }
