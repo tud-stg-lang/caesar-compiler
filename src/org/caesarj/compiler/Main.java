@@ -126,8 +126,6 @@ public class Main extends MainSuper implements Constants {
         adjustSuperTypes(tree);
         if(errorFound) return false;
         
-        checkConstructorInheritance(environment);
-        
         generateFactoryMethods(environment);
         if(errorFound) return false;
         
@@ -158,13 +156,6 @@ public class Main extends MainSuper implements Constants {
     }
 
 
-    private void checkConstructorInheritance(KjcEnvironment environment) {
-        CClassPreparation.instance().checkConstructorInheritance(
-            this,
-            environment
-        );
-    }
-    
     private void generateFactoryMethods(KjcEnvironment environment) {
         try {
             CClassPreparation.instance().generateFactoryMethods(
@@ -185,6 +176,7 @@ public class Main extends MainSuper implements Constants {
             JavaTypeNode item = (JavaTypeNode) it.next();
 
             try {
+            	ClassGenerator.setOutputDir("test/VirtualClassesTests/");
                 ClassGenerator.instance().generateClass(
                     item.getMixin().getQualifiedImplName(),
                     item.getQualifiedName(),
