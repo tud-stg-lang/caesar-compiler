@@ -48,13 +48,11 @@ public class FjFieldDeclaration extends JFieldDeclaration {
 					CaesarMessages.DEPLOYED_FIELD_NOT_FINAL_AND_STATIC));
 		}
 
-		if (context instanceof FjClassContext)
-			 ((FjClassContext) context).pushContextInfo(this);
+
 
 		CSourceField field = super.checkInterface(context);
 
-		if (context instanceof FjClassContext)
-			 ((FjClassContext) context).popContextInfo();
+
 
 		return field;
 	}
@@ -85,7 +83,7 @@ public class FjFieldDeclaration extends JFieldDeclaration {
 					  variable.getIdent(),
 					  variable.getType(),
 					  isDeprecated(),
-					  synthetic)); // not synthetic
+					  synthetic)); 
 			
 		return (CSourceField)getField();
 	}

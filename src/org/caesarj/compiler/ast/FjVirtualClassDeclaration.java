@@ -529,12 +529,6 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 					FjConstants.CHILD_TYPE,
 					CciConstants.ADAPT_METHOD_PARAM_NAME, 
 					false),
-				new FjFormalParameter(
-					ref, 
-					JVariableDefinition.DES_PARAMETER, 
-					FjConstants.CHILD_TYPE, 
-					CciConstants.ADAPT_METHOD_RECEIVER_PARAM_NAME, 
-					false),
 			};
 
 		String methodName = CciConstants.toAdaptMethodName(ident);
@@ -550,49 +544,10 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 				body,
 				CciConstants.ADAPT_METHOD_JAVADOC,
 				new JavaStyleComment[0]);
-
-		//FjCleanMethodDeclaration adaptAbstractMethod = createAbstractAdaptMethod(
-			//methodName);
-
 				
 		append(adaptMethod);
-//		getCleanInterface().addMethod(adaptAbstractMethod);
-//		getCleanInterfaceImplementation().addMethod(adaptAbstractMethod);
 	}
 	
-	protected FjCleanMethodDeclaration createAbstractAdaptMethod(
-		String methodName)
-	{
-		TokenReference ref = getTokenReference();
-		FjFormalParameter[] parameters = 
-			new FjFormalParameter[]
-			{
-				new FjFormalParameter(
-					ref, 
-					JVariableDefinition.DES_PARAMETER, 
-					new CClassNameType(JAV_OBJECT), 
-					CciConstants.ADAPT_METHOD_PARAM_NAME, 
-					false),
-				new FjFormalParameter(
-					ref, 
-					JVariableDefinition.DES_PARAMETER, 
-					FjConstants.CHILD_TYPE, 
-					CciConstants.ADAPT_METHOD_RECEIVER_PARAM_NAME,
-					false), 
-			};
-		return new FjCleanMethodDeclaration(
-				ref,
-				ACC_PUBLIC,
-				typeVariables,
-				new CClassNameType(JAV_OBJECT),
-				methodName,
-				parameters,
-				CReferenceType.EMPTY,
-				null,
-				CciConstants.ADAPT_METHOD_JAVADOC,
-				new JavaStyleComment[0]);
-		
-	}
 	
 	protected JBlock createAdaptMethodBody()
 	{
@@ -603,9 +558,7 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 			{
 				new JReturnStatement(
 					ref, 
-					new FjNameExpression(
-						ref, 
-						CciConstants.ADAPT_METHOD_RECEIVER_PARAM_NAME), 
+					new FjThisExpression(ref, true), 
 					null)
 			},
 			null);

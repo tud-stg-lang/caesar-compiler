@@ -39,7 +39,7 @@ public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 	{
 		super(
 			tokenReference,
-			ACC_PUBLIC | ACC_INTERFACE | ACC_ABSTRACT | modifiers,
+			ACC_PUBLIC | ACC_INTERFACE | ACC_ABSTRACT | FJC_CLEAN | modifiers,
 			ident,
 			CTypeVariable.EMPTY,
 			interfaces,
@@ -215,5 +215,13 @@ public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 			CaesarMessages.NON_CI,
 			ident);		
 	}		
+
+	/**
+	 * 
+	 */
+	protected int getAllowedModifiers()
+	{
+		return super.getAllowedModifiers() | FJC_CLEAN;
+	}
 
 }

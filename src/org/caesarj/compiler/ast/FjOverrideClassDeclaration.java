@@ -19,19 +19,14 @@ import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.JBlock;
 import org.caesarj.kjc.JEqualityExpression;
 import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.JFieldAccessExpression;
 import org.caesarj.kjc.JFieldDeclaration;
 import org.caesarj.kjc.JIfStatement;
 import org.caesarj.kjc.JMethodCallExpression;
 import org.caesarj.kjc.JMethodDeclaration;
-import org.caesarj.kjc.JOuterLocalVariableExpression;
-import org.caesarj.kjc.JOwnerExpression;
 import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JReturnStatement;
 import org.caesarj.kjc.JStatement;
-import org.caesarj.kjc.JThisExpression;
 import org.caesarj.kjc.JTypeDeclaration;
-import org.caesarj.kjc.JTypeNameExpression;
 
 public class FjOverrideClassDeclaration
 	extends FjVirtualClassDeclaration
@@ -242,6 +237,8 @@ public class FjOverrideClassDeclaration
 			ref, 
 			new JStatement[]
 			{
+				//if (enclosing.getTail() == this$.getTail())
+				//	return this;
 				new JIfStatement(
 					ref, 
 					new JEqualityExpression(
@@ -258,21 +255,20 @@ public class FjOverrideClassDeclaration
 							ref, 
 							new FjThisExpression(
 								ref, 
-								new JTypeNameExpression(
+								new FjNameExpression(
 									ref,
-									new CClassNameType(
-										((FjCleanClassDeclaration)ownerDecl)
-											.getCleanInterface().getIdent()))),
+									((FjCleanClassDeclaration)ownerDecl)
+										.getCleanInterface().getIdent())),
 							FjConstants.GET_TAIL_METHOD_NAME, 
 							JExpression.EMPTY)),
+					// return this;
 					new JReturnStatement(
 						ref, 
-						new FjNameExpression(
-							ref, 
-							CciConstants.ADAPT_METHOD_RECEIVER_PARAM_NAME), 
+						new FjThisExpression(ref, true), 
 						null),
 					null,
 					null),
+				// return super._adapt<MyType>(_enclosing);
 				new JReturnStatement(
 					ref,
 					new FjMethodCallExpression(
@@ -284,16 +280,6 @@ public class FjOverrideClassDeclaration
 							new FjNameExpression(
 								ref, 
 								CciConstants.ADAPT_METHOD_PARAM_NAME), 
-							new JMethodCallExpression(
-								ref,
-								new JThisExpression(ref),
-								FjConstants.GET_DISPATCHER_METHOD_NAME,
-								new JExpression[]
-								{
-									new FjNameExpression(
-										ref, 
-										CciConstants.ADAPT_METHOD_RECEIVER_PARAM_NAME), 
-								})
 						}),
 					null),
 			},

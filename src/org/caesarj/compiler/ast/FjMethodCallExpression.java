@@ -195,35 +195,63 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		}
 		catch(PositionedError e)
 		{
-			//If it does not find the field this$0 is because 
-			//it is a virtual class accessing outer private methods
-			//or accessing methods defined in outer outer ... class.
-			if (e.getFormattedMessage().getDescription() 
-				== KjcMessages.FIELD_UNKNOWN)
-			{
-				String fieldName = (String) e.getFormattedMessage()
-					.getParams()[0];
-				if (JAV_OUTER_THIS.equals(fieldName))
-				{
-					if (method != null 
-						&& CModifier.contains(method.getModifiers(), 
-							ACC_PRIVATE))
-						throw new PositionedError(
-							getTokenReference(), 
-							CaesarMessages.VIRTUAL_CALLING_PRIVATE_OUTER,
-							context.getClassContext().getCClass()
-								.getQualifiedName());
-					else 
-						throw new PositionedError(
-							getTokenReference(), 
-							CaesarMessages.VIRTUAL_CALLING_OUTER_OUTER,
-							context.getClassContext().getCClass()
-								.getQualifiedName());
-				}
-						
-			}
-			throw e;
+			throw handleMethodNotFoundError(context, e);
 		}			
+	}
+	/**
+	 * It handles exceptions that can occur when looking for methods
+	 * that are in the outer reference. It changes the message if it is the
+	 * case.
+	 * @param context
+	 * @param e
+	 * @return
+	 */
+	protected PositionedError handleMethodNotFoundError(
+		CExpressionContext context, 
+		PositionedError e)
+	{
+		//If it does not find the field this$0 is because 
+		//it is a virtual class accessing outer private methods
+		//or accessing methods defined in outer outer ... class.
+		if (e.getFormattedMessage().getDescription() 
+			== KjcMessages.FIELD_UNKNOWN)
+		{
+			String fieldName = (String) e.getFormattedMessage()
+				.getParams()[0];
+			if (JAV_OUTER_THIS.equals(fieldName))
+			{
+				if (method != null 
+					&& CModifier.contains(method.getModifiers(), 
+						ACC_PRIVATE))
+					return new PositionedError(
+						getTokenReference(), 
+						CaesarMessages.VIRTUAL_ACCESSING_OUTER_PRIVATE,
+						context.getClassContext().getCClass()
+							.getQualifiedName());
+				else 
+					return new PositionedError(
+						getTokenReference(), 
+						CaesarMessages.VIRTUAL_CALLING_OUTER_OUTER,
+						context.getClassContext().getCClass()
+							.getQualifiedName());
+			}
+						
+		}
+		else if (e instanceof CMethodNotFoundError)
+		{
+			CClass local = context.getClassContext().getCClass();
+			if (CModifier.contains(local.getModifiers(), FJC_VIRTUAL)
+				&& CModifier.contains(
+					local.getOwner().getModifiers(), FJC_CLEAN | FJC_VIRTUAL))
+				return new PositionedError(
+					getTokenReference(), 
+					CaesarMessages.METHOD_NOT_FOUND_INSIDE_VIRTUAL,
+					e.getFormattedMessage().getParams()[0]);
+
+		}
+				
+		return e;
+		
 	}
 
 	protected void assertPrefixIsSet(CExpressionContext context)
@@ -358,6 +386,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		//If it is in a binding or providing class it cannot call super
 		if (! FjConstants.isIfcImplName(clazz.getIdent())
 			&& ! FjConstants.isFactoryMethodName(ident)
+			&& ! CciConstants.isAdaptMethodName(ident)
 			&& CModifier.contains(clazz.getModifiers(), 
 				(CCI_BINDING | CCI_PROVIDING)))
 			throw 
@@ -580,7 +609,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 			}
 			catch (CMethodNotFoundError e1)
 			{
-				throw e;
+				throw handleMethodNotFoundError(context, e);
 			}
 			CClass owner = prefix == null
 							? local 
@@ -605,6 +634,10 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 						throw e2.addPosition(getTokenReference());
 				}
 			}
+		}
+		catch (PositionedError e)
+		{
+			throw handleMethodNotFoundError(context, e);
 		}
 	}
 	protected void setMethod(CExpressionContext context)

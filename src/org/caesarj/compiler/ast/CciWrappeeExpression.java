@@ -4,35 +4,19 @@ import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
-import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CExpressionContext;
-import org.caesarj.kjc.CMethodNotFoundError;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CType;
 import org.caesarj.kjc.JExpression;
 
 /**
+ * Represents a wrappee expression in the source code. For instance, 
+ * wrappee.<MethodCall>() the primary expression will be an instance of
+ * this class in the AST.
+ * 
  * @author Walter Augusto Werner
  */
-public class CciWrappeeExpression extends FjMethodCallExpression
+public class CciWrappeeExpression 
+	extends FjMethodCallExpression
 {
-
-	/**
-	 * @param where
-	 * @param prefix
-	 * @param ident
-	 */
-	public CciWrappeeExpression(
-		TokenReference where,
-		JExpression prefix)
-	{
-		super(
-			where, 
-			prefix, 
-			CciConstants.WRAPPEE_METHOD_NAME,
-			JExpression.EMPTY);
-		// TODO Auto-generated constructor stub
-	}
 
 	/**
 	 * @param where
@@ -40,32 +24,35 @@ public class CciWrappeeExpression extends FjMethodCallExpression
 	 */
 	public CciWrappeeExpression(TokenReference where)
 	{
-		this(where, null);
-		// TODO Auto-generated constructor stub
+		super(
+			where, 
+			null, 
+			CciConstants.WRAPPEE_METHOD_NAME,
+			JExpression.EMPTY);
 	}
 	
 	
 
 	/**
-	 * 
+	 * Tries to analyse the method call to the wrapper method, 
+	 * if it is not found, it is not in a Wrapper context.
 	 */
 	public JExpression analyse(CExpressionContext context)
 		throws PositionedError
 	{
-		CClass clazz = context.getClassContext().getCClass();
 		try
 		{
-			//Is it in the wrapper context?
-			findMethod(context, clazz, CReferenceType.EMPTY);
+			return super.analyse(context);
 		}
-		catch(CMethodNotFoundError e)
+		catch(PositionedError e)
 		{
+			//Ops, it is not in the context of a Wrapper
 			throw new PositionedError(
 				getTokenReference(),
 				CaesarMessages.CLASS_DOES_NOT_WRAP,
-				clazz.getQualifiedName());
+				context.getClassContext().getCClass().getQualifiedName());
 		}
-		return super.analyse(context);
+		
 	}
 
 }

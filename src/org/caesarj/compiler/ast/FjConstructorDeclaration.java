@@ -635,7 +635,12 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			null,
 			null);
 	}
-	
+	/**
+	 * Creates the argument to the key used by creator and destructor.
+	 * 
+	 * @param parameter
+	 * @return
+	 */
 	protected JExpression createKeyArgument(JFormalParameter parameter)
 	{
 		TokenReference ref = getTokenReference();
@@ -771,7 +776,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 	 * return _localWrapper;
 	 * 
 	 */	
-	public FjCleanMethodDeclaration createWrapperInstantiationMethod(
+	public FjCleanMethodDeclaration createWrapperCreatorMethod(
 		String mapName)
 	{
 		
@@ -911,9 +916,94 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 				newParameters,
 				CReferenceType.EMPTY,
 				methodBody,
-				CciConstants.WRAPPER_CREATION_JAVADOC,
+				CciConstants.WRAPPER_CREATOR_JAVADOC,
 				new JavaStyleComment[0]);
 	}
+
+	/**
+	 * Creates the method used to destruct wrappers. It is the method used
+	 * to realize the semantics of wrapper destructor.
+	 * 
+	 * Signature:
+	 * public Object _destructWrapper<WrapperTypeName>(...)
+	 * 
+	 * Body:
+	 * Object key = <keyExpression>;
+	 * _<wrapperType>.remove(key);
+	 */	
+	public FjCleanMethodDeclaration createWrapperDestructorMethod(
+		String mapName)
+	{
+
+		TokenReference ref = getTokenReference();
+		JExpression keyExpression = createKeyExpression();
+		String methodName = 
+			CciConstants.toWrapperMethodDestructionName(
+				FjConstants.toIfcName(ident));
+
+		FjFormalParameter[] newParameters = 
+			new FjFormalParameter[parameters.length];
+		
+		for (int i = 0; i < newParameters.length; i++)
+		{
+			newParameters[i] = (FjFormalParameter)
+				 ((FjFormalParameter) parameters[i]).clone();
+		}
+
+
+		JStatement[] statements = new JStatement[]
+		{
+			//Object key = <keyExpression>
+			new JVariableDeclarationStatement(
+				ref,
+				new JVariableDefinition(
+					ref, 
+					0, 
+					new CClassNameType(JAV_OBJECT), 
+					CciConstants.WRAPPER_LOCAL_KEY,
+					keyExpression),
+				null),
+
+			//map.remove(key)
+			new JExpressionStatement(
+				ref,
+				new FjMethodCallExpression(
+					ref, 
+					new JFieldAccessExpression(
+						ref, 
+						new JThisExpression(ref), 
+						mapName),
+					CciConstants.WRAPPER_MAP_REMOVE,
+					new JExpression[]
+					{
+						new FjNameExpression(
+							ref, 
+							CciConstants.WRAPPER_LOCAL_KEY)
+					}),
+				null),
+		};
+	
+		JBlock methodBody = new JBlock(
+			ref,
+			statements,
+			null);
+		
+	
+		return 
+			new FjCleanMethodDeclaration(
+				ref, 
+				ACC_PUBLIC, 
+				typeVariables, 
+				returnType,
+				methodName,
+				newParameters,
+				CReferenceType.EMPTY,
+				methodBody,
+				CciConstants.WRAPPER_DESTRUCTOR_JAVADOC,
+				new JavaStyleComment[0]);
+	}
+
+
 
 	/**
 	 * DEBUG - WALTER

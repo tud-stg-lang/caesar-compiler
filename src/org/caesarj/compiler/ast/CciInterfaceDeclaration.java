@@ -112,7 +112,8 @@ public class CciInterfaceDeclaration
 		
 		return new FjCleanClassDeclaration(
 			getTokenReference(),
-			modifiers & ~(ACC_INTERFACE | ACC_ABSTRACT),
+			modifiers & ~(ACC_INTERFACE | ACC_ABSTRACT) 
+				| FJC_CLEAN | CCI_COLLABORATION,
 			ident,
 			typeVariables,
 			superClass,

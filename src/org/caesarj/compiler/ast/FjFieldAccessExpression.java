@@ -87,7 +87,7 @@ public class FjFieldAccessExpression extends JFieldAccessExpression {
 					{
 						throw new PositionedError(
 							getTokenReference(), 
-							CaesarMessages.VIRTUAL_ACCESSING_OUTER_FIELD,
+							CaesarMessages.VIRTUAL_ACCESSING_OUTER_PRIVATE,
 							context.getClassContext().getCClass()
 								.getQualifiedName());
 					}

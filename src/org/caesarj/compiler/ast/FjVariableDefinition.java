@@ -27,7 +27,14 @@ public class FjVariableDefinition extends JVariableDefinition {
 
 	protected String cachedIdent;
 	protected JExpression cachedInitializer;
-	
+
+
+	/**
+	 * Initializes the family of the variable. Or if the type has not been
+	 * checked, tries to find the type in the current context.
+	 * 
+	 * @param context
+	 */
 	public void initFamily(CClassContext context) 
 	{
 		try 
@@ -58,6 +65,25 @@ public class FjVariableDefinition extends JVariableDefinition {
 					FjFamilyContext.getInstance().setFamilyOf(this, family);
 					field.setFamily(family);
 					type = family.getInnerType();
+				}
+			}
+			//It can be a type that must be lower bound
+			else if (! type.checked())
+			{
+				CClass owner = clazz;
+				CType lowerType = null;
+				while (owner != null)
+				{
+					try
+					{
+						type = fjts.lowerBound(
+							context, owner, type.toString());
+						break;
+					}
+					catch (UnpositionedError e)
+					{
+						owner = owner.getOwner();
+					}
 				}
 			}
 		} 
@@ -98,4 +124,6 @@ public class FjVariableDefinition extends JVariableDefinition {
 		}
 		super.analyse( context );
 	}
+
+
 }

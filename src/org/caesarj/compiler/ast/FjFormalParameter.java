@@ -1,5 +1,6 @@
 package org.caesarj.compiler.ast;
 
+import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
@@ -9,7 +10,7 @@ import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CType;
 import org.caesarj.kjc.CTypeContext;
 import org.caesarj.kjc.JAssignmentExpression;
-import org.caesarj.kjc.JCastExpression;
+import org.caesarj.kjc.JExpression;
 import org.caesarj.kjc.JExpressionStatement;
 import org.caesarj.kjc.JFormalParameter;
 import org.caesarj.kjc.JTypeDeclaration;
@@ -57,30 +58,35 @@ public class FjFormalParameter extends JFormalParameter {
 		return false;
 	}
 
-	public void introduceDownCastVariable( CTypeContext context )
-		throws UnpositionedError {
+	public void introduceDownCastVariable(CTypeContext context)
+		throws UnpositionedError 
+	{
 			
 		FjMethodDeclaration method = (FjMethodDeclaration)
 			((FjAdditionalContext) context).peekContextInfo(1);
 		JTypeDeclaration clazz = (JTypeDeclaration)
 			((FjAdditionalContext) context).peekContextInfo(2);
-
+		
 		int clazzModifiers = clazz.getModifiers();
-		if (((clazzModifiers & FJC_CLEAN) != 0
-			|| (clazzModifiers & FJC_VIRTUAL) != 0)
-			&& ! (FjConstants.isImplementationMethodName(method.getIdent())))
+		if (CModifier.contains(clazzModifiers, (FJC_CLEAN | FJC_VIRTUAL))
+			 && ! FjConstants.isImplementationMethodName(method.getIdent())) 
 		{
 			// downcast in clean classes only needed
-			// in implementation method or in the method that is sets the 
-			//implementation or the binding reference.
+			// in implementation method
 			return;
 		}
 
 	  	FjTypeSystem fjts = new FjTypeSystem();
+	  	FjFamily family = getFamily();
 		CReferenceType lowerBound = fjts.lowerBound(
 			context,
-			getFamily().getType().getCClass(),
+			family.getType().getCClass(),
 			((CReferenceType) type).getIdent());
+		
+		TokenReference ref = getTokenReference();
+		//Now, create the expression to be casted before.		
+		JExpression castedExpression = createCastedExpression(
+			lowerBound, family, clazz);
  
 		method.prependStatement(
 			new JExpressionStatement(
@@ -89,94 +95,113 @@ public class FjFormalParameter extends JFormalParameter {
 					getTokenReference(),
 					new FjNameExpression(
 						getTokenReference(),
-						name ),
+						name),
 					new FjCastExpression(
 						getTokenReference(),
-						new FjNameExpression(
-							getTokenReference(),
-							FjConstants.renameParameter( name ) ),
-						lowerBound ) ),
-				null ) );
+						castedExpression,
+						lowerBound)),
+				null));
 				
-		method.prependStatement( new JVariableDeclarationStatement( 
-			getTokenReference(),
-			new FjFamilyVariableDefinition(
-				getTokenReference(),
-				0,
-				lowerBound,
-				name,
-				null,
-				getFamily() ),
-			null ) );
-		name = FjConstants.renameParameter( name );
+		method.prependStatement(
+			new JVariableDeclarationStatement( 
+				ref,
+				new FjFamilyVariableDefinition(
+					ref,
+					0,
+					lowerBound,
+					name,
+					null,
+					getFamily() ),
+				null));
+
+		name = FjConstants.renameParameter(name);
 	}
 	
 	/**
-	 * This method is a copy of the introduceDownCasVariable defined above. 
-	 * It is here just while the semantics of the down cast variable of
-	 * the collaboration interfaces is not defined.
-	 * The only diference in this method, is that it creates a JCastExpression
-	 * instead of FjCastExpression in the line where there is the sign 
-	 * (//TEMPORAL!), and it creates a CciFamilyVariableDefinition instead of
-	 * FjFamilyVariableDefinition that is also marked with the sign.
-	 * The parameter true was inserted also in the call to lowerBound.
-	 * @param context
-	 * @throws UnpositionedError
+	 * Creates the expression to be casted in the 
+	 * when down casting the parameter. 
+	 * 
+	 * Used by introduceCownCastVariable(context)
+	 * 
+	 * @param lowerBound
+	 * @param family
+	 * @return
 	 */
-	public void introduceDownCastCollaborationInterfaceVariable(
-		CTypeContext context)
-		throws UnpositionedError 
+	private JExpression createCastedExpression(
+		CReferenceType lowerBound, FjFamily family, JTypeDeclaration clazz)
 	{
-			
-		FjMethodDeclaration method = (FjMethodDeclaration)
-			((FjAdditionalContext) context).peekContextInfo(1);
-		JTypeDeclaration clazz = (JTypeDeclaration)
-			((FjAdditionalContext) context).peekContextInfo(2);
-
-		int clazzModifiers = clazz.getModifiers();
-		if (((clazzModifiers & FJC_CLEAN) != 0
-			|| (clazzModifiers & FJC_VIRTUAL) != 0)
-			&& ! (FjConstants.isImplementationMethodName(method.getIdent())))
+		FjTypeSystem typeSystem = new FjTypeSystem();
+		TokenReference ref = getTokenReference();
+		//simple parameter access expression.
+		JExpression parameterAccess = 
+			new FjNameExpression(
+				ref,
+				FjConstants.renameParameter(name));
+		
+		CClass lowerBoundOwner = lowerBound.getCClass().getOwner();
+		int clazzModifiers = lowerBoundOwner.getModifiers();
+		if (CModifier.contains(clazzModifiers, (FJC_CLEAN | FJC_VIRTUAL)))
 		{
-			// downcast in clean classes only needed
-			// in implementation method or in the method that is sets the 
-			//implementation or the binding reference.
-			return;
-		}
-
-		FjTypeSystem fjts = new FjTypeSystem();
-		CReferenceType lowerBound = fjts.lowerBound(
-			context,
-			getFamily().getType().getCClass(),
-			((CReferenceType) type).getIdent(), true);//TEMPORAL!
-
-		method.prependStatement(
-			new JExpressionStatement(
-				getTokenReference(),
-				new JAssignmentExpression(
-					getTokenReference(),
-					new FjNameExpression(
-						getTokenReference(),
-						name ),
-					new JCastExpression(//TEMPORAL!
-						getTokenReference(),
-						new FjNameExpression(
-							getTokenReference(),
-							FjConstants.renameParameter( name ) ),
-						lowerBound ) ),
-				null ) );
+			if (clazz instanceof FjCleanClassDeclaration)
+			{
+				FjCleanClassDeclaration cleanClass = 
+					(FjCleanClassDeclaration) clazz;
+				//If it depends on this it must be adapted
+				if (family.isThis()) 
+				{
+					if (typeSystem.declaresInner(
+						cleanClass.getCleanInterface().getCClass(), 
+							lowerBound.getIdent()) != null)
+					{
+						//parameter._adapt<TypeName>(self)
+						return
+							new FjMethodCallExpression(
+								ref,
+								parameterAccess,
+								CciConstants.toAdaptMethodName(
+									lowerBound.getIdent()),
+							new JExpression[]
+							{
+								new FjThisExpression(ref, true)
+							});
+					}
+				}
+				//If it depends on outer this as well.
+				else if (family.isOuterThis())
+				{
+					FjClassDeclaration fjOwnerClass = 
+						cleanClass.getOwnerDeclaration();
+					if (fjOwnerClass instanceof FjCleanClassDeclaration)
+					{
+						FjCleanClassInterfaceDeclaration cleanOwnerInterface = 
+							((FjCleanClassDeclaration) fjOwnerClass).getCleanInterface();
+						if (typeSystem.declaresInner(
+								cleanOwnerInterface.getCClass(), 
+								lowerBound.getIdent()) != null)
+						{
+							//parameter._adapt<TypeName>(this$)
+							return 
+								new FjMethodCallExpression(
+									ref,
+									parameterAccess,
+									CciConstants.toAdaptMethodName(
+										lowerBound.getIdent()),
+								new JExpression[]
+								{
+									new FjThisExpression(
+										ref, 
+										new FjNameExpression(
+											ref, 
+											cleanOwnerInterface.getIdent()))
+								});
+						}
+					}
 				
-		method.prependStatement( new JVariableDeclarationStatement( 
-			getTokenReference(),
-			new CciFamilyVariableDefinition(//TEMPORAL!
-				getTokenReference(),
-				0,
-				lowerBound,
-				name,
-				null,
-				getFamily() ),
-			null ) );
-		name = FjConstants.renameParameter( name );
+				}
+			}
+		}
+		//Returns the simple parameter access.
+		return parameterAccess;
 	}
 
 	public void upcastOverriddenType( CTypeContext context ) throws UnpositionedError {
@@ -198,12 +223,7 @@ public class FjFormalParameter extends JFormalParameter {
 			getFamily().getInnerType().getIdent() ).getCClass();
 
 		if( !upperBound.descendsFrom( lowerBound ))
-		{
-			if (CModifier.contains(upperBound.getModifiers(), CCI_COLLABORATION))
-				introduceDownCastCollaborationInterfaceVariable(context);
-			else
-				introduceDownCastVariable(context);
-		}
+			introduceDownCastVariable(context);
 	}
 
 	public void addFamily( CTypeContext context ) throws UnpositionedError {

@@ -35,7 +35,7 @@ public class FjCleanClassIfcImplDeclaration
 		FjCleanClassDeclaration baseDecl ) {
 		super(
 			tokenReference,
-			modifiers | ACC_PUBLIC,
+			modifiers | FJC_CLEAN | ACC_PUBLIC,
 			ident,
 			CTypeVariable.EMPTY,
 			new CClassNameType( FjConstants.CHILD_IMPL_TYPE_NAME ),

@@ -273,7 +273,6 @@ public class FjTypeSystem
 		boolean check)
 		throws UnpositionedError
 	{
-		//TODO: Check this stuff!!
 		if (context.peekContextInfo(1) instanceof JFormalParameter[])
 		{
 			// "checking method parameters"
@@ -565,20 +564,20 @@ public class FjTypeSystem
 							+ "$"
 							+ innerTypeName)).checkType(context);
 							
-			//TEMPORAL!
-			if (! considerCollaborationInterface
-				|| ! CModifier.contains(type.getCClass().getModifiers(), 
-					Constants.FJC_OVERRIDE))
-				return (CReferenceType) type;
-			else
-			{
-				CClass result = getClassInHierarchy(
-					type.getCClass(), Constants.CCI_COLLABORATION);
-				return result == null ? (CReferenceType) type : result.getAbstractType();
-			}
-			//TEMPORAL END ;)
-			//It was just this return... 
-			//return (CReferenceType) type;
+//			//TEMPORAL!
+//			if (! considerCollaborationInterface
+//				|| ! CModifier.contains(type.getCClass().getModifiers(), 
+//					Constants.FJC_OVERRIDE))
+//				return (CReferenceType) type;
+//			else
+//			{
+//				CClass result = getClassInHierarchy(
+//					type.getCClass(), Constants.CCI_COLLABORATION);
+//				return result == null ? (CReferenceType) type : result.getAbstractType();
+//			}
+//			//TEMPORAL END ;)
+//			//It was just this return... 
+			return (CReferenceType) type;
 
 
 		}

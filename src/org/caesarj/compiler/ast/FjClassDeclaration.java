@@ -410,40 +410,11 @@ public class FjClassDeclaration
 			modifiers |= ACC_FINAL;
 		}
 
-		// when checking members we need the
-		// class declaration, so pass it here
-		// if there is one, pass the owner first
-		if (context instanceof FjAdditionalContext)
-			((FjClassContext) self).pushContextInfo(
-				((FjAdditionalContext) context).peekContextInfo());
-		((FjClassContext) self).pushContextInfo(this);
 
-		boolean atLeastOneResolved = true;
-		int i = 0;
-		// in each iteration there has to be at least
-		// one field to be checked, if not, there is a
-		// circularity, so stop
-		while (atLeastOneResolved)
-		{
-			atLeastOneResolved = false;
-			for (int j = 0; j < getFields().length; j++)
-			{
-				FjFieldDeclaration field =
-					((FjFieldDeclaration) getFields()[j]);
-				if (!field.isChecked())
-				{
-					field.setChecked(true);
-					field.checkInterface(self);
-					if (field.isChecked())
-						atLeastOneResolved = true;
-				}
-			}
-			i++;
-		}
+
 
 		super.checkInterface(context);
-		((FjClassContext) self).popContextInfo();
-		((FjClassContext) self).popContextInfo();
+
 
 		if (isPrivileged() || isStaticallyDeployed())
 		{
@@ -462,9 +433,11 @@ public class FjClassDeclaration
 
 		//if descendants of crosscutting class must be declared crosscutting too
 		if (getCClass().getSuperClass() != null
-			&& (getCClass().getSuperClass().getModifiers() & ACC_CROSSCUTTING)
-				!= 0
-			&& !isCrosscutting())
+				&& CModifier.contains(
+					getCClass().getSuperClass().getModifiers(),
+					ACC_CROSSCUTTING)
+				&& ! isCrosscutting()) 
+//				&& ! (this instanceof DeploymentSupportClassDeclaration))
 		{
 			context.reportTrouble(
 				new PositionedError(
@@ -493,7 +466,6 @@ public class FjClassDeclaration
 	 */
 	public void initFamilies(CClassContext context) throws PositionedError
 	{
-
 		int generatedFields = getCClass().hasOuterThis() ? 1 : 0;
 
 		//Initializes the families of the fields.
@@ -954,7 +926,7 @@ public class FjClassDeclaration
 				| CCI_WEAVELET
 				//Jurgen's
 				| ACC_PRIVILEGED 
-//				| ACC_CROSSCUTTING 
+				| ACC_CROSSCUTTING 
 				| ACC_DEPLOYED;
 	}
 
