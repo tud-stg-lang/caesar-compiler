@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.25 2004-10-27 17:21:27 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.26 2004-10-28 16:09:24 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -275,21 +275,19 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
 
             CClass clazz = interfaces[i].getCClass();
 
-            check(
-                context,
-                clazz.isInterface(),
-                KjcMessages.SUPERINTERFACE_WRONG_TYPE,
-                interfaces[i].getQualifiedName());
-            
             if( !(getCClass().isMixin() || getCClass().isMixinInterface()) ) {
 	            check(
 	                context,
 	                !clazz.isMixinInterface(),
 	                KjcMessages.SUPERINTERFACE_WRONG_TYPE,
 	                interfaces[i].getQualifiedName());                
-            }
-            
+            }            
 
+            check(
+                context,
+                clazz.isInterface(),
+                KjcMessages.SUPERINTERFACE_WRONG_TYPE,
+                interfaces[i].getQualifiedName());
             check(
                 context,
                 clazz.isAccessible(sourceClass),
