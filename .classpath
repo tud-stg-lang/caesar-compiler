@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="lib/cjbuildtools.jar"/>
 	<classpathentry kind="lib" path="test/VirtualClassesTests"/>
 	<classpathentry kind="var" path="JUNIT_HOME/junit.jar"/>
+	<classpathentry kind="lib" path="test/StructureModelTests"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
