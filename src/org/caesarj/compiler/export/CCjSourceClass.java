@@ -24,7 +24,6 @@ import org.caesarj.compiler.context.AdditionalGenerationContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.joinpoint.PrivilegedAccessHandler;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
-import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.InconsistencyException;
@@ -44,7 +43,7 @@ public class CCjSourceClass extends CSourceClass
 	protected PrivilegedAccessHandler privilegedAccessHandler;
 
 	protected List resolvedPointcuts = new ArrayList();
-	
+
 	public CCjSourceClass(
 		CClass owner,
 		TokenReference where,
@@ -97,7 +96,7 @@ public class CCjSourceClass extends CSourceClass
 			privilegedAccessHandler.setAspect(this);
 		}
 	}
-
+	    
 //
 //	public CClass lookupClass(CClass caller, String name)
 //		throws UnpositionedError
@@ -313,8 +312,7 @@ public class CCjSourceClass extends CSourceClass
 		CClass caller,
 		CType primary,
 		String ident,
-		CType[] actuals,
-		CReferenceType[] substitution)
+		CType[] actuals)
 		throws UnpositionedError
 	{
 
