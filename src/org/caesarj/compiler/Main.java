@@ -118,7 +118,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 		for (int count = 0; count < tree.length; count++) {
 			tree[count] =
 				parseFile((File) infiles.elementAt(count), environment);
-			//tree[count].accept(new DebugVisitor());
+//			tree[count].accept(new DebugVisitor());
 		}
 
 		infiles = null;
