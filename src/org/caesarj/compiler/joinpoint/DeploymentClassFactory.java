@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.42 2005-03-30 07:22:26 gasiunas Exp $
+ * $Id: DeploymentClassFactory.java,v 1.43 2005-03-30 14:22:58 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.caesarj.compiler.AstGenerator;
 import org.caesarj.compiler.KjcEnvironment;
+import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.aspectj.CaesarNameMangler;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.ast.phylum.JPhylum;
@@ -409,7 +410,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * It manages the deployment of aspects and dispatches the 
 	 * advice method calls to the deployed instances.
 	 */
-	public CjClassDeclaration createSingletonAspect(CjPointcutDeclaration[] pointcuts, CjAdviceDeclaration[] advices) {
+	public CjClassDeclaration createSingletonAspect(CjPointcutDeclaration[] pointcuts, CjAdviceDeclaration[] advices, CaesarDeclare[] declares) {
 		
 		List fields = new ArrayList();
 		List inners = new ArrayList();
@@ -501,7 +502,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			null,
 			pointcuts,
 			modifiedAdvices,
-			aspectClass.getDeclares(),
+			declares,
 			aspectClass,
 			REGISTRY_EXTENSION);
 

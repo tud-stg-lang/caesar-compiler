@@ -9,6 +9,7 @@ import java.util.List;
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.aspectj.CaesarAdviceKind;
+import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.aspectj.CaesarNameMangler;
 import org.caesarj.compiler.ast.phylum.declaration.CjAdviceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjPointcutDeclaration;
@@ -127,14 +128,16 @@ public class GenerateDeploymentSupport {
 		 		
 		 		List pointcuts = new LinkedList();
 		 		List advices = new LinkedList();
-		 		collectAllPointcutsAndAdvice(node, pointcuts, advices);
+		 		List declares = new LinkedList();
+		 		collectAllCrosscuts(node, pointcuts, advices, declares);
 		 		CjAdviceDeclaration[] adviceArr = (CjAdviceDeclaration[])advices.toArray(new CjAdviceDeclaration[0]);
 		 		CjPointcutDeclaration[] pointcutArr = (CjPointcutDeclaration[])pointcuts.toArray(new CjPointcutDeclaration[0]);
+		 		CaesarDeclare[] declareArr = (CaesarDeclare[])declares.toArray(new CaesarDeclare[0]);
 		 		
 		 		caesarClass.setAspectInterface(
 		 				utils.createAspectInterface(adviceArr));
 		 		caesarClass.setRegistryClass(
-		 				utils.createSingletonAspect(pointcutArr, adviceArr));
+		 				utils.createSingletonAspect(pointcutArr, adviceArr, declareArr));
 		 		utils.modifyAspectClass();				
 		 	}
 		}
@@ -184,7 +187,7 @@ public class GenerateDeploymentSupport {
 		return lst;
 	}
 	
-	private void collectAllPointcutsAndAdvice(CaesarTypeNode node, List pointcuts, List advices) {
+	private void collectAllCrosscuts(CaesarTypeNode node, List pointcuts, List advices, List declares) {
 		List ccLst = getCrosscuttingMixinList(node);
 		HashSet pctSet = new HashSet();
 		
@@ -236,7 +239,13 @@ public class GenerateDeploymentSupport {
  					pctSet.add(ident);
  					pointcuts.add(declPct[i1]);
  				} 				
- 			} 				 			
+ 			}
+ 			
+ 			/* colect all static crosscutting declarations */
+ 			CaesarDeclare declArr[] = classDecl.getDeclares();
+ 			for (int i1 = 0; i1 < declArr.length; i1++) {
+ 				declares.add(declArr[i1]);
+ 			}
  		}	
 	}
 }
