@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="test/CompilerErrorsTests"/>
 	<classpathentry kind="lib" path="tests/bin"/>
 	<classpathentry kind="lib" path="lib/jdom.jar"/>
+	<classpathentry kind="lib" path="test/PackageTests"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
