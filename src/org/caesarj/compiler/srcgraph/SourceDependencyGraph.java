@@ -15,7 +15,7 @@ import org.caesarj.compiler.types.CCompositeType;
 public class SourceDependencyGraph {
 
     // the root node representes any non-source type
-    private TypeNode rootNode = new RootTypeNode();
+    private RootTypeNode rootNode = new RootTypeNode();
     private HashMap typeMap = new HashMap();
 
     public SourceDependencyGraph() {

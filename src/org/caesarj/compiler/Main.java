@@ -124,11 +124,13 @@ public class Main extends MainSuper implements Constants {
         // - generate factory methods        
         
         generateSourceDependencyGraph(tree);
+        dependencyGraph.debug();
 
         CompilerPass compilerPass = 
             generateCompilerPassInfo();
             
         while(compilerPass != null) {       
+            System.out.println("--- pass: "+environment.getCompilerPass());
             compilerPass.begin();
             {
                 // CTODO mix classes
@@ -148,7 +150,7 @@ public class Main extends MainSuper implements Constants {
             }
             compilerPass.end();
             
-            compilerPass = compilerPass.getNextPass();
+            compilerPass = compilerPass.getNextPass();            
             environment.incCompilerPass(); 
         }
 

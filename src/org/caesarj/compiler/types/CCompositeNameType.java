@@ -40,6 +40,8 @@ public class CCompositeNameType extends CClassNameType {
             MixinList mixinList = ExportMixer.instance().mix(classes);
             String mixedClassName = mixinList.generateClassName();
             
+            // IVICA !!!
+            mixedClassName = "XXX";
             return new CCompositeType("$gen/"+mixedClassName, checkedInterfaceTypes, checkedImplTypes);            
         }
         catch (Exception e) {

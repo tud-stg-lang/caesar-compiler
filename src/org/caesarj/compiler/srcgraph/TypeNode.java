@@ -3,6 +3,7 @@ package org.caesarj.compiler.srcgraph;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * ... 
@@ -56,14 +57,19 @@ public abstract class TypeNode {
 
     public abstract void calculateLevel(int i);
     
-    public void debug() {
-        System.out.print(getLevel());
-        System.out.print(":  ");
-        System.out.println(getName());
-        
-        for(Iterator it=getSubTypes().iterator(); it.hasNext(); ) {
-            TypeNode subNode = (TypeNode)it.next();            
-            subNode.debug();
+    protected void debug(String indent, Set visited) {
+        if(!visited.contains(this)) {        
+            visited.add(this);
+            
+            System.out.print(indent);
+            System.out.print(getLevel());
+            System.out.print(":");
+            System.out.println(getName());
+            
+            for(Iterator it=getSubTypes().iterator(); it.hasNext(); ) {
+                TypeNode subNode = (TypeNode)it.next();            
+                subNode.debug(indent+'\t', visited);
+            }
         }
     }
 }

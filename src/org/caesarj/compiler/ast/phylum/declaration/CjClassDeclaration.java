@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.8 2004-04-16 14:30:20 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.9 2004-04-16 16:36:45 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -522,7 +522,12 @@ public class CjClassDeclaration
             }
         }
 
-        sourceClass.close(this.interfaces, new Hashtable(), methodList);        
+        sourceClass.close(this.interfaces, new Hashtable(), methodList);
+        
+        // Check inners
+        for(int k = 0; k < inners.length; k++) {
+            inners[k].checkConstructorInterfaceOnly(context);           
+        }
     }
 
 
@@ -533,7 +538,15 @@ public class CjClassDeclaration
     public void checkInterface(CContext context) throws PositionedError {
         
         // IVICA don't check interface if not enabled;
-        if(!checkEnabled(context)) return;
+        if(!checkEnabled(context)) {
+            
+            // just recurse into inners and then return
+            for (int i = inners.length - 1; i >= 0; i--) {
+                inners[i].checkInterface(context);
+            }
+
+            return;
+        } 
         
         // IVICA supertype could be composite, check it here
         try {
@@ -754,8 +767,15 @@ public class CjClassDeclaration
      */
     public void checkTypeBody(CContext context) throws PositionedError {
         
-        // IVICA
-        if(!checkEnabled(context)) return;
+        // IVICA don't check type body if not enabled
+        if(!checkEnabled(context)) {
+            // just recurse into inners and then return
+            for (int i = inners.length - 1; i >= 0; i--) {
+                inners[i].checkTypeBody(context);
+            }
+
+            return;
+        } 
 
         if (advices != null) {
             for (int i = 0; i < advices.length; i++) {

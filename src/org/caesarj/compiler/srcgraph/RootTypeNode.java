@@ -1,6 +1,8 @@
 package org.caesarj.compiler.srcgraph;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * ... 
@@ -17,6 +19,11 @@ public class RootTypeNode extends TypeNode {
         return "<ROOT>";
     }
 
+    public void debug() {
+		debug("", new HashSet());
+	}
+
+
     public void calculateLevel(int i) {
         this.level = i;
         for(Iterator it=getSubTypes().iterator(); it.hasNext(); ) {
@@ -24,4 +31,6 @@ public class RootTypeNode extends TypeNode {
             subNode.calculateLevel(level);
         }
     }
+    
+    
 }

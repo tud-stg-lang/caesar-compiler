@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.5 2004-04-16 14:30:20 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.6 2004-04-16 16:36:45 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -416,6 +416,8 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
      * @exception	PositionedError	Error catched as soon as possible
      */
     public void checkInitializers(CContext context) throws PositionedError {
+        
+        
         
         // IVICA 
         if(!checkEnabled(context)) return;

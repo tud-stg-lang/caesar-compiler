@@ -376,8 +376,15 @@ public class JClassDeclaration extends JTypeDeclaration {
      */
     public void checkInitializers(CContext context) throws PositionedError {
         
-        // IVICA
-        if(!checkEnabled(context)) return;
+        // IVICA don't check initializers if not enabled
+        if(!checkEnabled(context)) {
+            // just check inners
+            for (int i = inners.length - 1; i >= 0; i--) {
+                inners[i].checkInitializers(context);
+            }
+
+            return;
+        } 
 
         //Walter start:
         //self = new CClassContext(context, context.getEnvironment(), sourceClass, this);
