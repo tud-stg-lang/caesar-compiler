@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjUnqualifiedInstanceCreation.java,v 1.5 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CjUnqualifiedInstanceCreation.java,v 1.6 2005-02-04 19:08:30 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -108,6 +108,10 @@ public class CjUnqualifiedInstanceCreation extends JExpression {
         }
         
         return expr.analyse(context);
+    }
+    
+    public boolean isStatementExpression() {
+        return true;
     }
     
     public void genCode(GenerationContext context, boolean discardValue) {
