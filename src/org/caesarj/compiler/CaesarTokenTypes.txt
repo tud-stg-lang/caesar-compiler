@@ -1,0 +1,129 @@
+Caesar // output vocabulary
+
+// Definitions from C:\Programme\eclipse\workspace\Caesar\cc/caesar.t
+LITERAL_abstract = "abstract" = 4
+LITERAL_boolean = "boolean" = 5
+LITERAL_break = "break" = 6
+LITERAL_byte = "byte" = 7
+LITERAL_case = "case" = 8
+LITERAL_catch = "catch" = 9
+LITERAL_char = "char" = 10
+LITERAL_class = "class" = 11
+LITERAL_const = "const" = 12
+LITERAL_continue = "continue" = 13
+LITERAL_default = "default" = 14
+LITERAL_do = "do" = 15
+LITERAL_double = "double" = 16
+LITERAL_else = "else" = 17
+LITERAL_extends = "extends" = 18
+LITERAL_false = "false" = 19
+LITERAL_final = "final" = 20
+LITERAL_finally = "finally" = 21
+LITERAL_float = "float" = 22
+LITERAL_for = "for" = 23
+LITERAL_goto = "goto" = 24
+LITERAL_if = "if" = 25
+LITERAL_implements = "implements" = 26
+LITERAL_import = "import" = 27
+LITERAL_instanceof = "instanceof" = 28
+LITERAL_int = "int" = 29
+LITERAL_interface = "interface" = 30
+LITERAL_long = "long" = 31
+LITERAL_native = "native" = 32
+LITERAL_new = "new" = 33
+LITERAL_null = "null" = 34
+LITERAL_package = "package" = 35
+LITERAL_private = "private" = 36
+LITERAL_protected = "protected" = 37
+LITERAL_public = "public" = 38
+LITERAL_return = "return" = 39
+LITERAL_short = "short" = 40
+LITERAL_static = "static" = 41
+LITERAL_strictfp = "strictfp" = 42
+LITERAL_super = "super" = 43
+LITERAL_switch = "switch" = 44
+LITERAL_synchronized = "synchronized" = 45
+LITERAL_this = "this" = 46
+LITERAL_throw = "throw" = 47
+LITERAL_throws = "throws" = 48
+LITERAL_transient = "transient" = 49
+LITERAL_true = "true" = 50
+LITERAL_try = "try" = 51
+LITERAL_void = "void" = 52
+LITERAL_volatile = "volatile" = 53
+LITERAL_while = "while" = 54
+LITERAL_virtual = "virtual" = 55
+LITERAL_override = "override" = 56
+LITERAL_clean = "clean" = 57
+FJEQUAL("===") = 58
+LITERAL_collaboration = "collaboration" = 59
+LITERAL_provided = "provided" = 60
+LITERAL_expected = "expected" = 61
+LITERAL_binds = "binds" = 62
+LITERAL_provides = "provides" = 63
+LITERAL_wraps = "wraps" = 64
+LITERAL_wrappee = "wrappee" = 65
+WDESTRUCTOR("#") = 66
+LITERAL_after = "after" = 67
+LITERAL_around = "around" = 68
+LITERAL_before = "before" = 69
+LITERAL_declare = "declare" = 70
+LITERAL_deploy = "deploy" = 71
+LITERAL_deployed = "deployed" = 72
+LITERAL_pointcut = "pointcut" = 73
+LITERAL_precedence = "precedence" = 74
+LITERAL_privileged = "privileged" = 75
+LITERAL_returning = "returning" = 76
+LITERAL_throwing = "throwing" = 77
+ASSIGN("=") = 78
+BAND("&") = 79
+BAND_ASSIGN("&=") = 80
+BNOT("~") = 81
+BOR("|") = 82
+BOR_ASSIGN("|=") = 83
+BSR(">>>") = 84
+BSR_ASSIGN(">>>=") = 85
+BXOR("^") = 86
+BXOR_ASSIGN("^=") = 87
+COLON(":") = 88
+COMMA(",") = 89
+DEC("--") = 90
+DOT(".") = 91
+EQUAL("==") = 92
+GE(">=") = 93
+GT(">") = 94
+INC("++") = 95
+LAND("&&") = 96
+LBRACK("[") = 97
+LCURLY("{") = 98
+LE("<=") = 99
+LNOT("!") = 100
+LOR("||") = 101
+LPAREN("(") = 102
+LT("<") = 103
+MINUS("-") = 104
+MINUS_ASSIGN("-=") = 105
+NOT_EQUAL("!=") = 106
+PERCENT("%") = 107
+PERCENT_ASSIGN("%=") = 108
+PLUS("+") = 109
+PLUS_ASSIGN("+=") = 110
+QUESTION("?") = 111
+RBRACK("]") = 112
+RCURLY("}") = 113
+RPAREN(")") = 114
+SEMI(";") = 115
+SL("<<") = 116
+SLASH("/") = 117
+SLASH_ASSIGN("/=") = 118
+SL_ASSIGN("<<=") = 119
+SR(">>") = 120
+SR_ASSIGN(">>=") = 121
+STAR("*") = 122
+STAR_ASSIGN("*=") = 123
+CHARACTER_LITERAL("a character literal (inside simple quote)") = 124
+IDENT("an identifier") = 125
+INTEGER_LITERAL("an integer literal") = 126
+REAL_LITERAL("a real literal") = 127
+STRING_LITERAL("a string literal (inside double quote)") = 128
+TYPE_PATTERN("a type pattern for pointcut definition") = 129
