@@ -18,6 +18,7 @@ public class AllTests {
         suite.addTestSuite( VirtualClassesTests.class );
         //suite.addTestSuite( CompileAndRunResultsWeaverTest.class );
         suite.addTestSuite( AspectDeploymentTests.class);
+        suite.addTestSuite( StructureModelTests.class);
 		//$JUnit-END$
 		return suite;
 	}
