@@ -18,6 +18,7 @@ public class TypeSysTestCase {
 	    g2.N nn;
 	    nn = n;
 	}
+
 }
 
 public cclass G {

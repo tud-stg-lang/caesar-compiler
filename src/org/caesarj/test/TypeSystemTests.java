@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: TypeSystemTests.java,v 1.7 2005-01-27 15:21:43 aracic Exp $
+ * $Id: TypeSystemTests.java,v 1.8 2005-01-28 16:09:34 klose Exp $
  */
 
 package org.caesarj.test;
@@ -74,6 +74,17 @@ public class TypeSystemTests extends FjTestCase {
 	    compileDontRun("typesystest30");
 	}
 	
+	/** Anonymous inner cclasses */
+	public void testCaesarTestCase_31() throws Throwable{
+	    compileDontRun("typesystest31");
+	}
+	
+	/** Return type depends on parameter */
+	public void testCaesarTestCase_32() throws Throwable{
+	    compileDontRun("typesystest32");
+	   // compileAndCheckErrors("typesystest32", new String[]{""} );
+	}
+
 	/*
 	 * Test Dependent Types defined within cclass
 	 */

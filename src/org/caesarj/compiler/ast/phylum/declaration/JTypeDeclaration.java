@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclaration.java,v 1.40 2005-01-28 15:10:41 klose Exp $
+ * $Id: JTypeDeclaration.java,v 1.41 2005-01-28 16:09:34 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -487,8 +487,14 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
             CType t = methods[i].getReturnType();
             try {
                 if(t instanceof CClassNameType) {
+                    // create a method context to analyse the dep.-type in 
+                    KjcEnvironment env = self.getEnvironment();
+                    CContext methodContext = new CMethodContext(
+                            					((CClassContext)self), 
+                            					env,
+                            					methods[i] );
                     CClassNameType nt = (CClassNameType)t;
-                    t = new CDependentNameType(nt.getQualifiedName()).checkType(self);
+                    t = new CDependentNameType(nt.getQualifiedName()).checkType(methodContext);
                     
                     methods[i].setReturnType(t);
                     methods[i].getMethod().setReturnType(t);
@@ -498,6 +504,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
                 List formalParamTypes = new LinkedList();
                 for (int j = 0; j < formalParams.length; j++) {                    
                     if(formalParams[j].getType() instanceof CClassNameType) {
+                        // create a method context to analyse the dep.-type in 
                         KjcEnvironment env = self.getEnvironment();
                         CContext methodContext = new CMethodContext(
                                 					((CClassContext)self), 
