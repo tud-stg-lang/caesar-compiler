@@ -1,0 +1,350 @@
+package org.caesarj.compiler.ast;
+
+import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.AdviceKind;
+import org.aspectj.weaver.patterns.Pointcut;
+
+import org.caesarj.kjc.CBinaryTypeContext;
+import org.caesarj.kjc.CClassContext;
+import org.caesarj.kjc.CClassNameType;
+import org.caesarj.kjc.CModifier;
+import org.caesarj.kjc.CReferenceType;
+import org.caesarj.kjc.CSourceMethod;
+import org.caesarj.kjc.CType;
+import org.caesarj.kjc.CTypeVariable;
+import org.caesarj.kjc.JBlock;
+import org.caesarj.kjc.JFormalParameter;
+import org.caesarj.compiler.CaesarConstants;
+import org.caesarj.compiler.CaesarMessages;
+import org.caesarj.compiler.JavaStyleComment;
+import org.caesarj.compiler.JavadocComment;
+import org.caesarj.compiler.PositionedError;
+import org.caesarj.compiler.TokenReference;
+import org.caesarj.compiler.UnpositionedError;
+
+/**
+ * Represents an AdviceDeclaration in the Source Code.
+ * 
+ * @author Jürgen Hallpap
+ */
+public class AdviceDeclaration
+	extends FjMethodDeclaration
+	implements CaesarConstants {
+
+	public static final AdviceDeclaration[] EMPTY =
+		new AdviceDeclaration[0];
+
+	/** Pointcut */
+	private Pointcut pointcut;
+
+	/** Kind of Advice (Before,After,AfterReturning,AfterThrowing,Around).*/
+	private AdviceKind kind;
+
+	/** The proceed method for around advices.*/
+	private ProceedDeclaration proceedMethodDeclaration;
+
+	/** Flags, that show which extraArgument are needed (e.g. AroundClosure).*/
+	private int extraArgumentFlags = 0;
+
+	/** The parameters for the proceed-method which will be created later on for around-advices.*/
+	private JFormalParameter[] proceedParameters;
+
+	/**
+	 * Constructor for AdviceDeclaration.
+	 * 
+	 * @param where
+	 * @param modifiers
+	 * @param typeVariables
+	 * @param returnType
+	 * @param parameters
+	 * @param exceptions
+	 * @param body
+	 * @param javadoc
+	 * @param comments
+	 */
+	public AdviceDeclaration(
+		TokenReference where,
+		int modifiers,
+		CTypeVariable[] typeVariables,
+		CType returnType,
+		JFormalParameter[] parameters,
+		CReferenceType[] exceptions,
+		JBlock body,
+		JavadocComment javadoc,
+		JavaStyleComment[] comments,
+		Pointcut pointcut,
+		AdviceKind kind,
+		boolean hasExtraParameter) {
+		super(
+			where,
+			modifiers,
+			typeVariables,
+			returnType,
+			ADVICE_METHOD,
+			parameters,
+			exceptions,
+			body,
+			javadoc,
+			comments);
+
+		this.pointcut = pointcut;
+		this.kind = kind;
+
+		if (kind == AdviceKind.Around) {
+			addAroundClosureParameter();
+		}
+		
+		if (hasExtraParameter) {
+			extraArgumentFlags |= Advice.ExtraArgument;
+		}
+	}
+
+	/**
+	 * Adds an aroundClosure parameter to around advices.
+	 */
+	private void addAroundClosureParameter() {
+
+		JFormalParameter[] newParameters =
+			new JFormalParameter[parameters.length + 1];
+
+		System.arraycopy(parameters, 0, newParameters, 0, parameters.length);
+
+		CType aroundClosureType = new CClassNameType(AROUND_CLOSURE_CLASS);
+
+		newParameters[newParameters.length - 1] =
+			new FjFormalParameter(
+				TokenReference.NO_REF,
+				JFormalParameter.DES_GENERATED,
+				aroundClosureType,
+				AROUND_CLOSURE_PARAMETER,
+				false);
+
+		parameters = newParameters;
+
+		//needed for proceed-method creation
+		proceedParameters = newParameters;
+
+	}
+
+	/**
+	* @see org.caesarj.kjc.JMethodDeclaration#checkInterface(CClassContext)
+	*/
+	public CSourceMethod checkInterface1(CClassContext context)
+		throws PositionedError {
+
+		boolean inInterface = context.getCClass().isInterface();
+		boolean isExported = false;
+		//!(this instanceof JInitializerDeclaration);
+		String ident = this.ident;
+		//(this instanceof JConstructorDeclaration) ? JAV_CONSTRUCTOR : this.ident;
+
+		// Collect all parsed data
+		if (inInterface && isExported) {
+			modifiers |= ACC_PUBLIC | ACC_ABSTRACT;
+		}
+
+		// only strictfp allowed
+		check(
+			context,
+			CModifier.isSubsetOf(modifiers, ACC_STRICT),
+			CaesarMessages.ADVICE_FLAGS);
+
+		try {
+
+			for (int i = 0; i < typeVariables.length; i++) {
+				typeVariables[i].checkType(context);
+				typeVariables[i].setMethodTypeVariable(true);
+			}
+
+			CBinaryTypeContext typeContext =
+				new CBinaryTypeContext(
+					context.getClassReader(),
+					context.getTypeFactory(),
+					context,
+					typeVariables,
+					(modifiers & ACC_STATIC) == 0);
+
+			CType[] parameterTypes = new CType[parameters.length];
+			String[] parameterNames = new String[parameters.length];
+			for (int i = 0; i < parameters.length; i++) {
+				parameterTypes[i] = parameters[i].checkInterface(typeContext);
+				parameterNames[i] = parameters[i].getIdent();
+			}
+
+			returnType = returnType.checkType(typeContext);
+
+			for (int i = 0; i < exceptions.length; i++) {
+				exceptions[i] =
+					(CReferenceType) exceptions[i].checkType(typeContext);
+			}
+
+			FjFamily[] families = new FjFamily[parameterTypes.length];
+			for (int i = 0; i < families.length; i++) {
+				families[i] = ((FjFormalParameter) parameters[i]).getFamily();
+			}
+
+			CaesarAdvice adviceMethod =
+				new CaesarAdvice(
+					context.getCClass(),
+					ACC_PUBLIC,
+					ident,
+					returnType,
+					parameterTypes,
+					exceptions,
+					typeVariables,
+					body,
+					new FjFamily[0],
+					pointcut,
+					kind,
+					extraArgumentFlags);
+
+			//create a method attribute for the advice
+			/*			adviceMethod.createAttribute(
+							context,
+							context.getCClass(),
+							parameters,
+							getTokenReference());*/
+
+			setInterface(adviceMethod);
+
+			return adviceMethod;
+
+		} catch (UnpositionedError cue) {
+
+			throw cue.addPosition(getTokenReference());
+
+		}
+	}
+
+	/**
+	 * Returns whether this is an around advice.
+	 */
+	public boolean isAroundAdvice() {
+		return kind.equals(AdviceKind.Around);
+	}
+
+	/**
+	 * Returns the proceedMethodDeclaration.
+	 * @return CaesarProceedMethodDeclaration
+	 */
+	public ProceedDeclaration getProceedMethodDeclaration() {
+		return proceedMethodDeclaration;
+	}
+
+	/**
+	 * Sets the proceedMethodDeclaration.
+	 * @param proceedMethodDeclaration The proceedMethodDeclaration to set
+	 */
+	public void setProceedMethodDeclaration(ProceedDeclaration proceedMethodDeclaration) {
+		this.proceedMethodDeclaration = proceedMethodDeclaration;
+	}
+
+	/**
+	 * Method setIdent.
+	 * @param ident
+	 */
+	public void setIdent(String ident) {
+		this.ident = ident;
+	}
+
+	/**
+	 * Returns the kind.
+	 * 
+	 * @return AdviceKind
+	 */
+	public AdviceKind getKind() {
+		return kind;
+	}
+
+	/**
+	 * Sets the parameters.
+	 */
+	public void setParameters(JFormalParameter[] parameters) {
+		this.parameters = parameters;
+	}
+
+	/**
+	 * Returns the parameters.
+	 */
+	public JFormalParameter[] getParameters() {
+		return parameters;
+	}
+
+	/**
+	 * Returns the returnType.
+	 */
+	public CType getReturnType() {
+		return returnType;
+	}
+
+	public CReferenceType[] getExceptions() {
+		return exceptions;
+	}
+
+	/**
+	 * Returns the pointcut.
+	 * 
+	 * @return Pointcut
+	 */
+	public Pointcut getPointcut() {
+		return pointcut;
+	}
+
+	/**
+	 * Returns the body.
+	 */
+	public JBlock getBody() {
+		return body;
+	}
+
+	/**
+	 * Sets the body.
+	 */
+	public void setBody(JBlock body) {
+		this.body = body;
+	}
+
+	/**
+	 * Sets the corresponding bit in the extraArgumentFlag.
+	 * 
+	 * @param extraArgumentFlags The extraArgumentFlags to set
+	 */
+	public void setExtraArgumentFlag(int extraArgumentFlag) {
+		this.extraArgumentFlags |= extraArgumentFlag;
+	}
+
+	/**
+	 * Returns the proceedParameters.
+	 * 
+	 * @return JFormalParameter[]
+	 */
+	public JFormalParameter[] getProceedParameters() {
+
+		if (isAroundAdvice()) {
+			return proceedParameters;
+		} else {
+			return JFormalParameter.EMPTY;
+		}
+
+	}
+
+	/**
+	 * @see org.caesarj.kjc.JMethodDeclaration#checkBody1(CClassContext)
+	 */
+	public void checkBody1(CClassContext context) throws PositionedError {
+		super.checkBody1(context);
+	
+		//create a method attribute for the advice
+		// this has to be done after the pointcut declarations are resolved	
+		getCaesarAdvice().createAttribute(
+			context,
+			context.getCClass(),
+			parameters,
+			getTokenReference());
+	}
+
+	public CaesarAdvice getCaesarAdvice() {
+		return (CaesarAdvice) getMethod();
+	}
+
+}

@@ -1,0 +1,11 @@
+package generated;
+
+crosscutting public class AnotherAspect {
+
+	pointcut execMethod() : execution(* m(..));
+
+	before() : execMethod() {
+		System.out.println("AnotherAspect Before: " + thisJoinPoint.toString());
+	}
+
+}

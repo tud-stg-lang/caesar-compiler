@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="CaesarCi" default="generate" basedir=".">
+<project name="Caesar" default="generate" basedir=".">
   <description>Caesar Collaboration Interfaces compiler</description>
   <!-- set global properties for this build -->
   <property name="compiler.files" location="cc"/>
@@ -21,24 +21,24 @@
         <exclude name="*CVS*"/>
       </fileset>
     </copy>
-    <copy todir="${kopi.classroot}/at/dms/compiler" 
+    <copy todir="${kopi.classroot}/org/caesarj/compiler" 
           file="${compiler.files}/skeleton.shared" />
     
     <exec executable="make" dir="${kopi.home}/src" 
           failonerror="true">
-      <env key="CLASSPATH" path="${kopi.classroot}:${basedir}/lib/JFlex.jar:${basedir}/lib/java-getopt-1.0.9.jar"/>
+      <env key="CLASSPATH" path="${kopi.classroot}:${basedir}/lib/JFlex.jar:${basedir}/lib/java-getopt-1.0.9.jar:${basedir}/lib/aspectjtools.jar"/>
       <env key="CLASSROOT" path="${kopi.classroot}"/>
       <env key="JAVA" path="${java.sdk.home}/bin/java"/>
       <env key="JAVAC" path="${java.sdk.home}/bin/javac"/>
     </exec>
 
-    <copy todir="${basedir}/src/caesar/ci/compiler">
+    <copy todir="${basedir}/src/org/caesarj/compiler">
       <fileset dir="${kopi.home}/src/caesar" >
         <include name="**/*.java"/>
       </fileset>
     </copy>
     
-    <refreshLocal resource="CaesarCI/src"/>
+    <refreshLocal resource="Caesar/src"/>
 
   </target>
 </project>
