@@ -3,12 +3,12 @@ package org.caesarj.compiler.family;
 
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.JClassDeclaration;
-import org.caesarj.compiler.ast.CaesarClassDeclaration;
+import org.caesarj.compiler.ast.JCaesarClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassIfcImplDeclaration;
-import org.caesarj.compiler.ast.FjCleanClassInterfaceDeclaration;
+import org.caesarj.compiler.ast.JGeneratedInterfaceDeclaration;
 import org.caesarj.compiler.ast.FjCleanMethodDeclaration;
 import org.caesarj.compiler.ast.FjConstructorDeclaration;
-import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
+import org.caesarj.compiler.ast.VirtualClassDeclaration;
 import org.caesarj.compiler.ast.DeclarationVisitor;
 import org.caesarj.compiler.ast.JFieldDeclaration;
 import org.caesarj.compiler.ast.JMethodDeclaration;
@@ -35,7 +35,7 @@ public class MethodTransformationFjVisitor extends DeclarationVisitor {
 	
 	
 	public void visitFjCleanClassDeclaration(
-		CaesarClassDeclaration self,
+		JCaesarClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,
@@ -71,7 +71,7 @@ public class MethodTransformationFjVisitor extends DeclarationVisitor {
 	}
 	
 	public void visitFjVirtualClassDeclaration(
-		FjVirtualClassDeclaration self,
+		VirtualClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,
@@ -91,15 +91,15 @@ public class MethodTransformationFjVisitor extends DeclarationVisitor {
 			
 			//It will generated the structure of the wrapper only if 
 			//it is a binding or extends a binding class.
-			CaesarClassDeclaration cleanOwner = null;
+			JCaesarClassDeclaration cleanOwner = null;
 			String mapName = null;			
-			if (owner instanceof CaesarClassDeclaration
+			if (owner instanceof JCaesarClassDeclaration
 				&& (CModifier.contains(self.getModifiers(), 
 						CaesarConstants.CCI_BINDING)
 					|| self.getSuperCollaborationInterface(
 						self.getCClass(), CaesarConstants.CCI_BINDING) != null))
 			{
-				cleanOwner = (CaesarClassDeclaration) owner;
+				cleanOwner = (JCaesarClassDeclaration) owner;
 				mapName = CciConstants.toWrapperMapName(
 					FjConstants.toIfcName(ident));
 			}
@@ -126,7 +126,7 @@ public class MethodTransformationFjVisitor extends DeclarationVisitor {
 					
 					//Appends the methods created to the owner and 
 					//its interface and proxy
-					FjCleanClassInterfaceDeclaration cleanOwnerInterface =
+					JGeneratedInterfaceDeclaration cleanOwnerInterface =
 						cleanOwner.getCleanInterface();
 					FjCleanClassIfcImplDeclaration cleanOwnerIfcImpl =
 						cleanOwner.getCleanInterfaceImplementation();

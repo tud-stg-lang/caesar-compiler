@@ -14,6 +14,7 @@ import org.caesarj.compiler.aspectj.CaesarScope;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
@@ -26,7 +27,7 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Jürgen Hallpap
  */
-public class CaesarAdvice extends FjSourceMethod {
+public class CSourceAdviceMethod extends CSourceMethod {
 
 	/** The advice pointcut.*/
 	private CaesarPointcut pointcut;
@@ -54,7 +55,7 @@ public class CaesarAdvice extends FjSourceMethod {
 	 * @param parameterNames
 	 * @param extraArgumentFlags
 	 */
-	public CaesarAdvice(
+	public CSourceAdviceMethod(
 		CClass owner,
 		int modifiers,
 		String ident,
@@ -63,7 +64,6 @@ public class CaesarAdvice extends FjSourceMethod {
 		CReferenceType[] exceptions,
 		CTypeVariable[] typeVariables,
 		JBlock body,
-		FjFamily[] families,
 		CaesarPointcut pointcut,
 		CaesarAdviceKind kind,
 		int extraArgumentFlags) {
@@ -77,8 +77,7 @@ public class CaesarAdvice extends FjSourceMethod {
 			typeVariables,
 			false,
 			false,
-			body,
-			families);
+			body);
 
 		this.pointcut = pointcut;
 		this.kind = kind;

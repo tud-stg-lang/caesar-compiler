@@ -3,7 +3,7 @@ package org.caesarj.compiler.family;
 import java.util.Vector;
 
 import org.caesarj.compiler.ast.JClassDeclaration;
-import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
+import org.caesarj.compiler.ast.VirtualClassDeclaration;
 import org.caesarj.compiler.ast.JCompilationUnit;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.FjConstants;
@@ -37,7 +37,7 @@ public class InheritConstructorsFjVisitor
 	}
 
 	protected boolean collectClass( JClassDeclaration decl ) {
-		if( decl instanceof FjVirtualClassDeclaration )
+		if( decl instanceof VirtualClassDeclaration )
 			return true;
 		return false;
 	}
@@ -51,8 +51,8 @@ public class InheritConstructorsFjVisitor
 		// all virtual classes have been collected, now
 		// inherit all contructors starting from the highest
 		// baseclass:
-		FjVirtualClassDeclaration nextVirtualClass =
-			(FjVirtualClassDeclaration) findNext();
+		VirtualClassDeclaration nextVirtualClass =
+			(VirtualClassDeclaration) findNext();
 		while( nextVirtualClass != null ) {
 			Vector constructorsAppended = 
 				nextVirtualClass.inherritConstructorsFromBaseClass( markedClasses );
@@ -66,7 +66,7 @@ public class InheritConstructorsFjVisitor
 					messages.add( warning.addPosition( nextVirtualClass.getTokenReference() ) );
 				}
 			}
-			nextVirtualClass = (FjVirtualClassDeclaration) findNext();
+			nextVirtualClass = (VirtualClassDeclaration) findNext();
 		}
 		
 		transformationIsDone = true;

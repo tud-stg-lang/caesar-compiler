@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JExpression.java,v 1.1 2004-02-08 16:47:43 ostermann Exp $
+ * $Id: JExpression.java,v 1.2 2004-02-29 21:37:23 ostermann Exp $
  */ 
  
 package org.caesarj.compiler.ast;
@@ -267,21 +267,10 @@ public abstract class JExpression extends JPhylum {
     if (getType(factory).equals(dest)) {
       return this;
     } else {
-	// andreas start    
-    //return new JUnaryPromote(context, this, dest).analyse(context);    
-      return new org.caesarj.compiler.ast.FjUnaryPromote(context, this, dest).analyse(context);
-    // andreas end
+      return new JUnaryPromote(context, this, dest).analyse(context);    
     }
   }
 
-  // andreas start
-  public org.caesarj.compiler.ast.FjFamily getFamily( CExpressionContext context ) throws PositionedError {
-	return null;
-  }
-  public org.caesarj.compiler.ast.FjFamily toFamily( CBlockContext context ) throws PositionedError {
-	return null;
-  }
-  // andreas end
 
   /**
    * Can this expression be converted to the specified type by

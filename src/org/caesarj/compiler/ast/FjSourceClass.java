@@ -45,8 +45,6 @@ public class FjSourceClass extends CSourceClass
 
 	protected List resolvedPointcuts = new ArrayList();
 	
-	protected FjTypeSystem typeSystem = new FjTypeSystem();
-
 	public FjSourceClass(
 		CClass owner,
 		TokenReference where,

@@ -142,7 +142,7 @@ public class DeployStatement extends JStatement implements CaesarConstants {
                 new CClassNameType(CAESAR_DEPLOY_SUPPORT_CLASS));
 
         JExpression checkIfAspectCall =
-            new FjMethodCallExpression(
+            new JMethodCallExpression(
                 where,
                 prefix,
                 "checkIfDeployable",
@@ -150,7 +150,7 @@ public class DeployStatement extends JStatement implements CaesarConstants {
 
         return new JVariableDeclarationStatement(
 			getTokenReference(),
-			new FjVariableDefinition(
+			new JVariableDefinition(
                 where,
 				0,
 				new CClassNameType(CAESAR_ASPECT_IFC),
@@ -179,11 +179,11 @@ public class DeployStatement extends JStatement implements CaesarConstants {
                 new CClassNameType(CAESAR_DEPLOY_SUPPORT_CLASS));
 
         JExpression deployStatementCall =
-            new FjMethodCallExpression(
+            new JMethodCallExpression(
                 where,
                 prefix,
                 "deployBlock",
-                new JExpression[] {new FjNameExpression(getTokenReference(), deployVariableName)});
+                new JExpression[] {new JNameExpression(getTokenReference(), deployVariableName)});
         
 		return new JExpressionStatement(where, deployStatementCall, null);
 	}
@@ -206,11 +206,11 @@ public class DeployStatement extends JStatement implements CaesarConstants {
                 new CClassNameType(CAESAR_DEPLOY_SUPPORT_CLASS));
         
         JExpression deployStatementCall =
-            new FjMethodCallExpression(
+            new JMethodCallExpression(
                 where,
                 prefix,
                 "undeployBlock",
-                new JExpression[] {new FjNameExpression(getTokenReference(), deployVariableName)});
+                new JExpression[] {new JNameExpression(getTokenReference(), deployVariableName)});
                 
         return new JExpressionStatement(where, deployStatementCall, null);
 

@@ -12,7 +12,7 @@ import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.KjcOptions;
 import org.caesarj.compiler.Main;
 import org.caesarj.compiler.ast.JClassDeclaration;
-import org.caesarj.compiler.ast.CaesarClassDeclaration;
+import org.caesarj.compiler.ast.JCaesarClassDeclaration;
 import org.caesarj.compiler.ast.DeclarationVisitor;
 import org.caesarj.compiler.ast.JClassImport;
 import org.caesarj.compiler.ast.JCompilationUnit;
@@ -325,7 +325,7 @@ public class CompileAndRunResultsTest extends FjTestCase {
 		Vector cleanClassInterfacesCreated = new Vector();
 		Vector cleanClassesVisited = new Vector();
 		public void visitFjCleanClassDeclaration(
-			CaesarClassDeclaration self,
+			JCaesarClassDeclaration self,
 			int modifiers,
 			String ident,
 			CTypeVariable[] typeVariables,

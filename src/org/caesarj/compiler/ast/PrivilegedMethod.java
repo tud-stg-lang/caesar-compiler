@@ -3,6 +3,7 @@ package org.caesarj.compiler.ast;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.TokenReference;
@@ -12,7 +13,7 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Jürgen Hallpap
  */
-public class PrivilegedMethod extends FjSourceMethod {
+public class PrivilegedMethod extends CSourceMethod {
 
 	private CaesarMember resolvedMember;
 
@@ -46,8 +47,7 @@ public class PrivilegedMethod extends FjSourceMethod {
 			new JBlock(
 				TokenReference.NO_REF,
 				JBlock.EMPTY,
-				new JavaStyleComment[0]),
-			((FjSourceMethod) baseMethod).getFamilies());
+				new JavaStyleComment[0]));
 
 		this.baseMethod = baseMethod;
 	}

@@ -18,22 +18,22 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.Utils;
 
-public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
+public class JGeneratedInterfaceDeclaration extends FjInterfaceDeclaration
 {
 
-	CaesarClassDeclaration baseDecl;
+	JCaesarClassDeclaration baseDecl;
 
-	public FjCleanClassInterfaceDeclaration(
+	public JGeneratedInterfaceDeclaration(
 		TokenReference tokenReference,
 		String ident,
 		int modifiers,
 		CReferenceType[] interfaces,
-		FjCleanMethodDeclaration[] methods,
-		CaesarClassDeclaration baseDecl)
+		JMethodDeclaration[] methods,
+		JCaesarClassDeclaration baseDecl)
 	{
 		super(
 			tokenReference,
-			ACC_PUBLIC | ACC_INTERFACE | ACC_ABSTRACT | FJC_CLEAN | modifiers,
+			ACC_PUBLIC | ACC_INTERFACE | ACC_ABSTRACT | ACC_GENERATED_IFC | modifiers,
 			ident,
 			CTypeVariable.EMPTY,
 			interfaces,
@@ -52,48 +52,58 @@ public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 		this.baseDecl = baseDecl;
 	}
 
-	public FjMethodDeclaration[] getMethods()
+	public JMethodDeclaration[] getMethods()
 	{
-		return (FjMethodDeclaration[]) Utils.toArray(
+		return (JMethodDeclaration[]) Utils.toArray(
 			new Vector(Arrays.asList(methods)),
-			FjMethodDeclaration.class);
+			JMethodDeclaration.class);
 	}
 
-	public static FjMethodDeclaration[] importMethods(FjCleanMethodDeclaration[] cleanMethods)
+	private static JMethodDeclaration getAbstractMethodDeclaration(JMethodDeclaration m) {
+		JMethodDeclaration md =
+			new JMethodDeclaration(
+				m.getTokenReference(),
+				m.modifiers
+					& ~(
+						CModifier.ACC_NATIVE
+							| CModifier.ACC_SYNCHRONIZED
+							| CModifier.ACC_FINAL
+							| CModifier.ACC_STRICT)
+					| CModifier.ACC_ABSTRACT,
+				CTypeVariable.EMPTY,
+				m.returnType,
+				m.ident,
+				m.parameters,
+				m.exceptions,
+				null,
+				null,
+				null
+			);
+		return md;
+	}
+	
+	
+	public static JMethodDeclaration[] importMethods(JMethodDeclaration[] cleanMethods)
 	{
-
-		FjMethodDeclaration[] abstractMethods =
-			new FjMethodDeclaration[cleanMethods.length * 2];
+		JMethodDeclaration[] abstractMethods =
+			new JMethodDeclaration[cleanMethods.length];
 		for (int i = 0; i < cleanMethods.length; i++)
 		{
-			abstractMethods[2 * i] =
-				cleanMethods[i].getAbstractMethodDeclaration();
-			abstractMethods[2 * i + 1] =
-				cleanMethods[i]
-					.getForwardSelfToImplementationMethod(CStdType.Object)
-					.getAbstractMethodDeclaration();
-		}
+			abstractMethods[i] =
+				getAbstractMethodDeclaration(cleanMethods[i]);
+	}
 		return abstractMethods;
 	}
 
-	/**
-	 * Adds a clean method, importing it to this context.
-	 * 
-	 * @param methodToAdd
-	 */
-	public void addMethod(FjCleanMethodDeclaration methodToAdd)
-	{
-		addMethods(new FjCleanMethodDeclaration[]{methodToAdd});
-	}
 
 	/**
 	 * Adds clean methods, importing it to this context.
 	 * 
 	 * @param methodToAdd
 	 */
-	public void addMethods(FjCleanMethodDeclaration[] methodsToAdd)
+	public void addMethods(JMethodDeclaration[] methodsToAdd)
 	{
-		FjMethodDeclaration[] importedMethods = 
+		JMethodDeclaration[] importedMethods = 
 			importMethods(methodsToAdd);
 
 		JMethodDeclaration[] newMethods =
@@ -127,7 +137,7 @@ public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 		methods = newMethods;
 	}
 	
-	public CaesarClassDeclaration getBaseClass()
+	public JCaesarClassDeclaration getBaseClass()
 	{
 		return baseDecl;
 	}
@@ -186,36 +196,4 @@ public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 			// base class this class is derived from, too
 		}
 	}
-	
-	public void checkCollaborationInterface(CContext context, 
-		String collaborationName)
-		throws PositionedError
-	{
-		boolean found = false;
-		for (int i = 0; i < interfaces.length; i++)
-		{
-			CClass interfaceClass = interfaces[i].getCClass();
-			if (CModifier.contains(interfaceClass.getModifiers(),
-					CCI_COLLABORATION)
-				&& interfaceClass.getQualifiedName().equals(collaborationName))
-			{
-				found = true;
-				break;
-			}		
-		}
-		check(
-			context,
-			found,
-			CaesarMessages.NON_CI,
-			ident);		
-	}		
-
-	/**
-	 * 
-	 */
-	protected int getAllowedModifiers()
-	{
-		return super.getAllowedModifiers() | FJC_CLEAN;
-	}
-
 }

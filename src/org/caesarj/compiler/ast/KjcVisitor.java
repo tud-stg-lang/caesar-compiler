@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcVisitor.java,v 1.5 2004-02-28 17:58:05 ostermann Exp $
+ * $Id: KjcVisitor.java,v 1.6 2004-02-29 21:37:23 ostermann Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -70,7 +70,7 @@ public interface KjcVisitor {
 				JMethodDeclaration[] methods,
 				JTypeDeclaration[] decls);
 
-	void visitFjVirtualClassDeclaration(FjVirtualClassDeclaration self,
+	void visitFjVirtualClassDeclaration(VirtualClassDeclaration self,
 				int modifiers,
 				String ident,
 				CTypeVariable[] typeVariables,
@@ -80,17 +80,8 @@ public interface KjcVisitor {
 				JMethodDeclaration[] methods,
 				JTypeDeclaration[] decls);
 
-	void visitCciWeaveletClassDeclaration(CciWeaveletClassDeclaration self,
-				int modifiers,
-				String ident,
-				CTypeVariable[] typeVariables,
-				String superClass,
-				CReferenceType[] interfaces,
-				JPhylum[] body,
-				JMethodDeclaration[] methods,
-				JTypeDeclaration[] decls);
 
-	void visitFjCleanClassDeclaration(CaesarClassDeclaration self,
+	void visitFjCleanClassDeclaration(JCaesarClassDeclaration self,
 				int modifiers,
 				String ident,
 				CTypeVariable[] typeVariables,
@@ -129,12 +120,6 @@ public interface KjcVisitor {
 				 JPhylum[] body,
 				 JMethodDeclaration[] methods);
 
-  void visitCciInterfaceDeclaration(CciInterfaceDeclaration self,
-  				int modifiers,
-  				String ident,
-  				CReferenceType[] interfaces,
-  				JPhylum[] body,
-  				JMethodDeclaration[] methods);
 
   // ----------------------------------------------------------------------
   // METHODS AND FIELDS

@@ -15,7 +15,7 @@ import org.caesarj.util.UnpositionedError;
  * 
  * @author Jürgen Hallpap
  */
-public class ProceedDeclaration extends FjMethodDeclaration {
+public class ProceedDeclaration extends JMethodDeclaration {
 
 	/** The name of the enclosing advice-method.*/
 	private String adviceName;
@@ -81,10 +81,6 @@ public class ProceedDeclaration extends FjMethodDeclaration {
 					(CReferenceType) exceptions[i].checkType(typeContext);
 			}
 
-			FjFamily[] families = new FjFamily[parameterTypes.length];
-			for (int i = 0; i < families.length; i++) {
-				families[i] = ((FjFormalParameter) parameters[i]).getFamily();
-			}
 
 			setInterface(
 				new Proceed(
@@ -92,8 +88,7 @@ public class ProceedDeclaration extends FjMethodDeclaration {
 					ident,
 					returnType,
 					parameterTypes,
-					adviceName,
-					families));
+					adviceName));
 
 			return (CSourceMethod) getMethod();
 		} catch (UnpositionedError cue) {

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.5 2004-02-28 17:58:05 ostermann Exp $
+ * $Id: JClassDeclaration.java,v 1.6 2004-02-29 21:37:24 ostermann Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -526,17 +526,17 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
    * Returns all constructors. This method was pulled up. 
    * @return FjConstructorDeclaration[]
    */
-  protected FjConstructorDeclaration[] getConstructors()
+  protected JConstructorDeclaration[] getConstructors()
   {
 	  Vector contructors = new Vector(methods.length);
 	  for (int i = 0; i < methods.length; i++)
 	  {
-		  if (methods[i] instanceof FjConstructorDeclaration)
+		  if (methods[i] instanceof JConstructorDeclaration)
 			  contructors.add(methods[i]);
 	  }
-	  return (FjConstructorDeclaration[]) Utils.toArray(
+	  return (JConstructorDeclaration[]) Utils.toArray(
 		  contructors,
-		  FjConstructorDeclaration.class);
+		  JConstructorDeclaration.class);
   }
 
   /**
@@ -825,127 +825,48 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 	 */
 	public void join(CContext context) throws PositionedError
 	{
-		try
-		{
-			CReferenceType      objectType;
+		CReferenceType      objectType;
 
-			objectType = context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT);
+		objectType = context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT);
 
-			// construct the CClassContext; should be the first thing!
-			if (self == null) {
-			  self = constructContext(context);
-			}
-
-			if (superClass == null) {
-			  if (sourceClass.getQualifiedName() == JAV_OBJECT) {
-			// java/lang/Object
-			// superClass = null;
-			// superClass1 = null;
-			  } else {
-			superClass = objectType;
-			  }
-			} else {
-			  try {
-			superClass =(CReferenceType) superClass.checkType(self);
-			  } catch (UnpositionedError e) {
-			throw e.addPosition(getTokenReference());
-			  }
-			}
-
-			// check access
-			if (superClass != null) {
-			  CClass	clazz = superClass.getCClass();
-
-			  check(context, 
-					clazz.isAccessible(getCClass()),
-				KjcMessages.CLASS_ACCESSPARENT, superClass.getQualifiedName());
-			  check(context,
-				!clazz.isFinal(),
-				KjcMessages.CLASS_PARENT_FINAL, superClass.getQualifiedName());
-			  check(context,
-				!clazz.isInterface(),
-				KjcMessages.CLASS_EXTENDS_INTERFACE, superClass.getQualifiedName());
-			}
-			sourceClass.setSuperClass(superClass);
-
-			super.join(context);
+		// construct the CClassContext; should be the first thing!
+		if (self == null) {
+		  self = constructContext(context);
 		}
-		catch (PositionedError e)
-		{
-			// non clean classes may not inherrit
-			// clean, virtual or override classes
-			if (e.getFormattedMessage().getDescription()
-				== KjcMessages.CLASS_EXTENDS_INTERFACE)
-			{
-				String ifcName =
-					e.getFormattedMessage().getParams()[0].toString();
-				FjTypeSystem fjts = new FjTypeSystem();
-				if (fjts.isCleanIfc(context, getSuperClass().getCClass()))
-					throw new PositionedError(
-						getTokenReference(),
-						CaesarMessages.NON_CLEAN_INHERITS_CLEAN,
-						ifcName);
-			}
-			if (e.getFormattedMessage().getDescription()
-				== KjcMessages.TYPE_UNKNOWN
-				&& !(this instanceof CaesarClassDeclaration))
-			{
 
-				JTypeDeclaration ownerDecl = getOwnerDeclaration();
-				CType familyType = null;
-				if (ownerDecl != null)
-				{
-					String superName = getSuperClass().toString();
-					FjTypeSystem fjts = new FjTypeSystem();
-					String[] splitName = fjts.splitQualifier(superName);
-					if (splitName != null)
-					{
-						String qualifier = splitName[0];
-						String remainder = splitName[1];
-						JFieldDeclaration familyField = null;
-						int i = 0;
-						for (; i < ownerDecl.getFields().length; i++)
-						{
-							familyField = ownerDecl.getFields()[i];
-							if (familyField
-								.getVariable()
-								.getIdent()
-								.equals(qualifier))
-							{
-								familyType =
-									familyField.getVariable().getType();
-								break;
-							}
-						}
-						if (familyType != null)
-						{
-							try
-							{
-								familyType = familyType.checkType(context);
-								if (familyType.isReference())
-									new CClassNameType(
-										familyType
-											.getCClass()
-											.getQualifiedName()
-											+ "$"
-											+ remainder).checkType(
-										context);
-								// a virtual type is referenced!
-								throw new PositionedError(
-									getTokenReference(),
-									CaesarMessages.MUST_BE_VIRTUAL,
-									getIdent());
-							}
-							catch (UnpositionedError e2)
-							{
-							}
-						}
-					}
-				}
-			}
-			throw e;
-		} 
+		if (superClass == null) {
+		  if (sourceClass.getQualifiedName() == JAV_OBJECT) {
+		// java/lang/Object
+		// superClass = null;
+		// superClass1 = null;
+		  } else {
+		superClass = objectType;
+		  }
+		} else {
+		  try {
+		superClass =(CReferenceType) superClass.checkType(self);
+		  } catch (UnpositionedError e) {
+		throw e.addPosition(getTokenReference());
+		  }
+		}
 
+		// check access
+		if (superClass != null) {
+		  CClass	clazz = superClass.getCClass();
+
+		  check(context, 
+				clazz.isAccessible(getCClass()),
+			KjcMessages.CLASS_ACCESSPARENT, superClass.getQualifiedName());
+		  check(context,
+			!clazz.isFinal(),
+			KjcMessages.CLASS_PARENT_FINAL, superClass.getQualifiedName());
+		  check(context,
+			!clazz.isInterface(),
+			KjcMessages.CLASS_EXTENDS_INTERFACE, superClass.getQualifiedName());
+		}
+		sourceClass.setSuperClass(superClass);
+
+		super.join(context);
 	}
 
 	/**
@@ -1021,86 +942,6 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 		this.fields = fields;
 	}
 
-
-	/**
-	 * Initilizes the family in the class. It does almost everything that is
-	 * done during the checkInterface again.
-	 * 
-	 * @param context
-	 * @throws PositionedError
-	 */
-	public void initFamilies(CClassContext context) throws PositionedError
-	{
-		int generatedFields = getCClass().hasOuterThis() ? 1 : 0;
-
-		//Initializes the families of the fields.
-		Hashtable hashField =
-			new Hashtable(fields.length + generatedFields + 1);
-		for (int i = fields.length - 1; i >= 0; i--)
-		{
-			CSourceField field =
-				((FjFieldDeclaration) fields[i]).initFamily(context);
-
-			field.setPosition(i);
-
-			hashField.put(field.getIdent(), field);
-		}
-		if (generatedFields > 0)
-		{
-			CSourceField field = outerThis.checkInterface(self);
-
-			field.setPosition(hashField.size());
-
-			hashField.put(JAV_OUTER_THIS, field);
-		}
-
-		int generatedMethods = 0;
-
-		if (getDefaultConstructor() != null)
-			generatedMethods++;
-
-		if (statInit != null)
-			generatedMethods++;
-
-		if (instanceInit != null)
-			generatedMethods++;
-
-		// Initializes the families of the methods.
-		CMethod[] methodList = new CMethod[methods.length + generatedMethods];
-		int i = 0;
-		for (; i < methods.length; i++)
-		{
-			if (methods[i] instanceof FjMethodDeclaration)
-				methodList[i] =
-					((FjMethodDeclaration) methods[i]).initFamilies(context);
-			else
-				methodList[i] = methods[i].getMethod();
-
-		}
-
-		JConstructorDeclaration defaultConstructor = getDefaultConstructor();
-		if (defaultConstructor != null)
-		{
-			if (defaultConstructor instanceof FjConstructorDeclaration)
-				methodList[i++] =
-					((FjConstructorDeclaration) defaultConstructor)
-								.initFamilies(context);
-			else
-				methodList[i++] = defaultConstructor.getMethod();
-		}
-		if (statInit != null)
-			methodList[i++] = statInit.getMethod();
-		
-		if (instanceInit != null)
-			methodList[i++] = instanceInit.getMethod();
-
-		sourceClass.close(
-			interfaces,
-			sourceClass.getSuperType(),
-			hashField,
-			methodList);
-		
-	}
 
 	public void append(JMethodDeclaration newMethod)
 	{

@@ -6,8 +6,8 @@ import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.CciInterfaceDeclaration;
 import org.caesarj.compiler.ast.CciWeaveletClassDeclaration;
 import org.caesarj.compiler.ast.JClassDeclaration;
-import org.caesarj.compiler.ast.CaesarClassDeclaration;
-import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
+import org.caesarj.compiler.ast.JCaesarClassDeclaration;
+import org.caesarj.compiler.ast.VirtualClassDeclaration;
 import org.caesarj.compiler.ast.DeclarationVisitor;
 import org.caesarj.compiler.ast.JClassImport;
 import org.caesarj.compiler.ast.JCompilationUnit;
@@ -59,13 +59,13 @@ public class CollaborationInterfaceTransformation
 	 * A "family" of providing classes must be transformed only by the 
 	 * most outer owner.
 	 */
-	private CaesarClassDeclaration lastProvidingClass;
+	private JCaesarClassDeclaration lastProvidingClass;
 	
 	/**
 	 * A "family" of binding classes must be transformed only by the 
 	 * most outer owner.
 	 */
-	private CaesarClassDeclaration lastBindingClass;
+	private JCaesarClassDeclaration lastBindingClass;
 	
 	public CollaborationInterfaceTransformation(KjcEnvironment environment, 
 		CompilerBase compiler)
@@ -146,7 +146,7 @@ public class CollaborationInterfaceTransformation
 	 *
 	 */
 	public void visitFjCleanClassDeclaration(
-		CaesarClassDeclaration self,
+		JCaesarClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,
@@ -257,7 +257,7 @@ public class CollaborationInterfaceTransformation
 	 * Generates code for wrapper when it is explicitly declared.
 	 */
 	public void visitFjVirtualClassDeclaration(
-		FjVirtualClassDeclaration self,
+		VirtualClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,
@@ -334,7 +334,7 @@ public class CollaborationInterfaceTransformation
 				{
 					try
 					{
-						CaesarClassDeclaration classRepresentation 
+						JCaesarClassDeclaration classRepresentation 
 							= self.createCleanClassRepresentation();
 						
 						owner.getCompilationUnit().replace(

@@ -44,7 +44,7 @@ public class ProceedExpression
 		System.arraycopy(args, 0, newArgs, 0, args.length);
 
 		newArgs[newArgs.length - 1] =
-			new FjNameExpression(
+			new JNameExpression(
 				TokenReference.NO_REF,
 				AROUND_CLOSURE_PARAMETER);
 
@@ -73,11 +73,11 @@ public class ProceedExpression
 				new JTypeNameExpression(getTokenReference(), singletonType);
 
 		} else {
-			typePrefix = new FjThisExpression(getTokenReference());
+			typePrefix = new JThisExpression(getTokenReference());
 		}
 
 		prefix =
-			new FjNameExpression(
+			new JNameExpression(
 				getTokenReference(),
 				typePrefix,
 				PER_SINGLETON_INSTANCE_FIELD);

@@ -21,11 +21,11 @@ import org.caesarj.util.UnpositionedError;
  * 
  * @author Jürgen Hallpap
  */
-public class AdviceDeclaration
-	extends FjMethodDeclaration
+public class JAdviceDeclaration
+	extends JMethodDeclaration
 	implements CaesarConstants {
 
-	public static final AdviceDeclaration[] EMPTY = new AdviceDeclaration[0];
+	public static final JAdviceDeclaration[] EMPTY = new JAdviceDeclaration[0];
 
 	/** Pointcut */
 	private CaesarPointcut pointcut;
@@ -55,7 +55,7 @@ public class AdviceDeclaration
 	 * @param javadoc
 	 * @param comments
 	 */
-	public AdviceDeclaration(
+	public JAdviceDeclaration(
 		TokenReference where,
 		int modifiers,
 		CTypeVariable[] typeVariables,
@@ -105,7 +105,7 @@ public class AdviceDeclaration
 		CType aroundClosureType = new CClassNameType(AROUND_CLOSURE_CLASS);
 
 		newParameters[newParameters.length - 1] =
-			new FjFormalParameter(
+			new JFormalParameter(
 				TokenReference.NO_REF,
 				JFormalParameter.DES_GENERATED,
 				aroundClosureType,
@@ -118,9 +118,10 @@ public class AdviceDeclaration
 		proceedParameters = newParameters;
 
 	}
-
+	/*
 	public CSourceMethod checkInterface(CClassContext context)
 		throws PositionedError {
+
 
 		// when checking single parameters we need the list of
 		// all parameters and the method, so pass them here
@@ -167,8 +168,8 @@ public class AdviceDeclaration
 			parameterNames[i] = parameters[i].getIdent();
 		}
 
-		CaesarAdvice adviceMethod =
-			new CaesarAdvice(
+		CSourceAdviceMethod adviceMethod =
+			new CSourceAdviceMethod(
 				context.getCClass(),
 				ACC_PUBLIC,
 				ident,
@@ -185,7 +186,7 @@ public class AdviceDeclaration
 		setInterface(adviceMethod);
 
 		return adviceMethod;
-	}
+	}*/
 
 	/**
 	 * Returns whether this is an around advice.
@@ -314,8 +315,8 @@ public class AdviceDeclaration
 			getTokenReference());
 	}
 
-	public CaesarAdvice getCaesarAdvice() {
-		return (CaesarAdvice) getMethod();
+	public CSourceAdviceMethod getCaesarAdvice() {
+		return (CSourceAdviceMethod) getMethod();
 	}
 
 }

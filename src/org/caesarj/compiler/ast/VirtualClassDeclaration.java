@@ -21,13 +21,12 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
-public class FjVirtualClassDeclaration extends CaesarClassDeclaration
-	implements FjResolveable {
+public class VirtualClassDeclaration extends JCaesarClassDeclaration {
 
 	/** if inheriting a fields' inner type */
 	protected JFieldDeclaration superClassField;
 
-	public FjVirtualClassDeclaration(
+	public VirtualClassDeclaration(
 		TokenReference where,
 		int modifiers,
 		String ident,
@@ -45,7 +44,7 @@ public class FjVirtualClassDeclaration extends CaesarClassDeclaration
 		JavaStyleComment[] comment) {
 		super(
 			where,
-			modifiers | FJC_VIRTUAL,
+			modifiers,
 			ident,
 			typeVariables,
 			superClass,
@@ -61,7 +60,7 @@ public class FjVirtualClassDeclaration extends CaesarClassDeclaration
 			comment);
 	}
 
-	protected FjCleanClassInterfaceDeclaration newInterfaceDeclaration(
+	protected JGeneratedInterfaceDeclaration newInterfaceDeclaration(
 		TokenReference tokenReference,
 		String ident,
 		CReferenceType[] interfaces,
@@ -103,11 +102,11 @@ public class FjVirtualClassDeclaration extends CaesarClassDeclaration
 	{
 		//If it is a binding class, it cannot be declared with the same
 		//as a collaboration interface
-		if (ownerDecl instanceof CaesarClassDeclaration)
+		if (ownerDecl instanceof JCaesarClassDeclaration)
 		{
 				
 			CClass superCI = getSuperCollaborationInterfaceClass(
-				((CaesarClassDeclaration) ownerDecl)
+				((JCaesarClassDeclaration) ownerDecl)
 					.getCleanInterface().getCClass(), CCI_BINDING);
 	
 			
@@ -228,10 +227,10 @@ public class FjVirtualClassDeclaration extends CaesarClassDeclaration
 		}
 	}
 	protected static class UncheckedConstructors extends Constructors {
-		public UncheckedConstructors( CaesarClassDeclaration classDecl ) {
+		public UncheckedConstructors( JCaesarClassDeclaration classDecl ) {
 			super( findConstructors( classDecl ) );
 		}
-		private static Vector findConstructors( CaesarClassDeclaration classDecl ) {
+		private static Vector findConstructors( JCaesarClassDeclaration classDecl ) {
 			FjConstructorDeclaration[] methods = classDecl.getConstructors();
 			Vector constructors = new Vector();
 			for( int i = 0; i < methods.length; i++ ) {

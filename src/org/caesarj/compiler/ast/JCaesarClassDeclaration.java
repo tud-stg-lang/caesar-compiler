@@ -7,13 +7,18 @@ import java.util.Vector;
 import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
+import org.caesarj.compiler.aspectj.CaesarScope;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.CciConstants;
 import org.caesarj.compiler.constants.FjConstants;
+import org.caesarj.compiler.constants.KjcMessages;
+import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
+import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
@@ -24,7 +29,7 @@ import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 import org.caesarj.util.Utils;
 
-public class CaesarClassDeclaration 
+public class JCaesarClassDeclaration 
 	extends JClassDeclaration
 {
 	/*
@@ -32,7 +37,7 @@ public class CaesarClassDeclaration
 	 */
 	
 	/** The declared advices */
-	protected AdviceDeclaration[] advices;
+	protected JAdviceDeclaration[] advices;
 	/** e.g. declare precedence */
 	protected CaesarDeclare[] declares;
 
@@ -43,7 +48,7 @@ public class CaesarClassDeclaration
 	protected PointcutDeclaration[] pointcuts;
 
 	
-	public CaesarClassDeclaration(
+	public JCaesarClassDeclaration(
 		TokenReference where,
 		int modifiers,
 		String ident,
@@ -60,7 +65,7 @@ public class CaesarClassDeclaration
 		JavadocComment javadoc,
 		JavaStyleComment[] comment,
 		PointcutDeclaration[] pointcuts,
-		AdviceDeclaration[] advices,
+		JAdviceDeclaration[] advices,
 		CaesarDeclare[] declares) {
 			super(
 				where,
@@ -102,16 +107,11 @@ public class CaesarClassDeclaration
 			(modifiers & ACC_ABSTRACT) == 0,
 			CaesarMessages.CLEAN_ABSTRACT_CLASS);
 
-		// ... be inners
-		check(
-			context,
-			(modifiers & FJC_CLEAN) == 0 || getOwner() == null,
-			CaesarMessages.CLEAN_CLASS_NO_INNER);
 
 		//statically deployed classes are considered as aspects
 		if (isStaticallyDeployed())
 		{
-			DeploymentPreparation.prepareForStaticDeployment(context, (JClassDeclaration)this);
+			DeploymentPreparation.prepareForStaticDeployment(context, this);
 
 			modifiers |= ACC_FINAL;
 		}
@@ -119,12 +119,6 @@ public class CaesarClassDeclaration
 
 
 		super.checkInterface(context);
-
-		if (binding != null)
-			binding = resolveCollabortationInterface(context, binding);
-	
-		if (providing != null)
-			providing = resolveCollabortationInterface(context, providing);
 
 
 		if (isPrivileged() || isStaticallyDeployed())
@@ -163,17 +157,6 @@ public class CaesarClassDeclaration
 				fields[i].getField().getIdent());
 		}
 
-		// ... define non-clean inners
-		for (int i = 0; i < inners.length; i++)
-		{
-			check(
-				context,
-				CModifier.contains(
-					inners[i].getModifiers(),
-					FJC_CLEAN | FJC_VIRTUAL | FJC_OVERRIDE),
-				CaesarMessages.CLEAN_NO_NON_CLEAN_MEMBER,
-				inners[i].getCClass().getIdent());
-		}
 	}
 
 	public void join(CContext context) throws PositionedError
@@ -236,33 +219,18 @@ public class CaesarClassDeclaration
 		return typeFactory;
 	}
 
-	protected void createAccessorsForPrivateMethods()
-	{
-		Vector privateMethodAccessors = new Vector();
-		for (int i = 0; i < methods.length; i++)
-		{
-			if (methods[i] instanceof FjPrivateMethodDeclaration)
-			{
-				FjPrivateMethodDeclaration method =
-					(FjPrivateMethodDeclaration) methods[i];
-				method = method.getAccessorMethod(this);
-				if (method != null)
-					privateMethodAccessors.add(method);
-			}
-		}
-		for (int i = 0; i < privateMethodAccessors.size(); i++)
-		{
-			append((JMethodDeclaration) privateMethodAccessors.elementAt(i));
-		}
-	}
+	private JGeneratedInterfaceDeclaration cleanInterface;
 
-	private FjCleanClassInterfaceDeclaration cleanInterface;
-	public FjCleanClassInterfaceDeclaration getCleanInterface()
+	public JGeneratedInterfaceDeclaration getCleanInterface()
 	{
 		return cleanInterface;
 	}
 	
-	public FjCleanClassInterfaceDeclaration createCleanInterface(JClassDeclaration owner)
+	protected JMethodDeclaration[] getInterfaceMethods() {
+		// TODO
+		return this.methods;
+	}
+	public JGeneratedInterfaceDeclaration createClassInterface(JClassDeclaration owner)
 	{
 
 		//createAccessorsForPrivateMethods();
@@ -273,7 +241,7 @@ public class CaesarClassDeclaration
 				getTokenReference(),
 				FjConstants.cleanInterfaceName( ident ),
 				interfaces,
-				getCleanMethods()
+				getInterfaceMethods()
 			);
 
 			if (getSuperClass() != null)
@@ -290,71 +258,14 @@ public class CaesarClassDeclaration
 		return cleanInterface;
 	}
 
-	private FjCleanClassIfcImplDeclaration cleanInterfaceImplementation;
-	public FjCleanClassIfcImplDeclaration getCleanInterfaceImplementation()
-	{
-		return cleanInterfaceImplementation;
-	}
-	public FjCleanClassIfcImplDeclaration createCleanInterfaceImplementation(JClassDeclaration owner)
-	{
-		if (cleanInterfaceImplementation == null)
-		{
-			cleanInterfaceImplementation =
-				newIfcImplDeclaration(
-					getTokenReference(),
-					FjConstants.cleanInterfaceImplementationName(ident),
-					new CReferenceType[] {
-						new CClassNameType(
-							FjConstants.cleanInterfaceName(ident))},
-					getCleanMethods());
-
-			if (getSuperClass() == null)
-			{
-				CClassNameType superImplType =
-					new CClassNameType(FjConstants.CHILD_IMPL_TYPE_NAME);
-				cleanInterfaceImplementation.setSuperClass(superImplType);
-			}
-			else
-			{
-				CClassNameType superIfcType =
-					new CClassNameType(
-						FjConstants.cleanInterfaceName(
-							getSuperClass().getQualifiedName()));
-				cleanInterfaceImplementation.setSuperIfc(superIfcType);
-				CClassNameType superImplType =
-					new CClassNameType(
-						FjConstants.cleanInterfaceImplementationName(
-							getSuperClass().getQualifiedName()));
-				cleanInterfaceImplementation.setSuperClass(superImplType);
-			}
-
-			cleanInterfaceImplementation.addChildsConstructor(typeFactory);
-		}
-		return cleanInterfaceImplementation;
-	}
-	protected FjCleanClassInterfaceDeclaration newInterfaceDeclaration(
+	protected JGeneratedInterfaceDeclaration newInterfaceDeclaration(
 		TokenReference tokenReference,
 		String ident,
 		CReferenceType[] interfaces,
-		FjCleanMethodDeclaration[] methods)
+		JMethodDeclaration[] methods)
 	{
 
-		return new FjCleanClassInterfaceDeclaration(
-			getTokenReference(),
-			ident,
-			(modifiers & getInternalModifiers()),
-			interfaces,
-			methods,
-			this);
-	}
-	protected FjCleanClassIfcImplDeclaration newIfcImplDeclaration(
-		TokenReference tokenReference,
-		String ident,
-		CReferenceType[] interfaces,
-		FjCleanMethodDeclaration[] methods)
-	{
-
-		return new FjCleanClassIfcImplDeclaration(
+		return new JGeneratedInterfaceDeclaration(
 			getTokenReference(),
 			ident,
 			(modifiers & getInternalModifiers()),
@@ -363,53 +274,13 @@ public class CaesarClassDeclaration
 			this);
 	}
 
-	private FjCleanMethodDeclaration[] cleanMethods;
-	public FjCleanMethodDeclaration[] getCleanMethods()
-	{
-		if (cleanMethods == null)
-		{
-			int numberOfcleanMethods = 0;
-			// count the number of clean methods
-			for (int i = 0; i < methods.length; i++)
-			{
-				if (methods[i] instanceof FjCleanMethodDeclaration)
-					numberOfcleanMethods++;
-			}
-			cleanMethods = new FjCleanMethodDeclaration[numberOfcleanMethods];
-			// select the clean methods
-			for (int i = 0, j = 0; i < methods.length; i++)
-			{
-				if (methods[i] instanceof FjCleanMethodDeclaration)
-				{
-					cleanMethods[j] = (FjCleanMethodDeclaration) methods[i];
-					j++;
-				}
-			}
-			// include factory-methods of inner virtual types
-			for (int i = 0; i < inners.length; i++)
-			{
-				if (inners[i] instanceof FjVirtualClassDeclaration)
-				{
-					FjVirtualClassDeclaration inner = 
-						(FjVirtualClassDeclaration) inners[i];
-					
-					inner.setTypeFactory(typeFactory);
-					cleanMethods =
-						append(
-							cleanMethods,
-								inner.getFactoryMethods());
-				}
-			}
-		}
-		return cleanMethods;
-	}
-	private FjCleanMethodDeclaration[] append(
-		FjCleanMethodDeclaration[] left,
-		FjCleanMethodDeclaration[] right)
+	private JMethodDeclaration[] append(
+			JMethodDeclaration[] left,
+			JMethodDeclaration[] right)
 	{
 
-		FjCleanMethodDeclaration[] result =
-			new FjCleanMethodDeclaration[left.length + right.length];
+		JMethodDeclaration[] result =
+			new JMethodDeclaration[left.length + right.length];
 		int i = 0;
 		for (int j = 0; j < left.length; j++)
 		{
@@ -424,7 +295,7 @@ public class CaesarClassDeclaration
 		return result;
 	}
 
-	public CaesarClassDeclaration getBaseClass()
+	public JCaesarClassDeclaration getBaseClass()
 	{
 		return this;
 	}
@@ -447,33 +318,6 @@ public class CaesarClassDeclaration
 			(CReferenceType[]) Utils.toArray(interfaces, CReferenceType.class);
 	}
 
-	public void addSelfContextToCleanMethods(CReferenceType selfType)
-	{
-		Vector methodVector = new Vector(this.methods.length * 3);
-
-		for (int i = 0; i < this.methods.length; i++)
-		{
-			if (this.methods[i] instanceof FjMethodDeclaration)
-			{
-				FjMethodDeclaration[] transformedMethods =
-					((FjMethodDeclaration) this.methods[i])
-							.getSelfContextMethods(selfType);
-				for (int j = 0; j < transformedMethods.length; j++)
-				{
-					methodVector.add(transformedMethods[j]);
-				}
-			}
-			else
-			{
-				methodVector.add(this.methods[i]);
-			}
-		}
-
-		this.methods =
-			(JMethodDeclaration[]) toArray(methodVector,
-				JMethodDeclaration.class);
-	}
-	
 	protected CReferenceType getSuperConstructorType()
 	{
 		String superTypeName = getSuperClass().getQualifiedName();
@@ -489,75 +333,11 @@ public class CaesarClassDeclaration
 			return new JNullLiteral(FjConstants.STD_TOKEN_REFERENCE);
 		
 		return
-			new FjNameExpression(
+			new JNameExpression(
 				FjConstants.STD_TOKEN_REFERENCE,
 				FjConstants.PARENT_NAME);
 	}
 
-	public void addSuperTypeParameterToConstructors()
-	{
-
-		//String superTypeName = getSuperClass().getQualifiedName();
-		CReferenceType superType = getSuperConstructorType();
-		JExpression superArg = getSuperConstructorArgumentExpression();
-		CClass owner = getOwner();
-
-		//If it has a super ci, it must 
-		//define one more constructor (Only for the most outer classes)
-		CReferenceType superCi = null;
-		if (owner == null &&
-			binding == null && providing == null && 
-			! isWeavelet(getCClass()))
-		{
-			superCi = 
-				getSuperCollaborationInterface(
-					getCClass(), CCI_BINDING);
-			if (superCi == null)
-				superCi = 
-					getSuperCollaborationInterface(
-						getCClass(), CCI_PROVIDING);
-		}
-
-		// introduce additional parent-parameterized constructor
-		FjConstructorDeclaration[] constructors = getConstructors();
-		ArrayList oldConstructors = new ArrayList(constructors.length);
-		for (int i = 0; i < constructors.length; i++)
-		{
-			if (superType != null)
-			{
-				// only if the class has a supertype
-				if (owner == null)
-				{
-					// only for standalone clean classes *)
-					oldConstructors.add(
-						createStandardBaseClassConstructor(
-							constructors[i], 
-							superType));
-					
-					if (superCi != null)
-					{
-						oldConstructors.add(
-							constructors[i]
-								.getCollaborationInterfaceConstructor(
-									new CClassNameType(
-										FjConstants.toIfcName(
-											superCi.getQualifiedName())),
-									superType));
-					}
-				}
-				
-				constructors[i].addSuperTypeParameter(superType);
-			}
-			// always set a parent; no supertype => null
-			setSuperConstructorArgument(constructors[i], superArg);
-		}
-
-		// now provide the old constructors for *)
-		// by passing a standard baseclass parent
-		addMethods((JMethodDeclaration[]) oldConstructors.toArray(
-			new JMethodDeclaration[oldConstructors.size()]));
-	}
-	
 
 	/**
 	 * Is it a weavelet? Or does it have any weavelet as parent? 
@@ -634,19 +414,6 @@ public class CaesarClassDeclaration
 		return getCleanInterface();
 	}
 
-	public void setSuperClass()
-	{
-
-		if (getSuperClass() == null)
-			setSuperClass(new CClassNameType(FjConstants.CHILD_IMPL_TYPE_NAME));
-		else
-		{
-			setSuperClass(
-				new CClassNameType(
-					FjConstants.cleanInterfaceImplementationName(
-						getSuperClass().getQualifiedName())));
-		}
-	}
 
 	public void setIdent(String ident)
 	{
@@ -703,64 +470,6 @@ public class CaesarClassDeclaration
 		throws PositionedError
 	{
 		checkWrapper(context);
-		CReferenceType superCi;
-		// The methods must be in the right place, 
-		// and the nested classes must be implemented	
-		if (binding != null)
-		{
-			// it must be a collaboration interface.
-			cleanInterface.checkCollaborationInterface(context, 
-				binding.getQualifiedName());
-				
-			checkInnerTypeImplementation(context, CCI_EXPECTED,
-				binding.getCClass().getInnerClasses(), 
-				binding, 
-				CaesarMessages.NESTED_TYPE_NOT_BOUND);
-
-			checkCIMethods(context, binding, true, CCI_EXPECTED, 
-				CaesarMessages.MUST_IMPLEMENT_EXPECTED_METHOD,
-				ident);
-			
-			checkCIMethods(context, binding, false, CCI_PROVIDED, 
-				CaesarMessages.PROVIDED_METHOD_IN_BINDING, null);
-							
-		}
-		else if (providing != null)
-		{
-			checkProvidingConstructors(context);
-			
-			cleanInterface.checkCollaborationInterface(context, 
-				providing.getQualifiedName());
-			
-			checkInnerTypeImplementation(context, CCI_PROVIDED,
-				providing.getCClass().getInnerClasses(), 
-				providing, 
-				CaesarMessages.NESTED_TYPE_NOT_PROVIDED);
-
-			checkCIMethods(context, providing, true, CCI_PROVIDED, 
-				CaesarMessages.MUST_IMPLEMENT_PROVIDED_METHOD,
-				ident);
-
-			checkCIMethods(context, providing, false, CCI_EXPECTED, 
-				CaesarMessages.EXPECTED_METHOD_IN_PROVIDING, null);
-		}
-		else if (
-			(superCi = getSuperCollaborationInterface(getCClass(), CCI_BINDING)) 
-			!= null)
-		{
-			checkCIMethods(context, superCi, false, CCI_PROVIDED, 
-				CaesarMessages.PROVIDED_METHOD_IN_BINDING, null);
-		}
-		else if (
-			(superCi = getSuperCollaborationInterface(
-				getCClass(), CCI_PROVIDING)) 
-			!= null)
-		{
-			checkProvidingConstructors(context);
-			checkCIMethods(context, superCi, false, CCI_EXPECTED, 
-				CaesarMessages.EXPECTED_METHOD_IN_PROVIDING, null);
-		}
-		
 		if (advices != null)
 		{
 			for (int i = 0; i < advices.length; i++)
@@ -768,8 +477,7 @@ public class CaesarClassDeclaration
 				advices[i].checkBody1(self);
 			}
 		}
-
-		
+	
 		super.checkTypeBody(context);
 	}
 
@@ -826,29 +534,26 @@ public class CaesarClassDeclaration
 		MessageDescription errorMessage)
 		throws PositionedError
 	{
-		if (! FjConstants.isIfcImplName(ident))
+		for (int i = 0; i < ciInnerClasses.length; i++)
 		{
-			for (int i = 0; i < ciInnerClasses.length; i++)
+			if (FjConstants.isIfcName(ciInnerClasses[i]
+					.getCClass().getIdent())
+				&& getCiMethods(ciInnerClasses[i].getCClass(), 
+					modifier).size() > 0)
 			{
-				if (FjConstants.isIfcName(ciInnerClasses[i]
-						.getCClass().getIdent())
-					&& getCiMethods(ciInnerClasses[i].getCClass(), 
-						modifier).size() > 0)
+				boolean found = false;
+				for (int k = 0; k < inners.length; k++)
 				{
-					boolean found = false;
-					for (int k = 0; k < inners.length; k++)
+					if (inners[k].getCClass().descendsFrom(
+						ciInnerClasses[i].getCClass()))
 					{
-						if (inners[k].getCClass().descendsFrom(
-							ciInnerClasses[i].getCClass()))
-						{
-							found = true;
-							break;
-						}
+						found = true;
+						break;
 					}
-					check(context, found, errorMessage, 
-						ciInnerClasses[i].getCClass().getIdent(), 
-						ci.getQualifiedName());
 				}
+				check(context, found, errorMessage, 
+					ciInnerClasses[i].getCClass().getIdent(), 
+					ci.getQualifiedName());
 			}
 		}
 	}
@@ -999,7 +704,7 @@ public class CaesarClassDeclaration
 		return pointcuts;
 	}
 
-	public AdviceDeclaration[] getAdvices()
+	public JAdviceDeclaration[] getAdvices()
 	{
 		return advices;
 	}
@@ -1009,7 +714,7 @@ public class CaesarClassDeclaration
 		this.pointcuts = pointcuts;
 	}
 
-	public void setAdvices(AdviceDeclaration[] advices)
+	public void setAdvices(JAdviceDeclaration[] advices)
 	{
 		this.advices = advices;
 	}
@@ -1045,207 +750,11 @@ public class CaesarClassDeclaration
 		return CModifier.contains(modifiers, ACC_CROSSCUTTING);
 	}
 
-	/**
-	* Resolves the collaboration interface passed as parameter.
-	* Returns the ci checked.
-	* @param context
-	* @param ci
-	* @return CReferenceType 
-	* @throws PositionedError
-	*/
-   protected CReferenceType resolveCollabortationInterface(
-	   CContext context, CReferenceType ci)
-	   throws PositionedError		
-   {
-	   try
-	   {
-		   ci = (CReferenceType) ci.checkType(context);
-	   }
-	   catch (UnpositionedError e)
-	   {
-		   if (e.getFormattedMessage().getDescription()
-			   != KjcMessages.CLASS_AMBIGUOUS)
-			   throw e.addPosition(getTokenReference());
-					
-		   CClass[] candidates = (CClass[]) 
-			   e.getFormattedMessage().getParams()[1];
-				
-		   ci = candidates[0].getAbstractType();
-	   }
-	   return ci;	
-   }
-	
-   /**
-	* Transforms the inner classes in overriden types. The current class
-	* must be a providing class (getProviding() != null).
-	* @return JTypeDeclaration[] the new nested classes.
-	*/
-   public JTypeDeclaration[] transformInnerProvidingClasses()
-   {
-	   for (int i = 0; i < inners.length; i++)
-	   {
-		   if (inners[i] instanceof JClassDeclaration)
-		   {
-			   inners[i] = 
-				   ((JClassDeclaration)inners[i]) 
-					 .createOverrideClassDeclaration(this);
-		   }
-	   }
-	   return inners;
-   }
-	
-   /**
-	* Transforms the inner classes which bind some CI in virtual types. 
-	* The current class must be a binding class (getBinding() != null).
-	* @return JTypeDeclaration[] the new nested classes.
-	*/
-   public JTypeDeclaration[] transformInnerBindingClasses(
-	   JClassDeclaration owner)
-   {
-	   for (int i = 0; i < inners.length; i++)
-	   {
-		   if (inners[i] instanceof JClassDeclaration)
-		   {
-			   JClassDeclaration innerClass = (JClassDeclaration)inners[i];
-			   if (innerClass.getBinding() != null)
-			   {
-				   innerClass.setOwnerDeclaration(owner);
-				   inners[i] = innerClass.createVirtualClassDeclaration(
-					   owner);
-			   }
-			   else
-				   innerClass.transformInnerBindingClasses(this);
-		   }
-	   }
-	   return inners;
-   }		
-   /**
-	* Creates an override type. This is done when the compiler finds a 
-	* providing class, so it has to change its inners for an overriding classe.
-	* @param owner
-	* @return FjOverrideClassDeclaration
-	*/
-   public FjOverrideClassDeclaration createOverrideClassDeclaration(
-	   JClassDeclaration owner)
-   {
-	   providing = new CClassNameType(owner.getProviding().getQualifiedName() 
-		   + "$" + ident);
-	   return 
-		   new FjOverrideClassDeclaration(
-			   getTokenReference(),
-			   modifiers | CCI_PROVIDING,
-			   ident,
-			   typeVariables,
-			   null,
-			   null,
-			   providing,
-			   wrappee,
-			   interfaces,
-			   fields,
-			   methods,
-			   transformInnerProvidingClasses(),
-			   this.body,
-			   null,
-			   null);
-   }
-
-
-   /**
-	* Creates an virtual type. This is done when the compiler finds a 
-	* binding class, so it has to change its inners for virtual classes.
-	* @param owner
-	* @return FjOverrideClassDeclaration
-	*/
-   public FjVirtualClassDeclaration createVirtualClassDeclaration(
-	   JClassDeclaration owner)
-   {
-	   String superClassName = getBindingTypeName();
-
-	   FjVirtualClassDeclaration result =
-		   new FjVirtualClassDeclaration(
-			   getTokenReference(),
-			   (modifiers | CCI_BINDING) & ~FJC_CLEAN,
-			   ident,
-			   typeVariables,
-			   new CClassNameType(superClassName),
-			   new CClassNameType(superClassName),
-			   null,
-			   wrappee,
-			   interfaces,
-			   fields,
-			   methods,
-			   transformInnerBindingClasses(this),
-			   this.body,
-			   null,
-			   null);
-
-	   result.addProvidingAcessor();
-		
-	   return result;
-   }	
-
-   /**
-	* Adds the providing reference accessor. The class must be a binding class.
-	* The method will actually return a dispatcher of self in this context.
-	*/
-   public void addProvidingAcessor()
-   {
-	   TokenReference ref = getTokenReference();
-	   //Adds the implementation accessor.
-	   addMethod(
-		   createAccessor(
-			   CciConstants.PROVIDING_REFERENCE_NAME,
-			   new JMethodCallExpression(
-				   ref,
-				   new JThisExpression(ref),
-				   FjConstants.GET_DISPATCHER_METHOD_NAME,
-				   new JExpression[]
-				   {
-					   new FjNameExpression(
-							   ref,
-							   FjConstants.SELF_NAME)
-				   }),
-			   FjConstants.CHILD_TYPE));	
-   }
-	
-
-   /**
-	* Creates an accessor method.
-	* @param accessedName The name to be accessed
-	* @param returnExpression The return expression
-	* @param returnType The return type
-	* @return FjCleanMethodDeclaration
-	*/
-   protected FjCleanMethodDeclaration createAccessor(
-	   String accessedName, 
-	   JExpression returnExpression, 
-	   CReferenceType returnType)
-   {
-	   JStatement[] statements =
-		   new JStatement[] {
-				new JReturnStatement(
-				   getTokenReference(),
-				   returnExpression,
-				   null)};
-					
-	   JBlock body = new JBlock(getTokenReference(), statements, null);
-	
-	   return new FjCleanMethodDeclaration(
-		   getTokenReference(),
-		   ACC_PUBLIC,
-		   new CTypeVariable[0],
-		   returnType,
-		   CciConstants.toAccessorMethodName(accessedName),
-		   new JFormalParameter[0],
-		   new CReferenceType[0],
-		   body,
-		   null,
-		   null);
-   }
    public boolean isStaticallyDeployed()
    {
 	   return (modifiers & ACC_DEPLOYED) != 0;
    }
+
    public void initFamilies(CClassContext context) throws PositionedError
    {
    	   super.initFamilies(context);
@@ -1256,7 +765,7 @@ public class CaesarClassDeclaration
 		   advices[j].checkInterface(self);
 		   //during the following compiler passes
 		   //the advices should be treated like methods
-		   getFjSourceClass().addMethod((CaesarAdvice) advices[j].getMethod());
+		   getFjSourceClass().addMethod((CSourceAdviceMethod) advices[j].getMethod());
 	   }
 
 	   //consider declares

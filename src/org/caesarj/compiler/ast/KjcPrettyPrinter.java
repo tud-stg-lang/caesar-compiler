@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcPrettyPrinter.java,v 1.6 2004-02-28 17:58:05 ostermann Exp $
+ * $Id: KjcPrettyPrinter.java,v 1.7 2004-02-29 21:37:24 ostermann Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -1821,7 +1821,7 @@ public class KjcPrettyPrinter extends org.caesarj.util.Utils implements Constant
 	/* (non-Javadoc)
 	 * @see org.caesarj.compiler.ast.KjcVisitor#visitFjVirtualClassDeclaration(org.caesarj.compiler.ast.FjVirtualClassDeclaration, int, java.lang.String, org.caesarj.compiler.types.CTypeVariable[], java.lang.String, org.caesarj.compiler.types.CReferenceType[], org.caesarj.compiler.ast.JPhylum[], org.caesarj.compiler.ast.JMethodDeclaration[], org.caesarj.compiler.ast.JTypeDeclaration[])
 	 */
-	public void visitFjVirtualClassDeclaration(FjVirtualClassDeclaration self, int modifiers, String ident, CTypeVariable[] typeVariables, String superClass, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods, JTypeDeclaration[] decls) {
+	public void visitFjVirtualClassDeclaration(VirtualClassDeclaration self, int modifiers, String ident, CTypeVariable[] typeVariables, String superClass, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods, JTypeDeclaration[] decls) {
 		visitClassDeclaration(self, modifiers, ident, typeVariables, superClass, interfaces, body, methods, decls);
 	}
 	
@@ -1867,7 +1867,7 @@ public class KjcPrettyPrinter extends org.caesarj.util.Utils implements Constant
 	/* (non-Javadoc)
 	 * @see org.caesarj.compiler.ast.KjcVisitor#visitFjCleanClassDeclaration(org.caesarj.compiler.ast.FjCleanClassDeclaration, int, java.lang.String, org.caesarj.compiler.types.CTypeVariable[], java.lang.String, org.caesarj.compiler.types.CReferenceType[], org.caesarj.compiler.ast.JPhylum[], org.caesarj.compiler.ast.JMethodDeclaration[], org.caesarj.compiler.ast.JTypeDeclaration[])
 	 */
-	public void visitFjCleanClassDeclaration(CaesarClassDeclaration self, int modifiers, String ident, CTypeVariable[] typeVariables, String superClass, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods, JTypeDeclaration[] decls) {
+	public void visitFjCleanClassDeclaration(JCaesarClassDeclaration self, int modifiers, String ident, CTypeVariable[] typeVariables, String superClass, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods, JTypeDeclaration[] decls) {
 		visitClassDeclaration(self, modifiers, ident, typeVariables, superClass, interfaces, body, methods, decls);
 	}
 	

@@ -535,7 +535,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				  else if (providing != null || binding != null)
 				  {
 				  	if (CModifier.contains(modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL))
-			self = new FjVirtualClassDeclaration(sourceRef,
+			self = new VirtualClassDeclaration(sourceRef,
 							   modifiers,
 							   ident.getText(),
 							   typeVariables,
@@ -551,7 +551,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   javadoc,
 							   comments);
 				  	 else
-			self = new CaesarClassDeclaration(sourceRef,
+			self = new JCaesarClassDeclaration(sourceRef,
 							   modifiers | org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN,
 							   ident.getText(),
 							   typeVariables,
@@ -588,7 +588,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   javadoc,
 							   comments);
 			} else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL ) ) {
-			self = new FjVirtualClassDeclaration(sourceRef,
+			self = new VirtualClassDeclaration(sourceRef,
 							   modifiers,
 							   ident.getText(),
 							   typeVariables,
@@ -604,7 +604,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   javadoc,
 							   comments);
 			} else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN ) ) {
-			self = new CaesarClassDeclaration(sourceRef,
+			self = new JCaesarClassDeclaration(sourceRef,
 							   modifiers,
 							   ident.getText(),
 							   typeVariables,
@@ -1620,7 +1620,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		TypeFactory factory = environment.getTypeFactory();
 		CReferenceType[]		throwsList = CReferenceType.EMPTY;  
 		PointcutDeclaration pointcutDecl;
-		AdviceDeclaration adviceDecl;
+		JAdviceDeclaration adviceDecl;
 		
 		
 		{
@@ -2291,10 +2291,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		return self;
 	}
 	
-	private final AdviceDeclaration  jAdviceDeclaration(
+	private final JAdviceDeclaration  jAdviceDeclaration(
 		CaesarAdviceKind kind, int modifiers, JFormalParameter[] parameters, CType type, CReferenceType[] throwsList, JFormalParameter extraParam
 	) throws RecognitionException, TokenStreamException {
-		AdviceDeclaration self = null;
+		JAdviceDeclaration self = null;
 		
 		Token  pattern = null;
 		
@@ -2328,7 +2328,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							parameters = newParameters;			
 						}
 					
-						self = new AdviceDeclaration(sourceRef,
+						self = new JAdviceDeclaration(sourceRef,
 			modifiers,
 			CTypeVariable.EMPTY,
 			type,
@@ -2666,7 +2666,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_wrappee);
 			if ( inputState.guessing==0 ) {
-				self = new CciWrappeeExpression(sourceRef);
+				self = new WrappeeExpression(sourceRef);
 			}
 			break;
 		}

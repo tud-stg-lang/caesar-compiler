@@ -22,7 +22,6 @@ import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.CciConstants;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
-import org.caesarj.compiler.delegation.ClassTransformationFjVisitor;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.family.CollaborationInterfaceTransformation;
 import org.caesarj.compiler.family.CollectClassesFjVisitor;
@@ -114,10 +113,10 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 		JCompilationUnit[] tree = parseFiles(environment);
 
 		if (errorFound) {return false;}
-		transformCollaborationInterfaces(environment,tree);
+//		transformCollaborationInterfaces(environment,tree);
 		prepareJoinpointReflection(tree);
 		prepareDynamicDeployment(environment, tree);
-		createAllHelperInterfaces(environment, tree);
+//		createAllHelperInterfaces(environment, tree);
 		joinAll(tree);
 		if (errorFound) { return false; }
 		checkAllInterfaces(tree);
@@ -225,23 +224,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 	}
 
 
-	protected void createAllHelperInterfaces(
-		KjcEnvironment environment,
-		JCompilationUnit[] tree) {
-		for (int i = 0; i < tree.length; i++) {
-			tree[i].accept(getClassTransformation(environment));
-			//tree[i].accept(new DebugVisitor());
-		}
-	}
-
-	protected void transformCollaborationInterfaces(
-		KjcEnvironment environment,
-		JCompilationUnit[] tree) {
-
-		for (int i = 0; i < tree.length; i++) {
-			tree[i].accept(getCollaborationInteraceTransformation(environment));			
-		}
-	}
 
 
 	protected void prepareDynamicDeployment(
@@ -332,15 +314,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 	}
 
 
-	/**
-	 * 
-	 * @param environment
-	 * @return the visitor instance that transforms FamilyJ to Java.
-	 */
-	protected DeclarationVisitor getClassTransformation(KjcEnvironment environment) 
-	{
-		return new ClassTransformationFjVisitor(environment);
-	}
 	
 	/**
 	 * Returns the visitor instance for transforms the CIs.

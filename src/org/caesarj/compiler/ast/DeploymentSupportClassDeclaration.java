@@ -17,9 +17,9 @@ import org.caesarj.util.UnpositionedError;
  * 
  * @author Jürgen Hallpap
  */
-public class DeploymentSupportClassDeclaration extends CaesarClassDeclaration {
+public class DeploymentSupportClassDeclaration extends JCaesarClassDeclaration {
 
-	private CaesarClassDeclaration crosscuttingClass;
+	private JCaesarClassDeclaration crosscuttingClass;
 
 	private String postfix;
 
@@ -36,7 +36,7 @@ public class DeploymentSupportClassDeclaration extends CaesarClassDeclaration {
 		JPhylum[] initializers,
 		JavadocComment javadoc,
 		JavaStyleComment[] comment,
-		CaesarClassDeclaration crosscuttingClass,
+		JCaesarClassDeclaration crosscuttingClass,
 		String postfix) {
 		this(
 			where,
@@ -52,7 +52,7 @@ public class DeploymentSupportClassDeclaration extends CaesarClassDeclaration {
 			javadoc,
 			comment,
 			PointcutDeclaration.EMPTY,
-			AdviceDeclaration.EMPTY,
+			JAdviceDeclaration.EMPTY,
 			null,
 			crosscuttingClass,
 			postfix);
@@ -72,9 +72,9 @@ public class DeploymentSupportClassDeclaration extends CaesarClassDeclaration {
 		JavadocComment javadoc,
 		JavaStyleComment[] comment,
 		PointcutDeclaration[] pointcuts,
-		AdviceDeclaration[] advices,
+		JAdviceDeclaration[] advices,
 		CaesarDeclare[] declares,
-	    CaesarClassDeclaration crosscuttingClass,
+	    JCaesarClassDeclaration crosscuttingClass,
 		String postfix) {
 
 		super(
@@ -117,7 +117,7 @@ public class DeploymentSupportClassDeclaration extends CaesarClassDeclaration {
 					
 			String superClassName = null;
 			// test klaus
-			if (crosscuttingClass instanceof CaesarClassDeclaration) {
+			if (crosscuttingClass instanceof JCaesarClassDeclaration) {
 				
 //				String sc = 
 //				  crosscuttingClass.getSuperClass().getIdent();
@@ -198,17 +198,17 @@ public class DeploymentSupportClassDeclaration extends CaesarClassDeclaration {
 		JStatement[] newStatements = new JStatement[deployStatements.length + 1];
 		System.arraycopy(deployStatements, 0, newStatements, 0, deployStatements.length);
 
-		JExpression dprefix = new FjNameExpression(TokenReference.NO_REF, superClassName);
-		JExpression fac= new FjFieldAccessExpression(TokenReference.NO_REF,dprefix, "ajc$perSingletonInstance");
+		JExpression dprefix = new JNameExpression(TokenReference.NO_REF, superClassName);
+		JExpression fac= new JFieldAccessExpression(TokenReference.NO_REF,dprefix, "ajc$perSingletonInstance");
 		JFormalParameter[] dparameters = method.getArgs();
 		JExpression[] args = new JExpression[dparameters.length];
 		String argString="";
 		for(int i=0;i<args.length;i++){
-			 args[i]=new FjNameExpression(TokenReference.NO_REF,dparameters[i].getIdent());
+			 args[i]=new JNameExpression(TokenReference.NO_REF,dparameters[i].getIdent());
 			argString+=args[i]+", ";
 		}		
 		JExpression methodCall =
-			new FjMethodCallExpression(TokenReference.NO_REF, fac, methodName, args);
+			new JMethodCallExpression(TokenReference.NO_REF, fac, methodName, args);
 //		System.out.println("weaved in: "+dprefix+methodName+"("+argString+")");
 		newStatements[deployStatements.length] = new JExpressionStatement(TokenReference.NO_REF, methodCall, null);
 		method.setBlockBody(new JBlock(TokenReference.NO_REF,newStatements,null));

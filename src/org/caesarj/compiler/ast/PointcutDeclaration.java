@@ -23,7 +23,7 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Jürgen Hallpap
  */
-public class PointcutDeclaration extends FjMethodDeclaration {
+public class PointcutDeclaration extends JMethodDeclaration {
 
 	public static final PointcutDeclaration[] EMPTY =
 		new PointcutDeclaration[0];
