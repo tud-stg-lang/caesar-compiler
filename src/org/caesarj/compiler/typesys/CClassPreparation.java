@@ -12,6 +12,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import org.caesarj.compiler.AstGenerator;
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
@@ -21,23 +22,12 @@ import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
-import org.caesarj.compiler.ast.phylum.expression.JAssignmentExpression;
-import org.caesarj.compiler.ast.phylum.expression.JCastExpression;
-import org.caesarj.compiler.ast.phylum.expression.JEqualityExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
-import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
 import org.caesarj.compiler.ast.phylum.expression.JUnqualifiedInstanceCreation;
-import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
-import org.caesarj.compiler.ast.phylum.statement.JCompoundStatement;
-import org.caesarj.compiler.ast.phylum.statement.JExpressionListStatement;
-import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
-import org.caesarj.compiler.ast.phylum.statement.JIfStatement;
 import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
-import org.caesarj.compiler.ast.phylum.statement.JVariableDeclarationStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarConstants;
@@ -233,9 +223,11 @@ public class CClassPreparation implements CaesarConstants {
         CjInterfaceDeclaration innerIfcDecl = innerDecl.getMixinIfcDeclaration();
         
         TokenReference where = decl.getTokenReference();
-        
-        String wrapperMapName = 
-            "$"+inner.getMixin().getQualifiedName().getIdent()+"_wrapper_map";
+                
+        String wrapperClassIdent = inner.getMixin().getQualifiedName().getIdent();
+        String wrapperClassName = inner.getMixin().getQualifiedName().toString().replace('/','.').replace('$','.');
+        String wrappeeClassName = innerDecl.getWrappee().getQualifiedName().replace('/','.').replace('$','.');        
+        String wrapperMapName = "$"+wrapperClassIdent+"_wrapper_map";
         
         // TODO map = new WeakHashMap() didn't work
         decl.addField(
@@ -252,133 +244,42 @@ public class CClassPreparation implements CaesarConstants {
             )
         );
         
-        JMethodDeclaration wrapperMethod = 
-            new JMethodDeclaration(
-                where,
-                ACC_PRIVATE,
-                CTypeVariable.EMPTY,
-                innerIfcDecl.getCClass().getAbstractType(),
-                inner.getMixin().getQualifiedName().getIdent(),
-                new JFormalParameter[]{
-                    new JFormalParameter(
-                        where,
-                        JFormalParameter.DES_PARAMETER,
-                        innerDecl.getWrappee(),
-                        "$w",
-                        false
-                    )
-                },
-                CReferenceType.EMPTY,
-                new JBlock(
-                    where,
-                    new JStatement[]{
-                        new JIfStatement(
-                            where,
-                            new JEqualityExpression(
-                                where, 
-                                true,
-                                new JNameExpression(where, wrapperMapName),
-                                new JNullLiteral(where)
-                            ),
-                            new JExpressionStatement(
-                                where,
-                                new JAssignmentExpression(
-                                    where,
-                                    new JNameExpression(where, wrapperMapName),
-                                    new JUnqualifiedInstanceCreation(
-                                        where,
-                                        hashMapClass.getAbstractType(),
-                                        JExpression.EMPTY
-                                    )
-                                ),
-                                null
-                            ),
-                            null,
-                            null
-                        ),
-                        new JVariableDeclarationStatement(
-                            where,
-                            new JVariableDefinition(
-                                where,
-                                ACC_PUBLIC,
-                                innerIfcDecl.getCClass().getAbstractType(),
-                                "res",
-                                new JCastExpression(
-                                    where,
-                                    new JMethodCallExpression(
-                                        where,
-                                        new JNameExpression(where, wrapperMapName),
-                                        "get",
-                                        new JExpression[]{
-                                            new JNameExpression(where, "$w")
-                                        }
-                                    ),
-                                    innerIfcDecl.getCClass().getAbstractType()
-                                )
-                            ),
-                            null
-                        ),
-                        new JIfStatement(
-                            where,
-                            new JEqualityExpression(
-                                where, 
-                                true,
-                                new JNameExpression(where, "res"),
-                                new JNullLiteral(where)
-                            ),
-                            new JCompoundStatement(
-                                where,
-                                new JStatement[] {
-                                    new JExpressionListStatement(
-                                        where,
-                                        new JExpression[]{
-                                            new JAssignmentExpression(
-		                                        where,
-		                                        new JNameExpression(where, "res"),
-		                                        new JMethodCallExpression(
-		                                            where,
-		                                            null,
-		                                            "$new"+inner.getMixin().getQualifiedName().getIdent(),
-		                                            JExpression.EMPTY
-		                                        )
-	                                        ),
-	                                        new JMethodCallExpression(
-	                                            where,
-	                                            new JNameExpression(where, "res"),
-	                                            "$initWrappee",
-	                                            new JExpression[]{
-                                                    new JNameExpression(where, "$w")
-	                                            }	                                            
-	                                        ),
-	                                        new JMethodCallExpression(
-	                                            where,
-	                                            new JNameExpression(where, wrapperMapName),
-	                                            "put",
-	                                            new JExpression[]{
-                                                    new JNameExpression(where, "$w"),
-                                                    new JNameExpression(where, "res")
-	                                            }	                                            
-	                                        )
-                                        },
-                                        null
-                                    )
-                                }
-                            ),
-                            null,
-                            null
-                        ),
-                        new JReturnStatement(
-                            where,
-                            new JNameExpression(where, "res"),
-                            null
-                        )
-                    },
-                    null
-                ),
-                null, null
-            );
+        AstGenerator gen = environment.getAstGenerator();
         
-        decl.addMethod(wrapperMethod);
+        gen.writeMethod(
+            new String[] {
+                "public "+wrapperClassName+" "+wrapperClassIdent+"("+wrappeeClassName+" w) {",
+                "if (w == null)",
+                "    return null;",               
+                "if("+wrapperMapName+" == null) "+wrapperMapName+" = new java.util.WeakHashMap();",
+                wrapperClassName+" res = ("+wrapperClassName+")"+wrapperMapName+".get(w);",
+                "if (res == null) {",
+                "    res = this.new "+wrapperClassIdent+"();",
+                "    res.$initWrappee(w);",
+                "    "+wrapperMapName+".put(w, res);",
+                "}",
+                "return res;",
+                "}"
+            }
+        );
+        
+        decl.addMethod(gen.endMethod());
+        
+        
+        gen.writeMethod(
+            new String[] {
+                "public "+wrapperClassName+" get"+wrapperClassIdent+"("+wrappeeClassName+" w) {",
+                "if (w == null)",
+                "    return null;",               
+                "if("+wrapperMapName+" == null) "+wrapperMapName+" = new java.util.WeakHashMap();",
+                wrapperClassName+" res = ("+wrapperClassName+")"+wrapperMapName+".get(w);",
+                
+                "return res;",
+                "}"
+            }
+        );
+        
+        decl.addMethod(gen.endMethod());
 	}
 	
     /**

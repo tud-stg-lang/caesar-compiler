@@ -31,6 +31,7 @@ public class AstGenerator {
     public void writeMethod(String[] lines) {
     	for (int i1 = 0; i1 < lines.length; i1++) {
     		methodBuffer.append(lines[i1]);
+    		methodBuffer.append('\n');
     	}
     }
     
