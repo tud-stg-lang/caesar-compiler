@@ -2503,7 +2503,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_super);
 			if ( inputState.guessing==0 ) {
-				self = new FjSuperExpression(sourceRef);
+				self = new JSuperExpression(sourceRef);
 			}
 			break;
 		}
@@ -4920,7 +4920,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				{
 					match(LITERAL_super);
 					if ( inputState.guessing==0 ) {
-						self = new FjSuperExpression(sourceRef, self);
+						self = new JSuperExpression(sourceRef, self);
 					}
 					break;
 				}

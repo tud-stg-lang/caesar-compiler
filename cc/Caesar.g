@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.28 2004-03-15 16:47:14 aracic Exp $
+ * $Id: Caesar.g,v 1.29 2004-03-15 17:04:14 aracic Exp $
  */
 
 /*
@@ -1791,7 +1791,7 @@ jPostfixExpression[]
         { self = new JThisExpression(sourceRef, self); }
     | // 31.08.01
       "super"
-        { self = new FjSuperExpression(sourceRef, self); }
+        { self = new JSuperExpression(sourceRef, self); }
     |
       "class"
         { self = new JClassExpression(sourceRef, self, 0); }
@@ -1851,7 +1851,7 @@ jPrimaryExpression []
   self = jLiteral[]
 |
   "super"
-    { self = new FjSuperExpression(sourceRef); }
+    { self = new JSuperExpression(sourceRef); }
 |
   "true"
     { self = new JBooleanLiteral(sourceRef, true); }
