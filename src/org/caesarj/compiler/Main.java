@@ -57,10 +57,17 @@ public class Main extends MainSuper implements Constants {
         //		super(workingDirectory, diagnosticOutput  );
     }
 
-    public static void main(String[] args) {
-        boolean success;
-        success = compile(args);
-        System.exit(success ? 0 : 1);
+    public static void main(String[] args) 
+    {
+        try
+		{
+	    	boolean success;
+	        success = compile(args);
+		}
+        catch (Exception e)
+		{
+        	e.printStackTrace();
+		}        
     }
 
     public static boolean compile(String[] args) {
