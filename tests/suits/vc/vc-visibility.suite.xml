@@ -1,0 +1,165 @@
+<testsuite name="Test visibility of Caesar classes" package="suits.vc.visibility">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ONLY_PUBLIC_CCLASS"  id="vcvis001" description="non-public cclass">
+        <code>
+        	cclass OuterA {
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="METHOD_ACCESS_DIFFERENT"  id="vcvis002" description="restricting access in overriden method public -> protected">
+        <code>
+        	public cclass ClassA {
+				public void m() {
+				}
+			}
+			public cclass ClassB extends ClassA {
+				protected void m() {
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="METHOD_ACCESS_DIFFERENT"  id="vcvis003" description="inner inheritance leads to visibility restriction public -> protected">
+        <code>
+        	public cclass OuterA {
+				public cclass InnerA {
+					public void m() {
+					}
+				}
+				public cclass InnerB {
+					protected void m() {
+					}
+				}
+			}
+			public cclass OuterB extends OuterA {
+				public cclass InnerA {
+				}
+				public cclass InnerB extends InnerA {
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="METHOD_ACCESS_DIFFERENT"  id="vcvis004" description="restricting access in overriden method protected -> private">
+        <code>
+        	public cclass OuterA {
+				protected void m() {
+				}
+			}
+			public cclass OuterB extends OuterA {
+				private void m() {
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="CCLASS_PACKAGE_VISIBILITY"  id="vcvis006" description="package visible fields">
+        <code>
+        	public cclass OuterA {
+			    int x;
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="CCLASS_PACKAGE_VISIBILITY"  id="vcvis007" description="package visible methods">
+        <code>
+        	public cclass OuterA {
+			    void m() {}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="METHOD_NOT_FOUND"  id="vcvis008" description="accessing private method from subclass">
+        <code>
+        	public cclass ClassA {
+				private void m() {
+				}
+			}
+			public cclass ClassB extends ClassA {
+				public void n() {
+					m();
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="METHOD_NOT_FOUND"  id="vcvis009" description="accessing private method from inner class">
+        <code>
+        	public cclass OuterA {
+				private void m() {
+				}
+				public cclass InnerA {
+					public void n() {
+						OuterA.this.m();
+					}
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="METHOD_NOT_FOUND"  id="vcvis010" description="accessing protected method from inner class">
+        <code>
+        	public cclass OuterA {
+				protected void m() {
+				}
+				public cclass InnerA {
+					public void n() {
+						OuterA.this.m();
+					}
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="METHOD_NOT_FOUND"  id="vcvis011" description="accessing protected of the another same class object">
+        <code>
+        	public cclass OuterA {
+				protected void n() {
+				}
+				public void m(OuterA a) {
+					a.n();
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="METHOD_NOT_FOUND"  id="vcvis012" description="accessing protected of newly created same class object">
+        <code>
+        	public cclass OuterA {
+				protected void n() {
+				}
+				public void m() {
+					new OuterA().n();
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="CCLASS_CTOR_PUBLIC"  id="vcvis013" description="protected cclass constructor">
+        <code>
+        	public class Test {
+				public void test() {
+					ClassA a = new ClassA();
+				}
+			}
+			public cclass ClassA {
+				protected ClassA() {
+				}
+			}
+        </code>
+    </compile-check-error>
+	    
+</testsuite>
