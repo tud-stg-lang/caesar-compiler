@@ -32,15 +32,15 @@ cclass TestCase_1 {
 	 *
 	 */
 	public void test() {
-		deploy(new InnerAspect()) {
+		deploy(new TestCase_1_Impl.InnerAspect_Impl()) {
 			foo();
 		}
 
-		deploy(new InnerAspect_Sub()) {
+		deploy(new TestCase_1_Impl.InnerAspect_Sub_Impl()) {
 			foo();
 		}
 
-		deploy(new InnerAspect_Sub_Sub()) {
+		deploy(new TestCase_1_Impl.InnerAspect_Sub_Sub_Impl()) {
 			foo();
 		}	
 	}

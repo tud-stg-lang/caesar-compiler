@@ -1,5 +1,7 @@
 package org.caesarj.compiler.types;
 
+import java.util.StringTokenizer;
+
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
@@ -28,7 +30,13 @@ public class CCompositeNameType extends CClassNameType {
         
         for(int i=0; i<refType.length; i++) {
             checkedImplTypes[i] = 
-                (CReferenceType)(new CClassNameType(refType[i].getQualifiedName()+"_Impl")).checkType(context);
+                (CReferenceType)(
+                    new CClassNameType(
+                        mapToImplClassName(
+                            refType[i].getQualifiedName()
+                        )
+                    )
+                ).checkType(context);
             
             checkedInterfaceTypes[i] = 
                 (CReferenceType)refType[i].checkType(context);
@@ -48,6 +56,22 @@ public class CCompositeNameType extends CClassNameType {
             // CTODO create correct error message
 			throw new UnpositionedError(CaesarMessages.CANNOT_CREATE, new Object[]{"composite supertype"}, e);
 		}
+    }
+
+    // CTODO !!! code replication, see CClassFactory
+    private String mapToImplClassName(String fullQualifiedName) {
+        StringBuffer res = new StringBuffer();
+        StringTokenizer tok = new StringTokenizer(fullQualifiedName, "/");
+        
+        while(tok.hasMoreTokens()) {
+            String token = tok.nextToken();
+            res.append(token);
+            res.append("_Impl");
+            if(tok.hasMoreTokens())
+                res.append('/');
+        }
+        
+        return res.toString();
     }
 
     public CClassNameType[] getTypeList() {

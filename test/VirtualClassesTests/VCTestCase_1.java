@@ -24,19 +24,28 @@ public class VCTestCase_1 extends TestCase {
 public cclass _VCTestCase_1 {
     
     public void test() {
-        G g = new ColG();
-        G_Impl.UEdge ue = g.createUEdge();
+        G g = new _VCTestCase_1_Impl.ColG_Impl();
+        G.UEdge ue = g.$newUEdge();
+        
         System.out.println("***"+ue.getClass().getName());
+        g.doSomethingWithEdge(ue);
+        System.out.println("***");
     }
     
+    
     public static cclass G {
+        public void doSomethingWithEdge(G.UEdge edge) {
+            System.out.println(edge.getName());
+        }
         
-        public G_Impl.UEdge createUEdge() {
+        public G.UEdge $newUEdge() {
             return new G_Impl.UEdge_Impl();
         }
         
         public static cclass Edge {
-            
+            public String getName() {
+                return "name";
+            }
         }
         
         public static cclass UEdge extends Edge {
@@ -44,49 +53,28 @@ public cclass _VCTestCase_1 {
         }
     }
     
+    
     public static cclass ColG extends G {
+        public void doSomethingWithEdge(G.UEdge edge) {
+            ColG.UEdge e = (ColG.UEdge)edge;
+            System.out.println(e.getName());
+            System.out.println(e.getColor());
+        }
 
-        public G_Impl.UEdge createUEdge() {
+        public G.UEdge $newUEdge() {
             return new ColG_Impl.UEdge_Impl();
         }        
 
-        public static cclass Edge extends G_Impl.Edge {
-            
+        public static cclass Edge extends G.Edge {
+            public java.awt.Color getColor() {
+                return java.awt.Color.BLACK;
+            }
         }
         
-        public static cclass UEdge extends Edge & G_Impl.UEdge {
+        public static cclass UEdge extends Edge & G.UEdge {
             public UEdge() {
                 super();
             }
         }
     }
-    
 }
-
-/*
-public cclass _VCTestCase_1 {
-    
-    public void test() {
-        X x = new X();
-        X_Impl.D d = new X_Impl.D_Impl();
-
-        System.out.println(d.a());
-        System.out.println(d.b());
-        System.out.println(d.c());
-        System.out.println(d.d());
-    }
-    
-    public static cclass X {
-        public static cclass D extends B & C {
-            public D() {
-                System.out.println("hohoho D");
-            }
-        
-            public String d() {
-                return a()+'-'+b()+'-'+c();
-            }    
-        }
-    }
-}
-*/
-

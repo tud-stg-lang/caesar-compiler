@@ -27,10 +27,10 @@ cclass TestCase_0 {
     }
 
 	public void test() {
-		deploy(new InnerAspect()) {
+		deploy(new TestCase_0_Impl.InnerAspect_Impl()) {
 			foo();
             
-            deploy(new InnerAspect_Sub()) {
+            deploy(new TestCase_0_Impl.InnerAspect_Sub_Impl()) {
                 foo();
             }
 		}
