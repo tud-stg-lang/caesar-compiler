@@ -1,14 +1,13 @@
 package org.caesarj.compiler.classmixer;
 
-/*
- * Created on 01.03.2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 
 /**
- * @version $Revision: 1.2 $ $Date: 2004-03-05 20:25:05 $
+ * Abstract class for general mixin representation
+ * 
+ * <p> Implementations can be class based mixins, method
+ * based mixins or default mixins
+ * 
+ * @version $Revision: 1.3 $ $Date: 2004-03-05 20:36:23 $
  * @author Diana Kapsa
  * 
  */

@@ -1,10 +1,11 @@
 package org.caesarj.compiler.classmixer;
 
 /**
- * @version $Revision: 1.2 $ $Date: 2004-03-05 20:25:05 $
+ * Representation of method based mixin
+ * 
+ * @version $Revision: 1.3 $ $Date: 2004-03-05 20:36:23 $
  * @author Diana Kapsa
  * 
- * representation of method based mixin
  */
 
 import org.apache.bcel.classfile.*;

@@ -1,13 +1,11 @@
 package org.caesarj.compiler.classmixer;
-
-/*
- * Created on 02.03.2004
- *
- * realization of a vector of mixins
- */
-
 /**
- * @version $Revision: 1.2 $ $Date: 2004-03-05 20:25:05 $
+ * Implementation of a vector of mixins
+ * 
+ * <p> This data structure is the main storage structure for 
+ * mixin lists within mixins, especially within class based mixins.
+ * 
+ * @version $Revision: 1.3 $ $Date: 2004-03-05 20:36:23 $
  * @author Diana Kapsa
  * 
  */

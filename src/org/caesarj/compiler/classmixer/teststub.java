@@ -1,13 +1,10 @@
 package org.caesarj.compiler.classmixer;
 
-/*
- * Created on 06.02.2004
- * Diana Kapsa
- * teststub for running merge algorithm
- */
- 
 /**
- * @version $Revision: 1.2 $ $Date: 2004-03-05 20:25:05 $
+ * Temporary launching and testing stub for the class mixer
+ * JUnit Tests will be implemented instead
+ * 
+ * @version $Revision: 1.3 $ $Date: 2004-03-05 20:36:23 $
  * @author Diana Kapsa
  * 
  */

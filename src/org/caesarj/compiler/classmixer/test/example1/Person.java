@@ -1,11 +1,9 @@
-/*
- * Created on 27.01.2004
- *
-  */
 package org.caesarj.compiler.classmixer.test.example1;
 
 /**
- * @version $Revision: 1.2 $ $Date: 2004-03-05 20:25:05 $
+ * Test class
+ * 
+ * @version $Revision: 1.3 $ $Date: 2004-03-05 20:36:23 $
  * @author Diana Kapsa
  * 
  */
