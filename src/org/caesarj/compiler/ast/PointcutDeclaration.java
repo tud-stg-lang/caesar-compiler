@@ -36,6 +36,8 @@ public class PointcutDeclaration extends FjMethodDeclaration {
 	/**The corresponding Pointcut.*/
 	private Pointcut pointcut;
 
+	private boolean checked=false;
+
 	/**
 	 * Constructor for PointcutDeclaration.
 	 * @param where
@@ -109,7 +111,7 @@ public class PointcutDeclaration extends FjMethodDeclaration {
 				getTokenReference());
 
 		crosscuttingClass.addResolvedPointcut(rpd);
-			
+		checked=true;
 		return null;
 	}
 
@@ -146,13 +148,8 @@ public class PointcutDeclaration extends FjMethodDeclaration {
 		classContext.setBindings(
 			(FormalBinding[]) formalBindings.toArray(new FormalBinding[0]));
 
-		if ((modifiers & ACC_ABSTRACT) == 0) {
-//XXX CHANGE I just ignore double resolving pointcuts. seems to work. 
-			try{
+		if (((modifiers & ACC_ABSTRACT) == 0)&&!checked) {
 				pointcut.resolve(new CaesarScope((FjClassContext) context, caller));
-			}catch(org.aspectj.weaver.BCException e){
-				System.out.println(e+ " in pointcut " +pointcut);
-			}
 		}
 
 		ResolvedPointcutDefinition rpd =
@@ -165,8 +162,17 @@ public class PointcutDeclaration extends FjMethodDeclaration {
 
 		return rpd;
 	}
+
 	
 public String toString(){
 		return pointcut.toString();
 	}
+
+	/**
+	 * @return Returns the checked.
+	 */
+	public boolean isChecked() {
+		return checked;
+	}
+
 }

@@ -450,6 +450,7 @@ public class FjClassDeclaration
 
 		}
 
+	
 		//ckeckInterface of the pointcuts
 		for (int j = 0; j < pointcuts.length; j++)
 		{

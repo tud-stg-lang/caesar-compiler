@@ -140,22 +140,16 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
 			}				
 
 			try {
-				boolean isRegistry=false;
-				for (int i=0; i<interfaces.length&&!isRegistry;i++){
-					if(interfaces[i].getIdent().equals("AspectRegistry"))
-						isRegistry=true;
-				}
+				
 				wouldBeSuperClass=(CReferenceType) new CClassNameType(
 				superClassName.intern()).checkType(self);
-				System.out.println(ident+" mypc: "+pointcuts.length);
-				System.out.println(crosscuttingClass.getIdent()+" ccpc: "+crosscuttingClass.getPointcuts().length);
-				if(isRegistry&&(!CModifier.contains(crosscuttingClass.getSuperClass().getCClass().getModifiers(),ACC_ABSTRACT))){
+				if(isRegistry()&&(!CModifier.contains(crosscuttingClass.getSuperClass().getCClass().getModifiers(),ACC_ABSTRACT))){
 				
 //					//setPointcuts(crosscuttingClass.getPointcuts());
 					crosscuttingClass.setPointcuts(new PointcutDeclaration[0]);
 					pointcuts=new PointcutDeclaration[0];
 				}							
-				if(isRegistry&&
+				if(isRegistry()&&
 					(!CModifier.contains(
 										crosscuttingClass.getModifiers(),
 										ACC_ABSTRACT)
@@ -176,10 +170,26 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
 	
 			context.reportTrouble(e.addPosition(getTokenReference()));
 		}
-	}
-	super.checkInterface(context);
+
+			if(isRegistry()&&CModifier.contains(
+										wouldBeSuperClass.getCClass().getModifiers(),
+										ACC_ABSTRACT))
+				pointcuts=crosscuttingClass.getPointcuts();
+			
+	    }
+		    
+    super.checkInterface(context);
 }
 
+	private boolean isRegistry(){
+		boolean isRegistry=false;
+		for (int i=0; i<interfaces.length&&!isRegistry;i++){
+			if(interfaces[i].getIdent().equals("AspectRegistry"))
+				isRegistry=true;
+		}
+		return isRegistry;
+	}
+	
 /**
  * weaves calls to the given Method in the superclass
  * @param method the method to call in the superClass
@@ -206,7 +216,7 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
 		}		
 		JExpression methodCall =
 			new FjMethodCallExpression(TokenReference.NO_REF, fac, methodName, args);
-		System.out.println("weaved in: "+dprefix+methodName+"("+argString+")");
+//		System.out.println("weaved in: "+dprefix+methodName+"("+argString+")");
 		newStatements[deployStatements.length] = new JExpressionStatement(TokenReference.NO_REF, methodCall, null);
 		method.setBlockBody(new JBlock(TokenReference.NO_REF,newStatements,null));
 	}

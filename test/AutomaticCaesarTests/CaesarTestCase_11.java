@@ -29,7 +29,6 @@ public class CaesarTestCase_11 extends TestCase {
 
 	public void foo(String s) {
 		result.append(":foo");
-		System.out.println(":foo");
 	}
 
 }
@@ -39,7 +38,6 @@ public class CaesarTestCase_11 extends TestCase {
 	
 		before(String s) : execFoo(s) {
 			CaesarTestCase_11.result.append(":before foo(" + s +")");
-			System.out.println(":before foo(" + s +")");
 		}
 	}
 

@@ -2489,6 +2489,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		 */
 		FjClassDeclaration singletonAspect=null;
 		
+		
 			if((!CModifier.contains(aspectClass.getModifiers(),ACC_ABSTRACT))
 			){
 				
@@ -2511,8 +2512,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 					null,
 						//in concrete Aspects, COPY the pointcuts to the singleton. 
 						// Only the Pointcutresolver complains.
-					aspectClass.getPointcuts(),
-					//new PointcutDeclaration[0],
+					//aspectClass.getPointcuts(),
+					new PointcutDeclaration[0],
 					modifiedAdvices,
 					aspectClass.getDeclares(),
 					aspectClass,
