@@ -21,20 +21,18 @@ public class TypeSysTestCase {
 	}
 
 	void foo2() {
-	    b.x1.N n;
-	    n = b.n1;
+	    b.x1.N n = b.n1;
 	}
 	
 	void 	m1(b.g1.X x) 		{ }
 	void 	m2(final G g, g.X x) 	{ }	
-	b.g1.X 	m3() 					{ return null; }
-	g.X 	m4(final G g) 			{ return null; }
-	g.X 	m5(final G g, g.X x) 	{ return null; }
+	b.g1.X 	m3() 					{ {{return b.g1.new X();}} }
+	g.X 	m4(final G g) 			{ {return g.new X();} }
+	g.X 	m5(final G g, g.X x) 	{ return g.new X(); }
 	b.g1.X 	m6(final G g, g.X x) 	{ return null; }
 	void 	m7(final G g, g.X x, x.N n) {}
 	g.X		m8(final G g, g.X x, x.N n) {return null;}
 }
-
 
 public cclass B {
     public final G g1 = null;
@@ -49,7 +47,7 @@ public cclass B {
 
 public cclass G {
     public cclass X {
-        public N x() { return null; }
+        public N x() { return new N(); }
         public cclass N {}
     }    
 }
