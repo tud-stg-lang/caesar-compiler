@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JVariableDefinition.java,v 1.3 2004-09-09 14:35:57 aracic Exp $
+ * $Id: JVariableDefinition.java,v 1.4 2004-10-18 16:06:59 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -24,11 +24,11 @@ import org.caesarj.compiler.ast.phylum.expression.JArrayInitializer;
 import org.caesarj.compiler.ast.phylum.expression.JCastExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
+import org.caesarj.compiler.cclass.CastUtils;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CExpressionContext;
-import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CArrayType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
@@ -157,36 +157,16 @@ public class JVariableDefinition extends JLocalVariable {
       // change this adn add an extra class CjVariableDefinition
       CType exprType = expr.getType(factory);
       
-      if(exprType.isClassType()) {
-          CClass contextClass = context.getClassContext().getCClass();
-          
-	      if(exprType.getCClass().isMixinInterface() && contextClass.isMixin()) {
-	          String newRightClassQn = 
-	              context.getEnvironment().getCaesarTypeSystem().
-	              	findInContextOf(
-	              	    	exprType.getCClass().getQualifiedName(),
-		                    contextClass.convertToIfcQn()
-		                );
-	          
-	          if(newRightClassQn != null) {
-		            CClass newPrefixClass = 
-		                context.getClassReader().loadClass(
-		                    factory,
-		                    newRightClassQn
-		                );
-		            
-		            CType newRightType = newPrefixClass.getAbstractType();          
-		            
-		            expr = new JCastExpression(
-	                    getTokenReference(),
-	                    expr,
-	                    newRightType
-	                );
-		            	            
-		            expr = expr.analyse(new CExpressionContext(context, context.getEnvironment()));
-	          }
-	      }
+      CType castType = CastUtils.instance().castFrom(context, exprType, context.getClassContext().getCClass());
+      
+      if(castType != null) {
+          expr = new JCastExpression(
+              getTokenReference(),
+              expr,
+              castType
+          );
       }
+      
 
       check(context,
 	    expr.isAssignableTo(context, type),

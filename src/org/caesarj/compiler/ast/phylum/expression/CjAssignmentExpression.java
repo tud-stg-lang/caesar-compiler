@@ -15,11 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjAssignmentExpression.java,v 1.4 2004-10-15 15:34:25 aracic Exp $
+ * $Id: CjAssignmentExpression.java,v 1.5 2004-10-18 16:06:59 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
+import org.caesarj.compiler.cclass.CastUtils;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.export.CClass;
@@ -58,39 +59,20 @@ public class CjAssignmentExpression extends JBinaryExpression {
         
         CType rightType = right.getType(factory);
         
-        if(rightType.isClassType()) {
-		    CClass rightClass = rightType.getCClass();
-		        
-		    if(rightClass.isMixinInterface() && contextClass.isMixin()) {
-	            String newRightClassQn = 
-	                context.getEnvironment().getCaesarTypeSystem().
-	                	findInContextOf(
-	                	    rightClass.getQualifiedName(),
-		                    contextClass.convertToIfcQn()
-		                );
-	            
-	            if(newRightClassQn != null) {
-		            CClass newPrefixClass = 
-		                context.getClassReader().loadClass(
-		                    factory,
-		                    newRightClassQn
-		                );
-		            
-		            CType newRightType = newPrefixClass.getAbstractType();          
-		            
-		            expr = new JAssignmentExpression(
-		                getTokenReference(),
-		                left,
-		                new JCastExpression(
-		                    getTokenReference(),
-		                    right,
-		                    newRightType
-		                )
-		            );
-	            }	        
-	        }  
+        CType castType = CastUtils.instance().castFrom(context, rightType, contextClass);
+        
+        if(castType != null) {
+            expr = new JAssignmentExpression(
+                getTokenReference(),
+                left,
+                new JCastExpression(
+                    getTokenReference(),
+                    right,
+                    castType
+                )
+            );
         }
-
+        
         return expr.analyse(context);
     }
 

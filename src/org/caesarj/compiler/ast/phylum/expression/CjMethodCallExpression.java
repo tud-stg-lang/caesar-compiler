@@ -1,6 +1,7 @@
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.ast.visitor.IVisitor;
+import org.caesarj.compiler.cclass.CastUtils;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
@@ -48,50 +49,23 @@ public class CjMethodCallExpression extends JExpression implements CaesarConstan
 	        prefix = prefix.analyse(context);
 	                
 	        CType prefixType = prefix.getType(factory);
-	        CClass prefixClass = prefixType.getCClass();
 	        
 	        CClass contextClass = context.getClassContext().getCClass();
 	        
 	        expr = new JMethodCallExpression(getTokenReference(), prefix, ident, args);
 	        
-	        if(
-	            (prefixClass.isMixinInterface() /*|| prefixClass.isMixin()*/)
-	            && contextClass.isMixin()
-	        ) {
-	            
-	            /*
-	            if(prefixClass.isMixin()) {
-	                prefixType = prefixClass.getInterfaces()[0];
-	                prefixClass = prefixType.getCClass();
-	            }
-	            */
-	            
-	            String newPrefixClassQn = 
-	                context.getEnvironment().getCaesarTypeSystem().
-	                	findInContextOf(
-		                    prefixClass.getQualifiedName(),
-		                    contextClass.convertToIfcQn()
-		                );
-	            
-	            if(newPrefixClassQn != null) {
-		            CClass newPrefixClass = 
-		                context.getClassReader().loadClass(
-		                    factory,
-		                    newPrefixClassQn
-		                );
-		            
-		            CType newPrefixType = newPrefixClass.getAbstractType();          
-		            
-		            expr = new JMethodCallExpression(
-		                getTokenReference(),
-		                new JCastExpression(
-		                    getTokenReference(),
-		                    prefix,
-		                    newPrefixType
-		                ),
-		                ident, args
-		            );
-	            }
+	        CType castType = CastUtils.instance().castFrom(context, prefixType, contextClass);
+	        
+	        if(castType != null) {
+	            expr = new JMethodCallExpression(
+	                getTokenReference(),
+	                new JCastExpression(
+	                    getTokenReference(),
+	                    prefix,
+	                    castType
+	                ),
+	                ident, args
+	            );
 	        }
         }  
         else {
