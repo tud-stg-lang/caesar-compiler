@@ -47,7 +47,22 @@ public class CaesarTypeGraphGenerator {
             new JavaQualifiedName(thisClass.getQualifiedName()), 
 			CaesarTypeNode.DECLARED
         );
-                
+         
+        // check inner outer relations
+        if(ownerClass != null) {
+            CaesarTypeNode ownerNode = g.getTypeCreateIfNotExsistent(
+                new JavaQualifiedName(ownerClass.getQualifiedName()),
+				CaesarTypeNode.DECLARED
+            );
+            new OuterInnerRelation(ownerNode, thisNode);
+        }
+        else {
+            g.getTopClassRoot().add(thisNode);
+        }
+        
+        // check super type relations
+        // shift super class references to the context of the thisNode
+        // if thisNode is not a top level class
         if(superTypes.length > 0) {
             for(int i=0; i<superTypes.length; i++) {
                 if(superTypes[i].getCClass().isMixinInterface()) {
@@ -55,6 +70,10 @@ public class CaesarTypeGraphGenerator {
                     // super class can only be from the direct enclosing parent
                     JavaQualifiedName superQn = null;
 
+                    if(thisNode.getQualifiedName().toString().endsWith("InnerB")) {
+                        boolean stop = true;
+                    }
+                    
                     if(!thisNode.isTopLevelClass()) {
 	                    superQn = new JavaQualifiedName(
 	                        thisNode.getQualifiedName().getPrefix()
@@ -80,19 +99,6 @@ public class CaesarTypeGraphGenerator {
             g.getInheritanceRoot().add(thisNode);
         }
 
-        if(ownerClass != null) {
-            CaesarTypeNode ownerNode = g.getTypeCreateIfNotExsistent(
-                new JavaQualifiedName(ownerClass.getQualifiedName()),
-				CaesarTypeNode.DECLARED
-            );
-            new OuterInnerRelation(ownerNode, thisNode);
-        }
-        else {
-            g.getTopClassRoot().add(thisNode);
-        }
-
-        //thisNode.setDeclaration(decl);
-        
         // recurse into inners (here we can be sure all inners has ACC_CCLASS_INTERFACE)
 		JTypeDeclaration inners[] = decl.getInners();        
         for(int i=0; i<inners.length; i++)
