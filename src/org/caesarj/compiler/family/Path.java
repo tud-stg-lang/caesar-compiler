@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Path.java,v 1.14 2005-02-07 18:23:54 aracic Exp $
+ * $Id: Path.java,v 1.15 2005-02-09 16:50:18 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -38,6 +38,7 @@ import org.caesarj.compiler.ast.phylum.expression.JLocalVariableExpression;
 import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
 import org.caesarj.compiler.ast.phylum.expression.JQualifiedInstanceCreation;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
+import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
@@ -60,7 +61,10 @@ import org.caesarj.util.UnpositionedError;
  */
 public abstract class Path {       
 
+    public static final Path NULL = new Null();
+    
     private static final String ANONYMOUS_FIELD_ACCESS = "$".intern();
+    
     Path prefix;
     CReferenceType type;
     
@@ -110,6 +114,10 @@ public abstract class Path {
     
     /**
      * Create a path from an expression.
+     * 
+     * CTODO this has to be refactored, some of the ast elements implements
+     * the generation of the path by themself
+     * 
      * @param contextClass The context in which the expression should be analysed
      * @param expr	The expression containing the path
      */
@@ -121,7 +129,10 @@ public abstract class Path {
         boolean done = false;
         
         while (!done){
-            if(tmp instanceof JQualifiedInstanceCreation){
+            if(tmp instanceof JNullLiteral) {
+                return NULL;
+            }
+            else if(tmp instanceof JQualifiedInstanceCreation){
                 JQualifiedInstanceCreation qc = (JQualifiedInstanceCreation) tmp;
                 
                 CReferenceType type = (CReferenceType)qc.getType(context.getTypeFactory());
@@ -260,10 +271,6 @@ public abstract class Path {
                 
         for (Iterator it = path.iterator(); it.hasNext();) {
             Path p = (Path) it.next();
-
-            if(p.getType().getCClass().isNested() && !p.getType().getCClass().isMixinInterface()) {                
-                throw new UnpositionedError(CaesarMessages.INNER_PLAIN_JAVA_OBJECTS_IN_PATH);
-            }            
             
             p.prefix = result;
             result = p;
@@ -272,9 +279,22 @@ public abstract class Path {
         return result;        
     }
     
+    /**
+     * @return true if this path contains java elements
+     */
+    public boolean containsJavaElements() {
+        if(getType().getCClass().isNested() && !getType().getCClass().isMixinInterface()) {
+            return true;
+        }   
 
-    public boolean equals(Path other) {
-        return other.toString().equals(this.toString());
+        if(prefix != null)
+            return prefix.containsJavaElements();
+        else
+            return false;
+    }    
+    
+    public boolean isAssignableTo(Path other) {        
+        return this==NULL || other.toString().equals(this.toString());
     }
     
     public Path getHead() {
@@ -306,7 +326,7 @@ public abstract class Path {
     
     protected abstract Path _normalize(Path pred, Path tail) throws UnpositionedError;
     
-    protected abstract Path clonePath();
+    public abstract Path clonePath();
 
     public Path append(Path other) {
         other.getHead().prefix = this;
