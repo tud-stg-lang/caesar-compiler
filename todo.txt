@@ -1,0 +1,26 @@
+HIGH PRIORITY
+
+- vc specific error messages
+- Substitution of new calls
+- Name clashes -> compiler error
+- checkInterface -> redefined cclass methods have to keep complete parents throwable list
+
+LOW PRIORITY
+
+- incremental compilation
+- mixins with support classes for dynamic deployement
+
+
+WORK DONE
+
+- typesystem graphs
+- extended compiler controllflow
+- class generator component
+
+
+FUTURE WORK
+
+- Integration into eclipse GUI 
+	-> can we use type system graphs for adding extra informations to outline views
+- better constructor support
+- CIs
