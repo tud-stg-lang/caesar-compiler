@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.caesarj.compiler.typesys.util.JavaQualifiedName;
+import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 
 /**
  * ...

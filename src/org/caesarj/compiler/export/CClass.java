@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.19 2004-07-09 13:25:14 aracic Exp $
+ * $Id: CClass.java,v 1.20 2004-07-15 15:16:05 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -31,7 +31,6 @@ import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
-import org.caesarj.compiler.cclass.JavaQualifiedName;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CField;
@@ -42,6 +41,7 @@ import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.SimpleStringBuffer;
@@ -1707,7 +1707,8 @@ public abstract class CClass extends CMember
 			return false;
 		}
 	}
-	
+
+	// CTODO this here is not nice
 	public String convertToIfcQn() {
 		return new JavaQualifiedName(getQualifiedName()).convertToIfcName().toString();
 	}

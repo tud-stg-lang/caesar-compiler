@@ -1,9 +1,3 @@
-/*
- * Created on 08.02.2004
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package org.caesarj.compiler.typesys.graph;
 
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
@@ -12,10 +6,10 @@ import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.typesys.util.JavaQualifiedName;
+import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 
 /**
- * Generated source graph.
+ * Traverses AST and generates type graph for all types declared in the source code.
  * 
  * @author Ivica Aracic
  */

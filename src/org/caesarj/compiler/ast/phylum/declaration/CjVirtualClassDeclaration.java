@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.5 2004-07-09 14:26:32 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.6 2004-07-15 15:15:55 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -33,10 +33,6 @@ import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
-import org.caesarj.compiler.cclass.CaesarTypeNode;
-import org.caesarj.compiler.cclass.CaesarTypeSystem;
-import org.caesarj.compiler.cclass.JavaQualifiedName;
-import org.caesarj.compiler.cclass.JavaTypeNode;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CMethod;
@@ -45,6 +41,11 @@ import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.compiler.typesys.CaesarTypeSystem;
+import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
+import org.caesarj.compiler.typesys.graph.OuterInnerRelation;
+import org.caesarj.compiler.typesys.java.JavaQualifiedName;
+import org.caesarj.compiler.typesys.java.JavaTypeNode;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
@@ -223,8 +224,8 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         
         CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
 
-        CaesarTypeNode typeNode = typeSystem.getCompleteGraph().getType(qualifiedName);
-        JavaTypeNode javaTypeNode = typeSystem.getJavaGraph().getJavaTypeNode(typeNode);
+        CaesarTypeNode typeNode = typeSystem.getCaesarTypeGraph().getType(qualifiedName);
+        JavaTypeNode javaTypeNode = typeSystem.getJavaTypeGraph().getJavaTypeNode(typeNode);
         
         javaTypeNode.setCClass(getCClass());
         javaTypeNode.setDeclaration(this);
@@ -235,69 +236,67 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         List newImpls = new LinkedList();
         List newIfcs  = new LinkedList();           
         
-        for(Iterator it = typeNode.getInners().values().iterator(); it.hasNext(); ) {
-            CaesarTypeNode subNode = (CaesarTypeNode)it.next();
-
-            if(subNode.isImplicit()) {
-                // generate here
-                CjMixinInterfaceDeclaration ifcDecl = 
-                    new CjMixinInterfaceDeclaration(
-                        getTokenReference(),
-                        ACC_PUBLIC,
-                        subNode.getQualifiedName().getIdent(),
-                        new CReferenceType[0],
-                        new JFieldDeclaration[0],
-                        new JMethodDeclaration[0],
-                        new JTypeDeclaration[0],
-                        new JPhylum[0]
-                    ); 
-                
-                ifcDecl.generateInterface(
-                    context.getClassReader(), 
-                    getMixinIfcDeclaration().getCClass(), 
-                    subNode.getQualifiedName().getPrefix()
+        for(Iterator it = typeNode.implicitInners(); it.hasNext(); ) {
+            CaesarTypeNode subNode = ((OuterInnerRelation)it.next()).getInnerNode();
+            
+            // generate here
+            CjMixinInterfaceDeclaration ifcDecl = 
+                new CjMixinInterfaceDeclaration(
+                    getTokenReference(),
+                    ACC_PUBLIC,
+                    subNode.getQualifiedName().getIdent(),
+                    new CReferenceType[0],
+                    new JFieldDeclaration[0],
+                    new JMethodDeclaration[0],
+                    new JTypeDeclaration[0],
+                    new JPhylum[0]
+                ); 
+            
+            ifcDecl.generateInterface(
+                context.getClassReader(), 
+                getMixinIfcDeclaration().getCClass(), 
+                subNode.getQualifiedName().getPrefix()
+            );
+            
+            ifcDecl.join(context);
+            
+            CjVirtualClassDeclaration implDecl =
+                new CjVirtualClassDeclaration(
+                    getTokenReference(),
+                    ACC_PUBLIC,
+                    subNode.getQualifiedImplName().getIdent(),
+                    new CTypeVariable[0],
+                    context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT),
+                    null, // wrappee
+                    new CReferenceType[]{ifcDecl.getCClass().getAbstractType()}, // CTODO ifcs
+                    new JFieldDeclaration[0],
+					new JMethodDeclaration[0],
+                    new JTypeDeclaration[0],
+                    new JPhylum[0]
                 );
-                
-                ifcDecl.join(context);
-                
-                CjVirtualClassDeclaration implDecl =
-                    new CjVirtualClassDeclaration(
-                        getTokenReference(),
-                        ACC_PUBLIC,
-                        subNode.getQualifiedImplName().getIdent(),
-                        new CTypeVariable[0],
-                        context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT),
-                        null, // wrappee
-                        new CReferenceType[]{ifcDecl.getCClass().getAbstractType()}, // CTODO ifcs
-                        new JFieldDeclaration[0],
-						new JMethodDeclaration[0],
-                        new JTypeDeclaration[0],
-                        new JPhylum[0]
-                    );
-                
-                implDecl.generateInterface(
-                    context.getClassReader(),   
-                    this.getCClass(), 
-                    subNode.getQualifiedImplName().getPrefix()
-                );
-                
-                implDecl.join(context); // CTODO do we need this join here?
-                
-                implDecl.getCClass().close(
-                    implDecl.getInterfaces(),
-                    new Hashtable(),
-                    CMethod.EMPTY
-                );
-                
-                implDecl.setMixinIfcDeclaration(ifcDecl);
-                ifcDecl.setCorrespondingClassDeclaration(implDecl);
-                
-                newImpls.add(implDecl);
-                newIfcs.add(ifcDecl);
-                
-                // and recurse into
-                implDecl.createImplicitCaesarTypes(context);
-            }
+            
+            implDecl.generateInterface(
+                context.getClassReader(),   
+                this.getCClass(), 
+                subNode.getQualifiedImplName().getPrefix()
+            );
+            
+            implDecl.join(context); // CTODO do we need this join here?
+            
+            implDecl.getCClass().close(
+                implDecl.getInterfaces(),
+                new Hashtable(),
+                CMethod.EMPTY
+            );
+            
+            implDecl.setMixinIfcDeclaration(ifcDecl);
+            ifcDecl.setCorrespondingClassDeclaration(implDecl);
+            
+            newImpls.add(implDecl);
+            newIfcs.add(ifcDecl);
+            
+            // and recurse into
+            implDecl.createImplicitCaesarTypes(context);
         }
         
         // recurse in original inners
@@ -329,8 +328,8 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
             
             CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
 
-            CaesarTypeNode typeNode = typeSystem.getCompleteGraph().getType(qualifiedName);
-            JavaTypeNode javaTypeNode = typeSystem.getJavaGraph().getJavaTypeNode(typeNode);
+            CaesarTypeNode typeNode = typeSystem.getCaesarTypeGraph().getType(qualifiedName);
+            JavaTypeNode javaTypeNode = typeSystem.getJavaTypeGraph().getJavaTypeNode(typeNode);
             
             
             /*

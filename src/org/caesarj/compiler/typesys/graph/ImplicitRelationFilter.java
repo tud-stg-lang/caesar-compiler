@@ -4,7 +4,8 @@ import java.util.Iterator;
 
 
 /**
- * ...
+ * Iterates over a collection of Relation objects.
+ * Can filter out implicit/explicit relations.
  * 
  * @author Ivica Aracic
  */
@@ -12,7 +13,7 @@ public class ImplicitRelationFilter implements Iterator {
 
 	private boolean ignoreImplicit;
 	private Iterator it;
-	private Relation nextRelation = null;
+	private BidirectionalRelation nextRelation = null;
 	private boolean hasNext;
 	
 	public ImplicitRelationFilter(Iterator it, boolean ignoreImplicit) {
@@ -24,7 +25,7 @@ public class ImplicitRelationFilter implements Iterator {
 	private void searchNextValidElement() {
 		hasNext = false;
 		while(it.hasNext()) {
-			Relation rel = (Relation)it.next();
+			BidirectionalRelation rel = (BidirectionalRelation)it.next();
 			if((rel.isImplicit() && !ignoreImplicit) || (!rel.isImplicit() && ignoreImplicit)) {
 				hasNext = true;
 				nextRelation = rel;

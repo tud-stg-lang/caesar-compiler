@@ -1,9 +1,15 @@
-package org.caesarj.compiler.cclass;
+package org.caesarj.compiler.typesys.java;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
 
 
 /**
@@ -93,7 +99,7 @@ public class JavaTypeNode {
         res.append("]"); 
 
         res.append(" [M:");
-        res.append(!(type!=null && type.isImplicit()) ? getQualifiedMixinName().toString() : "---");
+        res.append(!(type!=null && type.isImplicitType()) ? getQualifiedMixinName().toString() : "---");
         res.append("]");
                        
         res.append(" [QN:");
@@ -130,7 +136,7 @@ public class JavaTypeNode {
     }
     
     public boolean isToBeGeneratedInAst() {
-        return type != null && type.isImplicit();
+        return type != null && type.isImplicitType();
     }
 
     public CaesarTypeNode getMixin() {
@@ -143,7 +149,7 @@ public class JavaTypeNode {
             setOuter(null);
         }
         else if(type != null) {
-            this.qualifiedName = type.getQualifiedImplName();
+            this.qualifiedName = type.getQualifiedName().convertToImplName();
             
             if(type.getOuter() != null)
                 setOuter(compilationGraph.getJavaTypeNode(type.getOuter()));

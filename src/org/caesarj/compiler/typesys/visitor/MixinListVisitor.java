@@ -10,7 +10,7 @@ import org.caesarj.compiler.typesys.graph.CaesarTypeGraph;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
 import org.caesarj.compiler.typesys.graph.OuterInnerRelation;
 import org.caesarj.compiler.typesys.graph.SuperSubRelation;
-import org.caesarj.compiler.typesys.util.JavaQualifiedName;
+import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.mixer.Linearizator;
 import org.caesarj.mixer.MixerException;
 

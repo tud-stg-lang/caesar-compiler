@@ -1,4 +1,4 @@
-package org.caesarj.compiler.typesys.util;
+package org.caesarj.compiler.typesys.java;
 
 
 /**

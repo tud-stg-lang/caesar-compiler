@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package org.caesarj.compiler.cclass;
+package org.caesarj.compiler.typesys;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,6 +42,8 @@ import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.CVoidType;
 import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
+import org.caesarj.compiler.typesys.java.JavaTypeNode;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
@@ -132,7 +134,7 @@ public class CClassPreparation implements CaesarConstants {
             TypeFactory typeFactory = environment.getTypeFactory();
             ClassReader classReader = environment.getClassReader();
                     
-            Collection allTypes = caesarTypeSystem.getJavaGraph().getAllTypes();        
+            Collection allTypes = caesarTypeSystem.getJavaTypeGraph().getAllTypes();        
             
             for (Iterator it = allTypes.iterator(); it.hasNext();) {
                 JavaTypeNode item = (JavaTypeNode)it.next();                        
@@ -166,10 +168,7 @@ public class CClassPreparation implements CaesarConstants {
                                 null
                             );
                             
-                            CaesarTypeNode topMost = 
-                            	caesarTypeSystem.getCompleteGraph().getType(
-                        			inner.getMixin().getQualifiedName()
-								).getTopmostNode();
+                            CaesarTypeNode topMost = inner.getMixin().getTopmostNode();
                             
                             CClass returnType = classReader.loadClass(
                                 typeFactory, 
@@ -233,7 +232,7 @@ public class CClassPreparation implements CaesarConstants {
         CCompilationUnitContext context =
             new CCompilationUnitContext(compilerBase, environment, cu.getExport());
         
-        Collection typesToGenerate = caesarTypeSystem.getJavaGraph().getTypesToGenerate();        
+        Collection typesToGenerate = caesarTypeSystem.getJavaTypeGraph().getTypesToGenerate();        
         
         for (Iterator it = typesToGenerate.iterator(); it.hasNext();) {
             JavaTypeNode item = (JavaTypeNode) it.next();

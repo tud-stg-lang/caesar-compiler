@@ -1,20 +1,21 @@
 package org.caesarj.compiler.ast.phylum.declaration;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.cclass.CaesarTypeNode;
-import org.caesarj.compiler.cclass.CaesarTypeSystem;
-import org.caesarj.compiler.cclass.JavaQualifiedName;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.compiler.typesys.CaesarTypeSystem;
+import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
+import org.caesarj.compiler.typesys.graph.SuperSubRelation;
+import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
@@ -51,12 +52,12 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
                 );
             
             CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
-            CaesarTypeNode typeNode = typeSystem.getCompleteGraph().getType(qualifiedName);
+            CaesarTypeNode typeNode = typeSystem.getCaesarTypeGraph().getType(qualifiedName);
 
-            List ifcList = new ArrayList(typeNode.getParents().size());
+            List ifcList = new LinkedList();
             
-            for (Iterator it = typeNode.getImplictParentsSubSet().iterator(); it.hasNext();) {
-                CaesarTypeNode parentNode = (CaesarTypeNode) it.next();
+            for (Iterator it = typeNode.implicitParents(); it.hasNext();) {
+                CaesarTypeNode parentNode = ((SuperSubRelation)it.next()).getSuperNode();
                 
                 CReferenceType superTypeRef = 
                     context.getTypeFactory().createType(

@@ -1,4 +1,4 @@
-package org.caesarj.compiler.cclass;
+package org.caesarj.compiler.typesys;
 
 import java.util.ArrayList;
 

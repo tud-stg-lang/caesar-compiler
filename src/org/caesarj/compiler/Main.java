@@ -4,16 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
-import org.caesarj.compiler.cclass.CClassPreparation;
-import org.caesarj.compiler.cclass.CaesarTypeGraphGenerator;
-import org.caesarj.compiler.cclass.JavaTypeGraph;
-import org.caesarj.compiler.cclass.JavaTypeNode;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
@@ -22,6 +22,10 @@ import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.compiler.typesys.CClassPreparation;
+import org.caesarj.compiler.typesys.graph.CaesarTypeGraphGenerator;
+import org.caesarj.compiler.typesys.java.JavaTypeGraph;
+import org.caesarj.compiler.typesys.java.JavaTypeNode;
 import org.caesarj.mixer.ClassGenerator;
 import org.caesarj.mixer.MixerException;
 import org.caesarj.tools.antlr.extra.InputBuffer;
@@ -170,7 +174,7 @@ public class Main extends MainSuper implements Constants {
     
     private void genMixinCopies(KjcEnvironment environment) {
         
-        JavaTypeGraph javaTypeGraph = environment.getCaesarTypeSystem().getJavaGraph();
+        JavaTypeGraph javaTypeGraph = environment.getCaesarTypeSystem().getJavaTypeGraph();
         Collection typesToGenerate = javaTypeGraph.getTypesToGenerate();
         for (Iterator it = typesToGenerate.iterator(); it.hasNext();) {
             JavaTypeNode item = (JavaTypeNode) it.next();
@@ -268,9 +272,10 @@ public class Main extends MainSuper implements Constants {
      */
     protected void generateCaesarTypeSystem(KjcEnvironment environment, JCompilationUnit[] tree) {
         System.out.println("generateDependencyGraph");        
-        for (int i=0; i<tree.length; i++) {
-            CaesarTypeGraphGenerator.instance().generateGraph(environment.getCaesarTypeSystem().getExplicitGraph(), tree[i]);
-            CaesarTypeGraphGenerator.instance().generateGraph(environment.getCaesarTypeSystem().getCompleteGraph(), tree[i]);
+        for (int i=0; i<tree.length; i++) {        	
+            CaesarTypeGraphGenerator.instance().generateGraph(
+        		environment.getCaesarTypeSystem().getCaesarTypeGraph(), tree[i]
+            );
         }
         
         environment.getCaesarTypeSystem().generate();

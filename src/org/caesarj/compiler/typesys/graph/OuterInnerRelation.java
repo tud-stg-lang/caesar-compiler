@@ -1,11 +1,11 @@
 package org.caesarj.compiler.typesys.graph;
 
 /**
- * ...
+ * Representes an outer <-> inner class relation
  * 
  * @author Ivica Aracic
  */
-public class OuterInnerRelation extends Relation {
+public class OuterInnerRelation extends BidirectionalRelation {
 	public OuterInnerRelation(CaesarTypeNode outerNode, CaesarTypeNode innerNode) {
 		this(false, outerNode, innerNode);
 	}

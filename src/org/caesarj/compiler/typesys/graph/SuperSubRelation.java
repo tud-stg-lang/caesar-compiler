@@ -1,11 +1,11 @@
 package org.caesarj.compiler.typesys.graph;
 
 /**
- * ...
+ * represents a super <-> sub class relation
  * 
  * @author Ivica Aracic
  */
-public class SuperSubRelation extends Relation {
+public class SuperSubRelation extends BidirectionalRelation {
 	public SuperSubRelation(CaesarTypeNode superNode, CaesarTypeNode subNode) {
 		this(false, superNode, subNode);
 	}

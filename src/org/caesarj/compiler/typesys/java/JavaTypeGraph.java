@@ -1,6 +1,15 @@
-package org.caesarj.compiler.cclass;
+package org.caesarj.compiler.typesys.java;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.caesarj.compiler.typesys.graph.CaesarTypeGraph;
+import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
 
 
 /**
@@ -15,7 +24,13 @@ public class JavaTypeGraph {
     private HashMap nodes = new HashMap();
     
     public JavaTypeGraph() {
-        CaesarTypeNode typeNode = new CaesarTypeNode(null, "org/caesarj/runtime/CaesarObject", false);
+        CaesarTypeNode typeNode = 
+        	new CaesarTypeNode(
+    			null,
+				CaesarTypeNode.DECLARED,
+				new JavaQualifiedName("org/caesarj/runtime/CaesarObject")
+			);
+        
         root = new JavaTypeNode(this, typeNode);
         root.setType(typeNode);
     }
@@ -56,7 +71,7 @@ public class JavaTypeGraph {
                 current = next;
             }
             
-            if(t.isImplicit()) {
+            if(t.isImplicitType()) {
                 // append as leaf
                 JavaTypeNode next = new JavaTypeNode(this, t);
                 next.setType(t);

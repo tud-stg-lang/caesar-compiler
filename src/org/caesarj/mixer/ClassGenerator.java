@@ -1,14 +1,7 @@
 package org.caesarj.mixer;
 
-import java.util.Stack;
-import java.util.Vector;
-
-import org.apache.bcel.classfile.ConstantClass;
-import org.apache.bcel.classfile.ConstantPool;
-import org.apache.bcel.classfile.ConstantUtf8;
-import org.caesarj.compiler.cclass.CaesarTypeSystem;
-import org.caesarj.compiler.cclass.JavaQualifiedName;
-import org.caesarj.compiler.cclass.JavaTypeNode;
+import org.caesarj.compiler.typesys.CaesarTypeSystem;
+import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.mixer.intern.ClassModifyingVisitor;
 
 public class ClassGenerator {

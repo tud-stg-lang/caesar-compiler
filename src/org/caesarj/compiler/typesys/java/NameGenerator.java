@@ -2,7 +2,7 @@
  * Created on 03.05.2004
  *
  */
-package org.caesarj.compiler.cclass;
+package org.caesarj.compiler.typesys.java;
 
 import java.security.MessageDigest;
 

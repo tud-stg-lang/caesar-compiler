@@ -5,26 +5,32 @@
 package org.caesarj.mixer.intern;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Stack;
 import java.util.Vector;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantMethodref;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.ConstantUtf8;
+import org.apache.bcel.classfile.DescendingVisitor;
+import org.apache.bcel.classfile.EmptyVisitor;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.InnerClass;
+import org.apache.bcel.classfile.InnerClasses;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ClassGen;
-import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
-import org.apache.bcel.verifier.GraphicalVerifier;
-import org.caesarj.classfile.NameAndTypeConstant;
-import org.caesarj.compiler.cclass.CaesarTypeSystem;
-import org.caesarj.compiler.cclass.JavaQualifiedName;
-import org.caesarj.compiler.cclass.JavaTypeNode;
-import org.caesarj.mixer.ClassGenerator;
+import org.caesarj.compiler.typesys.CaesarTypeSystem;
+import org.caesarj.compiler.typesys.java.JavaQualifiedName;
+import org.caesarj.compiler.typesys.java.JavaTypeNode;
 import org.caesarj.mixer.MixerException;
 
 
@@ -79,12 +85,12 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 		String oldSuperclassName = clazz.getSuperclassName().replace('.','/');
 		
 		// use the typesystem to calculate some missing information
-		JavaTypeNode	oldSuperClass = typeSystem.getJavaGraph().getNode(new JavaQualifiedName(oldSuperclassName));
+		JavaTypeNode	oldSuperClass = typeSystem.getJavaTypeGraph().getNode(new JavaQualifiedName(oldSuperclassName));
 		String outerOfOldSuper = null;
 		if (oldSuperClass != null && oldSuperClass.getOuter() != null)
 			outerOfOldSuper = oldSuperClass.getOuter().getQualifiedName().toString();
 		
-		JavaTypeNode	newSuperClass = typeSystem.getJavaGraph().getNode(new JavaQualifiedName(newSuperclassName));
+		JavaTypeNode	newSuperClass = typeSystem.getJavaTypeGraph().getNode(new JavaQualifiedName(newSuperclassName));
 		String outerOfNewSuper = null;
 		if (newSuperClass != null && newSuperClass.getOuter() != null)
 			outerOfNewSuper = newSuperClass.getOuter().getQualifiedName().toString();
@@ -92,7 +98,7 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 		// collect all outer classes for this mixin
     	Vector	outerClasses = new Vector();
     	
-    	JavaTypeNode mixinType = typeSystem.getJavaGraph().getNode(new JavaQualifiedName(newClassName)),
+    	JavaTypeNode mixinType = typeSystem.getJavaTypeGraph().getNode(new JavaQualifiedName(newClassName)),
 					outerType = mixinType.getOuter();
     	while ( outerType != null){
        	  outerClasses.add( outerType.getQualifiedName().getIdent() );  		

@@ -4,12 +4,16 @@
  */
 package org.caesarj.mixer.intern;
 
-import java.util.Vector;
-
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.ConstantUtf8;
+import org.apache.bcel.classfile.InnerClass;
+import org.apache.bcel.classfile.InnerClasses;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
-import org.caesarj.compiler.cclass.JavaQualifiedName;
+import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.util.InconsistencyException;
 
 /**

@@ -4,7 +4,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.caesarj.compiler.typesys.util.JavaQualifiedName;
+import org.caesarj.compiler.typesys.CaesarTypeSystemException;
+import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.compiler.typesys.visitor.ICaesarTypeVisitor;
 import org.caesarj.util.InconsistencyException;
 
@@ -25,6 +26,7 @@ public class CaesarTypeNode {
 	private Kind kind;
 	
 	private JavaQualifiedName qualifiedName;
+	private JavaQualifiedName qualifiedImplName;
 	
 	private List mixinList = new LinkedList();
 	
@@ -45,6 +47,7 @@ public class CaesarTypeNode {
 	public CaesarTypeNode(CaesarTypeGraph g, Kind kind, JavaQualifiedName qn) {
 		this.kind = kind;
 		this.qualifiedName = qn;
+		this.qualifiedImplName = qn.convertToImplName();
 		this.g = g;
 	}
 	
@@ -62,6 +65,10 @@ public class CaesarTypeNode {
 
 	public JavaQualifiedName getQualifiedName() {
 		return qualifiedName;
+	}
+	
+	public JavaQualifiedName getQualifiedImplName() {
+		return qualifiedImplName;
 	}
 
 	public List getMixinList() {
@@ -105,31 +112,31 @@ public class CaesarTypeNode {
 	}
 
 	
-	public void addEnclosedBy(Relation relation) {
+	public void addEnclosedBy(BidirectionalRelation relation) {
 		addToList(relation, enclosedBy);
 	}
 
-	public void addEnclosingFor(Relation relation) {
+	public void addEnclosingFor(BidirectionalRelation relation) {
 		addToList(relation, enclosingFor);
 	}
 
-	public void addFurtherbindingFor(Relation relation) {
+	public void addFurtherbindingFor(BidirectionalRelation relation) {
 		addToList(relation, furtherbindingFor);
 	}
 
-	public void addFurtherboundBy(Relation relation) {
+	public void addFurtherboundBy(BidirectionalRelation relation) {
 		addToList(relation, furtherboundBy);
 	}
 
-	public void addInheritedBy(Relation relation) {
+	public void addInheritedBy(BidirectionalRelation relation) {
 		addToList(relation, inheritedBy);
 	}
 
-	public void addInheritsFrom(Relation relation) {
+	public void addInheritsFrom(BidirectionalRelation relation) {
 		addToList(relation, inheritsFrom);
 	}
 
-	private void addToList(Relation relation, List list) {
+	private void addToList(BidirectionalRelation relation, List list) {
 		if(!list.contains(relation))
 			list.add(relation);
 	}
@@ -165,6 +172,42 @@ public class CaesarTypeNode {
 		}
 		
 		return null;
+	}
+	
+	public CaesarTypeNode getTopmostNode() throws CaesarTypeSystemException{
+        if(!isFurtherbinding()) {
+            return this;
+        }
+        else {
+            LinkedList topMostList = new LinkedList();
+
+            for(Iterator it=furtherbindingFor.iterator(); it.hasNext();) {
+                CaesarTypeNode item = ((FurtherboundFurtherbindingRelation)it.next()).getFurtherboundNode();
+                topMostList.add(item.getTopmostNode());
+            }
+                        
+            // check that they are all same
+            if(topMostList.size() > 1) {
+                boolean first = true;
+                CaesarTypeNode ref = null;
+                for (Iterator it = topMostList.iterator(); it.hasNext();) {
+                    CaesarTypeNode item = (CaesarTypeNode) it.next();
+                    
+                    if(first) {
+                        // get ref
+                        first = false;
+                        ref = item;
+                    }
+                    else {
+                        // compare with ref
+                        if(!ref.equals(item))
+                            throw new CaesarTypeSystemException();
+                    }
+                }                               
+            }
+            
+            return (CaesarTypeNode)topMostList.get(0);
+        }	    
 	}
 	
     public String toString() {
