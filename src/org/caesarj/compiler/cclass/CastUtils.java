@@ -58,6 +58,10 @@ public class CastUtils {
         }
         */
         
+        // cast not necessary
+        if(res != null && res.equals(t))
+            res = null;
+        
         return res;
     }
 }
