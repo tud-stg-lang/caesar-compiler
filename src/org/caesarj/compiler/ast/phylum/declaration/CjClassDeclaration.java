@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.28 2004-10-29 13:22:48 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.29 2005-01-20 17:28:43 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -350,7 +350,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
                 new JFieldDeclaration[oldFields.size()]);
     }
     
-    public void addMethods(ArrayList methodsToAdd) {
+    public void addMethods(List methodsToAdd) {
         addMethods(
             (JMethodDeclaration[])methodsToAdd.toArray(
                 new JMethodDeclaration[methodsToAdd.size()]));
