@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JFormalParameter.java,v 1.5 2005-01-24 16:52:57 aracic Exp $
+ * $Id: JFormalParameter.java,v 1.6 2005-01-27 15:20:02 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -84,11 +84,12 @@ public class JFormalParameter extends JLocalVariable {
   public CType checkInterface(CTypeContext context) {
     try {
       type = type.checkType(context);
-      return type;
+      //return type;
     } catch (UnpositionedError cue) {
-      context.reportTrouble(cue.addPosition(getTokenReference()));
-      return context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT);
+      //context.reportTrouble(cue.addPosition(getTokenReference()));
+      //return context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT);
     }
+    return type;
   }
 
   // ----------------------------------------------------------------------
