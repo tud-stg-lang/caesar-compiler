@@ -17,6 +17,7 @@ import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
@@ -141,7 +142,7 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 	    };
 	    
 	    gen.writeBlock(block);
-	    	    	     
+	      	    	     
 		JStatement[] body = gen.endBlock("static-deploy-block");
 		return new JClassBlock(where, true, body);
 	}
@@ -172,6 +173,24 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 		
 		fromClass.addClassBlock(new JClassBlock(fromClass.getTokenReference(), true, body));
 	}
+	
+	/**
+	 * Creates aspectOf method for registry class
+	 */
+	private JMethodDeclaration createAspectOfMethod(String classIdent) {
+		
+		AstGenerator gen = environment.getAstGenerator();
+		
+		String[] body = new String[] {
+			"public static " + classIdent + " aspect()",
+			"{",
+				"return " + STATIC_INSTANCE_FIELD + ";",
+			"}"	
+		};
+		
+		gen.writeMethod(body);	     
+		return gen.endMethod("aspectof");
+	}
 
 	/**
 	 * Prepare Caesar class for static deployment
@@ -183,7 +202,7 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 		CType singletonType = new CClassNameType(cd.getIdent());
 		JVariableDefinition aspectInstanceVar =
 			new JVariableDefinition(
-				TokenReference.NO_REF,
+				cd.getTokenReference(),
 				ACC_PUBLIC | ACC_FINAL | ACC_STATIC,
 				singletonType,
 				STATIC_INSTANCE_FIELD,
@@ -203,6 +222,8 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 			cd.getTokenReference(),
 			cd,
 			field));
+		
+		cd.addMethod(createAspectOfMethod(cd.getIdent()));
 		
 		CjClassDeclaration regClass = findRegistryClass(cd.getMixinIfcDeclaration().getCClass().getQualifiedName());
 		if (regClass == null) {
