@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassFactory.java,v 1.29 2005-01-24 16:53:02 aracic Exp $
+ * $Id: CClassFactory.java,v 1.30 2005-01-27 15:20:26 aracic Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -198,19 +198,23 @@ public class CClassFactory implements CaesarConstants {
 		for (int i = 0; i < fields.length; i++) {
 		    JFieldDeclaration f = fields[i];
             if( CModifier.contains(CModifier.ACC_PUBLIC, f.getVariable().getModifiers())) {
+                
+                //TokenReference where = TokenReference.NO_REF;
+                TokenReference where = f.getTokenReference();
+                
                 accessors.add(
                 	new JMethodDeclaration(
-                	    f.getTokenReference(),
+                	    where,
                 	    CModifier.ACC_PUBLIC,
                 	    f.getType(factory),
                 	    "get_"+f.getVariable().getIdent(),
                 	    JFormalParameter.EMPTY,
                 	    CReferenceType.EMPTY,
                 	    new JBlock(
-                	        f.getTokenReference(), 
+                	        where, 
                 	        new JStatement[]{
                 	            new JReturnStatement(
-                	                f.getTokenReference(), 
+                	                where, 
                 	                new JNameExpression(
                 	                    f.getTokenReference(), 
                 	                    f.getVariable().getIdent()),
@@ -221,7 +225,43 @@ public class CClassFactory implements CaesarConstants {
             	        ),
                 	    null, null
                 	)
-                );                
+                );    
+                  
+                /*
+                accessors.add(
+                	new JMethodDeclaration(
+                	    where,
+                	    CModifier.ACC_PUBLIC,
+                	    new CVoidType(),
+                	    "set_"+f.getVariable().getIdent(),
+                	    new JFormalParameter[] {
+                	        new JFormalParameter(
+                	            where,
+                	            JFormalParameter.DES_PARAMETER,
+                	            f.getType(factory),
+                	            "_arg_",
+                	            false)
+                	    },
+                	    CReferenceType.EMPTY,
+                	    new JBlock(
+                	        where, 
+                	        new JStatement[]{
+                	            new JExpressionStatement(
+                	                where,
+	                	            new JAssignmentExpression(
+	                	                where,                	                
+	                	                new JNameExpression(where, f.getVariable().getIdent()),
+	                	                new JNameExpression(where, "_arg_")
+	            	                ),
+	            	                null
+        	                	)
+            	            }, 
+                	        null
+            	        ),
+                	    null, null
+                	)
+                );
+                */ 
             }
         }
 		
