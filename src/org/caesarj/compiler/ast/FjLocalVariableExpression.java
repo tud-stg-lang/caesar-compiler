@@ -7,7 +7,7 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
-
+// FJPULLUP
 public class FjLocalVariableExpression extends JLocalVariableExpression {
 
 	JLocalVariable cachedVar;
@@ -18,7 +18,7 @@ public class FjLocalVariableExpression extends JLocalVariableExpression {
 		super(where, variable);
 		cachedVar = variable;
 	}
-	
+	/*
 	public JExpression analyse(CExpressionContext context)
 		throws PositionedError {
 		return super.analyse(context);
@@ -40,4 +40,5 @@ public class FjLocalVariableExpression extends JLocalVariableExpression {
 			throw e.addPosition( getTokenReference() );
 		}
 	}
+	*/
 }

@@ -82,9 +82,11 @@ public class ProceedDeclaration extends FjMethodDeclaration {
 			}
 
 			FjFamily[] families = new FjFamily[parameterTypes.length];
+			/* FJRM
 			for (int i = 0; i < families.length; i++) {
 				families[i] = ((FjFormalParameter) parameters[i]).getFamily();
 			}
+			*/
 
 			setInterface(
 				new Proceed(

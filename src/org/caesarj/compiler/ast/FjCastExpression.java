@@ -9,6 +9,7 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
+// FJPULLUP
 public class FjCastExpression extends JCastExpression {
 
 	private FjFamily family;
@@ -45,6 +46,7 @@ public class FjCastExpression extends JCastExpression {
 
 	public JExpression analyse(CExpressionContext context)
 		throws PositionedError {
+		/* FJRM
 		lookUpFamily( context );
 		if( family != null && insertRuntimeFamilyCheck ) {
 			JMethodCallExpression newExpr = new JMethodCallExpression(
@@ -62,9 +64,11 @@ public class FjCastExpression extends JCastExpression {
 				} );
 			expr = newExpr;
 		}
+		*/
 		return super.analyse(context);
 	}
 
+	/* FJRM
 	public FjFamily toFamily(CBlockContext context) throws PositionedError {
 		return expr.toFamily(context);
 	}
@@ -103,4 +107,5 @@ public class FjCastExpression extends JCastExpression {
 			}
 		}
 	}
+	*/
 }

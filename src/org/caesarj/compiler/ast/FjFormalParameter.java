@@ -12,6 +12,7 @@ import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
+// FJPULLUP
 public class FjFormalParameter extends JFormalParameter {
 
 	protected FjFamily family;
@@ -39,6 +40,7 @@ public class FjFormalParameter extends JFormalParameter {
 		);
 	}
 
+	/* FJRM
 	protected boolean scip() {
 		if( name.equals( FjConstants.SELF_NAME ) )
 			// self parameter
@@ -110,6 +112,7 @@ public class FjFormalParameter extends JFormalParameter {
 
 		name = FjConstants.renameParameter(name);
 	}
+	*/
 	
 	/**
 	 * Creates the expression to be casted in the 
@@ -121,6 +124,7 @@ public class FjFormalParameter extends JFormalParameter {
 	 * @param family
 	 * @return
 	 */
+	/* FJRM
 	private JExpression createCastedExpression(
 		CReferenceType lowerBound, FjFamily family, JTypeDeclaration clazz)
 	{
@@ -248,16 +252,18 @@ public class FjFormalParameter extends JFormalParameter {
 	public FjFamily getFamily() {
 		return family;
 	}
+	*/
+	
 	/* (non-Javadoc)
 	 * @see org.caesarj.kjc.JFormalParameter#checkInterface(org.caesarj.kjc.CTypeContext)
 	 * Walter
 	 */
+	/* FJRM
 	public CType checkInterface(CTypeContext context)
-	{
+	{		
 		try 
-		{
-			type = type.checkType(context);
-			
+		{		
+			type = type.checkType(context);		
 		} 
 		catch (UnpositionedError cue) 
 		{
@@ -276,7 +282,9 @@ public class FjFormalParameter extends JFormalParameter {
 				
 			type = candidates[0].getAbstractType();
 		}
-		return type;	
+		
+		return type;
 	}
+	*/	
 
 }

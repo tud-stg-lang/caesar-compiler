@@ -14,6 +14,7 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
+// FJPULLUP
 public class FjFieldAccessExpression extends JFieldAccessExpression {
 
 	public FjFieldAccessExpression(
@@ -36,7 +37,7 @@ public class FjFieldAccessExpression extends JFieldAccessExpression {
 	
 	public JExpression analyse(CExpressionContext context)
 		throws PositionedError {
-
+		/* FJRM
 		if( ident == FjConstants.SUPER ) {
 			JExpression fjSuper = new FjCastExpression(
 				getTokenReference(),
@@ -66,8 +67,9 @@ public class FjFieldAccessExpression extends JFieldAccessExpression {
 				ident).analyse( context );
 		} else {
 			try
-			{
+			{*/
 				return super.analyse( context );
+				/* FJRM
 			}
 			catch(PositionedError e)
 			{
@@ -92,8 +94,10 @@ public class FjFieldAccessExpression extends JFieldAccessExpression {
 				throw e;
 			}		
 		}
+		*/
 	}
 
+	/* FJRM
 	protected CReferenceType findSuperType( CExpressionContext context )
 		throws PositionedError {
 		try {
@@ -124,7 +128,7 @@ public class FjFieldAccessExpression extends JFieldAccessExpression {
 	public FjFamily getFamily(CExpressionContext context) 
 		throws PositionedError 
 	{
-		try {
+		try { 
 			
 			FjFamily myFamily = null;
 			if (prefix != null)
@@ -189,4 +193,5 @@ public class FjFieldAccessExpression extends JFieldAccessExpression {
 			throw e.addPosition( getTokenReference() );
 		}
 	}
+	*/
 }

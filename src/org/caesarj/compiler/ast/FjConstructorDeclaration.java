@@ -551,6 +551,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 	public CSourceMethod initFamilies(CClassContext context)
 		throws PositionedError
 	{
+		/* FJRM
 		((FjAdditionalContext) context).pushContextInfo(this);
 		((FjAdditionalContext) context).pushContextInfo(parameters);		
 		// after checking the parameters we rename overridden ones
@@ -568,12 +569,15 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 				context.reportTrouble(e.addPosition(parameter.getTokenReference()));
 			}
 		}
+		*/
 			
 		CSourceMethod method = checkInterface(context);
 			
+		/* FJRM
 		// pop parameters and method name from the stack again
 		((FjAdditionalContext) context).popContextInfo();
 		((FjAdditionalContext) context).popContextInfo();
+		*/
 		return method;
 	}
 	/**
@@ -998,7 +1002,8 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 	/**
 	 * DEBUG - WALTER
 	 * @author Walter Augusto Werner
-	 */	
+	 */
+	/* FJRM		
 	public void print()
 	{
 		super.print();
@@ -1013,4 +1018,5 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 		System.out.println();
 
 	}
+	*/
 }

@@ -12,6 +12,7 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
+// FJTODO
 public class FjNameExpression extends JNameExpression {
 
 	public FjNameExpression(
@@ -38,6 +39,7 @@ public class FjNameExpression extends JNameExpression {
 		String ident) {
 		return new FjFieldAccessExpression(ref, ident);
 	}
+	
 	
 	public FjFamily getFamily(CExpressionContext context)
 		throws PositionedError {
@@ -134,4 +136,5 @@ public class FjNameExpression extends JNameExpression {
 			throw e.addPosition( getTokenReference() );
 		}
 	}
+	
 }

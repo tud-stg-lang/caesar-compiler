@@ -19,7 +19,7 @@ public class CciFamilyVariableDefinition
 	extends JVariableDefinition
 {
 
-	private JExpression cachedInitializer;
+	/* FJRM private JExpression cachedInitializer; */
 	public CciFamilyVariableDefinition(
 		TokenReference where,
 		int modifiers,
@@ -29,16 +29,18 @@ public class CciFamilyVariableDefinition
 		FjFamily family)
 	{
 		super(where, modifiers, type, ident, initializer);
+		/* FJRM 
 		if (family != null)
 			FjFamilyContext.getInstance().setFamilyOf(this, family);
-		cachedInitializer = initializer;
+		cachedInitializer = initializer; 
+		*/
 	}
 	/**
 	 * Method copied from FjVariableDefinition.
 	 */
 	public void analyse(CBodyContext context) throws PositionedError
 	{
-
+		/* FJRM
 		FjTypeSystem fjts = new FjTypeSystem();
 		try
 		{
@@ -73,6 +75,7 @@ public class CciFamilyVariableDefinition
 		{
 			throw e.addPosition(getTokenReference());
 		}
+		*/
 		super.analyse(context);
 	}
 

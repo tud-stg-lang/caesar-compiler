@@ -8,6 +8,7 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
+// FJPULLUP
 public class FjThisExpression extends JThisExpression {
 
 	protected boolean transformToSelf;
@@ -31,20 +32,21 @@ public class FjThisExpression extends JThisExpression {
 
 	public JExpression analyse(CExpressionContext context)
 		throws PositionedError {
-		
+		/* FJRM
 		if( isWithinImplementationMethod( context ) && transformToSelf )
 			return new FjNameExpression (
 				getTokenReference(),
 				FjConstants.SELF_NAME ).analyse( context );
-		else
+		else*/
 			return super.analyse(context);
 	}
 
+	/* FJRM
 	protected boolean isWithinImplementationMethod( CExpressionContext context ) {		
 		return FjConstants.isImplementationMethodName(
 			context.getMethodContext().getCMethod().getIdent() );
 	}	
-
+	
 	public FjFamily getFamily(CExpressionContext context)
 		throws PositionedError {
 		try {
@@ -66,4 +68,5 @@ public class FjThisExpression extends JThisExpression {
 			throw e.addPosition( getTokenReference() );
 		}
 	}
+	*/
 }

@@ -16,6 +16,7 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
+// FJCLEANUP
 /**
  * Represents an AdviceDeclaration in the Source Code.
  * 
@@ -122,35 +123,43 @@ public class AdviceDeclaration
 	public CSourceMethod checkInterface(CClassContext context)
 		throws PositionedError {
 
+		/* FJRM
 		// when checking single parameters we need the list of
 		// all parameters and the method, so pass them here
 		 ((FjAdditionalContext) context).pushContextInfo(this);
 		((FjAdditionalContext) context).pushContextInfo(parameters);
-
+		
 		// we have to work on the returntype here:
 		// if it's an overridden class cast upwards
 		FjTypeSystem fjts = new FjTypeSystem();
+		*/
 		try {
 			if (returnType.isReference()) {
 				returnType = returnType.checkType(context);
+				/* FJRM
 				returnType =
 					fjts.upperBound(context, (CReferenceType) returnType);
+				*/
 			}
 		} catch (UnpositionedError e) {
+			/* FJRM
 			if (e.getFormattedMessage().getDescription()
 				== KjcMessages.CLASS_AMBIGUOUS) {
 				CClass[] candidates =
-					(CClass[]) e.getFormattedMessage().getParams()[1];
+					(CClass[]) e.getFormattedMessage().getParams()[1];					
 				try {
 					returnType = fjts.commonOverrideType(context, candidates);
 				} catch (UnpositionedError e2) {
 					// will be handled later
 				}
 			}
+			*/
 		}
+		/* FJRM
 		// pop parameters and method name from the stack again
 		 ((FjAdditionalContext) context).popContextInfo();
 		((FjAdditionalContext) context).popContextInfo();
+		*/
 
 		CBinaryTypeContext typeContext =
 			new CBinaryTypeContext(

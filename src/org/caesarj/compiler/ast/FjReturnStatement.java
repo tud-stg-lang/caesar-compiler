@@ -8,6 +8,7 @@ import org.caesarj.compiler.types.CType;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
+// FJPULLUP
 public class FjReturnStatement extends JReturnStatement {
 	
 	public FjReturnStatement(
@@ -17,6 +18,7 @@ public class FjReturnStatement extends JReturnStatement {
 		super(where, expr, comments);
 	}
 
+	/* FJRM
 	public void analyse(CBodyContext context) throws PositionedError {
 		JExpression unAnalysedExpr = expr;	
 		super.analyse(context);
@@ -49,4 +51,5 @@ public class FjReturnStatement extends JReturnStatement {
 				unAnalysedExpr );
 		}
 	}
+	*/
 }

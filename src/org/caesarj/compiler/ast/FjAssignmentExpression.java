@@ -7,6 +7,7 @@ import org.caesarj.compiler.types.CType;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
+// FJPULLUP
 public class FjAssignmentExpression extends JAssignmentExpression {
 
 	public FjAssignmentExpression(
@@ -38,7 +39,8 @@ public class FjAssignmentExpression extends JAssignmentExpression {
 		} catch (PositionedError e) {
 			aError = e;
 		}
-		PositionedError fError = null;
+		/* FJRM
+		PositionedError fError = null;		
 		try {
 			FjTypeSystem fjts = new FjTypeSystem();
 			fjts.checkFamilies(context, oldLeft, oldRight);
@@ -49,7 +51,7 @@ public class FjAssignmentExpression extends JAssignmentExpression {
 			if (aError != null)
 				context.reportTrouble(aError);
 			throw fError;
-		} else if (aError != null) {
+		} else*/ if (aError != null) {
 			if (aError
 				.getFormattedMessage()
 				.getDescription()
@@ -71,9 +73,11 @@ public class FjAssignmentExpression extends JAssignmentExpression {
 			}
 
 		}
+		
 		return result;
 	}
-
+	
+	/*
 	public FjFamily getFamily(CExpressionContext context)
 		throws PositionedError {
 		return left.getFamily(context);
@@ -82,4 +86,5 @@ public class FjAssignmentExpression extends JAssignmentExpression {
 	public FjFamily toFamily(CBlockContext context) throws PositionedError {
 		return left.toFamily(context);
 	}
+	*/
 }

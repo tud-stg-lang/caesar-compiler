@@ -17,6 +17,7 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
+// FJPULLUP
 public class FjMethodDeclaration extends JMethodDeclaration {
 
 	public FjMethodDeclaration(
@@ -47,9 +48,10 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 		return ident;
 	}
 
-	public CSourceMethod checkInterface(CClassContext context)
+	/* FJRM
+	public CSourceMethod checkInterface___(CClassContext context)
 		throws PositionedError {
-
+		
 		// when checking single parameters we need the list of
 		// all parameters and the method, so pass them here
 		((FjAdditionalContext) context).pushContextInfo(this);
@@ -58,13 +60,18 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 		// we have to work on the returntype here:
 		// if it's an overridden class cast upwards
 		FjTypeSystem fjts = new FjTypeSystem();
-		try {
+		
+		
+		try {		
 			if (returnType.isReference()) {
 				returnType = returnType.checkType(context);
+				
 				returnType =
 					fjts.upperBound(context, (CReferenceType) returnType);
-			}
+				
+			}		
 		} catch (UnpositionedError e) {
+			
 			if (e.getFormattedMessage().getDescription()
 				== KjcMessages.CLASS_AMBIGUOUS) {
 				CClass[] candidates =
@@ -75,11 +82,14 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 					// will be handled later
 				}
 			}
+			
 		}
+		
 		// pop parameters and method name from the stack again
 		((FjAdditionalContext) context).popContextInfo();
 		((FjAdditionalContext) context).popContextInfo();
-
+		
+		
 		CType[] parameterTypes = new CType[parameters.length];
 		for (int i = 0; i < parameterTypes.length; i++) 
 			parameterTypes[i] = parameters[i].getType();
@@ -98,6 +108,7 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 
 		return (CSourceMethod)getMethod(); 
 	}
+	*/
 
 	/*protected void setInterface(CMember export) {
 		CSourceMethod oldExport = (CSourceMethod) export;
@@ -142,6 +153,7 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 	public CMethod initFamilies(CClassContext context)
 		throws PositionedError
 	{
+		/* FJRM
 		((FjAdditionalContext) context).pushContextInfo(this);
 		((FjAdditionalContext) context).pushContextInfo(parameters);		
 		// after checking the parameters we rename overridden ones
@@ -159,12 +171,15 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 				context.reportTrouble(e.addPosition(parameter.getTokenReference()));
 			}
 		}
+		*/
 			
 		CSourceMethod method = checkInterface1(context);
 			
+		/* FJRM
 		// pop parameters and method name from the stack again
 		((FjAdditionalContext) context).popContextInfo();
 		((FjAdditionalContext) context).popContextInfo();
+		*/
 		return method;
 	}
 		
@@ -326,9 +341,12 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 			}
 
 			FjFamily[] families = new FjFamily[parameters.length];
+			/* 	FJRM  
+			 	FJTODO
 			for (int i = 0; i < families.length; i++) {
 				families[i] = ((FjFormalParameter) parameters[i]).getFamily();
 			}
+			*/
 
 			setInterface(new FjSourceMethod(
 				context.getCClass(),
@@ -370,6 +388,7 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 	 * DEBUG - WALTER
 	 * @author Walter Augusto Werner
 	 */	
+	/* FJRM
 	public void print()
 	{
 		super.print();
@@ -384,4 +403,5 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 		System.out.println();
 
 	}
+	*/
 }

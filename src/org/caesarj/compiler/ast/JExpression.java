@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JExpression.java,v 1.4 2004-03-14 11:03:25 aracic Exp $
+ * $Id: JExpression.java,v 1.5 2004-03-14 22:05:31 aracic Exp $
  */ 
  
 package org.caesarj.compiler.ast;
@@ -274,6 +274,7 @@ public abstract class JExpression extends JPhylum {
     }
   }
 
+// FJTODO
   // andreas start
   public org.caesarj.compiler.ast.FjFamily getFamily( CExpressionContext context ) throws PositionedError {
 	return null;
@@ -282,6 +283,7 @@ public abstract class JExpression extends JPhylum {
 	return null;
   }
   // andreas end
+
 
   /**
    * Can this expression be converted to the specified type by

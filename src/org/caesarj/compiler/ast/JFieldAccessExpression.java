@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldAccessExpression.java,v 1.4 2004-03-14 11:03:26 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.5 2004-03-14 22:05:31 aracic Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -29,6 +29,7 @@ import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.context.CInitializerContext;
 import org.caesarj.compiler.context.CVariableInfo;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.export.*;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;

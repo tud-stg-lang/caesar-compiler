@@ -10,6 +10,7 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
+// FJTODO
 public class FjVariableDefinition extends JVariableDefinition {
 
 	public FjVariableDefinition(
@@ -32,11 +33,13 @@ public class FjVariableDefinition extends JVariableDefinition {
 	 * checked, tries to find the type in the current context.
 	 * 
 	 * @param context
-	 */
+	 */	
+	
 	public void initFamily(CClassContext context) 
-	{
+	{		
 		try 
-		{		
+		{
+					
 			FjFieldDeclaration field =
 				(FjFieldDeclaration) 
 					((FjAdditionalContext) context).peekContextInfo();
@@ -44,6 +47,7 @@ public class FjVariableDefinition extends JVariableDefinition {
 				((JClassDeclaration) 
 					((FjAdditionalContext) 
 						context).peekContextInfo(1)).getCClass();
+				
 	
 			FjTypeSystem fjts = new FjTypeSystem();
 			String[] split = fjts.splitQualifier(type.toString());
@@ -92,10 +96,10 @@ public class FjVariableDefinition extends JVariableDefinition {
 		{
 			context.reportTrouble(e.addPosition(getTokenReference()));
 		}
-	}
-
-	public void analyse(CBodyContext context) throws PositionedError {
-
+		
+	}	
+	
+	public void analyse(CBodyContext context) throws PositionedError {		
 		FjTypeSystem fjts = new FjTypeSystem();		
 		try {
 			//Walter: inserted the sencod param in this method call
@@ -120,6 +124,7 @@ public class FjVariableDefinition extends JVariableDefinition {
 		} catch( UnpositionedError e ) {
 			throw e.addPosition( getTokenReference() );
 		}
+		
 		super.analyse( context );
 	}
 

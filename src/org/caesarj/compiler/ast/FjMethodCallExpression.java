@@ -18,6 +18,10 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
+// FJTODO assertPrefix call is important for around advices (proceed)!
+// don't forget problems with pullup of this class!
+// wrapee handling also done here!
+// it will be best to keep this one and JMethodCallExpression separated  
 public class FjMethodCallExpression extends JMethodCallExpression {
 
 	protected JExpression[] unanalysedArgs;
@@ -62,7 +66,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		CMethod method,
 		JExpression[] args) {
 		super(where, prefix, method, args);
-		cachedWhere = where;
+		// FJRM cachedWhere = where;
 	}
 
 	public FjMethodCallExpression(
@@ -72,7 +76,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		JExpression[] args,
 		JExpression[] unanalysedArgs) {
 		super(where, prefix, method, args);
-		cachedWhere = where;
+		// FJRM cachedWhere = where;
 		this.unanalysedArgs = new JExpression[unanalysedArgs.length];
 		for (int i = 0; i < unanalysedArgs.length; i++) {
 			this.unanalysedArgs[i] = unanalysedArgs[i];
@@ -93,24 +97,29 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		throws PositionedError 
 	{
 		JExpression expression;
+		/* FJRM
 		if (isWithinImplementationMethod(context) && ! isWrapperRecycling() 
 			&& isSuperMethodCall())
 			expression = handleSuperCall(context);
 		else if (isWithinImplementationMethod(context) && ! isWrapperRecycling()
 				&& isThisMethodCall(context))
 			expression = handleThisCall(context);
-		else 
-		{
+		else
+		*/ 
+		{	
+			/* FJRM		
 			assertPrefixIsSet(context);
 			checkFamilies(context);
 			resetPrefix();
+			*/
 			//If wrapper is not null, it is a wrapper recycling operator
 			if (isWrapperRecycling())
 				expression = handleWrapperRecyclingCall(context);
 			else
-				expression = analyseExpression(context);
+				expression = analyseExpression(context);			
 		}
 		
+		/* FJRM
 		//Walter: Cast the type for the most specific one.
 		//Walter: It is because the type may be overridden in this context.
 		if (! typeBound)
@@ -123,6 +132,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 				typeBound = true;
 			}
 		}
+		*/
 
 		return expression;
 	}
@@ -237,19 +247,22 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		
 	}
 
+	/* FJRM
 	protected void assertPrefixIsSet(CExpressionContext context)
 		throws PositionedError 
 	{
 		setMethod(context);
 
+	
 		if (prefix == null)
 		{
 			if (isThisMethodCall(context))
 				prefix = new FjThisExpression(getTokenReference());
 			else
 				prefix = new OuterThisDummyPrefix(getTokenReference());
-		}
+		}		
 	}
+	*/
 	
 
 	/**
@@ -263,6 +276,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 	 * @return the overriden type if it exists and <b>null</b> otherwise.
 	 * @author Walter Augusto Werner
 	 */
+	/* FJRM
 	private CReferenceType getOverriddenReturnType(CExpressionContext context) 
 		throws PositionedError
 	{
@@ -286,6 +300,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 			prefix = null;
 	}
 
+	
 	protected void checkFamilies(CExpressionContext context)
 		throws PositionedError 
 	{
@@ -341,7 +356,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 						unanalysedArgs[i]);
 			}
 		}
-	}
+	}	
 
 	protected String isCallToPrivateNonThis(
 		CExpressionContext context,
@@ -361,7 +376,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		}
 		return null;
 	}
-
+	
 	protected JExpression handleSuperCall(CExpressionContext context)
 		throws PositionedError {
 		CClass clazz = context.getClassContext().getCClass();
@@ -443,7 +458,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		} else {
 			return parentCall.analyse(context);
 		}
-	}
+	}	
 
 	protected boolean isObjectsMethod(CExpressionContext context)
 		throws PositionedError {
@@ -455,7 +470,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 			|| methodId.equals("finalize")
 			|| methodId.equals("clone");
 	}
-
+	
 	protected JExpression handleThisCall(CExpressionContext context)
 		throws PositionedError {
 		// use _self instead of this
@@ -565,6 +580,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		}
 		return null;
 	}
+	*/
 	/**
 	 * Overridden for allow the wrapper recycling construction.
 	 * If the method is not found, it tries the wrapper recycling method. 
@@ -707,6 +723,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		return method;
 	}
 
+	/* FJRM
 	protected boolean returnTypeIsPrefixVirtualInner(CExpressionContext context)
 		throws PositionedError {
 
@@ -818,6 +835,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 			}
 		}
 	}
+	*/
 
 	public void setArgs(JExpression[] args) {
 		this.args = args;
