@@ -1,21 +1,12 @@
 package generated.test270;
 
-import junit.framework.TestCase;
-
 /**
  * Purpose: applying wrapper function on wrong type
  *
  * @author Vaidas Gasiunas
  */
-public class CETestCase extends TestCase {
-
-	public CETestCase() {
-		super("test");
-	}
-
+public class Test {
 	public void test() {
-		System.out.println("-------> CETest 270: should not start");
-
 		OuterA oa = new OuterA();
 		OuterA.InnerA ia = oa.InnerA(new ClassB());
 	}
