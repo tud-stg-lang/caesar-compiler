@@ -166,15 +166,13 @@ public class DeploymentClassFactory implements CaesarConstants {
         
 		//add support methods
 		List newMethods = new ArrayList();
-		// FJTODO !!!
-		boolean cleanMethodsRequired = false;
-
-		newMethods.add(createAspectClassDeployMethod(cleanMethodsRequired));
-		newMethods.add(createAspectClassUndeployMethod(cleanMethodsRequired));
-		newMethods.add(createGetDeploymentThreadMethod(cleanMethodsRequired));
-		newMethods.add(createSetDeploymentThreadMethod(cleanMethodsRequired));
-		newMethods.add(createGetSingletonAspectMethod(cleanMethodsRequired));
-		newMethods.add(createGetThreadLocalDeployedInstancesMethod(cleanMethodsRequired));
+        
+		newMethods.add(createAspectClassDeployMethod());
+		newMethods.add(createAspectClassUndeployMethod());
+		newMethods.add(createGetDeploymentThreadMethod());
+		newMethods.add(createSetDeploymentThreadMethod());
+		newMethods.add(createGetSingletonAspectMethod());
+		newMethods.add(createGetThreadLocalDeployedInstancesMethod());
 
 		aspectClass.addMethods(
 			(JMethodDeclaration[]) newMethods.toArray(
@@ -318,7 +316,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 * Creates the deploy method for single instance aspects.
 	 */
-	private JMethodDeclaration createAspectClassDeployMethod(boolean cleanMethod) {
+	private JMethodDeclaration createAspectClassDeployMethod() {
 		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
 
 		JFormalParameter param =
@@ -514,7 +512,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 * Creates the undeploy method for a single instance aspect.
 	 */
-	private JMethodDeclaration createAspectClassUndeployMethod(boolean cleanMethod) {
+	private JMethodDeclaration createAspectClassUndeployMethod() {
 
 		JStatement[] statements =
 			{
@@ -600,7 +598,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * 
 	 * return singletonAspectType.ajc$perSingletonInstance
 	 */
-	private JMethodDeclaration createGetSingletonAspectMethod(boolean cleanMethod) {
+	private JMethodDeclaration createGetSingletonAspectMethod() {
 
 		CReferenceType singletonType =
 			new CClassNameType(qualifiedSingletonAspectName);
@@ -672,10 +670,10 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		methods.add(createMultiInstanceDeployMethod());
 		methods.add(createMultiInstanceUndeployMethod());
-		methods.add(createSetDeploymentThreadMethod(false));
-		methods.add(createGetDeploymentThreadMethod(false));
+		methods.add(createSetDeploymentThreadMethod());
+		methods.add(createGetDeploymentThreadMethod());
 		methods.add(createMultiInstanceGetDeployedInstancesMethod());
-		methods.add(createGetThreadLocalDeployedInstancesMethod(false));
+		methods.add(createGetThreadLocalDeployedInstancesMethod());
 
 		CjAdviceDeclaration[] adviceMethods = aspectClass.getAdvices();
 		List inners = new ArrayList();
@@ -1494,8 +1492,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		methods.add(createMultiThreadDeployMethod());
 		methods.add(createMultiThreadUndeployMethod());
-		methods.add(createSetDeploymentThreadMethod(false));
-		methods.add(createGetDeploymentThreadMethod(false));
+		methods.add(createSetDeploymentThreadMethod());
+		methods.add(createGetDeploymentThreadMethod());
 		methods.add(createMultiThreadGetDeployedInstancesMethod());
 		methods.add(createMultiThreadGetThreadLocalDeployedInstancesMethod());
 
@@ -2201,7 +2199,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * Creates the getDeploymentThread method for all implementors
 	 * of the aspect interface.
 	 */
-	private JMethodDeclaration createGetDeploymentThreadMethod(boolean cleanMethod) {
+	private JMethodDeclaration createGetDeploymentThreadMethod() {
 		JExpression fieldExpr =
 			new JFieldAccessExpression(where, DEPLOYMENT_THREAD);
 		JStatement[] body = { new JReturnStatement(where, fieldExpr, null)};
@@ -2226,7 +2224,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * Creates the setDeploymentThread method for all implementors
 	 * of the aspect interface.
 	 */
-	private JMethodDeclaration createSetDeploymentThreadMethod(boolean cleanMethod) {
+	private JMethodDeclaration createSetDeploymentThreadMethod() {
 		CType type = new CClassNameType(QUALIFIED_THREAD_CLASS);
 
 		JExpression fieldExpr =
@@ -2947,7 +2945,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			null);
 	}
 
-	private JMethodDeclaration createGetThreadLocalDeployedInstancesMethod(boolean cleanMethod) {
+	private JMethodDeclaration createGetThreadLocalDeployedInstancesMethod() {
 
 		CType deployableType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
 
