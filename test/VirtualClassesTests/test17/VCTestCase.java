@@ -16,8 +16,10 @@ public class VCTestCase extends TestCase
 		super("test");
 	}
 
-	public static final String expectedResult = "A.A.A.A, A.A.B.A, A.A.C.A, A.B.A.A, B.B.B.A, A.A.C.A, B.B.D.A"
-											  + ", A.B.A.A, B.B.B.A, A.A.C.A";
+	public static final String expectedResult = "A.A.A, B.A.A, A.B.A" +
+												", A.A.B, child: A.A.A, B.A.A, A.B.A, A.A.C, B.A.C, A.B.C" +
+												", B.A.B, child3: A.A.A, B.A.A, A.B.A, A.A.C, B.A.C, A.B.C, B.A.E" +
+												", A.B.A, child2: A.A.A, B.A.A, A.B.A, A.A.C, B.A.C, A.B.C, A.B.D";
 
 	public void test() {
 
@@ -28,7 +30,7 @@ public class VCTestCase extends TestCase
 		String result = b.defaultObject().queryA();
 
 		System.out.println(result);
-		//assertEquals(result, expectedResult);
+		assertEquals(result, expectedResult);
 
         System.out.println("-------> VCTest 17: end");
 	}
@@ -94,7 +96,7 @@ public cclass OuterA
 
 		public cclass DeepestB
 		{
-			DeepestA _child2 = null;
+			OuterA.InnerA.DeepestA _child2 = null;
 
 			public void setChild2(OuterA.InnerA.DeepestA child)
 			{
@@ -130,7 +132,7 @@ public cclass OuterA
 
 		public OuterA.InnerA.DeepestB defaultObject()
 		{
-			DeepestB b = super.defaultObject();
+			OuterA.InnerB.DeepestB b = (OuterA.InnerB.DeepestB)super.defaultObject();
 			b.setDefaultChild2();
 			return b;
 		}
@@ -139,7 +141,7 @@ public cclass OuterA
 
 public cclass OuterB extends OuterA
 {
-	public cclass InnerA extends InnerA
+	public cclass InnerA
 	{
 		public cclass DeepestA
 		{
@@ -151,7 +153,7 @@ public cclass OuterB extends OuterA
 
 		public cclass DeepestB
 		{
-			DeepestA _child3 = null;
+			OuterA.InnerA.DeepestA _child3 = null;
 
 			public void setChild3(OuterA.InnerA.DeepestA child)
 			{
@@ -187,7 +189,7 @@ public cclass OuterB extends OuterA
 
 		public OuterA.InnerA.DeepestB defaultObject()
 		{
-			DeepestB b = super.defaultObject();
+			OuterB.InnerA.DeepestB b = (OuterB.InnerA.DeepestB)super.defaultObject();
 			b.setDefaultChild3();
 			return b;
 		}
