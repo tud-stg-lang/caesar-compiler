@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JFieldAccessExpression.java,v 1.25 2005-02-16 16:34:44 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.26 2005-03-03 12:16:53 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -455,13 +455,11 @@ public class JFieldAccessExpression extends JExpression {
         }
         else {
 	        Path prefixFam = prefix.getThisAsFamily();
-	        if(prefixFam != null && type.isReference()) {
-	            Path p = new FieldAccess(prefixFam.clonePath(), field.getIdent(), (CReferenceType)type);
+	        if(prefixFam != null && type.isReference() && !type.isArrayType()) {
+	            Path p = new FieldAccess(field.isFinal(), prefixFam.clonePath(), field.getIdent(), (CReferenceType)type);
 	            family = p.normalize();
 	            
-	            if(field.isFinal()) {
-	                thisAsFamily = p;
-	            }
+	            thisAsFamily = p;	            
 	        }
         }
     }
