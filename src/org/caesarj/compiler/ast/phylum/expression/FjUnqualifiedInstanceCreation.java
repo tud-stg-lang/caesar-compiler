@@ -67,6 +67,7 @@ public class FjUnqualifiedInstanceCreation extends JUnqualifiedInstanceCreation
 				throw e.addPosition(getTokenReference());
 		}
 		
+		/* FJRM
 		classOrInterface = type.getCClass();
 		if (fjts.isCleanIfc(context, classOrInterface))
 		{
@@ -109,6 +110,7 @@ public class FjUnqualifiedInstanceCreation extends JUnqualifiedInstanceCreation
 				cachedParams).analyse(
 				context);
 		}
+		*/
 
 		return super.analyse(context);
 	}
