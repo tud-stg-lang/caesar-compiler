@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JThisExpression.java,v 1.11 2005-02-14 19:21:41 aracic Exp $
+ * $Id: JThisExpression.java,v 1.12 2005-03-06 13:47:35 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -31,17 +31,17 @@ import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CConstructorContext;
+import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.family.ContextExpression;
-import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
-import org.caesarj.util.UnpositionedError;
 
 /**
  * A 'this' expression
@@ -261,17 +261,34 @@ public class JThisExpression extends JExpression {
 			KjcMessages.BAD_THIS_STATIC);
 
 		// IVICA store family
-		try {
-		    thisAsFamily = Path.createFrom(context.getBlockContext(), this);
-		    family = thisAsFamily.clonePath();
-		    ((ContextExpression)family.getHead()).adaptK(+1);
-		}
-		catch (UnpositionedError e) {
-            throw e.addPosition(getTokenReference());
-        }
+		calcExpressionFamily(context);		
 		
 		return this;
 	}
+    
+    protected void calcExpressionFamily(CExpressionContext context) throws PositionedError {
+        int k = 0;
+        // navigate out to the first class context
+        CContext ctx = context.getBlockContext();
+        while (! (ctx instanceof CClassContext)){
+            ctx = ctx.getParentContext();
+            k++;
+        }
+        
+        // then navigate to the owner
+        CClass owner = this.getSelf();
+        CClass current = context.getClassContext().getCClass();
+        while(!(current == owner || current.descendsFrom( owner ))) {
+            if(current == null) 
+                throw new InconsistencyException();
+            current = current.getOwner();
+            k++;
+        }
+        
+        thisAsFamily = new ContextExpression(null, k, (CReferenceType)getType(context.getTypeFactory()));
+        family = thisAsFamily.clonePath();
+        ((ContextExpression)family.getHead()).adaptK(+1);
+    }
 
 	public boolean equals(Object o) {
 		return o instanceof JThisExpression

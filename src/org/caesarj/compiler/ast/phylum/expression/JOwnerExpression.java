@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JOwnerExpression.java,v 1.6 2005-02-16 16:33:13 aracic Exp $
+ * $Id: JOwnerExpression.java,v 1.7 2005-03-06 13:47:35 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -31,13 +31,10 @@ import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CConstructorContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.family.ContextExpression;
-import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
-import org.caesarj.util.UnpositionedError;
 
 /**
  * A 'this' expression
@@ -207,14 +204,7 @@ public class JOwnerExpression extends JThisExpression
 			KjcMessages.BAD_THIS_STATIC);
 		
 		// IVICA store family
-		try {
-		    thisAsFamily = Path.createFrom(context.getBlockContext(), this);
-		    family = thisAsFamily.clonePath();
-		    ((ContextExpression)family.getHead()).adaptK(+1);
-		}
-		catch (UnpositionedError e) {
-            throw e.addPosition(getTokenReference());
-        }
+        calcExpressionFamily(context);        
 
 		return this;
 	}
