@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentNameType.java,v 1.14 2005-02-11 18:45:22 aracic Exp $
+ * $Id: CDependentNameType.java,v 1.15 2005-02-15 18:32:05 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -100,7 +100,10 @@ public class CDependentNameType extends CClassNameType
         KjcEnvironment env;
 
         // create an expression context to analyse the expression
-        if (context instanceof CClassContext){
+        if(context instanceof CExpressionContext) {
+            ectx = (CExpressionContext)context;
+        }
+        else if (context instanceof CClassContext){
             CClassContext classContext = (CClassContext)context;
             env = classContext.getEnvironment();
             ectx =
@@ -164,14 +167,17 @@ public class CDependentNameType extends CClassNameType
                 CDependentType dt = new CDependentType((CContext)context, expr, t);
                 
                 // it is forbidden for type paths to contain java elements
+                /* CRITICAL: check removed
                 if(dt.getPath().containsJavaElements()) {
                     throw new UnpositionedError(CaesarMessages.INNER_PLAIN_JAVA_OBJECTS_IN_PATH);
                 }
+                */
                 
                 return dt;
             }
 
-        } catch (Exception e){
+        } 
+        catch (Exception e){
             // If the message of a positioned error is in passThrough, the
             // exception is thrown further. Otherwise, a TYPE_UNKNOWN error
             // is thrown at the end of the function.
