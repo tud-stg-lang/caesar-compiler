@@ -19,10 +19,20 @@
  <property name="dist" location="dist"/>
 
  <!-- Create CaesarMessages.java -->
- <target name="msggen" description="Generate CaesarMessages.java">
+	 
+	
+ <target name="compile.util" description="compile the util packagesource files">
+  <javac 	srcdir="cjbuildtools-src" 
+  			classpath="${libs}/java-getopt-1.0.9.jar;${libs}/cjbuildtools.jar"
+  		 	destdir="bin" listfiles="true" failonerror="true"/>
+ </target>
+
+	
+<target name="msggen" depends="compile.util" description="Generate CaesarMessages.java">
   <java fork="true" dir="${source}/compiler/constants"
   		classname="org.caesarj.tools.msggen.Main"
-  		classpath="${libs}/java-getopt-1.0.9.jar;
+  		classpath="${bin};
+  					${libs}/java-getopt-1.0.9.jar;
   				   ${libs}/cjbuildtools.jar">
    <arg value="${inputFiles}/CaesarMessages.msg"/>
   </java>
@@ -77,7 +87,7 @@
   <echo message="2nd step: LEXINC"/>
   <java fork="true" failonerror="true"
   		classname="org.caesarj.tools.include.Main"
-        classpath="${libs}/cjbuildtools.jar;${libs}/java-getopt-1.0.9.jar">
+        classpath="${bin};${libs}/cjbuildtools.jar;${libs}/java-getopt-1.0.9.jar">
    <arg value="${inputFiles}/Caesar.flex.in"/>
    <arg value="-o"/>
    <arg value="${inputFiles}/Caesar.flex"/>  
@@ -110,7 +120,7 @@
   		fork="true" dir="${source}/compiler"
   		failonerror="true"
   		classname="org.caesarj.tools.antlr.compiler.Main"
- 		classpath="${libs}/cjbuildtools.jar;${libs}/java-getopt-1.0.9.jar">
+ 		classpath="${bin};${libs}/cjbuildtools.jar;${libs}/java-getopt-1.0.9.jar">
  		 
    	<arg value="${inputFiles}/Caesar.g"/>
   </java>
