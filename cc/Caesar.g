@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.24 2004-03-14 11:11:56 aracic Exp $
+ * $Id: Caesar.g,v 1.25 2004-03-15 11:52:05 aracic Exp $
  */
 
 /*
@@ -35,6 +35,12 @@ header { package org.caesarj.compiler; }
   import java.util.ArrayList;
 
   import org.caesarj.compiler.ast.*;
+  import org.caesarj.compiler.ast.phylum.*;
+  import org.caesarj.compiler.ast.phylum.expression.*;
+  import org.caesarj.compiler.ast.phylum.expression.literal.*;
+  import org.caesarj.compiler.ast.phylum.declaration.*;
+  import org.caesarj.compiler.ast.phylum.statement.*;
+  import org.caesarj.compiler.ast.phylum.variable.*;
   import org.caesarj.compiler.constants.*;
   import org.caesarj.compiler.aspectj.CaesarAdviceKind;
   import org.caesarj.compiler.aspectj.CaesarPatternParser;
