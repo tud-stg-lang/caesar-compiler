@@ -137,6 +137,10 @@ public class VirtualClassesTests extends FjTestCase {
     public void testCaesarTestCase_31() throws Throwable {
         compileAndRun("test31", "VCTestCase");
     }
+    
+    public void testCaesarTestCase_32() throws Throwable {
+        compileAndRun("test32", "VCTestCase");
+    }
 	
 	public void testCaesarTestCase_99() throws Throwable {
         compileAndRun("test99", "VCTestCase");
