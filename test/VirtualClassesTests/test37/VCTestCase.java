@@ -6,6 +6,7 @@ import java.awt.Color;
 
 /**
  * Test automatic casts
+ * This unit test fails because of prepareDynamicDeployment rewrites the CClass generated
  *
  * @author Ivica Aracic
  */
@@ -50,18 +51,18 @@ public class VCTestCase extends TestCase {
 public cclass A {
 	public cclass G {
 		public cclass E {
-			protected A.G.N n1, n2;
+			protected N n1, n2;
 			
-			public A.G.E init(A.G.N n1, A.G.N n2) {
+			public E init(N n1, N n2) {
 				this.n1 = n1;
 				this.n2 = n2;
 				return this;
 			}
 			
-			public A.G.N getStartNode() {return n1;}
-			public A.G.N getEndNode() {return n2;}
+			public N getStartNode() {return n1;}
+			public N getEndNode() {return n2;}
 			
-			public boolean isConnecting(A.G.N n1, A.G.N n2) {
+			public boolean isConnecting(N n1, N n2) {
 				return this.n1 == n1 && this.n2 == n2;
 			}
 			
@@ -73,7 +74,7 @@ public cclass A {
 		public cclass N {
 			protected String name;
 			
-			public A.G.N init(String name) {
+			public N init(String name) {
 				this.name = name;
 				return this;
 			}
@@ -96,7 +97,7 @@ public cclass A {
 		    
 		    public Color getColor() {return col;}
 		    
-			public A.G.N init(String name, Color color) {
+			public N init(String name, Color color) {
 				init(name);
 				this.col = color;
 				return this;
@@ -136,7 +137,7 @@ public cclass X {
 	}
 	
 	public cclass B {
-		protected X.A.A a;
+		protected A a;
 	}
 }
 
@@ -149,7 +150,7 @@ public cclass Y extends X {
 	
 	public cclass B {
 		public void exec() {
-			Y.A ya = $outer.new A();
+			A ya = $outer.new A();
 			a = ya.new A();
 			a.x();
 		}

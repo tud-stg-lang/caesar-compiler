@@ -64,7 +64,6 @@ public cclass OuterA
 
 public cclass OuterB extends OuterA
 {
-	// scoping workaround
 	public cclass InnerB
 	{
 		public String queryA()

@@ -4,9 +4,13 @@ import junit.framework.*;
 import java.util.*;
 
 /**
- * Test inheritance from implicit type.
+ * Test virtual class scoping
+ * 
+ * Here we test the following:
+ *     - resolution of types which has not been explicitly redefined in the same collaboration
+ * 	   - lookup of ambiguous types inherited from different interfaces
  *
- * @author Vaidas Gasiunas
+ * @author Ivica Aracic
  */
 public class VCTestCase extends TestCase
 {
@@ -23,7 +27,7 @@ public class VCTestCase extends TestCase
 	{
 		System.out.println("-------> VCTest 33: Inheritance from Implicit Type: start");
         
-        OuterC.InnerB cb = new OuterC().new InnerB();
+        OuterE.InnerB cb = new OuterE().new InnerB();
 	
 		String result = cb.queryA() + ", " + cb.queryB() + ", " + cb.queryC();
 
@@ -65,4 +69,22 @@ public cclass OuterC extends OuterB
 			return "C.A.C";
 		}
 	}
+}
+
+public cclass OuterD extends OuterB {}
+
+public cclass OuterE extends OuterC & OuterD {
+
+	public cclass InnerX extends InnerA {}
+	public cclass InnerY extends InnerB {}
+
+	private InnerA a;
+	private InnerB b;
+	private String s;
+
+    public cclass X {
+        private InnerA a;
+        private InnerB b;
+        private String s;
+    }
 }

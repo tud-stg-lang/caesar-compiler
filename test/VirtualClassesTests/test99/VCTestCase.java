@@ -101,9 +101,6 @@ public cclass EagleSubject extends Forest {
 	public cclass Dandellon extends NectarPlant {
 	}
 	
-	public cclass Bird {
-	}
-	
 	public cclass Woodman extends Predator {
 		private int attackingRating;
 		public void setAttackingRating(int rating) {this.attackingRating = rating;}
@@ -152,10 +149,6 @@ public cclass WoodmanSubject extends Forest {
 }
 
 public cclass WoodmanEagleSubject extends WoodmanSubject & EagleSubject {
-	
-	// scoping workaround
-	public cclass Plant {}
-	
 	public cclass Tree extends Plant {
 		public void chopDown() {
 			super.chopDown(); 

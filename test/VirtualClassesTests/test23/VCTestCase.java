@@ -130,7 +130,6 @@ public cclass OuterB extends OuterA
 		}
 	}
 
-	// scoping workaround, see InnerC & InnerF bellow
 	public cclass InnerF {
 		public String queryA()
 		{
@@ -165,7 +164,6 @@ public cclass OuterC extends OuterA
 		}
 	}
 
-	// scoping workaround, see InnerB & InnerC bellow
 	public cclass InnerC {
 		public String queryA()
 		{
@@ -192,14 +190,6 @@ public cclass OuterC extends OuterA
 
 public cclass OuterD extends OuterB & OuterC
 {
-	// scoping workaround, see InnerF & InnerD bellow
-	public cclass InnerF
-	{ }
-
-	// scoping workaround, see InnerF & InnerD bellow
-	public cclass InnerD
-	{ }
-
 	public cclass InnerI extends InnerF & InnerD
 	{
 		public String queryA()

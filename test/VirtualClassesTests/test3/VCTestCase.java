@@ -45,19 +45,19 @@ public class VCTestCase extends TestCase {
 public cclass TestCase3 {
 
 	public cclass G {
-		public void doSomethingWithEdge(TestCase3.G.E e) {
-			
+		public void doSomethingWithEdge(E e) {
+		    System.out.println("G.doSomethingWithEdge");
 		}
 
 		public cclass E {
-	        TestCase3.G.N n1, n2;
+	        N n1, n2;
 
-	        public void setEdges(TestCase3.G.N n1, TestCase3.G.N n2) {
+	        public void setEdges(N n1, N n2) {
 	            this.n1 = n1;
 	            this.n2 = n2;
 	        }
 
-			public boolean isConnecting(TestCase3.G.N n1, TestCase3.G.N n2) {
+			public boolean isConnecting(N n1, N n2) {
 				return this.n1==n1 && this.n2==n2;
 			}
 
@@ -67,7 +67,7 @@ public cclass TestCase3 {
 		}
 
 		public cclass UE extends E {
-		    public boolean isConnecting(TestCase3.G.N n1, TestCase3.G.N n2) {
+		    public boolean isConnecting(N n1, N n2) {
 		    	return super.isConnecting(n1,n2) || super.isConnecting(n2, n1);
 		    }
 
@@ -88,8 +88,11 @@ public cclass TestCase3 {
 
 	//=========================================================
 	public cclass CG extends G {
-		public void doSomethingWithEdge(TestCase3.G.E e) {			
+	    // test: signature should be same as in G
+		public void doSomethingWithEdge(E e) {
+		    super.doSomethingWithEdge(e);
 			e.setColor("#a1babe");
+			System.out.println("CG.doSomethingWithEdge");
 		}
 
 		public cclass E {
@@ -99,7 +102,7 @@ public cclass TestCase3 {
 		    public void setColor(String col) {this.col = col;}
 
 	        public void someSpecialAlg() {
-	            TestCase3.CG.N n = n1;
+	            N n = n1;
 	        }
 
 	        public String toString() {
@@ -119,7 +122,7 @@ public cclass TestCase3 {
 	}
 
 	//=========================================================
-	public cclass CWG extends TestCase3.CG & TestCase3.WG {
+	public cclass CWG extends CG & WG {
 	    public cclass E {
 	        public void nowWeHaveItAll() {
 	            float w = this.w;
@@ -127,8 +130,8 @@ public cclass TestCase3 {
 	            
 	            // note that the type of n1,n2 has been bound to the most specific node,
 	            // namely CWG.N
-	            TestCase3.CWG.N n1 = this.n1;
-	            TestCase3.CWG.N n2 = this.n2;
+	            N n1 = this.n1;
+	            N n2 = this.n2;
 	        }
 	    }
 	}

@@ -52,7 +52,7 @@ public cclass OuterA
 		{
 			DeepestA _child = null;
 
-			public void setChild(OuterA.InnerA.DeepestA child)
+			public void setChild(DeepestA child)
 			{
 				_child = child;
 			}
@@ -76,7 +76,7 @@ public cclass OuterA
 			}
 		}
 
-		public OuterA.InnerA.DeepestB defaultObject()
+		public DeepestB defaultObject()
 		{
 			DeepestB b = new DeepestB();
 			b.setDefaultChild();
@@ -98,7 +98,7 @@ public cclass OuterA
 		{
 			OuterA.InnerA.DeepestA _child2 = null;
 
-			public void setChild2(OuterA.InnerA.DeepestA child)
+			public void setChild2(DeepestA child)
 			{
 				_child2 = child;
 			}
@@ -130,9 +130,9 @@ public cclass OuterA
 			}
 		}
 
-		public OuterA.InnerA.DeepestB defaultObject()
+		public DeepestB defaultObject()
 		{
-			OuterA.InnerB.DeepestB b = super.defaultObject();
+			DeepestB b = super.defaultObject();
 			b.setDefaultChild2();
 			return b;
 		}
@@ -153,9 +153,9 @@ public cclass OuterB extends OuterA
 
 		public cclass DeepestB
 		{
-			OuterA.InnerA.DeepestA _child3 = null;
+			DeepestA _child3 = null;
 
-			public void setChild3(OuterA.InnerA.DeepestA child)
+			public void setChild3(DeepestA child)
 			{
 				_child3 = child;
 			}
@@ -187,9 +187,9 @@ public cclass OuterB extends OuterA
 			}
 		}
 
-		public OuterA.InnerA.DeepestB defaultObject()
+		public DeepestB defaultObject()
 		{
-			OuterB.InnerA.DeepestB b = super.defaultObject();
+			DeepestB b = super.defaultObject();
 			b.setDefaultChild3();
 			return b;
 		}
