@@ -41,13 +41,13 @@
    <arg value="-ditf"/>
    <arg value="${inputFiles}/caesar.t"/>
   </java>
-  <copy file="cc/CaesarTokenTypes.java" todir="${source}/compiler"></copy>
-  <copy file="cc/CaesarTokenTypes.txt" todir="${source}/compiler"></copy>
+  <copy file="${inputFiles}/CaesarTokenTypes.java" todir="${source}/compiler"></copy>
+  <copy file="${inputFiles}/CaesarTokenTypes.txt" todir="${source}/compiler"></copy>
 
   <!-- 2. LEXINC: Creates the .flex file -->
   <echo message="LEXINC"/>
   <java classname="org.caesarj.compiler.tools.include.Main"
-         classpath="bin;${libs}/java-getopt-1.0.9.jar">
+        classpath="bin;${libs}/java-getopt-1.0.9.jar">
    <arg value="${inputFiles}/Caesar.flex.in"/>
    <arg value="-o"/>
    <arg value="${inputFiles}/Caesar.flex"/>  
