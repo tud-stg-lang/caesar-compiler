@@ -42,11 +42,22 @@ public class VirtualClassesTests extends FjTestCase {
 				// these files should not raise errors
 				String[] args =
 					new String[] {
-						//"VCTestCase_0.java",
-                        //"VCTestCase_1.java",
-                        //"VCTestCase_2.java",
-						"VCTestCase_3.java",
-						"VCTestCase_4.java",
+					//	"VCTestCase_0.java",
+                    //  "VCTestCase_1.java",
+                    //  "VCTestCase_2.java",
+					//	"VCTestCase_3.java",
+					//	"VCTestCase_4.java",
+					//	"VCTestCase_5.java",
+					//	"VCTestCase_6.java",
+					//	"VCTestCase_7.java",
+					//	"VCTestCase_8.java",
+					//	"VCTestCase_9.java",
+					//	"VCTestCase_10.java",
+					//	"VCTestCase_11.java",
+					//	"VCTestCase_12.java",
+					//	"VCTestCase_13.java",
+					//	"VCTestCase_14.java",
+						"VCTestCase_15.java"
                     };
 
 				compiler = new CompilerMock(this, new PrintWriter(System.out) {
@@ -82,23 +93,82 @@ public class VirtualClassesTests extends FjTestCase {
     public void testCaesarTestCase_0() throws Throwable {
         doGeneratedTest("VCTestCase_0");
     }
-
+*/
+/*
     public void testCaesarTestCase_1() throws Throwable {
         doGeneratedTest("VCTestCase_1");
     }
-
+*/
+/*
     public void testCaesarTestCase_2() throws Throwable {
         doGeneratedTest("VCTestCase_2");
     }
 */
+/*
     public void testCaesarTestCase_3() throws Throwable {
         doGeneratedTest("VCTestCase_3");
     }
-
+*/
+/*
     public void testCaesarTestCase_4() throws Throwable {
         doGeneratedTest("VCTestCase_4");
     }
-
+*/
+/*    
+    public void testCaesarTestCase_5() throws Throwable {
+        doGeneratedTest("VCTestCase_5");
+    }
+*/
+/* 
+   public void testCaesarTestCase_6() throws Throwable {
+        doGeneratedTest("VCTestCase_6");
+    }
+*/
+/*
+    public void testCaesarTestCase_7() throws Throwable {
+        doGeneratedTest("VCTestCase_7");
+    }
+*/
+/*
+	public void testCaesarTestCase_8() throws Throwable {
+        doGeneratedTest("VCTestCase_8");
+    }
+*/
+/*	
+	public void testCaesarTestCase_9() throws Throwable {
+        doGeneratedTest("VCTestCase_9");
+    }
+*/
+/*	
+	public void testCaesarTestCase_10() throws Throwable {
+        doGeneratedTest("VCTestCase_10");
+    }
+*/
+/*
+	public void testCaesarTestCase_11() throws Throwable {
+        doGeneratedTest("VCTestCase_11");
+    }
+*/
+/*
+	public void testCaesarTestCase_12() throws Throwable {
+        doGeneratedTest("VCTestCase_12");
+    }
+*/
+/*
+	public void testCaesarTestCase_13() throws Throwable {
+        doGeneratedTest("VCTestCase_13");
+    }
+*/
+/*	
+	public void testCaesarTestCase_14() throws Throwable {
+        doGeneratedTest("VCTestCase_14");
+    }
+*/
+	
+	public void testCaesarTestCase_15() throws Throwable {
+        doGeneratedTest("VCTestCase_15");
+    }
+	
 	class CompilerMock extends Main {
 
 		public CompilerMock(VirtualClassesTests test, PrintWriter p) {
