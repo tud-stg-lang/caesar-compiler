@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.19 2004-10-29 13:23:53 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.20 2004-11-02 17:59:20 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -32,7 +32,6 @@ import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
-import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
@@ -307,29 +306,11 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         // add outer variable
     	CType outerType = null;
     	
-        if(getCClass().getOwner() != null) {
+    	// if an inner class, set to static
+    	// we are manually managing the outer references
+        if(getCClass().isNested()) {
             this.modifiers |= ACC_STATIC;
             getCClass().setModifiers(this.modifiers);
-            
-            outerType = context.getClassReader().loadClass(
-        		context.getTypeFactory(), 
-				getCClass().getOwner().convertToIfcQn()
-			).getAbstractType();
-            
-            JFieldDeclaration outerField = new JFieldDeclaration(
-        		getTokenReference(),
-				new JVariableDefinition(
-					getTokenReference(),
-					ACC_FINAL | ACC_PRIVATE,
-					outerType, // type
-					OUTER_FIELD,
-					null
-				),
-				false,
-				null, null
-    		);
-            
-            addField(outerField);
         }
         
         // search for default ctor
