@@ -20,13 +20,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ContextExpression.java,v 1.7 2005-01-24 16:52:59 aracic Exp $
+ * $Id: ContextExpression.java,v 1.8 2005-01-26 16:09:16 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
 
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.util.InconsistencyException;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * ctx(k)
@@ -57,7 +58,7 @@ public class ContextExpression extends Path {
         return this.clonePath();
     }
     
-    protected Path _normalize(Path pred, Path tail) {
+    protected Path _normalize(Path pred, Path tail) throws UnpositionedError {
         
         System.out.println("\t----->"+tail);
         

@@ -20,12 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: FieldAccess.java,v 1.8 2005-01-24 16:52:59 aracic Exp $
+ * $Id: FieldAccess.java,v 1.9 2005-01-26 16:09:25 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
 
 import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.util.UnpositionedError;
 
 
 /**
@@ -54,7 +55,7 @@ public class FieldAccess extends Path {
         return prefix+"."+name;
     }
 
-    public Path normalize() {
+    public Path normalize() throws UnpositionedError {
         Path typePath = type.getPath().clonePath();
         Path typePathHeadPred = typePath.getHeadPred();
         Path typePathHead = typePath.getHead();
@@ -63,7 +64,7 @@ public class FieldAccess extends Path {
         return typePathHead._normalize(typePathHeadPred, typePath);
     }
 
-    protected Path _normalize(Path pred, Path tail) {
+    protected Path _normalize(Path pred, Path tail) throws UnpositionedError {
         return prefix._normalize(this, tail);
     }
     
