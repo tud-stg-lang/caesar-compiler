@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.16 2004-10-15 15:38:29 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.17 2004-10-28 13:07:16 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -41,13 +41,11 @@ import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
 import org.caesarj.compiler.typesys.graph.OuterInnerRelation;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.compiler.typesys.java.JavaTypeNode;
-import org.caesarj.util.CWarning;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
@@ -55,13 +53,13 @@ import org.caesarj.util.TokenReference;
 /**
  * This class represents a cclass in the syntax tree.  
  */
-public class CjVirtualClassDeclaration extends CjClassDeclaration {
-    
+public class CjVirtualClassDeclaration extends CjClassDeclaration {       
+
     public CjVirtualClassDeclaration(
         TokenReference where,
         int modifiers,
         String ident,
-        CReferenceType superClass,
+        CReferenceType[] superClasses,
         CReferenceType wrappee,
         CReferenceType[] interfaces,
         JFieldDeclaration[] fields,
@@ -78,7 +76,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
             where,
             modifiers | ACC_MIXIN,
             implClass ? ident+"_Impl" : ident,
-            superClass,
+            null,
             wrappee,
             interfaces,
             fields,
@@ -91,7 +89,9 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
             advices,
             declares);
               
-        // IVICA 
+        
+        this.superClasses = superClasses;
+        
         if(implClass) {                    
             originalIdent = ident;
             
@@ -103,69 +103,6 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
                 }
             }
         }        
-    }
-
-    public CjVirtualClassDeclaration(
-        TokenReference where,
-        int modifiers,
-        String ident,
-        CReferenceType superClass,
-        CReferenceType wrappee,
-        CReferenceType[] interfaces,
-        JFieldDeclaration[] fields,
-        JMethodDeclaration[] methods,
-        JTypeDeclaration[] inners,
-        JPhylum[] initializers
-	) {
-    	super(
-	        where,
-	        modifiers | ACC_MIXIN,
-	        ident,
-	        superClass,
-	        wrappee,
-	        interfaces,
-	        fields,
-	        methods,
-	        inners,
-	        initializers,
-	        null, 
-			null
-		);           
-    }
-    
-    public CjVirtualClassDeclaration(
-        TokenReference where,
-        int modifiers,
-        String ident,
-        CReferenceType superClass,
-        CReferenceType wrappee,
-        CReferenceType[] interfaces,
-        JFieldDeclaration[] fields,
-        JMethodDeclaration[] methods,
-        JTypeDeclaration[] inners,
-        JPhylum[] initializers,
-        JavadocComment javadoc,
-        JavaStyleComment[] comment,
-        CjPointcutDeclaration[] pointcuts,
-        CjAdviceDeclaration[] advices,
-        CaesarDeclare[] declares) {
-    	super(
-	        where,
-	        modifiers | ACC_MIXIN,
-	        ident,
-	        superClass,
-	        wrappee,
-	        interfaces,
-	        fields,
-	        methods,
-	        inners,
-	        initializers,
-	        javadoc,
-	        comment,
-	        pointcuts,
-	        advices,
-	        declares
-		);           
     }
 
   
@@ -227,13 +164,17 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
                     getTokenReference(),
                     ACC_PUBLIC,
                     subNode.getQualifiedImplName().getIdent(),
-                    context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT),
+                    CReferenceType.EMPTY,
                     null, // wrappee
                     new CReferenceType[]{ifcDecl.getCClass().getAbstractType()}, // CTODO ifcs
                     new JFieldDeclaration[0],
 					new JMethodDeclaration[0],
                     new JTypeDeclaration[0],
-                    new JPhylum[0]
+                    new JPhylum[0], null, null, 
+                    CjPointcutDeclaration.EMPTY,
+                    CjAdviceDeclaration.EMPTY,
+                    new CaesarDeclare[0],
+                    false
                 );
             
             implDecl.generateInterface(
@@ -334,16 +275,14 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
      * - check that cclass modifier is always set to public
      */
     public void join(CContext context) throws PositionedError {
-                
+
         if(!CModifier.contains(ACC_PUBLIC, modifiers)) {
 	        context.reportTrouble(
-	            new CWarning(
+	            new PositionedError(
 	                getTokenReference(),
 	                CaesarMessages.ONLY_PUBLIC_CCLASS
                 )
             );
-	        
-	        setModifiers(modifiers |= ACC_PUBLIC);
         }
         
         super.join(context);
@@ -579,6 +518,11 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         return mixinIfcDecl;
     }
     
+    public CReferenceType[] getSuperClasses() {
+        return superClasses;
+    }
+    
     private CjMixinInterfaceDeclaration mixinIfcDecl = null;
 
+    private CReferenceType[] superClasses;
 }
