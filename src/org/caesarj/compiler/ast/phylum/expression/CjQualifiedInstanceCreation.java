@@ -20,12 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjQualifiedInstanceCreation.java,v 1.7 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CjQualifiedInstanceCreation.java,v 1.8 2005-02-09 16:55:04 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.ast.visitor.IVisitor;
+import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
@@ -92,7 +93,7 @@ public class CjQualifiedInstanceCreation extends JExpression {
             
             // convert to factory method
             // a.new C() -> a.$newC()
-            expr = new CjMethodCallExpression(getTokenReference(), prefix, "$new"+ident, params);
+            expr = new CjMethodCallExpression(getTokenReference(), prefix, CaesarConstants.FACTORY_METHOD_PREFIX+ident, params);
             //expr = new JCastExpression(getTokenReference(), expr, returnClass.getAbstractType());
         }
         else {

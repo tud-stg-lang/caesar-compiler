@@ -20,13 +20,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjUnqualifiedInstanceCreation.java,v 1.6 2005-02-04 19:08:30 aracic Exp $
+ * $Id: CjUnqualifiedInstanceCreation.java,v 1.7 2005-02-09 16:55:04 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.visitor.IVisitor;
+import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.export.CClass;
@@ -86,7 +87,7 @@ public class CjUnqualifiedInstanceCreation extends JExpression {
                 expr = new CjMethodCallExpression(
                     getTokenReference(),
                     null,
-                    "$new"+type.getCClass().getIdent(),
+                    CaesarConstants.FACTORY_METHOD_PREFIX+type.getCClass().getIdent(),
                     params
                 );
             }
