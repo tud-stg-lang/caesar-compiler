@@ -1,8 +1,6 @@
 package org.caesarj.classfile;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -11,7 +9,7 @@ import java.util.Vector;
  * Extends ClassInfo to support generating the class to a byte[]
  * and to add some extra attributes.
  * 
- * @author J?rgen Hallpap
+ * @author Jürgen Hallpap
  */
 public class AttributedClassInfo extends ClassInfo {
 
