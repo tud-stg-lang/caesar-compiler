@@ -6,6 +6,9 @@ public class TypeSystemTests extends FjTestCase {
 		super(name);
 	}
 
+	/*
+	 * Test Dependent Types defined within plain Java classes
+	 */
 	public void testCaesarTestCase_01() throws Throwable {
 	    compileDontRun("typesystest01");
     }
@@ -40,6 +43,17 @@ public class TypeSystemTests extends FjTestCase {
 
 	public void testCaesarTestCase_09() throws Throwable {
 	    compileDontRun("typesystest09");
+    }
+
+	/*
+	 * Test Dependent Types defined within cclass
+	 */
+	public void testCaesarTestCase_50() throws Throwable {
+	    compileDontRun("typesystest50");
+    }
+
+	public void testCaesarTestCase_51() throws Throwable {
+	    compileDontRun("typesystest51");
     }
 
 
