@@ -25,7 +25,7 @@ are available under the terms of the GNU Lesser General Public
 License (LGPL), see http://www.gnu.org/copyleft/lesser.html
 
 GetOpt - Command line arguments are parsed using the GNU GetOpt.
-It is available under the GPL license.
+It is available under the GPL license, see http://www.gnu.org/copyleft/gpl.html.
 
 ANTLR - ANother Tool for Language Recognition
 Available at http://www.antlr.org/
