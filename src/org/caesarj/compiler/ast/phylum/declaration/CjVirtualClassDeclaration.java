@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.15 2004-10-15 11:12:52 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.16 2004-10-15 15:38:29 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -38,6 +38,7 @@ import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
@@ -46,6 +47,7 @@ import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
 import org.caesarj.compiler.typesys.graph.OuterInnerRelation;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.compiler.typesys.java.JavaTypeNode;
+import org.caesarj.util.CWarning;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
@@ -329,6 +331,25 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     
         
     /**
+     * - check that cclass modifier is always set to public
+     */
+    public void join(CContext context) throws PositionedError {
+                
+        if(!CModifier.contains(ACC_PUBLIC, modifiers)) {
+	        context.reportTrouble(
+	            new CWarning(
+	                getTokenReference(),
+	                CaesarMessages.ONLY_PUBLIC_CCLASS
+                )
+            );
+	        
+	        setModifiers(modifiers |= ACC_PUBLIC);
+        }
+        
+        super.join(context);
+    }
+    
+    /**
      * Resolves the binding and providing references. Of course it calls the
      * super implementation of the method also.
      */
@@ -405,6 +426,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
 			);
         }
     	
+        
     	super.checkInterface(context);
 		
 		// CTODO: check inheritance of full throwable list on method redefinition
@@ -420,10 +442,6 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
             
             if(method.isConstructor())
                 continue;
-            
-            if(method.getIdent().equals("$newDeepestD") && this.getIdent().equals("InnerB_Impl")) {
-                boolean stop = true;
-            }
             
             // find initial declaration of the method
             CMethod initialMethodDecl = findInitialDeclaration(method, context);
@@ -483,11 +501,6 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
 
     
     private CMethod findInitialDeclaration(CMethod orig, CContext context) {
-        
-        if(orig.getIdent().equals("doSomethingWithEdge")) {
-            boolean stop = true;
-        }
-        
         CClass ownerSuperClass = orig.getOwner().getSuperClass();
         CMethod lastFound = orig;
         
