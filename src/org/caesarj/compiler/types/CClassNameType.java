@@ -15,16 +15,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassNameType.java,v 1.5 2004-10-17 20:59:36 aracic Exp $
+ * $Id: CClassNameType.java,v 1.6 2004-11-17 18:08:10 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.constants.KjcMessages;
+import org.caesarj.compiler.context.CBlockContext;
+import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CMember;
 import org.caesarj.util.InconsistencyException;
+import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
 /**
@@ -108,6 +118,48 @@ public class CClassNameType extends CReferenceType
 	// INTERFACE CHECKING
 	// ----------------------------------------------------------------------
 
+	private JExpression convertToExpression() {
+	    String pathSegs[] = qualifiedName.split("/");
+	    JExpression expr = null;
+	    for (int i = 0; i < pathSegs.length-1; i++) {
+            expr = new JNameExpression(TokenReference.NO_REF, expr, pathSegs[i]);
+        }
+	    
+	    return expr;
+	}
+	
+	private CMember[] makePos(CTypeContext context) {
+        List list = new LinkedList();
+        
+	    if(context instanceof CBlockContext) {
+            list.add(0, ((CBlockContext)context).getMethodContext().getCMethod());
+        } 
+	    else if(context instanceof CExpressionContext) {
+	        list.add(0, ((CExpressionContext)context).getMethodContext().getCMethod());
+        }
+	    
+	    CClassContext clsCtx = context.getClassContext();
+	    
+	    while(clsCtx != null) {
+	        list.add(0, clsCtx.getCClass());
+	        if(clsCtx.getParentContext() instanceof CClassContext) {
+	            clsCtx = (CClassContext)clsCtx.getParentContext();
+	        }
+	        else {
+	            clsCtx = null;
+	        }
+	    }
+	    
+	    return (CMember[])list.toArray(new CMember[list.size()]);
+    }
+	
+	private String[] makePath() {
+	    String pathSegs[] = qualifiedName.split("/");
+	    String resPath[] = new String[pathSegs.length - 1];
+	    System.arraycopy(pathSegs, 0, resPath, 0, resPath.length);
+	    return resPath;
+    }
+	
 	/**
 	 * check that type is valid
 	 * necessary to resolve String into java/lang/String
@@ -116,6 +168,50 @@ public class CClassNameType extends CReferenceType
 	 */
 	public CType checkType(CTypeContext context) throws UnpositionedError
 	{
+	    /*************************************/	    
+	    // IVICA: try to lookup the path first	    
+	    
+	    if(qualifiedName.equals("g/N")) {
+	        boolean stop = true;
+	    }
+	    
+	    JExpression expr = convertToExpression();
+	    
+	    
+        if(expr != null && (context instanceof CBlockContext || context instanceof CExpressionContext)) {
+            try {
+                
+                CExpressionContext ctx = null;
+                                
+                if(ctx instanceof CExpressionContext) {
+                    ctx = (CExpressionContext)ctx;
+                }
+                else if(context instanceof CBodyContext) {
+                    ctx = new CExpressionContext(
+                        (CBodyContext)context, 
+                        context.getClassContext().getEnvironment()
+                    );
+                }
+                
+                expr = expr.analyse(ctx);
+                
+                String pathSegs[] = qualifiedName.split("/");
+                
+                CClass clazz = context.getClassReader().loadClass(
+                    context.getTypeFactory(),
+                    expr.getType(context.getTypeFactory()).getCClass().getQualifiedName()+"$"+pathSegs[pathSegs.length-1]
+                );
+                
+                return 
+                	new CDependentType(makePos(context), makePath(), clazz.getAbstractType());
+            }
+            catch (Exception e) {
+                System.out.println("couldn't find");
+            }            
+	    }
+	    
+	    /*************************************/
+	    
 		if (binary && qualifiedName.indexOf('/') >= 0)
 		{
 			return new CBinaryType(
@@ -250,7 +346,7 @@ public class CClassNameType extends CReferenceType
 		}
 	}
 
-	public boolean isAssignableTo(
+    public boolean isAssignableTo(
 		CTypeContext context,
 		CType dest,
 		CReferenceType[] substitution)
