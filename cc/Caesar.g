@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.57 2004-11-03 14:17:14 aracic Exp $
+ * $Id: Caesar.g,v 1.58 2004-11-16 10:43:44 aracic Exp $
  */
 
 /*
@@ -1920,6 +1920,9 @@ jPrimaryExpression []
 |
   "this"
     { self = new JThisExpression(sourceRef); }
+| 
+  "wrappee"
+    { self = new CjWrappeeExpression(sourceRef); }
 | 
   "null"
     { self = new JNullLiteral(sourceRef); }
