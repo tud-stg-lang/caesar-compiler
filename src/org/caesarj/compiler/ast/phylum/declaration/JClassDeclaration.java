@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.11 2004-03-17 14:57:48 aracic Exp $
+ * $Id: JClassDeclaration.java,v 1.12 2004-03-17 15:05:12 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -1018,7 +1018,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 
 		if (isPrivileged() || isStaticallyDeployed())
 		{
-			getFjSourceClass().setPerClause(
+			getCjSourceClass().setPerClause(
 				CaesarPointcut.createPerSingleton()
 				);
 		}
@@ -1033,7 +1033,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 		initFamilies(self);		
 	}
 
-	public CCjSourceClass getFjSourceClass()
+	public CCjSourceClass getCjSourceClass()
 	{
 		return (CCjSourceClass) sourceClass;
 	}
@@ -1159,12 +1159,19 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 		int i = 0;
 		for (; i < methods.length; i++)
 		{
+			// FJTODO initFamilies for CjMethodDeclaration
+			/* 
 			if (methods[i] instanceof CjMethodDeclaration)
 				methodList[i] =
 					((CjMethodDeclaration) methods[i]).initFamilies(context);
 			else
 				methodList[i] = methods[i].getMethod();
-
+			*/
+			if (methods[i] instanceof CjMethodDeclaration)
+				methodList[i] =
+					methods[i].checkInterface(context);
+			else
+				methodList[i] = methods[i].getMethod();
 		}
 
 		JConstructorDeclaration defaultConstructor = getDefaultConstructor();
@@ -1198,7 +1205,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 			advices[j].checkInterface(self);
 			//during the following compiler passes
 			//the advices should be treated like methods
-			getFjSourceClass().addMethod((CCjAdvice) advices[j].getMethod());
+			getCjSourceClass().addMethod((CCjAdvice) advices[j].getMethod());
 		}
 
 		//consider declares
@@ -1209,10 +1216,10 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 				declares[j].resolve(
 					new CaesarScope(
 						(FjClassContext) constructContext(context),
-						getFjSourceClass()));
+						getCjSourceClass()));
 			}
 
-			getFjSourceClass().setDeclares(declares);
+			getCjSourceClass().setDeclares(declares);
 		}		
 	}
 

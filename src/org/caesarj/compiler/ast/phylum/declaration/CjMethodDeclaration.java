@@ -7,7 +7,6 @@ import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
-import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
@@ -48,11 +47,19 @@ public class CjMethodDeclaration extends JMethodDeclaration {
 		return ident;
 	}
 		
+	public CSourceMethod checkInterface(CClassContext context)
+		throws PositionedError {
+		super.checkInterface(context);
+		return checkInterface1(context);
+	}
+
+	/* FJRM
 	public CMethod initFamilies(CClassContext context)
 		throws PositionedError
 	{			
 		return checkInterface1(context);
 	}
+	*/
 		
 
 	/**

@@ -216,7 +216,7 @@ public class DeploymentPreparation implements CaesarConstants {
 	}
 	private CjMethodDeclaration createAspectOfMethod() {
 
-		CType singletonType = new CClassNameType(cd.getFjSourceClass().getQualifiedName());
+		CType singletonType = new CClassNameType(cd.getCjSourceClass().getQualifiedName());
 		JExpression expr =
 			new JFieldAccessExpression(
 				TokenReference.NO_REF,
@@ -262,7 +262,7 @@ public class DeploymentPreparation implements CaesarConstants {
 	{
 
 		CReferenceType type =
-			new CClassNameType(cd.getFjSourceClass().getQualifiedName());
+			new CClassNameType(cd.getCjSourceClass().getQualifiedName());
 		JExpression prefix = new JTypeNameExpression(cd.getTokenReference(), type);
 
 		JExpression expr =
