@@ -98,7 +98,6 @@ public class KjcOptions extends org.caesarj.util.Options {
     total[parent.length + 11] = "  --classpath, -C<String>: Changes class path to classpath";
     total[parent.length + 12] = "  --debug, -g:          Produces debug information (does nothing yet) [false]";
     total[parent.length + 13] = "  --source, -s<String>: Sets the source language (1.1, 1.2, 1.3, 1.4) [1.2]";
-    total[parent.length + 14] = "  --assertion, -A<String>: Enables assert extension to Java (none, simple, all) [none]";
     total[parent.length + 15] = "  --generic, -G:        Enables generic extension to Java [false]";
     total[parent.length + 16] = "  --filter, -f<String>: Warning filter [org.caesarj.kjc.DefaultFilter]";
     
@@ -112,23 +111,21 @@ public class KjcOptions extends org.caesarj.util.Options {
 
 
   public void version() {
-    System.out.println("Version 2.1A released 11. February 2002");
+    System.out.println("Version 0.1");
   }
 
 
   public void usage() {
-    System.err.println("usage: org.caesarj.kjc.Main [option]* [--help] <java-files>");
+    System.err.println("usage: org.caesarj.compiler.Main [option]* [--help] <java-files>");
   }
 
 
   public void help() {
-    System.err.println("usage: org.caesarj.kjc.Main [option]* [--help] <java-files>");
+    System.err.println("usage: org.caesarj.compiler.Main [option]* [--help] <java-files>");
     printOptions();
     System.err.println();
     version();
     System.err.println();
-    System.err.println("This program is part of the Kopi Suite.");
-    System.err.println("For more info, please see: http://www.dms.at/kopi");
   }
 
   public LongOpt[] getLongOptions() {
