@@ -61,7 +61,7 @@ public cclass TestCase2 {
 		    
 		    public Color getColor() {return col;}
 		    public void setColor(Color col) {this.col = col;}	        
-		}	
+		}			
 	}	
 }
 //=========================================================
