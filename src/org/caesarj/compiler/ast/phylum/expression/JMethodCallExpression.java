@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.27 2005-03-03 12:18:23 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.28 2005-03-03 15:49:36 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -477,8 +477,8 @@ public class JMethodCallExpression extends JExpression
 							context,
 							argTypePaths[i].isAssignableTo( depTypePath ),
 							KjcMessages.ASSIGNMENT_BADTYPE,
-							"P:"+argTypePaths[i].toString(),
-							"P:"+depTypePath.toString());
+							argTypePaths[i].toString()+"."+refType.getIdent(),
+							depTypePath.toString()+"."+depType.getIdent());
 			        }
 			        else {
 			            // this dependent type does not depend on a family defined
