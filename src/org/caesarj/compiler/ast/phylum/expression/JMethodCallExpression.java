@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodCallExpression.java,v 1.1 2004-03-15 11:56:51 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.2 2004-07-22 13:12:01 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -25,6 +25,7 @@ import org.caesarj.compiler.ast.visitor.KjcVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
+import org.caesarj.compiler.context.AdditionalGenerationContext;
 import org.caesarj.compiler.context.CConstructorContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
@@ -617,6 +618,11 @@ public class JMethodCallExpression extends JExpression
 	 */
 	public void genCode(GenerationContext context, boolean discardValue)
 	{
+	    
+	    if(prefix == null) {
+	        System.out.println();
+	    }
+	    
 		CodeSequence code = context.getCodeSequence();
 		TypeFactory factory = context.getTypeFactory();
 
@@ -641,7 +647,30 @@ public class JMethodCallExpression extends JExpression
 		{
 			args[i].genCode(context, false);
 		}
-		method.genCode(context, forceNonVirtual);
+		
+		
+		CClass callerClass = AdditionalGenerationContext.instance().getCurrentClass();
+		
+		// IVICA: when setting target for method calls
+		// use direct super for super calls 
+		// and caller class for this calls instead of owner of the CMethod
+		if(prefix instanceof JSuperExpression) {
+		    method.genCode(
+		        context, 
+		        forceNonVirtual, 
+		        callerClass.getSuperClass().getQualifiedName());		    		   
+		}
+		else if(prefix == null) {
+		    method.genCode(
+		        context, 
+		        forceNonVirtual, 
+		        callerClass.getQualifiedName());		    		   		    
+		}
+		else {
+		    method.genCode(context, forceNonVirtual);
+		}
+		
+		
 
 		if (discardValue)
 		{
