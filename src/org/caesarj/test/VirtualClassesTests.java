@@ -219,6 +219,11 @@ public class VirtualClassesTests extends FjTestCase {
         compileAndRun("test40", "VCTestCase");
     }
 	
+	/* Accessing field within nested mixin copies */
+	public void testCaesarTestCase_41() throws Throwable {
+        compileAndRun("test41", "VCTestCase");
+    }
+	
 	/* Test subject oriented programming. */
 	public void testCaesarTestCase_99() throws Throwable {
         compileAndRun("test99", "VCTestCase");
