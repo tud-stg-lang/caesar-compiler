@@ -51,7 +51,7 @@ public class B extends A {
 
 
 // topMostInterface for factory methods workaround 
-public cclass _genSynthRoot {
+public cclass _synth {
 	public cclass Obj {}	
 	public cclass Plant {}
 	public cclass Nestable {}
@@ -71,7 +71,7 @@ public cclass _genSynthRoot {
 	public cclass Woodman {}
 }
 
-public cclass EagleSubject extends _genSynthRoot {
+public cclass EagleSubject extends _synth {
 	public cclass Obj {
 	}
 	
@@ -124,7 +124,7 @@ public cclass EagleSubject extends _genSynthRoot {
 	}
 }
 
-public cclass WoodmanSubject extends _genSynthRoot {
+public cclass WoodmanSubject extends _synth {
 	public cclass Obj {
 	}
 	
@@ -174,8 +174,7 @@ public cclass WoodmanEagleSubject extends WoodmanSubject & EagleSubject {
 	
 	public cclass Tree extends Plant {
 		public void chopDown() {
-			super.chopDown();	
-			//foodValue = 0; //		 <- ambigous!?
+			super.chopDown(); 
 			setFoodValue(0);
 		}
 	}

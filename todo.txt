@@ -1,28 +1,30 @@
 BUGS
 
 - recognition of duplicated types fails -> StackOverflowError in createImplicitTypesAndRelations
-- amiguities on fields -> see 17,19
-- arrays not working in cclass
-- polymorphy of arrays
+- arrays not working in cclass (return type, polymorphical assignment)
+
 
 HIGH PRIORITY
 
+- controll unit tests, there are few where error cases are commented out
 - debug logging! -> log4j
 - vc specific error messages
 - Substitution of new calls
 - Name clashes -> compiler error
 - checkInterface -> redefined cclass methods have to keep complete parents throwable list
-- ~~~ allowing extends clause for furtherbindings ~~~
 - typesystem -> casts, family variables
 - outer and deep nesting -> access of outer of outer, in java: static accessor methods
 - virtual class scoping! joinAll has to be changed -> for the problem see OuterD in 23
+
 
 LOW PRIORITY
 
 - support for binary caesar libraries
 - incremental compilation
 - mixins with support classes for dynamic deployment
-- dynamic deployement broken because of changes to outerThis
+- dynamic deployment broken because of changes to outerThis
+- super calls and calls to fields defined in on of the super classes has been fixed, but:
+	the fix doesn't look nice at all -> see AdditionalGenerationContext for more Infos
 
 
 WORK DONE
@@ -31,13 +33,14 @@ WORK DONE
 - extended compiler controllflow
 - class generator component
 - implements clause for cclass
+- allowing extends clause for furtherbindings
 
 
 THINK ABOUT IT
 
 - abstract virtual class
 - static interfaces in cclass
-- single CaesarTypeGraph instr
+- topMostIfc -> merging classes with non common root 
 
 
 FUTURE WORK
