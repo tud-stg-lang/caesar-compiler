@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JUnqualifiedAnonymousCreation.java,v 1.1 2003-07-05 18:29:38 werner Exp $
+ * $Id: JUnqualifiedAnonymousCreation.java,v 1.2 2003-08-26 10:15:18 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -23,6 +23,7 @@ package org.caesarj.kjc;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
+import org.caesarj.compiler.ast.FjClassDeclaration;
 
 /**
  * !!! This class represents a new allocation expression 'new Toto(1){}'
@@ -178,6 +179,10 @@ public class JUnqualifiedAnonymousCreation extends JExpression {
     decl.setDefaultConstructor(cstr);
     decl.join(context.getClassContext());
     decl.checkInterface(context.getClassContext());
+    //Walter start
+    if (decl instanceof FjClassDeclaration)
+		((FjClassDeclaration)decl).initFamilies(context.getClassContext());
+	//Walter end
 
     if (context.isStaticContext()) {
       decl.getCClass().setModifiers(decl.getCClass().getModifiers() | ACC_STATIC);

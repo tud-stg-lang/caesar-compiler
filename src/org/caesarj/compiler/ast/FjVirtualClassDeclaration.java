@@ -29,7 +29,6 @@ import org.caesarj.kjc.JMethodDeclaration;
 import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JReturnStatement;
 import org.caesarj.kjc.JStatement;
-import org.caesarj.kjc.JThisExpression;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.JVariableDefinition;
 import org.caesarj.kjc.TypeFactory;
@@ -82,8 +81,7 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 		return new FjVirtualCleanClassInterfaceDeclaration(
 			tokenReference,
 			ident,
-			modifiers & (CCI_COLLABORATION | CCI_BINDING | CCI_PROVIDING 
-				| CCI_WEAVELET),			
+			(modifiers & getInternalModifiers()),
 			interfaces,
 			methods,
 			getOwnerDeclaration(),
@@ -98,8 +96,7 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 		return new FjVirtualCleanClassIfcImplDeclaration(
 			tokenReference,
 			ident,
-			(modifiers & (CCI_COLLABORATION | CCI_BINDING | CCI_PROVIDING 
-				| CCI_WEAVELET)) | ACC_PUBLIC,			
+			(modifiers & getInternalModifiers()),			
 			interfaces,
 			methods,
 			getOwnerDeclaration(),
@@ -113,7 +110,34 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 	}
 	
 
-	public void checkTypeBody(CContext context) throws PositionedError {		
+	public void checkTypeBody(CContext context) 
+		throws PositionedError
+	{
+		
+		if (ownerDecl instanceof FjCleanClassDeclaration)
+		{
+				
+			CClass superCI = getSuperCollaborationInterfaceClass(
+				((FjCleanClassDeclaration) ownerDecl)
+					.getCleanInterface().getCClass(), CCI_BINDING);
+	
+			
+			if (superCI != null)
+			{
+				CReferenceType sameNameCI =
+					 new FjTypeSystem().declaresInner(
+					 	superCI, getCleanInterface().getIdent());
+				check(
+					context,
+					sameNameCI == null,
+					CaesarMessages.BINDING_CI_WITH_SAME_NAME,
+					getCClass().getQualifiedName(), 
+					sameNameCI != null 
+						? sameNameCI.getQualifiedName() 
+						: "");
+			}
+		}
+
 		try {
 			if( getSuperClassField() != null ) {
 				FjFamily family = new FjFieldFamily( context, getSuperClassField().getField() );
@@ -243,6 +267,9 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 	}
 
 	/**
+	 * Overriden to change the type of the outer this. 
+	 * Now the type of this field is the clean interface rather than 
+	 * the real outer type.
 	 */
 	public void addOuterThis()
 	{
@@ -405,6 +432,31 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 			|| getSuperCollaborationInterface(getCClass(), CCI_BINDING) != null,
 			CaesarMessages.NON_BINDING_WRAPPER,
 			getCClass().getQualifiedName());
+			
+		if (wrappee != null)
+		{
+			CMethod method = null;
+			try
+			{
+				 method = getCClass().getSuperClass().lookupMethod(
+					context.getClassContext(),
+					getCClass().getSuperClass(),
+					null,
+					CciConstants.WRAPPEE_METHOD_NAME,
+					CReferenceType.EMPTY,
+					null);
+			}
+			catch (UnpositionedError e)
+			{
+				//does nothing!
+			}
+	
+			check(
+				context,
+				method == null,
+				CaesarMessages.SUPER_CLASS_WRAPS,
+				getCClass().getQualifiedName());	
+		}		
 	}
 
 
@@ -417,11 +469,26 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 	{
 		verify(wrappee != null);
 		addField(createWrappeeField());
+		addMethod(createWrappeeAccessorMethod());
 		FjConstructorDeclaration[] constructors = getConstructors();
 		for (int i = 0; i < constructors.length; i++)
 			constructors[i].addWrappeeParameter(wrappee);
 	}
 	
+	/**
+	 * @return
+	 */
+	protected JMethodDeclaration createWrappeeAccessorMethod()
+	{
+		TokenReference ref = getTokenReference();
+		
+		return createAccessor(
+			CciConstants.WRAPPEE_FIELD_NAME, 
+			new FjNameExpression(ref, CciConstants.WRAPPEE_FIELD_NAME),
+			new CClassNameType(wrappee.getQualifiedName()));
+			
+	}
+
 	/**
 	 * Creates a field declaration which will contain all 
 	 * instances of the wrappers of the type passed.

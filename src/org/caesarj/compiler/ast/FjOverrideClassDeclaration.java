@@ -83,8 +83,7 @@ public class FjOverrideClassDeclaration
 		return new FjOverridingCleanClassInterfaceDeclaration(
 			where,
 			ident,
-			modifiers & (CCI_COLLABORATION | CCI_BINDING | CCI_PROVIDING 
-				| CCI_WEAVELET),			
+			(modifiers & getInternalModifiers()),			
 			interfaces,
 			methods,
 			getOwnerDeclaration(),
@@ -99,8 +98,7 @@ public class FjOverrideClassDeclaration
 		return new FjOverridingCleanClassIfcImplDeclaration(
 			where,
 			ident,
-			(modifiers & (CCI_COLLABORATION | CCI_BINDING | CCI_PROVIDING 
-				| CCI_WEAVELET)) | ACC_PUBLIC,			
+			(modifiers & getInternalModifiers()),			
 			interfaces,
 			methods,
 			getOwnerDeclaration(),

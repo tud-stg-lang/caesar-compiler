@@ -18,7 +18,6 @@ import org.caesarj.kjc.CSourceMethod;
 import org.caesarj.kjc.JArrayInitializer;
 import org.caesarj.kjc.JAssignmentExpression;
 import org.caesarj.kjc.JBlock;
-import org.caesarj.kjc.JCastExpression;
 import org.caesarj.kjc.JConstructorBlock;
 import org.caesarj.kjc.JConstructorDeclaration;
 import org.caesarj.kjc.JEqualityExpression;
@@ -731,12 +730,9 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 						ref,
 						new FjThisExpression(ref),
 						CciConstants.WRAPPEE_FIELD_NAME),
-					new JCastExpression(
-						ref,
-						new FjNameExpression(
+					new FjNameExpression(
 							ref,
-							CciConstants.WRAPPEE_PARAMETER_NAME),
-						new CClassNameType(wrappee.getQualifiedName()))),
+							CciConstants.WRAPPEE_PARAMETER_NAME)),
 				null);
 			
 		body = 
@@ -751,7 +747,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 				new FjFormalParameter(
 					ref,
 					JLocalVariable.DES_PARAMETER,
-					new CClassNameType(JAV_OBJECT),
+					new CClassNameType(wrappee.getQualifiedName()),
 					CciConstants.WRAPPEE_PARAMETER_NAME,
 					false)
 			};

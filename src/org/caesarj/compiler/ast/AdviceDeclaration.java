@@ -3,24 +3,22 @@ package org.caesarj.compiler.ast;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.patterns.Pointcut;
-
-import org.caesarj.kjc.CBinaryTypeContext;
+import org.caesarj.compiler.CaesarConstants;
+import org.caesarj.compiler.JavaStyleComment;
+import org.caesarj.compiler.JavadocComment;
+import org.caesarj.compiler.PositionedError;
+import org.caesarj.compiler.TokenReference;
+import org.caesarj.compiler.UnpositionedError;
+import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CClassContext;
 import org.caesarj.kjc.CClassNameType;
-import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CSourceMethod;
 import org.caesarj.kjc.CType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.JBlock;
 import org.caesarj.kjc.JFormalParameter;
-import org.caesarj.compiler.CaesarConstants;
-import org.caesarj.compiler.CaesarMessages;
-import org.caesarj.compiler.JavaStyleComment;
-import org.caesarj.compiler.JavadocComment;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.compiler.UnpositionedError;
+import org.caesarj.kjc.KjcMessages;
 
 /**
  * Represents an AdviceDeclaration in the Source Code.
@@ -31,8 +29,7 @@ public class AdviceDeclaration
 	extends FjMethodDeclaration
 	implements CaesarConstants {
 
-	public static final AdviceDeclaration[] EMPTY =
-		new AdviceDeclaration[0];
+	public static final AdviceDeclaration[] EMPTY = new AdviceDeclaration[0];
 
 	/** Pointcut */
 	private Pointcut pointcut;
@@ -93,7 +90,7 @@ public class AdviceDeclaration
 		if (kind == AdviceKind.Around) {
 			addAroundClosureParameter();
 		}
-		
+
 		if (hasExtraParameter) {
 			extraArgumentFlags |= Advice.ExtraArgument;
 		}
@@ -124,96 +121,6 @@ public class AdviceDeclaration
 		//needed for proceed-method creation
 		proceedParameters = newParameters;
 
-	}
-
-	/**
-	* @see org.caesarj.kjc.JMethodDeclaration#checkInterface(CClassContext)
-	*/
-	public CSourceMethod checkInterface1(CClassContext context)
-		throws PositionedError {
-
-		boolean inInterface = context.getCClass().isInterface();
-		boolean isExported = false;
-		//!(this instanceof JInitializerDeclaration);
-		String ident = this.ident;
-		//(this instanceof JConstructorDeclaration) ? JAV_CONSTRUCTOR : this.ident;
-
-		// Collect all parsed data
-		if (inInterface && isExported) {
-			modifiers |= ACC_PUBLIC | ACC_ABSTRACT;
-		}
-
-		// only strictfp allowed
-		check(
-			context,
-			CModifier.isSubsetOf(modifiers, ACC_STRICT),
-			CaesarMessages.ADVICE_FLAGS);
-
-		try {
-
-			for (int i = 0; i < typeVariables.length; i++) {
-				typeVariables[i].checkType(context);
-				typeVariables[i].setMethodTypeVariable(true);
-			}
-
-			CBinaryTypeContext typeContext =
-				new CBinaryTypeContext(
-					context.getClassReader(),
-					context.getTypeFactory(),
-					context,
-					typeVariables,
-					(modifiers & ACC_STATIC) == 0);
-
-			CType[] parameterTypes = new CType[parameters.length];
-			String[] parameterNames = new String[parameters.length];
-			for (int i = 0; i < parameters.length; i++) {
-				parameterTypes[i] = parameters[i].checkInterface(typeContext);
-				parameterNames[i] = parameters[i].getIdent();
-			}
-
-			returnType = returnType.checkType(typeContext);
-
-			for (int i = 0; i < exceptions.length; i++) {
-				exceptions[i] =
-					(CReferenceType) exceptions[i].checkType(typeContext);
-			}
-
-			FjFamily[] families = new FjFamily[parameterTypes.length];
-			for (int i = 0; i < families.length; i++) {
-				families[i] = ((FjFormalParameter) parameters[i]).getFamily();
-			}
-
-			CaesarAdvice adviceMethod =
-				new CaesarAdvice(
-					context.getCClass(),
-					ACC_PUBLIC,
-					ident,
-					returnType,
-					parameterTypes,
-					exceptions,
-					typeVariables,
-					body,
-					new FjFamily[0],
-					pointcut,
-					kind,
-					extraArgumentFlags);
-
-			//create a method attribute for the advice
-			/*			adviceMethod.createAttribute(
-							context,
-							context.getCClass(),
-							parameters,
-							getTokenReference());*/
-
-			setInterface(adviceMethod);
-
-			return adviceMethod;
-
-		} catch (UnpositionedError cue) {
-
-			throw cue.addPosition(getTokenReference());
-
-		}
 	}
 
 	/**
@@ -333,7 +240,7 @@ public class AdviceDeclaration
 	 */
 	public void checkBody1(CClassContext context) throws PositionedError {
 		super.checkBody1(context);
-	
+
 		//create a method attribute for the advice
 		// this has to be done after the pointcut declarations are resolved	
 		getCaesarAdvice().createAttribute(
@@ -345,6 +252,63 @@ public class AdviceDeclaration
 
 	public CaesarAdvice getCaesarAdvice() {
 		return (CaesarAdvice) getMethod();
+	}
+
+	public CSourceMethod checkInterface(CClassContext context)
+		throws PositionedError {
+
+		// when checking single parameters we need the list of
+		// all parameters and the method, so pass them here
+		 ((FjAdditionalContext) context).pushContextInfo(this);
+		((FjAdditionalContext) context).pushContextInfo(parameters);
+
+		// we have to work on the returntype here:
+		// if it's an overridden class cast upwards
+		FjTypeSystem fjts = new FjTypeSystem();
+		try {
+			if (returnType.isReference()) {
+				returnType = returnType.checkType(context);
+				returnType =
+					fjts.upperBound(context, (CReferenceType) returnType);
+			}
+		} catch (UnpositionedError e) {
+			if (e.getFormattedMessage().getDescription()
+				== KjcMessages.CLASS_AMBIGUOUS) {
+				CClass[] candidates =
+					(CClass[]) e.getFormattedMessage().getParams()[1];
+				try {
+					returnType = fjts.commonOverrideType(context, candidates);
+				} catch (UnpositionedError e2) {
+					// will be handled later
+				}
+			}
+		}
+		// pop parameters and method name from the stack again
+		 ((FjAdditionalContext) context).popContextInfo();
+		((FjAdditionalContext) context).popContextInfo();
+
+		CType[] parameterTypes = new CType[parameters.length];
+		for (int i = 0; i < parameterTypes.length; i++)
+			parameterTypes[i] = parameters[i].getType();
+
+		CaesarAdvice adviceMethod =
+			new CaesarAdvice(
+				context.getCClass(),
+				ACC_PUBLIC,
+				ident,
+				returnType,
+				parameterTypes,
+				exceptions,
+				typeVariables,
+				body,
+				new FjFamily[0],
+				pointcut,
+				kind,
+				extraArgumentFlags);
+
+		setInterface(adviceMethod);
+
+		return adviceMethod;
 	}
 
 }

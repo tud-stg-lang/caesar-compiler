@@ -33,7 +33,8 @@ public class FjVariableDefinition extends JVariableDefinition {
 		try 
 		{		
 			FjFieldDeclaration field =
-				(FjFieldDeclaration) ((FjAdditionalContext) context).peekContextInfo();
+				(FjFieldDeclaration) 
+					((FjAdditionalContext) context).peekContextInfo();
 			CClass clazz =
 				((FjClassDeclaration) 
 					((FjAdditionalContext) 
@@ -67,7 +68,6 @@ public class FjVariableDefinition extends JVariableDefinition {
 		{
 			context.reportTrouble(e.addPosition(getTokenReference()));
 		}
-	
 	}
 
 	public void analyse(CBodyContext context) throws PositionedError {

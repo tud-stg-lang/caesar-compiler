@@ -57,10 +57,12 @@ public interface CaesarMessages extends org.caesarj.compiler.CompilerMessages {
   MessageDescription	REFERENCE_IS_NOT_PROVIDING = new MessageDescription("\"{0}\" is not a providing class.", null, 0);
   MessageDescription	BINDING_OTHER_CI = new MessageDescription("\"{0}\" does not bind the collaboration interface \"{1}\".", null, 0);
   MessageDescription	PROVIDING_OTHER_CI = new MessageDescription("\"{0}\" does not provide the collaboration interface \"{1}\".", null, 0);
+  MessageDescription	BINDING_CI_WITH_SAME_NAME = new MessageDescription("\"{0}\" cannot be declared with the same name of the collaboration interface \"{1}\".", null, 0);
   MessageDescription	PROVIDING_DEFINES_CONSTRUCTOR = new MessageDescription("Providing class \"{0}\" cannot define constructors with parameters.", null, 0);
   MessageDescription	BINDING_PROVIDING_DIRECT_CREATION = new MessageDescription("Providing or binding class \"{0}\" cannot be directly created.", null, 0);
   MessageDescription	WRAPPER_DEFINES_CONSTRUCTOR = new MessageDescription("Explicity declared wrapper class \"{0}\" cannot define constructors with parameters.", null, 0);
-  MessageDescription	NON_BINDING_WRAPPER = new MessageDescription("Class \"{0}\" cannot defines \"wraps\" clause because it does not bind an aspect interface.", null, 0);
+  MessageDescription	NON_BINDING_WRAPPER = new MessageDescription("Class \"{0}\" cannot define \"wraps\" clause because it does not bind an aspect interface.", null, 0);
+  MessageDescription	SUPER_CLASS_WRAPS = new MessageDescription("Class \"{0}\" cannot define \"wraps\" clause because its super class already wraps a class.", null, 0);
   MessageDescription	CLASS_DOES_NOT_WRAP = new MessageDescription("Class \"{0}\" does not wrap any class, so \"wrappee\" is not available.", null, 0);
   MessageDescription	VIRTUAL_CALLING_PRIVATE_OUTER = new MessageDescription("Virtual or override class \"{0}\" cannot access private methods of the enclosing class.", null, 0);
   MessageDescription	VIRTUAL_ACCESSING_OUTER_FIELD = new MessageDescription("Virtual or override class \"{0}\" cannot access fields of the enclosing class.", null, 0);

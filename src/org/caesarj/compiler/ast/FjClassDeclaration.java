@@ -160,38 +160,11 @@ public class FjClassDeclaration
 		int modifiers = getModifiers();
 
 		// Syntactically valid class modifiers
-		check(context, CModifier.isSubsetOf(modifiers,
-		/*					ACC_PUBLIC | ACC_PROTECTED | ACC_PRIVATE | ACC_ABSTRACT
-				// andreas start
-				//		       | ACC_STATIC | ACC_FINAL | ACC_STRICT),
-				| ACC_STATIC
-				| ACC_FINAL
-				| ACC_STRICT
-				| FJC_VIRTUAL
-				| FJC_OVERRIDE
-				| FJC_CLEAN
-				| ACC_PRIVILEGED
-				| ACC_CROSSCUTTING
-				| ACC_DEPLOYED),
-				// andreas end
-		*/
-		getAllowedModifiers()),
+		check(context, CModifier.isSubsetOf(modifiers, getAllowedModifiers()),
 			KjcMessages.NOT_CLASS_MODIFIERS,
-			CModifier.toString(CModifier.notElementsOf(modifiers,
-		/*						ACC_PUBLIC
-									| ACC_PROTECTED
-									| ACC_PRIVATE
-									| ACC_ABSTRACT
-									| ACC_STATIC
-									| ACC_FINAL
-				//andreas start
-				//				     | ACC_STRICT)));
-				
-				| ACC_STRICT | FJC_VIRTUAL | FJC_OVERRIDE)));
-		*/
-		getAllowedModifiers())));
+			CModifier.toString(CModifier.notElementsOf(modifiers, 
+				getAllowedModifiers())));
 		// FJLS 1 : modifiers virtual and override pertain only to member classes
-		/*
 		check(
 			context,
 			!(CModifier.contains(modifiers, FJC_VIRTUAL)
@@ -201,7 +174,6 @@ public class FjClassDeclaration
 			CaesarMessages.MODIFIERS_INNER_CLASSES_ONLY,
 			CModifier.toString(
 				CModifier.getSubsetOf(modifiers, FJC_VIRTUAL | FJC_OVERRIDE)));
-		*/
 		// andreas end
 
 		// JLS 8.1.1 : The access modifier public pertains only to top level
@@ -261,10 +233,18 @@ public class FjClassDeclaration
 		CClass owner,
 		String prefix)
 	{
-		//Walter start
-		//sourceClass = new FjSourceClass(owner, getTokenReference(), modifiers, ident, prefix + ident, typeVariables, isDeprecated(), false, this);
-		sourceClass = constructSourceClass(owner, prefix);
-		//Walter end 
+		sourceClass =
+			new FjSourceClass(
+				owner,
+				getTokenReference(),
+				modifiers,
+				ident,
+				prefix + ident,
+				typeVariables,
+				isDeprecated(),
+				false,
+				this,
+				perClause);
 
 		setInterface(sourceClass);
 
@@ -298,10 +278,7 @@ public class FjClassDeclaration
 			(JTypeDeclaration[]) Array.newInstance(
 				JTypeDeclaration.class,
 				inners.length + 1);
-		for (int i = 0; i < inners.length; i++)
-		{
-			newInners[i] = inners[i];
-		}
+		System.arraycopy(inners, 0, newInners, 0, inners.length);
 		newInners[inners.length] = type;
 		setInners(newInners);
 	}
@@ -502,29 +479,8 @@ public class FjClassDeclaration
 		{
 			pointcuts[j].checkInterface(self);
 		}
+		
 
-		//ckeckInterface of the advices
-		for (int j = 0; j < advices.length; j++)
-		{
-			advices[j].checkInterface(self);
-			//during the following compiler passes
-			//the advices should be treated like methods
-			getFjSourceClass().addMethod((CaesarAdvice) advices[j].getMethod());
-		}
-
-		//consider declares
-		if (declares != null)
-		{
-			for (int j = 0; j < declares.length; j++)
-			{
-				declares[j].resolve(
-					new CaesarScope(
-						(FjClassContext) constructContext(context),
-						getFjSourceClass()));
-			}
-
-			getFjSourceClass().setDeclares(declares);
-		}
 
 	}
 
@@ -537,6 +493,7 @@ public class FjClassDeclaration
 	 */
 	public void initFamilies(CClassContext context) throws PositionedError
 	{
+
 		int generatedFields = getCClass().hasOuterThis() ? 1 : 0;
 
 		//Initializes the families of the fields.
@@ -565,10 +522,10 @@ public class FjClassDeclaration
 		if (getDefaultConstructor() != null)
 			generatedMethods++;
 
-		if (statInit != null && !statInit.isDummy())
+		if (statInit != null)
 			generatedMethods++;
 
-		if (instanceInit != null && !instanceInit.isDummy())
+		if (instanceInit != null)
 			generatedMethods++;
 
 		// Initializes the families of the methods.
@@ -580,7 +537,7 @@ public class FjClassDeclaration
 				methodList[i] =
 					((FjMethodDeclaration) methods[i]).initFamilies(context);
 			else
-				methodList[i] = methods[i].checkInterface(context);
+				methodList[i] = methods[i].getMethod();
 
 		}
 
@@ -589,35 +546,46 @@ public class FjClassDeclaration
 		{
 			if (defaultConstructor instanceof FjConstructorDeclaration)
 				methodList[i++] =
-					(
-						(
-							FjConstructorDeclaration) defaultConstructor)
-								.initFamilies(
-						context);
+					((FjConstructorDeclaration) defaultConstructor)
+								.initFamilies(context);
 			else
-				methodList[i++] = defaultConstructor.checkInterface(context);
+				methodList[i++] = defaultConstructor.getMethod();
 		}
-
 		if (statInit != null)
-		{
-			if (!statInit.isDummy())
-				methodList[i++] = statInit.checkInterface(self);
-			else
-				statInit.checkInterface(self);
-		}
+			methodList[i++] = statInit.getMethod();
+		
 		if (instanceInit != null)
-		{
-			if (!instanceInit.isDummy())
-				methodList[i++] = instanceInit.checkInterface(self);
-			else
-				instanceInit.checkInterface(self);
-		}
+			methodList[i++] = instanceInit.getMethod();
 
 		sourceClass.close(
 			interfaces,
 			sourceClass.getSuperType(),
 			hashField,
 			methodList);
+		
+
+		//ckeckInterface of the advices
+		for (int j = 0; j < advices.length; j++)
+		{
+			advices[j].checkInterface(self);
+			//during the following compiler passes
+			//the advices should be treated like methods
+			getFjSourceClass().addMethod((CaesarAdvice) advices[j].getMethod());
+		}
+
+		//consider declares
+		if (declares != null)
+		{
+			for (int j = 0; j < declares.length; j++)
+			{
+				declares[j].resolve(
+					new CaesarScope(
+						(FjClassContext) constructContext(context),
+						getFjSourceClass()));
+			}
+
+			getFjSourceClass().setDeclares(declares);
+		}		
 	}
 
 	public String getIdent()
@@ -970,16 +938,23 @@ public class FjClassDeclaration
 	 */
 	protected int getAllowedModifiers()
 	{
-		return super.getAllowedModifiers()
+		return super.getAllowedModifiers() 
 			| FJC_VIRTUAL
 			| FJC_OVERRIDE
 			| FJC_CLEAN
-			| CCI_COLLABORATION
-			| CCI_BINDING
-			| CCI_PROVIDING
-			| CCI_WEAVELET
-		//Jurgen's
-		| ACC_PRIVILEGED | ACC_CROSSCUTTING | ACC_DEPLOYED;
+			| getInternalModifiers();
+	}
+	
+	protected int getInternalModifiers()
+	{
+		return  CCI_COLLABORATION
+				| CCI_BINDING
+				| CCI_PROVIDING
+				| CCI_WEAVELET
+				//Jurgen's
+				| ACC_PRIVILEGED 
+				| ACC_CROSSCUTTING 
+				| ACC_DEPLOYED;
 	}
 
 }

@@ -48,6 +48,10 @@ public class CciConstants
 	public static final String WRAPPEE_PARAMETER_NAME = 
 		(SEPERATOR + "internalWrappee").intern(); 		
 
+	public static final String WRAPPEE_METHOD_NAME = 
+		toAccessorMethodName(WRAPPEE_FIELD_NAME).intern();		
+
+
 	protected static final String ADAPT_METHOD_NAME = 
 		(SEPERATOR + "adapt").intern();
 	
@@ -108,7 +112,8 @@ public class CciConstants
 	{
 		return (WRAPPER_CREATION_PREFIX + bindingType).intern();
 	}
-
+	
+	
 	public static String toAdaptMethodName(String virtualType)
 	{
 		return (ADAPT_METHOD_NAME + virtualType).intern();
@@ -137,6 +142,13 @@ public class CciConstants
 		methodName = methodName.replaceAll( IMPLEMENTATION_METHOD_SUFFIX, "" );
 		methodName = methodName.replaceAll( SEPERATOR, "" );
 		return methodName;
-	}	
+	}
+
+	public static String removeCaesarInternalNames(String message) {
+		message = FjConstants.removeFamilyJ(message);
+		message = message.replaceAll(WRAPPER_CREATION_PREFIX, "" );
+		return message;
+	}
+		
 
 }

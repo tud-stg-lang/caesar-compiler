@@ -299,8 +299,7 @@ public class FjCleanClassDeclaration
 		return new FjCleanClassInterfaceDeclaration(
 			getTokenReference(),
 			ident,
-			modifiers & (CCI_COLLABORATION | CCI_BINDING | CCI_PROVIDING 
-				| CCI_WEAVELET),
+			(modifiers & getInternalModifiers()),
 			interfaces,
 			methods,
 			this);
@@ -315,8 +314,7 @@ public class FjCleanClassDeclaration
 		return new FjCleanClassIfcImplDeclaration(
 			getTokenReference(),
 			ident,
-			(modifiers & (CCI_COLLABORATION | CCI_BINDING | CCI_PROVIDING 
-				| CCI_WEAVELET)) | ACC_PUBLIC,
+			(modifiers & getInternalModifiers()),
 			interfaces,
 			methods,
 			this);

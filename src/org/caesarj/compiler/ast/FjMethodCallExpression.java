@@ -341,6 +341,20 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		throws PositionedError {
 		CClass clazz = context.getClassContext().getCClass();
 		CReferenceType parentType = clazz.getSuperClass().getInterfaces()[0];
+		//If it is in a binding or providing class it cannot call super
+		if (! FjConstants.isIfcImplName(clazz.getIdent())
+			&& ! FjConstants.isFactoryMethodName(ident)
+			&& CModifier.contains(clazz.getModifiers(), 
+				(CCI_BINDING | CCI_PROVIDING)))
+			throw 
+				new CMethodNotFoundError(
+					getTokenReference(), 
+					this, 
+					parentType.getQualifiedName() + 
+						"." + ident, 
+					getArgumentTypes(context, args, context.getTypeFactory()));
+
+
 
 		// super is replaced by parent's target					
 		JExpression parentGetTarget =
@@ -408,7 +422,8 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 	protected boolean isObjectsMethod(CExpressionContext context)
 		throws PositionedError {
 		String methodId =
-			FjConstants.uniqueMethodId(ident, getArgumentTypes(context, args));
+			FjConstants.uniqueMethodId(ident, getArgumentTypes(context, args, 
+				context.getTypeFactory()));
 		return methodId.equals("toString")
 			|| methodId.equals("hashCode")
 			|| methodId.equals("finalize")
@@ -472,7 +487,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 				typeName,
 				FjConstants.uniqueMethodId(
 					ident,
-					getArgumentTypes(context, args))),
+					getArgumentTypes(context, args, context.getTypeFactory()))),
 			args).analyse(
 			context);
 	}
@@ -581,7 +596,8 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 	protected void setMethod(CExpressionContext context)
 		throws PositionedError {
 		CClass local = context.getClassContext().getCClass();
-		CType[] argTypes = getArgumentTypes(context, args);
+		CType[] argTypes = getArgumentTypes(context, args, 
+			context.getTypeFactory());
 		findMethod(context, local, argTypes);
 		
 		//If the method is not private and it is called in a clean 
@@ -617,21 +633,12 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 	private CType[] argTypes;
 	protected CType[] getArgumentTypes(
 		CExpressionContext context,
-		JExpression[] args)
+		JExpression[] args,
+		TypeFactory factory)
 		throws PositionedError {
-		if (argTypes == null) {
-			argTypes = new CType[args.length];
-			TypeFactory factory = context.getTypeFactory();
-			JExpression analysed = null;
-			for (int i = 0; i < argTypes.length; i++) {
-				analysed =
-					args[i].analyse(
-						new CExpressionContext(
-							context,
-							context.getEnvironment()));
-				argTypes[i] = analysed.getType(factory);
-			}
-		}
+		if (argTypes == null) 
+			argTypes = super.getArgumentTypes(context, args, factory);
+
 		return argTypes;
 	}
 
@@ -731,16 +738,6 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 					(result != null) ? result.first() : null,
 					(CReferenceType) getMethod(context).getReturnType());
 		}
-//		//if it is a wrapper recycling it has the same semantics 
-//		//of a qualified creation
-//		else if (wrapperType != null)
-//		{
-//			result = prefix.toFamily(context.getBlockContext());
-//			result =
-//				fc.addTypesFamilies(
-//					(result != null)? result.first() : null,
-//					wrapperType);			
-//		}
 		resetPrefix();
 		return result;
 	}

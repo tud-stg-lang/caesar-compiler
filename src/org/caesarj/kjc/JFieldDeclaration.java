@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldDeclaration.java,v 1.1 2003-07-05 18:29:38 werner Exp $
+ * $Id: JFieldDeclaration.java,v 1.2 2003-08-26 10:15:18 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -292,7 +292,7 @@ public class JFieldDeclaration extends JMemberDeclaration {
 	// DATA MEMBERS
 	// ----------------------------------------------------------------------
 	private CClassContext classContext;
-	private boolean synthetic;
+	protected boolean synthetic;
 	protected JVariableDefinition variable;
 	public static final JFieldDeclaration[] EMPTY = new JFieldDeclaration[0];
 }

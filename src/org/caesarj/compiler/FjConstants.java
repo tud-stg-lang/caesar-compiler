@@ -227,6 +227,9 @@ public class FjConstants {
 		message = message.replaceAll( SEPERATOR+FACTORY_PREFIX, "" );
 		message = message.replaceAll( IMPL_POSTFIX, "" );
 		message = message.replaceAll( PROXY_POSTFIX, "" );
+		message = message.replaceAll( SELFCONTEXT_METHOD_SUFFIX, "" );
+		message = message.replaceAll( IMPLEMENTATION_METHOD_SUFFIX, "" );
+		message = message.replaceAll( "." + SEPERATOR, "." );		
 		return message;
 	}
 	

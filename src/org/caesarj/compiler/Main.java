@@ -582,7 +582,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 				super.println();
 		}
 		public void write(String s) {
-			s = FjConstants.removeFamilyJ(s);
+			s = CciConstants.removeCaesarInternalNames(s);
 			if (otherPrinter != null) {
 				otherPrinter.write(s);
 				//super.write( s );

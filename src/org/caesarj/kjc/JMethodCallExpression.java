@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodCallExpression.java,v 1.2 2003-07-30 09:24:55 werner Exp $
+ * $Id: JMethodCallExpression.java,v 1.3 2003-08-26 10:15:18 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -126,25 +126,10 @@ public class JMethodCallExpression extends JExpression
 			// for assertions in interfaces which call methods 
 			prefix = new JNameExpression(getTokenReference(), IDENT_CLASS);
 		}
-
-		CType[] argTypes = new CType[args.length];
-
-		for (int i = 0; i < argTypes.length; i++)
-		{
-			// evaluate the arguments in rhs mode, result will be used
-			args[i] =
-				args[i].analyse(
-					new CExpressionContext(context, context.getEnvironment()));
-			argTypes[i] = args[i].getType(factory);
-			try
-			{
-				argTypes[i] = argTypes[i].checkType(context);
-			}
-			catch (UnpositionedError e)
-			{
-				throw e.addPosition(getTokenReference());
-			}
-		}
+		
+		//Walter: this method is called now 
+		//rather than analise the args directly
+		CType[] argTypes = getArgumentTypes(context, args, factory);
 		CClass local = context.getClassContext().getCClass();
 
 		findMethod(context, local, argTypes);
@@ -386,6 +371,42 @@ public class JMethodCallExpression extends JExpression
 		//    analysed = true;
 		return this;
 	}
+	
+	/**
+	 * This method has been created to allow subclasses to override it.
+	 * @param context
+	 * @param args
+	 * @param factory
+	 * @return
+	 * @throws PositionedError
+	 * @author Walter Augusto Werner
+	 */
+	protected CType[] getArgumentTypes(
+		CExpressionContext context,
+		JExpression[] args,
+		TypeFactory factory)
+		throws PositionedError
+	{
+		CType[] argTypes = new CType[args.length];
+
+		for (int i = 0; i < argTypes.length; i++)
+		{
+		// evaluate the arguments in rhs mode, result will be used
+			args[i] =
+				args[i].analyse(
+					new CExpressionContext(context, context.getEnvironment()));
+			argTypes[i] = args[i].getType(factory);
+			try
+			{
+				argTypes[i] = argTypes[i].checkType(context);
+			}
+			catch (UnpositionedError e)
+			{
+				throw e.addPosition(getTokenReference());
+			}
+		}
+		return argTypes;
+	}
 
 	protected void findMethod(
 		CExpressionContext context,
@@ -564,6 +585,7 @@ public class JMethodCallExpression extends JExpression
 				argTypes);
 		}
 	}
+	
 	// ----------------------------------------------------------------------
 	// CODE GENERATION
 	// ----------------------------------------------------------------------

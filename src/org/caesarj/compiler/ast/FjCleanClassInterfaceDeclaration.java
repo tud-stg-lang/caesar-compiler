@@ -86,9 +86,18 @@ public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 	 */
 	public void addMethod(FjCleanMethodDeclaration methodToAdd)
 	{
+		addMethods(new FjCleanMethodDeclaration[]{methodToAdd});
+	}
+
+	/**
+	 * Adds clean methods, importing it to this context.
+	 * 
+	 * @param methodToAdd
+	 */
+	public void addMethods(FjCleanMethodDeclaration[] methodsToAdd)
+	{
 		FjMethodDeclaration[] importedMethods = 
-			importMethods(
-				new FjCleanMethodDeclaration[]{methodToAdd});
+			importMethods(methodsToAdd);
 
 		JMethodDeclaration[] newMethods =
 			new JMethodDeclaration[methods.length + importedMethods.length];
@@ -102,7 +111,7 @@ public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 			importedMethods.length);
 
 		methods = newMethods;
-	}
+	}	
 
 	/**
 	 * Adds a non clean method.

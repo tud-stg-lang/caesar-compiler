@@ -35,7 +35,7 @@ public class FjCleanClassIfcImplDeclaration
 		FjCleanClassDeclaration baseDecl ) {
 		super(
 			tokenReference,
-			modifiers,
+			modifiers | ACC_PUBLIC,
 			ident,
 			CTypeVariable.EMPTY,
 			new CClassNameType( FjConstants.CHILD_IMPL_TYPE_NAME ),
@@ -89,10 +89,16 @@ public class FjCleanClassIfcImplDeclaration
 	 */
 	public void addMethod(FjCleanMethodDeclaration methodToAdd)
 	{
+		addMethods(new FjCleanMethodDeclaration[]{methodToAdd});
+	}
+	/**
+	 * Adds methods imported to this context
+	 * @param methodsToAdd
+	 */
+	public void addMethods(FjCleanMethodDeclaration[] methodsToAdd)
+	{
 		FjMethodDeclaration[] importedMethods = 
-			importMethods(
-				new FjCleanMethodDeclaration[]{methodToAdd}, 
-				interfaces);
+			importMethods(methodsToAdd, interfaces);
 
 		JMethodDeclaration[] newMethods =
 			new JMethodDeclaration[methods.length + importedMethods.length];
@@ -105,9 +111,8 @@ public class FjCleanClassIfcImplDeclaration
 			methods.length,
 			importedMethods.length);
 
-		methods = newMethods;
+		methods = newMethods;		
 	}
-
 	public FjCleanClassDeclaration getBaseClass() {
 		return baseDecl;
 	}

@@ -70,7 +70,8 @@ public class AutomaticCaesarTests extends FjTestCase {
 						"CaesarTestCase_7.java",
 						"CaesarTestCase_8.java",
 						"CaesarTestCase_9.java",						
-						"CaesarTestCase_10.java",												
+						"CaesarTestCase_10.java",	
+						/*"CaesarTestCase_11.java",*/																													
 						"Barrier.java" };
 
 				compiler = new CompilerMock(this, new PrintWriter(System.out) {
@@ -175,6 +176,10 @@ public class AutomaticCaesarTests extends FjTestCase {
 	public void testCaesarTestCase_10() throws Throwable {
 		doGeneratedTest("CaesarTestCase_10");
 	}
+	
+	/*public void testCaesarTestCase_11() throws Throwable {
+		doGeneratedTest("CaesarTestCase_11");
+	}*/
 		
 	
 

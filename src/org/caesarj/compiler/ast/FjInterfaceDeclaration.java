@@ -56,49 +56,6 @@ public class FjInterfaceDeclaration
 
 	protected void checkModifiers(CContext context) throws PositionedError {
 		int modifiers = getModifiers();
-/*
-		int myAdditionalModifiers = 0;
-		if( getClass() != FjInterfaceDeclaration.class )
-			myAdditionalModifiers = FJC_VIRTUAL | FJC_OVERRIDE
-			                        //Walter start
-			                        | CCI_COLLABORATION
-			                        //Walter end
-			                        ;
-
-
-		// Syntactically valid interface modifiers
-		check(
-			context,
-			CModifier.isSubsetOf(
-				modifiers,
-				ACC_PUBLIC
-					| ACC_PROTECTED
-					| ACC_PRIVATE
-					| ACC_ABSTRACT
-					| ACC_STATIC
-					| ACC_STRICT
-					// andreas start
-					//| ACC_INTERFACE),
-					| ACC_INTERFACE
-					| myAdditionalModifiers ),
-					// andreas end
-			KjcMessages.NOT_INTERFACE_MODIFIERS,
-			CModifier.toString(
-				CModifier.notElementsOf(
-					modifiers,
-					ACC_PUBLIC
-						| ACC_PROTECTED
-						| ACC_PRIVATE
-						| ACC_ABSTRACT
-						| ACC_STATIC
-						| ACC_STRICT
-						//Walter start
-						//| ACC_INTERFACE)));
-		                | ACC_INTERFACE
-		                | myAdditionalModifiers)));
-		                //Walter end
-*/
-
 
 		check(
 			context,
@@ -262,89 +219,6 @@ public class FjInterfaceDeclaration
 		return inners;
 	}
 
-	
-//	public void fixBindingMethods(CReferenceType binding)
-//	{
-//		for (int i = 0; i < methods.length; i++)
-//		{
-//			if (methods[i] instanceof FjMethodDeclaration)
-//				((FjMethodDeclaration) methods[i]).fixBindingTypes(
-//					binding);
-//		}
-//		for (int i = 0; i < inners.length; i++)
-//		{
-//			if (inners[i] instanceof CciNestedContainer)
-//				((CciNestedContainer)inners[i]).fixBindingMethods(binding);
-//		}
-//	}
-	
-
-
-//	/**
-//	 * Overriden for insert the implementations as interfaces. As the 
-//	 * implementation will be defined by the name of the class instead of
-//	 * the clause implements, it must try to find a CI that has the same 
-//	 * name as its own.
-//	 * 
-//	 * @see at.dms.kjc.JTypeDeclaration#resolveInterfaces(at.dms.kjc.CContext)
-//	 * @author Walter Augusto Werner
-//	 */
-//	protected void resolveInterfaces(CContext context) throws PositionedError
-//	{
-//		//First resolve the interfaces
-//		super.resolveInterfaces(context);
-//		//Now look for the implementation and add it as an interface.
-//		CClass owner = getOwner();
-//		if (owner != null)
-//		{
-//			// First look for the CI that the owner implements.
-//			CReferenceType[] ownerInterfaces = owner.getInterfaces();
-//			CReferenceType ci = null;
-//			
-//			for (int i = 0; i < ownerInterfaces.length; i++)
-//			{
-//				if (CModifier.contains(
-//					ownerInterfaces[i].getCClass().getModifiers(), 
-//					CCI_COLLABORATION))
-//				{
-//					ci = ownerInterfaces[i];
-//					break;
-//				}
-//			}
-//			//If the owner implements a CI, look for a nested interface on it
-//			//that has the same name as mine.
-//			if (ci != null)
-//			{
-//				FjTypeSystem typeSystem = new FjTypeSystem();
-//				CReferenceType ownerInnerType = typeSystem.declaresInner(
-//					ci.getCClass(), ident);
-//				if (ownerInnerType != null)
-//				{
-//					CReferenceType[] newInterfaces = new CReferenceType[
-//						interfaces.length + 1];
-//					System.arraycopy(interfaces, 0, newInterfaces, 0, 
-//						interfaces.length);
-//					try
-//					{
-//						newInterfaces[interfaces.length] = 
-//							(CReferenceType) new CClassNameType(
-//								ownerInnerType.getQualifiedName())
-//									.checkType(context);
-//					}
-//					catch (UnpositionedError e)
-//					{
-//						throw e.addPosition(getTokenReference());
-//					}
-//					interfaces = newInterfaces;
-//					sourceClass.setInterfaces(interfaces);
-//					//if it arrives here, it is a inner virtual class that 
-//					//overrides a super virtual type.
-//					modifiers = modifiers | FJC_OVERRIDE;
-//					sourceClass.setModifiers(modifiers);
-//				}				
-//			}
-//		}
-//	}	
 	/**
 	 * Walter
 	 * Returns the modifiers that are allowed in this definition.
@@ -361,7 +235,11 @@ public class FjInterfaceDeclaration
 			| CCI_COLLABORATION
 			| CCI_BINDING
 			| CCI_PROVIDING
-			| CCI_WEAVELET;
+			| CCI_WEAVELET
+			//Jurgen's
+			| ACC_PRIVILEGED 
+			| ACC_CROSSCUTTING 
+			| ACC_DEPLOYED;
 //		Walter: Collaboration, binding and providing inserted
 
 			

@@ -84,7 +84,7 @@ public class FjFieldDeclaration extends JFieldDeclaration {
 					  variable.getIdent(),
 					  variable.getType(),
 					  isDeprecated(),
-					  false)); // not synthetic
+					  synthetic)); // not synthetic
 			
 		return (CSourceField)getField();
 	}
