@@ -9,36 +9,43 @@ import junit.framework.TestCase;
 /**
  * deployment of multiple instances vs. around advices
  */
-public cclass CaesarTestCase_12 extends TestCase {
+public class CaesarTestCase_12 extends TestCase {
 
-	public CaesarTestCase_12() {
-		super("test");
-	}
+    public CaesarTestCase_12() {
+        super("test");
+    }
 
-	public static StringBuffer result = new StringBuffer();
+    public static StringBuffer result = new StringBuffer();
 
-	public String expectedResult = ":bar1:bar2:bar3:bar4:foo";
+    public String expectedResult = ":bar1:bar2:bar3:bar4:foo";
 
-	public void test() {
-		deploy(new Aspect_12(1)) {
-			deploy(new Aspect_12(2)) {
-				deploy(new Aspect_12(3)) {
-					deploy(new Aspect_12(4)) {
-						foo("string");
-					}
-				}
-			}
-		}
+    public void test() {
+        new TestCase_12().test();
+        
+        assertEquals(expectedResult, result.toString());
+    }
 
-		assertEquals(expectedResult, result.toString());
-	}
+    public static char foo(String s) {
+        result.append(":foo");
+        
+        return 'a';
+    }
 
-	public static char foo(String s) {
-		result.append(":foo");
-		
-		return 'a';
-	}
+}
 
+public cclass TestCase_12 {
+
+    public void test() {
+        deploy(new Aspect_12(1)) {
+            deploy(new Aspect_12(2)) {
+                deploy(new Aspect_12(3)) {
+                    deploy(new Aspect_12(4)) {
+                        CaesarTestCase_12.foo("string");
+                    }
+                }
+            }
+        }
+    }
 }
 
 cclass Aspect_12 {

@@ -9,7 +9,7 @@ import junit.framework.TestCase;
 /**
  * thread safity of deployment
  */
-public cclass CaesarTestCase_10 extends TestCase {
+public class CaesarTestCase_10 extends TestCase {
 
 	public CaesarTestCase_10() {
 		super("test");

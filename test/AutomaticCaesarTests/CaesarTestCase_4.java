@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 /**
  * declare precdence for crosscutting and deployed classes
  */
-public cclass CaesarTestCase_4 extends TestCase {
+public class CaesarTestCase_4 extends TestCase {
 
 	public CaesarTestCase_4() {
 		super("test");
@@ -17,30 +17,38 @@ public cclass CaesarTestCase_4 extends TestCase {
 		":before foo C:before foo A:before foo D:before foo B:foo";
 
 	public void test() {
-		deploy(new A_4()) {
-			deploy(new B_4()) {
-				deploy(new C_4()) {
-					foo();
-				}
-			}
-		}
+		new TestCase_4().test();
 
 		assertEquals(expectedResult, result.toString());
 	}
+}
 
-	public void foo() {
-		result.append(":foo");
-	}
+cclass TestCase_4 {
+    public void test() {
+        deploy(new A_4()) {
+            deploy(new B_4()) {
+                deploy(new C_4()) {
+                    foo();
+                }
+            }
+        }
+    }
+    
+    public void foo() {
+        CaesarTestCase_4.result.append(":foo");
+    }
 }
 
 deployed cclass Ordering {
-	declare precedence : C_4, A_4, D_4, B_4;
+    // TODO
+	declare precedence : C_4_Impl, A_4_Impl, D_4_Impl, B_4_Impl;
+    //declare precedence : C_4, A_4, D_4, B_4;
 }
 
 
 cclass A_4 {
 
-	pointcut callFoo() : call(* CaesarTestCase_4.foo());
+	pointcut callFoo() : call(* TestCase_4.foo());
 
 	before() : callFoo() {
 		CaesarTestCase_4.result.append(":before foo A");
@@ -49,7 +57,7 @@ cclass A_4 {
 
 cclass B_4 {
 
-	pointcut callFoo() : call(* CaesarTestCase_4.foo());
+	pointcut callFoo() : call(* TestCase_4.foo());
 
 	before() : callFoo() {
 		CaesarTestCase_4.result.append(":before foo B");
@@ -58,7 +66,7 @@ cclass B_4 {
 
 cclass C_4 {
 
-	pointcut callFoo() : call(* CaesarTestCase_4.foo());
+	pointcut callFoo() : call(* TestCase_4.foo());
 
 	before() : callFoo() {
 		CaesarTestCase_4.result.append(":before foo C");
@@ -67,7 +75,7 @@ cclass C_4 {
 
 deployed cclass D_4 {
 
-	pointcut callFoo() : call(* CaesarTestCase_4.foo());
+	pointcut callFoo() : call(* TestCase_4.foo());
 
 	before() : callFoo() {
 		CaesarTestCase_4.result.append(":before foo D");

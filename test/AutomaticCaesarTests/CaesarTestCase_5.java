@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 /**
  * after returning, after throwing, usage of join point reflection
  */
-public cclass CaesarTestCase_5 extends TestCase {
+public class CaesarTestCase_5 extends TestCase {
 
 	public CaesarTestCase_5() {
 		super("test");
@@ -19,40 +19,47 @@ public cclass CaesarTestCase_5 extends TestCase {
 		":around foo:foo:after returning foo:around foo:after throwing ex foo:after returning bar 42";
 
 	public void test() {
-		deploy(new Aspect_5()) {
-			foo();
-
-			try {
-				foo();
-			} catch (RuntimeException e) {
-			}
-
-			bar();
-		}
+		new TestCase_5().test();
 
 		assertEquals(expectedResult, result.toString());
 	}
+}
 
-	public void foo() throws RuntimeException {
-		if (fooCounter == 1) {
-			throw new RuntimeException("ex");
-		}
+public cclass TestCase_5 {
 
-		result.append(":foo");
-		fooCounter++;
-	}
+    public void test() {
+        deploy(new Aspect_5()) {
+            foo();
 
-	public int bar() {
-		return 42;
-	}
+            try {
+                foo();
+            } catch (RuntimeException e) {
+            }
+
+            bar();
+        }
+    }
+
+    public void foo() throws RuntimeException {
+        if (CaesarTestCase_5.fooCounter == 1) {
+            throw new RuntimeException("ex");
+        }
+
+        CaesarTestCase_5.result.append(":foo");
+        CaesarTestCase_5.fooCounter++;
+    }
+
+    public int bar() {
+        return 42;
+    }
 
 }
 
 cclass Aspect_5 {
 
-	pointcut callFoo() : call(* CaesarTestCase_5.foo());
+	pointcut callFoo() : call(* TestCase_5.foo());
 
-	pointcut callBar() : call(* CaesarTestCase_5.bar());
+	pointcut callBar() : call(* TestCase_5.bar());
 
 	void around() : callFoo() {
 		CaesarTestCase_5.result.append(":around foo");

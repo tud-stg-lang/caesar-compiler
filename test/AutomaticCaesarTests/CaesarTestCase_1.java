@@ -2,7 +2,7 @@ package generated;
 
 import junit.framework.TestCase;
 
-public cclass CaesarTestCase_1 extends TestCase {
+public class CaesarTestCase_1 extends TestCase {
 
 	public CaesarTestCase_1() {
 		super("test");
@@ -12,6 +12,20 @@ public cclass CaesarTestCase_1 extends TestCase {
 
 	public String expectedResult =
 		":foo:before foo:foo:before foo:foo:after foo";
+
+    public void test() {
+        new TestCase_1(result).test();
+        assertEquals(expectedResult, result.toString());
+    }
+}
+
+cclass TestCase_1 {
+    
+    StringBuffer result;
+    
+    public TestCase_1(StringBuffer result) {
+        this.result = result;
+    }
 
 	/**
 	 * tests inheriting aspects
@@ -28,10 +42,7 @@ public cclass CaesarTestCase_1 extends TestCase {
 
 		deploy(new InnerAspect_Sub_Sub()) {
 			foo();
-		}
-		
-		
-		assertEquals(expectedResult, result.toString());
+		}	
 	}
 
 	public void foo() {
@@ -39,7 +50,7 @@ public cclass CaesarTestCase_1 extends TestCase {
 	}
 
 	cclass InnerAspect {
-		pointcut fooCall() : call(* CaesarTestCase_1.foo());
+		pointcut fooCall() : call(* TestCase_1.foo());
 		before() : fooCall() {
 			System.out.println("just for testing");
 		}

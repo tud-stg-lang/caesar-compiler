@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 /**
  * abstract crosscutting classes, implementing abstract pointcuts
  */
-public cclass CaesarTestCase_3 extends TestCase {
+public class CaesarTestCase_3 extends TestCase {
 
 	public CaesarTestCase_3() {
 		super("test");

@@ -9,38 +9,43 @@ import junit.framework.TestCase;
 /**
  * thread safity of deployment
  */
-public cclass CaesarTestCase_9 extends TestCase {
+public class CaesarTestCase_9 extends TestCase {
 
-	public CaesarTestCase_9() {
-		super("test");
-	}
+    public CaesarTestCase_9() {
+        super("test");
+    }
 
-	public static StringBuffer result = new StringBuffer();
+    public static StringBuffer result = new StringBuffer();
 
-	public String expectedResult = ":before foo:foo:after foo:before foo:foo:after foo:foo";
+    public String expectedResult = ":before foo:foo:after foo:before foo:foo:after foo:foo";
 
-	public void test() {
-		deploy(new Aspect_9()) {
-			Thread anotherThread = new AnotherThread_9();
-			anotherThread.start();
-		}
-		
-		Barrier.getInstance().check(); //1	
-		
-		Barrier.getInstance().check();	//2
-        
-        foo();
-        
-		assertEquals(expectedResult, result.toString());
-	}
-
-	public static void foo() {
-		result.append(":foo");
-	}
-
+    public void test() {
+        new TestCase_9().test();  
+        assertEquals(expectedResult, result.toString());
+    }
+    
+    public static void foo() {
+        result.append(":foo");
+    }
 }
 
-cclass AnotherThread_9 extends CaesarThread {
+public cclass TestCase_9 {
+
+    public void test() {
+        deploy(new Aspect_9()) {
+            Thread anotherThread = new AnotherThread_9();
+            anotherThread.start();
+        }
+        
+        Barrier.getInstance().check(); //1  
+        
+        Barrier.getInstance().check();  //2
+        
+        CaesarTestCase_9.foo();
+    }
+}
+
+class AnotherThread_9 extends CaesarThread {
 	public void run() {
 		CaesarTestCase_9.foo();
 		

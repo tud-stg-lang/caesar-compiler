@@ -43,7 +43,6 @@ public class AutomaticCaesarTests extends FjTestCase {
 				String[] args =
 					new String[] {
 						"CaesarTestCase_0.java",
-/*                        
 						"CaesarTestCase_1.java",
 						"CaesarTestCase_2.java",
 						"CaesarTestCase_3.java",
@@ -51,12 +50,11 @@ public class AutomaticCaesarTests extends FjTestCase {
 						"CaesarTestCase_5.java",
 						"CaesarTestCase_6.java",
 						"CaesarTestCase_7.java",
-						"CaesarTestCase_8.java",
-						"CaesarTestCase_9.java",						
+						//"CaesarTestCase_8.java", // does not work, priviledged access missing
+						"CaesarTestCase_9.java",
 						"CaesarTestCase_10.java",	
 						"CaesarTestCase_11.java",
-						"CaesarTestCase_12.java",		
-*/
+						"CaesarTestCase_12.java",	
 						"Barrier.java" 
 };
 
@@ -94,7 +92,6 @@ public class AutomaticCaesarTests extends FjTestCase {
 		doGeneratedTest("CaesarTestCase_0");
 	}
 
-/*
 	public void testCaesarTestCase_1() throws Throwable {
 		doGeneratedTest("CaesarTestCase_1");
 	}
@@ -122,15 +119,15 @@ public class AutomaticCaesarTests extends FjTestCase {
 	public void testCaesarTestCase_7() throws Throwable {
 		doGeneratedTest("CaesarTestCase_7");
 	}
-
+/*
 	public void testCaesarTestCase_8() throws Throwable {
 		doGeneratedTest("CaesarTestCase_8");
 	}
-	
+*/
 	public void testCaesarTestCase_9() throws Throwable {
 		doGeneratedTest("CaesarTestCase_9");
 	}
-	
+      	
 	public void testCaesarTestCase_10() throws Throwable {
 		doGeneratedTest("CaesarTestCase_10");
 	}
@@ -141,7 +138,6 @@ public class AutomaticCaesarTests extends FjTestCase {
 	public void testCaesarTestCase_12() throws Throwable {
 		doGeneratedTest("CaesarTestCase_12");
 	}
-*/	
 	
 
 

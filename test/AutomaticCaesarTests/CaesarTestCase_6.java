@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 /**
  * around
  */
-public cclass CaesarTestCase_6 extends TestCase {
+public class CaesarTestCase_6 extends TestCase {
 
 	public CaesarTestCase_6() {
 		super("test");
@@ -18,39 +18,46 @@ public cclass CaesarTestCase_6 extends TestCase {
 	public String expectedResult = ":foo:around foo 42:around bar:ioe";
 
 	public void test() {
-		deploy(new Aspect_6()) {
-			int i = foo();
-
-			try {
-				bar();
-			} catch (IOException e) {
-				result.append(e.getMessage());
-			}
-		}
-
+        new TestCase_6().test();
 		assertEquals(expectedResult, result.toString());
 	}
 
-	public int foo() {
+}
 
-		result.append(":foo");
+public cclass TestCase_6 {
 
-		return 42;
+    public void test() {
+        deploy(new Aspect_6()) {
+            int i = foo();
 
-	}
+            try {
+                bar();
+            } catch (IOException e) {
+                CaesarTestCase_6.result.append(e.getMessage());
+            }
+        }
+    }
 
-	public void bar() throws IOException {
+    public int foo() {
 
-		result.append(":bar");
-	}
+        CaesarTestCase_6.result.append(":foo");
+
+        return 42;
+
+    }
+
+    public void bar() throws IOException {
+
+        CaesarTestCase_6.result.append(":bar");
+    }
 
 }
 
 cclass Aspect_6 {
 
-	pointcut callFoo() : call(* CaesarTestCase_6.foo());
+	pointcut callFoo() : call(* TestCase_6.foo());
 
-	pointcut callBar() : call(* CaesarTestCase_6.bar());
+	pointcut callBar() : call(* TestCase_6.bar());
 
 	Object around() : callFoo() {
 		int result = ((Integer) proceed()).intValue();

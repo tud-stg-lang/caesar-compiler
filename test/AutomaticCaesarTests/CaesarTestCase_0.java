@@ -14,8 +14,7 @@ public class CaesarTestCase_0 extends TestCase {
     }
     
     public void test() {
-        TestCase_0 cObj = new TestCase_0(result);
-        cObj.test();    
+        new TestCase_0(result).test();
         assertEquals(expectedResult, result.toString());
     }
 }
