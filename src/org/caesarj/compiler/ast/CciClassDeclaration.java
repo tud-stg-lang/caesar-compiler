@@ -254,6 +254,7 @@ public class CciClassDeclaration
 	 * @param prefix
 	 * @return CSourceClass
 	 */
+	/* TODO: Remove if not needed
 	protected CSourceClass constructSourceClass(CClass owner, String prefix)
 	{
 		return new FjSourceClass(
@@ -268,7 +269,7 @@ public class CciClassDeclaration
 			this);
 	}
 	
-	
+	*/
 	/**
 	 * Appends an inner class.
 	 * This method was pulled up from FjClassDeclaration.

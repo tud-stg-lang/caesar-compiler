@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.3 2004-02-05 21:35:16 ostermann Exp $
+ * $Id: CClass.java,v 1.4 2004-02-06 16:45:51 ostermann Exp $
  */
 
 package org.caesarj.kjc;
@@ -53,7 +53,8 @@ public abstract class CClass extends CMember
 		String qualifiedName,
 		CReferenceType superClass,
 		boolean deprecated,
-		boolean synthetic)
+		boolean synthetic
+		)
 	{
 		super(owner, modifiers, ident, deprecated, synthetic);
 
@@ -135,6 +136,11 @@ public abstract class CClass extends CMember
 	{
 		this.localClass = localClass;
 	}
+	public boolean isCrosscutting() {
+		return (!CModifier.contains(getModifiers(),ACC_DEPLOYED)) &&
+		  CModifier.contains(getModifiers(),ACC_CROSSCUTTING);
+	}
+	
 
 	/**
 	 * @return true if this class is defines the condition methods of an interface

@@ -146,6 +146,9 @@ public class FjClassDeclaration
 		this.pointcuts = pointcuts;
 		this.advices = advices;
 		this.declares = declares;
+		// structural detection of crosscutting property
+		if (advices.length > 0)
+		     this.modifiers |= ACC_CROSSCUTTING;
 	}
 
 	public JMethodDeclaration[] getMethods()
@@ -410,8 +413,6 @@ public class FjClassDeclaration
 		}
 
 
-
-
 		super.checkInterface(context);
 
 
@@ -422,35 +423,6 @@ public class FjClassDeclaration
 				);
 		}
 
-		if (!(isCrosscutting() || isStaticallyDeployed())
-			&& (pointcuts.length > 0 || advices.length > 0))
-		{
-			context.reportTrouble(
-				new PositionedError(
-					getTokenReference(),
-					CaesarMessages
-						.POINTCUTS_OR_ADVICES_IN_NON_CROSSCUTTING_CLASS));
-		}
-		
-		
-
-		//if descendants of crosscutting class must be declared crosscutting too
-		if (getCClass().getSuperClass() != null
-				&& CModifier.contains(
-					getCClass().getSuperClass().getModifiers(),
-					ACC_CROSSCUTTING)
-				&& ! isCrosscutting()) 
-//				&& ! (this instanceof DeploymentSupportClassDeclaration))
-		{
-			context.reportTrouble(
-				new PositionedError(
-					getTokenReference(),
-					CaesarMessages
-						.DESCENDANT_OF_CROSSCUTTING_CLASS_NOT_DECLARED_CROSSCUTTING));
-
-		}
-
-	
 		//ckeckInterface of the pointcuts
 		for (int j = 0; j < pointcuts.length; j++)
 		{
@@ -631,10 +603,6 @@ public class FjClassDeclaration
 		return (modifiers & ACC_PRIVILEGED) != 0;
 	}
 
-	public boolean isCrosscutting()
-	{
-		return (modifiers & ACC_CROSSCUTTING) != 0;
-	}
 
 	public boolean isStaticallyDeployed()
 	{
@@ -824,6 +792,9 @@ public class FjClassDeclaration
 		adviceDeclaration.setIdent(ident);
 	}
 
+    public boolean isCrosscutting() {
+    	return CModifier.contains(modifiers, ACC_CROSSCUTTING);
+    }
 
 	/**
 	 * Generates for every nested crosscutting class the corresponding deployment support classes.

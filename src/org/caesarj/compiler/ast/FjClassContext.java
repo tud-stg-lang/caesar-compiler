@@ -70,7 +70,9 @@ public class FjClassContext
 	}
 
 	public CCompilationUnitContext getParentCompilationUnitContext() {
-		return (CCompilationUnitContext) parent;
+		CContext p = parent;
+		while (!(p instanceof CCompilationUnitContext)) p = p.getParentContext(); 
+		return (CCompilationUnitContext) p;
 	}
 
 

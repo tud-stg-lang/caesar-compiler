@@ -84,7 +84,7 @@ public class FjCompilationUnit extends JCompilationUnit {
 				FjClassDeclaration caesarClass =
 					(FjClassDeclaration) typeDeclarations[i];
 
-				if (caesarClass.isCrosscutting()) {
+				if (caesarClass.isCrosscutting() && (!caesarClass.isStaticallyDeployed()) ) {
 
 					DeploymentClassFactory utils =
 						new DeploymentClassFactory(

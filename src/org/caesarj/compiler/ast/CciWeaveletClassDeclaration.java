@@ -323,10 +323,11 @@ public class CciWeaveletClassDeclaration
 			superCollaborationInterface);
 	}
 	
-	/**
+	/** TODO: Remove if not needed
 	 * Constructs the source class which represents the weavelet.
 	 *
 	 */
+	/*
 	protected CSourceClass constructSourceClass(CClass owner, String prefix)
 	{
 		return new CciWeaveletSourceClass(
@@ -341,5 +342,5 @@ public class CciWeaveletClassDeclaration
 			false,
 			this);
 	}
-
+*/
 }

@@ -67,10 +67,7 @@ public class ProceedExpression
 
 		JExpression typePrefix;
 
-		if (CModifier
-			.contains(
-				context.getClassContext().getCClass().getModifiers(),
-				ACC_CROSSCUTTING)) {
+		if (context.getClassContext().getCClass().isCrosscutting()) {
 
 			CReferenceType singletonType =
 				new CClassNameType(

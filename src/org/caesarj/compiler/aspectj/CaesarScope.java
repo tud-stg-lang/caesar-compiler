@@ -66,8 +66,8 @@ public class CaesarScope implements IScope, CaesarConstants {
 		//If the lookup retrieves a crosscutting class, then its
 		//aspect registry should be returned instead.
 		// Hence do a lookup for the registry.
-		if (cclass != null
-			&& CModifier.contains(cclass.getModifiers(), ACC_CROSSCUTTING)) {
+		if ((cclass != null) 
+			&& (cclass.isCrosscutting())) {
 			cclass =
 				lookupClass((typeName + REGISTRY_EXTENSION).intern());
 		}

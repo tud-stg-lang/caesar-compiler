@@ -96,23 +96,6 @@ public class DeployStatement extends JStatement implements CaesarConstants {
 			aspectExpression.analyse(
 				new CExpressionContext(context, context.getEnvironment()));
 
-		//check type of aspectExpression
-		if ((aspectExpression
-			.getType(context.getTypeFactory())
-			.getCClass()
-			.getModifiers()
-			& ACC_CROSSCUTTING)
-			== 0
-			&& !(aspectExpression instanceof JNullLiteral)) {
-
-			context.reportTrouble(
-				new PositionedError(
-					aspectExpression.getTokenReference(),
-					new Message(
-						CaesarMessages.DEPLOYED_CLASS_NOT_CROSSCUTTING)));
-
-			return;
-		}
 
 		CBodyContext bodyContext =
 			new CSimpleBodyContext(context, context.getEnvironment(), context);

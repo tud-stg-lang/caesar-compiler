@@ -122,7 +122,6 @@ private static final int MAX_LOOKAHEAD = 2;
 		case LITERAL_collaboration:
 		case LITERAL_provided:
 		case LITERAL_expected:
-		case LITERAL_crosscutting:
 		case LITERAL_deployed:
 		case LITERAL_privileged:
 		case SEMI:
@@ -188,7 +187,6 @@ private static final int MAX_LOOKAHEAD = 2;
 		case LITERAL_collaboration:
 		case LITERAL_provided:
 		case LITERAL_expected:
-		case LITERAL_crosscutting:
 		case LITERAL_deployed:
 		case LITERAL_privileged:
 		{
@@ -203,13 +201,6 @@ private static final int MAX_LOOKAHEAD = 2;
 			case LITERAL_interface:
 			{
 				decl=jInterfaceDefinition(mods);
-				if ( inputState.guessing==0 ) {
-					
-							if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-					context.addTypeDeclaration(environment.getClassReader(), ((JInterfaceDeclaration)decl).getAssertionClass());
-					}
-					
-				}
 				break;
 			}
 			default:
@@ -525,17 +516,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			
 			JMethodDeclaration[]      methods;
 			
-			if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-			JMethodDeclaration[]    assertions = context.getAssertions();
-			JMethodDeclaration[]    decMethods = context.getMethods();
-			
-			methods = new JMethodDeclaration[assertions.length+decMethods.length];
-			// assertions first!
-			System.arraycopy(assertions, 0, methods, 0, assertions.length);
-			System.arraycopy(decMethods, 0, methods, assertions.length, decMethods.length);
-			} else {
 			methods = context.getMethods();
-			}
 			if (superClass instanceof CciWeaveletReferenceType)
 				self = new CciWeaveletClassDeclaration(sourceRef,
 							   modifiers,
@@ -716,22 +697,6 @@ private static final int MAX_LOOKAHEAD = 2;
 			context.getBody(),
 			getJavadocComment(),
 			getStatementComment());
-			
-			
-			if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-			KopiAssertionClassDeclaration assertionClass =
-			new KopiAssertionClassDeclaration(sourceRef,
-			modifiers,
-			ident.getText(),
-			CTypeVariable.cloneArray(typeVariables),
-			context.getAssertions(),
-			null,
-			null,
-			environment.getTypeFactory());
-					if (self instanceof JInterfaceDeclaration)
-				((JInterfaceDeclaration)self).setAssertionClass(assertionClass);
-			}
-			
 			context.release();
 			
 		}
@@ -954,14 +919,6 @@ private static final int MAX_LOOKAHEAD = 2;
 			match(LITERAL_privileged);
 			if ( inputState.guessing==0 ) {
 				self = org.caesarj.kjc.Constants.ACC_PRIVILEGED;
-			}
-			break;
-		}
-		case LITERAL_crosscutting:
-		{
-			match(LITERAL_crosscutting);
-			if ( inputState.guessing==0 ) {
-				self = org.caesarj.kjc.Constants.ACC_CROSSCUTTING;
 			}
 			break;
 		}
@@ -1518,7 +1475,6 @@ private static final int MAX_LOOKAHEAD = 2;
 			case LITERAL_expected:
 			case LITERAL_after:
 			case LITERAL_before:
-			case LITERAL_crosscutting:
 			case LITERAL_declare:
 			case LITERAL_deployed:
 			case LITERAL_pointcut:
@@ -1685,9 +1641,6 @@ private static final int MAX_LOOKAHEAD = 2;
 				if ( inputState.guessing==0 ) {
 					
 							context.addInnerDeclaration(decl);
-							if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-								context.addInnerDeclaration(((JInterfaceDeclaration)decl).getAssertionClass());
-							}
 						
 				}
 				break;
@@ -3547,11 +3500,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		match(SEMI);
 		if ( inputState.guessing==0 ) {
 			
-			if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-			self = new KopiReturnStatement(sourceRef, expr, getStatementComment());
-			} else {
 			self = new FjReturnStatement(sourceRef, expr, getStatementComment());
-			}
 			
 		}
 		return self;
@@ -3697,7 +3646,6 @@ private static final int MAX_LOOKAHEAD = 2;
 		case LITERAL_expected:
 		case LITERAL_wrappee:
 		case WDESTRUCTOR:
-		case LITERAL_crosscutting:
 		case LITERAL_deploy:
 		case LITERAL_deployed:
 		case LITERAL_privileged:
@@ -5318,17 +5266,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				
 				JMethodDeclaration[]      methods;
 				
-				if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-				JMethodDeclaration[]    assertions = context.getAssertions();
-				JMethodDeclaration[]    decMethods = context.getMethods();
-				
-				methods = new JMethodDeclaration[assertions.length+decMethods.length];
-				// assertions first!
-				System.arraycopy(assertions, 0, methods, 0, assertions.length);
-				System.arraycopy(decMethods, 0, methods, assertions.length, decMethods.length);
-				} else {
 				methods = context.getMethods();
-				}
 				
 					decl = new FjClassDeclaration(sourceRef,
 								     org.caesarj.kjc.Constants.ACC_FINAL, // JLS 15.9.5
@@ -5599,17 +5537,7 @@ private static final int MAX_LOOKAHEAD = 2;
 						
 						JMethodDeclaration[]      methods;
 						
-						if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-						JMethodDeclaration[]    assertions = context.getAssertions();
-						JMethodDeclaration[]    decMethods = context.getMethods();
-						
-						methods = new JMethodDeclaration[assertions.length+decMethods.length];
-						// assertions first!
-						System.arraycopy(assertions, 0, methods, 0, assertions.length);
-						System.arraycopy(decMethods, 0, methods, assertions.length, decMethods.length);
-						} else {
 						methods = context.getMethods();
-						}
 						
 							    decl = new FjClassDeclaration(sourceRef,
 											 org.caesarj.kjc.Constants.ACC_FINAL, // JLS 15.9.5
@@ -6141,7 +6069,6 @@ private static final int MAX_LOOKAHEAD = 2;
 		"\"after\"",
 		"\"around\"",
 		"\"before\"",
-		"\"crosscutting\"",
 		"\"declare\"",
 		"\"deploy\"",
 		"\"deployed\"",
@@ -6204,67 +6131,67 @@ private static final int MAX_LOOKAHEAD = 2;
 		"a type pattern for pointcut definition"
 	};
 	
-	private static final long[] _tokenSet_0_data_ = { 4297039262312826896L, 4503599627375168L, 0L, 0L };
+	private static final long[] _tokenSet_0_data_ = { 4297039262312826896L, 2251799813687552L, 0L, 0L };
 	public static final BitSet _tokenSet_0 = new BitSet(_tokenSet_0_data_);
-	private static final long[] _tokenSet_1_data_ = { 4297039261239083024L, 4672L, 0L, 0L };
+	private static final long[] _tokenSet_1_data_ = { 4297039261239083024L, 2304L, 0L, 0L };
 	public static final BitSet _tokenSet_1 = new BitSet(_tokenSet_1_data_);
-	private static final long[] _tokenSet_2_data_ = { 4301543964140440752L, 4611687117939021544L, 0L, 0L };
+	private static final long[] _tokenSet_2_data_ = { 4301543964140440752L, 2305843558969510760L, 0L, 0L };
 	public static final BitSet _tokenSet_2 = new BitSet(_tokenSet_2_data_);
-	private static final long[] _tokenSet_3_data_ = { 4301543964140440752L, 4611687685143140088L, 4L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_3_data_ = { 4301543964140440752L, 2305843842571570040L, 2L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_3 = new BitSet(_tokenSet_3_data_);
-	private static final long[] _tokenSet_4_data_ = { 4504701827613856L, 4611686018427387904L, 0L, 0L };
+	private static final long[] _tokenSet_4_data_ = { 4504701827613856L, 2305843009213693952L, 0L, 0L };
 	public static final BitSet _tokenSet_4 = new BitSet(_tokenSet_4_data_);
-	private static final long[] _tokenSet_5_data_ = { 0L, 4611687135387320336L, 0L, 0L };
+	private static final long[] _tokenSet_5_data_ = { 0L, 2305843567693660176L, 0L, 0L };
 	public static final BitSet _tokenSet_5 = new BitSet(_tokenSet_5_data_);
-	private static final long[] _tokenSet_6_data_ = { 0L, 4503616874381312L, 0L, 0L };
+	private static final long[] _tokenSet_6_data_ = { 0L, 2251808437190656L, 0L, 0L };
 	public static final BitSet _tokenSet_6 = new BitSet(_tokenSet_6_data_);
-	private static final long[] _tokenSet_7_data_ = { 5709792341984416L, -2305842459189444602L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_7_data_ = { 5709792341984416L, -1152921229594722298L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_7 = new BitSet(_tokenSet_7_data_);
-	private static final long[] _tokenSet_8_data_ = { 5709792341984416L, -2305769732373741562L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_8_data_ = { 5709792341984416L, -1152884866186870778L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_8 = new BitSet(_tokenSet_8_data_);
-	private static final long[] _tokenSet_9_data_ = { 4323174131376434416L, -2300140215928089786L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_9_data_ = { 4323174131376434416L, -1150070107964044922L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_9 = new BitSet(_tokenSet_9_data_);
-	private static final long[] _tokenSet_10_data_ = { 4611404508870323440L, -2814749834242066L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_10_data_ = { 4611404508870323440L, -1407374917121042L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_10 = new BitSet(_tokenSet_10_data_);
-	private static final long[] _tokenSet_11_data_ = { 4323174131376434416L, -2301266115834932410L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_11_data_ = { 4323174131376434416L, -1150633057917466234L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_11 = new BitSet(_tokenSet_11_data_);
-	private static final long[] _tokenSet_12_data_ = { 4297039261239085072L, 4672L, 0L, 0L };
+	private static final long[] _tokenSet_12_data_ = { 4297039261239085072L, 2304L, 0L, 0L };
 	public static final BitSet _tokenSet_12 = new BitSet(_tokenSet_12_data_);
-	private static final long[] _tokenSet_13_data_ = { 4297039261239085072L, 4611686018427392576L, 0L, 0L };
+	private static final long[] _tokenSet_13_data_ = { 4297039261239085072L, 2305843009213696256L, 0L, 0L };
 	public static final BitSet _tokenSet_13 = new BitSet(_tokenSet_13_data_);
-	private static final long[] _tokenSet_14_data_ = { 4301543963066696880L, 4611686018427392576L, 0L, 0L };
+	private static final long[] _tokenSet_14_data_ = { 4301543963066696880L, 2305843009213696256L, 0L, 0L };
 	public static final BitSet _tokenSet_14 = new BitSet(_tokenSet_14_data_);
-	private static final long[] _tokenSet_15_data_ = { 4301543963066696880L, 4611687135387324992L, 0L, 0L };
+	private static final long[] _tokenSet_15_data_ = { 4301543963066696880L, 2305843567693662464L, 0L, 0L };
 	public static final BitSet _tokenSet_15 = new BitSet(_tokenSet_15_data_);
-	private static final long[] _tokenSet_16_data_ = { 26170054509438176L, -2301266115834937082L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_16_data_ = { 26170054509438176L, -1150633057917468538L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_16 = new BitSet(_tokenSet_16_data_);
-	private static final long[] _tokenSet_17_data_ = { 4611404507796598256L, -2814749834243258L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_17_data_ = { 4611404507796598256L, -1407374917121658L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_17 = new BitSet(_tokenSet_17_data_);
-	private static final long[] _tokenSet_18_data_ = { 5709792341984416L, -2305769715462307834L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_18_data_ = { 5709792341984416L, -1152884857731153914L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_18 = new BitSet(_tokenSet_18_data_);
-	private static final long[] _tokenSet_19_data_ = { 5709792341984416L, -2305769749822046202L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_19_data_ = { 5709792341984416L, -1152884874911023098L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_19 = new BitSet(_tokenSet_19_data_);
-	private static final long[] _tokenSet_20_data_ = { 293940168762131616L, -3940684134383610L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_20_data_ = { 293940168762131616L, -1970342067191802L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_20 = new BitSet(_tokenSet_20_data_);
-	private static final long[] _tokenSet_21_data_ = { 4323174131376582128L, -2300140215928089786L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_21_data_ = { 4323174131376582128L, -1150070107964044922L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_21 = new BitSet(_tokenSet_21_data_);
-	private static final long[] _tokenSet_22_data_ = { 4611404508872568816L, -2814749834242066L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_22_data_ = { 4611404508872568816L, -1407374917121042L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_22 = new BitSet(_tokenSet_22_data_);
-	private static final long[] _tokenSet_23_data_ = { 5709792341984416L, -2305769749788491770L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_23_data_ = { 5709792341984416L, -1152884874894245882L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_23 = new BitSet(_tokenSet_23_data_);
-	private static final long[] _tokenSet_24_data_ = { 293940168762131616L, -3940684067274746L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_24_data_ = { 293940168762131616L, -1970342033637370L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_24 = new BitSet(_tokenSet_24_data_);
-	private static final long[] _tokenSet_25_data_ = { 0L, 1171452329984L, 0L, 0L };
+	private static final long[] _tokenSet_25_data_ = { 0L, 585726164992L, 0L, 0L };
 	public static final BitSet _tokenSet_25 = new BitSet(_tokenSet_25_data_);
-	private static final long[] _tokenSet_26_data_ = { 0L, 153122387332694016L, 0L, 0L };
+	private static final long[] _tokenSet_26_data_ = { 0L, 76561193666347008L, 0L, 0L };
 	public static final BitSet _tokenSet_26 = new BitSet(_tokenSet_26_data_);
 	private static final long[] _tokenSet_27_data_ = { 4504701827613856L, 0L, 0L };
 	public static final BitSet _tokenSet_27 = new BitSet(_tokenSet_27_data_);
-	private static final long[] _tokenSet_28_data_ = { 5709792341984416L, -2305842459457880058L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_28_data_ = { 5709792341984416L, -1152921229728940026L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_28 = new BitSet(_tokenSet_28_data_);
-	private static final long[] _tokenSet_29_data_ = { 293940168762131616L, -34359771130L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_29_data_ = { 293940168762131616L, -17179885562L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_29 = new BitSet(_tokenSet_29_data_);
-	private static final long[] _tokenSet_30_data_ = { 5709792341984416L, -2305206799868624890L, 3L, 0L, 0L, 0L };
+	private static final long[] _tokenSet_30_data_ = { 5709792341984416L, -1152603399934312442L, 1L, 0L, 0L, 0L };
 	public static final BitSet _tokenSet_30 = new BitSet(_tokenSet_30_data_);
 	
 	}
