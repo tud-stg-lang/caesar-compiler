@@ -26,6 +26,11 @@ public class CaesarBcelWorld /*extends BcelWorld */{
 
 		return theInstance;
 	}
+	
+	/* resets the singleton instance */
+	public static void resetInstance() {
+		theInstance = null;
+	}
 
 	/* returns the BcelWorld object */
 	public BcelWorld getWorld(){

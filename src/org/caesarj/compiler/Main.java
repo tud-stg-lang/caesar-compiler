@@ -642,6 +642,10 @@ public class Main extends MainSuper implements Constants {
         super.initialize(environment);
 
         messageHandler = new CaesarMessageHandler(this);
+        
+        // reset static instance, which can have remained after previous compilation
+        CaesarBcelWorld.resetInstance();
+        
         CaesarBcelWorld world = CaesarBcelWorld.getInstance();
         world.setMessageHandler(messageHandler);        
     }
