@@ -544,23 +544,37 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 			else
 				ident = methodName;
 
-			super.findMethod(context, local, argTypes);
+			
 			try
 			{
-				wrapperType = 
-					(CReferenceType) 
-						new FjTypeSystem()
-							.lowerBound(
-								context.getClassContext(),
-								prefix == null
-									? local 
-									: prefix.getType(context.getTypeFactory())
-										.getCClass(), 
-								wrapperTypeName);
+				super.findMethod(context, local, argTypes);
 			}
-			catch (UnpositionedError e1)
+			catch (CMethodNotFoundError e1)
 			{
-				throw e1.addPosition(getTokenReference());
+				throw e;
+			}
+			CClass owner = prefix == null
+							? local 
+							: prefix.getType(context.getTypeFactory())
+								.getCClass();
+			while (wrapperType == null)
+			{
+				try
+				{				
+					wrapperType = 
+						(CReferenceType) 
+							new FjTypeSystem()
+								.lowerBound(
+									context.getClassContext(),
+									owner, 
+									wrapperTypeName);
+				}
+				catch (UnpositionedError e2)
+				{
+					owner = owner.getOwner();
+					if (owner == null)
+						throw e2.addPosition(getTokenReference());
+				}
 			}
 		}
 	}

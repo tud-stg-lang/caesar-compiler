@@ -1,6 +1,7 @@
 package org.caesarj.compiler.ast;
 
 import org.caesarj.compiler.CaesarMessages;
+import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
@@ -272,7 +273,8 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 		
 		//These checks must be done only for base methods...
 		if (FjConstants.isBaseMethodName(ident) 
-			&& ! FjConstants.isFactoryMethodName(ident))
+			&& ! FjConstants.isFactoryMethodName(ident)
+			&& ! CciConstants.isAdaptMethodName(ident))
 		{
 			if (inCollaborationInterface)
 				check(

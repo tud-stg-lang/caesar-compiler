@@ -15,6 +15,7 @@ import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.JExpression;
+import org.caesarj.kjc.JFieldDeclaration;
 import org.caesarj.kjc.JMethodDeclaration;
 import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JTypeDeclaration;
@@ -88,32 +89,24 @@ public class MethodTransformationFjVisitor extends FjVisitor {
 			FjClassDeclaration owner = (FjClassDeclaration) objOwner;
 			superClass = self.getSuperClass().getQualifiedName();
 			
-			//Creates the expression that is used to creates the key of the 
-			//Wrapper when it is explictily declared		
-			JExpression wrappeeAccessExpression = null;
-			CReferenceType wrappee = self.getWrappee();
-			if (wrappee != null)
-			{
-				wrappeeAccessExpression = 
-					new FjNameExpression(
-						FjConstants.STD_TOKEN_REFERENCE, 
-						CciConstants.WRAPPEE_PARAMETER_NAME);
-			}
-			
 			//It will generated the structure of the wrapper only if 
 			//it is a binding or extends a binding class.
 			FjCleanClassDeclaration cleanOwner = null;
+			String mapName = null;			
 			if (owner instanceof FjCleanClassDeclaration
 				&& (CModifier.contains(self.getModifiers(), 
 						Constants.CCI_BINDING)
 					|| self.getSuperCollaborationInterface(
 						self.getCClass(), Constants.CCI_BINDING) != null))
+			{
 				cleanOwner = (FjCleanClassDeclaration) owner;
+				mapName = CciConstants.toWrapperMapName(
+					FjConstants.toIfcName(ident));
+			}
 		
 
 			FjConstructorDeclaration[] constructors = self.getConstructors();
-			ArrayList wrapperMaps = new ArrayList(constructors.length);
-			JExpression keyExpression;
+			boolean constructorFound = false;
 			for( int i = 0; i < constructors.length; i++ ) 
 			{
 				//Creates the wrapper creator methods only for 
@@ -121,23 +114,11 @@ public class MethodTransformationFjVisitor extends FjVisitor {
 				if (cleanOwner != null && 
 					constructors[i].getParameters().length > 0)
 				{
-					String mapName = CciConstants.toWrapperMapName(
-						FjConstants.toIfcName(ident) + i);
-					
-					//Creates the map
-					wrapperMaps.add(self.createWrapperMap(mapName));
-					
-					//If the class has defined a wrappee the expression
-					//for obtain the key is diferent
-					if (wrappee != null)
-						keyExpression = wrappeeAccessExpression;
-					else
-						keyExpression = constructors[i].createKeyExpression();
-					
+					constructorFound = true;
+
 					//creates the method
 					FjCleanMethodDeclaration wrapperInitializationMethod = 
 						constructors[i].createWrapperInstantiationMethod(
-							keyExpression, 
 							mapName);
 					
 					//Appends the method created to the owner and 
@@ -156,10 +137,11 @@ public class MethodTransformationFjVisitor extends FjVisitor {
 						owner.isClean()));
 			}
 			//Now the fields and their initialization are added
-			if (wrapperMaps.size() > 0)
+			if (constructorFound)
 			{
-				cleanOwner.addFields(wrapperMaps);
-				cleanOwner.insertWrapperMappingsInitialization(wrapperMaps);
+				JFieldDeclaration map = self.createWrapperMap(mapName);	
+				cleanOwner.addField(map);
+				cleanOwner.insertWrapperMappingsInitialization(map);
 			}
 		}
 		

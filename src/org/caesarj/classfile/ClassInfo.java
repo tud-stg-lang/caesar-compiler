@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: ClassInfo.java,v 1.1 2003-07-05 18:29:37 werner Exp $
+ * $Id: ClassInfo.java,v 1.2 2003-08-25 14:47:38 werner Exp $
  */
 
 package org.caesarj.classfile;
@@ -545,6 +545,12 @@ public AttributeList getAttributes() {
    */
   private static final int		MODIFIER_MASK =
     ACC_PUBLIC | ACC_FINAL | ACC_SUPER | ACC_INTERFACE | ACC_ABSTRACT;
+//	//Walter start
+//	| FJC_CLEAN | FJC_OVERRIDE | FJC_VIRTUAL  
+//	| CCI_COLLABORATION | CCI_BINDING | CCI_PROVIDING
+//	| CCI_WEAVELET;
+	//Walter end
+
 
   private int				majorVersion;
   private int				minorVersion;

@@ -1,5 +1,6 @@
 package org.caesarj.compiler.util;
 
+import org.caesarj.classfile.Constants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
@@ -8,6 +9,7 @@ import org.caesarj.compiler.ast.FjCleanClassInterfaceDeclaration;
 import org.caesarj.compiler.ast.FjCompilationUnit;
 import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
 import org.caesarj.kjc.CClassNameType;
+import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.JClassImport;
@@ -18,6 +20,8 @@ import org.caesarj.kjc.JPackageName;
 import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.KjcEnvironment;
+
+import com.sun.corba.se.internal.core.Constant;
 
 public class ClassTransformationFjVisitor extends FjVisitor
 {
@@ -163,6 +167,10 @@ public class ClassTransformationFjVisitor extends FjVisitor
 		// virtual classes need to now in order
 		// to perform the proper tranformations
 		self.setOwnerDeclaration(owner.get());
+//		if (owner.get() instanceof FjCleanClassDeclaration)
+//		{
+//			self.addAdaptMethod();
+//		}
 
 		super.visitFjVirtualClassDeclaration(
 			self,

@@ -195,9 +195,11 @@ public class CciClassDeclaration
 	public String getBindingTypeName()
 	{
 		return ownerDecl != null 
-				? ownerDecl.getBindingTypeName() + "$" + binding.toString()
-				: binding.toString();
+				? ownerDecl.getBindingTypeName() + 
+					(binding == null ? "" : "$" + binding.toString())
+				: binding == null ? "" : binding.toString();
 	}
+
 
 	/**
 	 * Sets the owner declaration. This method was pulled up.
@@ -423,7 +425,8 @@ public class CciClassDeclaration
 	 * The current class must be a binding class (getBinding() != null).
 	 * @return JTypeDeclaration[] the new nested classes.
 	 */
-	public JTypeDeclaration[] transformInnerBindingClasses(String superOwner)
+	public JTypeDeclaration[] transformInnerBindingClasses(
+		CciClassDeclaration owner)
 	{
 		for (int i = 0; i < inners.length; i++)
 		{
@@ -432,9 +435,12 @@ public class CciClassDeclaration
 				FjClassDeclaration innerClass = (FjClassDeclaration)inners[i];
 				if (innerClass.getBinding() != null)
 				{
+					innerClass.setOwnerDeclaration(owner);
 					inners[i] = innerClass.createVirtualClassDeclaration(
-						superOwner);
+						owner);
 				}
+				else
+					innerClass.transformInnerBindingClasses(this);
 			}
 		}
 		return inners;
@@ -459,7 +465,7 @@ public class CciClassDeclaration
 				null,
 				null,
 				providing,
-				null,
+				wrappee,
 				interfaces,
 				fields,
 				methods,
@@ -477,9 +483,9 @@ public class CciClassDeclaration
 	 * @return FjOverrideClassDeclaration
 	 */
 	public FjVirtualClassDeclaration createVirtualClassDeclaration(
-		String superOwner)
+		CciClassDeclaration owner)
 	{
-		String superClassName = superOwner + "$" + getBindingTypeName();
+		String superClassName = getBindingTypeName();
 
 		FjVirtualClassDeclaration result =
 			new FjVirtualClassDeclaration(
@@ -490,15 +496,15 @@ public class CciClassDeclaration
 				new CClassNameType(superClassName),
 				new CClassNameType(superClassName),
 				null,
-				null,
+				wrappee,
 				interfaces,
 				fields,
 				methods,
-				transformInnerBindingClasses(superOwner),
+				transformInnerBindingClasses(this),
 				this.body,
 				null,
 				null);
-		
+
 		result.addProvidingAcessor();
 		
 		return result;

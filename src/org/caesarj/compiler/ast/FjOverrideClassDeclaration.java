@@ -4,6 +4,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.caesarj.compiler.CaesarMessages;
+import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.Compiler;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
@@ -15,10 +16,22 @@ import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CTypeVariable;
+import org.caesarj.kjc.JBlock;
+import org.caesarj.kjc.JEqualityExpression;
+import org.caesarj.kjc.JExpression;
+import org.caesarj.kjc.JFieldAccessExpression;
 import org.caesarj.kjc.JFieldDeclaration;
+import org.caesarj.kjc.JIfStatement;
+import org.caesarj.kjc.JMethodCallExpression;
 import org.caesarj.kjc.JMethodDeclaration;
+import org.caesarj.kjc.JOuterLocalVariableExpression;
+import org.caesarj.kjc.JOwnerExpression;
 import org.caesarj.kjc.JPhylum;
+import org.caesarj.kjc.JReturnStatement;
+import org.caesarj.kjc.JStatement;
+import org.caesarj.kjc.JThisExpression;
 import org.caesarj.kjc.JTypeDeclaration;
+import org.caesarj.kjc.JTypeNameExpression;
 
 public class FjOverrideClassDeclaration
 	extends FjVirtualClassDeclaration
@@ -221,4 +234,72 @@ public class FjOverrideClassDeclaration
 
 		return assertConstructorsAreAvailable(constructorsToSupport);
 	}
+	/**
+	 * 
+	 */
+	protected JBlock createAdaptMethodBody()
+	{
+		TokenReference ref = getTokenReference();
+		return new JBlock(
+			ref, 
+			new JStatement[]
+			{
+				new JIfStatement(
+					ref, 
+					new JEqualityExpression(
+						ref, 
+						true, 
+						new JMethodCallExpression(
+							ref, 
+							new FjNameExpression(
+								ref, 
+								CciConstants.ADAPT_METHOD_PARAM_NAME), 
+							FjConstants.GET_TAIL_METHOD_NAME, 
+							JExpression.EMPTY),
+						new JMethodCallExpression(
+							ref, 
+							new FjThisExpression(
+								ref, 
+								new JTypeNameExpression(
+									ref,
+									new CClassNameType(
+										((FjCleanClassDeclaration)ownerDecl)
+											.getCleanInterface().getIdent()))),
+							FjConstants.GET_TAIL_METHOD_NAME, 
+							JExpression.EMPTY)),
+					new JReturnStatement(
+						ref, 
+						new FjNameExpression(
+							ref, 
+							CciConstants.ADAPT_METHOD_RECEIVER_PARAM_NAME), 
+						null),
+					null,
+					null),
+				new JReturnStatement(
+					ref,
+					new FjMethodCallExpression(
+						ref,
+						new FjSuperExpression(ref),
+						CciConstants.toAdaptMethodName(ident),
+						new JExpression[]
+						{ 
+							new FjNameExpression(
+								ref, 
+								CciConstants.ADAPT_METHOD_PARAM_NAME), 
+							new JMethodCallExpression(
+								ref,
+								new JThisExpression(ref),
+								FjConstants.GET_DISPATCHER_METHOD_NAME,
+								new JExpression[]
+								{
+									new FjNameExpression(
+										ref, 
+										CciConstants.ADAPT_METHOD_RECEIVER_PARAM_NAME), 
+								})
+						}),
+					null),
+			},
+			null);
+	}
+
 }

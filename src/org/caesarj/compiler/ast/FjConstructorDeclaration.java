@@ -28,11 +28,13 @@ import org.caesarj.kjc.JFieldAccessExpression;
 import org.caesarj.kjc.JFormalParameter;
 import org.caesarj.kjc.JIfStatement;
 import org.caesarj.kjc.JLocalVariable;
+import org.caesarj.kjc.JMethodCallExpression;
 import org.caesarj.kjc.JNewArrayExpression;
 import org.caesarj.kjc.JNullLiteral;
 import org.caesarj.kjc.JReturnStatement;
 import org.caesarj.kjc.JStatement;
 import org.caesarj.kjc.JThisExpression;
+import org.caesarj.kjc.JTypeNameExpression;
 import org.caesarj.kjc.JUnqualifiedInstanceCreation;
 import org.caesarj.kjc.JVariableDeclarationStatement;
 import org.caesarj.kjc.JVariableDefinition;
@@ -304,14 +306,15 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 					getTokenReference(),
 					new CClassNameType(
 						collaborationInterface.getProvidingQualifiedName()),
-					new JExpression[]
-					{
-						new CciInternalUnqualifiedInstanceCreation(
-							getTokenReference(),
-							new CClassNameType(
-								collaborationInterface.getQualifiedName()),
-							JExpression.EMPTY)
-					});
+					JExpression.EMPTY);
+//					new JExpression[]
+//					{
+//						new CciInternalUnqualifiedInstanceCreation(
+//							getTokenReference(),
+//							new CClassNameType(
+//								collaborationInterface.getQualifiedName()),
+//							JExpression.EMPTY)
+//					});
 					
 			//Creates the expression: new <BindingType>(newSuperArguments)
 			arguments = new JExpression[]
@@ -632,7 +635,26 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			null,
 			null,
 			null);
-	}	
+	}
+	
+	protected JExpression createKeyArgument(JFormalParameter parameter)
+	{
+		TokenReference ref = getTokenReference();
+		if (parameter.getType().isReference())
+			return new FjNameExpression(ref, parameter.getIdent());
+		else
+			return new JMethodCallExpression(
+				ref, 
+				new JTypeNameExpression(
+					ref, 
+					CciConstants.WRAPPER_KEY_TYPE),
+				CciConstants.KEY_TRANSFORMER_METHOD_NAME,
+				new JExpression[]
+				{
+					new FjNameExpression(ref, parameter.getIdent())
+				});
+		
+	}
 	/**
 	 * Creates the key expression for access the wrapper maps.
 	 * 
@@ -641,28 +663,33 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 	public JExpression createKeyExpression()
 	{
 		TokenReference ref = getTokenReference();
-		JExpression[] arrayInitializerElements = 
-			new JExpression[parameters.length];
 		
-		for (int i = 0; i < parameters.length; i++)
-			arrayInitializerElements[i] = 
-				new FjNameExpression(ref, parameters[i].getIdent());
-				
-		return 
-			new JUnqualifiedInstanceCreation(
-				ref,
-				CciConstants.WRAPPER_KEY_TYPE,
-				new JExpression[]
-				{
-					new JNewArrayExpression(
-						ref, 
-						new CClassNameType(JAV_OBJECT),
-						new JExpression[1],
-						new JArrayInitializer(
-							ref,
-							arrayInitializerElements))					
-				}
-			);
+		if (parameters.length == 1)
+			return createKeyArgument(parameters[0]);
+		else
+		{
+			JExpression[] arrayInitializerElements = 
+				new JExpression[parameters.length];
+			
+			for (int i = 0; i < parameters.length; i++)
+				arrayInitializerElements[i] = createKeyArgument(parameters[i]);
+					
+			return 
+				new JUnqualifiedInstanceCreation(
+					ref,
+					CciConstants.WRAPPER_KEY_TYPE,
+					new JExpression[]
+					{
+						new JNewArrayExpression(
+							ref, 
+							new CClassNameType(JAV_OBJECT),
+							new JExpression[1],
+							new JArrayInitializer(
+								ref,
+								arrayInitializerElements))					
+					}
+				);
+		}
 	}
 
 	/**
@@ -749,10 +776,11 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 	 * 
 	 */	
 	public FjCleanMethodDeclaration createWrapperInstantiationMethod(
-		JExpression keyExpression, String mapName)
+		String mapName)
 	{
 		
 		TokenReference ref = getTokenReference();
+		JExpression keyExpression = createKeyExpression();
 		String methodName = 
 			CciConstants.toWrapperMethodCreationName(
 				FjConstants.toIfcName(ident));

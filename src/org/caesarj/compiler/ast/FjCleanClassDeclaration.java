@@ -880,58 +880,18 @@ public class FjCleanClassDeclaration
 		}
 		return methodsToReturn;
 	}	
-	/**
-	 * Creates the proxies of the inner classes of this interface.
-	 * @param ownerName
-	 * @return if it does not have inners it returns an empty array, 
-	 * otherwise it returns the proxy declaration of the its nested types.
-	 */
-	public JTypeDeclaration[] transformInnerInterfaces()
-	{
-		for (int i = 0; i < inners.length; i++)
-		{
-			if (inners[i] instanceof CciInterfaceDeclaration)
-				inners[i] =
-					((CciInterfaceDeclaration)inners[i])
-						.createEmptyVirtualDeclaration(this);
-		}
-
-		return inners;
-	}
 	
-	/**
-	 * Creates empty implementation of the interface methods.
-	 * @return
-	 */
-	public void createEmptyMethodBodies()
-	{
-		ArrayList emptyMethods = new ArrayList(methods.length);
-		for (int i = 0; i < methods.length; i++)
-		{
-			if (methods[i] instanceof FjCleanMethodDeclaration)
-				emptyMethods.add(
-					((FjCleanMethodDeclaration)methods[i]).createEmptyMethod());
-		}
-		methods = (JMethodDeclaration[])emptyMethods.toArray(
-			new JMethodDeclaration[emptyMethods.size()]);
-	}
-
-
 	/**
 	 * Insert the wrapper mappings in the body reference of the class.
 	 * It is for the compiler insert the right initialization.
 	 */
-	public void insertWrapperMappingsInitialization(ArrayList wrapperMappings)
+	public void insertWrapperMappingsInitialization(JFieldDeclaration map)
 	{
-		JPhylum[] newBody = new JPhylum[body.length + wrapperMappings.size()];
-		System.arraycopy(body, 0, newBody, 0, body.length);
+		JPhylum[] newBody = new JPhylum[body.length + 1];
+		System.arraycopy(body, 0, newBody, 1, body.length);
 		
-		JFieldDeclaration[] fields = 
-			(JFieldDeclaration[]) 
-				wrapperMappings.toArray(
-					new JFieldDeclaration[wrapperMappings.size()]);
-					
-		System.arraycopy(fields, 0, newBody, body.length, fields.length);
+		newBody[0] = map;
+
 		body = newBody;
 	}
 

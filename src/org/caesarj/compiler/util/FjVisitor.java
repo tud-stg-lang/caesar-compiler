@@ -3,6 +3,7 @@ package org.caesarj.compiler.util;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.PositionedError;
+import org.caesarj.compiler.ast.CciInterfaceDeclaration;
 import org.caesarj.compiler.ast.CciWeaveletClassDeclaration;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
@@ -102,7 +103,8 @@ public abstract class FjVisitor implements KjcVisitor {
 		public void set( Object o ) {
 			if (o == null
 				|| o instanceof FjClassDeclaration
-				|| o instanceof FjCompilationUnit)
+				|| o instanceof FjCompilationUnit
+				|| o instanceof CciInterfaceDeclaration)
 				reference = o;
 			else
 				throw new IllegalArgumentException( "illegal owner: " + o.getClass().getName() );

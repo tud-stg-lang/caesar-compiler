@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarScanner.java,v 1.7 2003-08-14 00:35:50 werner Exp $
+ * $Id: CaesarScanner.java,v 1.8 2003-08-25 14:47:39 werner Exp $
  */
 
 package org.caesarj.compiler;

@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: InnerClassInfo.java,v 1.1 2003-07-05 18:29:37 werner Exp $
+ * $Id: InnerClassInfo.java,v 1.2 2003-08-25 14:47:38 werner Exp $
  */
 
 package org.caesarj.classfile;
@@ -149,6 +149,10 @@ public class InnerClassInfo implements Constants {
   private static final int		MODIFIER_MASK =
     ACC_PUBLIC | ACC_PRIVATE | ACC_PROTECTED | ACC_STATIC
     | ACC_FINAL | ACC_INTERFACE | ACC_ABSTRACT;
+    //Walter start
+//    | FJC_OVERRIDE | FJC_VIRTUAL | 
+//     CCI_BINDING | CCI_PROVIDING;
+    //Walter end
 
   private ClassConstant			innerClass;
   private ClassConstant			outerClass;

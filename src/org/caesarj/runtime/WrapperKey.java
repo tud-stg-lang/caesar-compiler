@@ -49,4 +49,36 @@ public class WrapperKey
 		return hashCode;
 	}
 
+	public static Boolean transform(boolean toTransform)
+	{
+		return new Boolean(toTransform);
+	}
+	public static Integer transform(int toTransform)
+	{
+		return new Integer(toTransform);
+	}
+	public static Double transform(double toTransform)
+	{
+		return new Double(toTransform);
+	}
+	public static Long transform(long toTransform)
+	{
+		return new Long(toTransform);
+	}
+	public static Short transform(short toTransform)
+	{
+		return new Short(toTransform);
+	}
+	public static Byte transform(byte toTransform)
+	{
+		return new Byte(toTransform);
+	}
+	public static Float transform(float toTransform)
+	{
+		return new Float(toTransform);
+	}
+	public static Character transform(char toTransform)
+	{
+		return new Character(toTransform);
+	}
 }

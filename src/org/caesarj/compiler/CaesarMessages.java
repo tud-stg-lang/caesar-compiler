@@ -42,6 +42,8 @@ public interface CaesarMessages extends org.caesarj.compiler.CompilerMessages {
   MessageDescription	COLLABORATION_METHOD_OUT_CI = new MessageDescription("The method \"{0}\" must be defined in a collaboration interaface.", null, 0);
   MessageDescription	CI_METHOD_FLAGS = new MessageDescription("Method \"{0}\" must be provided or expected.", null, 0);
   MessageDescription	NON_CI = new MessageDescription("Interface \"{0}\" must be a collaboration interface.", null, 0);
+  MessageDescription	OWNER_IS_NOT_CI = new MessageDescription("Collaboration interface \"{0}\" must be declared inside a collaboration interface.", null, 0);
+  MessageDescription	CI_MULTIPLE_SUPER_TYPE = new MessageDescription("Collaboration interface \"{0}\" cannot extend more than one collaboration interface.", null, 0);
   MessageDescription	EXPECTED_METHOD_IN_PROVIDING = new MessageDescription("Expected method \"{0}\" cannot be implemented in a providing class.", null, 0);
   MessageDescription	PROVIDED_METHOD_IN_BINDING = new MessageDescription("Provided method \"{0}\" cannot be implemented in a binding class.", null, 0);
   MessageDescription	MUST_IMPLEMENT_EXPECTED_METHOD = new MessageDescription("Expected method \"{0}\" must be implemented by the binding class \"{1}\".", null, 0);
@@ -57,10 +59,11 @@ public interface CaesarMessages extends org.caesarj.compiler.CompilerMessages {
   MessageDescription	PROVIDING_OTHER_CI = new MessageDescription("\"{0}\" does not provide the collaboration interface \"{1}\".", null, 0);
   MessageDescription	PROVIDING_DEFINES_CONSTRUCTOR = new MessageDescription("Providing class \"{0}\" cannot define constructors with parameters.", null, 0);
   MessageDescription	BINDING_PROVIDING_DIRECT_CREATION = new MessageDescription("Providing or binding class \"{0}\" cannot be directly created.", null, 0);
-  MessageDescription	WRAPPER_DEFINES_CONSTRUCTOR = new MessageDescription("Explicity declared wrapper class \"{0}\" cannot define constructors.", null, 0);
+  MessageDescription	WRAPPER_DEFINES_CONSTRUCTOR = new MessageDescription("Explicity declared wrapper class \"{0}\" cannot define constructors with parameters.", null, 0);
   MessageDescription	NON_BINDING_WRAPPER = new MessageDescription("Class \"{0}\" cannot defines \"wraps\" clause because it does not bind an aspect interface.", null, 0);
   MessageDescription	CLASS_DOES_NOT_WRAP = new MessageDescription("Class \"{0}\" does not wrap any class, so \"wrappee\" is not available.", null, 0);
   MessageDescription	VIRTUAL_CALLING_PRIVATE_OUTER = new MessageDescription("Virtual or override class \"{0}\" cannot access private methods of the enclosing class.", null, 0);
   MessageDescription	VIRTUAL_ACCESSING_OUTER_FIELD = new MessageDescription("Virtual or override class \"{0}\" cannot access fields of the enclosing class.", null, 0);
   MessageDescription	VIRTUAL_CALLING_OUTER_OUTER = new MessageDescription("Virtual or override class \"{0}\" cannot call methods or access fields defined in the enclosing class of its outer class.", null, 0);
+  MessageDescription	WEAVELET_NESTED = new MessageDescription("Weavelet class \"{0}\" cannot be an inner class.", null, 0);
 }

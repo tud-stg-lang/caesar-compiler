@@ -445,36 +445,33 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 				CciConstants.WRAPPEE_FIELD_JAVADOC,
 				new JavaStyleComment[0]);
 	}
+
 	
 	public void addAdaptMethod()
 	{
 		TokenReference ref = getTokenReference();
-		JBlock body = 
-			new JBlock(
-				ref, 
-				new JStatement[]
-				{
-					new JReturnStatement(
-						ref, 
-						new JThisExpression(ref), 
-						null)
-				},
-				null);
+		JBlock body = createAdaptMethodBody();
 				
-		JFormalParameter[] parameters = 
-			new JFormalParameter[]
+		FjFormalParameter[] parameters = 
+			new FjFormalParameter[]
 			{
-				new JFormalParameter(
+				new FjFormalParameter(
 					ref, 
 					JVariableDefinition.DES_PARAMETER, 
-					new CClassNameType(JAV_OBJECT), 
+					FjConstants.CHILD_TYPE,
 					CciConstants.ADAPT_METHOD_PARAM_NAME, 
-					false)
+					false),
+				new FjFormalParameter(
+					ref, 
+					JVariableDefinition.DES_PARAMETER, 
+					FjConstants.CHILD_TYPE, 
+					CciConstants.ADAPT_METHOD_RECEIVER_PARAM_NAME, 
+					false),
 			};
 
 		String methodName = CciConstants.toAdaptMethodName(ident);
-		JMethodDeclaration adaptMethod = 
-			new JMethodDeclaration(
+		FjCleanMethodDeclaration adaptMethod = 
+			new FjCleanMethodDeclaration(
 				ref,
 				ACC_PUBLIC,
 				typeVariables,
@@ -486,8 +483,36 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 				CciConstants.ADAPT_METHOD_JAVADOC,
 				new JavaStyleComment[0]);
 
-		JMethodDeclaration adaptAbstractMethod = 
-			new JMethodDeclaration(
+		//FjCleanMethodDeclaration adaptAbstractMethod = createAbstractAdaptMethod(
+			//methodName);
+
+				
+		append(adaptMethod);
+//		getCleanInterface().addMethod(adaptAbstractMethod);
+//		getCleanInterfaceImplementation().addMethod(adaptAbstractMethod);
+	}
+	
+	protected FjCleanMethodDeclaration createAbstractAdaptMethod(
+		String methodName)
+	{
+		TokenReference ref = getTokenReference();
+		FjFormalParameter[] parameters = 
+			new FjFormalParameter[]
+			{
+				new FjFormalParameter(
+					ref, 
+					JVariableDefinition.DES_PARAMETER, 
+					new CClassNameType(JAV_OBJECT), 
+					CciConstants.ADAPT_METHOD_PARAM_NAME, 
+					false),
+				new FjFormalParameter(
+					ref, 
+					JVariableDefinition.DES_PARAMETER, 
+					FjConstants.CHILD_TYPE, 
+					CciConstants.ADAPT_METHOD_RECEIVER_PARAM_NAME,
+					false), 
+			};
+		return new FjCleanMethodDeclaration(
 				ref,
 				ACC_PUBLIC,
 				typeVariables,
@@ -498,10 +523,25 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 				null,
 				CciConstants.ADAPT_METHOD_JAVADOC,
 				new JavaStyleComment[0]);
-
-				
-		append(adaptMethod);
-		//getCleanInterface().append(adaptAbstractMethod);
+		
 	}
+	
+	protected JBlock createAdaptMethodBody()
+	{
+		TokenReference ref = getTokenReference();
+		return new JBlock(
+			ref, 
+			new JStatement[]
+			{
+				new JReturnStatement(
+					ref, 
+					new FjNameExpression(
+						ref, 
+						CciConstants.ADAPT_METHOD_RECEIVER_PARAM_NAME), 
+					null)
+			},
+			null);
+	}
+
 
 }

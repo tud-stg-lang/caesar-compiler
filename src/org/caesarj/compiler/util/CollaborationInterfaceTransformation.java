@@ -1,8 +1,11 @@
 package org.caesarj.compiler.util;
 
 import org.caesarj.classfile.Constants;
+import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.Compiler;
+import org.caesarj.compiler.ParseClassContext;
 import org.caesarj.compiler.PositionedError;
+import org.caesarj.compiler.ast.CciInterfaceDeclaration;
 import org.caesarj.compiler.ast.CciWeaveletClassDeclaration;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
@@ -14,6 +17,7 @@ import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.JClassImport;
 import org.caesarj.kjc.JCompilationUnit;
+import org.caesarj.kjc.JInterfaceDeclaration;
 import org.caesarj.kjc.JMethodDeclaration;
 import org.caesarj.kjc.JPackageImport;
 import org.caesarj.kjc.JPackageName;
@@ -50,7 +54,7 @@ public class CollaborationInterfaceTransformation
 	 * A "family" of collaboration interfaces must be transformed only by the 
 	 * most outer owner.
 	 */
-	private FjCleanClassDeclaration lastCollaborationInterface;
+	private CciInterfaceDeclaration lastCollaborationInterface;
 
 	/**
 	 * A "family" of providing classes must be transformed only by the 
@@ -154,28 +158,7 @@ public class CollaborationInterfaceTransformation
 		JMethodDeclaration[] methods,
 		JTypeDeclaration[] decls)
 	{
-		if (CModifier.contains(modifiers, Constants.CCI_COLLABORATION)
-				&& lastCollaborationInterface == null)
-		{
-			//Transforms inner interfaces in virtual or override types.
-			self.transformInnerInterfaces();
-			//Create the empty bodies of the methods
-			self.createEmptyMethodBodies();
-
-			//Sets the super class if there is one.
-			if (interfaces.length > 0)
-			{
-				superClass = interfaces[0].getQualifiedName();
-				self.setSuperClass(new CClassNameType(superClass));
-			
-				//if it has more than one it will generate an error.
-				if (interfaces.length <= 1)
-					self.setInterfaces(CReferenceType.EMPTY);
-			}
-			//My inners cannot pass by here...
-			lastCollaborationInterface = self;
-		}
-		else if (self.getProviding() != null && lastProvidingClass == null)
+		if (self.getProviding() != null && lastProvidingClass == null)
 		{
 			self.setModifiers(self.getModifiers() | Constants.CCI_PROVIDING);
 			modifiers = self.getModifiers();
@@ -196,7 +179,7 @@ public class CollaborationInterfaceTransformation
 			//Sets the right super type of the inner classes, 
 			//and sets it as a binding.
 			superClass = self.getBindingTypeName();
-			self.transformInnerBindingClasses(superClass);
+			self.transformInnerBindingClasses(self);
 			self.addProvidingAcessor();
 			// My super class is the binding class.
 			self.setSuperClass(new CClassNameType(
@@ -219,9 +202,7 @@ public class CollaborationInterfaceTransformation
 			decls);
 		
 		//Ok, I am the last, so set it null..
-		if (self == lastCollaborationInterface)
-			lastCollaborationInterface = null;
-		else if (self == lastProvidingClass)
+		if (self == lastProvidingClass)
 			lastProvidingClass = null;	
 		else if (self == lastBindingClass)
 			lastBindingClass = null;			
@@ -240,9 +221,19 @@ public class CollaborationInterfaceTransformation
 		JMethodDeclaration[] methods,
 		JTypeDeclaration[] decls)
 	{
-		superClass = self.getBindingTypeName();
-		self.setSuperClass(new CClassNameType(superClass));
-		self.addAccessors();
+
+		if (! (owner.get() instanceof FjClassDeclaration))
+		{
+			superClass = self.getBindingTypeName();
+			self.setSuperClass(new CClassNameType(superClass));
+			self.addAccessors();
+		}
+		else
+		{
+			compiler.reportTrouble(
+				new PositionedError(self.getTokenReference(), 
+					CaesarMessages.WEAVELET_NESTED, ident));
+		}
 		
 		super.visitCciWeaveletClassDeclaration(
 			self,
@@ -295,6 +286,66 @@ public class CollaborationInterfaceTransformation
 			body,
 			methods,
 			decls);
+	}
+
+	/**
+	 * Transform the collaboration interfaces.
+	 */
+	public void visitInterfaceDeclaration(
+		JInterfaceDeclaration self,
+		int modifiers,
+		String ident,
+		CReferenceType[] interfaces,
+		JPhylum[] body,
+		JMethodDeclaration[] methods)
+	{
+		if (CModifier.contains(modifiers, Constants.CCI_COLLABORATION)
+			&& lastCollaborationInterface == null)
+		{
+			CciInterfaceDeclaration cciSelf = (CciInterfaceDeclaration) self;
+			if (! (owner.get() instanceof FjCompilationUnit))
+			{
+				compiler.reportTrouble(
+					new PositionedError(
+						self.getTokenReference(), 
+						CaesarMessages.OWNER_IS_NOT_CI,
+						ident));
+			}
+			else
+			{
+				try
+				{
+					FjCleanClassDeclaration classRepresentation 
+						= cciSelf.createCleanClassRepresentation();
+						
+					((FjCompilationUnit) owner.get()).replace(
+						self, classRepresentation);
+				}
+				catch(PositionedError e)
+				{
+					compiler.reportTrouble(e);
+				}
+			}
+			//My inners cannot pass by here...
+			lastCollaborationInterface = cciSelf;
+		}
+		else if (self instanceof CciInterfaceDeclaration)
+		{
+			CciInterfaceDeclaration cciSelf = (CciInterfaceDeclaration)self;
+			Object oldOwner = owner.get();
+			owner.set(self);
+			JTypeDeclaration[] inners = cciSelf.getInners();
+			for (int i = 0; i < inners.length; i++)
+			{
+				if (inners[i] instanceof FjClassDeclaration)
+					((FjClassDeclaration) inners[i]).setOwnerDeclaration(self);
+				inners[i].accept(this);
+			}
+			owner.set(oldOwner);
+		}
+		//Ok, I am the last, so set it null..
+		if (self == lastCollaborationInterface)
+			lastCollaborationInterface = null;		
 	}
 
 }

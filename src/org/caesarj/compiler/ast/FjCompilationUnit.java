@@ -51,6 +51,23 @@ public class FjCompilationUnit extends JCompilationUnit {
 		typeDeclarations = newTypeDeclarations;
 	}
 	
+	/**
+	 * Replaces the first parameter for the second in the compilation unit.
+	 * @param decl
+	 * @param newDecl
+	 */
+	public void replace(JTypeDeclaration decl, JTypeDeclaration newDecl)
+	{
+		for( int i = 0; i < typeDeclarations.length; i++ ) 
+		{
+			if (typeDeclarations[i] == decl)
+			{
+				typeDeclarations[i] = newDecl;
+				return;
+			}
+		}
+	}	
+	
 	public JTypeDeclaration[] getInners() {
 		return typeDeclarations;
 	}

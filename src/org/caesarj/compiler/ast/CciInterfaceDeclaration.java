@@ -2,9 +2,12 @@ package org.caesarj.compiler.ast;
 
 import java.util.ArrayList;
 
+import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
+import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
+import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CTypeVariable;
@@ -66,7 +69,7 @@ public class CciInterfaceDeclaration
 	 */
 	public boolean isCollaborationInterface()
 	{
-		return false;
+		return CModifier.contains(modifiers, CCI_COLLABORATION);
 	}
 	
 	/**
@@ -88,12 +91,52 @@ public class CciInterfaceDeclaration
 		sourceClass.setInterfaces(interfaces);
 	}
 	/**
+	 * Creates the class representation of collaboration interfaces.
+	 * @return
+	 * @throws PositionedError
+	 */
+	public FjCleanClassDeclaration createCleanClassRepresentation()
+		throws PositionedError
+	{
+		CClassNameType superClass = null;
+		//Sets the super class if there is one.
+		if (interfaces.length == 1)
+			superClass = new CClassNameType(interfaces[0].getQualifiedName());
+		else if (interfaces.length > 0)
+		{
+			throw new PositionedError(
+					getTokenReference(), 
+					CaesarMessages.CI_MULTIPLE_SUPER_TYPE,
+					ident);
+		}		
+		
+		return new FjCleanClassDeclaration(
+			getTokenReference(),
+			modifiers & ~(ACC_INTERFACE | ACC_ABSTRACT),
+			ident,
+			typeVariables,
+			superClass,
+			null,
+			null,
+			null,
+			CReferenceType.EMPTY,
+			fields,
+			createEmptyMethods(),
+			transformInnerInterfaces(),
+			body,
+			null,
+			null);
+	}
+	
+	
+	/**
 	 * Creates the empty classes for all interfaces it finds. It has to be
 	 * done for the interfaces that are defined inside Collaboration Intefaces.
 	 * @param ownerName
 	 * @return 
 	 */
-	public JTypeDeclaration[] transformInnerInterfaces()
+	public JTypeDeclaration[] transformInnerInterfaces() 
+		throws PositionedError
 	{
 		ArrayList innerProxies = new ArrayList(inners.length);
 		for (int i = 0; i < inners.length; i++)
@@ -126,8 +169,23 @@ public class CciInterfaceDeclaration
 	 * @return
 	 */
 	public FjVirtualClassDeclaration createEmptyVirtualDeclaration(
-		JTypeDeclaration owner)
+		JTypeDeclaration owner) 
+		throws PositionedError
 	{
+		CClassNameType superClass = null;
+		if (interfaces.length == 1)
+		{
+			superClass = new CClassNameType(interfaces[0].getQualifiedName());
+		}
+		else if (interfaces.length > 0)
+		{
+			throw new PositionedError(
+					getTokenReference(), 
+					CaesarMessages.CI_MULTIPLE_SUPER_TYPE,
+					ident);
+		}
+		
+		
 		int newModifiers = (~ACC_ABSTRACT & ~ACC_INTERFACE & modifiers) 
 			| CCI_COLLABORATION;
 		FjVirtualClassDeclaration returnClass;
@@ -138,7 +196,7 @@ public class CciInterfaceDeclaration
 					newModifiers,
 					ident,
 					typeVariables,
-					null,
+					superClass,
 					null, 
 					null,
 					null,
@@ -156,7 +214,7 @@ public class CciInterfaceDeclaration
 					newModifiers,
 					ident,
 					typeVariables,
-					null,
+					superClass,
 					null,
 					null,
 					null,

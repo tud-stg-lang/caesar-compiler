@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.5 2003-08-14 00:31:37 werner Exp $
+ * $Id: CaesarMessages.msg,v 1.6 2003-08-25 14:46:31 werner Exp $
  */
 
 package org.caesarj.compiler
@@ -164,6 +164,12 @@ error   CI_METHOD_FLAGS
 error   NON_CI
 		"Interface \"{0}\" must be a collaboration interface."
 
+error   OWNER_IS_NOT_CI
+		"Collaboration interface \"{0}\" must be declared inside a collaboration interface."
+
+error   CI_MULTIPLE_SUPER_TYPE
+		"Collaboration interface \"{0}\" cannot extend more than one collaboration interface."
+
 error   EXPECTED_METHOD_IN_PROVIDING
 		"Expected method \"{0}\" cannot be implemented in a providing class."
 		
@@ -210,7 +216,7 @@ error   BINDING_PROVIDING_DIRECT_CREATION
 		"Providing or binding class \"{0}\" cannot be directly created."
 
 error   WRAPPER_DEFINES_CONSTRUCTOR
-		"Explicity declared wrapper class \"{0}\" cannot define constructors."
+		"Explicity declared wrapper class \"{0}\" cannot define constructors with parameters."
 
 error   NON_BINDING_WRAPPER
 		"Class \"{0}\" cannot defines \"wraps\" clause because it does not bind an aspect interface."
@@ -226,4 +232,6 @@ error   VIRTUAL_ACCESSING_OUTER_FIELD
 
 error   VIRTUAL_CALLING_OUTER_OUTER
 		"Virtual or override class \"{0}\" cannot call methods or access fields defined in the enclosing class of its outer class."
-		
+
+error   WEAVELET_NESTED
+		"Weavelet class \"{0}\" cannot be an inner class."	

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.8 2003-08-14 00:34:07 werner Exp $
+ * $Id: Caesar.g,v 1.9 2003-08-25 14:46:31 werner Exp $
  */
 
 /*
@@ -418,19 +418,15 @@ jClassDefinition [int modifiers]
   "class" ident:IDENT
   (typeVariables = kTypeVariableDeclarationList[])?
   //This is like this for prevent non-determinism
-  ( "extends" superClass =  jSuperTypeName[]
-  | "binds" binding = jTypeName[]
-  | "provides" providing = jTypeName[] )?
-  
-//  (superClass = jSuperClassClause[] 
-//  | binding = jBindsClause[]
-//  | providing = jProvidesClause[])?
+  (superClass =  jSuperClassClause[]
+  | binding = jBindsClause[]
+  | providing = jProvidesClause[])?
 
-  wrappee = jWrapsClause[]
-  interfaces = jImplementsClause[] 
-  
+  (interfaces = jImplementsClause[])?
+  (wrappee = jWrapsClause[])?
+   
   jClassBlock[context]
-    {
+  {
       JMethodDeclaration[]      methods;
 
       if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
@@ -568,22 +564,20 @@ jClassDefinition [int modifiers]
 jSuperClassClause []
   returns [CReferenceType self = null]
 :
-  ( "extends" self =  jSuperTypeName[]
-  | "binds" self = jTypeName[]
-  | "provides" self = jTypeName[] )?
+  ("extends" self =  jSuperTypeName[])
 ;
 
-jBindsClause[]
+jBindsClause []
   returns [CReferenceType self = null]
 :
-  ( "binds" self = jTypeName[] )?
+  ("binds" self = jTypeName[])
+;
+jProvidesClause []
+  returns [CReferenceType self = null]
+:
+   ("provides" self = jTypeName[])
 ;
 
-jProvidesClause[]
-  returns [CReferenceType self = null]
-:
-  ( "provides" self = jTypeName[] )?
-;
 
 jSuperTypeName []
   returns [CReferenceType self = null]
@@ -627,27 +621,7 @@ jInterfaceDefinition [int modifiers]
   // now parse the body of the interface (looks like a class...)
   jClassBlock[context]
     {
-     if (CModifier.contains(modifiers,  
-     	org.caesarj.kjc.Constants.CCI_COLLABORATION)) 
-     {
-          self = new FjCleanClassDeclaration(sourceRef,
-				   modifiers | org.caesarj.kjc.Constants.FJC_CLEAN,
-				   ident.getText(),
-				   typeVariables,
-				   null,
-				   null,
-				   null,
-				   null,
-				   interfaces,
-				   JFieldDeclaration.EMPTY,
-				   context.getMethods(),
-				   context.getInnerClasses(),
-				   context.getBody(),
-				   getJavadocComment(),
-				   getStatementComment());
-     }
-     else
-     {
+
         self = new CciInterfaceDeclaration(sourceRef,
                                            modifiers,
                                            ident.getText(),
@@ -659,7 +633,7 @@ jInterfaceDefinition [int modifiers]
                                            context.getBody(),
                                            getJavadocComment(),
                                            getStatementComment());
-     }
+
 
       if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
         KopiAssertionClassDeclaration assertionClass =
@@ -704,14 +678,14 @@ jInterfaceExtends []
 jWrapsClause[]
   returns [CReferenceType self = null]
 :
-  ( "wraps" self = jTypeName[] )?
+  ( "wraps" self = jTypeName[] )
 ;
 
 // A class can implement several interfaces...
 jImplementsClause[]
   returns [CReferenceType[] self = CReferenceType.EMPTY]
 :
-  ( "implements" self = jNameList[] )?
+  ( "implements" self = jNameList[] )
 ;
 
 // Now the various things that can be defined inside a class or interface:
