@@ -22,7 +22,6 @@
  <property name="cjrmi-dist" location="../org.caesarj.ui"/>
 
  <!-- Create CaesarMessages.java -->
-	 
 	
 <target name="clean">
 	<delete dir="${bin}/org"/>
