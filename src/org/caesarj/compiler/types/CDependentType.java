@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentType.java,v 1.13 2005-01-26 16:11:58 aracic Exp $
+ * $Id: CDependentType.java,v 1.14 2005-02-11 18:45:22 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -29,6 +29,7 @@ import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.family.ContextExpression;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.util.UnpositionedError;
 
@@ -45,19 +46,28 @@ public class CDependentType extends CReferenceType {
     
     private JExpression family; /** family expression */
     
-    private int k = 0;          /** ctx(k); determines how many steps to go out 
-                                    of the current context */
-              
-    public CDependentType(CContext ctx, int k, JExpression family, CType staticType) {
-        setDeclContext(ctx);
-        this.k = k;
+    private Path path = null;
+    
+    public CDependentType(CContext ctx, JExpression family, CType staticType) {
+        setDeclContext(ctx);      
         this.family = family;
         this.plainType = staticType;
-        System.out.println("new CDependentType: k="+k);
     }
     
     public Path getPath() throws UnpositionedError {
-        return Path.createFrom(declContext, family);
+        if(path != null) return path.clonePath();  
+        
+        path = Path.createFrom(declContext, family);
+        
+        // if this type has been resolve in the context of a caesar accessor method
+        // subtract 1 from k 
+        // (we want ot start our path relative to the field decl rather than the context of the accessor method)
+        if(declContext.getMethodContext() != null) {            
+            if(declContext.getMethodContext().getMethodDeclaration().getMethod().isCaesarAccessorMethod())
+                ((ContextExpression)path.getHead()).adaptK(-1);
+        }
+
+        return path;
     }
 
     public CClass getCClass() {
@@ -96,10 +106,6 @@ public class CDependentType extends CReferenceType {
         return true;
     }
     
-    public int getK() {
-        return k;
-    }
-    
     public JExpression getFamily() {
         return family;
     }
@@ -108,11 +114,14 @@ public class CDependentType extends CReferenceType {
         return plainType;
     }
     
+    public int getK() throws UnpositionedError {
+        return ((ContextExpression)getPath().getHead()).getK();
+    }
+    
     public String toString() {
         StringBuffer res = new StringBuffer();
                 
-        res.append("ctx("+k+""+").");
-        res.append(family);
+        res.append(path);        
         res.append(".");
         res.append(plainType);
         

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CMethod.java,v 1.12 2005-02-09 16:51:27 aracic Exp $
+ * $Id: CMethod.java,v 1.13 2005-02-11 18:45:22 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -93,6 +93,10 @@ public abstract class CMethod extends CMember {
 
     public boolean isCaesarFactoryMethod() {
         return getIdent().startsWith(CaesarConstants.FACTORY_METHOD_PREFIX);
+    }
+    
+    public boolean isCaesarAccessorMethod() {
+        return getIdent().startsWith(CaesarConstants.GETTER_PREFIX);
     }
     
     /**

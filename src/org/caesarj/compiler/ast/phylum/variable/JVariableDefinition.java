@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JVariableDefinition.java,v 1.12 2005-02-10 19:02:02 aracic Exp $
+ * $Id: JVariableDefinition.java,v 1.13 2005-02-11 18:45:22 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -28,7 +28,6 @@ package org.caesarj.compiler.ast.phylum.variable;
 import org.caesarj.compiler.ast.phylum.expression.JArrayInitializer;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
-import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CClassContext;
@@ -40,7 +39,6 @@ import org.caesarj.compiler.types.CDependentNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -204,7 +202,8 @@ public class JVariableDefinition extends JLocalVariable {
 		                check(
 		                    context,
 		                    !(lFam!=null ^ rFam!=null),
-		                    CaesarMessages.BAD_END_OF_LINE
+		                    KjcMessages.ASSIGNMENT_BADTYPE,
+		                    rFam, lFam
 	                    );
 		            }
                 }

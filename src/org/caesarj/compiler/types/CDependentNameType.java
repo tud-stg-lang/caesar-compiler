@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentNameType.java,v 1.13 2005-02-09 16:49:16 aracic Exp $
+ * $Id: CDependentNameType.java,v 1.14 2005-02-11 18:45:22 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -46,7 +46,6 @@ import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.context.CVariableInfo;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.family.Path;
 import org.caesarj.util.MessageDescription;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
@@ -155,9 +154,6 @@ public class CDependentNameType extends CClassNameType
                     expr.getType(context.getTypeFactory()).getCClass().getQualifiedName()+"$"+pathSegs[pathSegs.length-1]
                 );
 
-                // calculate k for this dependent type
-                int k = Path.calcK( (CContext)context, expr );
-                
                 // create and return new CDependentType
                 CType t = clazz.getAbstractType().checkType(context);
                 
@@ -165,7 +161,7 @@ public class CDependentNameType extends CClassNameType
                     throw new UnpositionedError(CaesarMessages.PLAINTYPE_WITH_PATH);
                 }
                 
-                CDependentType dt = new CDependentType((CContext)context, k, expr, t);
+                CDependentType dt = new CDependentType((CContext)context, expr, t);
                 
                 // it is forbidden for type paths to contain java elements
                 if(dt.getPath().containsJavaElements()) {

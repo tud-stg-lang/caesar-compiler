@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JFieldAccessExpression.java,v 1.21 2005-02-09 16:56:28 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.22 2005-02-11 18:45:22 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -311,7 +311,7 @@ public class JFieldAccessExpression extends JExpression {
 	        	        	new CjAccessorCallExpression(
 	        	        	    getTokenReference(),
 	        	        	    prefix,
-	        	        	    ident        	    
+	        	        	    ident
 	        	        	).analyse(context);
 	                /*}
 	                else {
@@ -354,7 +354,7 @@ public class JFieldAccessExpression extends JExpression {
     
     // IVICA: if we have a cclass, and want to acces the public field, map to accessor method
     CType prefixType = prefix.getType(factory); 
-    if(prefixType.getCClass().isMixinInterface()) {
+    if(prefixType.getCClass().isMixinInterface() && prefixType.getCClass()!=context.getClassContext().getCClass()) {
         
         // check it is not an write access
         check(context, !context.isLeftSide(), CaesarMessages.READ_ONLY_ACCESS_TO_CCLASS_FIELDS);        
@@ -364,7 +364,7 @@ public class JFieldAccessExpression extends JExpression {
 	        	new CjAccessorCallExpression(
 	        	    getTokenReference(),
 	        	    prefix,
-	        	    ident        	    
+	        	    ident
 	        	).analyse(context);
         /*}
         else {
@@ -445,7 +445,7 @@ public class JFieldAccessExpression extends JExpression {
     try {
         // store family here 
         Path prefixFam = prefix.getThisAsFamily();
-        if(prefixFam != null && type.isCaesarReference()) {
+        if(prefixFam != null && type.isReference()) {
             thisAsFamily = new FieldAccess(prefixFam.clonePath(), field.getIdent(), (CReferenceType)type);
             family = thisAsFamily.normalize();
         }

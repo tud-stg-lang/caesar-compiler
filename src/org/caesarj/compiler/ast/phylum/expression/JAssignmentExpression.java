@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JAssignmentExpression.java,v 1.13 2005-02-09 16:56:28 aracic Exp $
+ * $Id: JAssignmentExpression.java,v 1.14 2005-02-11 18:45:22 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -119,53 +119,10 @@ public class JAssignmentExpression extends JBinaryExpression {
     right = right.analyse(new CExpressionContext(context, 
                                                  context.getEnvironment(), 
                                                  false,          
-                                                 false));
-    
-    /*
-     * first tender experiments with family checks ;)
-     */
-    /*
-    try {
-	    CType 	rType = right.getType(factory),
-	    		lType = left.getType(factory);
-	    
-	    boolean rDepType = rType instanceof CDependentType || (rType.getCClass().isMixinInterface() && rType.getCClass().isNested()),	
-	    		lDepType = lType instanceof CDependentType || (lType.getCClass().isMixinInterface() && lType.getCClass().isNested());
-	        
-	    check(
-	        context,
-	        !(rDepType ^ lDepType),
-	        CaesarMessages.ASSIGNMENT_MIXEDTYPES);    
-	    
-	    if (rDepType == true) {
-		    // CTODO mach hier weiter
-		    Path rPath = Path.createFrom(context.getBlockContext(), right);
-		    Path lPath = Path.createFrom(context.getBlockContext(), left);
-		    System.out.println("assignment at line: "+getTokenReference().getLine());
-		    
-		    System.out.println("\trFam >"+rPath);	    	    
-		    Path rPathNorm = rPath.normalize();
-		    System.out.println("\trFamNorm = "+rPathNorm);
-		    System.out.println();
-		    System.out.println("\tlFam >"+lPath);
-		    Path lPathNorm = lPath.normalize();    
-		    System.out.println("\tlFamNorm = "+lPathNorm);
-		
-		    
-		    check(context,
-		      rPathNorm.equals(lPathNorm),
-		//		KjcMessages.ASSIGNMENT_BADTYPE, right.getType(factory), left.getType(factory));
-		      KjcMessages.ASSIGNMENT_BADTYPE, 	rPathNorm+","+right.getType(factory).getCClass().getIdent(), 
-		      									lPathNorm+","+left.getType(factory).getCClass().getIdent() );
-	    }
-    }
-    catch (UnpositionedError e) {
-        throw e.addPosition(getTokenReference());
-    }
-    */
+                                                 false));       
     
     /**
-     * doing it better way
+     * family check
      */
     Path rFam = right.getFamily();
     Path lFam = left.getFamily();

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Path.java,v 1.15 2005-02-09 16:50:18 aracic Exp $
+ * $Id: Path.java,v 1.16 2005-02-11 18:45:22 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -65,8 +65,8 @@ public abstract class Path {
     
     private static final String ANONYMOUS_FIELD_ACCESS = "$".intern();
     
-    Path prefix;
-    CReferenceType type;
+    protected Path prefix;
+    protected CReferenceType type;
     
     public Path getPrefix() {
         return prefix;
@@ -86,7 +86,19 @@ public abstract class Path {
     }
 
     public Path getTypePath() throws UnpositionedError {
-        return type.getPath();
+        Path res = type.getPath();
+        
+/*
+        CContext typeCtx = type.getDeclContext();
+        if(typeCtx != null) {
+            CMethodContext methodCtx = type.getDeclContext().getMethodContext();
+            if(methodCtx!=null && methodCtx.getMethodDeclaration().getMethod().isCaesarAccessorMethod()) {
+                ((ContextExpression)res.getHead()).adaptK(-1);
+            }
+        }
+*/
+        
+        return res;
     }
 
     /**
@@ -152,6 +164,7 @@ public abstract class Path {
                 CjAccessorCallExpression ac = (CjAccessorCallExpression)tmp;
                 CType type = ac.getType(context.getTypeFactory()); 
                 
+                // CTODO: type of the method call expression or type of the field?
                 path.add(0, new FieldAccess(null, ac.getFieldIdent(), (CReferenceType)type) );
                 
                 tmp = ac.getPrefix();
@@ -187,11 +200,10 @@ public abstract class Path {
             else if (tmp instanceof JLocalVariableExpression) {
                 JLocalVariableExpression local = (JLocalVariableExpression) tmp;
                 JLocalVariable var = local.getVariable();
-                
-                int pos = local.getVariable().getPosition();
+                                
                 
                 if(var instanceof JFormalParameter) {
-                    path.add(0, new ArgumentAccess(null, (CReferenceType)var.getType(), pos-1));
+                    path.add(0, new ArgumentAccess(null, (CReferenceType)var.getType(), var.getIndex()));
                 }
                 else {
                     path.add(0, new FieldAccess(null, var.getIdent(), (CReferenceType)var.getType()));
@@ -210,7 +222,7 @@ public abstract class Path {
                     boolean found = false;
                     do {
                         if (! (context instanceof CBlockContext)){                            
-                            throw new RuntimeException("Cannot find "+var.getIdent());
+                            throw new InconsistencyException("Cannot find "+var.getIdent());
                         }
                         CBlockContext block = (CBlockContext)context;
                         if (block.containsVariable(var.getIdent())){

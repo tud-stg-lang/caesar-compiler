@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjUnqualifiedInstanceCreation.java,v 1.7 2005-02-09 16:55:04 aracic Exp $
+ * $Id: CjUnqualifiedInstanceCreation.java,v 1.8 2005-02-11 18:45:22 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -31,6 +31,7 @@ import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
@@ -77,6 +78,7 @@ public class CjUnqualifiedInstanceCreation extends JExpression {
         
         CClass typeClass = type.getCClass();
         
+        // IVICA
         // if we have a caesar class, we have to replace the interface with the impl class
         // and add null parameter to the constructor
         // new C() -> (C)(new C_Impl(null)) if not a nested class (owner == null)
@@ -92,12 +94,8 @@ public class CjUnqualifiedInstanceCreation extends JExpression {
                 );
             }
             else {      
-                CClass implClass = context.getClassReader().loadClass(
-                    factory,
-                    type.getCClass().convertToImplQn()
-                );
-                
-                CReferenceType newType = implClass.getAbstractType();
+                String typeName = type.getCClass().convertToImplQn();
+                CReferenceType newType = new CClassNameType(typeName);
                 
 	            params = new JExpression[]{new JNullLiteral(getTokenReference())};            
 	            expr = new JUnqualifiedInstanceCreation(getTokenReference(), newType, params);

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CReferenceType.java,v 1.15 2005-02-04 19:09:28 aracic Exp $
+ * $Id: CReferenceType.java,v 1.16 2005-02-11 18:45:22 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -52,6 +52,10 @@ public class CReferenceType extends CType {
     public int getDefDepth(CContext in){
         int k = 0;	
         CClass myType = getCClass();
+        
+        // start with the block context if any
+        if(in.getBlockContext() != null)
+            in = in.getBlockContext();
         
         // find class context
         while ( !(in instanceof CClassContext) ){

@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ContextExpression.java,v 1.10 2005-02-09 16:51:04 aracic Exp $
+ * $Id: ContextExpression.java,v 1.11 2005-02-11 18:45:22 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
 
+import org.caesarj.compiler.Log;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.UnpositionedError;
@@ -71,7 +72,7 @@ public class ContextExpression extends Path {
     
     protected Path _normalize(Path pred, Path tail) throws UnpositionedError {
         
-        System.out.println("\t----->"+tail);
+        Log.verbose("normalize: "+tail);
         
         if(prefix == null) {
             return tail;
@@ -111,5 +112,13 @@ public class ContextExpression extends Path {
     
     public Path clonePath() {
         return new ContextExpression(prefix==null ? null : prefix.clonePath(), k, type);
+    }
+
+    /**
+     * this is necessary since e.g. unqualified new calls from a initializer block take 
+     * logically place at same level like the declaration 
+     */
+    public void adaptK(int offset) {
+        this.k += offset;
     }
 }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CInitializerContext.java,v 1.4 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CInitializerContext.java,v 1.5 2005-02-11 18:45:22 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -116,6 +116,11 @@ public class CInitializerContext extends CMethodContext {
     fieldInfo.setInfo(index, info);
   }
 
+  
+public CInitializerContext getInitializerContext() {
+    return this;
+}
+  
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------

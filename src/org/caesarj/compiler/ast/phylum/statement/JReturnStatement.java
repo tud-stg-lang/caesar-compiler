@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JReturnStatement.java,v 1.4 2005-02-09 16:52:56 aracic Exp $
+ * $Id: JReturnStatement.java,v 1.5 2005-02-11 18:45:22 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -113,6 +113,7 @@ public class JReturnStatement extends JStatement {
       if(
           returnType.isCaesarReference() 
           && !context.getMethodContext().getMethodDeclaration().getMethod().isCaesarFactoryMethod()
+          && !context.getMethodContext().getMethodDeclaration().getMethod().isCaesarAccessorMethod()
       ) {
           try {
 	            Path rFam = expr.getFamily();

@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjAccessorCallExpression.java,v 1.5 2005-02-09 16:56:28 aracic Exp $
+ * $Id: CjAccessorCallExpression.java,v 1.6 2005-02-11 18:45:22 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
+import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.family.FieldAccess;
 import org.caesarj.compiler.family.Path;
@@ -48,7 +49,7 @@ public class CjAccessorCallExpression extends JMethodCallExpression {
         JExpression prefix,
         String ident
     ) {
-        super(where, prefix, "get_"+ident, JExpression.EMPTY);
+        super(where, prefix, CaesarConstants.GETTER_PREFIX+ident, JExpression.EMPTY);
         fieldIdent = ident;
     }
     
@@ -58,7 +59,7 @@ public class CjAccessorCallExpression extends JMethodCallExpression {
         JExpression argument,
         String ident
     ) {
-        super(where, prefix, "set_"+ident, new JExpression[]{argument});
+        super(where, prefix, CaesarConstants.SETTER_PREFIX+ident, new JExpression[]{argument});
         fieldIdent = ident;
         setter = true;
     }
@@ -79,7 +80,23 @@ public class CjAccessorCallExpression extends JMethodCallExpression {
         }
 	        
         return res;
-    }       
+    } 
+    
+    /**
+     * handle this method call as a regular field access
+     */
+    protected void calcExpressionFamily() throws PositionedError {
+        try {
+            Path prefixFam = prefix.getThisAsFamily();
+            if(prefixFam != null && type.isReference()) {
+                thisAsFamily = new FieldAccess(prefixFam.clonePath(), getFieldIdent(), (CReferenceType)type);
+                family = thisAsFamily.normalize();
+            }
+        }
+        catch (UnpositionedError e) {
+            throw e.addPosition(getTokenReference());
+        }
+    }
     
     public boolean isSetter() {
         return setter;

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: MemberAccess.java,v 1.1 2005-02-07 18:23:54 aracic Exp $
+ * $Id: MemberAccess.java,v 1.2 2005-02-11 18:45:22 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -56,7 +56,8 @@ public abstract class MemberAccess extends Path {
     }
 
     public Path normalize() throws UnpositionedError {
-        Path typePath = type.getPath().clonePath();
+        Path typePath = getTypePath().clonePath();
+                
         Path typePathHeadPred = typePath.getHeadPred();
         Path typePathHead = typePath.getHead();
         typePathHead.prefix = prefix.clonePath();

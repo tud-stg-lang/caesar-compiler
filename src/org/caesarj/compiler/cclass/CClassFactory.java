@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassFactory.java,v 1.30 2005-01-27 15:20:26 aracic Exp $
+ * $Id: CClassFactory.java,v 1.31 2005-02-11 18:45:22 aracic Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -207,7 +207,7 @@ public class CClassFactory implements CaesarConstants {
                 	    where,
                 	    CModifier.ACC_PUBLIC,
                 	    f.getType(factory),
-                	    "get_"+f.getVariable().getIdent(),
+                	    CaesarConstants.GETTER_PREFIX+f.getVariable().getIdent(),
                 	    JFormalParameter.EMPTY,
                 	    CReferenceType.EMPTY,
                 	    new JBlock(
@@ -233,7 +233,7 @@ public class CClassFactory implements CaesarConstants {
                 	    where,
                 	    CModifier.ACC_PUBLIC,
                 	    new CVoidType(),
-                	    "set_"+f.getVariable().getIdent(),
+                	    CaesarConstants.SETTER_PREFIX+f.getVariable().getIdent(),
                 	    new JFormalParameter[] {
                 	        new JFormalParameter(
                 	            where,
