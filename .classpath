@@ -10,5 +10,6 @@
     <classpathentry kind="lib" path="lib/java-getopt-1.0.9.jar"/>
     <classpathentry kind="lib" path="lib/JFlex.jar"/>
     <classpathentry kind="lib" path="lib/junit.jar"/>
+    <classpathentry kind="lib" path="generated"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

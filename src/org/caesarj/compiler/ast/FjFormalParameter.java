@@ -1,5 +1,6 @@
 package org.caesarj.compiler.ast;
 
+import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
@@ -63,11 +64,14 @@ public class FjFormalParameter extends JFormalParameter {
 			((FjAdditionalContext) context).peekContextInfo(2);
 
 		int clazzModifiers = clazz.getModifiers();
-		if( ((clazzModifiers & FJC_CLEAN) != 0
+		if (((clazzModifiers & FJC_CLEAN) != 0
 			|| (clazzModifiers & FJC_VIRTUAL) != 0)
-			&& !FjConstants.isImplementationMethodName( method.getIdent() ) ) {
+			&& ! (FjConstants.isImplementationMethodName(method.getIdent())
+					|| CciConstants.isSettingMethodName(method.getIdent()))) 
+		{
 			// downcast in clean classes only needed
-			// in implementation method
+			// in implementation method or in the method that is sets the 
+			//implementation or the binding reference.
 			return;
 		}
 
@@ -76,7 +80,7 @@ public class FjFormalParameter extends JFormalParameter {
 			context,
 			getFamily().getType().getCClass(),
 			((CReferenceType) type).getIdent() );
-
+			
 		method.prependStatement(
 			new JExpressionStatement(
 				getTokenReference(),
@@ -173,7 +177,6 @@ public class FjFormalParameter extends JFormalParameter {
 		} 
 		catch (UnpositionedError cue) 
 		{
-			System.out.println("Erro: " + context.getClassContext().getCClass().getQualifiedName());
 			 context.reportTrouble(cue.addPosition(getTokenReference()));
 			 return context.getTypeFactory().createReferenceType(
 			 	TypeFactory.RFT_OBJECT);

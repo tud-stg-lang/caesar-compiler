@@ -39,7 +39,7 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 		CTypeVariable[] typeVariables,
 		CReferenceType superClass,
 		CReferenceType[] interfaces,
-		CReferenceType[] bindings,
+		CReferenceType binding,
 		JFieldDeclaration[] fields,
 		JMethodDeclaration[] methods,
 		JTypeDeclaration[] inners,
@@ -53,14 +53,14 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 			typeVariables,
 			superClass,
 			interfaces,
-			bindings,
+			binding,
 			fields,
 			methods,
 			inners,
 			initializers,
 			javadoc,
 			comment);
-		// Walter: the "bindings" was inserted as parameter.			
+		// Walter: the "binding" was inserted as parameter.			
 	}
 
 	protected FjCleanClassInterfaceDeclaration newInterfaceDeclaration(

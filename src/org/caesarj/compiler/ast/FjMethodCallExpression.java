@@ -155,9 +155,10 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 	}
 
 	protected void checkFamilies(CExpressionContext context)
-		throws PositionedError {
-
-		if (getMethod(context) instanceof FjSourceMethod) {
+		throws PositionedError 
+	{
+		if (getMethod(context) instanceof FjSourceMethod) 
+		{
 			FjFamily[] expectedFamilies =
 				((FjSourceMethod) method).getFamilies();
 			boolean thisFound = false;

@@ -10,17 +10,9 @@ import org.caesarj.compiler.TokenReference;
 import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CTypeVariable;
-import org.caesarj.kjc.JConstructorBlock;
-import org.caesarj.kjc.JConstructorCall;
-import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.JExpressionStatement;
 import org.caesarj.kjc.JFieldDeclaration;
-import org.caesarj.kjc.JFormalParameter;
-import org.caesarj.kjc.JLocalVariable;
 import org.caesarj.kjc.JMethodDeclaration;
 import org.caesarj.kjc.JPhylum;
-import org.caesarj.kjc.JStatement;
-import org.caesarj.kjc.JThisExpression;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.TypeFactory;
 
@@ -179,15 +171,13 @@ public class CciInterfaceDeclaration
 						new CClassNameType(ident)},
 					createProxyFields(ownerName),
 					createProxyMethods(),
-					createInnerProxies(ownerName, typeFactory));
+					createInnerProxies(ownerName, typeFactory),
+					ident);
 					
-			proxyDeclaration.addMethod(createProxyConstructor(
-				ownerName,
-				ownerHasSuper, 
-				typeFactory));
 		}
 		return proxyDeclaration;
 	}
+	
 	public boolean hasSuper()
 	{
 		return interfaces.length > 0;		
@@ -203,7 +193,7 @@ public class CciInterfaceDeclaration
 	 */
 	protected CReferenceType createProxySuperType(String ownerName)
 	{
-		return interfaces.length > 0 
+		return hasSuper()
 			? ownerName == null 
 				? new CClassNameType(
 					CciConstants.toCollaborationInterfaceImplName(
@@ -240,7 +230,50 @@ public class CciInterfaceDeclaration
 			: new JTypeDeclaration[0];
 		
 	}
+	/**
+	 * It creates the two fields that are needed in the proxies: implementation
+	 * and binding. They are the references which it delegates the execution of
+	 * all methods.
+	 * @param ownerName
+	 * @return An array with the two fields.
+	 */
+	protected JFieldDeclaration[] createProxyFields(String ownerName)
+	{
+		
+		JFieldDeclaration implementation = createField(ownerName,
+			CciConstants.IMPLEMENTATION_FIELD_NAME);
+		JFieldDeclaration binding = createField(ownerName,
+			CciConstants.BINDING_FIELD_NAME);
+		 
+		return new JFieldDeclaration[]{implementation, binding};
+		
+	}
 	
+	/**
+	 * Creates a field that is the reference for the implementation 
+	 * or the binding.
+	 * @param ownerName
+	 * @param fieldName
+	 * @return
+	 */
+	protected JFieldDeclaration createField(String ownerName, String fieldName)
+	{
+		String typeName = ownerName == null 
+			? ident
+			: ownerName + "$" + ident;
+
+		return new FjFieldDeclaration(
+					getTokenReference(), 
+					new FjVariableDefinition(
+						getTokenReference(), 
+						ACC_PROTECTED, 
+						new CClassNameType(typeName), 
+						fieldName, 
+						null),
+					false, 
+					null, 
+					null);		
+	}		
 	/**
 	 * Creates the method declaration for the proxy.
 	 * @return An array with the proxy methods.
@@ -264,148 +297,7 @@ public class CciInterfaceDeclaration
 		return (JMethodDeclaration[])
 			proxyMethods.toArray(new JMethodDeclaration[proxyMethods.size()]);
 	}
-	
-	/**
-	 * Creates a constructor for the proxy. This constructor has two parameters:
-	 * the implementation and the binding that will be woven by the weavelet
-	 * class that will extend the proxy.
-	 * @param ownerName
-	 * @param ownerHasSuper
-	 * @param typeFactory
-	 * @return
-	 */
-	protected JMethodDeclaration createProxyConstructor(String ownerName, 
-		boolean ownerHasSuper, TypeFactory typeFactory)
-	{
-		JFormalParameter[] parameters = new JFormalParameter[2];
 
-		String parameterTypeName = ownerName == null 
-			? ident
-			: ownerName + "$" + ident;
-		
-		//Two parameters: the implementation and the binding
-		parameters[0] = new FjFormalParameter(
-			getTokenReference(),
-			JLocalVariable.DES_PARAMETER,
-			new CClassNameType(parameterTypeName),
-			CciConstants.IMPLEMENTATION_FIELD_NAME,
-			false);
-
-		parameters[1] = new FjFormalParameter(
-			getTokenReference(),
-			JLocalVariable.DES_PARAMETER,
-			new CClassNameType(parameterTypeName),
-			CciConstants.BINDING_FIELD_NAME,
-			false);
-		
-		//Two assigment expressions to set the fields implementation and
-		//binding.
-		JStatement[] statements = new JStatement[]
-		{
-			new JExpressionStatement(
-				getTokenReference(),
-				new FjAssignmentExpression(
-					getTokenReference(), 
-					new FjFieldAccessExpression(
-						getTokenReference(), 
-						new JThisExpression(getTokenReference()),
-						CciConstants.IMPLEMENTATION_FIELD_NAME),
-					new FjLocalVariableExpression(
-						getTokenReference(), 
-						parameters[0])),
-				null),
-			new JExpressionStatement(
-				getTokenReference(),
-				new FjAssignmentExpression(
-					getTokenReference(), 
-					new FjFieldAccessExpression(
-						getTokenReference(), 
-						new JThisExpression(getTokenReference()),
-						CciConstants.BINDING_FIELD_NAME),
-					new FjLocalVariableExpression(
-						getTokenReference(), 
-						parameters[1])),
-				null)
-		};
-		JConstructorCall constructorCall = null;
-		//if it has a super type calls the super constructor.
-		if (ownerHasSuper)
-		{
-			JExpression[] arguments = new JExpression[]
-			{
-				new FjLocalVariableExpression(
-					getTokenReference(), 
-					parameters[0]),
-				new FjLocalVariableExpression(
-					getTokenReference(), 
-					parameters[1]),
-			};
-			constructorCall = new FjConstructorCall(
-				getTokenReference(), 
-				false, 
-				arguments);
-		}
-		
-		JConstructorBlock constructorBody = new FjConstructorBlock(
-			getTokenReference(), 
-			constructorCall, 
-			statements);
-			
-		return new FjConstructorDeclaration(
-			getTokenReference(), 
-			ACC_PUBLIC, 
-			CciConstants.toCollaborationInterfaceImplName(ident), 
-			parameters, 
-			new CReferenceType[0], 
-			constructorBody, 
-			null, 
-			null, 
-			typeFactory);
-	}
-	
-	/**
-	 * It creates the two fields that are needed in the proxies: implementation
-	 * and binding. They are the references which it delegates the execution of
-	 * all methods.
-	 * @param ownerName
-	 * @return An array with the two fields.
-	 */
-	protected JFieldDeclaration[] createProxyFields(String ownerName)
-	{
-		
-		JFieldDeclaration implementation = createField(ownerName,
-			CciConstants.IMPLEMENTATION_FIELD_NAME);
-		JFieldDeclaration binding = createField(ownerName,
-			CciConstants.BINDING_FIELD_NAME);
-		 
-		return new JFieldDeclaration[]{implementation, binding};
-		
-	}
-	
-	/**
-	 * Creates a field.
-	 * @param ownerName
-	 * @param fieldName
-	 * @return
-	 */
-	protected JFieldDeclaration createField(String ownerName, String fieldName)
-	{
-		String typeName = ownerName == null 
-			? ident
-			: ownerName + "$" + ident;
-
-		return new FjFieldDeclaration(
-					getTokenReference(), 
-					new FjVariableDefinition(
-						getTokenReference(), 
-						ACC_PROTECTED, 
-						new CClassNameType(typeName), 
-						fieldName, 
-						null),
-					false, 
-					null, 
-					null);		
-	}
 	/**
 	 * Sets the super type of the proxy declaration of this interface.
 	 * @param superClassType
@@ -414,4 +306,106 @@ public class CciInterfaceDeclaration
 	{
 		proxyDeclaration.setSuperClass(superClassType);
 	}
+	
+	
+	
+//	/**
+//	 * Creates a constructor for the proxy. This constructor has two parameters:
+//	 * the implementation and the binding that will be woven by the weavelet
+//	 * class that will extend the proxy.
+//	 * @param ownerName
+//	 * @param ownerHasSuper
+//	 * @param typeFactory
+//	 * @return
+//	 */
+//	protected JMethodDeclaration createProxyConstructor(String ownerName, 
+//		boolean ownerHasSuper, TypeFactory typeFactory)
+//	{
+//		JFormalParameter[] parameters = new JFormalParameter[2];
+//
+//		String parameterTypeName = ownerName == null 
+//			? ident
+//			: ownerName + "$" + ident;
+//		
+//		//Two parameters: the implementation and the binding
+//		parameters[0] = new FjFormalParameter(
+//			getTokenReference(),
+//			JLocalVariable.DES_PARAMETER,
+//			new CClassNameType(parameterTypeName),
+//			CciConstants.IMPLEMENTATION_FIELD_NAME,
+//			false);
+//
+//		parameters[1] = new FjFormalParameter(
+//			getTokenReference(),
+//			JLocalVariable.DES_PARAMETER,
+//			new CClassNameType(parameterTypeName),
+//			CciConstants.BINDING_FIELD_NAME,
+//			false);
+//		
+//		//Two assigment expressions to set the fields implementation and
+//		//binding.
+//		JStatement[] statements = new JStatement[]
+//		{
+//			new JExpressionStatement(
+//				getTokenReference(),
+//				new FjAssignmentExpression(
+//					getTokenReference(), 
+//					new FjFieldAccessExpression(
+//						getTokenReference(), 
+//						new JThisExpression(getTokenReference()),
+//						CciConstants.IMPLEMENTATION_FIELD_NAME),
+//					new FjLocalVariableExpression(
+//						getTokenReference(), 
+//						parameters[0])),
+//				null),
+//			new JExpressionStatement(
+//				getTokenReference(),
+//				new FjAssignmentExpression(
+//					getTokenReference(), 
+//					new FjFieldAccessExpression(
+//						getTokenReference(), 
+//						new JThisExpression(getTokenReference()),
+//						CciConstants.BINDING_FIELD_NAME),
+//					new FjLocalVariableExpression(
+//						getTokenReference(), 
+//						parameters[1])),
+//				null)
+//		};
+//		JConstructorCall constructorCall = null;
+//		//if it has a super type calls the super constructor.
+//		if (ownerHasSuper)
+//		{
+//			JExpression[] arguments = new JExpression[]
+//			{
+//				new FjLocalVariableExpression(
+//					getTokenReference(), 
+//					parameters[0]),
+//				new FjLocalVariableExpression(
+//					getTokenReference(), 
+//					parameters[1]),
+//			};
+//			constructorCall = new FjConstructorCall(
+//				getTokenReference(), 
+//				false, 
+//				arguments);
+//		}
+//		
+//		JConstructorBlock constructorBody = new FjConstructorBlock(
+//			getTokenReference(), 
+//			constructorCall, 
+//			statements);
+//			
+//		return new FjConstructorDeclaration(
+//			getTokenReference(), 
+//			ACC_PUBLIC, 
+//			CciConstants.toCollaborationInterfaceImplName(ident), 
+//			parameters, 
+//			new CReferenceType[0], 
+//			constructorBody, 
+//			null, 
+//			null, 
+//			typeFactory);
+//	}
+	
+
 }

@@ -1,6 +1,5 @@
 package org.caesarj.compiler.ast;
 
-import java.util.Hashtable;
 
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.kjc.CClass;
@@ -19,15 +18,7 @@ public class CciSourceClass
 	extends FjSourceClass
 	implements CciClass
 {
-	/**
-	 * The CIs that the class binds.
-	 */
-	private CReferenceType[] bindings;
-	/**
-	 * The CIs that the class implements.
-	 */
-	private CReferenceType[] implementations;
-	
+
 	/**
 	 * 
 	 * @param owner
@@ -64,43 +55,33 @@ public class CciSourceClass
 		
 	}
 
-
-
 	/**
-	 * Overriden for set the bindings and implementations.
-	 * 
-	 * @see at.dms.kjc.CClass#close(at.dms.kjc.CReferenceType[], java.util.Hashtable, at.dms.kjc.CMethod[])
+	 * @return the CI that the class binds.
 	 */
-	public void close(
-		CReferenceType[] interfaces,
-		Hashtable fields,
-		CMethod[] methods)
-	{
-		if (decl instanceof CciClassDeclaration)
-		{
-			bindings = ((CciClassDeclaration)decl).getBindings();
-			implementations = ((CciClassDeclaration)decl).getImplementations();
-		}
-		super.close(interfaces, fields, methods);
-	}
-
-	/**
-	 * @return the CIs that the class binds.
-	 */
-	public CReferenceType[] getBindings()
+	public CReferenceType getBinding()
 	{
 		return decl instanceof CciClassDeclaration
-			? ((CciClassDeclaration)decl).getBindings()
+			? ((CciClassDeclaration)decl).getBinding()
 			: null;
 	}
 
 	/**
-	 * @return the CIs that the class implements.
+	 * @return the CI that the class implements.
 	 */
-	public CReferenceType[] getImplementations()
+	public CReferenceType getImplementation()
 	{
 		return decl instanceof CciClassDeclaration
-			? ((CciClassDeclaration)decl).getImplementations()
+			? ((CciClassDeclaration)decl).getImplementation()
 			: null;
 	}
+	
+	/**
+	 * Sets the methods of this source class.
+	 * @param methods
+	 */
+	public void setMethods(CMethod[] methods)
+	{
+		this.methods = methods;
+	}
+
 }

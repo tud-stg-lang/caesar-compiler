@@ -47,4 +47,5 @@ public interface CaesarMessages extends org.caesarj.compiler.CompilerMessages {
   MessageDescription	CI_METHOD_FLAGS_CHANGED_IN_OVERRIDING = new MessageDescription("The method \"{0}\" cannot change the modifier when overriding a collaboration method.", null, 0);
   MessageDescription	NESTED_TYPE_NOT_IMPLEMENTED = new MessageDescription("The nested type \"{0}\" from the collaboration interface \"{1}\" must be implemented.", null, 0);
   MessageDescription	NESTED_TYPE_NOT_BOUND = new MessageDescription("The nested type \"{0}\" from the collaboration interface \"{1}\" must be bound.", null, 0);
+  MessageDescription	CLASS_IMPLEMENTS_N_CIS = new MessageDescription("The class \"{0}\" cannot implement more than one CI.", null, 0);
 }

@@ -531,7 +531,6 @@ public class FjTypeSystem
 		throws UnpositionedError
 	{
 
-
 		CReferenceType inner = declaresInner(owner, innerTypeName);
 		if (inner != null)
 		{
@@ -598,7 +597,7 @@ public class FjTypeSystem
 		CReferenceType inner = declaresInner(owner, innerTypeName);
 		if (inner != null
 			&& (inner.getCClass().getModifiers() 
-				& Constants.FJC_OVERRIDE)	== 0)
+				& Constants.FJC_OVERRIDE) == 0)
 		{
 			return (CReferenceType) new CClassNameType(
 				FjConstants.toIfcName(
@@ -694,9 +693,10 @@ public class FjTypeSystem
 
 	public boolean hasInner(CClass outerClass, String innerClassName)
 	{
-		CReferenceType[] inners = outerClass.getInnerClasses();
+		
 		while (outerClass != null)
 		{
+			CReferenceType[] inners = outerClass.getInnerClasses();
 			for (int i = 0; i < inners.length; i++)
 			{
 				if (inners[i].getIdent().equals(innerClassName))

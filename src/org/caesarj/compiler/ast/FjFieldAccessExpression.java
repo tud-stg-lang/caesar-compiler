@@ -105,7 +105,7 @@ public class FjFieldAccessExpression extends JFieldAccessExpression {
 			
 			FjFamily myFamily = null;
 			if (prefix != null)
-				myFamily = prefix.toFamily(context.getBlockContext());
+				myFamily = prefix.getFamily(context);//toFamily(context.getBlockContext());
 				
 			CClass currentClass;
 			if (myFamily == null)

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.1 2003-07-05 18:26:10 werner Exp $
+ * $Id: CaesarMessages.msg,v 1.2 2003-07-14 16:14:44 werner Exp $
  */
 
 package org.caesarj.compiler
@@ -178,5 +178,8 @@ error   NESTED_TYPE_NOT_IMPLEMENTED
 
 error   NESTED_TYPE_NOT_BOUND
 		"The nested type \"{0}\" from the collaboration interface \"{1}\" must be bound."
+		
+error   CLASS_IMPLEMENTS_N_CIS
+		"The class \"{0}\" cannot implement more than one CI."
 		
 

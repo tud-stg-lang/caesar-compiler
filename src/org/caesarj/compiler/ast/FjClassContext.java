@@ -4,6 +4,8 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 
 import org.aspectj.weaver.patterns.FormalBinding;
+import org.caesarj.compiler.UnpositionedError;
+import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CClassContext;
 import org.caesarj.kjc.CCompilationUnitContext;
 import org.caesarj.kjc.CContext;
@@ -71,6 +73,16 @@ public class FjClassContext
 
 	public CCompilationUnitContext getParentCompilationUnitContext() {
 		return (CCompilationUnitContext) parent;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.caesarj.kjc.CTypeContext#lookupClass(org.caesarj.kjc.CClass, java.lang.String)
+	 */
+	public CClass lookupClass(CClass caller, String name)
+		throws UnpositionedError
+	{
+		// TODO Auto-generated method stub
+		return super.lookupClass(caller, name);
 	}
 
 }

@@ -1,6 +1,7 @@
 package org.caesarj.compiler.ast;
 
 import org.caesarj.compiler.UnpositionedError;
+import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CType;
@@ -30,6 +31,7 @@ public class CciWeaveletReferenceType extends CClassNameType
 		CReferenceType implementation, CReferenceType binding)
 	{
 		super(collaborationInterface.getQualifiedName());
+		this.collaborationInterface = collaborationInterface;
 		this.implementation = implementation;
 		this.binding = binding;
 	}
@@ -40,13 +42,22 @@ public class CciWeaveletReferenceType extends CClassNameType
 	public CType checkType(CTypeContext context) 
 		throws UnpositionedError
 	{
+	
 		implementation = 
 			(CReferenceType) implementation.checkType(context);
-			
+		
 		binding = 
 			(CReferenceType) binding.checkType(context);
-			
-		return super.checkType(context);
+		
+		collaborationInterface =
+			(CReferenceType) collaborationInterface.checkType(context);
+		
+		setClass(collaborationInterface.getCClass());
+//		this.qualifiedName = collaborationInterface.getQualifiedName();
+//		
+//		super.checkType(context);
+		
+		return this;
 	}
 	
 	/**
@@ -64,4 +75,51 @@ public class CciWeaveletReferenceType extends CClassNameType
 		return binding.getQualifiedName();
 	}
 	
+	public void setBindingType(CReferenceType bindingType)
+	{
+		binding = bindingType;
+	}
+	public void setCollaborationInterfaceType(
+		CReferenceType collaborationInterfaceType)
+	{
+		collaborationInterface = collaborationInterfaceType;
+	}	
+	public void setImplementationType(CReferenceType implementationType)
+	{
+		implementation = implementationType;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.caesarj.kjc.CType#getCClass()
+	 */
+	public CClass getCClass()
+	{
+		return collaborationInterface.getCClass();
+	}
+
+	/**
+	 * @return
+	 */
+	public CReferenceType getBindingType()
+	{
+		return binding;
+	}
+
+	/**
+	 * @return
+	 */
+	public CReferenceType getImplementationType()
+	{
+		return implementation;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.caesarj.kjc.CReferenceType#isChecked()
+	 */
+	public boolean isChecked()
+	{
+		return super.isChecked();
+	}
+
 }

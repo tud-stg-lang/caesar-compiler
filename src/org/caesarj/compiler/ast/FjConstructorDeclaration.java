@@ -1,10 +1,9 @@
 package org.caesarj.compiler.ast;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.caesarj.classfile.Constants;
 import org.caesarj.compiler.CaesarMessages;
+import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
@@ -207,7 +206,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			null,
 			null);
 	}
-
+	
 	public FjCleanMethodDeclaration getFactoryMethod(
 		FjVirtualClassDeclaration factoredClass,
 		String superTypeName) {
@@ -397,30 +396,146 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 		return method;
 	}
 	
-	//Walter
+	//Walter NEW
 	public void updateWeaveletConstructor(CciWeaveletClassDeclaration owner)
 	{
-		FjConstructorCall constructorCall = 
-			((FjConstructorBlock)body).getConstructorCall();
-			
-		if (! constructorCall.isThisInvoke())
+		TokenReference ref = getTokenReference();
+		JExpression[] bindingCallArgs = new JExpression[]
 		{
-			JExpression[] arguments = constructorCall.getArguments();
-			ArrayList newArguments = new ArrayList(arguments.length + 2);
-			newArguments.add(
-				new FjUnqualifiedInstanceCreation(
-					getTokenReference(),
-					new CClassNameType(owner.getImplementationTypeName()),
-					new JExpression[0]));
-			newArguments.add(
-				new FjUnqualifiedInstanceCreation(
-					getTokenReference(), 
-					new CClassNameType(owner.getBindingTypeName()),
-					new JExpression[0]));
-			newArguments.addAll(Arrays.asList(arguments));
-			constructorCall.setArguments(
-				(JExpression[])	newArguments.toArray(
-					new JExpression[newArguments.size()]));
+			new FjFieldAccessExpression(ref, 
+				new FjThisExpression(ref), 
+				CciConstants.IMPLEMENTATION_FIELD_NAME)
+		};
+		JExpression[] implementationCallArgs = new JExpression[]
+		{
+			new FjFieldAccessExpression(ref, 
+				new FjThisExpression(ref), 
+				CciConstants.BINDING_FIELD_NAME)
+		};
+		
+		JStatement[] statements = new JStatement[]
+		{
+			new JExpressionStatement(ref,
+				new FjAssignmentExpression(ref, 
+					new FjFieldAccessExpression(ref, 
+						CciConstants.IMPLEMENTATION_FIELD_NAME),
+					new FjUnqualifiedInstanceCreation(ref,
+						new CClassNameType(owner.getImplementationTypeName()), 
+						new JExpression[0])),
+				null),
+			new JExpressionStatement(ref,
+				new FjAssignmentExpression(ref, 
+					new FjFieldAccessExpression(ref, 
+						CciConstants.BINDING_FIELD_NAME),
+					new FjUnqualifiedInstanceCreation(ref,
+						new CClassNameType(owner.getBindingTypeName()), 
+						new JExpression[0])),
+				null),
+			new JExpressionStatement(ref,
+				new FjMethodCallExpression(ref, 
+					new FjThisExpression(ref), 
+					CciConstants.toSettingMethodName(
+						CciConstants.BINDING_FIELD_NAME),
+					implementationCallArgs),
+				null),
+			new JExpressionStatement(ref,
+				new FjMethodCallExpression(ref, 
+					new FjThisExpression(ref), 
+					CciConstants.toSettingMethodName(
+						CciConstants.IMPLEMENTATION_FIELD_NAME),
+					bindingCallArgs),
+				null)
+		};
+		JStatement[] currentStatements = body.getBody();
+		JStatement[] finalStatements;
+		if (currentStatements != null
+			&& currentStatements.length > 0)
+		{
+			finalStatements = new JStatement[currentStatements.length + 
+				statements.length];
+			System.arraycopy(statements, 0, finalStatements, 0, 
+				statements.length);
+			System.arraycopy(currentStatements, 0, finalStatements, 
+				statements.length, currentStatements.length);
 		}
+		else
+			finalStatements = statements;
+			
+		
+		body = new FjConstructorBlock(
+			ref, 
+			((FjConstructorBlock)body).getConstructorCall(), 
+			finalStatements);
+	}
+	
+//	//Walter
+//	public void updateConstructor(String ciType, String fieldName)
+//	{
+//		JFormalParameter[] newParameters = 
+//			new JFormalParameter[parameters.length + 1];
+//			
+//		System.arraycopy(parameters, 0, newParameters, 1, parameters.length);
+//		newParameters[0] = 
+//			new FjFormalParameter(
+//				getTokenReference(), 
+//				JFormalParameter.DES_PARAMETER, 
+//				new CClassNameType(ciType), 
+//				fieldName, 
+//				false);
+//
+//		FjConstructorCall constructorCall = 
+//			((FjConstructorBlock)body).getConstructorCall();
+//
+//		JExpression[] arguments = constructorCall.getArguments();
+//
+//		JExpression[] newArguments = new JExpression[arguments.length + 1];
+//		System.arraycopy(arguments, 0, newArguments, 1, arguments.length);
+//		newArguments[0] =
+//			new FjNameExpression(
+//				getTokenReference(),
+//				fieldName);
+//
+//		constructorCall.setArguments(newArguments);
+//		
+//		JStatement[] statements = body.getBody();
+//		JStatement[] newStatements = new JStatement[statements.length + 1];
+//		
+//		System.arraycopy(statements, 0, newStatements, 0, statements.length);
+//		
+//		newStatements[statements.length] = 
+//			new JExpressionStatement(
+//				getTokenReference(),
+//				new FjAssignmentExpression(
+//					getTokenReference(), 
+//					new FjFieldAccessExpression(
+//						getTokenReference(), 
+//						new FjThisExpression(getTokenReference()), 
+//						fieldName), 
+//					new FjNameExpression(
+//						getTokenReference(), 
+//						fieldName)),
+//				null);
+//		
+//		body = new FjConstructorBlock(getTokenReference(), 
+//			constructorCall, newStatements);
+//	}
+
+	/**
+	 * DEBUG - WALTER
+	 * @author Walter Augusto Werner
+	 */	
+	public void print()
+	{
+		super.print();
+		System.out.print(" ------> Families: ");
+		for (int i = 0; i < parameters.length; i++)
+		{
+			if (i > 0) System.out.print(", ");
+			System.out.print(parameters[i].getIdent());
+			System.out.print(" - ");
+			System.out.print(((FjFormalParameter)parameters[i]).getFamily());
+		}
+		System.out.println();
+
 	}
 }

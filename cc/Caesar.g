@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.2 2003-07-11 11:58:01 werner Exp $
+ * $Id: Caesar.g,v 1.3 2003-07-14 16:14:44 werner Exp $
  */
 
 /*
@@ -407,7 +407,7 @@ jClassDefinition [int modifiers]
   CReferenceType			superClass = null;
   CciWeaveletReferenceType	superCI = null;  
   CReferenceType[]			interfaces = CReferenceType.EMPTY;
-  CReferenceType[]			bindings = CReferenceType.EMPTY;  
+  CReferenceType			binding = null;  
   ParseClassContext	context = ParseClassContext.getInstance();
   TokenReference	sourceRef = buildTokenReference();
   JavadocComment	javadoc = getJavadocComment();
@@ -424,7 +424,7 @@ jClassDefinition [int modifiers]
   //Walter start
   //implements or binds clause
   (interfaces = jImplementsClause[] 
-  | bindings = jBindsClause[])
+  | binding = jBindsClause[])
   //Walter end
 
   jClassBlock[context]
@@ -464,7 +464,7 @@ jClassDefinition [int modifiers]
 				   typeVariables,
 				   superClass,
 				   interfaces,
-				   bindings,
+				   binding,
 				   context.getFields(),
 				   methods,
 				   context.getInnerClasses(),
@@ -478,7 +478,7 @@ jClassDefinition [int modifiers]
 				   typeVariables,
 				   superClass,
 				   interfaces,
-				   bindings,
+				   binding,
 				   context.getFields(),
 				   methods,
 				   context.getInnerClasses(),
@@ -492,7 +492,7 @@ jClassDefinition [int modifiers]
 				   typeVariables,
 				   superClass,
 				   interfaces,
-				   bindings,
+				   binding,
 				   context.getFields(),
 				   methods,
 				   context.getInnerClasses(),
@@ -506,7 +506,7 @@ jClassDefinition [int modifiers]
                    typeVariables,
 				   superClass,
 				   interfaces,
-				   bindings,
+				   binding,
 				   context.getFields(),
 				   methods,
 				   context.getInnerClasses(),
@@ -642,9 +642,9 @@ jInterfaceExtends []
 
 // A class can bind several collaboration interfaces...
 jBindsClause[]
-  returns [CReferenceType[] self = CReferenceType.EMPTY]
+  returns [CReferenceType self = null]
 :
-  ( "binds" self = jNameList[]/*jTypeName[]*/ )?
+  ( "binds" self = jTypeName[] )?
 ;
 
 // A class can implement several interfaces...
@@ -2307,7 +2307,7 @@ jUnqualifiedNewExpression []
                      CTypeVariable.EMPTY,
 					 null,
 					 CReferenceType.EMPTY,
-					 CReferenceType.EMPTY,
+					 null,
 					 context.getFields(),
 					 methods,
 					 context.getInnerClasses(),
@@ -2359,10 +2359,10 @@ jQualifiedNewExpression [JExpression prefix]
 	decl = new FjClassDeclaration(sourceRef,
 				     org.caesarj.kjc.Constants.ACC_FINAL, // JLS 15.9.5
 				     ident.getText(),
-                                     CTypeVariable.EMPTY,
+                     CTypeVariable.EMPTY,
 				     null,
 				     CReferenceType.EMPTY,
-				     CReferenceType.EMPTY,
+				     null,
 				     context.getFields(),
 				     methods,
 				     context.getInnerClasses(),

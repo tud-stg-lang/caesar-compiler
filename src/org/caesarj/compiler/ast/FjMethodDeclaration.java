@@ -180,9 +180,8 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 		JStatement[] statements = body.getBody();
 		JStatement[] extendedStatements = new JStatement[statements.length + 1];
 		extendedStatements[0] = statement;
-		for (int i = 0; i < statements.length; i++) {
-			extendedStatements[i + 1] = statements[i];
-		}
+		System.arraycopy(statements, 0, extendedStatements, 1, 
+			statements.length);
 		body = new JBlock(body.getTokenReference(), extendedStatements, null);
 	}
 
@@ -353,7 +352,7 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 			System.out.print(((FjFormalParameter)parameters[i]).getFamily());
 		}
 		System.out.println();
-		
+
 	}
 
 }

@@ -76,7 +76,7 @@ public class FjClassDeclaration
 		CTypeVariable[] typeVariables,
 		CReferenceType superClass,
 		CReferenceType[] interfaces,
-		CReferenceType[] bindings,
+		CReferenceType binding,
 		JFieldDeclaration[] fields,
 		JMethodDeclaration[] methods,
 		JTypeDeclaration[] inners,
@@ -91,7 +91,7 @@ public class FjClassDeclaration
 			typeVariables,
 			superClass,
 			interfaces,
-			bindings,
+			binding,
 			fields,
 			methods,
 			inners,
@@ -110,7 +110,7 @@ public class FjClassDeclaration
 		CTypeVariable[] typeVariables,
 		CReferenceType superClass,
 		CReferenceType[] interfaces,
-		CReferenceType[] bindings,
+		CReferenceType binding,
 		JFieldDeclaration[] fields,
 		JMethodDeclaration[] methods,
 		JTypeDeclaration[] inners,
@@ -128,7 +128,7 @@ public class FjClassDeclaration
 			typeVariables,
 			superClass,
 			interfaces,
-			bindings,
+			binding,
 			fields,
 			methods,
 			inners,
@@ -669,18 +669,6 @@ public class FjClassDeclaration
 		fields = newFields;
 	}
 
-	public void addMethod(JMethodDeclaration newMethod)
-	{
-		JMethodDeclaration[] newMethods =
-			new JMethodDeclaration[methods.length + 1];
-
-		System.arraycopy(methods, 0, newMethods, 0, methods.length);
-
-		newMethods[methods.length] = newMethod;
-
-		methods = newMethods;
-	}
-
 	public void addMethods(JMethodDeclaration[] methodsToAdd)
 	{
 		JMethodDeclaration[] newMethods =
@@ -988,7 +976,7 @@ public class FjClassDeclaration
 	 */
 	protected CClassContext constructContext(CContext context)
 	{
-		return new CciClassContext(
+		return new FjClassContext(
 			context,
 			context.getEnvironment(),
 			sourceClass,

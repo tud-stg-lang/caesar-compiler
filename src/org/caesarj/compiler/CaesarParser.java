@@ -426,7 +426,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		CReferenceType			superClass = null;
 		CciWeaveletReferenceType	superCI = null;  
 		CReferenceType[]			interfaces = CReferenceType.EMPTY;
-		CReferenceType[]			bindings = null;  
+		CReferenceType			binding = null;  
 		ParseClassContext	context = ParseClassContext.getInstance();
 		TokenReference	sourceRef = buildTokenReference();
 		JavadocComment	javadoc = getJavadocComment();
@@ -473,7 +473,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			interfaces=jImplementsClause();
 		}
 		else if ((LA(1)==LITERAL_binds||LA(1)==LCURLY) && (_tokenSet_3.member(LA(2)))) {
-			bindings=jBindsClause();
+			binding=jBindsClause();
 		}
 		else {
 			throw new NoViableAltException(LT(1), getFilename());
@@ -518,7 +518,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   typeVariables,
 							   superClass,
 							   interfaces,
-							   bindings,
+							   binding,
 							   context.getFields(),
 							   methods,
 							   context.getInnerClasses(),
@@ -532,7 +532,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   typeVariables,
 							   superClass,
 							   interfaces,
-							   bindings,
+							   binding,
 							   context.getFields(),
 							   methods,
 							   context.getInnerClasses(),
@@ -546,7 +546,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   typeVariables,
 							   superClass,
 							   interfaces,
-							   bindings,
+							   binding,
 							   context.getFields(),
 							   methods,
 							   context.getInnerClasses(),
@@ -560,7 +560,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			typeVariables,
 							   superClass,
 							   interfaces,
-							   bindings,
+							   binding,
 							   context.getFields(),
 							   methods,
 							   context.getInnerClasses(),
@@ -1450,10 +1450,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		return self;
 	}
 	
-	private final CReferenceType[]  jBindsClause(
+	private final CReferenceType  jBindsClause(
 		
 	) throws RecognitionException, TokenStreamException {
-		CReferenceType[] self = null;
+		CReferenceType self = null;
 		
 		
 		{
@@ -1461,7 +1461,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		case LITERAL_binds:
 		{
 			match(LITERAL_binds);
-			self=jNameList();
+			self=jTypeName();
 			break;
 		}
 		case LCURLY:

@@ -41,41 +41,41 @@ public class FjVariableDefinition extends JVariableDefinition {
 	
 			FjTypeSystem fjts = new FjTypeSystem();
 			String[] split = fjts.splitQualifier(type.toString());
-			
+			FjFamily family = null;
 			if (split != null ) 
 			{
 				String qualifier = split[0];
 				String remainder = split[1];
 				
 				CField referedField = clazz.getField(qualifier);	
-				try 
-				{
-					FjFamily family = fjts.resolveFamily(context, clazz, 
+
+				family = fjts.resolveFamily(context, clazz, 
 						qualifier, remainder);
 
-					if (family != null)
-					{
-						FjFamilyContext.getInstance().setFamilyOf(this, family);
-						field.setFamily(family);
-						type = family.getInnerType();
-					}
-				} 
-				catch (UnpositionedError e) 
+				if (family != null)
 				{
-					context.reportTrouble(e.addPosition(getTokenReference()));
+					FjFamilyContext.getInstance().setFamilyOf(this, family);
+					field.setFamily(family);
+					type = family.getInnerType();
 				}
 			}
 		} 
 		catch (ClassCastException e) 
 		{// we are not in a class => continue 
 		}
+		catch (UnpositionedError e) 
+		{
+			context.reportTrouble(e.addPosition(getTokenReference()));
+		}
+	
 	}
 
 	public void analyse(CBodyContext context) throws PositionedError {
 		FjTypeSystem fjts = new FjTypeSystem();		
 		try {
 			//Walter: inserted the sencod param in this method call
-			FjFamily family = fjts.resolveFamily( context, context.getClassContext().getCClass(), type );
+			FjFamily family = fjts.resolveFamily( context, 
+				context.getClassContext().getCClass(), type );
 			// if the typename is qualified by a variable
 			// the qualifier has to be resolved to its type
 			if( family != null ) {

@@ -20,7 +20,9 @@ import org.caesarj.kjc.JStatement;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.TypeFactory;
 
-public class FjCleanClassIfcImplDeclaration extends FjClassDeclaration {
+public class FjCleanClassIfcImplDeclaration
+	extends FjClassDeclaration 
+{
 
 	protected FjCleanClassDeclaration baseDecl;
 
@@ -38,7 +40,7 @@ public class FjCleanClassIfcImplDeclaration extends FjClassDeclaration {
 			CTypeVariable.EMPTY,
 			new CClassNameType( FjConstants.CHILD_IMPL_TYPE_NAME ),
 			interfaces,
-			baseDecl.getBindings(),
+			baseDecl.getBinding(),
 			new JFieldDeclaration[0], // clean classes - no fields
 			FjCleanClassIfcImplDeclaration.importMethods( methods, interfaces ),
 			new JTypeDeclaration[0], // inners are possible
@@ -144,21 +146,4 @@ public class FjCleanClassIfcImplDeclaration extends FjClassDeclaration {
 			// base class this class is derived from, too
 		}
 	}
-
-//	Walter start	
-	/**
-	 * @return the CIs bound by the class.
-	 */
-	public CReferenceType[] getBindings()
-	{
-		return baseDecl.getBindings();
-}
-	/**
-	 * @return the CIs implemented by the class.
-	 */
-	public CReferenceType[] getImplementations()
-	{
-		return baseDecl.getImplementations();
-	}
-//	Walter end
 }

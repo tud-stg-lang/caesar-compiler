@@ -1,9 +1,16 @@
 package org.caesarj.compiler.util;
 
+import org.caesarj.classfile.Constants;
+import org.caesarj.compiler.CciConstants;
+import org.caesarj.compiler.ast.CciWeaveletClassDeclaration;
+import org.caesarj.compiler.ast.CciWeaveletReferenceType;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
 import org.caesarj.compiler.ast.FjConstructorDeclaration;
+import org.caesarj.compiler.ast.FjTypeSystem;
 import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
+import org.caesarj.kjc.CClassNameType;
+import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.JMethodDeclaration;
@@ -79,5 +86,64 @@ public class MethodTransformationFjVisitor extends FjVisitor {
 			body,
 			methods,
 			decls);
+	}
+	/* Walter
+	 * @see org.caesarj.compiler.util.FjVisitor#visitCciWeaveletClassDeclaration(org.caesarj.compiler.ast.CciWeaveletClassDeclaration, int, java.lang.String, org.caesarj.kjc.CTypeVariable[], java.lang.String, org.caesarj.kjc.CReferenceType[], org.caesarj.kjc.JPhylum[], org.caesarj.kjc.JMethodDeclaration[], org.caesarj.kjc.JTypeDeclaration[])
+	 */
+	public void visitCciWeaveletClassDeclaration(
+		CciWeaveletClassDeclaration self,
+		int modifiers,
+		String ident,
+		CTypeVariable[] typeVariables,
+		String superClass,
+		CReferenceType[] interfaces,
+		JPhylum[] body,
+		JMethodDeclaration[] methods,
+		JTypeDeclaration[] decls)
+	{
+
+		CciWeaveletReferenceType superCollaborationInterface = 
+			self.getSuperCollaborationInterface();
+		CReferenceType bindingType = superCollaborationInterface
+			.getBindingType();
+		CReferenceType implementationType = superCollaborationInterface
+			.getImplementationType();
+		
+		addWeaveletFactoryMethods(self, bindingType, 
+			CciConstants.BINDING_FIELD_NAME);
+
+		addWeaveletFactoryMethods(self, implementationType, 
+			CciConstants.IMPLEMENTATION_FIELD_NAME);
+
+
+
+		super.visitCciWeaveletClassDeclaration(
+			self,
+			modifiers,
+			ident,
+			typeVariables,
+			superClass,
+			interfaces,
+			body,
+			methods,
+			decls);
+	}
+	protected void addWeaveletFactoryMethods(
+		CciWeaveletClassDeclaration self, 
+		CReferenceType ciType, 
+		String fieldName)
+	{
+		if (CModifier.contains(ciType.getCClass().getModifiers(), 
+			Constants.FJC_VIRTUAL))
+		{
+			if (owner.get() instanceof CciWeaveletClassDeclaration)
+			{
+				CciWeaveletClassDeclaration weavelet = 
+					(CciWeaveletClassDeclaration)owner.get();
+				
+				weavelet.addFactoryMethods(self, ciType, 
+					fieldName);
+			}
+		}		
 	}
 }

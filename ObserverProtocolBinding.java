@@ -4,15 +4,19 @@ public class ObserverProtocolBinding binds ObserverProtocol
 {
 	public Object getNameParentExpected(String child)
 	{
-		return "";
+		System.out.println("ObserverProtocolBinding.getNameParentExpected(" + child + ")");
+		return "ObserverProtocolBinding";
 	}
+
 	virtual class SubjectBinding binds Subject
 	{
 		public void setObserver(Observer o)
 		{
+			System.out.println("SubjectBinding.setObserver(" + o + ")");
 		}
 		public Object getState()
 		{
+			System.out.println("SubjectBinding.getState()");
 			return "MyState";
 		}
     }
@@ -21,6 +25,7 @@ public class ObserverProtocolBinding binds ObserverProtocol
 	{
 		public void notify(Subject s)
 		{
+			System.out.println("ObserverBinding.notify(" + s + ")");
 			System.out.println(s.getState());
 		}
 	}

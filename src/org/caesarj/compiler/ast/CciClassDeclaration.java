@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.caesarj.compiler.CaesarMessages;
+import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
@@ -11,20 +12,28 @@ import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
 import org.caesarj.kjc.CClass;
-import org.caesarj.kjc.CClassContext;
 import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CContext;
+import org.caesarj.kjc.CMethod;
 import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CSourceClass;
 import org.caesarj.kjc.CType;
 import org.caesarj.kjc.CTypeVariable;
+import org.caesarj.kjc.CVoidType;
+import org.caesarj.kjc.Constants;
+import org.caesarj.kjc.JBlock;
 import org.caesarj.kjc.JClassDeclaration;
+import org.caesarj.kjc.JExpression;
+import org.caesarj.kjc.JExpressionStatement;
 import org.caesarj.kjc.JFieldDeclaration;
+import org.caesarj.kjc.JFormalParameter;
 import org.caesarj.kjc.JMethodDeclaration;
 import org.caesarj.kjc.JPhylum;
+import org.caesarj.kjc.JStatement;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.KjcMessages;
+import org.caesarj.kjc.TypeFactory;
 import org.caesarj.util.MessageDescription;
 
 /**
@@ -39,13 +48,13 @@ public class CciClassDeclaration
 	extends JClassDeclaration
 {
 	/** 
-	 * The CIs that the class binds.
+	 * The CI that the class binds.
 	 */
-	protected CReferenceType[] bindings;
+	protected CReferenceType binding;
 	/** 
 	 * The CIs that the class implements.
 	 */
-	protected CReferenceType[] implementations;
+	protected CReferenceType implementation;
 
 	/**
 	 * @param where
@@ -69,7 +78,7 @@ public class CciClassDeclaration
 		CTypeVariable[] typeVariables,
 		CReferenceType superClass,
 		CReferenceType[] interfaces,
-		CReferenceType[] bindings,
+		CReferenceType binding,
 		JFieldDeclaration[] fields,
 		JMethodDeclaration[] methods,
 		JTypeDeclaration[] inners,
@@ -91,16 +100,18 @@ public class CciClassDeclaration
 			javadoc,
 			comment);
 		
-		//binding will never be null!
-		this.bindings = (bindings == null) ? new CReferenceType[0] : bindings;
+		this.binding = binding;
 	}
 
 	/**
-	 * Initializes the array <code>implementations</coed> with all the CI 
-	 * implemented by the class, removing this interfaces from the 
-	 * <code>interfaces</code> array.
+	 * Initializes the <code>implementation</coed> reference with the CI 
+	 * implemented by the class, removing this interface from the 
+	 * <code>interfaces</code> array. It checks if the class is implementing 
+	 * more than one CI.
 	 */
-	protected void initImplemetations()
+	protected void initImplemetation(CContext context)
+		throws PositionedError
+		
 	{
 		ArrayList tempInterfaces = new ArrayList(
 			Arrays.asList(interfaces));
@@ -114,12 +125,17 @@ public class CciClassDeclaration
 				tempInterfaces.remove(interfaces[i]);				
 			}
 		}
-					
-		implementations = (CReferenceType[]) tempImplementations.toArray(
-			new CReferenceType[tempImplementations.size()]);
+		
+		check(context, ! (tempImplementations.size() > 1), 
+			CaesarMessages.CLASS_IMPLEMENTS_N_CIS, ident);
+		
+		if (tempImplementations.size() > 0)
+		{
+			implementation = (CReferenceType) tempImplementations.get(0);
 			
-		interfaces = (CReferenceType[]) tempInterfaces.toArray(
-			new CReferenceType[tempInterfaces.size()]);
+			interfaces = (CReferenceType[]) tempInterfaces.toArray(
+				new CReferenceType[tempInterfaces.size()]);
+		}
 
 	}
 
@@ -128,7 +144,7 @@ public class CciClassDeclaration
 	 * This method resolves the interface that is passed as parameter 
 	 * and performs the checks. 
 	 * It performs all checks that are done for standard java interfaces
-	 * implementations plus the check if it is a CI, if the last parameter is 
+	 * plus the check if it is a CI, if the last parameter is 
 	 * true.
 	 *  
 	 * @param context
@@ -195,8 +211,8 @@ public class CciClassDeclaration
 	}
 	
 	/**
-	 * Overriden for resolve the bindings and insert the name of 
-	 * the CI that are defined at the owner. Beyond that, the implementations
+	 * Overriden for resolve the binding and insert on it the name of 
+	 * the outer CI where it is defined. Beyond that, the implementation
 	 * of the inner classes must be added. The implementation of the inner 
 	 * CIs is not defined by the programmer with the implements clause. It 
 	 * is done using the same name as the name used for the inner interface 
@@ -216,24 +232,24 @@ public class CciClassDeclaration
 			CciClass ownerClass = ((CciClass)owner);
 		
 			//First try the bindings			
-			CReferenceType[] ownerCis = ownerClass.getBindings();
-			if (ownerCis != null && ownerCis.length > 0)
-				ciName = ownerCis[0].getQualifiedName();
+			CReferenceType ownerCi = ownerClass.getBinding();
+			if (ownerCi != null)
+				ciName = ownerCi.getQualifiedName();
 			else
 			{
 				//Now the implementations, adding the implementation interfaces
 				//to the inners.
-				ownerCis = ownerClass.getImplementations();
-				if (ownerCis != null && ownerCis.length > 0)
+				ownerCi = ownerClass.getImplementation();
+				if (ownerCi != null)
 				{
-					ciName = ownerCis[0].getQualifiedName();
-					addImplementation(ownerCis[0]);
+					ciName = ownerCi.getQualifiedName();
+					addImplementation(ownerCi);
 				}
 				else
 				{
 					//The owner can be an interface, so here we look for the
 					// CI in the interfaces of the owner.
-					ownerCis = owner.getInterfaces();
+					CReferenceType[] ownerCis = owner.getInterfaces();
 					if (ownerCis != null && ownerCis.length > 0)
 					{
 						CReferenceType ci = null;
@@ -265,26 +281,241 @@ public class CciClassDeclaration
 		}
 		
 		//After resolving the interfaces initializes the implementations
-		initImplemetations();
+		initImplemetation(context);
 		
-		//Resolves the bindings
-		for (int i = 0; i < bindings.length; i++)
+		//Resolves the binding
+		if (binding != null)
 		{
-			//The bindings must be CIs, so the last parameter is true.
+			//The binding must be a CI, so the last parameter is true.
 			//And it is added the name of the owner CI on it.
-			bindings[i] = resolveInterface(
+			binding = resolveInterface(
 				context,
 				ciName, 
 				ciName != null 
-					? new CClassNameType(ciName + "$" + bindings[i])
-					: bindings[i], 
+					? new CClassNameType(ciName + "$" + binding)
+					: binding, 
 				true);
+			
+			addCrossReferenceField(binding.getQualifiedName(), 
+				CciConstants.IMPLEMENTATION_FIELD_NAME);
+			
+			addSettingMethod(
+				binding.getQualifiedName(),
+				CciConstants.IMPLEMENTATION_FIELD_NAME, 
+				context.getTypeFactory());
+		}
+		else if (implementation != null)
+		{
+			addCrossReferenceField(implementation.getQualifiedName(), 
+				CciConstants.BINDING_FIELD_NAME);
+
+			addSettingMethod(
+				implementation.getQualifiedName(),
+				CciConstants.BINDING_FIELD_NAME, 
+				context.getTypeFactory());
+
 		}
 	
 		sourceClass.setInterfaces(getAllInterfaces());
 
 	}
 	
+	/**
+	 * Adds a field that is the reference for the implementation 
+	 * or the binding.
+	 * @param ownerName
+	 * @param fieldName
+	 * @return
+	 */
+	protected void addCrossReferenceField(String typeName, 
+		String fieldName)
+	{
+		JFieldDeclaration[] newFields = 
+			new JFieldDeclaration[fields.length + 1];
+		System.arraycopy(fields, 0, newFields, 0, fields.length);
+		
+		newFields[fields.length] = new FjFieldDeclaration(
+					getTokenReference(), 
+					new FjVariableDefinition(
+						getTokenReference(), 
+						ACC_PRIVATE, 
+						new CClassNameType(typeName), 
+						fieldName, 
+						null),
+					false, 
+					null, 
+					null);
+
+		fields = newFields;
+	}
+	public JMethodDeclaration createSettingMethod(String ciType, 
+		String fieldName, TypeFactory typeFactory)
+	{
+		TokenReference ref = getTokenReference();
+		
+		JExpression[] args = new JExpression[]
+		{
+			new FjFieldAccessExpression(ref, 
+				new FjThisExpression(ref), 
+				fieldName)
+		};
+		JStatement assigmentExpression =				
+			new JExpressionStatement(ref,
+				new FjAssignmentExpression(ref, 
+					new FjFieldAccessExpression(ref, 
+						new FjThisExpression(ref), 
+						fieldName),
+					new FjNameExpression(ref, fieldName)),
+				null);
+		JStatement[] statements;
+		
+		if (hasSuperClass())
+		{
+			statements = 
+				new JStatement[] 
+				{
+					assigmentExpression,
+					new JExpressionStatement(ref,
+						new FjMethodCallExpression(ref, 
+							new FjSuperExpression(ref), 
+							CciConstants.toSettingMethodName(fieldName),
+							args),
+						null)
+				};
+		}
+		else
+			statements = new JStatement[]{assigmentExpression};
+				
+		JBlock body = new JBlock(getTokenReference(), statements, null);
+		
+		JFormalParameter[] parameters = new JFormalParameter[]
+		{
+			new FjFormalParameter(ref, 
+				JFormalParameter.DES_PARAMETER, 
+				new CClassNameType(ciType), 
+				fieldName,
+				false)
+		};
+
+		return
+			new FjMethodDeclaration(
+				ref, 
+				ACC_PUBLIC, 
+				new CTypeVariable[0],
+				typeFactory.getVoidType(),
+				CciConstants.toSettingMethodName(fieldName),
+				parameters,
+				new CReferenceType[0],
+				body,
+				null, null);
+		
+	}
+	/**
+	 * Adds the methods to access the binding and implementation references.
+	 *
+	 */
+	protected void addSettingMethod(String ciType, 
+		String fieldName, TypeFactory typeFactory)
+	{
+		addMethod(createSettingMethod(ciType, fieldName, typeFactory));
+	}
+	public boolean hasSuperClass()
+	{
+		return getSuperClass() != null
+			&& ! (getSuperClass().getQualifiedName().equals(
+					FjConstants.CHILD_IMPL_TYPE_NAME))
+			&& ! (getSuperClass().getQualifiedName().equals(
+					Constants.JAV_OBJECT));
+	}
+	
+//	/**
+//	 * Updates the cosntructors for call the super constructors of the proxies.
+//	 * If it does not have one, it adds a constructor that will call the super
+//	 * one.
+//	 */
+//	protected void updateConstructors(
+//		String collaborationInterface, 
+//		String fieldName,
+//		TypeFactory typefactory)
+//	{
+//		boolean hasConstructor = false;
+//		for (int i = 0; i < methods.length; i++)
+//		{
+//			if (methods[i] instanceof FjConstructorDeclaration)
+//			{
+//				((FjConstructorDeclaration)methods[i])
+//					.updateConstructor(
+//						collaborationInterface, 
+//						fieldName);
+//				hasConstructor = true;
+//			}
+//		}
+//		
+//		if (! hasConstructor)
+//		{
+//			addMethod(
+//				createConstructor(
+//					collaborationInterface, 
+//					fieldName, 
+//					typefactory));
+//		}
+//
+//	}
+//	
+//	/**
+//	 * Creates a constructor without parameters that calls the super type 
+//	 * constructor. The super constructor has to receive two parameters: the
+//	 * implementation and the binding, so it creates two fresh objects and 
+//	 * passes for the super constructor.
+//	 */
+//	protected JMethodDeclaration createConstructor(
+//		String collaborationInterface, 
+//		String fieldName,
+//		TypeFactory typeFactory)
+//	{
+//		JFormalParameter[] parameters = 
+//			new JFormalParameter[]
+//			{
+//				new FjFormalParameter(
+//					getTokenReference(), 
+//					JFormalParameter.DES_PARAMETER, 
+//					new CClassNameType(collaborationInterface), 
+//					fieldName, 
+//					false)
+//			};
+//		
+//		// ver se tem super, dae insira um coinstructor call.
+//		
+//		JStatement[] statements = new JStatement[]
+//		{
+//			new JExpressionStatement(
+//				getTokenReference(),
+//				new FjAssignmentExpression(
+//					getTokenReference(), 
+//					new FjFieldAccessExpression(
+//						getTokenReference(), 
+//						new FjThisExpression(getTokenReference()), 
+//						fieldName), 
+//					new FjNameExpression(
+//						getTokenReference(), 
+//						fieldName)),
+//				null)			
+//		};
+//		
+//		FjConstructorBlock body = 
+//			new FjConstructorBlock(getTokenReference(), null, statements);
+//		
+//		return new FjConstructorDeclaration(
+//			getTokenReference(), 
+//			ACC_PUBLIC, 
+//			ident, 
+//			parameters, 
+//			new CReferenceType[0], 
+//			body, 
+//			null, 
+//			null, 
+//			typeFactory);
+//	}	
 	/**
 	 * This method is used to insert the collaboration interaface when the 
 	 * class is nested and shall implement the collaboration interface that 
@@ -328,29 +559,27 @@ public class CciClassDeclaration
 	}
 	
 	/**
-	 * @return the Collaboration Interfaces which it binds.
+	 * @return the Collaboration Interface which it binds.
 	 */
-	public CReferenceType[] getBindings()
+	public CReferenceType getBinding()
 	{
-		return bindings;
+		return binding;
 	}
 
 	/**
-	 * @return the Collaboration Interfaces which it implements.
+	 * @return the Collaboration Interface which it implements.
 	 */
-	public CReferenceType[] getImplementations()
+	public CReferenceType getImplementation()
 	{
-		return implementations == null 
-			? new CReferenceType[0]
-			: implementations;
+		return implementation;
 	}
 	/**
-	 * Sets the implementations of the class
+	 * Sets the implementation of the class
 	 * @param implementations
 	 */
-	public void setImplementations(CReferenceType[] implementations)
+	public void setImplementation(CReferenceType implementation)
 	{
-		this.implementations = implementations;
+		this.implementation = implementation;
 	}
 	
 	/**
@@ -358,28 +587,21 @@ public class CciClassDeclaration
 	 */
 	public CReferenceType[] getAllInterfaces()
 	{
-		CReferenceType[] bindings = getBindings();
-		CReferenceType[] implementations = getImplementations();
+		CReferenceType binding = getBinding();
+		CReferenceType implementation = getImplementation();
 		
 		CReferenceType[] allInterfaces = 
 			new CReferenceType[
 				interfaces.length 
-				+ bindings.length 
-				+ (implementations == null 
-					? 0 
-					: implementations.length)];
-		
-		System.arraycopy(interfaces, 0, allInterfaces, 0, interfaces.length);	
-		System.arraycopy(bindings, 0, allInterfaces, interfaces.length, 
-			bindings.length);
-			
-		if (implementations != null)
-			System.arraycopy(implementations, 0, allInterfaces, 
-				interfaces.length + bindings.length, 
-				implementations.length);
-			
+				+ (binding != null ? 1 : (implementation != null ? 1 : 0))];
+				
+		System.arraycopy(interfaces, 0, allInterfaces, 0, interfaces.length);
+		if (binding != null)
+			allInterfaces[interfaces.length] = binding;
+		else if (implementation != null)
+			allInterfaces[interfaces.length] = implementation;
+
 		return allInterfaces;
-	
 	}
 	
 	/**
@@ -420,16 +642,6 @@ public class CciClassDeclaration
 	}	
 	
 	/**
-	 * Constructs a context.
-	 */
-	protected CClassContext constructContext(CContext context)
-	{
-		
-		return new CciClassContext(context, context.getEnvironment(), 
-			sourceClass, this);
-	}
-
-	/**
 	 * This method was pulled up from FjClassDeclaration.
 	 * @param type
 	 */
@@ -448,35 +660,327 @@ public class CciClassDeclaration
 	 * @param type
 	 * @author Walter Augusto Werner
 	 */
-	protected void setInners(JTypeDeclaration[] d)
+	protected void setInners(JTypeDeclaration[] inners)
 	{
-		inners = d;
+		this.inners = inners;
 	}
 
 	/**
-	 * Overriden for check if the class implements or binds all nested 
-	 * interfaces from the CI.
+	 * Checks if the class implements or binds all nested 
+	 * interfaces from the CI and if the methods are in the right place. The 
+	 * expected methods cannot be defined into a implementation class as 
+	 * provided in binding classes. After checking, it inserts the methods
+	 * that are not defined in the class: for example the provided methods in 
+	 * the binding classes. The implementation of these methods is just a
+	 * delegation for the object whose is set on the delegation field of the
+	 * class, for example: the field _implementation in the binding classes.
+	 * 
 	 * 
 	 * @see at.dms.kjc.JTypeDeclaration#checkTypeBody(at.dms.kjc.CContext)
 	 */
-	public void checkTypeBody(CContext context) throws PositionedError
+	public void checkTypeBody(CContext context) 
+		throws PositionedError
 	{
-		if (bindings.length > 0)
+		if (binding != null)
 		{
 			checkInnerTypeImplementation(context, 
-				bindings[0].getCClass().getInnerClasses(), 
-				bindings[0], 
+				binding.getCClass().getInnerClasses(), 
+				binding, 
 				CaesarMessages.NESTED_TYPE_NOT_BOUND);
+			
+			checkCIMethods(context, binding, CCI_PROVIDED, 
+				CaesarMessages.PROVIDED_METHOD_IN_BINDING);
+							
+			addUndefinedMethods(constructContext(context), binding, 
+				CCI_PROVIDED, CciConstants.IMPLEMENTATION_FIELD_NAME);
+			
 		}
-		else if (implementations != null && implementations.length > 0)
+		else if (implementation != null)
 		{
 			checkInnerTypeImplementation(context, 
-				implementations[0].getCClass().getInnerClasses(), 
-				implementations[0], 
+				implementation.getCClass().getInnerClasses(), 
+				implementation, 
 				CaesarMessages.NESTED_TYPE_NOT_IMPLEMENTED);
+
+			checkCIMethods(context, implementation, CCI_EXPECTED, 
+				CaesarMessages.EXPECTED_METHOD_IN_IMPLEMENTATION);
+				
+			addUndefinedMethods(constructContext(context), implementation, 
+				CCI_EXPECTED, CciConstants.BINDING_FIELD_NAME);
 		}
 		
 		super.checkTypeBody(context);
+	}
+
+	/**
+	 * Checks if the method is in the right place. For example,
+	 * expected methods must be implemented <b>only</b> in binding classes 
+	 * while provided methods in implemention classes.
+	 * 
+	 * @param context
+	 * @param interfaces
+	 * @param modifier
+	 * @param message
+	 * @throws PositionedError
+	 */
+	protected void checkCIMethods(
+		CContext context,
+		CReferenceType collaborationInterface,
+		int modifier,
+		MessageDescription message)
+		throws PositionedError
+	{
+		ArrayList ciMethods = 
+			getCiMethods(
+				collaborationInterface.getCClass(), 
+				modifier);
+
+		for (int i = 0; i < ciMethods.size(); i++)
+		{
+			CMethod ciMethod = (CMethod) ciMethods.get(i);
+			check(context,
+				! isDefined(ciMethod),
+				message,
+				ciMethod.getIdent());
+		}
+
+	}
+
+	/**
+	 * This method is used to check if the method is defined in the class.
+	 * 
+	 * @param method the method which one wants to know if there is an
+	 * implementation.
+	 * @return true if the method is already defined, false otherwise.
+	 */
+	protected boolean isDefined(CMethod method)
+	{
+		for (int i = 0; i < methods.length; i++)
+		{
+			CMethod definedMethod = methods[i].getMethod();
+			if (method.getIdent().equals(definedMethod.getIdent())
+				&& method.hasSameSignature(definedMethod, null))
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Adds the methods that cannot be defined by the programer 
+	 * in the source code. For example, the provided methods on binding classes.
+	 * The body of the method is just a method call for the reference that is
+	 * set as its delegation reference.
+	 * 
+	 * @param context
+	 * @param collaborationInterface
+	 * @param methodModifier
+	 * @param fieldName
+	 * @throws PositionedError
+	 */
+	protected void addUndefinedMethods(CContext context,
+		CReferenceType collaborationInterface, 
+		int methodModifier, String fieldName) 
+		throws PositionedError
+	{
+		TokenReference ref = getTokenReference();
+		//The methods that must be defined now.
+		CMethod[] ciMethods = (CMethod[]) getCiMethods(
+			collaborationInterface.getCClass(), 
+			methodModifier).toArray(new CMethod[0]);
+		
+		// We have to store both the method itself and its source reference	
+		ArrayList newMethods = new ArrayList(ciMethods.length);
+		ArrayList sourceMethods = new ArrayList(ciMethods.length);
+		//Creates the methods
+		for (int i = 0; i < ciMethods.length; i++)
+		{
+			FjCleanMethodDeclaration method =
+				createDelagationMethod(fieldName, ciMethods[i]);
+					
+			// Now we have to initializate the internal structure of the method,
+			// as well as creates their sources.
+			FjClassContext classContext = (FjClassContext) 
+				context.getClassContext();
+			classContext.pushContextInfo(this);
+			if (isCleanClass())
+			{
+				//For clean classes we have to create the self context methods
+				FjMethodDeclaration[] cleanMethods = 
+					method.getSelfContextMethods(getCClass().getAbstractType());
+				for (int j = 0; j < cleanMethods.length; j++)
+				{
+					newMethods.add(cleanMethods[j]);
+					cleanMethods[j].checkInterface(classContext);
+					sourceMethods.add(cleanMethods[j].initFamilies(
+						classContext));
+				}
+			}
+			else
+			{
+				newMethods.add(method);
+				method.checkInterface(classContext);
+				sourceMethods.add(method.initFamilies(classContext));
+			}
+			classContext.popContextInfo();
+		}
+		
+		addMethods((JMethodDeclaration[]) 
+			newMethods.toArray(new JMethodDeclaration[newMethods.size()]));
+		
+		sourceMethods.addAll(Arrays.asList(sourceClass.getMethods()));
+		
+		((CciSourceClass)sourceClass).setMethods(
+			(CMethod[])
+				sourceMethods.toArray(
+					new CMethod[sourceMethods.size()]));
+	}
+	
+	public FjCleanMethodDeclaration createDelagationMethod(
+		String fieldName,
+		CMethod method)
+	{
+		return 
+			createDelagationMethod(
+				fieldName, 
+				method.getIdent(), 
+				method.getParameters(),
+				method.getTypeVariables(),
+				method.getReturnType(), 
+				method.getThrowables());
+	}
+
+	public FjCleanMethodDeclaration createDelagationMethod(
+		String fieldName,
+		String methodName,
+		CType[] parameterTypes,
+		CTypeVariable[] typeVariables,
+		CType returnType,
+		CReferenceType[] exceptions)
+	{
+		TokenReference ref = getTokenReference();
+		// The parameters and the arguments are created in the same round.
+		FjFormalParameter[] parameters = new FjFormalParameter[
+			parameterTypes.length];
+		JExpression[] args = new JExpression[
+			parameterTypes.length];
+		
+		for (int j = 0; j < parameters.length; j++)
+		{
+			String parameterName = ("param" + j).intern();
+			//Creates the parameter...
+			parameters[j] = new FjFormalParameter(
+				ref, 
+				JFormalParameter.DES_PARAMETER, 
+				parameterTypes[j],
+				parameterName,
+				false);
+			//Creates the argument...
+			args[j] = new FjNameExpression(ref, parameterName);
+		}
+		
+		return
+			new FjCleanMethodDeclaration(
+				ref, 
+				ACC_PUBLIC, 
+				typeVariables, 
+				returnType, 
+				methodName, 
+				parameters, 
+				exceptions, 
+				createUndefinedMethodBody(fieldName, 
+					methodName, args, ! (returnType instanceof CVoidType)), 
+				null, 
+				null);
+		
+	}
+	
+	/**
+	 * @return Is it a clean class?
+	 */
+	public boolean isCleanClass()
+	{
+		return CModifier.contains(modifiers, FJC_CLEAN)
+				| CModifier.contains(modifiers, FJC_VIRTUAL)
+				| CModifier.contains(modifiers, FJC_OVERRIDE);
+	}
+	
+	/**
+	 * Returns the methods that are defined in the CI with the passed modifier.
+	 * For example, we could want all provided methods defined in the CI, 
+	 * including those methods defined in super CIs.
+	 * 
+	 * @param collaborationInterface
+	 * @param modifier
+	 * @return
+	 */
+	protected ArrayList getCiMethods(CClass collaborationInterface, 
+		int modifier)
+	{
+		CMethod[] ciMethods = collaborationInterface.getMethods();
+		ArrayList methodsToReturn = new ArrayList(ciMethods.length);
+		for (int i = 0; i < ciMethods.length; i++)
+			if (CModifier.contains(ciMethods[i].getModifiers(), modifier))
+				methodsToReturn.add(ciMethods[i]);
+		CReferenceType[] interfaces = collaborationInterface.getInterfaces();
+		for (int i = 0; i < interfaces.length; i++)
+		{
+			CClass superType = interfaces[i].getCClass();
+			if (CModifier.contains(superType.getModifiers(), CCI_COLLABORATION))
+				methodsToReturn.addAll(getCiMethods(superType, modifier));
+		}
+		return methodsToReturn;
+	}
+
+	/**
+	 * Returns a method body for the methods that are not defined by 
+	 * the programmers. This body is just a method call for the method with 
+	 * the same name as the passed method for the field also passed as 
+	 * parameter.
+	 * 
+	 * @param fieldName
+	 * @param method
+	 * @param args
+	 * @return
+	 */
+	protected JBlock createUndefinedMethodBody(
+		String fieldName,
+		String methodName,
+		JExpression[] args,
+		boolean returns)
+	{
+		TokenReference ref = getTokenReference();
+		JExpression expr = 
+			new FjMethodCallExpression(
+				ref, 
+				new FjFieldAccessExpression(
+					ref, 
+					new FjThisExpression(ref), 
+					fieldName),
+				methodName,
+				args);
+				
+		JStatement[] body =
+			new JStatement[] 
+			{
+				returns
+					? (JStatement) 
+						new FjReturnStatement(ref, expr, null)
+					: (JStatement) 
+						new JExpressionStatement(ref, expr, null)
+			};
+		return new JBlock(ref, body, null);
+	}
+	
+	protected void addMethods(JMethodDeclaration[] newMethods)
+	{
+		JMethodDeclaration[] tempMethods = new JMethodDeclaration[
+			methods.length + newMethods.length];
+			
+		System.arraycopy(methods, 0, tempMethods, 0, methods.length);
+		System.arraycopy(newMethods, 0, tempMethods, methods.length, 
+			newMethods.length);
+		
+		methods = tempMethods;
 	}
 
 	/**
@@ -516,6 +1020,27 @@ public class CciClassDeclaration
 		}
 	}
 
+	/**
+	 * Pulled up!
+	 * @param newMethod
+	 */
+	public void addMethod(JMethodDeclaration newMethod)
+	{
+		JMethodDeclaration[] newMethods =
+			new JMethodDeclaration[methods.length + 1];
+	
+		System.arraycopy(methods, 0, newMethods, 0, methods.length);
+	
+		newMethods[methods.length] = newMethod;
+	
+		methods = newMethods;
+	}
+	public void checkInterface(CContext context) throws PositionedError
+	{
+		super.checkInterface(context);
+		sourceClass.setInterfaces(getAllInterfaces());
+	}
+
 	/* (non-Javadoc)
 	 * @see at.dms.kjc.JTypeDeclaration#print()
 	 */
@@ -524,35 +1049,35 @@ public class CciClassDeclaration
 		System.out.print(CModifier.toString(modifiers));
 		System.out.print("class ");
 		super.print();
-		System.out.print(" extends " + superClass );
-		System.out.print(" implements ");
-		for (int i = 0; i < interfaces.length; i++)
+		if (superClass != null)
+			System.out.print(" extends " + superClass );
+		if (interfaces.length > 0)
 		{
-			if (i > 0)
-				System.out.print(", ");
-				
-			System.out.print(interfaces[i]);
+			System.out.print(" implements ");
+			for (int i = 0; i < interfaces.length; i++)
+			{
+				if (i > 0)
+					System.out.print(", ");
+					
+				System.out.print(interfaces[i]);
+			}
 		}
-		System.out.print(" implementsCI ");
-		for (int i = 0; implementations != null && i < implementations.length; i++)
+		
+		if (implementation != null)
 		{
-			if (i > 0)
-				System.out.print(", ");
-			
-			System.out.print(implementations[i]);
+			System.out.print(" implementsCI ");
+
+			System.out.print(implementation);
 		}
 			
-		System.out.print(" binds ");
-		for (int i = 0; i < bindings.length; i++)
+		
+		if (binding != null)
 		{
-			if (i > 0)
-				System.out.print(", ");
-	
-			System.out.print(bindings[i]);
+			System.out.print(" binds ");
+			System.out.print(binding);
 		}
 		
 		System.out.println();
 	}
-
 
 }

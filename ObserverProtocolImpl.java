@@ -7,7 +7,8 @@ public class ObserverProtocolImpl implements ObserverProtocol
 {
 	public String getNameParent(String child)
 	{
-		return "";
+		System.out.println("ObserverProtocolImpl.getNameParent(" + child + ")");
+		return "ObserverProtocolImpl";
 	}
 	
 	virtual public class Subject
@@ -15,15 +16,18 @@ public class ObserverProtocolImpl implements ObserverProtocol
 		private ArrayList observers = new ArrayList();
 		public void addObserver(Observer o)
 		{
+			System.out.println("Subject.addObserver(" + o + ")");
 			observers.add(o);
 		}
 		public void removeObserver(Observer o)
 		{
+			System.out.println("Subject.removeObserver(" + o + ")");
 			getNameParent("X");
 			observers.remove(o);
 		}
 		public void changed()
 		{
+			System.out.println("Subject.changed()");
 			for (Iterator iter = observers.iterator(); iter.hasNext();)
 				((Observer)iter.next()).notify(this);
 		}
@@ -34,6 +38,7 @@ public class ObserverProtocolImpl implements ObserverProtocol
 	{
 		public void setSubject(Subject s)
 		{
+			System.out.println("Observer.setSubject(" + s + ")");
 		}		
 	}
 }

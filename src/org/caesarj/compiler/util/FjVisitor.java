@@ -3,6 +3,7 @@ package org.caesarj.compiler.util;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.PositionedError;
+import org.caesarj.compiler.ast.CciWeaveletClassDeclaration;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
 import org.caesarj.compiler.ast.FjCompilationUnit;
@@ -179,6 +180,17 @@ public abstract class FjVisitor implements KjcVisitor {
 					body,
 					methods,
 					decls );
+			else if (self instanceof CciWeaveletClassDeclaration)
+				visitCciWeaveletClassDeclaration(
+					(CciWeaveletClassDeclaration) self,
+					modifiers,
+					ident,
+					typeVariables,
+					superClass,
+					interfaces,
+					body,
+					methods,
+					decls );
 			else if( self instanceof FjClassDeclaration )
 				visitFjClassDeclaration(
 					(FjClassDeclaration) self,
@@ -228,6 +240,29 @@ public abstract class FjVisitor implements KjcVisitor {
 			decls[i].accept( this );
 		}
 		this.owner.set( oldOwner );
+	}
+
+	public void visitCciWeaveletClassDeclaration(
+		CciWeaveletClassDeclaration self,
+		int modifiers,
+		String ident,
+		CTypeVariable[] typeVariables,
+		String superClass,
+		CReferenceType[] interfaces,
+		JPhylum[] body,
+		JMethodDeclaration[] methods,
+		JTypeDeclaration[] decls) {
+		visitFjClassDeclaration(
+			self,
+			modifiers,
+			ident,
+			typeVariables,
+			superClass,
+			interfaces,
+			body,
+			methods,
+			decls
+		);
 	}
 	
 	public void visitFjCleanClassDeclaration(

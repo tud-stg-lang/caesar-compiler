@@ -146,34 +146,13 @@ public abstract class CciMethodDeclaration
 		for (int i = 0; i < ownParameters.length; i++) 
 			ownParameters[i] = (FjFormalParameter) myParameters[i].clone();
 			
-		JExpression[] arguments;
-		int j;
-		String methodName;
-		if (! FjConstants.isSelfContextMethodName(ident))
-		{
-			//Creates the expressions that are the arguments for the method call
-			arguments = new JExpression[ownParameters.length + 1];
-			
-			//The first expression is an access to "this".
-			arguments[0] = new FjThisExpression(getTokenReference(), false);
-			
-			j = 1;
-			
-			methodName = FjConstants.selfContextMethodName(ident);			
-		}
-		else
-		{
-			//Creates the expressions that are the arguments for the method call
-			arguments =	new JExpression[ownParameters.length];
-			
-			j = 0;
-			methodName = ident;			
-		}
+		//Creates the expressions that are the arguments for the method call
+		JExpression[] arguments = new JExpression[ownParameters.length];
 
 		//The others are accesses to the received parameters.
-		for (int i = 0; i < ownParameters.length; i++, j++)
+		for (int i = 0; i < ownParameters.length; i++)
 		{ 
-			arguments[j] =
+			arguments[i] =
 				new FjNameExpression(
 					getTokenReference(),
 					ownParameters[i].getIdent());
@@ -189,7 +168,7 @@ public abstract class CciMethodDeclaration
 			new JMethodCallExpression(
 				getTokenReference(),
 				prefix,
-				methodName,
+				ident,
 				arguments);
 				
 		//If the return type is other than void it must return the 

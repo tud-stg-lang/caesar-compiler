@@ -1,6 +1,8 @@
 package org.caesarj.compiler.util;
 
 import org.caesarj.compiler.ast.FjInterfaceDeclaration;
+import org.caesarj.compiler.ast.FjSourceField;
+import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CType;
 import org.caesarj.kjc.CTypeVariable;
@@ -8,6 +10,10 @@ import org.caesarj.kjc.JBlock;
 import org.caesarj.kjc.JClassDeclaration;
 import org.caesarj.kjc.JClassImport;
 import org.caesarj.kjc.JCompilationUnit;
+import org.caesarj.kjc.JConstructorBlock;
+import org.caesarj.kjc.JConstructorDeclaration;
+import org.caesarj.kjc.JExpression;
+import org.caesarj.kjc.JFieldDeclaration;
 import org.caesarj.kjc.JFormalParameter;
 import org.caesarj.kjc.JInterfaceDeclaration;
 import org.caesarj.kjc.JMethodDeclaration;
@@ -77,6 +83,14 @@ public class DebugVisitor extends FjVisitor
 		addIdent();
 		for (int i = 0; i < decls.length; i++)
 			decls[i].accept(this);
+		
+		System.out.println();
+		JFieldDeclaration[] fields = self.getFields();
+		for (int i = 0; i < fields.length; i++)
+			fields[i].accept(this);
+			
+		System.out.println();
+
 			
 		for (int i = 0; i < methods.length; i++)
 			methods[i].accept(this);
@@ -146,4 +160,36 @@ public class DebugVisitor extends FjVisitor
 		printIdent();
 		self.print();
 	}
+	/* (non-Javadoc)
+	 * @see org.caesarj.kjc.KjcVisitor#visitFieldDeclaration(org.caesarj.kjc.JFieldDeclaration, int, org.caesarj.kjc.CType, java.lang.String, org.caesarj.kjc.JExpression)
+	 */
+	public void visitFieldDeclaration(
+		JFieldDeclaration self,
+		int modifiers,
+		CType type,
+		String ident,
+		JExpression expr)
+	{
+		printIdent();
+		System.out.print(CModifier.toString(modifiers));
+		System.out.print(((CReferenceType)type).getQualifiedName());
+		System.out.print(" " + ident + ";");
+		System.out.println(((FjSourceField)self.getField()).getFamily());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.caesarj.kjc.KjcVisitor#visitConstructorDeclaration(org.caesarj.kjc.JConstructorDeclaration, int, java.lang.String, org.caesarj.kjc.JFormalParameter[], org.caesarj.kjc.CReferenceType[], org.caesarj.kjc.JConstructorBlock)
+	 */
+	public void visitConstructorDeclaration(
+		JConstructorDeclaration self,
+		int modifiers,
+		String ident,
+		JFormalParameter[] parameters,
+		CReferenceType[] exceptions,
+		JConstructorBlock body)
+	{
+		printIdent();
+		self.print();
+	}
+
 }

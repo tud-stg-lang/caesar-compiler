@@ -1,8 +1,10 @@
 package org.caesarj.compiler.util;
 
+import org.caesarj.classfile.Constants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.ast.CciCollaborationInterfaceDeclaration;
 import org.caesarj.compiler.ast.CciCollaborationInterfaceProxyDeclaration;
+import org.caesarj.compiler.ast.CciInterfaceDeclaration;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassIfcImplDeclaration;
@@ -10,6 +12,7 @@ import org.caesarj.compiler.ast.FjCleanClassInterfaceDeclaration;
 import org.caesarj.compiler.ast.FjCompilationUnit;
 import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
 import org.caesarj.kjc.CClassNameType;
+import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.JClassImport;
@@ -161,11 +164,8 @@ public class ClassTransformationFjVisitor extends FjVisitor {
 	{
 		if (self instanceof CciCollaborationInterfaceDeclaration)
 		{
-			CciCollaborationInterfaceDeclaration collaborationInterface = 
-				(CciCollaborationInterfaceDeclaration)self;
-				
-			/*collaborationInterface.addSelfContextMethods(
-				environment.getTypeFactory());*/
+			CciInterfaceDeclaration collaborationInterface = 
+				(CciInterfaceDeclaration)self;
 
 			collaborationInterface.initInnersAsCollaboration();
 			
@@ -174,7 +174,6 @@ public class ClassTransformationFjVisitor extends FjVisitor {
 					environment.getTypeFactory());
 
 			owner.append(ciProxy);
-			
 		}
 
 		super.visitInterfaceDeclaration(

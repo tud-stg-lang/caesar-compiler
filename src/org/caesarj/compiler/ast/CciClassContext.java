@@ -1,14 +1,23 @@
 package org.caesarj.compiler.ast;
 
 import org.caesarj.compiler.CaesarMessages;
+import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.PositionedError;
+import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
 import org.caesarj.kjc.CContext;
 import org.caesarj.kjc.CMethod;
 import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CSourceClass;
+import org.caesarj.kjc.CType;
 import org.caesarj.kjc.CVariableInfo;
+import org.caesarj.kjc.CVoidType;
+import org.caesarj.kjc.JBlock;
+import org.caesarj.kjc.JExpression;
+import org.caesarj.kjc.JExpressionStatement;
+import org.caesarj.kjc.JFormalParameter;
+import org.caesarj.kjc.JStatement;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.KjcEnvironment;
 import org.caesarj.util.MessageDescription;
@@ -18,6 +27,9 @@ import org.caesarj.util.MessageDescription;
  * responsable to insert the expected and provided methods.
  * 
  * @author Walter Augusto Werner
+ * 
+ * ::::::THIS CLASS IS NOT BEING USED ANYMORE:::::
+ * 
  */
 public class CciClassContext 
 	extends FjClassContext
@@ -61,13 +73,16 @@ public class CciClassContext
 		{
 			CciSourceClass cciSelf = (CciSourceClass) self;
 			
-			checkCIMethods(cciSelf.getBindings(), CCI_PROVIDED, 
+			checkCIMethods(cciSelf.getBinding(), CCI_PROVIDED, 
 				CaesarMessages.PROVIDED_METHOD_IN_BINDING);
-			checkCIMethods(cciSelf.getImplementations(), CCI_EXPECTED, 
+			checkCIMethods(cciSelf.getImplementation(), CCI_EXPECTED, 
 				CaesarMessages.EXPECTED_METHOD_IN_IMPLEMENTATION);
 
-			addUncallableMethods(cciSelf.getBindings(), CCI_PROVIDED);
-			addUncallableMethods(cciSelf.getImplementations(), CCI_EXPECTED);
+			addUndefinedMethods(cciSelf.getBinding(), CCI_PROVIDED, 
+				CciConstants.IMPLEMENTATION_FIELD_NAME);
+			addUndefinedMethods(cciSelf.getImplementation(), CCI_EXPECTED, 
+				CciConstants.IMPLEMENTATION_FIELD_NAME);
+
 
 		}
 		super.close(decl, staticC, instanceC, constructorsC);
@@ -85,33 +100,56 @@ public class CciClassContext
 	 * @throws UnpositionedError
 	 * @throws PositionedError
 	 */
-	protected void addUncallableMethods(
-		CReferenceType[] collaborationInterfaces,
-		int modifier)
+	protected void addUndefinedMethods(
+		CReferenceType collaborationInterface,
+		int modifier,
+		String fieldName)
 		throws UnpositionedError
 	{
-		//CMethod[] methods = getCClass().getAbstractMethods(this, false);
-
-		for (int i = 0; i < collaborationInterfaces.length; i++)
+		if (collaborationInterface != null)
 		{
 			CMethod[] methods =
-				collaborationInterfaces[i].getCClass().getAbstractMethods(this, 
+				collaborationInterface.getCClass().getAbstractMethods(this, 
 					false);
-			for (int j = 0; j < methods.length; j++)
+			for (int i = 0; i < methods.length; i++)
 			{
-				if (CModifier.contains(methods[j].getModifiers(), modifier)
-					&& !isDefined(methods[j]))
+				if (CModifier.contains(methods[i].getModifiers(), modifier)
+					&& !isDefined(methods[i]))
 				{
-					CciSourceUncallableMethod method =
-						new CciSourceUncallableMethod(
-							getTypeFactory(),
+					CType[] ciMethodParameters = methods[i].getParameters();
+					FjFormalParameter[] parameters = new FjFormalParameter[
+						ciMethodParameters.length];
+					JExpression[] args = new JExpression[
+						ciMethodParameters.length];
+				
+					for (int j = 0; j < parameters.length; j++)
+					{
+						String paramName = "param" + j; 
+						parameters[j] = new FjFormalParameter(
+							TokenReference.NO_REF, 
+							JFormalParameter.DES_PARAMETER, 
+							ciMethodParameters[j],
+							paramName,
+							false);
+						
+						args[j] = 
+							new FjLocalVariableExpression(
+								TokenReference.NO_REF, 
+								parameters[j]);
+					}
+										
+					CciSourceUndefinedMethod method =
+						new CciSourceUndefinedMethod(
 							self,
 							ACC_PUBLIC | modifier,
-							methods[j].getIdent(),
-							methods[j].getReturnType(),
-							methods[j].getParameters(),
-							methods[j].getThrowables(),
-							methods[j].getTypeVariables());
+							methods[i].getIdent(),
+							methods[i].getReturnType(),
+							methods[i].getParameters(),
+							parameters,
+							methods[i].getThrowables(),
+							methods[i].getTypeVariables(),
+							createUndefinedMethodBody(fieldName, 
+								methods[i], args));
 
 					//It is for the internal data be initializated in the method.
 					try
@@ -130,6 +168,37 @@ public class CciClassContext
 		}
 	}
 
+	protected JBlock createUndefinedMethodBody(
+		String fieldName,
+		CMethod method,
+		JExpression[] args)
+	{
+		TokenReference ref = TokenReference.NO_REF;
+		JExpression expr = 
+			new FjMethodCallExpression(
+				ref, 
+				new FjFieldAccessExpression(
+					ref, 
+					new FjThisExpression(ref), 
+					fieldName),
+				method.getIdent(),
+				args);
+				
+		boolean returns = 
+			! (method.getReturnType() instanceof CVoidType);
+		
+		JStatement[] body =
+			new JStatement[] 
+			{
+				returns
+					? (JStatement) 
+						new FjReturnStatement(ref, expr, null)
+					: (JStatement) 
+						new JExpressionStatement(ref, expr, null)
+			};
+		return new JBlock(ref, body, null);
+	}
+	
 	/**
 	 * This method is used to check if the method is defined in the class. 
 	 * It can be used when adding methods and the inserted methods are not 
@@ -175,16 +244,17 @@ public class CciClassContext
 	 * @throws PositionedError
 	 */
 	protected void checkCIMethods(
-		CReferenceType[] collaborationInterfaces,
+		CReferenceType collaborationInterface,
 		int modifier,
 		MessageDescription message)
 		throws UnpositionedError
 	{
-		CMethod[] abstractMethods = self.getAbstractMethods(this, false);
-		for (int i = 0; i < collaborationInterfaces.length; i++)
+		if (collaborationInterface != null)
 		{
+			CMethod[] abstractMethods = self.getAbstractMethods(this, false);
+
 			CMethod[] implementMethods =
-				collaborationInterfaces[i].getCClass().getMethods();
+				collaborationInterface.getCClass().getMethods();
 
 			for (int j = 0; j < implementMethods.length; j++)
 				if (CModifier

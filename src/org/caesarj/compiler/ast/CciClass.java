@@ -7,8 +7,6 @@ import org.caesarj.kjc.CReferenceType;
  */
 public interface CciClass
 {
-	public CReferenceType[] getBindings();
-	public CReferenceType[] getImplementations();
-	
-
+	public CReferenceType getBinding();
+	public CReferenceType getImplementation();
 }

@@ -49,6 +49,7 @@ public class FjConstants {
 	public static final String UNKNOWN_TYPE_NAME = ("familyj/compiler/TypeYetUnknown").intern();
 	private static final String FACTORY_PREFIX = "create".intern();
 	private static final String PARAM_PREFIX = "renamed".intern();
+	
 	private static final String IMPL_POSTFIX = "_Impl".intern();
 	protected static final String PROXY_POSTFIX = "_Proxy".intern();
 	public static final String IMPLEMENTATION_METHOD_SUFFIX = ( SEPERATOR + "implementation").intern();

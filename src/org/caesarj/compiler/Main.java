@@ -146,7 +146,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 			System.out.println("CHECK_INTERFACE:");
 			for (int count = 0; count < tree.length; count++) {
 				checkInterface(tree[count]);
-				tree[count].accept(new DebugVisitor());
+				//tree[count].accept(new DebugVisitor());
 			}
 			if (verboseMode()) {
 				inform(
@@ -180,6 +180,8 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 
 			for (int count = 0; count < tree.length; count++) {
 				checkBody(tree[count]);
+				//tree[count].accept(new DebugVisitor());
+				
 				if (!options._java
 					&& !options.beautify
 					&& !(environment.getAssertExtension()

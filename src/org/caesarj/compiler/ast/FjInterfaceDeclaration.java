@@ -195,10 +195,8 @@ public class FjInterfaceDeclaration extends JInterfaceDeclaration {
 		throws PositionedError
 		
 	{
-		int generatedFields = getCClass().hasOuterThis() ? 1 : 0;
-		
 		//Initializes the families of the fields.
-		Hashtable hashField = new Hashtable(fields.length + generatedFields + 1);
+		Hashtable hashField = new Hashtable(fields.length + 1);
 		for (int i = fields.length - 1; i >= 0 ; i--) 
 		{
 			CSourceField field = ((FjFieldDeclaration)fields[i])
@@ -208,30 +206,9 @@ public class FjInterfaceDeclaration extends JInterfaceDeclaration {
 			
 			hashField.put(field.getIdent(), field);
 		}
-		if (generatedFields > 0) 
-		{
-			CSourceField field = outerThis.checkInterface(self);
-
-			field.setPosition(hashField.size());
-
-			hashField.put(JAV_OUTER_THIS, field);
-		}
-		
-		int		generatedMethods = 0;
-
-		if (getDefaultConstructor() != null)
-			generatedMethods++;
-
-		if (statInit != null && !statInit.isDummy()) 
-			generatedMethods++;
-
-		if (instanceInit != null && !instanceInit.isDummy())
-			generatedMethods++;
-
-
 		
 		// Initializes the families of the methods.
-		CMethod[] methodList = new CMethod[methods.length + generatedMethods];
+		CMethod[] methodList = new CMethod[methods.length];
 		int i = 0;
 		for (; i < methods.length; i++)
 		{ 
@@ -242,20 +219,6 @@ public class FjInterfaceDeclaration extends JInterfaceDeclaration {
 				methodList[i] = methods[i].checkInterface(context);
 		}
 		
-		if (statInit != null) 
-		{
-			if (! statInit.isDummy()) 
-				methodList[i++] = statInit.checkInterface(self);
-			else
-				statInit.checkInterface(self);
-		}
-		if (instanceInit != null) 
-		{
-			if (! instanceInit.isDummy()) 
-				methodList[i++] = instanceInit.checkInterface(self);
-			else
-				instanceInit.checkInterface(self);
-		}
 		
 		sourceClass.close(sourceClass.getInterfaces(), 
 			sourceClass.getSuperType(), hashField, methodList);
