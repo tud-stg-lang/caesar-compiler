@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.21 2004-03-03 17:11:53 aracic Exp $
+ * $Id: Caesar.g,v 1.22 2004-03-11 22:31:40 aracic Exp $
  */
 
 /*
@@ -397,7 +397,6 @@ jCaesarClassDefinition [int modifiers]
 :
   "cclass" ident:IDENT
   (typeVariables = kTypeVariableDeclarationList[])?
-  //This is like this for prevent non-determinism
   (superClass =  jCompositeTypeClause[])?
   (interfaces = jImplementsClause[])?
   (wrappee = jWrapsClause[])?
@@ -446,7 +445,6 @@ jVirtualClassDefinition [int modifiers]
 :
   "class" ident:IDENT
   (typeVariables = kTypeVariableDeclarationList[])?
-  //This is like this for prevent non-determinism
   (superClass =  jCompositeTypeClause[])?
   (interfaces = jImplementsClause[])?
   (wrappee = jWrapsClause[])?
@@ -665,40 +663,39 @@ jMember [ParseClassContext context]
       		{ context.addInnerDeclaration(decl); }
   		|
     		decl = jInterfaceDefinition[modifiers]          // inner interface
-      		{
-        		context.addInnerDeclaration(decl);
-      	}
+      		{ context.addInnerDeclaration(decl); }
   		|
     		method = jConstructorDefinition[context, modifiers]
       		{ context.addMethodDeclaration(method); }
-  		|
+		|
     		// method with type variables
 	    	typeVariables = kTypeVariableDeclarationList[]
     		type = jTypeSpec[]
     		method = jMethodDefinition [context, modifiers, type, typeVariables]
-	    	{ context.addMethodDeclaration(method); }
-	  	|
-	  		//pointcut declaration  	
-  			"pointcut" pointcutDecl = jPointcutDefinition[modifiers, CTypeVariable.EMPTY] 
-  			{ 
-  				context.addPointcutDeclaration(pointcutDecl);	
-  			}	 		  		 	  		  		    
-    	|
-      		method = jMethodDefinition [context, modifiers, type, CTypeVariable.EMPTY]
-	        { context.addMethodDeclaration(method); }
-    	|
-      		vars = jVariableDefinitions[modifiers, type] SEMI
-        	{
-	  			for (int i = 0; i < vars.length; i++) {
-		    		context.addFieldDeclaration(new JFieldDeclaration(sourceRef,
-																		vars[i],
-																		getJavadocComment(),
-																		getStatementComment()));
-		  		}
-			}
-    	)
+	    	{ context.addMethodDeclaration(method); }		
+		|  		  	
+    		type = jTypeSpec[]
+	    	(
+	      		method = jMethodDefinition [context, modifiers, type, CTypeVariable.EMPTY]
+		        { context.addMethodDeclaration(method); }
+	    	|
+	      		vars = jVariableDefinitions[modifiers, type] SEMI
+	        	{
+		  			for (int i = 0; i < vars.length; i++) {
+			    		context.addFieldDeclaration(
+			    			new JFieldDeclaration(
+			    				sourceRef,
+								vars[i],
+								getJavadocComment(),
+								getStatementComment()
+							)
+						);
+			  		}
+				}
+	    	)
+	    )
 	)
-	|
+	|	
 		// "static { ... }" class initializer
 		"static" body = jCompoundStatement[]
     	{ context.addBlockInitializer(new JClassBlock(sourceRef, true, body)); }
@@ -706,7 +703,7 @@ jMember [ParseClassContext context]
 	  	// "{ ... }" instance initializer
 	 	body = jCompoundStatement[]
     	{ context.addBlockInitializer(new JClassBlock(sourceRef, false, body)); }
-  	
+    
 ;
 
 jCaesarMember [ParseClassContext context]
@@ -728,10 +725,10 @@ jCaesarMember [ParseClassContext context]
   JAdviceDeclaration adviceDecl;
 }
 :
-  	(
-   		modifiers = jModifiers[]
+	(
+		modifiers = jModifiers[]
    		(
-    		decl = jVirtualClassDefinition[modifiers]   // all inner classes are be virtual
+    		decl = jVirtualClassDefinition[modifiers]   // all inner classes are virtual
       		{ context.addInnerDeclaration(decl); }
   		|
     		method = jConstructorDefinition[context, modifiers]
@@ -745,25 +742,21 @@ jCaesarMember [ParseClassContext context]
 	  	|
 	  		//pointcut declaration  	
   			"pointcut" pointcutDecl = jPointcutDefinition[modifiers, CTypeVariable.EMPTY] 
-  			{ 
-  				context.addPointcutDeclaration(pointcutDecl);	
-  			}
+  			{ context.addPointcutDeclaration(pointcutDecl);	}
     	|	
         	"declare"
     		pattern : TYPE_PATTERN
-    		{
-    		
+    		{    		
 				try {
-
 					CaesarPatternParser patternParser = new CaesarPatternParser(
 															"declare "+pattern.getText(),
 															new CaesarSourceContext(sourceRef) );
 					context.addDeclare(patternParser.parseDeclare());		
 					
 				} catch(CaesarPatternParser.CaesarParserException e) {
-					reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));			
+					reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));
 				} catch(RuntimeException e) {
-			  		reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));							
+			  		reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));
 				}  			
 			}  			
 	  	|  	  	
@@ -771,9 +764,7 @@ jCaesarMember [ParseClassContext context]
   			"before"
 	  		LPAREN  parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN   	
  			adviceDecl = jAdviceDeclaration[CaesarAdviceKind.Before, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, null]
-			{ 	
-				context.addAdviceDeclaration(adviceDecl);
-			}  	 		  		 	 
+			{ context.addAdviceDeclaration(adviceDecl); }  	 		  		 	 
 	  	|
   			//after advice declaration
   			 "after" {kind = CaesarAdviceKind.After;}
@@ -792,36 +783,39 @@ jCaesarMember [ParseClassContext context]
   				{kind = CaesarAdviceKind.AfterThrowing;}
 			)?  	
  			adviceDecl = jAdviceDeclaration[kind, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, extraParam]   
-			{ 
-				context.addAdviceDeclaration(adviceDecl);			
-			}  	 		  		 	 
-	  	| 
-  		  	// around advice declaration
+			{ context.addAdviceDeclaration(adviceDecl); }  	 		  		 	 
+	  	|   		  	
     		type = jTypeSpec[]
 	    	(
-  	  		"around"		  	
-	      	LPAREN  parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN   	
-  		  	(throwsList = jThrowsClause[])?
- 	  		adviceDecl = jAdviceDeclaration[CaesarAdviceKind.Around, modifiers, parameters, type, throwsList, extraParam] 	
-	  		{ 
-	  			context.addAdviceDeclaration(adviceDecl);	  			
-	  		}  	 		  		    
-    	|
-      		method = jMethodDefinition [context, modifiers, type, CTypeVariable.EMPTY]
-	        { context.addMethodDeclaration(method); }
-    	|
-      		vars = jVariableDefinitions[modifiers, type] SEMI
-        	{
-	  			for (int i = 0; i < vars.length; i++) {
-		    		context.addFieldDeclaration(new JFieldDeclaration(sourceRef,
-																		vars[i],
-																		getJavadocComment(),
-																		getStatementComment()));
-		  		}
-			}
-    	)
+		    	// around advice declaration
+	  	  		"around"		  	
+		      	LPAREN  parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN   	
+	  		  	(throwsList = jThrowsClause[])?
+	 	  		adviceDecl = jAdviceDeclaration[CaesarAdviceKind.Around, modifiers, parameters, type, throwsList, extraParam] 	
+		  		{ 
+		  			context.addAdviceDeclaration(adviceDecl);	  			
+		  		}  	 		  		    
+	    	|
+	      		method = jMethodDefinition [context, modifiers, type, CTypeVariable.EMPTY]
+		        { context.addMethodDeclaration(method); }
+	    	|
+	      		vars = jVariableDefinitions[modifiers, type] SEMI
+	        	{
+		  			for (int i = 0; i < vars.length; i++) {
+			    		context.addFieldDeclaration(
+			    			new JFieldDeclaration(
+			    				sourceRef,
+								vars[i],
+								getJavadocComment(),
+								getStatementComment()
+							)
+						);
+			  		}
+				}
+	    	)
+	    )
 	)
-	|
+	|	
 		// "static { ... }" class initializer
 		"static" body = jCompoundStatement[]
     	{ context.addBlockInitializer(new JClassBlock(sourceRef, true, body)); }
@@ -829,7 +823,7 @@ jCaesarMember [ParseClassContext context]
 	  	// "{ ... }" instance initializer
 	 	body = jCompoundStatement[]
     	{ context.addBlockInitializer(new JClassBlock(sourceRef, false, body)); }
-  	)
+    
 ;
 
 

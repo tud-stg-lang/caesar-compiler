@@ -2,6 +2,7 @@ package org.caesarj.compiler.ast;
 
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.export.*;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
@@ -52,10 +53,9 @@ public class ProceedDeclaration extends JMethodDeclaration {
 	/**
 	 * @see familyj.compiler.FjMethodDeclaration#checkInterface1(CClassContext)
 	 */
-	public CSourceMethod checkInterface1(CClassContext context)
+	public CSourceMethod checkInterface(CClassContext context)
 		throws PositionedError {
 
-		
 		try {
 			for (int i = 0; i < typeVariables.length; i++) {
 				typeVariables[i].checkType(context);
@@ -81,9 +81,8 @@ public class ProceedDeclaration extends JMethodDeclaration {
 					(CReferenceType) exceptions[i].checkType(typeContext);
 			}
 
-
 			setInterface(
-				new Proceed(
+				new CProceed(
 					context.getCClass(),
 					ident,
 					returnType,
@@ -94,7 +93,6 @@ public class ProceedDeclaration extends JMethodDeclaration {
 		} catch (UnpositionedError cue) {
 			throw cue.addPosition(getTokenReference());
 		}
-
 	}
 
 	/**

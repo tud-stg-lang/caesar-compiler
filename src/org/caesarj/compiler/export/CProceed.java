@@ -1,4 +1,4 @@
-package org.caesarj.compiler.ast;
+package org.caesarj.compiler.export;
 
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.ClassRefInstruction;
@@ -9,8 +9,6 @@ import org.caesarj.classfile.MethodInfo;
 import org.caesarj.classfile.PushLiteralInstruction;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarConstants;
-import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
 import org.caesarj.compiler.types.CBooleanType;
 import org.caesarj.compiler.types.CByteType;
@@ -34,7 +32,7 @@ import org.caesarj.util.InconsistencyException;
  * 
  * @author Jürgen Hallpap
  */
-public class Proceed extends CSourceMethod implements CaesarConstants {
+public class CProceed extends CSourceMethod implements CaesarConstants {
 
 	private String adviceName;
 
@@ -52,7 +50,7 @@ public class Proceed extends CSourceMethod implements CaesarConstants {
 	 * @param body
 	 * @param families
 	 */
-	public Proceed(
+	public CProceed(
 		CClass owner,
 		String ident,
 		CType returnType,
