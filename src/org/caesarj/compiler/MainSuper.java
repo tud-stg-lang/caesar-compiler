@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: MainSuper.java,v 1.11 2004-08-04 12:48:36 gasiunas Exp $
+ * $Id: MainSuper.java,v 1.12 2004-09-06 13:31:02 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -28,7 +28,6 @@ import java.util.Vector;
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.ClassInfo;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
-import org.caesarj.compiler.ast.visitor.KjcPrettyPrinter;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.export.CSourceClass;
@@ -37,7 +36,13 @@ import org.caesarj.compiler.types.CStdType;
 import org.caesarj.compiler.types.KjcSignatureParser;
 import org.caesarj.compiler.types.KjcTypeFactory;
 import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.util.*;
+import org.caesarj.util.CWarning;
+import org.caesarj.util.InconsistencyException;
+import org.caesarj.util.Messages;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
+import org.caesarj.util.Utils;
 
 /**
  * This class implements the entry point of the Java compiler
@@ -283,46 +288,7 @@ public abstract class MainSuper extends CompilerBase {
         }
     }
 
-    /**
-     * generate the source code of parsed compilation unit
-     * @param	cunit		the compilation unit
-     */
-    protected void generateJavaCode(
-        final JCompilationUnit cunit,
-        final TypeFactory factory) {
-        final long lastTime = System.currentTimeMillis();
-        final String fileName;
 
-        if (options.destination == null || options.destination.equals("")) {
-            fileName = cunit.getTokenReference().getName() + ".gen";
-        }
-        else {
-            fileName =
-                options.destination
-                    + File.separatorChar
-                    + cunit.getTokenReference().getName();
-        }
-
-        try {
-            final KjcPrettyPrinter pp;
-
-            pp = getPrettyPrinter(fileName, factory);
-
-            cunit.accept(pp);
-            pp.close();
-        }
-        catch (IOException ioe) {
-            ioe.printStackTrace();
-            System.err.println("cannot write: " + fileName);
-        }
-
-        if (verboseMode()) {
-            inform(
-                CaesarMessages.JAVA_CODE_GENERATED,
-                cunit.getFileName(),
-                new Long(System.currentTimeMillis() - lastTime));
-        }
-    }
 
     // --------------------------------------------------------------------
     // COMPILER
@@ -413,17 +379,6 @@ public abstract class MainSuper extends CompilerBase {
             CSourceClass.class);
     }
 
-    /**
-     * This method has to be overridden in the sub-classes.
-     *
-     * @return the corresponding PrettyPrinter
-     */
-    protected KjcPrettyPrinter getPrettyPrinter(
-        String fileName,
-        TypeFactory factory)
-        throws IOException {
-        return new KjcPrettyPrinter(fileName, factory);
-    }
 
     // ----------------------------------------------------------------------
     // PROTECTED DATA MEMBERS
