@@ -1623,8 +1623,8 @@ private static final int MAX_LOOKAHEAD = 2;
 		AdviceDeclaration adviceDecl;
 		
 		
-		{
 		if ((_tokenSet_2.member(LA(1))) && (_tokenSet_3.member(LA(2)))) {
+			{
 			modifiers=jModifiers();
 			{
 			switch ( LA(1)) {
@@ -1823,8 +1823,8 @@ private static final int MAX_LOOKAHEAD = 2;
 						adviceDecl=jAdviceDeclaration(CaesarAdviceKind.Around, modifiers, parameters, type, throwsList, extraParam);
 						if ( inputState.guessing==0 ) {
 							
-								  			context.addAdviceDeclaration(adviceDecl);	  			
-								  		
+									  			context.addAdviceDeclaration(adviceDecl);	  			
+									  		
 						}
 					}
 					else if ((LA(1)==IDENT) && (LA(2)==LPAREN)) {
@@ -1838,13 +1838,13 @@ private static final int MAX_LOOKAHEAD = 2;
 						match(SEMI);
 						if ( inputState.guessing==0 ) {
 							
-								  			for (int i = 0; i < vars.length; i++) {
-									    		context.addFieldDeclaration(new FjFieldDeclaration(sourceRef,
-																									vars[i],
-																									getJavadocComment(),
-																									getStatementComment()));
-									  		}
-										
+									  			for (int i = 0; i < vars.length; i++) {
+										    		context.addFieldDeclaration(new FjFieldDeclaration(sourceRef,
+																										vars[i],
+																										getJavadocComment(),
+																										getStatementComment()));
+										  		}
+											
 						}
 					}
 					else {
@@ -1855,6 +1855,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 			else {
 				throw new NoViableAltException(LT(1), getFilename());
+			}
 			}
 			}
 			}
@@ -1876,7 +1877,6 @@ private static final int MAX_LOOKAHEAD = 2;
 			throw new NoViableAltException(LT(1), getFilename());
 		}
 		
-		}
 	}
 	
 	private final CReferenceType[]  jNameList(

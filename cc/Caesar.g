@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.23 2004-03-14 11:00:00 aracic Exp $
+ * $Id: Caesar.g,v 1.24 2004-03-14 11:11:56 aracic Exp $
  */
 
 /*
@@ -760,27 +760,28 @@ jMember [ParseClassContext context]
   		  	// around advice declaration
     		type = jTypeSpec[]
 	    	(
-  	  		"around"		  	
-	      	LPAREN  parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN   	
-  		  	(throwsList = jThrowsClause[])?
- 	  		adviceDecl = jAdviceDeclaration[CaesarAdviceKind.Around, modifiers, parameters, type, throwsList, extraParam] 	
-	  		{ 
-	  			context.addAdviceDeclaration(adviceDecl);	  			
-	  		}  	 		  		    
-    	|
-      		method = jMethodDefinition [context, modifiers, type, CTypeVariable.EMPTY]
-	        { context.addMethodDeclaration(method); }
-    	|
-      		vars = jVariableDefinitions[modifiers, type] SEMI
-        	{
-	  			for (int i = 0; i < vars.length; i++) {
-		    		context.addFieldDeclaration(new FjFieldDeclaration(sourceRef,
-																		vars[i],
-																		getJavadocComment(),
-																		getStatementComment()));
-		  		}
-			}
-    	)
+	  	  		"around"		  	
+		      	LPAREN  parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN   	
+	  		  	(throwsList = jThrowsClause[])?
+	 	  		adviceDecl = jAdviceDeclaration[CaesarAdviceKind.Around, modifiers, parameters, type, throwsList, extraParam] 	
+		  		{ 
+		  			context.addAdviceDeclaration(adviceDecl);	  			
+		  		}  	 		  		    
+	    	|
+	      		method = jMethodDefinition [context, modifiers, type, CTypeVariable.EMPTY]
+		        { context.addMethodDeclaration(method); }
+	    	|
+	      		vars = jVariableDefinitions[modifiers, type] SEMI
+	        	{
+		  			for (int i = 0; i < vars.length; i++) {
+			    		context.addFieldDeclaration(new FjFieldDeclaration(sourceRef,
+																			vars[i],
+																			getJavadocComment(),
+																			getStatementComment()));
+			  		}
+				}
+	    	)
+		)
 	)
 	|
 		// "static { ... }" class initializer
@@ -789,8 +790,7 @@ jMember [ParseClassContext context]
 	|
 	  	// "{ ... }" instance initializer
 	 	body = jCompoundStatement[]
-    	{ context.addBlockInitializer(new JClassBlock(sourceRef, false, body)); }
-  	)
+    	{ context.addBlockInitializer(new JClassBlock(sourceRef, false, body)); }  	
 ;
 
 jConstructorDefinition [ParseClassContext context, int modifiers]
