@@ -428,7 +428,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CReferenceType multiInstanceType =
 			new CClassNameType(qualifiedMultiInstanceAspectClassName);
 		JExpression right =
-			new FjUnqualifiedInstanceCreation(
+			new JUnqualifiedInstanceCreation(
 				where,
 				multiInstanceType,
 				JExpression.EMPTY);
@@ -468,7 +468,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CReferenceType type =
 			new CClassNameType(qualifiedMultiThreadAspectClassName);
 		JExpression right =
-			new FjUnqualifiedInstanceCreation(where, type, JExpression.EMPTY);
+			new JUnqualifiedInstanceCreation(where, type, JExpression.EMPTY);
 		JExpression expr = new FjAssignmentExpression(where, left, right);
 
 		return new JExpressionStatement(where, expr, null);
@@ -637,7 +637,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CClassNameType stackType = new CClassNameType("java/util/Stack");
 
 		JExpression stackInit =
-			new FjUnqualifiedInstanceCreation(
+			new JUnqualifiedInstanceCreation(
 				where,
 				stackType,
 				JExpression.EMPTY);
@@ -1287,7 +1287,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
 
 		JExpression initializer =
-			new FjUnqualifiedInstanceCreation(
+			new JUnqualifiedInstanceCreation(
 				where,
 				multiThreadType,
 				JExpression.EMPTY);
@@ -1451,7 +1451,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new CClassNameType("java/util/WeakHashMap");
 
 		JExpression initializer =
-			new FjUnqualifiedInstanceCreation(
+			new JUnqualifiedInstanceCreation(
 				where,
 				hashMapType,
 				JExpression.EMPTY);
@@ -2610,7 +2610,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression left =
 			new JNameExpression(where, PER_SINGLETON_INSTANCE_FIELD);
 		JExpression right =
-			new FjUnqualifiedInstanceCreation(
+			new JUnqualifiedInstanceCreation(
 				where,
 				new CClassNameType(singletonAspectName),
 				JExpression.EMPTY);

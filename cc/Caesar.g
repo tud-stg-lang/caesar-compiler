@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.31 2004-03-15 17:52:05 aracic Exp $
+ * $Id: Caesar.g,v 1.32 2004-03-15 18:23:13 aracic Exp $
  */
 
 /*
@@ -1943,7 +1943,7 @@ jUnqualifiedNewExpression []
           { self = new JUnqualifiedAnonymousCreation(sourceRef, (CReferenceType)type, args, decl); }
       |
 	// epsilon
-        { self = new FjUnqualifiedInstanceCreation(sourceRef, (CReferenceType)type, args); }
+        { self = new JUnqualifiedInstanceCreation(sourceRef, (CReferenceType)type, args); }
       )
     )
   )
@@ -1989,7 +1989,7 @@ jQualifiedNewExpression [JExpression prefix]
       }
       { self = new JQualifiedAnonymousCreation(sourceRef, prefix, ident.getText(), args, decl); }
   |
-    { self = new FjQualifiedInstanceCreation(sourceRef, prefix, ident.getText(), args); }
+    { self = new JQualifiedInstanceCreation(sourceRef, prefix, ident.getText(), args); }
   )
 ;
 

@@ -5208,7 +5208,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		case STAR_ASSIGN:
 		{
 			if ( inputState.guessing==0 ) {
-				self = new FjQualifiedInstanceCreation(sourceRef, prefix, ident.getText(), args);
+				self = new JQualifiedInstanceCreation(sourceRef, prefix, ident.getText(), args);
 			}
 			break;
 		}
@@ -5479,7 +5479,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				case STAR_ASSIGN:
 				{
 					if ( inputState.guessing==0 ) {
-						self = new FjUnqualifiedInstanceCreation(sourceRef, (CReferenceType)type, args);
+						self = new JUnqualifiedInstanceCreation(sourceRef, (CReferenceType)type, args);
 					}
 					break;
 				}

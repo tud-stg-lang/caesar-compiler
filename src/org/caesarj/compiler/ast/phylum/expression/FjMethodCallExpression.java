@@ -698,7 +698,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 	}
 
 	protected boolean hasAnUnqualifiedInstanceCreationPrefix() {
-		if (prefix instanceof FjQualifiedInstanceCreation)
+		if (prefix instanceof JQualifiedInstanceCreation)
 			return true;
 		else if (prefix instanceof FjMethodCallExpression)
 			return ((FjMethodCallExpression) prefix)
