@@ -20,12 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JAssignmentExpression.java,v 1.16 2005-02-15 18:33:19 aracic Exp $
+ * $Id: JAssignmentExpression.java,v 1.17 2005-02-16 12:02:59 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
@@ -33,7 +34,6 @@ import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.CWarning;
-import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -135,9 +135,12 @@ public class JAssignmentExpression extends JBinaryExpression {
 	  	      KjcMessages.ASSIGNMENT_BADTYPE, 	right.getFamily()+"."+right.getType(factory).getCClass().getIdent(),   
 	  	      left.getFamily()+"."+left.getType(factory).getCClass().getIdent() );
 	    }
-	    else if(lFam!=null ^ rFam!=null) {
-	        // CTODO add error here
-	        throw new InconsistencyException("(error required here)... trying to assign an object with family to an object without family");
+	    else {
+	        check(
+	            context,
+	            !(lFam!=null ^ rFam!=null),
+	            CaesarMessages.ASSIGNMENT_MIXEDTYPES
+	        );	 
 	    }
     }
 	    

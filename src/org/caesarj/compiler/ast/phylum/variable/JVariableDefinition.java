@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JVariableDefinition.java,v 1.14 2005-02-15 18:33:01 aracic Exp $
+ * $Id: JVariableDefinition.java,v 1.15 2005-02-16 12:02:59 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -194,14 +194,11 @@ public class JVariableDefinition extends JLocalVariable {
 		            System.out.println("\t"+lFam+" <= "+rFam);
 		            if(lFam != null && rFam != null) {
 		                
-		                // we are outside a method and the family of the expression is from the initializer method
-		                CType exprType = expr.getType(context.getTypeFactory());
-		                if(
-		                    ((CReferenceType)exprType).getDeclContext().getInitializerContext() != null
-		                    && context.getMethodContext() == null
-	                    ) {
-		                    // adapt the initializer context
-		                    ((ContextExpression)rFam.getHead()).adaptK(-3);
+		                // IVICA: if we are in the initialzer context, then calculate -3 to the rightExpression
+		                // Reason is that the path of the field being initialized has been resolved in the class context
+		                if(rFam != Path.NULL && context.getInitializerContext() != null) {
+		                    // adapt the k		                    
+		                    ((ContextExpression)rFam.getHead()).adaptK(-3);		                    
 		                }
 		                
 		                check(context,
