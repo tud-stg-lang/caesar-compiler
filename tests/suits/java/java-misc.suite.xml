@@ -1,4 +1,4 @@
-<testsuite name="Test casts to dependent types" package="suits.javatests.misc">
+<testsuite name="Miscelaneous Java tests" package="suits.javatests.misc">
 
 	<common-code-base>		
 		public cclass G {
