@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: PositionedError.java,v 1.6 2005-01-24 16:52:58 aracic Exp $
+ * $Id: PositionedError.java,v 1.7 2005-01-28 17:57:31 klose Exp $
  */
 
 package org.caesarj.util;
@@ -118,4 +118,5 @@ public class PositionedError extends FormattedException {
   // ----------------------------------------------------------------------
 
   private final TokenReference		where;
+
 }

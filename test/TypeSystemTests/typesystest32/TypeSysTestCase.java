@@ -14,7 +14,7 @@ public cclass GraphLib{
 }
 
 public cclass A {
-    public g.Node create( final GraphLib g, g.Node n){
+    public g.Node create( final GraphLib g ){
         return g.new Node();
     }
 
@@ -22,7 +22,7 @@ public cclass A {
         final GraphLib g = new GraphLib();
         g.Node n;
         
-        //n = create( g );
+        n = create( g );
     }
     
 };
