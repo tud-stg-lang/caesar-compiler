@@ -1,5 +1,6 @@
 package org.caesarj.compiler.family;
 
+import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjInterfaceDeclaration;
@@ -18,7 +19,6 @@ import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
-import org.caesarj.tools.antlr.extra.CompilerBase;
 import org.caesarj.util.PositionedError;
 
 /**

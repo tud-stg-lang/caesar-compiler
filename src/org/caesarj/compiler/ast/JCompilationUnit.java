@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JCompilationUnit.java,v 1.3 2004-02-09 17:33:54 ostermann Exp $
+ * $Id: JCompilationUnit.java,v 1.4 2004-02-18 09:23:42 klose Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -24,13 +24,13 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.caesarj.compiler.ClassReader;
+import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CCompilationUnit;
 import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.tools.antlr.extra.CompilerBase;
 import org.caesarj.util.CWarning;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;

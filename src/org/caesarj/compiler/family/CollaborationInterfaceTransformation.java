@@ -1,6 +1,7 @@
 package org.caesarj.compiler.family;
 
 import org.caesarj.classfile.ClassfileConstants2;
+import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.CciInterfaceDeclaration;
 import org.caesarj.compiler.ast.CciWeaveletClassDeclaration;
@@ -22,7 +23,6 @@ import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.tools.antlr.extra.CompilerBase;
 import org.caesarj.util.PositionedError;
 
 /**

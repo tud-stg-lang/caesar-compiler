@@ -3,6 +3,7 @@ package org.caesarj.compiler.ast;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.CciConstants;
 import org.caesarj.compiler.constants.FjConstants;
@@ -10,7 +11,6 @@ import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
-import org.caesarj.tools.antlr.extra.CompilerBase;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;

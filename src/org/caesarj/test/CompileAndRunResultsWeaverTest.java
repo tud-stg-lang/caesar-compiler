@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.caesarj.compiler.CaesarParser;
+import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcClassReader;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.KjcOptions;
@@ -27,7 +28,6 @@ import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.KjcSignatureParser;
 import org.caesarj.compiler.types.KjcTypeFactory;
 import org.caesarj.compiler.types.SignatureParser;
-import org.caesarj.tools.antlr.extra.CompilerBase;
 import org.caesarj.tools.antlr.runtime.ParserException;
 
 public class CompileAndRunResultsWeaverTest extends FjTestCase {

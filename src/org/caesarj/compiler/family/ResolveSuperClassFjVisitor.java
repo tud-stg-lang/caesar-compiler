@@ -3,6 +3,7 @@ package org.caesarj.compiler.family;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.Main;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjInterfaceDeclaration;
@@ -20,7 +21,6 @@ import org.caesarj.compiler.ast.JPhylum;
 import org.caesarj.compiler.ast.JTypeDeclaration;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
-import org.caesarj.tools.antlr.extra.CompilerBase;
 
 import sun.misc.Queue;
 
