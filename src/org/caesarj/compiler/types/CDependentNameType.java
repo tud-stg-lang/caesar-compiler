@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CDependentNameType.java,v 1.7 2005-01-20 13:43:46 klose Exp $
+ * $Id: CDependentNameType.java,v 1.8 2005-01-20 14:07:34 klose Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -90,7 +90,7 @@ public class CDependentNameType extends CClassNameType
         CExpressionContext ectx = null;
         KjcEnvironment env;
 
-        // create expression context to analyse the expression
+        // create an expression context to analyse the expression
         if (context instanceof CClassContext){
             CClassContext classContext = (CClassContext)context;
             env = classContext.getEnvironment();
@@ -110,7 +110,7 @@ public class CDependentNameType extends CClassNameType
             throw new UnpositionedError(KjcMessages.TYPE_UNKNOWN, qualifiedName);
         }
         
-        // try to anylse the fieldaccess
+        // try to analyse the fieldaccess
         try{
             expr = expr.analyse(ectx);
         
