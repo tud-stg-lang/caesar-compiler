@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.13 2004-10-06 11:32:18 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.14 2004-10-10 19:29:14 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -31,9 +31,12 @@ import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
@@ -332,7 +335,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         }
     }   
     
-    
+        
     /**
      * Resolves the binding and providing references. Of course it calls the
      * super implementation of the method also.
@@ -413,7 +416,146 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     	super.checkInterface(context);
 		
 		// CTODO: check inheritance of full throwable list on method redefinition
+    	
     }
+    
+    
+    // check method overriding in the context of virtual classes
+    public void checkVirtualClassMethodSignatures(CCompilationUnitContext context) throws PositionedError {
+    	for (int i = 0; i < methods.length; i++) {    	        	    
+            JMethodDeclaration methodDecl = methods[i];
+            CMethod method = methodDecl.getMethod();
+            
+            if(method.isConstructor())
+                continue;
+            
+            if(method.getIdent().equals("$newDeepestD") && this.getIdent().equals("InnerB_Impl")) {
+                boolean stop = true;
+            }
+            
+            // find initial declaration of the method
+            CMethod initialMethodDecl = findInitialDeclaration(method, context);
+            
+            // set parameter list equal to the inital method declaration 
+            if(!initialMethodDecl.equals(method)) {
+	            // check return type and parameters
+	            if(
+	                method.getReturnType().isClassType() 
+	                && method.getReturnType().getCClass().isMixinInterface()
+	            ) {
+	                
+                	if(!context.getEnvironment().getCaesarTypeSystem().
+	                	isIncrementOf(
+	                	    method.getReturnType().getCClass().getQualifiedName(),
+	                	    initialMethodDecl.getReturnType().getCClass().getQualifiedName()
+	                    )
+	                ) {
+                	    // different return types and the lower is not increment of the upper
+                	    // no modification, just continue
+                	    // checkAllBodies will throw an exception
+                	    continue;
+                	}
+                	
+	            }
+	            
+	            
+	            // update formal parameter list
+	            JFormalParameter origFormalParams[] = methodDecl.getParameters();
+	            JFormalParameter[] newFormalParams = new JFormalParameter[origFormalParams.length];
+	            
+	            for(int p = 0; p < newFormalParams.length; p++) {
+	                newFormalParams[p] = new JFormalParameter(
+	                    origFormalParams[p].getTokenReference(),
+	                    origFormalParams[p].getDescription(),
+	                    initialMethodDecl.getParameters()[p],
+	                    origFormalParams[p].getIdent(),
+	                    origFormalParams[p].isFinal()
+                    );
+                }
+	            
+	            // update declaration
+	            methodDecl.setReturnType(initialMethodDecl.getReturnType());
+	            methodDecl.setParameters(newFormalParams);
+	            
+	            // update type information
+	            method.setReturnType(initialMethodDecl.getReturnType());
+	            method.setParameters(initialMethodDecl.getParameters());
+            }
+        }    	    
+    	
+    	// recurse into inners
+    	for (int i = 0; i < inners.length; i++) {
+            inners[i].checkVirtualClassMethodSignatures(context);
+        }
+    }    
+
+    
+    private CMethod findInitialDeclaration(CMethod orig, CContext context) {
+        
+        if(orig.getIdent().equals("doSomethingWithEdge")) {
+            boolean stop = true;
+        }
+        
+        CClass ownerSuperClass = orig.getOwner().getSuperClass();
+        CMethod lastFound = orig;
+        
+        while(ownerSuperClass != null) {
+            
+            CMethod[] methods = ownerSuperClass.getMethods();
+            
+            if(methods == null) {
+                boolean stopHere = true;
+            }
+            
+            for (int i = 0; i < methods.length; i++) {
+                
+                CMethod other = methods[i];
+                
+                if(other.isConstructor())
+                    continue;
+                
+                boolean equals = true;
+                
+                if(
+                    !orig.getIdent().equals(other.getIdent())
+                    || orig.getParameters().length != other.getParameters().length
+                ) {
+                    equals = false;
+                }
+
+                // check params
+                for (int j = 0; j < orig.getParameters().length && equals; j++) {
+                    if (!orig.getParameters()[j].equals(other.getParameters()[j])) {
+                        // check if the params are furtherbindings
+                        
+                        if(orig.getParameters()[j].isClassType()) {                        
+	                        if(
+	                            !context.getEnvironment().getCaesarTypeSystem().
+	                            	isIncrementOf(
+	                            	    orig.getParameters()[j].getCClass().getQualifiedName(),
+	                            	    other.getParameters()[j].getCClass().getQualifiedName()
+	                                )
+	                        ) {
+	                            equals = false;	                            
+	                        }
+                        }
+                        else {
+                            equals = false;
+                        }
+                    }
+                }
+                                    
+                if(equals) {   
+                    lastFound = methods[i];
+                }
+            }
+            
+            ownerSuperClass = ownerSuperClass.getSuperClass();
+        }
+        
+        return lastFound;
+    }
+    
     
     protected int getAllowedModifiers() {
         return super.getAllowedModifiers() | ACC_MIXIN;
