@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclaration.java,v 1.43 2005-02-09 17:02:02 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.44 2005-02-16 16:34:03 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -641,31 +641,40 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
      * IVICA: changed owner type to cclass interface (if we have a cclass)
      * -> getOwner().getCorrespondingCClass().getAbstractType()
      */
-    public void addOuterThis() {
-        if (outerThis == null) {
-            sourceClass.setHasOuterThis(true);
-            outerThis =
-                new JFieldDeclaration(
-                    getTokenReference(),
-                    new JVariableDefinition(
-                        getTokenReference(),
-                        ACC_PRIVATE | ACC_FINAL,
-                        //getOwner().getCorrespondingCClass().getAbstractType(),
-                        getOwner().getAbstractType(),
-                        JAV_OUTER_THIS,
-                        null),
-                    null,
-                    null);
-            ((CSourceClass)getCClass()).addField(
-                new CSourceField(
-                    getCClass(),
-                    ACC_PRIVATE | ACC_FINAL,
-                    JAV_OUTER_THIS,
-                    //getOwner().getCorrespondingCClass().getAbstractType(),
-                    getOwner().getAbstractType(),
-                    false,
-                    true));
-            // synthetic
+    public void addOuterThis(CContext context) throws PositionedError {
+        try {
+	        if (outerThis == null) {
+	            sourceClass.setHasOuterThis(true);                       
+	                        
+	            CType ownerType = //getOwner().getAbstractType(); 
+	                new CClassNameType(getOwner().getQualifiedName()).checkType(context);
+	            
+	            outerThis =
+	                new JFieldDeclaration(
+	                    getTokenReference(),
+	                    new JVariableDefinition(
+	                        getTokenReference(),
+	                        ACC_PRIVATE | ACC_FINAL,
+	                        //getOwner().getCorrespondingCClass().getAbstractType(),
+	                        ownerType,
+	                        JAV_OUTER_THIS,
+	                        null),
+	                    null,
+	                    null);
+	            ((CSourceClass)getCClass()).addField(
+	                new CSourceField(
+	                    getCClass(),
+	                    ACC_PRIVATE | ACC_FINAL,
+	                    JAV_OUTER_THIS,
+	                    //getOwner().getCorrespondingCClass().getAbstractType(),
+	                    ownerType,
+	                    false,
+	                    true));
+	            // synthetic
+	        }
+        }
+        catch (UnpositionedError e) {
+            throw e.addPosition(getTokenReference());
         }
     }
 
