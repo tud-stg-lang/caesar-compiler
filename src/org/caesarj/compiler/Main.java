@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.90 2005-03-29 09:47:37 gasiunas Exp $
+ * $Id: Main.java,v 1.91 2005-03-30 07:22:43 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -52,6 +52,7 @@ import org.caesarj.compiler.joincollab.JoinCollaborations;
 import org.caesarj.compiler.joinpoint.GenerateDeploymentSupport;
 import org.caesarj.compiler.joinpoint.JoinDeploymentSupport;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
+import org.caesarj.compiler.joinpoint.StaticDeploymentPreparation;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.compiler.typesys.graph.CaesarTypeGraphGenerator;
 import org.caesarj.compiler.typesys.java.JavaTypeGraph;
@@ -179,7 +180,7 @@ public class Main extends MainSuper implements Constants {
         generateCaesarTypeSystem(environment, tree);
         if(errorFound) return false;
         
-        prepareDynamicDeployment(environment, tree);
+        prepareAspectDeployment(environment, tree);
         
         createMixinCloneTypeInfo(environment, tree[0]);
         
@@ -485,7 +486,7 @@ public class Main extends MainSuper implements Constants {
         }
     }
 
-    protected void prepareDynamicDeployment(
+    protected void prepareAspectDeployment(
         KjcEnvironment environment,
         JCompilationUnit[] tree) {
         Log.verbose("prepareDynamicDeployment");
@@ -498,6 +499,13 @@ public class Main extends MainSuper implements Constants {
         for (int i = 0; i < tree.length; i++) {
             JCompilationUnit cu = tree[i];
             JoinDeploymentSupport.prepareForDynamicDeployment(this, cu);
+        }
+        
+        // Prepare for static deployment
+        StaticDeploymentPreparation statDeplPrep = new StaticDeploymentPreparation(this, environment);
+        for (int i = 0; i < tree.length; i++) {
+            JCompilationUnit cu = tree[i];
+            statDeplPrep.prepareForStaticDeployment(cu);
         }
     }
 

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JoinDeploymentSupport.java,v 1.1 2005-03-29 09:47:01 gasiunas Exp $
+ * $Id: JoinDeploymentSupport.java,v 1.2 2005-03-30 07:24:06 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -83,15 +83,11 @@ public class JoinDeploymentSupport implements CaesarConstants {
 					catch (PositionedError err) {
 						System.out.println(err.getMessage());
 					}
-
-					if (caesarClass.isStaticallyDeployed()) {
-						StaticDeploymentPreparation.prepareForStaticDeployment(caesarClass, cu.getEnvironment());					
-					}
 				}
 				
 				if (caesarClass.getInners().length > 0) {
 					//consider nested types
-					new JoinDeploymentSupport().prepareForDynamicDeployment(caesarClass, cu.getEnvironment());
+					JoinDeploymentSupport.prepareForDynamicDeployment(caesarClass, cu.getEnvironment());
 				}
 			}
 		}
@@ -101,7 +97,7 @@ public class JoinDeploymentSupport implements CaesarConstants {
 		}
 	}
 	
-	private void prepareForDynamicDeployment(CjClassDeclaration cd, KjcEnvironment environment)
+	private static void prepareForDynamicDeployment(CjClassDeclaration cd, KjcEnvironment environment)
 	{
 	    List newInners = new LinkedList();
 	    CContext ownerCtx = (CContext)cd.getTypeContext();
@@ -146,7 +142,7 @@ public class JoinDeploymentSupport implements CaesarConstants {
 					{
 						CjClassDeclaration currentInnerInner =
 							(CjClassDeclaration) innersInners[j];
-						new JoinDeploymentSupport().prepareForDynamicDeployment(currentInnerInner, environment);
+						JoinDeploymentSupport.prepareForDynamicDeployment(currentInnerInner, environment);
 					}
 				}
 			}
