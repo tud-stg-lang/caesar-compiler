@@ -25,7 +25,8 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 17: Extending Deep Classes: start");
 
-		OuterB.InnerB b = new OuterB().new InnerB();
+		final OuterB ob = new OuterB();
+		ob.InnerB b = ob.new InnerB();
 
 		String result = b.defaultObject().queryA();
 

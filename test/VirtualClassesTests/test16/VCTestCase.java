@@ -36,8 +36,8 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 16: Test State Inheritance: start");
 
-		OuterB ob = new OuterB();
-		OuterB.InnerB bb = ob.new InnerB();
+		final OuterB ob = new OuterB();
+		ob.InnerB bb = ob.new InnerB();
 
 		String resA = bb.queryA();
 		String resB = bb.queryB();
@@ -51,7 +51,7 @@ public class VCTestCase extends TestCase
 		System.out.println(result);
 		assertEquals(result, expectedResultBB);
 
-		OuterB.InnerA ba = ob.new InnerA();
+		ob.InnerA ba = ob.new InnerA();
 
 		resA = ba.queryA();
 		resB = ba.queryB();

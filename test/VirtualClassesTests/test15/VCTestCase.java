@@ -23,15 +23,15 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 15: Long Inheritance Sequence: start");
 
-		OuterC oc = new OuterC(); 
-		OuterC.InnerD cd = oc.new InnerD();
+		final OuterC oc = new OuterC(); 
+		oc.InnerD cd = oc.new InnerD();
 
 		String result = cd.queryA();
 
 		System.out.println(result);
 		assertEquals(result, expectedResultCD);
 
-		OuterC.InnerF cf = oc.new InnerF();
+		oc.InnerF cf = oc.new InnerF();
 
 		result = cf.queryA();
 
