@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldAccessExpression.java,v 1.10 2004-10-29 13:21:18 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.11 2004-11-15 17:22:52 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -419,42 +419,62 @@ public class JFieldAccessExpression extends JExpression {
   }
   /**
    * Finds the type of the prefix.
-   *
-   * @exception	PositionedError		Error catched as soon as possible
+   * 
+   * @exception PositionedError
+   *                Error catched as soon as possible
    */
-  protected void findPrefix(CClass local, CExpressionContext context) throws PositionedError {
-    TypeFactory         factory = context.getTypeFactory();
+    protected void findPrefix(CClass local, CExpressionContext context)
+        throws PositionedError {
+        TypeFactory factory = context.getTypeFactory();
 
-    if (prefix != null) {
-      prefix = prefix.analyse(context);
-      check(context,
-	    prefix.getType(factory).isClassType(),
-	    KjcMessages.FIELD_BADACCESS, prefix.getType(factory));
-      constantPrefix = prefix instanceof JTypeNameExpression;
-    } else {
-      constantPrefix = true;
+        if (prefix != null) {
+            prefix = prefix.analyse(context);
+            check(
+                context,
+                prefix.getType(factory).isClassType(),
+                KjcMessages.FIELD_BADACCESS,
+                prefix.getType(factory));
+            constantPrefix = prefix instanceof JTypeNameExpression;
+        }
+        else {
+            constantPrefix = true;
 
-      try {
-	field = context.lookupField(local, null /* primary == null */, ident);
-	if (field == null) {
-	  field = context.getClassContext().lookupOuterField(local, null, ident); // $$$ Why searching again
-	}
-      } catch (UnpositionedError e) {
-	throw e.addPosition(getTokenReference());
-      }
-      check(context, field != null, KjcMessages.FIELD_UNKNOWN, ident);
+            try {
+                field = context.lookupField(
+                    local,
+                    null /* primary == null */,
+                    ident);
+                if (field == null) {
+                    field = context.getClassContext().lookupOuterField(
+                        local,
+                        null,
+                        ident); // $$$ Why searching again
+                }
+            }
+            catch (UnpositionedError e) {
+                throw e.addPosition(getTokenReference());
+            }
+            
+            check(context, field != null, KjcMessages.FIELD_UNKNOWN, ident);
 
-      if (!field.isStatic()) {
-	check(context,
-	      !local.isStatic() || local.descendsFrom(field.getOwner()),
-	      KjcMessages.FIELD_STATICERR, ident);
-        prefix = new JOwnerExpression(getTokenReference(), field.getOwner());
-      } else {
-	prefix = new JTypeNameExpression(getTokenReference(), field.getOwnerType());
-      }
-      prefix = prefix.analyse(context);
+            if (!field.isStatic()) {
+                check(
+                    context,
+                    !local.isStatic() || local.descendsFrom(field.getOwner()),
+                    KjcMessages.FIELD_STATICERR,
+                    ident);
+                
+                //prefix = new JOwnerExpression(getTokenReference(), field.getOwner());
+                //IVICA: this as target for the field call
+                prefix = new JOwnerExpression(getTokenReference(), context.getClassContext().getCClass());
+            }
+            else {
+                prefix = new JTypeNameExpression(getTokenReference(), field.getOwnerType());
+            }
+            
+            prefix = prefix.analyse(context);
+        }
     }
-  }
 
   /**
    * Checks is access to prefix is okay
@@ -637,8 +657,16 @@ public class JFieldAccessExpression extends JExpression {
 
     setLineNumber(code);
 
+    String target = null;
+    
     if (! field.isStatic()) {
-      prefix.genCode(context, false);
+      
+        prefix.genCode(context, false);
+        
+        // IVICA: if we are in a cclass, use prefix type as target
+        if(prefix.getType(context.getTypeFactory()).getCClass().isMixin())
+            target = prefix.getType(context.getTypeFactory()).getCClass().getQualifiedName();
+        
       if (discardValue) {
         /*
          * JLS 15.11.1 Field Access Using a Primary :
@@ -657,7 +685,7 @@ public class JFieldAccessExpression extends JExpression {
       prefix.genCode(context, true);
     }
     if (!discardValue) {
-      field.genLoad(context);
+      field.genLoad(context, target);
     }
   }
 
@@ -697,7 +725,7 @@ public class JFieldAccessExpression extends JExpression {
     }
 
     if (!discardValue) {
-      field.genLoad(context);
+      field.genLoad(context, null);
     }
   }
 

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CField.java,v 1.4 2004-10-17 20:59:37 aracic Exp $
+ * $Id: CField.java,v 1.5 2004-11-15 17:22:01 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -230,12 +230,13 @@ public abstract class CField extends CMember {
      * @param code
      *            the code list
      */
-    public void genLoad(GenerationContext context) {
+    public void genLoad(GenerationContext context, String prefixName) {
         CodeSequence code = context.getCodeSequence();
 
         code.plantFieldRefInstruction(
             isStatic() ? opc_getstatic : opc_getfield,
-            getPrefixName(),
+            // IVICA: if we provide a prefixName, use it, otherwise take the owner of the field
+            prefixName == null ? getPrefixName() : prefixName,
             getIdent(),
             getType().getSignature());
     }
