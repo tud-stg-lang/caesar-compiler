@@ -17,7 +17,9 @@ public class VCTestCase extends TestCase {
 	public void test() {
 		System.out.println("-------> VCTest 38: Wrapper test: start");
 
-        // just compile for now
+		Client c = new Client();
+		X x = new X();
+		x.doSomethingWithSome(c);
 
         System.out.println("-------> VCTest 38: end");
 	}
