@@ -85,8 +85,8 @@ import org.caesarj.kjc.JVariableDeclarationStatement;
 import org.caesarj.kjc.JVariableDefinition;
 import org.caesarj.kjc.JWhileStatement;
 import org.caesarj.kjc.KjcVisitor;
-import org.caesarj.kjc.KopiAssertStatement;
-import org.caesarj.kjc.KopiFailStatement;
+
+
 
 
 /**
@@ -612,20 +612,6 @@ public abstract class FjVisitor implements KjcVisitor {
 		JTypeDeclaration decl) {
 	}
 
-	/**
-	 * @see org.caesarj.kjc.KjcVisitor#visitAssertStatement(KopiAssertStatement, JExpression, JExpression)
-	 */
-	public void visitAssertStatement(
-		KopiAssertStatement self,
-		JExpression cond,
-		JExpression expr) {
-	}
-
-	/**
-	 * @see org.caesarj.kjc.KjcVisitor#visitFailStatement(KopiFailStatement, JExpression)
-	 */
-	public void visitFailStatement(KopiFailStatement self, JExpression expr) {
-	}
 
 	/**
 	 * @see org.caesarj.kjc.KjcVisitor#visitUnaryPlusExpression(JUnaryExpression, JExpression)

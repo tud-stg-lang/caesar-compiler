@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CSourceClass.java,v 1.3 2003-10-29 12:29:07 kloppenburg Exp $
+ * $Id: CSourceClass.java,v 1.4 2004-02-05 21:35:16 ostermann Exp $
  */
 
 package org.caesarj.kjc;
@@ -391,16 +391,6 @@ public class CSourceClass extends CClass {
     invariantMethod = method;
   }
 
-  /**
-   * @return true if this class is defines the condition methods of an interface
-   */
-  public boolean isAssertionClass() {
-    return assertionClass;
-  }
-
-  public void setAssertionClass(boolean assertionClass) {
-    this.assertionClass = assertionClass;
-  }
 
   public void analyseConditions() throws PositionedError {
     if (decl != null) {

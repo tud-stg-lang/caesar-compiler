@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JInterfaceDeclaration.java,v 1.1 2003-07-05 18:29:40 werner Exp $
+ * $Id: JInterfaceDeclaration.java,v 1.2 2004-02-05 21:35:16 ostermann Exp $
  */
 
 package org.caesarj.kjc;
@@ -255,17 +255,6 @@ public class JInterfaceDeclaration extends JTypeDeclaration {
     }
   }
 
-  // ----------------------------------------------------------------------
-  // ACCESSOR
-  // ----------------------------------------------------------------------
-
-  public KopiAssertionClassDeclaration getAssertionClass() {
-    return assertionClass;
-  }
-
-  public void setAssertionClass(KopiAssertionClassDeclaration clazz) {
-    assertionClass = clazz;
-  }
 
   // ----------------------------------------------------------------------
   // CODE GENERATION
@@ -289,5 +278,5 @@ public class JInterfaceDeclaration extends JTypeDeclaration {
   // PRIVATE DATA MEMBERS
   // ----------------------------------------------------------------------
 
-  private KopiAssertionClassDeclaration         assertionClass = null;
+
 }

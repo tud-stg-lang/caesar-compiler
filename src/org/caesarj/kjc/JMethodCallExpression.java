@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodCallExpression.java,v 1.3 2003-08-26 10:15:18 werner Exp $
+ * $Id: JMethodCallExpression.java,v 1.4 2004-02-05 21:35:16 ostermann Exp $
  */
 
 package org.caesarj.kjc;
@@ -117,14 +117,6 @@ public class JMethodCallExpression extends JExpression
 		if (analysed)
 		{
 			return this;
-		}
-		if (context.getClassContext().getCClass().isAssertionClass()
-			&& context.getEnvironment().getAssertExtension()
-				== KjcEnvironment.AS_ALL
-			&& prefix == null)
-		{
-			// for assertions in interfaces which call methods 
-			prefix = new JNameExpression(getTokenReference(), IDENT_CLASS);
 		}
 		
 		//Walter: this method is called now 

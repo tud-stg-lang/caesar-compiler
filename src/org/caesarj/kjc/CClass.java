@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.2 2003-08-25 14:47:39 werner Exp $
+ * $Id: CClass.java,v 1.3 2004-02-05 21:35:16 ostermann Exp $
  */
 
 package org.caesarj.kjc;
@@ -1167,32 +1167,6 @@ public abstract class CClass extends CMember
 			else
 			{
 				ovMethod.checkOverriding(context, method, substitution);
-
-				CSourceMethod precondition =
-					(CSourceMethod) ovMethod.getPreconditionMethod();
-				CMethod superPrecondition = method.getPreconditionMethod();
-
-				if (precondition != null && superPrecondition != null)
-				{
-					precondition.addSuperMethod(superPrecondition);
-				}
-				else if (precondition == null && superPrecondition != null)
-				{
-					throw new InconsistencyException("no precondition method, but superprecondition");
-				}
-
-				CSourceMethod postcondition =
-					(CSourceMethod) ovMethod.getPostconditionMethod();
-				CMethod superPostcondition = method.getPostconditionMethod();
-
-				if (postcondition != null && superPostcondition != null)
-				{
-					postcondition.addSuperMethod(superPostcondition);
-				}
-				else if (postcondition == null && superPostcondition != null)
-				{
-					throw new InconsistencyException("no postcondition method, but superpostcondition");
-				}
 
 				if (direct)
 				{

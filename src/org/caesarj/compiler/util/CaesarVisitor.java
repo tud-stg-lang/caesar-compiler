@@ -61,8 +61,8 @@ import org.caesarj.kjc.JUnqualifiedInstanceCreation;
 import org.caesarj.kjc.JVariableDeclarationStatement;
 import org.caesarj.kjc.JVariableDefinition;
 import org.caesarj.kjc.JWhileStatement;
-import org.caesarj.kjc.KopiAssertStatement;
-import org.caesarj.kjc.KopiFailStatement;
+
+
 
 /**
  * This visitor implementation visits almost 
@@ -320,20 +320,7 @@ public abstract class CaesarVisitor extends FjVisitor {
 		decl.accept(this);
 	}
 
-	public void visitAssertStatement(
-		KopiAssertStatement self,
-		JExpression cond,
-		JExpression expr) {
 
-		cond.accept(this);
-		if (expr != null) {
-			expr.accept(this);
-		}
-	}
-
-	public void visitFailStatement(KopiFailStatement self, JExpression expr) {
-		expr.accept(this);
-	}
 
 	// ----------------------------------------------------------------------
 	// EXPRESSIONS

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CMethod.java,v 1.1 2003-07-05 18:29:37 werner Exp $
+ * $Id: CMethod.java,v 1.2 2004-02-05 21:35:16 ostermann Exp $
  */
 
 package org.caesarj.kjc;
@@ -234,16 +234,6 @@ public abstract class CMethod extends CMember {
     return getIdent() == JAV_CONSTRUCTOR;
   }
 
-  // ----------------------------------------------------------------------
-  // ACCESSORS (Extended)
-  // ----------------------------------------------------------------------
-  
-  public abstract boolean isInvariant();
-  public abstract boolean isPrecondition();
-  public abstract boolean isPostcondition();
-  public abstract CMethod getPreconditionMethod();
-  public abstract CMethod getPostconditionMethod();
-  public abstract CReferenceType getOldValueStore();
 
   /**
    * Find out that pre/postcondition of supermethod is already checked by 

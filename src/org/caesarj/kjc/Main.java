@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Main.java,v 1.1 2003-07-05 18:29:38 werner Exp $
+ * $Id: Main.java,v 1.2 2004-02-05 21:35:16 ostermann Exp $
  */
 
 package org.caesarj.kjc;
@@ -43,31 +43,12 @@ import org.caesarj.compiler.WarningFilter;
 /**
  * This class implements the entry point of the Java compiler
  */
-public class Main extends Compiler {
+public abstract class Main extends Compiler {
 
   // ----------------------------------------------------------------------
   // ENTRY POINT
   // ----------------------------------------------------------------------
 
-  /**
-   * Entry point
-   *
-   * @param	args		the command line arguments
-   */
-  public static void main(String[] args) {
-    boolean	success;
-
-    success = compile(args);
-
-    System.exit(success ? 0 : 1);
-  }
-
-  /**
-   * Second entry point
-   */
-  public static boolean compile(String[] args) {
-    return new Main(null, null).run(args);
-  }
 
   /**
    * Creates a new compiler instance.
@@ -184,7 +165,7 @@ public class Main extends Compiler {
         /* Andreas start
         if (!options.java && !options.beautify && !(environment.getAssertExtension() == KjcEnvironment.AS_ALL)) {
         */
-        if (!options._java && !options.beautify && !(environment.getAssertExtension() == KjcEnvironment.AS_ALL)) {
+        if (!options._java && !options.beautify) {
         // Andreas end
           tree[count] = null;
         }
@@ -194,22 +175,6 @@ public class Main extends Compiler {
 	return false;
       }
       
-      if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-        for (int count = 0; count < tree.length; count++) {
-          checkCondition(tree[count]);
-          /* Andreas start
-          if (!options.java && !options.beautify) {
-          */          
-          if (!options._java && !options.beautify) {
-          // Andreas end
-            tree[count] = null;
-          }
-        }
-
-        if (errorFound) {
-          return false;
-        }
-      }
     }
 
     if (!options.nowrite) {
@@ -322,55 +287,7 @@ public class Main extends Compiler {
    * @param	file		the name of the file (assert exists)
    * @return	the compilation unit defined by this file
    */
-  protected JCompilationUnit parseFile(File file, KjcEnvironment environment) {
-    InputBuffer		buffer;
-
-    try {
-      buffer = new InputBuffer(file, options.encoding);
-    } catch (UnsupportedEncodingException e) {
-      reportTrouble(new UnpositionedError(CompilerMessages.UNSUPPORTED_ENCODING,
-					  options.encoding));
-      return null;
-    } catch (IOException e) {
-      reportTrouble(new UnpositionedError(CompilerMessages.IO_EXCEPTION,
-					  file.getPath(),
-					  e.getMessage()));
-      return null;
-    }
-
-    KjcParser		parser;
-    JCompilationUnit	unit;
-    long		lastTime = System.currentTimeMillis();
-
-    parser = new KjcParser(this, buffer, environment);
-
-    try {
-      unit = parser.jCompilationUnit();
-    } catch (ParserException e) {
-      reportTrouble(parser.beautifyParseError(e));
-      unit = null;
-    } catch (Exception e) {
-      //err.println("{" + file.getPath() + ":" + scanner.getLine() + "} " + e.getMessage());
-      e.printStackTrace();
-      errorFound = true;
-      unit = null;
-    }
-
-    if (verboseMode()) {
-      inform(CompilerMessages.FILE_PARSED, file.getPath(), new Long(System.currentTimeMillis() - lastTime));
-    }
-
-    try {
-      buffer.close();
-    } catch (IOException e) {
-      reportTrouble(new UnpositionedError(CompilerMessages.IO_EXCEPTION,
-					  file.getPath(),
-					  e.getMessage()));
-    }
-
-    return unit;
-  }
-
+  protected abstract JCompilationUnit parseFile(File file, KjcEnvironment environment);
   /**
    * creates the class hierarchie (superclass, interfaces, ...)
    * @param	cunit		the compilation unit

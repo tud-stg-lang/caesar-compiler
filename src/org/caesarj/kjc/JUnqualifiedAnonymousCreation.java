@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JUnqualifiedAnonymousCreation.java,v 1.2 2003-08-26 10:15:18 werner Exp $
+ * $Id: JUnqualifiedAnonymousCreation.java,v 1.3 2004-02-05 21:35:16 ostermann Exp $
  */
 
 package org.caesarj.kjc;
@@ -164,15 +164,13 @@ public class JUnqualifiedAnonymousCreation extends JExpression {
 						      fparams[i]);
     }
     JConstructorCall    cstrCall = new JConstructorCall(getTokenReference(), false, checkedParams);
-    boolean             withAssertion = (context.getEnvironment().getAssertExtension() == KjcEnvironment.AS_ALL);
 
     cstr = new JConstructorDeclaration(getTokenReference(),
 				       ACC_PUBLIC,
 				       decl.getCClass().getIdent(),
 				       fparams,
 				       throwables,
-				       withAssertion ?  new KopiConstructorBlock(getTokenReference(), cstrCall, new JStatement[0])
-                                                     : new JConstructorBlock(getTokenReference(), cstrCall, new JStatement[0]),
+				       new JConstructorBlock(getTokenReference(), cstrCall, new JStatement[0]),
 				       null,
 				       null,
                                        factory);

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JQualifiedAnonymousCreation.java,v 1.2 2003-08-26 10:15:18 werner Exp $
+ * $Id: JQualifiedAnonymousCreation.java,v 1.3 2004-02-05 21:35:16 ostermann Exp $
  */
 
 package org.caesarj.kjc;
@@ -197,7 +197,6 @@ public class JQualifiedAnonymousCreation extends JExpression {
 
     // add parameter for qualified instance creation
     JFormalParameter[]	qualfparams = new JFormalParameter[fparams.length+1];
-    boolean             withAssertion = (context.getEnvironment().getAssertExtension() == KjcEnvironment.AS_ALL);
  
     System.arraycopy(fparams,0,qualfparams,1,fparams.length);
     qualfparams[0] = new JFormalParameter(getTokenReference(),
@@ -211,10 +210,7 @@ public class JQualifiedAnonymousCreation extends JExpression {
 				       decl.getCClass().getIdent(),
 				       qualfparams,
 				       throwables,
-				       withAssertion ? new KopiConstructorBlock(getTokenReference(), 
-                                                                                new JConstructorCall(getTokenReference(), false, checkedParams), 
-                                                                                new JStatement[0])
-                                                     : new JConstructorBlock(getTokenReference(), 
+				       new JConstructorBlock(getTokenReference(), 
                                                                              new JConstructorCall(getTokenReference(), 
                                                                                                   false, 
                                                                                                   new JTypeNameExpression(getTokenReference(), 

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcPrettyPrinter.java,v 1.1 2003-07-05 18:29:38 werner Exp $
+ * $Id: KjcPrettyPrinter.java,v 1.2 2004-02-05 21:35:16 ostermann Exp $
  */
 
 package org.caesarj.kjc;
@@ -825,34 +825,6 @@ public class KjcPrettyPrinter extends org.caesarj.util.Utils implements Constant
     decl.accept(this);
   }
 
-  /**
-   * prints an assert statement
-   */
-  public void visitAssertStatement(KopiAssertStatement self,
-				   JExpression cond,
-				   JExpression expr)
- {
-    newLine();
-    print("@assert ");
-    cond.accept(this);
-    if (expr != null) {
-      print(": ");
-      expr.accept(this);
-    }
-    print(";");
-  }
-
-  /**
-   * prints a fail statement
-   */
-  public void visitFailStatement(KopiFailStatement self,
-                                 JExpression expr)
- {
-    newLine();
-    print("@fail ");
-    expr.accept(this);
-    print(";");
-  }
   // ----------------------------------------------------------------------
   // EXPRESSION
   // ----------------------------------------------------------------------

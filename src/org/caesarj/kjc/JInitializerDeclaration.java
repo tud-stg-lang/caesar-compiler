@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JInitializerDeclaration.java,v 1.1 2003-07-05 18:29:38 werner Exp $
+ * $Id: JInitializerDeclaration.java,v 1.2 2004-02-05 21:35:16 ostermann Exp $
  */
 
 package org.caesarj.kjc;
@@ -183,19 +183,6 @@ public class JInitializerDeclaration extends JMethodDeclaration {
                                                                                 null),
                                                        null)},
                                     null);
-        } else {       
-          if (context.getEnvironment().getAssertExtension() == KjcEnvironment.AS_ALL 
-              || context.getEnvironment().getAssertExtension() == KjcEnvironment.AS_SIMPLE) {
-            classBlock = new JBlock(ref, 
-                                    new JStatement[] {
-                                      new JExpressionStatement(ref,
-                                                               new JAssignmentExpression(ref,
-                                                                                         new JFieldAccessExpression(ref, IDENT_ASSERT),
-                                                                                         new JBooleanLiteral(ref, false)),
-                                                               null)
-                                    },
-                                    null);
-          }
         }
         if (classBlock != null) {
           body = new JBlock(getTokenReference(), 

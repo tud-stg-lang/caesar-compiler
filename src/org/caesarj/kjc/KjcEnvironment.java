@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcEnvironment.java,v 1.1 2003-07-05 18:29:38 werner Exp $
+ * $Id: KjcEnvironment.java,v 1.2 2004-02-05 21:35:16 ostermann Exp $
  */
 
 package org.caesarj.kjc;
@@ -35,14 +35,6 @@ public class KjcEnvironment {
     this.typeFactory = typeFactory;
     this.options = options;
     this.languageExtensions = new LanguageExtensions();
-
-    if (options.assertion.equals("simple")) {
-      this.assertion = AS_SIMPLE; 
-    } else if(options.assertion.equals("all")){
-      this.assertion = AS_ALL; 
-    } else {
-      this.assertion = AS_NONE; 
-    }
   }
 
   public ClassReader getClassReader() {
@@ -76,9 +68,6 @@ public class KjcEnvironment {
     }
   }
 
-  public int getAssertExtension() {
-    return assertion;
-  }
   public boolean isGenericEnabled() {
     return options.generic;
   }
@@ -86,12 +75,8 @@ public class KjcEnvironment {
   private final ClassReader             classReader;
   private final TypeFactory             typeFactory;
   private final KjcOptions              options;
-  private final int                     assertion;
   private final LanguageExtensions      languageExtensions;
 
-  public final static int               AS_NONE   = 0;
-  public final static int               AS_SIMPLE = 1;
-  public final static int               AS_ALL    = 2;
 
   public final static int               SOURCE_1_1 = 101;
   public final static int               SOURCE_1_2 = 102;

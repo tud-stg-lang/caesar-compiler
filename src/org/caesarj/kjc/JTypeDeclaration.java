@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.3 2003-08-14 00:36:22 werner Exp $
+ * $Id: JTypeDeclaration.java,v 1.4 2004-02-05 21:35:16 ostermann Exp $
  */
 
 package org.caesarj.kjc;
@@ -313,12 +313,14 @@ public abstract class JTypeDeclaration extends JMemberDeclaration
 					sourceClass.getQualifiedName()));
 		}
 
-		if (!isNested()
+/*		
+ * @TODO: Klaus: Disabled this check temporarily, but we should include it
+ * once we can differentiate generated from user classes
+ */
+ /*if (!isNested()
 			&& sourceClass.isPublic()
 			&& !getTokenReference().getName().startsWith(ident + ".")
-			&& (!(context.getEnvironment().getAssertExtension()
-				== KjcEnvironment.AS_ALL))
-			&& sourceClass.isAssertionClass())
+			)
 		{
 			context.reportTrouble(
 				new PositionedError(
@@ -327,7 +329,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration
 					ident,
 					getTokenReference().getName()));
 		}
-
+*/
 		// If the class is an inner class, add field for this-reference.
 		// Add fields of this class
 		int generatedFields = getCClass().hasOuterThis() ? 1 : 0;

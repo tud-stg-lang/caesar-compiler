@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.5 2003-10-29 12:29:07 kloppenburg Exp $
+ * $Id: JClassDeclaration.java,v 1.6 2004-02-05 21:35:16 ostermann Exp $
  */
 
 package org.caesarj.kjc;
@@ -68,8 +68,7 @@ public class JClassDeclaration extends JTypeDeclaration {
   {
     super(where, modifiers, ident, typeVariables, interfaces, fields, methods, inners, initializers, javadoc, comment);
     this.superClass = superClass;
-    this.defaultInvariant = null;
-  }
+ }
 
   // ----------------------------------------------------------------------
   // INTERFACE CHECKING
@@ -140,36 +139,6 @@ public class JClassDeclaration extends JTypeDeclaration {
     this.interfaces = interfaces;
   }
 
-  /**
-   * Inserts field $assertionsDisabled if the (simple) asserts are enabled and
-   * the field class$<name of the class> if it is compiled for JDK 1.4
-   */
-  protected void createAssertFields(final CContext context) throws PositionedError {
-      // add field $assertionsDisabled and class$className
-      int                       offset = (context.getEnvironment().getSourceVersion() >= KjcEnvironment.SOURCE_1_4) ? 2 : 1;
-      JPhylum[]                 bodyTmp = new JPhylum[body.length + offset];
-      JFieldDeclaration[]       fieldsTmp = new JFieldDeclaration[fields.length + offset];
-
-      System.arraycopy(body, 0, bodyTmp, offset, body.length);
-      System.arraycopy(fields, 0, fieldsTmp, offset, fields.length);
-      bodyTmp[0] = fieldsTmp[0] = context.getEnvironment().getLanguageExtFactory().createAssertField(context.getEnvironment().getTypeFactory());
-      if (context.getEnvironment().getSourceVersion() >= KjcEnvironment.SOURCE_1_4) {
-        String         clazzName = getCClass().getIdent();
-
-        if (clazzName.lastIndexOf('/') > 0) {
-          clazzName = clazzName.substring(clazzName.lastIndexOf('/')+1);
-        }        
-
-        bodyTmp[1] = fieldsTmp[1] = context.getEnvironment().getLanguageExtFactory().createClassField(context.getEnvironment().getTypeFactory(),
-                                                                                                      clazzName);
-       }
-      body = bodyTmp;
-      fields = fieldsTmp;
-
-      if ((!isNested()) && (context.getEnvironment().getSourceVersion() >= KjcEnvironment.SOURCE_1_4)) {
-        assertMethod = createClassAssertMethod(context);
-      }
-  }
 
   /**
    * Second pass (quick), check interface looks good
@@ -179,14 +148,8 @@ public class JClassDeclaration extends JTypeDeclaration {
    * @exception	PositionedError	an error with reference to the source file
    */
   public void checkInterface(final CContext context) throws PositionedError {
-    assertMethod = null;
 
     checkModifiers(context); 
-    if ( context.getEnvironment().getAssertExtension() == KjcEnvironment.AS_ALL 
-         || context.getEnvironment().getAssertExtension() == KjcEnvironment.AS_SIMPLE
-         || context.getEnvironment().getSourceVersion() >= KjcEnvironment.SOURCE_1_4) {
-      createAssertFields(context);
-    }
 
     statInit = constructInitializers(true,
                                      context.getEnvironment().getSourceVersion() >= KjcEnvironment.SOURCE_1_4,
@@ -228,87 +191,8 @@ public class JClassDeclaration extends JTypeDeclaration {
       }
     }
     
-    if (context.getEnvironment().getAssertExtension() == KjcEnvironment.AS_ALL) {
-      addDefaultInvariant(self);
-    }
   }
 
-  private JMethodDeclaration createClassAssertMethod(CContext context) {
-    JStatement      loadClass;
-    JExpression     forNameCall;
-    JStatement      throwStatement; 
-    TokenReference  ref = TokenReference.NO_REF;
-
-    forNameCall = new JMethodCallExpression(ref,
-                                            new JTypeNameExpression(ref, context.getTypeFactory().createReferenceType(TypeFactory.RFT_CLASS)), 
-                                            "forName",
-                                            new JExpression[] {
-                                              new JNameExpression(ref,"param")
-                                            });
-    throwStatement =  new JThrowStatement(ref,
-                                          new JUnqualifiedInstanceCreation(ref,
-                                                                           context.getTypeFactory().createType("java/lang/NoClassDefFoundError", false),
-                                                                           new JExpression[] {                                                     
-                                                                             new JMethodCallExpression(ref,
-                                                                                                       new JNameExpression(ref, "not$found$e"), 
-                                                                                                       "getMessage",
-                                                                                                       JExpression.EMPTY)
-                                                                           }),
-                                          null);
-    loadClass = new JTryCatchStatement(ref,
-                                       new JBlock(ref,
-                                                  new JStatement[] {
-                                                    new JReturnStatement(ref,
-                                                                         forNameCall,
-                                                                         null)
-                                                  }, 
-                                                  null),
-                                       new JCatchClause[] {
-                                         new JCatchClause(ref,
-                                                          new JFormalParameter(ref, 
-                                                                               JLocalVariable.DES_PARAMETER, 
-                                                                               context.getTypeFactory().createType("java/lang/ClassNotFoundException", false), 
-                                                                               "not$found$e", 
-                                                                               false),
-                                                          new JBlock(ref,
-                                                                     new JStatement[] {
-                                                                       throwStatement
-                                                                     },
-                                                                     null)
-                                                          )},
-                                       null);
-
-    return new  JMethodDeclaration(TokenReference.NO_REF,
-                                   ACC_STATIC,
-                                   CTypeVariable.EMPTY,
-                                   context.getTypeFactory().createReferenceType(TypeFactory.RFT_CLASS),
-                                   JAV_IDENT_CLASS,
-                                   new JFormalParameter[] {
-                                     new JFormalParameter(TokenReference.NO_REF, 
-                                                          JLocalVariable.DES_PARAMETER, 
-                                                          context.getTypeFactory().createReferenceType(TypeFactory.RFT_STRING), 
-                                                          "param", 
-                                                          false)
-                                       },
-                                   CReferenceType.EMPTY,
-                                   new JBlock(TokenReference.NO_REF,
-                                              new JStatement[] {loadClass},
-                                              null),
-                                   null,
-                                   null);
-  }
-
-  /**
-   * called to add the defaultInvariant. Overriden in subclasses 
-   * to prevent that.
-   */
-  protected void addDefaultInvariant(CClassContext context) throws PositionedError {
-    if (getCClass().getInvariant() == null) {
-        // add default invariant
-      defaultInvariant = KopiInvariantDeclaration.createDefaultInvariant(context.getTypeFactory());
-      getCClass().addMethod(defaultInvariant.checkInterface(context));
-    }
-  }
 
   /**
    * Checks that the modifiers are valid (JLS 8.1.1).
@@ -470,10 +354,6 @@ public class JClassDeclaration extends JTypeDeclaration {
 
       // First we compile constructors
       constructorsInfo = compileConstructors(context);
-
-      if (defaultInvariant != null) { // default invariant
-        defaultInvariant.checkBody1(self);
-      }
 
       // Now we compile methods
       for (int i = methods.length - 1; i >= 0 ; i--) {
@@ -664,15 +544,12 @@ public class JClassDeclaration extends JTypeDeclaration {
          access implied by no  access modifier. */
       modifier = 0;
     }    
-    boolean withAssertion = (environment.getAssertExtension() == KjcEnvironment.AS_ALL);
-
     return new JConstructorDeclaration(getTokenReference(),
 				       modifier,
 				       ident,
 				       JFormalParameter.EMPTY,
 				       CReferenceType.EMPTY,
-				       withAssertion ?  new KopiConstructorBlock(getTokenReference(), null, new JStatement[0])
-                                     : new JConstructorBlock(getTokenReference(), null, new JStatement[0]),
+				       new JConstructorBlock(getTokenReference(), null, new JStatement[0]),
 				       null,
 				       null,
                        factory);
@@ -781,6 +658,6 @@ public class JClassDeclaration extends JTypeDeclaration {
   protected CReferenceType		wouldBeSuperClass;
   
   //  private CClassContext		self;
-  KopiInvariantDeclaration      defaultInvariant;
+
   JMethodDeclaration            assertMethod;
 }

@@ -108,7 +108,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 			return false;
 		}
 		
-		System.out.println("PARSER:");
+//		System.out.println("PARSER:");
 		options.destination = checkDestination(options.destination);
 		JCompilationUnit[] tree = new JCompilationUnit[infiles.size()];
 		for (int count = 0; count < tree.length; count++) {
@@ -142,7 +142,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 				//tree[i].accept(new DebugVisitor());
 			}
 						
-			System.out.println("JOIN:");
+//			System.out.println("JOIN:");
 			for (int count = 0; count < tree.length; count++) {
 				join(tree[count]);
 				//tree[count].accept(new DebugVisitor());
@@ -151,7 +151,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 			if (errorFound) {
 				return false;
 			}
-			System.out.println("CHECK_INTERFACE:");
+//			System.out.println("CHECK_INTERFACE:");
 			for (int count = 0; count < tree.length; count++) {
 				checkInterface(tree[count]);
 				//tree[count].accept(new DebugVisitor());
@@ -167,7 +167,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 				return false;
 			}
 			
-			System.out.println("INIT FAMILY:");
+//			System.out.println("INIT FAMILY:");
 			//Walter: Now the families are initializated in a new round
 			for (int count = 0; count < tree.length; count++)
 			{
@@ -177,7 +177,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 
 			if (errorFound)
 				return false;
-			System.out.println("CHECK INITIALIZERS:");
+//			System.out.println("CHECK INITIALIZERS:");
 			for (int count = 0; count < tree.length; count++) {
 				checkInitializers(tree[count]);
 			}
@@ -185,34 +185,19 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 			if (errorFound) {
 				return false;
 			}
-			System.out.println("CHECK BODY:");
+//			System.out.println("CHECK BODY:");
 			for (int count = 0; count < tree.length; count++) {
 				checkBody(tree[count]);
 				//tree[count].accept(new DebugVisitor());
 				
 				if (!options._java
-					&& !options.beautify
-					&& !(environment.getAssertExtension()
-						== KjcEnvironment.AS_ALL)) {
+					&& !options.beautify) {
 					tree[count] = null;
 				}
 			}
 
 			if (errorFound) {
 				return false;
-			}
-
-			if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
-				for (int count = 0; count < tree.length; count++) {
-					checkCondition(tree[count]);
-					if (!options._java && !options.beautify) {
-						tree[count] = null;
-					}
-				}
-
-				if (errorFound) {
-					return false;
-				}
 			}
 		}
 
