@@ -406,7 +406,6 @@ public class CciClassDeclaration
 	 */
 	public JTypeDeclaration[] transformInnerProvidingClasses()
 	{
-		verify(getProviding() != null);
 		for (int i = 0; i < inners.length; i++)
 		{
 			if (inners[i] instanceof FjClassDeclaration)
@@ -426,7 +425,6 @@ public class CciClassDeclaration
 	 */
 	public JTypeDeclaration[] transformInnerBindingClasses(String superOwner)
 	{
-		verify(getBinding() != null);
 		for (int i = 0; i < inners.length; i++)
 		{
 			if (inners[i] instanceof FjClassDeclaration)
