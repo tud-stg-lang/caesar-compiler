@@ -51,17 +51,7 @@ public class B extends A {
 
 
 // topMostInterface for factory methods workaround 
-public cclass _synth {
-	public cclass Obj {}	
-	public cclass Plant {}
-	public cclass Nestable {}
-	public cclass Predator {}	
-	public cclass NectarPlant {}	
-	public cclass InsectPlant {}	
-	public cclass Tree {}
-	public cclass NonTree {}
-	public cclass Softwood {}	
-	public cclass Hardwood {}		
+public cclass Forest {
 	public cclass Maple {}	
 	public cclass Cherry {}	
 	public cclass Locust {}	
@@ -71,23 +61,20 @@ public cclass _synth {
 	public cclass Woodman {}
 }
 
-public cclass EagleSubject extends _synth {
-	public cclass Obj {
-	}
-	
-	public cclass Plant extends Obj {
+public cclass EagleSubject extends Forest {
+	public cclass Plant {
 		protected int foodValue;
 		public void setFoodValue(int foodValue) {this.foodValue = foodValue;}
 		public int getFoodValue() {return foodValue;}
 	}
 
-	public cclass Nestable extends Obj {
+	public cclass Nestable {
 		private int nestSafetyRating;
 		public void setNestSafetyRating(int val) {this.nestSafetyRating = val;}
 		public int getNestSafetyRating() {return nestSafetyRating;}
 	}
 
-	public cclass Predator extends Obj {
+	public cclass Predator {
 		private int rating;
 		public void setDangerRating(int rating) {this.rating = rating;}
 		public int getDangerRating() {return rating;}
@@ -124,11 +111,8 @@ public cclass EagleSubject extends _synth {
 	}
 }
 
-public cclass WoodmanSubject extends _synth {
-	public cclass Obj {
-	}
-	
-	public cclass Tree extends Obj {
+public cclass WoodmanSubject extends Forest {
+	public cclass Tree {
 		private int timeToChopDown;
 		public void setTimeToChopDown(int timeToChopDown) {this.timeToChopDown = timeToChopDown;}
 		public int getTimeToChopDown() {return timeToChopDown;}
@@ -136,7 +120,7 @@ public cclass WoodmanSubject extends _synth {
 		public void chopDown() {}
 	}
 
-	public cclass NonTree extends Obj {
+	public cclass NonTree {
 	}
 
 	public cclass Softwood extends Tree {
