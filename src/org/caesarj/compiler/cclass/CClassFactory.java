@@ -83,37 +83,25 @@ public class CClassFactory implements CaesarConstants {
 		JMethodDeclaration[] cclassMethods = caesarClass.getMethods();
 
         ArrayList interfaceMethods = new ArrayList(cclassMethods.length);
-
-        // default is: our interface has no superinterface
-        CReferenceType[] superInterfaces = new CReferenceType[]{};
+       
+        CReferenceType[] extendedTypes = new CReferenceType[caesarClass.getSuperClasses().length];
+        CReferenceType[] implementedTypes = new CReferenceType[caesarClass.getInterfaces().length];
         
-        CReferenceType[] typeList = caesarClass.getSuperClasses();
-        
-        // CTODO think about it
-        
-        // if we have a composite type our superinterface list consists
-        // of composite type's typeList 
-        superInterfaces = new CReferenceType[typeList.length];            
-        for(int i=0; i<typeList.length; i++) {
-            superInterfaces[i] = typeList[i];
-        }        
-        
-        CReferenceType ifcs[] = caesarClass.getInterfaces();
-        
-        if(ifcs.length > 0) {
-            CReferenceType tmp[] = new CReferenceType[superInterfaces.length+ifcs.length];
-            System.arraycopy(superInterfaces, 0, tmp, 0, superInterfaces.length);
-            System.arraycopy(ifcs, 0, tmp, superInterfaces.length, ifcs.length);
-            superInterfaces = tmp;
+        for (int i = 0; i < extendedTypes.length; i++) {
+            extendedTypes[i] = caesarClass.getSuperClasses()[i];
         }
-        
+
+        for (int i = 0; i < implementedTypes.length; i++) {
+            implementedTypes[i] = caesarClass.getInterfaces()[i];
+        }
 
 		CjMixinInterfaceDeclaration cclassInterface =
 			new CjMixinInterfaceDeclaration(
 				caesarClass.getTokenReference(),
 				ACC_PUBLIC,
 				interfaceName,
-				superInterfaces,
+				extendedTypes,
+				implementedTypes,
 				JFieldDeclaration.EMPTY,
 				(JMethodDeclaration[])interfaceMethods.toArray(new JMethodDeclaration[]{}),
 				new JTypeDeclaration[0],
