@@ -65,9 +65,9 @@ public class CDependentType extends CReferenceType {
         return plainType.isChecked();
     }
 
-    // not castable for now
+    // always castable for now
     public boolean isCastableTo(CType dest) {
-        return false;
+        return true;
     }
     
     public int getK() {
