@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcEnvironment.java,v 1.1 2004-02-08 16:47:51 ostermann Exp $
+ * $Id: KjcEnvironment.java,v 1.2 2004-04-15 15:09:12 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -30,58 +30,71 @@ import org.caesarj.util.InconsistencyException;
 
 public class KjcEnvironment {
 
-  public KjcEnvironment(ClassReader classReader, 
-                        TypeFactory typeFactory, 
-                        KjcOptions options) {
-    this.classReader = classReader;
-    this.typeFactory = typeFactory;
-    this.options = options;
-    this.languageExtensions = new LanguageExtensions();
-  }
+	public KjcEnvironment(
+		ClassReader classReader,
+		TypeFactory typeFactory,
+		KjcOptions options) {
+		this.classReader = classReader;
+		this.typeFactory = typeFactory;
+		this.options = options;
+		this.languageExtensions = new LanguageExtensions();
+	}
 
-  public ClassReader getClassReader() {
-    return classReader;
-  }
+	public ClassReader getClassReader() {
+		return classReader;
+	}
 
-  public TypeFactory getTypeFactory() {
-    return typeFactory;
-  }
+	public TypeFactory getTypeFactory() {
+		return typeFactory;
+	}
 
-  public SignatureParser getSignatureParser() {
-    return classReader.getSignatureParser();
-  }
+	public SignatureParser getSignatureParser() {
+		return classReader.getSignatureParser();
+	}
 
-  public LanguageExtensions getLanguageExtFactory() {
-    return languageExtensions;
-  }
+	public LanguageExtensions getLanguageExtFactory() {
+		return languageExtensions;
+	}
 
+	public int getSourceVersion() {
+		if (options.source.equals("1.1")) {
+			return SOURCE_1_1;
+		}
+		else if (options.source.equals("1.2")) {
+			return SOURCE_1_2;
+		}
+		else if (options.source.equals("1.3")) {
+			return SOURCE_1_3;
+		}
+		else if (options.source.equals("1.4")) {
+			return SOURCE_1_4;
+		}
+		else {
+			throw new InconsistencyException("Wrong source language in options");
+		}
+	}
 
-  public int getSourceVersion() {
-    if (options.source.equals("1.1")) {
-      return SOURCE_1_1;
-    } else if (options.source.equals("1.2")) {
-      return SOURCE_1_2;
-    } else if (options.source.equals("1.3")) {
-      return SOURCE_1_3;
-    } else if (options.source.equals("1.4")){
-      return SOURCE_1_4;
-    } else {
-      throw new InconsistencyException("Wrong source language in options");
+	public boolean isGenericEnabled() {
+		return options.generic;
+	}
+    
+    public int getCompilerPass() {
+        return compilerPass;
     }
-  }
+    
+    public void incCompilerPass() {
+        compilerPass++;
+    }
 
-  public boolean isGenericEnabled() {
-    return options.generic;
-  }
+    private int compilerPass = 0; // IVICA compilerPass
 
-  private final ClassReader             classReader;
-  private final TypeFactory             typeFactory;
-  private final KjcOptions              options;
-  private final LanguageExtensions      languageExtensions;
+	private final ClassReader classReader;
+	private final TypeFactory typeFactory;
+	private final KjcOptions options;
+	private final LanguageExtensions languageExtensions;
 
-
-  public final static int               SOURCE_1_1 = 101;
-  public final static int               SOURCE_1_2 = 102;
-  public final static int               SOURCE_1_3 = 103;
-  public final static int               SOURCE_1_4 = 104;
+	public final static int SOURCE_1_1 = 101;
+	public final static int SOURCE_1_2 = 102;
+	public final static int SOURCE_1_3 = 103;
+	public final static int SOURCE_1_4 = 104;
 }
