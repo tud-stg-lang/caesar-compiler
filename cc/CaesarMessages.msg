@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.16 2004-10-18 20:25:01 aracic Exp $
+ * $Id: CaesarMessages.msg,v 1.17 2004-10-28 08:00:46 aracic Exp $
  */
 
 package org.caesarj.compiler.constants
