@@ -122,7 +122,8 @@ public class DeploymentPreparation implements CaesarConstants {
 		cd.setInners(
 			(JTypeDeclaration[]) newInners.toArray(new JTypeDeclaration[0]));
 
-		//Important! Regenerate the interface of the enclosing class.				
+		//Important! Regenerate the interface of the enclosing class.
+		// TODO: this has destroyed everything: bad thing! analyse this code?
 		String prefix = cd.getCClass().getPackage().replace('.', '/') + "/";
 		cd.generateInterface(environment.getClassReader(), cd.getOwner(), prefix);
 	}
