@@ -30,6 +30,7 @@ public interface CaesarMessages extends org.caesarj.util.Messages {
   MessageDescription	VIRTUAL_CALLING_OUTER_OUTER = new MessageDescription("Virtual or override class \"{0}\" cannot call methods or access fields defined in the enclosing class of its outer class.", null, 0);
   
   // IVICA
+  MessageDescription    ONLY_DEF_CTOR_ALLOWED = new MessageDescription("A virtual class may have only a default constructor.", null, 0);
   MessageDescription    NAME_CLASH = new MessageDescription("Name clash for member \"{0}\" detected.", null, 0);
   MessageDescription    CLASS_GENERATOR = new MessageDescription("Class Generator failed on \"{0}\": {1}.", null, 0);
   MessageDescription    FATAL_ERROR = new MessageDescription("Fatal error! Everything is going to explode. Panic! Women and children first!", null, 0);
