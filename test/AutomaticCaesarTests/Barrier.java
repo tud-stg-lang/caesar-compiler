@@ -9,7 +9,7 @@ public class Barrier {
 
 	private static Barrier theInstance;
 
-	public static Barrier getInstance() {
+	public static synchronized Barrier getInstance() {
 		if (theInstance == null) {
 			theInstance = new Barrier();
 		}
@@ -17,11 +17,10 @@ public class Barrier {
 		return theInstance;
 	}
 
-	private int b;
+	private static int b=0;
 
-	public Barrier() {
+	private Barrier() {
 		b = 0;
-
 	}
 
 	public synchronized void check() {
@@ -33,6 +32,7 @@ public class Barrier {
 			}
 		} else {
 			b = 0;
+			
 			this.notifyAll();
 		}
 	}
