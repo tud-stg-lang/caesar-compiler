@@ -20,13 +20,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjAccessorCallExpression.java,v 1.6 2005-02-11 18:45:22 aracic Exp $
+ * $Id: CjAccessorCallExpression.java,v 1.7 2005-02-12 17:56:59 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.family.FieldAccess;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CReferenceType;
@@ -41,26 +42,26 @@ import org.caesarj.util.UnpositionedError;
  */
 public class CjAccessorCallExpression extends JMethodCallExpression {
    
-    private String fieldIdent;
-    private boolean setter = false;
+    protected CField field;
+    protected boolean setter = false;
     
     public CjAccessorCallExpression(
         TokenReference where,
         JExpression prefix,
-        String ident
+        CField field
     ) {
-        super(where, prefix, CaesarConstants.GETTER_PREFIX+ident, JExpression.EMPTY);
-        fieldIdent = ident;
+        super(where, prefix, CaesarConstants.GETTER_PREFIX+field.getIdent(), JExpression.EMPTY);
+        this.field = field;
     }
     
     public CjAccessorCallExpression(
         TokenReference where,
         JExpression prefix,
         JExpression argument,
-        String ident
+        CField field
     ) {
-        super(where, prefix, CaesarConstants.SETTER_PREFIX+ident, new JExpression[]{argument});
-        fieldIdent = ident;
+        super(where, prefix, CaesarConstants.SETTER_PREFIX+field.getIdent(), new JExpression[]{argument});
+        this.field = field;
         setter = true;
     }
     
@@ -70,8 +71,8 @@ public class CjAccessorCallExpression extends JMethodCallExpression {
         try {
 	        // store family here 
 	        Path prefixFam = prefix.getThisAsFamily();
-	        if(prefixFam != null && type.isCaesarReference()) {
-	            thisAsFamily = new FieldAccess(prefixFam.clonePath(), fieldIdent, (CReferenceType)type);
+	        if(prefixFam != null && type.isCaesarReference() && field.isFinal()) {
+	            thisAsFamily = new FieldAccess(prefixFam.clonePath(), field.getIdent(), (CReferenceType)type);
 	            family = thisAsFamily.normalize();
 	        }
         }
@@ -89,8 +90,12 @@ public class CjAccessorCallExpression extends JMethodCallExpression {
         try {
             Path prefixFam = prefix.getThisAsFamily();
             if(prefixFam != null && type.isReference()) {
-                thisAsFamily = new FieldAccess(prefixFam.clonePath(), getFieldIdent(), (CReferenceType)type);
-                family = thisAsFamily.normalize();
+                Path p = new FieldAccess(prefixFam.clonePath(), getFieldIdent(), (CReferenceType)type);
+                family = p.normalize();
+                
+                if(field.isFinal()) {
+                    thisAsFamily = p;
+                }
             }
         }
         catch (UnpositionedError e) {
@@ -103,7 +108,7 @@ public class CjAccessorCallExpression extends JMethodCallExpression {
     }
     
     public String getFieldIdent() {
-        return fieldIdent;
+        return field.getIdent();
     }
 
     public void setArgument(JExpression arg) {

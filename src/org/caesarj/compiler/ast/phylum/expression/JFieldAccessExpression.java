@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JFieldAccessExpression.java,v 1.22 2005-02-11 18:45:22 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.23 2005-02-12 17:56:59 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
+import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.phylum.expression.literal.JLiteral;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.cclass.CastUtils;
@@ -311,7 +312,7 @@ public class JFieldAccessExpression extends JExpression {
 	        	        	new CjAccessorCallExpression(
 	        	        	    getTokenReference(),
 	        	        	    prefix,
-	        	        	    ident
+	        	        	    field
 	        	        	).analyse(context);
 	                /*}
 	                else {
@@ -349,8 +350,7 @@ public class JFieldAccessExpression extends JExpression {
 	        
 	        prefix = prefix.analyse(context);
 	    }
-    }    
-    
+    }              
     
     // IVICA: if we have a cclass, and want to acces the public field, map to accessor method
     CType prefixType = prefix.getType(factory); 
@@ -359,12 +359,14 @@ public class JFieldAccessExpression extends JExpression {
         // check it is not an write access
         check(context, !context.isLeftSide(), CaesarMessages.READ_ONLY_ACCESS_TO_CCLASS_FIELDS);        
         
+        checkAccess(local, context, true);
+        
         //if(!context.isLeftSide()) {
             return
 	        	new CjAccessorCallExpression(
 	        	    getTokenReference(),
 	        	    prefix,
-	        	    ident
+	        	    field
 	        	).analyse(context);
         /*}
         else {
@@ -377,10 +379,9 @@ public class JFieldAccessExpression extends JExpression {
 	        	).analyse(context);
         }*/
     }
-    // --- end ---
-    
-    
-    checkAccess(local, context);
+    // --- end ---      
+
+    checkAccess(local, context, false);
     
 	if (field instanceof CCjPrivilegedField) {
 		CCjPrivilegedField privField = (CCjPrivilegedField) field;
@@ -446,8 +447,12 @@ public class JFieldAccessExpression extends JExpression {
         // store family here 
         Path prefixFam = prefix.getThisAsFamily();
         if(prefixFam != null && type.isReference()) {
-            thisAsFamily = new FieldAccess(prefixFam.clonePath(), field.getIdent(), (CReferenceType)type);
-            family = thisAsFamily.normalize();
+            Path p = new FieldAccess(prefixFam.clonePath(), field.getIdent(), (CReferenceType)type);
+            family = p.normalize();
+            
+            if(field.isFinal()) {
+                thisAsFamily = p;
+            }
         }
     }
     catch (UnpositionedError e) {
@@ -617,10 +622,14 @@ public class JFieldAccessExpression extends JExpression {
    *
    * @exception	PositionedError	Error catched as soon as possible
    */
-  public void checkAccess(CClass local, CExpressionContext context) throws PositionedError {
+  protected void checkAccess(CClass local, CExpressionContext context, boolean checkInMixin) throws PositionedError {
     TypeFactory         factory = context.getTypeFactory();
 
     CClass	access = prefix.getType(factory).getCClass();
+    if(checkInMixin) {
+        ClassReader classReader = context.getClassReader();
+        access = classReader.loadClass(factory, access.getImplQualifiedName());
+    }
 
     try {
       // FIX lackner 25.11.01  used for xkjc (Main.java) prefix instanceof JSuperExpression
