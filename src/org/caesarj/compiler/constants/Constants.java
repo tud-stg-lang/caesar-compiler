@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Constants.java,v 1.2 2004-02-09 17:33:55 ostermann Exp $
+ * $Id: Constants.java,v 1.3 2004-11-03 14:18:42 aracic Exp $
  */
 
 package org.caesarj.compiler.constants;
@@ -106,7 +106,6 @@ public interface Constants extends ClassfileConstants2 {
   String IDENT_PRE              = "$pre";
   String IDENT_POST             = "$post";
   String IDENT_V_POST           = "$V$post";
-  String IDENT_INVARIANT        = "$invariant";
   String IDENT_STORE            = "$$Store"; //$$Store0 $$Store1 ...
   String IDENT_PARAMETER        = "parameter"; //$parameter0 $parameter1 ...
   String IDENT_SUPER_STORAGE    ="superStore$"; //superStore$$0 superStore$$1 ...

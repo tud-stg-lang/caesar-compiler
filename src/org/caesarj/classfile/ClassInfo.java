@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: ClassInfo.java,v 1.4 2004-04-08 10:56:59 aracic Exp $
+ * $Id: ClassInfo.java,v 1.5 2004-11-03 14:17:57 aracic Exp $
  */
 
 package org.caesarj.classfile;
@@ -85,7 +85,7 @@ public class ClassInfo extends Member {
 
     this.attributes = new AttributeList(innerClasses != null ? new InnerClassTable(innerClasses) : null,
 					sourceFile != null ? new SourceFileAttribute(sourceFile) : null,
-					genericSignature != null ? new SignatureAttribute(genericSignature) : null,
+					null,
 					synthetic ? new SyntheticAttribute() : null);
     if (deprecated) {
       attributes.add(new DeprecatedAttribute());
@@ -319,23 +319,7 @@ public class ClassInfo extends Member {
     }
 
     return names;
-  }
-
-  /**
-   * Returns the generic type of the this class
-   */
-  public String getGenericSignature() {
-    Attribute  attr = attributes.get(ClassfileConstants2.ATT_SIGNATURE);
-
-    return attr == null ? null : ((SignatureAttribute)attr).getSignature();
-  }
-
-  /**
-   * Returns the generic type of the this class
-   */
-  public void setGenericSignature(String type) {
-    attributes.add(new SignatureAttribute(type));
-  }
+  } 
 
   /**
    * Sets the interfaces of the class in the file

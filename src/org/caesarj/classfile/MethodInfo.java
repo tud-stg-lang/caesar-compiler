@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: MethodInfo.java,v 1.3 2004-02-09 17:34:16 ostermann Exp $
+ * $Id: MethodInfo.java,v 1.4 2004-11-03 14:17:57 aracic Exp $
  */
 
 package org.caesarj.classfile;
@@ -69,7 +69,7 @@ public class MethodInfo extends Member {
 
     this.attributes = new AttributeList(code,
 					exceptions != null && exceptions.length != 0 ? new ExceptionsAttribute(exceptions) : null,
-					genericSignature != null ? new SignatureAttribute(genericSignature) : null,
+					null,
 					synthetic ? new SyntheticAttribute() : null);
     if (deprecated) {
       attributes.add( new DeprecatedAttribute());
@@ -133,22 +133,6 @@ public class MethodInfo extends Member {
   }
 
   /**
-   * Returns the generic signature of this method
-   */
-  public String getGenericSignature() {
-    Attribute  attr = attributes.get(ClassfileConstants2.ATT_SIGNATURE);
-
-    return attr == null ? getSignature() : ((SignatureAttribute)attr).getSignature();
-  }
-
-  /**
-   * Returns the generic signature of this method
-   */
-  public void setGenericSignature(String type) {
-    attributes.add(new SignatureAttribute(type));
-  }
-
-  /**
    * Returns the exceptions of this method
    */
   public String[] getExceptions() {
@@ -202,113 +186,6 @@ public class MethodInfo extends Member {
     } else {
       attributes.remove(ClassfileConstants2.ATT_SYNTHETIC);
     }
-  }
-
-  /**
-   * Returns true if this method is the invariant
-   */
-  public boolean isInvariant() {
-    return attributes.get(ClassfileConstants2.ATT_INVARIANT) != null;
-  }
-
-  /**
-   * Mark this method as invariant
-   */
-  public void setInvariant(boolean invariant) {
-    if (invariant) {
-      attributes.add(new InvariantAttribute());
-    } else {
-      attributes.remove(ClassfileConstants2.ATT_INVARIANT);
-    }
-  }
-
-  /**
-   * Returns true if this method is a precondition
-   */
-  public boolean isPrecondition() {
-    return attributes.get(ClassfileConstants2.ATT_PRECONDITION) != null;
-  }
-
-  /**
-   * (Un-)Mark this method as a precondition
-   */
-  public void setPrecondition(boolean precondition) {
-    if (precondition) {
-      attributes.add(new PreconditionAttribute());
-    } else {
-      attributes.remove(ClassfileConstants2.ATT_PRECONDITION);
-    }
-  }
-
-  /**
-   * Returns true if this method is a postcondition
-   * @see #setPostcondition(String)
-   * @see #getOldValueStore()
-   */
-  public boolean isPostcondition() {
-    return attributes.get(ClassfileConstants2.ATT_POSTCONDITION) != null;
-  }
-
-  /**
-   * Returns true if this method is a postcondition
-   * @see #setPostcondition(String)
-   */
-  public String getOldValueStore() {
-    Attribute		attr = attributes.get(ClassfileConstants2.ATT_POSTCONDITION);
-
-    return attr == null ? null : ((PostconditionAttribute)attr).getOldValueStore();
-  }
-
-  /**
-   * Mark this method as a postcondition. 
-   *
-   * @param store name of the inner class with old values or null;
-   * @see #getOldValueStore()
-   */
-  public void setPostcondition(String store) {
-    if (store == null) {
-      attributes.add(new PostconditionAttribute());
-    } else {
-      attributes.add(new PostconditionAttribute(store));
-    }
-  }
-
-  /**
-   * Returns the precondition method of this method or null if 
-   * there is no such method.
-   */
-  public MethodDescription getPreconditionMethod() {
-    Attribute   attr = attributes.get(ClassfileConstants2.ATT_CONSTRAINTS);
-
-    if (attr == null) {
-      return null;
-    } else {
-      return ((ConstraintsAttribute) attr).getPrecondition();
-    }
-  }
- 
- /**
-   * Returns the postcondition method of this method or null if 
-   * there is no such method.
-   */
-  public MethodDescription getPostconditionMethod() {
-    Attribute   attr = attributes.get(ClassfileConstants2.ATT_CONSTRAINTS);
-
-    if (attr == null) {
-      return null;
-    } else {
-      return ((ConstraintsAttribute) attr).getPostcondition();
-    }
-  }
-
-  /**
-   * Set the pre- & postcondition method of this method 
-   *
-   * @param pre precondition method
-   * @param post postcondition method
-   */
-  public void setConditionMethods(MethodDescription pre, MethodDescription post) {
-    attributes.add(new ConstraintsAttribute(pre, post));
   }
 
   /**

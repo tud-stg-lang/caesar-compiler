@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: FieldInfo.java,v 1.3 2004-02-09 17:34:16 ostermann Exp $
+ * $Id: FieldInfo.java,v 1.4 2004-11-03 14:17:57 aracic Exp $
  */
 
 package org.caesarj.classfile;
@@ -63,7 +63,7 @@ public class FieldInfo extends Member {
     this.type = new AsciiConstant(type);
 
     this.attributes = new AttributeList(value != null ? new ConstantValueAttribute(value) : null,
-                                        genericType != null ? new SignatureAttribute(genericType) : null,
+                    null,
 					deprecated ? new DeprecatedAttribute() : null,
 					synthetic ? new SyntheticAttribute() : null);
   }
@@ -116,23 +116,7 @@ public class FieldInfo extends Member {
    */
   public void setSignature(String type) {
     this.type = new AsciiConstant(type);
-  }
-
-  /**
-   * Returns the generic type of the this field
-   */
-  public String getGenericSignature() {
-    Attribute  attr = attributes.get(ClassfileConstants2.ATT_SIGNATURE);
-
-    return attr == null ? getSignature() : ((SignatureAttribute)attr).getSignature();
-  }
-
-  /**
-   * Returns the generic type of the this field
-   */
-  public void setGenericSignature(String type) {
-    attributes.add(new SignatureAttribute(type));
-  }
+  }  
 
   /**
    * Returns the value of the this field

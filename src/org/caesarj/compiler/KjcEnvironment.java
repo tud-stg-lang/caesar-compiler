@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcEnvironment.java,v 1.7 2004-09-12 14:29:04 aracic Exp $
+ * $Id: KjcEnvironment.java,v 1.8 2004-11-03 14:18:12 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -41,7 +41,6 @@ public class KjcEnvironment {
 		this.classReader = classReader;
 		this.typeFactory = typeFactory;
 		this.options = options;
-		this.languageExtensions = new LanguageExtensions();
         this.caesarTypeSystem = new CaesarTypeSystem();
 	}
 
@@ -63,10 +62,6 @@ public class KjcEnvironment {
 
 	public SignatureParser getSignatureParser() {
 		return classReader.getSignatureParser();
-	}
-
-	public LanguageExtensions getLanguageExtFactory() {
-		return languageExtensions;
 	}
 
 	public int getSourceVersion() {
@@ -95,7 +90,6 @@ public class KjcEnvironment {
     private final CaesarTypeSystem caesarTypeSystem;
     private final TypeFactory typeFactory;
 	private final KjcOptions options;
-	private final LanguageExtensions languageExtensions;
 	private final AstGenerator astGenerator;
 
 	public final static int SOURCE_1_1 = 101;

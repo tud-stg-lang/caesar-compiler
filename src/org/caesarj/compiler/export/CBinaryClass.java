@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBinaryClass.java,v 1.8 2004-10-15 11:12:53 aracic Exp $
+ * $Id: CBinaryClass.java,v 1.9 2004-11-03 14:18:49 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -65,18 +65,10 @@ public class CBinaryClass extends CClass {
 	  null,
 	  classInfo.isDeprecated(),
           classInfo.isSynthetic());
-    String              genericSignature =  classInfo.getGenericSignature();
     CReferenceType[]	interfaces;
-
-    if (genericSignature == null) {
-      setSuperClass(classInfo.getSuperClass() == null ? null : factory.createType(classInfo.getSuperClass(), true));
-      interfaces = loadInterfaces(factory, classInfo.getInterfaces());      
-    } else {
-      SignatureParser.ClassSignature    classSignature = signatureParser.parseClassSignature(factory, genericSignature);
-
-      setSuperClass(classSignature.superType);
-      interfaces = classSignature.interfaces;     
-    }
+    
+    setSuperClass(classInfo.getSuperClass() == null ? null : factory.createType(classInfo.getSuperClass(), true));
+    interfaces = loadInterfaces(factory, classInfo.getInterfaces());      
 
     FieldInfo[]         fields = classInfo.getFields();
     Hashtable           fields_H = null;

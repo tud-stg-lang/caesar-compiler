@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CSourceMethod.java,v 1.4 2004-10-17 20:59:37 aracic Exp $
+ * $Id: CSourceMethod.java,v 1.5 2004-11-03 14:18:49 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.CodeEnv;
 import org.caesarj.classfile.CodeInfo;
-import org.caesarj.classfile.MethodDescription;
 import org.caesarj.classfile.MethodInfo;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.codegen.CodeSequence;
@@ -90,57 +89,7 @@ public class CSourceMethod extends CMethod {
   public void setSynthetic(boolean syn) {
     synthetic = syn;
   }
-  // ----------------------------------------------------------------------
-  // ACCESSORS (Extended)
-  // ----------------------------------------------------------------------
-  
-  public boolean isInvariant() {
-    return invariant;
-  }
 
-  public void setInvariant(boolean invariant) {
-    this.invariant = invariant;
-  }
-
-  public boolean isPrecondition() {
-    return precondition;
-  }
-
-  public void setPrecondition(boolean precondition) {
-    this.precondition = precondition;
-  }
-
-  public boolean isPostcondition() {
-    return postcondition;
-  }
-
-  public void setPostcondition(boolean postcondition) {
-    this.postcondition = postcondition;
-  }
-
-  public CReferenceType getOldValueStore() {
-    return oldValueStore;
-  }
-
-  public void setOldValueStore(CReferenceType oldValueStore) {
-    this.oldValueStore = oldValueStore;
-  }
-
-  public CMethod getPreconditionMethod() {
-    return preconditionMethod;
-  }
-
-  public void setPreconditionMethod(CMethod pre) {
-    preconditionMethod = pre;
-  }
-
-  public CMethod getPostconditionMethod() {
-    return postconditionMethod;
-  }
-
-  public void setPostconditionMethod(CMethod post) {
-    this.postconditionMethod = post;
-  }
   public void addSuperMethod(CMethod superMethod) {
     verify(superMethod != null);
     if(superMethods == null) {
@@ -200,33 +149,7 @@ public class CSourceMethod extends CMethod {
                                             isDeprecated(),
                                             isSynthetic());
     methodInfo = optimizer.run(methodInfo);
-
-    if (isInvariant()) {
-      methodInfo.setInvariant(true);
-    }
-    if (isPrecondition()) {
-      methodInfo.setPrecondition(true);
-    }
-    if (isPostcondition()) {
-      methodInfo.setPostcondition(oldValueStore == null ? null :  oldValueStore.getIdent());
-    }
-    if (preconditionMethod != null || preconditionMethod != null) {
-      MethodDescription pre, post;
-
-      if (preconditionMethod == null) {
-        pre = null;
-      } else {
-        pre = new MethodDescription(preconditionMethod.getQualifiedName(),
-                                    preconditionMethod.getSignature());
-      }
-      if (postconditionMethod == null) {
-        post = null;
-      } else {
-        post = new MethodDescription(postconditionMethod.getQualifiedName(),
-                                     postconditionMethod.getSignature());
-      }
-      methodInfo.setConditionMethods(pre, post);
-    }
+    
     return methodInfo;
   }
 
@@ -342,11 +265,5 @@ public class CSourceMethod extends CMethod {
 //Walter end
 
   private boolean               used;
-  private CMethod               preconditionMethod;
-  private CMethod               postconditionMethod;
-  private CReferenceType        oldValueStore;
-  private boolean               invariant;
-  private boolean               precondition;
-  private boolean               postcondition;
   private ArrayList             superMethods;
 }

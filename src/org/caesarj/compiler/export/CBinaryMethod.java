@@ -15,12 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBinaryMethod.java,v 1.2 2004-10-15 11:12:53 aracic Exp $
+ * $Id: CBinaryMethod.java,v 1.3 2004-11-03 14:18:49 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
 
-import org.caesarj.classfile.MethodDescription;
 import org.caesarj.classfile.MethodInfo;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.types.CReferenceType;
@@ -143,37 +142,7 @@ public class CBinaryMethod extends CMethod {
 
     for (int i=0; i < exceptions.length; i++) {
       exceptions[i] = (CReferenceType) exceptions[i].checkType(self);
-    }
-
-    // load types for extended features (assertion)
-    TypeFactory         factory = context.getTypeFactory();
-    MethodDescription   preMethod = methodInfo.getPreconditionMethod();
-
-    if (preMethod != null) {
-      CReferenceType        preClass = factory.createType(preMethod.getOwner(), true);
-      CType[]           params = buildParameterTypes(factory,
-                                                     context.getSignatureParser(),
-                                                     preMethod.getType());
-
-      preconditionMethod = preClass.getCClass().lookupMethod(context, getOwner(), null, preMethod.getName(), params);
-    }
-    MethodDescription   postMethod = methodInfo.getPostconditionMethod();
-
-    if (postMethod != null) {
-      CReferenceType         postClass = factory.createType(postMethod.getOwner(), true);
-      CType[]            params = buildParameterTypes(factory,
-                                                      context.getSignatureParser(),
-                                                      postMethod.getType());
-
-      postconditionMethod = postClass.getCClass().lookupMethod(context, getOwner(), null, postMethod.getName(), params);
-    }
-      
-    if (methodInfo.isPostcondition() && methodInfo.getOldValueStore() != null) {
-      oldValueStore = getOwner().lookupClass(getOwner(), methodInfo.getOldValueStore()).getAbstractType();
-    } else {
-      oldValueStore = null;
-    }
- 
+    } 
   }
   // ----------------------------------------------------------------------
   // CHECK MATCHING
@@ -348,36 +317,7 @@ public class CBinaryMethod extends CMethod {
   public String getSignature() {
     return methodInfo.getSignature();
   }
-  // ----------------------------------------------------------------------
-  // ACCESSORS (Extended)
-  // ----------------------------------------------------------------------
-  
-  public boolean isInvariant() {
-    return methodInfo.isInvariant();
-  }
 
-  public boolean isPrecondition() {
-    return methodInfo.isPrecondition();
-  }
-  
-  public boolean isPostcondition() {
-    return methodInfo.isPostcondition();
-  }
 
-  public CMethod getPreconditionMethod() {
-    return preconditionMethod;
-  }
-
-  public CMethod getPostconditionMethod() {
-    return postconditionMethod;
-  }
-
-  public CReferenceType getOldValueStore() {
-    return oldValueStore;
-  }
-
-  private MethodInfo    methodInfo;
-  private CMethod       preconditionMethod;
-  private CMethod       postconditionMethod;
-  private CReferenceType    oldValueStore;
+  private MethodInfo    methodInfo;  
 }

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CSourceClass.java,v 1.10 2004-10-17 20:59:37 aracic Exp $
+ * $Id: CSourceClass.java,v 1.11 2004-11-03 14:18:49 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -469,20 +469,6 @@ public class CSourceClass extends CClass {
         }
     }
 
-    /**
-     * Returns the invariant method for this class or null if no invariant exists.
-     */
-    public CMethod getInvariant() {
-        return invariantMethod;
-    }
-
-    /**
-     * Sets the invariant method of this class.
-     */
-    public void setInvariant(CMethod method) {
-        invariantMethod = method;
-    }
-
     public void analyseConditions() throws PositionedError {
         if (decl != null) {
             JTypeDeclaration tmp = decl;
@@ -700,6 +686,5 @@ public class CSourceClass extends CClass {
     private boolean assertionClass;
     private Hashtable outers;
     private int syntheticFieldCount;
-    private CMethod invariantMethod;
     protected JTypeDeclaration decl;
 }

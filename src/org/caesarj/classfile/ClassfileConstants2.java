@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: ClassfileConstants2.java,v 1.8 2004-07-21 08:45:11 aracic Exp $
+ * $Id: ClassfileConstants2.java,v 1.9 2004-11-03 14:17:57 aracic Exp $
  */
 
 package org.caesarj.classfile;
@@ -100,14 +100,6 @@ public interface ClassfileConstants2 {
   int		ATT_DEPRECATED = 11;
   int		ATT_INNERCLASSES = 21;
   int		ATT_SYNTHETIC = 22;
-
-  // for extension
-  int           ATT_INVARIANT = 101;
-  int           ATT_PRECONDITION = 102;
-  int           ATT_POSTCONDITION = 103;
-  int           ATT_CONSTRAINTS  =104;
-  int           ATT_SIGNATURE  =105;
-  int           ATT_BRIDGE  =106;
 
   // ----------------------------------------------------------------------
   // VM OPCODES

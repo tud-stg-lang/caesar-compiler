@@ -15,7 +15,7 @@
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Attribute.java,v 1.6 2004-09-08 13:46:31 aracic Exp $
+ * $Id: Attribute.java,v 1.7 2004-11-03 14:17:57 aracic Exp $
  */
 package org.caesarj.classfile;
 import java.io.DataInput;
@@ -52,8 +52,6 @@ public abstract class Attribute {
 					return new CodeInfo(in, cp);
 				} else if (tag.equals("ConstantValue")) {
 					return new ConstantValueAttribute(in, cp);
-				} else if (tag.equals(ConstraintsAttribute.NAME)) {
-					return new ConstraintsAttribute(in, cp);
 				}
 				break;
 			case 'D' :
@@ -69,9 +67,7 @@ public abstract class Attribute {
 			case 'I' :
 				if (tag.equals("InnerClasses")) {
 					return new InnerClassTable(in, cp);
-				} else if (tag.equals(InvariantAttribute.NAME)) {
-					return new InvariantAttribute(in, cp);
-				}
+				} 
 				break;
 			case 'L' :
 				if (tag.equals("LineNumberTable")) {
@@ -81,20 +77,12 @@ public abstract class Attribute {
 					throw new ClassFileFormatException(
 							"Attribute \"LocalVariableTable\" illegal outside of Attribute Code");
 				}
-				break;
-			case 'P' :
-				if (tag.equals(PostconditionAttribute.NAME)) {
-					return new PostconditionAttribute(in, cp);
-				} else if (tag.equals(PreconditionAttribute.NAME)) {
-					return new PreconditionAttribute(in, cp);
-				}
+				break;			
 			case 'S' :
 				if (tag.equals("SourceFile")) {
 					return new SourceFileAttribute(in, cp);
 				} else if (tag.equals("Synthetic")) {
 					return new SyntheticAttribute(in, cp);
-				} else if (tag.equals(SignatureAttribute.NAME)) {
-					return new SignatureAttribute(in, cp);
 				}
 				break;
 			default :
