@@ -74,7 +74,7 @@ public class ProceedExpression
 				new JTypeNameExpression(getTokenReference(), singletonType);
 
 		} else {
-			typePrefix = new FjThisExpression(getTokenReference());
+			typePrefix = new JThisExpression(getTokenReference());
 		}
 
 		prefix =

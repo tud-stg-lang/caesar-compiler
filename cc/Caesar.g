@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.25 2004-03-15 11:52:05 aracic Exp $
+ * $Id: Caesar.g,v 1.26 2004-03-15 13:04:46 aracic Exp $
  */
 
 /*
@@ -1076,7 +1076,7 @@ jParameterDeclaration [int desc]
 	reportTrouble(new CWarning(sourceRef, KjcMessages.OLD_STYLE_ARRAY_BOUNDS, null));
 	type = new CArrayType(type, bounds);
       }
-      self = new FjFormalParameter(sourceRef, desc, type, ident.getText(), isFinal);
+      self = new JFormalParameter(sourceRef, desc, type, ident.getText(), isFinal);
     }
 ;
 
@@ -1291,7 +1291,7 @@ jReturnStatement []
 :
   "return" ( expr = jExpression[] )? SEMI
     {
-        self = new FjReturnStatement(sourceRef, expr, getStatementComment());
+        self = new JReturnStatement(sourceRef, expr, getStatementComment());
     }
 ;
 
@@ -1880,7 +1880,7 @@ jUnaryExpressionNotPlusMinus []
     LPAREN dest = jBuiltInTypeSpec[]
     ( 
       RPAREN expr = jUnaryExpression[]
-      { self = new FjCastExpression(sourceRef, expr, dest, true, true); }
+      { self = new JCastExpression(sourceRef, expr, dest, true, true); }
     |
       // the second posibility is e.g. " Class clazz = (int.class);"
       DOT "class" RPAREN
@@ -1899,7 +1899,7 @@ jUnaryExpressionNotPlusMinus []
     (LPAREN jClassTypeSpec[] RPAREN jUnaryExpressionNotPlusMinus[])=>
     LPAREN dest = jClassTypeSpec[] RPAREN
     expr = jUnaryExpressionNotPlusMinus[]
-      { self = new FjCastExpression(sourceRef, expr, dest, true, true); }
+      { self = new JCastExpression(sourceRef, expr, dest, true, true); }
   |
    self = jPostfixExpression[]
   )

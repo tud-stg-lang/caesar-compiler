@@ -12,35 +12,14 @@ import java.util.List;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.aspectj.CaesarNameMangler;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
-import org.caesarj.compiler.ast.phylum.declaration.AdviceDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.FjFieldDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.FjMethodDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JClassDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.ProceedDeclaration;
-import org.caesarj.compiler.ast.phylum.expression.CciInternalUnqualifiedInstanceCreation;
-import org.caesarj.compiler.ast.phylum.expression.FjAssignmentExpression;
-import org.caesarj.compiler.ast.phylum.expression.FjFieldAccessExpression;
-import org.caesarj.compiler.ast.phylum.expression.FjMethodCallExpression;
-import org.caesarj.compiler.ast.phylum.expression.FjNameExpression;
-import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
-import org.caesarj.compiler.ast.phylum.statement.JBlock;
-import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
-import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
-import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
-import org.caesarj.compiler.ast.phylum.statement.JStatement;
-import org.caesarj.compiler.ast.phylum.variable.FjFormalParameter;
+import org.caesarj.compiler.ast.phylum.declaration.*;
+import org.caesarj.compiler.ast.phylum.expression.*;
+import org.caesarj.compiler.ast.phylum.statement.*;
 import org.caesarj.compiler.ast.phylum.variable.FjVariableDefinition;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.types.CClassNameType;
-import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
-import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.compiler.types.*;
 import org.caesarj.util.TokenReference;
 
 /**
@@ -239,7 +218,7 @@ public class DeploymentPreparation implements CaesarConstants {
 
 		CType singletonType = new CClassNameType(cd.getFjSourceClass().getQualifiedName());
 		JExpression expr =
-			new FjFieldAccessExpression(
+			new JFieldAccessExpression(
 				TokenReference.NO_REF,
 				null,
 				PER_SINGLETON_INSTANCE_FIELD);
@@ -250,7 +229,7 @@ public class DeploymentPreparation implements CaesarConstants {
 			CTypeVariable.EMPTY,
 			singletonType,
 			ASPECT_OF_METHOD,
-			FjFormalParameter.EMPTY,
+			JFormalParameter.EMPTY,
 			CReferenceType.EMPTY,
 			new JBlock(TokenReference.NO_REF, body, null),
 			null,

@@ -2,11 +2,12 @@ package org.caesarj.compiler.ast.phylum.declaration;
 
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
-import org.caesarj.compiler.ast.phylum.expression.*;
+import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.expression.FjConstructorCall;
+import org.caesarj.compiler.ast.phylum.expression.FjNameExpression;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.statement.FjConstructorBlock;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
-import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.variable.FjFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.context.CContext;
@@ -118,7 +119,7 @@ public class FjCleanClassIfcImplDeclaration
 	public void addChildsConstructor( TypeFactory typeFactory ) {
 		
 		JFormalParameter parent =
-			new FjFormalParameter(
+			new JFormalParameter(
 				getTokenReference(),
 				JFormalParameter.DES_PARAMETER,
 				new CClassNameType( FjConstants.CHILD_TYPE_NAME ),

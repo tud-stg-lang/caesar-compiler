@@ -1,31 +1,32 @@
 // $ANTLR 1.5A: "cc/Caesar.g" -> "CaesarParser.java"$
  package org.caesarj.compiler; 
+import java.util.ArrayList;
+
+import org.caesarj.compiler.aspectj.CaesarAdviceKind;
+import org.caesarj.compiler.aspectj.CaesarPatternParser;
+import org.caesarj.compiler.aspectj.CaesarPointcut;
+import org.caesarj.compiler.aspectj.CaesarSourceContext;
+import org.caesarj.compiler.ast.JavaStyleComment;
+import org.caesarj.compiler.ast.JavadocComment;
+import org.caesarj.compiler.ast.phylum.JClassImport;
+import org.caesarj.compiler.ast.phylum.JCompilationUnit;
+import org.caesarj.compiler.ast.phylum.JPackageImport;
+import org.caesarj.compiler.ast.phylum.JPackageName;
+import org.caesarj.compiler.ast.phylum.declaration.*;
+import org.caesarj.compiler.ast.phylum.expression.*;
+import org.caesarj.compiler.ast.phylum.expression.literal.*;
+import org.caesarj.compiler.ast.phylum.statement.*;
+import org.caesarj.compiler.ast.phylum.variable.*;
+import org.caesarj.compiler.constants.Constants;
+import org.caesarj.compiler.constants.KjcMessages;
+import org.caesarj.compiler.context.CParseCompilationUnitContext;
+import org.caesarj.compiler.export.CModifier;
+import org.caesarj.compiler.types.*;
+import org.caesarj.tools.antlr.extra.InputBuffer;
 import org.caesarj.tools.antlr.runtime.*;
-
-  import java.util.ArrayList;
-
-  import org.caesarj.compiler.ast.*;
-  import org.caesarj.compiler.ast.phylum.*;
-  import org.caesarj.compiler.ast.phylum.expression.*;
-  import org.caesarj.compiler.ast.phylum.expression.literal.*;
-  import org.caesarj.compiler.ast.phylum.declaration.*;
-  import org.caesarj.compiler.ast.phylum.statement.*;
-  import org.caesarj.compiler.ast.phylum.variable.*;
-  import org.caesarj.compiler.constants.*;
-  import org.caesarj.compiler.aspectj.CaesarAdviceKind;
-  import org.caesarj.compiler.aspectj.CaesarPatternParser;
-  import org.caesarj.compiler.aspectj.CaesarPointcut;
-  import org.caesarj.compiler.aspectj.CaesarSourceContext;
-
-  import org.caesarj.util.CWarning;
-  import org.caesarj.tools.antlr.extra.*;
-  import org.caesarj.compiler.ast.JavaStyleComment;
-  import org.caesarj.compiler.ast.JavadocComment;
-  import org.caesarj.tools.antlr.extra.InputBuffer;
-  import org.caesarj.compiler.context.*;
-  import org.caesarj.compiler.types.*;
-  import org.caesarj.compiler.export.*;
-  import org.caesarj.util.*;
+import org.caesarj.util.CWarning;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
 
 public class CaesarParser extends org.caesarj.tools.antlr.extra.Parser
        implements CaesarTokenTypes
@@ -2426,7 +2427,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				reportTrouble(new CWarning(sourceRef, KjcMessages.OLD_STYLE_ARRAY_BOUNDS, null));
 				type = new CArrayType(type, bounds);
 			}
-			self = new FjFormalParameter(sourceRef, desc, type, ident.getText(), isFinal);
+			self = new JFormalParameter(sourceRef, desc, type, ident.getText(), isFinal);
 			
 		}
 		return self;
@@ -2664,7 +2665,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		{
 			match(LITERAL_this);
 			if ( inputState.guessing==0 ) {
-				self = new FjThisExpression(sourceRef);
+				self = new JThisExpression(sourceRef);
 			}
 			break;
 		}
@@ -3507,7 +3508,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		match(SEMI);
 		if ( inputState.guessing==0 ) {
 			
-			self = new FjReturnStatement(sourceRef, expr, getStatementComment());
+			self = new JReturnStatement(sourceRef, expr, getStatementComment());
 			
 		}
 		return self;
@@ -4938,7 +4939,7 @@ private static final int MAX_LOOKAHEAD = 2;
 					match(RPAREN);
 					expr=jUnaryExpression();
 					if ( inputState.guessing==0 ) {
-						self = new FjCastExpression(sourceRef, expr, dest, true, true);
+						self = new JCastExpression(sourceRef, expr, dest);
 					}
 					break;
 				}
@@ -4991,7 +4992,7 @@ private static final int MAX_LOOKAHEAD = 2;
 					match(RPAREN);
 					expr=jUnaryExpressionNotPlusMinus();
 					if ( inputState.guessing==0 ) {
-						self = new FjCastExpression(sourceRef, expr, dest, true, true);
+						self = new JCastExpression(sourceRef, expr, dest);
 					}
 				}
 				else if ((_tokenSet_28.member(LA(1))) && (_tokenSet_29.member(LA(2)))) {
@@ -5049,7 +5050,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				{
 					match(LITERAL_this);
 					if ( inputState.guessing==0 ) {
-						self = new FjThisExpression(sourceRef, self);
+						self = new JThisExpression(sourceRef, self);
 					}
 					break;
 				}

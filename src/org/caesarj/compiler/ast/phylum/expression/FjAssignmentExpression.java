@@ -6,7 +6,7 @@ import org.caesarj.compiler.types.CType;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
-// FJPULLUP
+// FJPULLUP hard
 public class FjAssignmentExpression extends JAssignmentExpression {
 
 	public FjAssignmentExpression(

@@ -7,7 +7,6 @@ import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.expression.*;
 import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.phylum.statement.*;
-import org.caesarj.compiler.ast.phylum.variable.FjFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
@@ -73,7 +72,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 				newParameters[i + 1] = parameters[i];
 			}
 			newParameters[0] =
-				new FjFormalParameter(
+				new JFormalParameter(
 					getTokenReference(),
 					JFormalParameter.DES_PARAMETER,
 					superType,
@@ -102,12 +101,12 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			superArguments = superCall.getArguments();
 
 
-		FjFormalParameter[] newParameters =
-			new FjFormalParameter[parameters.length];
+		JFormalParameter[] newParameters =
+			new JFormalParameter[parameters.length];
 		for (int i = 0; i < parameters.length; i++) 
 		{
 			newParameters[i] =
-				(FjFormalParameter) ((FjFormalParameter) parameters[i]).clone();
+				(JFormalParameter) ((JFormalParameter) parameters[i]).clone();
 		}
 
 		JExpression[] arguments = null;
@@ -173,16 +172,16 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			superArguments = superCall.getArguments();
 
 
-		FjFormalParameter[] newParameters =
-			new FjFormalParameter[parameters.length + 1];
+		JFormalParameter[] newParameters =
+			new JFormalParameter[parameters.length + 1];
 		for (int i = 1, j = 0; i < newParameters.length; i++, j++) 
 		{
 			newParameters[i] =
-				(FjFormalParameter) ((FjFormalParameter) parameters[j]).clone();
+				(JFormalParameter) ((JFormalParameter) parameters[j]).clone();
 		}
 		
 		newParameters[0] = 
-			new FjFormalParameter(
+			new JFormalParameter(
 				getTokenReference(), 
 				JVariableDefinition.DES_PARAMETER,
 				superParameterType,
@@ -268,11 +267,11 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			constructorCallArguments = superCall.getArguments();
 
 		//Clones the parameters.
-		FjFormalParameter[] newParameters =
-			new FjFormalParameter[parameters.length];
+		JFormalParameter[] newParameters =
+			new JFormalParameter[parameters.length];
 		for (int i = 0; i < parameters.length; i++) 
 			newParameters[i] =
-				(FjFormalParameter) ((FjFormalParameter) parameters[i]).clone();
+				(JFormalParameter) ((JFormalParameter) parameters[i]).clone();
 
 
 		JExpression[] arguments = null;
@@ -407,7 +406,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 		if (factoredClass.getSuperClassField() != null)
 		{
 			superFactoryPrefix =
-				new FjFieldAccessExpression(
+				new JFieldAccessExpression(
 					getTokenReference(),
 					factoredClass
 						.getSuperClassField()
@@ -428,7 +427,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 		for (int i = 0; i < parameters.length; i++) 
 		{
 			newParameters[i] =
-				(FjFormalParameter) ((FjFormalParameter) parameters[i]).clone();
+				(JFormalParameter) ((JFormalParameter) parameters[i]).clone();
 		}
 		
 		// calculate the arguments to
@@ -566,7 +565,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 		// and introduce downcasted variables with the old name		
 		for (int i = 0; i < parameters.length; i++) 
 		{
-			FjFormalParameter parameter = (FjFormalParameter) parameters[ i ];
+			JFormalParameter parameter = (JFormalParameter) parameters[ i ];
 			try 
 			{
 				parameter.addFamily(context);
@@ -733,9 +732,9 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 				ref, 
 				new JAssignmentExpression(
 					ref,
-					new FjFieldAccessExpression(
+					new JFieldAccessExpression(
 						ref,
-						new FjThisExpression(ref),
+						new JThisExpression(ref),
 						CciConstants.WRAPPEE_FIELD_NAME),
 					new FjNameExpression(
 							ref,
@@ -749,9 +748,9 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 				constructorBody);
 				
 		parameters = 
-			new FjFormalParameter[]
+			new JFormalParameter[]
 			{
-				new FjFormalParameter(
+				new JFormalParameter(
 					ref,
 					JLocalVariable.DES_PARAMETER,
 					new CClassNameType(wrappee.getQualifiedName()),
@@ -788,14 +787,14 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			CciConstants.toWrapperMethodCreationName(
 				FjConstants.toIfcName(ident));
 
-		FjFormalParameter[] newParameters = 
-			new FjFormalParameter[parameters.length];
+		JFormalParameter[] newParameters = 
+			new JFormalParameter[parameters.length];
 		JExpression[] constructorArgs = new JExpression[parameters.length];
 		
 		for (int i = 0; i < newParameters.length; i++)
 		{
-			newParameters[i] = (FjFormalParameter)
-				 ((FjFormalParameter) parameters[i]).clone();
+			newParameters[i] = (JFormalParameter)
+				 ((JFormalParameter) parameters[i]).clone();
 			constructorArgs[i] = 
 				new FjNameExpression(ref, newParameters[i].getIdent());
 		}
@@ -874,7 +873,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 							ref,
 							new FjMethodCallExpression(
 								ref,
-								new FjFieldAccessExpression(
+								new JFieldAccessExpression(
 									ref, 
 									null, 
 									mapName),
@@ -943,13 +942,13 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			CciConstants.toWrapperMethodDestructionName(
 				FjConstants.toIfcName(ident));
 
-		FjFormalParameter[] newParameters = 
-			new FjFormalParameter[parameters.length];
+		JFormalParameter[] newParameters = 
+			new JFormalParameter[parameters.length];
 		
 		for (int i = 0; i < newParameters.length; i++)
 		{
-			newParameters[i] = (FjFormalParameter)
-				 ((FjFormalParameter) parameters[i]).clone();
+			newParameters[i] = (JFormalParameter)
+				 ((JFormalParameter) parameters[i]).clone();
 		}
 
 
@@ -1021,7 +1020,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			if (i > 0) System.out.print(", ");
 			System.out.print(parameters[i].getIdent());
 			System.out.print(" - ");
-			System.out.print(((FjFormalParameter)parameters[i]).getFamily());
+			System.out.print(((JFormalParameter)parameters[i]).getFamily());
 		}
 		System.out.println();
 

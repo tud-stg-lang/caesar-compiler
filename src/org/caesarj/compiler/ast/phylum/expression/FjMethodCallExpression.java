@@ -157,8 +157,8 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 	
 		TokenReference ref = getTokenReference();
 
-		FjCastExpression result = 
-			new FjCastExpression(
+		JCastExpression result = 
+			new JCastExpression(
 				ref,
 				new FjMethodCallExpression(
 					ref,

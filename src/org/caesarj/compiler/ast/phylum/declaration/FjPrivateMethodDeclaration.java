@@ -6,12 +6,14 @@ import java.util.Vector;
 import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
-import org.caesarj.compiler.ast.phylum.expression.*;
+import org.caesarj.compiler.ast.phylum.expression.FjMethodCallExpression;
+import org.caesarj.compiler.ast.phylum.expression.FjNameExpression;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
 import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
-import org.caesarj.compiler.ast.phylum.variable.FjFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.types.CReferenceType;
@@ -53,10 +55,10 @@ public class FjPrivateMethodDeclaration extends FjMethodDeclaration {
 				? 1
 				: parameters.length + 1];
 		for (int i = 1; i < contextParameters.length; i++) {
-			contextParameters[i] = (FjFormalParameter) getParameters()[i - 1].clone();
+			contextParameters[i] = (JFormalParameter) getParameters()[i - 1].clone();
 		}
 		contextParameters[0] =
-			new FjFormalParameter(
+			new JFormalParameter(
 				getTokenReference(),
 				JFormalParameter.DES_PARAMETER,
 				selfType,
@@ -77,12 +79,12 @@ public class FjPrivateMethodDeclaration extends FjMethodDeclaration {
 				null );
 	}
 
-	public FjFormalParameter[] getParameters() {
+	public JFormalParameter[] getParameters() {
 		Vector parameterVector = new Vector(
 			Arrays.asList( parameters )
 		);		
-		return (FjFormalParameter[])
-			Utils.toArray( parameterVector, FjFormalParameter.class );
+		return (JFormalParameter[])
+			Utils.toArray( parameterVector, JFormalParameter.class );
 	}
 	
 	public FjMethodDeclaration[] getSelfContextMethods( CType selfType ) {
@@ -95,7 +97,7 @@ public class FjPrivateMethodDeclaration extends FjMethodDeclaration {
 		JExpression[] implCallArgs = new JExpression[parameters == null ? 1 : parameters.length + 1];
 		for (int args = 0; args < implCallArgs.length; args++) {
 			if (args == 0) {
-				implCallArgs[args] = new FjThisExpression(getTokenReference(), false);
+				implCallArgs[args] = new JThisExpression(getTokenReference());
 			} else {
 				implCallArgs[args] =
 					new FjNameExpression(
@@ -138,10 +140,10 @@ public class FjPrivateMethodDeclaration extends FjMethodDeclaration {
 
 	public FjCleanMethodDeclaration getAccessorMethod( JTypeDeclaration owner ) {
 		JExpression[] args = new JExpression[ parameters.length ];
-		JFormalParameter[] newParameters = new FjFormalParameter[ parameters.length ];
+		JFormalParameter[] newParameters = new JFormalParameter[ parameters.length ];
 		for( int i = 0; i < args.length; i++ ) {
 			args[ i ] =	new FjNameExpression( getTokenReference(), parameters[ i ].getIdent() );
-			newParameters[ i ] = (FjFormalParameter) ((FjFormalParameter) parameters[ i ]).clone();
+			newParameters[ i ] = (JFormalParameter) ((JFormalParameter) parameters[ i ]).clone();
 		}
 		JExpression implCall =
 			new FjMethodCallExpression(

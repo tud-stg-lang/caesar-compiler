@@ -5,7 +5,6 @@ import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
-import org.caesarj.compiler.ast.phylum.variable.FjFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CBinaryTypeContext;
@@ -111,7 +110,7 @@ public class AdviceDeclaration
 		CType aroundClosureType = new CClassNameType(AROUND_CLOSURE_CLASS);
 
 		newParameters[newParameters.length - 1] =
-			new FjFormalParameter(
+			new JFormalParameter(
 				TokenReference.NO_REF,
 				JFormalParameter.DES_GENERATED,
 				aroundClosureType,

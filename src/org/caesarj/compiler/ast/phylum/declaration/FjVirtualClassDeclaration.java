@@ -6,16 +6,15 @@ import java.util.Vector;
 import org.caesarj.compiler.ast.FjFamilyContext;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
+import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.expression.FjConstructorCall;
 import org.caesarj.compiler.ast.phylum.expression.FjNameExpression;
-import org.caesarj.compiler.ast.phylum.expression.FjThisExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
 import org.caesarj.compiler.ast.phylum.statement.FjConstructorBlock;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
-import org.caesarj.compiler.ast.phylum.variable.FjFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.FjVariableDefinition;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
@@ -352,7 +351,7 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 			CType[] paramTypes = constructor.getParameters();			
 			Vector paramV = new Vector();
 			for( int i = 0; i < paramTypes.length; i++ ) {
-				paramV.add( new FjFormalParameter(
+				paramV.add( new JFormalParameter(
 					FjConstants.STD_TOKEN_REFERENCE,
 					JFormalParameter.DES_PARAMETER,
 					paramTypes[ i ],
@@ -528,10 +527,10 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 		TokenReference ref = getTokenReference();
 		JBlock body = createAdaptMethodBody();
 				
-		FjFormalParameter[] parameters = 
-			new FjFormalParameter[]
+		JFormalParameter[] parameters = 
+			new JFormalParameter[]
 			{
-				new FjFormalParameter(
+				new JFormalParameter(
 					ref, 
 					JVariableDefinition.DES_PARAMETER, 
 					FjConstants.CHILD_TYPE,
@@ -566,7 +565,7 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 			{
 				new JReturnStatement(
 					ref, 
-					new FjThisExpression(ref, true), 
+					new JThisExpression(ref), 
 					null)
 			},
 			null);

@@ -6,21 +6,15 @@ import org.caesarj.compiler.ast.phylum.expression.*;
 import org.caesarj.compiler.ast.phylum.expression.literal.JBooleanLiteral;
 import org.caesarj.compiler.ast.phylum.expression.literal.JIntLiteral;
 import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
-import org.caesarj.compiler.ast.phylum.statement.FjReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
 import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
-import org.caesarj.compiler.ast.phylum.variable.FjFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.CciConstants;
 import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.export.CModifier;
-import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CStdType;
-import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
-import org.caesarj.compiler.types.CVoidType;
+import org.caesarj.compiler.types.*;
 import org.caesarj.util.TokenReference;
 
 public class FjCleanMethodDeclaration 
@@ -60,7 +54,7 @@ public class FjCleanMethodDeclaration
 				? null 
 				: new JFormalParameter[parameters.length];
 		for (int i = 0; i < clonedParameters.length; i++)
-			clonedParameters[i] = (FjFormalParameter)getParameters()[i].clone();
+			clonedParameters[i] = (JFormalParameter)getParameters()[i].clone();
 			
 		FjMethodDeclaration md =
 			new FjMethodDeclaration(
@@ -88,10 +82,10 @@ public class FjCleanMethodDeclaration
 		JFormalParameter[] contextParameters =
 			new JFormalParameter[parameters == null ? 1 : parameters.length + 1];
 		for (int i = 1; i < contextParameters.length; i++) {
-			contextParameters[i] = (FjFormalParameter) getParameters()[i - 1].clone();
+			contextParameters[i] = (JFormalParameter) getParameters()[i - 1].clone();
 		}
 		contextParameters[0] =
-			new FjFormalParameter(
+			new JFormalParameter(
 				getTokenReference(),
 				JFormalParameter.DES_PARAMETER,
 				CStdType.Object,
@@ -108,7 +102,7 @@ public class FjCleanMethodDeclaration
 					contextParameters[args].getIdent());
 			if (args == 0) {
 				contextImplCallArgs[args] =
-					new FjCastExpression(
+					new JCastExpression(
 						getTokenReference(),
 						contextImplCallArgs[args],
 						selfType );
@@ -152,10 +146,10 @@ public class FjCleanMethodDeclaration
 		JFormalParameter[] contextParameters =
 			new JFormalParameter[parameters == null ? 1 : parameters.length + 1];
 		for (int i = 1; i < contextParameters.length; i++) {
-			contextParameters[i] = (FjFormalParameter) getParameters()[i - 1].clone();
+			contextParameters[i] = (JFormalParameter) getParameters()[i - 1].clone();
 		}
 		contextParameters[0] =
-			new FjFormalParameter(
+			new JFormalParameter(
 				getTokenReference(),
 				JFormalParameter.DES_PARAMETER,
 				CStdType.Object,
@@ -182,11 +176,11 @@ public class FjCleanMethodDeclaration
 				FjConstants.selfContextMethodName( ident ),
 				contextImplCallArgs );
 		contextImplCall.setPrefix(
-			new FjCastExpression( 
+			new JCastExpression( 
 				getTokenReference(),
 				new FjMethodCallExpression(
 					getTokenReference(),					
-					new FjFieldAccessExpression(
+					new JFieldAccessExpression(
 						getTokenReference(),
 						FjConstants.PARENT_NAME ),
 					FjConstants.GET_TARGET_METHOD_NAME,
@@ -226,11 +220,11 @@ public class FjCleanMethodDeclaration
 		JFormalParameter[] ownParameters =
 			new JFormalParameter[parameters == null ? 0 : parameters.length];
 		for (int i = 1; i < callParameters.length; i++) {
-			callParameters[i] = (FjFormalParameter) getParameters()[i - 1].clone();
-			ownParameters[i - 1] = (FjFormalParameter) getParameters()[i - 1].clone();
+			callParameters[i] = (JFormalParameter) getParameters()[i - 1].clone();
+			ownParameters[i - 1] = (JFormalParameter) getParameters()[i - 1].clone();
 		}
 		callParameters[0] =
-			new FjFormalParameter(
+			new JFormalParameter(
 				getTokenReference(),
 				JFormalParameter.DES_PARAMETER,
 				CStdType.Object,
@@ -247,7 +241,7 @@ public class FjCleanMethodDeclaration
 					callParameters[args].getIdent());
 			if (args == 0) {
 				contextImplCallArgs[args] =
-					new FjThisExpression(getTokenReference(), false);
+					new JThisExpression(getTokenReference());
 			}
 		}
 		JExpression contextImplCall =
@@ -337,7 +331,7 @@ public class FjCleanMethodDeclaration
 			
 			statements = new JStatement[]
 			{
-				new FjReturnStatement(ref, expression, null)
+				new JReturnStatement(ref, expression, null)
 			};
 		}
 		

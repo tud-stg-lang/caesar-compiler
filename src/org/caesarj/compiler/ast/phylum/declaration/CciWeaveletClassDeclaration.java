@@ -171,9 +171,9 @@ public class CciWeaveletClassDeclaration
 		addMethod(
 			createAccessor(
 				CciConstants.BINDING_NAME,
-				new FjCastExpression(
+				new JCastExpression(
 					ref,
-					new FjFieldAccessExpression(
+					new JFieldAccessExpression(
 						ref,
 						FjConstants.PARENT_NAME),
 					bindingType),
@@ -185,7 +185,7 @@ public class CciWeaveletClassDeclaration
 		addMethod(
 			createAccessor(
 				CciConstants.PROVIDING_NAME,
-				new FjCastExpression(
+				new JCastExpression(
 					ref,
 					new JMethodCallExpression(
 							ref, 

@@ -89,7 +89,7 @@ public class FjUnqualifiedInstanceCreation extends JUnqualifiedInstanceCreation
 
 				CReferenceType lowerBoundType =
 					fjts.lowerBound(context, type.getIdent());
-				return new FjCastExpression(
+				return new JCastExpression(
 					getTokenReference(),
 					new FjMethodCallExpression(
 						getTokenReference(),
@@ -164,7 +164,7 @@ public class FjUnqualifiedInstanceCreation extends JUnqualifiedInstanceCreation
 		throws PositionedError
 	{
 		JExpression analysed = analyse(context);
-		if (analysed instanceof FjCastExpression)
+		if (analysed instanceof JCastExpression)
 			// -> translated to factory method
 			return analysed.getFamily(context);
 

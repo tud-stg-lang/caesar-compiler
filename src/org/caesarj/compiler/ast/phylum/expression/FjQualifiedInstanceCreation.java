@@ -74,15 +74,14 @@ public class FjQualifiedInstanceCreation
 				CaesarMessages.BINDING_PROVIDING_DIRECT_CREATION,
 				ownType.getQualifiedName());
 
-			return new FjCastExpression (
+			return new JCastExpression (
 				getTokenReference(),
 				new FjMethodCallExpression(
 					getTokenReference(),
 					cachedPrefix,
 					factoryMethodName,
 					cachedParams ),
-				ownType,
-				false ).analyse( context );
+				ownType).analyse( context );
 			
 
 		}

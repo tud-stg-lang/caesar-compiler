@@ -3,7 +3,6 @@ package org.caesarj.compiler.ast.phylum.declaration;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
-import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.CciConstants;
@@ -23,7 +22,7 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
-// FJPULLUP
+// FJPULLUP hard
 public class FjMethodDeclaration extends JMethodDeclaration {
 
 	public FjMethodDeclaration(
@@ -136,7 +135,7 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 			families );
 		FjSourceMethod newExport = createSourceMethod(oldExport, families);
 		super.setInterface( newExport );
-	}*/
+	}
 
 	protected FjSourceMethod createSourceMethod(
 		CSourceMethod oldExport,
@@ -155,6 +154,7 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 					body,
 					families);
 	}
+	*/
 	
 	public CMethod initFamilies(CClassContext context)
 		throws PositionedError
@@ -189,6 +189,7 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 		return method;
 	}
 		
+	/* FJRM
 	public void prependStatement(JStatement statement) {
 
 		if ((modifiers & ACC_ABSTRACT) != 0)
@@ -202,10 +203,12 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 			statements.length);
 		body = new JBlock(body.getTokenReference(), extendedStatements, null);
 	}
+	*/
 
 	public FjMethodDeclaration[] getSelfContextMethods(CType selfType) {
 		return new FjMethodDeclaration[] { this };
 	}
+	
 
 	/**
 	 * Second pass (quick), check interface looks good

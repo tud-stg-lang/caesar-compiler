@@ -206,7 +206,7 @@ public class DeploymentSupportClassDeclaration extends JClassDeclaration {
 		System.arraycopy(deployStatements, 0, newStatements, 0, deployStatements.length);
 
 		JExpression dprefix = new FjNameExpression(TokenReference.NO_REF, superClassName);
-		JExpression fac= new FjFieldAccessExpression(TokenReference.NO_REF,dprefix, "ajc$perSingletonInstance");
+		JExpression fac= new JFieldAccessExpression(TokenReference.NO_REF,dprefix, "ajc$perSingletonInstance");
 		JFormalParameter[] dparameters = method.getArgs();
 		JExpression[] args = new JExpression[dparameters.length];
 		String argString="";

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JNameExpression.java,v 1.1 2004-03-15 11:56:52 aracic Exp $
+ * $Id: JNameExpression.java,v 1.2 2004-03-15 13:04:29 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -30,11 +30,7 @@ import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.util.InconsistencyException;
-import org.caesarj.util.PositionedError;
-import org.caesarj.util.TokenReference;
-import org.caesarj.util.UnpositionedError;
-import org.caesarj.util.Utils;
+import org.caesarj.util.*;
 
 /**
  * JLS 6.5.6 Expression Names.
@@ -197,7 +193,7 @@ public class JNameExpression extends JExpression
 					{
 						// andreas start
 						// return new JLocalVariableExpression(getTokenReference(), var).analyse(context);
-						return new FjLocalVariableExpression(getTokenReference(), var)
+						return new JLocalVariableExpression(getTokenReference(), var)
 							.analyse(context);
 						// andreas end
 					}

@@ -6,14 +6,8 @@ import java.util.Vector;
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
-import org.caesarj.compiler.ast.phylum.expression.FjMethodCallExpression;
-import org.caesarj.compiler.ast.phylum.expression.FjNameExpression;
-import org.caesarj.compiler.ast.phylum.expression.FjSuperExpression;
-import org.caesarj.compiler.ast.phylum.expression.FjThisExpression;
-import org.caesarj.compiler.ast.phylum.expression.JEqualityExpression;
-import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
 import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.expression.*;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JIfStatement;
 import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
@@ -256,7 +250,7 @@ public class FjOverrideClassDeclaration
 							JExpression.EMPTY),
 						new JMethodCallExpression(
 							ref, 
-							new FjThisExpression(
+							new JThisExpression(
 								ref, 
 								new FjNameExpression(
 									ref,
@@ -267,7 +261,7 @@ public class FjOverrideClassDeclaration
 					// return this;
 					new JReturnStatement(
 						ref, 
-						new FjThisExpression(ref, true), 
+						new JThisExpression(ref), 
 						null),
 					null,
 					null),

@@ -4,21 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.declaration.AdviceDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JClassDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
-import org.caesarj.compiler.ast.phylum.expression.FjMethodCallExpression;
-import org.caesarj.compiler.ast.phylum.expression.FjNameExpression;
-import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
-import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
+import org.caesarj.compiler.ast.phylum.declaration.*;
+import org.caesarj.compiler.ast.phylum.expression.*;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
 import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
-import org.caesarj.compiler.ast.phylum.variable.FjFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.visitor.BodyVisitor;
 import org.caesarj.compiler.constants.CaesarConstants;
@@ -131,8 +122,8 @@ public class JoinPointReflectionVisitor
 
 					adviceDec.setExtraArgumentFlag(
 						CaesarConstants.ThisJoinPointStaticPart);
-					FjFormalParameter extraParameter =
-						new FjFormalParameter(
+					JFormalParameter extraParameter =
+						new JFormalParameter(
 							TokenReference.NO_REF,
 							JFormalParameter.DES_GENERATED,
 							new CClassNameType(JOIN_POINT_STATIC_PART_CLASS),
@@ -144,8 +135,8 @@ public class JoinPointReflectionVisitor
 				if (needsThisJoinPoint) {
 
 					adviceDec.setExtraArgumentFlag(CaesarConstants.ThisJoinPoint);
-					FjFormalParameter extraParameter =
-						new FjFormalParameter(
+					JFormalParameter extraParameter =
+						new JFormalParameter(
 							TokenReference.NO_REF,
 							JFormalParameter.DES_GENERATED,
 							new CClassNameType(JOIN_POINT_CLASS),
@@ -158,8 +149,8 @@ public class JoinPointReflectionVisitor
 
 					adviceDec.setExtraArgumentFlag(
 						CaesarConstants.ThisEnclosingJoinPointStaticPart);
-					FjFormalParameter extraParameter =
-						new FjFormalParameter(
+					JFormalParameter extraParameter =
+						new JFormalParameter(
 							TokenReference.NO_REF,
 							JFormalParameter.DES_GENERATED,
 							new CClassNameType(JOIN_POINT_STATIC_PART_CLASS),

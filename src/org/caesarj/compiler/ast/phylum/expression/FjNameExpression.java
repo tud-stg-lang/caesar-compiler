@@ -37,13 +37,13 @@ public class FjNameExpression extends JNameExpression {
 		JExpression prefix,
 		String ident,
 		TypeFactory factory) {
-		return new FjFieldAccessExpression(ref, prefix, ident);
+		return new JFieldAccessExpression(ref, prefix, ident);
 	}
 
 	protected JFieldAccessExpression createClassField(
 		TokenReference ref,
 		String ident) {
-		return new FjFieldAccessExpression(ref, ident);
+		return new JFieldAccessExpression(ref, ident);
 	}
 	
 	
@@ -53,7 +53,7 @@ public class FjNameExpression extends JNameExpression {
 			String name = toString().intern();
 			JLocalVariable	var = context.lookupLocalVariable( name );
 			if( name == FjConstants.SELF_NAME ) {
-				return new FjThisExpression( getTokenReference() ).getFamily( context );
+				return new JThisExpression( getTokenReference() ).getFamily( context );
 			} else	if( var != null ) {
 				// return the variable's family
 				return FjFamilyContext.getInstance().lookupFamily( var );
