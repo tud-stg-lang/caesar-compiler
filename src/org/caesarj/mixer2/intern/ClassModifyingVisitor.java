@@ -262,7 +262,7 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 			
 			if (Tools.sameClass(argTypes[0].toString(),oldOuterClassName)){
 				// construct the new signature & use it to overwrite the old one
-				String newSignature = "(L"+newClassName+";)V";
+				String newSignature = "(L"+newOuterClassName+";)V";
 				
 				int index = obj.getSignatureIndex();
 				
