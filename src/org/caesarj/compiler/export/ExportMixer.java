@@ -1,5 +1,7 @@
 package org.caesarj.compiler.export;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -114,37 +116,51 @@ public class ExportMixer {
         return res;
     }
     
-    public String generateClassName(CClass[] mixins) {
-        StringBuffer packageNames = new StringBuffer();
-        StringBuffer className    = new StringBuffer();
-        for(int i=0; i<mixins.length; i++) {
+    public String generateClassName(CClass[] mixins) throws ExportMixerException {
+        try {       
+            StringBuffer packageNames = new StringBuffer();
+            StringBuffer className    = new StringBuffer();
+            for(int i=0; i<mixins.length; i++) {
+                
+                className.append('_');
+                className.append(mixins[i].getIdent());
+                
+                if(mixins[i].getPackage().length() > 0)
+                    packageNames.append(mixins[i].getPackage());
+                else 
+                    packageNames.append("(default)");
+            }
             
             className.append('_');
-            className.append(mixins[i].getIdent());
+            className.append(generateHashCode(packageNames.toString()));
             
-            if(mixins[i].getPackage().length() > 0)
-                packageNames.append(mixins[i].getPackage());
-            else 
-                packageNames.append("(default)");
+            return 
+                className.toString();
         }
-        
-        className.append('_');
-        className.append(generateHashCode(packageNames.toString()));
-        
-        return 
-            className.toString();            
+        catch(Exception e) {
+			throw new ExportMixerException(e);
+		}
     }
     
-    public String generateHashCode(String packageNames) {
+    // CTODO generating hex string from byte array? do we realy need to do this manually?
+    private String generateHashCode(String packageNames) throws NoSuchAlgorithmException {        
         if(packageNames.length() == 0)
             throw new InconsistencyException("packageNames String must not be empty!");
             
-        // CTODO ExportMixer needs HashAlgorithm 
-        while(packageNames.length() < 10) {
-            packageNames += packageNames;
+        char hexVals[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+        
+        MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+        byte[] hash = messageDigest.digest(packageNames.getBytes());
+        StringBuffer res = new StringBuffer();
+        
+        for(int i=0; i<hash.length; i++) {
+            int hi = (hash[i] >> 4) & 15;
+            int lo = hash[i] & 15;
+            res.append(hexVals[hi]);
+            res.append(hexVals[lo]);  
         }
         
-        return packageNames.substring(0, 10);
+        return res.toString();
     }
 }
 

@@ -670,7 +670,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   context.getPointcuts(),
 							   context.getAdvices(),
 							   context.getDeclares(),
-                               true);
+							   true);
 						
 			context.release();
 			
@@ -1386,7 +1386,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		CReferenceType self = null;
 		
 		
-		CReferenceType	name;
+		CReferenceType name;
 		ArrayList	container = new ArrayList();
 		
 		
@@ -1417,8 +1417,8 @@ private static final int MAX_LOOKAHEAD = 2;
 			
 				if(container.size() > 1) {
 				  	self = 
-				  		new CCompositeType(
-					  		(CReferenceType[])container.toArray(new CReferenceType[container.size()])
+				  		new CCompositeNameType(
+					  		(CClassNameType[])container.toArray(new CClassNameType[container.size()])
 					  	);
 				}
 				else {

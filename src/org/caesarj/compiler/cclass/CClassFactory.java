@@ -7,6 +7,7 @@ import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.declaration.*;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CCompositeNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
@@ -70,14 +71,28 @@ public class CClassFactory implements CaesarConstants {
                 interfaceMethods.add(createInterfaceMethod(cclassMethods[i]));
 		}
 
+        // default is our interface has no superinterface
         CReferenceType[] superInterfaces = new CReferenceType[]{};
         
         CReferenceType superType = caesarClass.getSuperClass();
         
-        // hack
-        if(superType instanceof CClassNameType) {            
+        // CTODO think about it
+        if(superType instanceof CCompositeNameType) {
+            // if we have a composite type our superinterface list consists
+            // of composite type's typeList 
+            CCompositeNameType compositType = (CCompositeNameType)superType;
+            CClassNameType typeList[] = compositType.getTypeList();
+            superInterfaces = new CReferenceType[typeList.length];            
+            for(int i=0; i<typeList.length; i++) {
+                superInterfaces[i] = typeList[i];
+            }
+        }
+        else if(superType instanceof CClassNameType) {
+            // if we have a super cclass, our superinterface list consist of
+            // superTypes interface name
             superInterfaces = new CReferenceType[]{superType};
         }
+        
 
 		CjInterfaceDeclaration cclassInterface =
 			new CjInterfaceDeclaration(
@@ -131,7 +146,7 @@ public class CClassFactory implements CaesarConstants {
             
         CReferenceType superType = caesarClass.getSuperClass();
          
-        if(superType != null) {
+        if(superType != null && !(superType instanceof CCompositeNameType)) {
             CClassNameType newSuperType = new CClassNameType(superType.getQualifiedName()+"_Impl");
             caesarClass.setSuperClass(newSuperType);
         }
