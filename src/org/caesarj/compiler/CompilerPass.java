@@ -3,8 +3,6 @@ package org.caesarj.compiler;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.caesarj.compiler.srcgraph.TypeNode;
-
 /**
  * Stores Information about a compiler pass.
  * 

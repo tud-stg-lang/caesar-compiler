@@ -11,7 +11,7 @@ import java.util.StringTokenizer;
 import org.caesarj.util.InconsistencyException;
 
 /**
- * ...
+ * C3 Linearization Algorithm (&)
  * 
  * @author Ivica Aracic
  */

@@ -12,6 +12,7 @@ import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.cclass.CClassPreparation;
+import org.caesarj.compiler.cclass.Node;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
@@ -20,11 +21,6 @@ import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
-import org.caesarj.compiler.srcgraph.*;
-import org.caesarj.compiler.srcgraph.GraphGenerator;
-import org.caesarj.compiler.srcgraph.RegularTypeNode;
-import org.caesarj.compiler.srcgraph.SourceDependencyGraph;
-import org.caesarj.compiler.srcgraph.TypeNode;
 import org.caesarj.compiler.types.CCompositeType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.mixer.Mixer;
@@ -47,10 +43,7 @@ public class Main extends MainSuper implements Constants {
     private Set errorMessages;
 
     // The used weaver. An instance ist created when it's needed in generateAndWeaveCode
-    private CaesarWeaver weaver;
-    
-    private SourceDependencyGraph dependencyGraph = new SourceDependencyGraph();
-        
+    private CaesarWeaver weaver;         
 
     /**
      * @param workingDirectory the working directory
@@ -132,8 +125,6 @@ public class Main extends MainSuper implements Constants {
             System.out.println("--- pass: " + environment.getCompilerPass());
             compilerPass.begin();
             {
-                mixTypes(compilerPass);
-                
                 checkAllInterfaces(tree);
                 if(errorFound) return false;
                 
@@ -165,27 +156,6 @@ public class Main extends MainSuper implements Constants {
     }
 
 
-    /**
-     * check which classes can be composed in this compiler pass
-     */
-    protected void mixTypes(CompilerPass compilerPass) {
-        System.out.println("mixClasses");
-        try {
-            Vector typesToMix = compilerPass.getTypesToMix();
-            
-            for(Iterator it=typesToMix.iterator(); it.hasNext();) {
-                CompositeTypeNode node = (CompositeTypeNode)it.next();
-    			CCompositeType compositeType = node.getCompositeType();
-                MixinList mixinList = compositeType.getMixinList();
-                String generatedClassName = Mixer.instance().generateClass(mixinList);
-                System.out.println("***"+generatedClassName);
-    		}
-        }
-        catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	protected void prepareVirtualClasses(
         KjcEnvironment environment,
         JCompilationUnit[] tree) {  
@@ -206,40 +176,7 @@ public class Main extends MainSuper implements Constants {
      * Here CompilerPassInfo List gets created
      */
     protected CompilerPass generateCompilerPassInfo() {        
-        HashMap passMap = new HashMap();
-        
-        for(Iterator it=dependencyGraph.iterator(); it.hasNext(); ) {
-            TypeNode node = (TypeNode)it.next();
-            node.updateLevel();            
-                   
-            int level = node.getLevel();
-            
-            CompilerPass pass = (CompilerPass)passMap.get(new Integer(level));
-                     
-            if(pass == null) {
-                pass = new CompilerPass();
-                passMap.put(new Integer(level), pass);
-            }
-                                    
-            if(node instanceof CompositeTypeNode) {                
-                pass.getTypesToMix().add(node);
-            }
-        } 
-        
-        CompilerPass firstPass   = (CompilerPass)passMap.get(new Integer(0));
-        CompilerPass lastPass    = firstPass;
-        CompilerPass currentPass = null;
-        for(int i=1; i<Integer.MAX_VALUE; i++) {
-            currentPass = (CompilerPass)passMap.get(new Integer(i));
-            
-            if(currentPass == null)
-                break;
-            
-            lastPass.setNextPass(currentPass);
-            lastPass = currentPass;
-        }
-        
-        return firstPass;        
+        return null;       
 	}
 
 	/**
@@ -275,14 +212,8 @@ public class Main extends MainSuper implements Constants {
     protected void generateSourceDependencyGraph(JCompilationUnit[] tree) {
         System.out.println("generateDependencyGraph");        
         for (int i=0; i<tree.length; i++) {
-            GraphGenerator.instance().generateGraph(
-                dependencyGraph, tree[i]
-            );
+            // ...
         }
-        
-        dependencyGraph.calculateLevels();
-        
-        dependencyGraph.debug();
     }
 
     // IVICA 
