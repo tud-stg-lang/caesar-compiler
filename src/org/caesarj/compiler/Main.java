@@ -17,7 +17,6 @@ import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
-import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
@@ -35,7 +34,7 @@ import org.caesarj.util.Utils;
  * 
  * @author Jürgen Hallpap
  */
-public class Main extends org.caesarj.compiler.MainSuper implements Constants {
+public class Main extends MainSuper implements Constants {
 
     private CaesarMessageHandler messageHandler;
     private Set errorMessages;
@@ -107,11 +106,27 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
                 
         joinAll(tree);                  if(errorFound) return false;
                 
+        
+        // calculate dependency graph once
+            
+        // while(classesToBeCompiled.size()>0) {
+                
+        // mix all composite types which super classes has been already compiled         
+        
+        
         checkAllInterfaces(tree);       if(errorFound) return false;
                 
         checkAllInitializers(tree);     if(errorFound) return false;
                 
         checkAllBodies(tree);           if(errorFound) return false;
+        
+        
+        // generateCode
+        
+        // }
+        
+        
+        // if(!noWeaveMode()) weaveCode....
         
         if (noWeaveMode()) {
             genCode(environment.getTypeFactory());
@@ -386,7 +401,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
                 long lastTime = System.currentTimeMillis();
 
                 classBuffer =
-                    ((CCjSourceClass)classes[count]).genCodeToBuffer(
+                    classes[count].genCodeToBuffer(
                         optimizer,
                         options.destination,
                         factory);
