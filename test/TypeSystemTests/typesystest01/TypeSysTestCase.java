@@ -28,7 +28,9 @@ public class TypeSysTestCase extends TestCase {
 	
 	public void test() {	
 		x1.n = n1;
-		x2.n = n1;
+		//x2.n = n1;
+		
+		x2.n = x2.g.new N2();
 	}
 	
 	/*
@@ -43,4 +45,5 @@ public cclass G {
     public cclass E {}
     public cclass UE extends E {}
     public cclass N {}
+    public cclass N2 extends N {}
 }
