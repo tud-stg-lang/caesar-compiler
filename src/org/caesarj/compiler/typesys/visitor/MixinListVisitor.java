@@ -67,36 +67,35 @@ public class MixinListVisitor implements ICaesarTypeVisitor {
         if(t != null) {
             mixinListToAppend.add(t);
             
-            if(t.isFurtherbinding()) {                
-                createMixinList(mixinListToAppend, outerMixinList, m+1, qualifiedName);
+            List superClassMixinLists = new LinkedList();
+            
+            for (Iterator it = t.declaredParents(); it.hasNext();) {
+                CaesarTypeNode superType = ((SuperSubRelation)it.next()).getSuperNode();
+                LinkedList l = new LinkedList();
+                createMixinList(l, outerMixinList, 0, superType.getQualifiedName());
+                superClassMixinLists.add(l);
             }
-            else {
-                List superClassMixinLists = new LinkedList();
-                
-                for (Iterator it = t.declaredParents(); it.hasNext();) {
-                    CaesarTypeNode superType = ((SuperSubRelation)it.next()).getSuperNode();
+            
+            if(t.isFurtherbinding()) {
+            	LinkedList s = new LinkedList();
+                createMixinList(s, outerMixinList, m+1, qualifiedName);
+                superClassMixinLists.add(s);
+            }
+            
+            if(superClassMixinLists.size() > 0) {
+                try {
+                    // C3 Linearization
+                    List mergedList = Linearizator.instance().mixFromLeftToRight(
+                		(List[])superClassMixinLists.toArray(new List[superClassMixinLists.size()])
+					);
                     
-                    LinkedList parentMixinList = new LinkedList();
-                    createMixinList(parentMixinList, outerMixinList, 0, superType.getQualifiedName());
-                    
-                    superClassMixinLists.add(parentMixinList);
+                    // append
+                    for(Iterator it=mergedList.iterator(); it.hasNext(); ) {
+                        mixinListToAppend.add(it.next());
+                    }
                 }
-
-                if(superClassMixinLists.size() > 0) {
-	                try {
-	                    // linearize
-	                    List mergedList = Linearizator.instance().mixFromLeftToRight(
-	                		(List[])superClassMixinLists.toArray(new List[superClassMixinLists.size()])
-						);
-	                    
-	                    // append
-	                    for(Iterator it=mergedList.iterator(); it.hasNext(); ) {
-	                        mixinListToAppend.add(it.next());
-	                    }
-	                }
-	                catch (MixerException e) {
-	                    e.printStackTrace();
-	                }
+                catch (MixerException e) {
+                    e.printStackTrace();
                 }
             }
         }
