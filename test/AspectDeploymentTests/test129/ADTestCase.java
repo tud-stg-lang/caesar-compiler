@@ -1,11 +1,11 @@
 package generated.test129;
 
 import junit.framework.TestCase;
-import org.caesarj.runtime.CaesarThread;
-import org.aspectj.runtime.internal.CFlowStack;
+import org.caesarj.runtime.DeploySupport;
+
 
 /**
- * Tests nested croscutting classes 
+ * Tests nested croscutting classes
  *
  * @author Vaidas Gasiunas
  */
@@ -19,17 +19,21 @@ public class ADTestCase extends TestCase
 
 	public static StringBuffer result = new StringBuffer();
 
-	public String expectedResult = "X";
+	public String expectedResult = "PR";
 
 	public void test()
 	{
 		System.out.println("-------> ADTest 29");
 
-		deploy(new B().new X()) {
-		    Test test = new Test();
-		    test.foo();
-		}
-		
+		StockPricing.PerRequestDiscount pricing = new StockPricing().new PerRequestDiscount();
+		Test test = new Test();
+
+		DeploySupport.deployLocal(pricing);
+
+		test.foo();
+
+		DeploySupport.undeployLocal(pricing);
+
 		assertEquals(expectedResult, result.toString());
 
 		System.out.println("-------> ADTest 29: end");
@@ -40,18 +44,34 @@ public class Test {
     public void foo() {}
 }
 
-public cclass A
+public cclass Pricing
 {
-    public cclass X 
-    {
-        after() : execution(public void Test.foo()) {
-            System.out.println("----> X");
-            ADTestCase.result.append("X");
-        }
-    } 
+	public cclass CI {
+	}
+
+	public cclass Discount extends CI {
+	}
 }
 
 
-public cclass B {
-    public cclass X {}
+public cclass StockPricing extends Pricing {
+
+	public cclass CI {
+	}
+
+	public cclass Discount {
+	}
+
+	public cclass Common extends CI {
+	}
+
+	public cclass PerRequest extends Common {
+		after() : execution(public void Test.foo()) {
+			System.out.println("----> PR");
+		   	ADTestCase.result.append("PR");
+       	}
+	}
+
+	public cclass PerRequestDiscount extends Discount & PerRequest {
+	}
 }
