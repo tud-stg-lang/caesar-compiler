@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CMethod.java,v 1.11 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CMethod.java,v 1.12 2005-02-09 16:51:27 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -31,6 +31,7 @@ import java.util.Hashtable;
 import org.caesarj.classfile.InvokeinterfaceInstruction;
 import org.caesarj.compiler.ast.phylum.declaration.JAccessorMethod;
 import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CTypeContext;
@@ -90,6 +91,10 @@ public abstract class CMethod extends CMember {
     // ACCESSORS
     // ----------------------------------------------------------------------
 
+    public boolean isCaesarFactoryMethod() {
+        return getIdent().startsWith(CaesarConstants.FACTORY_METHOD_PREFIX);
+    }
+    
     /**
      * Checks whether this type is accessible from the specified class (JLS
      * 6.6).
