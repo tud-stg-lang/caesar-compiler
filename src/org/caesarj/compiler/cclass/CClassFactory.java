@@ -1,7 +1,6 @@
 package org.caesarj.compiler.cclass;
 
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
@@ -157,7 +156,7 @@ public class CClassFactory implements CaesarConstants {
         // link this two AST elements
         caesarClass.setCorrespondingInterfaceDeclaration(cclassInterface);
         cclassInterface.setCorrespondingClassDeclaration(caesarClass);
-
+        
 		return cclassInterface;
 	}
         
@@ -199,17 +198,11 @@ public class CClassFactory implements CaesarConstants {
 
 	}
     
-	public void modifyCaesarClass() {    
-
-        {
-            CReferenceType superType = caesarClass.getSuperClass();
-             
-            if(superType != null && !(superType instanceof CCompositeNameType)) {
-                CClassNameType newSuperType = new CClassNameType(mapToImplClassName(superType.getQualifiedName()));
-                caesarClass.setSuperClass(newSuperType);
-            }
-        }
-        
+	public void modifyCaesarClass() {    	
+				
+		caesarClass.setInterfaces(CReferenceType.EMPTY);
+		caesarClass.setSuperClass(null);
+		
          JMethodDeclaration methodDecls[] = caesarClass.getMethods();
          boolean defCtorFound = false;
          for (int i = 0; i < methodDecls.length; i++) {             
@@ -247,22 +240,4 @@ public class CClassFactory implements CaesarConstants {
             caesarClass.addMethod(defCtor);
         }
 	}
-
-    // this one will make problems!
-    // fullQualifiedName of (e.g.) generated.G$E will be generated/G/E at pre joinAll time 
-    private String mapToImplClassName(String fullQualifiedName) {
-        StringBuffer res = new StringBuffer();
-        StringTokenizer tok = new StringTokenizer(fullQualifiedName, "/");
-        
-        while(tok.hasMoreTokens()) {
-            String token = tok.nextToken();
-            res.append(token);
-            res.append("_Impl");
-            if(tok.hasMoreTokens())
-                res.append('/');
-        }
-        
-        return res.toString();
-    }
-
 }
