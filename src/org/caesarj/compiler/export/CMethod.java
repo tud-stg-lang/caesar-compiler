@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CMethod.java,v 1.5 2004-07-21 09:53:11 aracic Exp $
+ * $Id: CMethod.java,v 1.6 2004-07-22 13:11:19 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -28,7 +28,6 @@ import org.caesarj.compiler.ast.phylum.declaration.JAccessorMethod;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
-import org.caesarj.compiler.context.AdditionalGenerationContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.types.CReferenceType;
@@ -713,6 +712,10 @@ public abstract class CMethod extends CMember {
      *            force non-virtual dispatching
      */
     public void genCode(GenerationContext context, boolean nonVirtual) {
+        genCode(context, nonVirtual, getPrefixName());
+    }
+    
+    public void genCode(GenerationContext context, boolean nonVirtual, String nonIfcCallTarget) {
         CodeSequence code = context.getCodeSequence();
 
         if (getOwner().isInterface()) {
@@ -742,38 +745,12 @@ public abstract class CMethod extends CMember {
                 opcode = opc_invokevirtual;
             }
 
-            /*
-             * code.plantMethodRefInstruction(opcode, getPrefixName(),
-             * getIdent(), getSignature());
-             */
-
-            // IVICA: replace code above with:
-            CClass currentClass = AdditionalGenerationContext.instance()
-                .getCurrentClass();
-
-            if (getOwner().isMixin() && currentClass.isMixin() && !isConstructor()) {
-                if(nonVirtual) {
-                    code.plantMethodRefInstruction(
-                        opcode,
-                        currentClass.getSuperClass().getQualifiedName(),
-                        getIdent(),
-                        getSignature());
-                }
-                else {
-                    code.plantMethodRefInstruction(
-                        opcode,
-                        currentClass.getQualifiedName(),
-                        getIdent(),
-                        getSignature());                    
-                }
-            }
-            else {
-                code.plantMethodRefInstruction(
-                    opcode,
-                    getPrefixName(),
-                    getIdent(),
-                    getSignature());
-            }
+            code.plantMethodRefInstruction(
+                opcode, 
+                nonIfcCallTarget,
+                getIdent(), 
+                getSignature()
+            );
         }
     }
 
