@@ -94,7 +94,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 			inform(KjcMessages.NO_INPUT_FILE);
 			return false;
 		}
-
+		options.destination = checkDestination(options.destination);		
 		if (verboseMode()) {
 			inform(
 				CompilerMessages.COMPILATION_STARTED,
@@ -108,116 +108,29 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 			return false;
 		}
 		
-//		System.out.println("PARSER:");
-		options.destination = checkDestination(options.destination);
-		JCompilationUnit[] tree = new JCompilationUnit[infiles.size()];
-		for (int count = 0; count < tree.length; count++) {
-			tree[count] =
-				parseFile((File) infiles.elementAt(count), environment);
-//			tree[count].accept(new DebugVisitor());
-		}
 
-		infiles = null;
-		if (errorFound) {
-			return false;
-		}
+		JCompilationUnit[] tree = parseFiles(environment);
 
-		if (!options.beautify) {
-			long lastTime = System.currentTimeMillis();
-
-				
-			//Handle Join Point Reflection.
-			for (int i = 0; i < tree.length; i++) {
-				tree[i].accept(new JoinPointReflectionVisitor());
-			}
-
-			//Modify and generate support classes for dynamic deployment.
-			for (int i = 0; i < tree.length; i++) {
-				FjCompilationUnit cu = (FjCompilationUnit) tree[i];
-				cu.prepareForDynamicDeployment(environment);
-			}
-			
-			for (int i = 0; i < tree.length; i++) {
-				tree[i].accept(getClassTransformation(environment));
-				//tree[i].accept(new DebugVisitor());
-			}
-						
-//			System.out.println("JOIN:");
-			for (int count = 0; count < tree.length; count++) {
-				join(tree[count]);
-				//tree[count].accept(new DebugVisitor());
-			}
-
-			if (errorFound) {
-				return false;
-			}
-//			System.out.println("CHECK_INTERFACE:");
-			for (int count = 0; count < tree.length; count++) {
-				checkInterface(tree[count]);
-				//tree[count].accept(new DebugVisitor());
-			}
-
-			if (verboseMode()) {
-				inform(
-					CompilerMessages.INTERFACES_CHECKED,
-					new Long(System.currentTimeMillis() - lastTime));
-			}
-
-			if (errorFound) {
-				return false;
-			}
-			
-//			System.out.println("INIT FAMILY:");
-			//Walter: Now the families are initializated in a new round
-			for (int count = 0; count < tree.length; count++)
-			{
-				initFamilies(tree[count]);
-				//tree[count].accept(new DebugVisitor());
-			}
-
-			if (errorFound)
-				return false;
-//			System.out.println("CHECK INITIALIZERS:");
-			for (int count = 0; count < tree.length; count++) {
-				checkInitializers(tree[count]);
-			}
-
-			if (errorFound) {
-				return false;
-			}
-//			System.out.println("CHECK BODY:");
-			for (int count = 0; count < tree.length; count++) {
-				checkBody(tree[count]);
-				//tree[count].accept(new DebugVisitor());
-				
-				if (!options._java
-					&& !options.beautify) {
-					tree[count] = null;
-				}
-			}
-
-			if (errorFound) {
-				return false;
-			}
-		}
-
-		if (!options.nowrite) {
-			if (options._java || options.beautify) {
-				for (int count = 0; count < tree.length; count++) {
-					generateJavaCode(tree[count], environment.getTypeFactory());
-					tree[count] = null;
-				}
-			} else {
-				if (noWeaveMode()) {
-					//just generate the code
-					genCode(environment.getTypeFactory());
-
-				} else {
-					//generate code and perform weaving
-					generateAndWeaveCode(environment.getTypeFactory());
-
-				}
-			}
+		if (errorFound) {return false;}
+		prepareJoinpointReflection(tree);
+		prepareDynamicDeployment(environment, tree);
+		createAllHelperInterfaces(environment, tree);
+		joinAll(tree);
+		if (errorFound) { return false; }
+		checkAllInterfaces(tree);
+		if (errorFound) { return false;	}
+		initAllFamilies(tree);
+		if (errorFound) { return false; }
+		checkAllInitializers(tree);
+		if (errorFound) { return false;	}
+		checkAllBodies(tree);
+		if (errorFound) { return false;	}
+		if (noWeaveMode()) {
+			//just generate the code
+			genCode(environment.getTypeFactory());
+		} else {
+			//generate code and perform weaving
+			generateAndWeaveCode(environment.getTypeFactory());
 		}
 
 		if (verboseMode()) {
@@ -226,6 +139,76 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 
 		CodeSequence.endSession();
 		return true;
+	}
+
+	protected void checkAllBodies(JCompilationUnit[] tree) {
+		for (int count = 0; count < tree.length; count++) {
+			checkBody(tree[count]);
+			if (!options._java && !options.beautify) {
+				tree[count] = null;
+			}
+		}
+	}
+
+	protected void checkAllInitializers(JCompilationUnit[] tree) {
+		for (int count = 0; count < tree.length; count++) {
+			checkInitializers(tree[count]);
+		}
+	}
+
+	protected void initAllFamilies(JCompilationUnit[] tree) {
+		for (int count = 0; count < tree.length; count++) {
+			initFamilies(tree[count]);
+			//tree[count].accept(new DebugVisitor());
+		}
+	}
+
+	protected void checkAllInterfaces(JCompilationUnit[] tree) {
+		for (int count = 0; count < tree.length; count++) {
+			checkInterface(tree[count]);
+			//tree[count].accept(new DebugVisitor());
+		}
+	}
+
+	protected void joinAll(JCompilationUnit[] tree) {
+		for (int count = 0; count < tree.length; count++) {
+			join(tree[count]);
+		}
+	}
+
+	protected void createAllHelperInterfaces(
+		KjcEnvironment environment,
+		JCompilationUnit[] tree) {
+		for (int i = 0; i < tree.length; i++) {
+			tree[i].accept(getClassTransformation(environment));
+			//tree[i].accept(new DebugVisitor());
+		}
+	}
+
+	protected void prepareDynamicDeployment(
+		KjcEnvironment environment,
+		JCompilationUnit[] tree) {
+		//Modify and generate support classes for dynamic deployment.
+		for (int i = 0; i < tree.length; i++) {
+			FjCompilationUnit cu = (FjCompilationUnit) tree[i];
+			cu.prepareForDynamicDeployment(environment);
+		}
+	}
+
+	protected void prepareJoinpointReflection(JCompilationUnit[] tree) {
+		//Handle Join Point Reflection.
+		for (int i = 0; i < tree.length; i++) {
+			tree[i].accept(new JoinPointReflectionVisitor());
+		}
+	}
+
+	protected JCompilationUnit[] parseFiles(KjcEnvironment environment) {
+		JCompilationUnit[] tree = new JCompilationUnit[infiles.size()];
+		for (int count = 0; count < tree.length; count++) {
+			tree[count] =
+				parseFile((File) infiles.elementAt(count), environment);
+		}
+		return tree;
 	}
 
 	
