@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.22 2004-07-21 08:45:11 aracic Exp $
+ * $Id: CClass.java,v 1.23 2004-09-07 14:26:37 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -1942,25 +1942,17 @@ public abstract class CClass extends CMember
 	private boolean qualifiedAndAnonymous;
 	private int syntheticIndex = 0;
 	private CTypeVariable[] typeVariables;
-	protected boolean implicitClass = false;
-	protected boolean generatedClass = false;
 
-
-	public boolean isImplicit() {
-		return implicitClass;
+	private AdditionalCaesarTypeInformation additionalTypeInfo = null;
+	
+	public void setAdditionalTypeInformation(AdditionalCaesarTypeInformation additionalTypeInfo) {
+	    this.additionalTypeInfo = additionalTypeInfo;
 	}
-
-	public void setImplicit(boolean value) {
-		implicitClass = value;
+	
+	public AdditionalCaesarTypeInformation getAdditionalTypeInformation() {
+	    return additionalTypeInfo;
 	}
-
-	public void setGenerated(boolean value) {
-		generatedClass = value;
-	}
-
-	public boolean isGenerated() {
-		return generatedClass;
-	}
+	
 
     public void setOwner(CClass owner) {
         this.owner = owner;

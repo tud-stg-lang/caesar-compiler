@@ -4,8 +4,12 @@
  */
 package org.caesarj.classfile;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * This class is the base class for all attributes that
@@ -46,6 +50,37 @@ public class CaesarAttribute extends GenericAttribute {
 	public final static String	AttributePrefix = "org.caesarj.compiler.classfile.";
 
 
+	static byte[] objectToByteArray(Object obj) {
+	    try {
+		    byte[] res;
+		    ByteArrayOutputStream out = new ByteArrayOutputStream();
+		    ObjectOutputStream o = new ObjectOutputStream(out);
+		    o.writeObject(obj);
+		    res = out.toByteArray();
+		    o.close();	    
+		    return res;
+	    }
+	    catch (Exception e) {
+            e.printStackTrace();
+            return new byte[0];
+        }
+	}
+	
+	static Object byteArrayToObject(byte[] data) {
+
+	    try {
+		    ByteArrayInputStream in = new ByteArrayInputStream(data);
+		    ObjectInputStream i = new ObjectInputStream(in);
+		    Object res = i.readObject();	    
+		    i.close();	    
+		    return res;
+	    }
+	    catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+	}
+	
 	/**
 	 * Converts an integer to a byte array representation to be stored
 	 */

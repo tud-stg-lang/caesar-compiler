@@ -7,6 +7,8 @@ package org.caesarj.classfile;
 import java.io.DataInput;
 import java.io.IOException;
 
+import org.caesarj.compiler.export.AdditionalCaesarTypeInformation;
+
 /**
  * This attribute stores the value of the generated and implicit flags of a class.
  * @author Karl Klose
@@ -14,28 +16,12 @@ import java.io.IOException;
 public class AdditionalTypeInformationAttribute extends CaesarAttribute {
 	
 	public static final String AttributeName = AttributePrefix + "AdditionalTypeInformationAttribute";
+		
+	AdditionalCaesarTypeInformation additionalInfo = null;
 	
-	protected boolean implicit, generated;
-	
-	public static final int	IMPLICIT = 1, GENERATED = 2;
-	
-	public boolean isImplicit(){
-		return implicit;
+	public AdditionalTypeInformationAttribute(AdditionalCaesarTypeInformation additionalInfo){
+		super(AttributeName, objectToByteArray(additionalInfo));
 	}
-	
-	public boolean isGenerated(){
-		return generated;
-	}
-	
-	
-	public AdditionalTypeInformationAttribute( boolean implicit, boolean generated ){
-		super(AttributeName, CaesarAttribute.integerToByteArray( 
-								(implicit?IMPLICIT:0) + (generated?GENERATED:0))  );
-		this.implicit = implicit;
-		this.generated = generated;
-	}
-
-	
 	
 	/**
 	 * Read from a input stream
@@ -44,9 +30,11 @@ public class AdditionalTypeInformationAttribute extends CaesarAttribute {
 	 */
 	public AdditionalTypeInformationAttribute(DataInput in, ConstantPool cp) throws IOException {
 		super( new AsciiConstant(AttributeName), in, cp );
-		int intValue = CaesarAttribute.byteArrayToInteger(getData());
-		implicit = (intValue&IMPLICIT) != 0;
-		generated= (intValue&GENERATED) != 0;
+		additionalInfo = (AdditionalCaesarTypeInformation)byteArrayToObject(getData());
 	}
+
+    public AdditionalCaesarTypeInformation getTypeInformation() {
+        return additionalInfo;
+    }
 	
 }

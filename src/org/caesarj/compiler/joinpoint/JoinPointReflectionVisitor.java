@@ -49,12 +49,12 @@ public class JoinPointReflectionVisitor implements IVisitor, CaesarConstants  {
 	    visitor.end();
     }
 	
-	// recurse by default into all nodes
+	// recurse by default into all nodes...
 	public boolean visit(JPhylum self) {
 	    return true;
     }
     
-	// but not into member declaration
+	// ...but not into member declaration...
 	public boolean visit(JMemberDeclaration self) {
 	    return false;
     }    
@@ -76,7 +76,7 @@ public class JoinPointReflectionVisitor implements IVisitor, CaesarConstants  {
         return true;
     }
 
-    // ... and CjAdviceDeclaration
+    // ... and CjAdviceDeclaration ...
     public boolean visit(CjAdviceDeclaration adviceDec) {
 		//include the old parameters
         adviceParameters = new ArrayList();
@@ -138,6 +138,7 @@ public class JoinPointReflectionVisitor implements IVisitor, CaesarConstants  {
 		);
     }   
 
+    // ... inspect in the body of the adivice only joinpoint reflection
     public boolean visit(JNameExpression expr) {
         
 		if (expr.getName().equals(THIS_JOIN_POINT)) {

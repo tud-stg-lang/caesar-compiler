@@ -78,6 +78,26 @@ public class CaesarTypeNode {
 	public CaesarTypeNode[] getMixinListAsArray() {
 		return (CaesarTypeNode[])mixinList.toArray(new CaesarTypeNode[mixinList.size()]);
 	}
+	
+    public String[] getMixinListAsStringArray() {
+        String[] res = new String[mixinList.size()];
+        int i = 0;
+        for (Iterator it = mixinList.iterator(); it.hasNext();) {
+            CaesarTypeNode item = (CaesarTypeNode) it.next();
+            res[i++] = item.getQualifiedName().toString();
+        }
+        return res;
+    }
+
+    public String[] getSuperClassesAsStringArray() {
+        String[] res = new String[inheritsFrom.size()];
+        int i = 0;
+        for (Iterator it = inheritsFrom.iterator(); it.hasNext();) {
+            SuperSubRelation item = (SuperSubRelation) it.next();
+            res[i++] = item.getSuperNode().getQualifiedName().toString();
+        }
+        return res;
+    }
 
 	public Iterator implicitInners() {
 		return new ImplicitRelationFilter(enclosingFor.iterator(), false);

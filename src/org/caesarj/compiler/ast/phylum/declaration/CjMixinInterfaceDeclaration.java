@@ -8,6 +8,7 @@ import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.export.AdditionalCaesarTypeInformation;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CReferenceType;
@@ -54,6 +55,19 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
             CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
             CaesarTypeNode typeNode = typeSystem.getCaesarTypeGraph().getType(qualifiedName);
 
+            
+            // store additional type infos
+            AdditionalCaesarTypeInformation addInfo = new AdditionalCaesarTypeInformation(
+                typeNode.isImplicitType(),
+                typeNode.getMixinListAsStringArray(),
+                typeNode.getSuperClassesAsStringArray(),
+                new String[]{}, // IVICA super Ifcs
+                getCorrespondingClassDeclaration().getCClass().getQualifiedName()
+            );
+            
+            getCClass().setAdditionalTypeInformation(addInfo);
+            
+            
             List ifcList = new LinkedList();
             
             for (Iterator it = typeNode.implicitParents(); it.hasNext();) {

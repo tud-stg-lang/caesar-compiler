@@ -456,7 +456,9 @@ public class CCjSourceClass extends CSourceClass
 		}
         
         // store implicit and generated flag
-        attributeList.add( new AdditionalTypeInformationAttribute(implicitClass,generatedClass));
+        attributeList.add( 
+            new AdditionalTypeInformationAttribute(getAdditionalTypeInformation())
+        );
         
         if (perClause != null)
         {

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBinaryClass.java,v 1.4 2004-06-15 16:42:05 aracic Exp $
+ * $Id: CBinaryClass.java,v 1.5 2004-09-07 14:26:37 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -115,8 +115,7 @@ public class CBinaryClass extends CClass {
 			// restore implicit and generated flag
 			else if (name.equals(AdditionalTypeInformationAttribute.AttributeName)){
 				AdditionalTypeInformationAttribute ati = ((AdditionalTypeInformationAttribute)ga);
-				setImplicit( ati.isImplicit() );
-				setGenerated( ati.isGenerated() );
+				setAdditionalTypeInformation(ati.getTypeInformation());
 			}
 		}
 	}
