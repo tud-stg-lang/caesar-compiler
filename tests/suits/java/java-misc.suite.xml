@@ -1,0 +1,103 @@
+<testsuite name="Test casts to dependent types" package="suits.javatests.misc">
+
+	<common-code-base>		
+		public cclass G {
+			public cclass N {}
+		}
+	</common-code-base>
+
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="javamisc001" description="Test outer field access">
+		<test>			
+		    OuterA.InnerA a = new OuterA().new InnerA();
+			assertEquals(a.m(), 5);
+		</test>
+        <code>
+        	class OuterA {
+				int a = 5;
+				class InnerA {
+					int m() {
+						return a;
+					}
+				}
+			}
+        </code>
+    </compile-run>		  	
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="javamisc002" description="Test interface method call through abstract class">
+		<test>		
+			Role role = new RoleNet4J();
+			assertEquals(role.methA(), "A");
+		</test>
+        <code>
+        	interface NetObject {
+				public String methA();
+			}
+			
+			abstract class Role implements NetObject {	
+			}
+			
+			class RoleNet4J extends Role {
+				public String methA() {
+					return "A";
+				}
+			}
+        </code>
+    </compile-run>		  	
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="javamisc003" description="Test unqualified instantiation as statement">
+		<test>		
+			new TestClass();
+		</test>
+        <code>
+			class TestClass { }
+		</code>
+    </compile-run>		  	
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="javamisc004" description="Test abstract classes">
+		<test>		
+			new ClassB();
+		</test>
+        <code>
+			public abstract class ClassA {
+				public abstract void m();
+			}
+			
+			public class ClassB extends ClassA {
+				public void m() { }
+			}
+		</code>
+    </compile-run>		  	
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="javamisc005" description="Test inlined class inside abstract class">
+		<test>		
+			new ClassB().m();
+		</test>
+        <code>
+			public abstract class ClassA {
+				public ClassA() {		
+				}
+				
+				public void m() {
+					final Runnable inlined = new Runnable() {
+						public void run() {
+							System.out.println("run");
+						}
+			        };
+			        
+			        new Thread(inlined).start();
+				}
+			}
+			
+			public class ClassB extends ClassA {	
+			}
+		</code>
+    </compile-run>		  	
+	
+
+</testsuite>
