@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CastSupport.java,v 1.1 2005-02-16 13:25:10 aracic Exp $
+ * $Id: CastSupport.java,v 1.2 2005-02-16 13:27:54 aracic Exp $
  */
 
 package org.caesarj.runtime;
@@ -43,7 +43,7 @@ public class CastSupport {
      * If the runtime family of x1 is not fam2, ClassCastException is thrown
      */
     public static Object cast(Object fam, Object o2) {
-		if(fam != null) {
+		if(fam != null && o2 != null) {
 			if(fam instanceof CaesarObject) {
 				if( ((CaesarObject)o2).family() != fam ) {
 					throw new ClassCastException("illegal family");
