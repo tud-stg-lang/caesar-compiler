@@ -47,6 +47,7 @@ public class Main extends MainSuper implements Constants {
     private CaesarWeaver weaver;
     
     private SourceDependencyGraph dependencyGraph = new SourceDependencyGraph();
+        
 
     /**
      * @param workingDirectory the working directory
@@ -116,6 +117,7 @@ public class Main extends MainSuper implements Constants {
         
         // CTODO prepareVirtualClasses: transform extends and generate factory methods
         
+        
         generateSourceDependencyGraph(tree);
 
         CompilerPass compilerPass = 
@@ -124,8 +126,10 @@ public class Main extends MainSuper implements Constants {
         while(compilerPass != null) {       
             
             compilerPass.begin();
-            
+
             {
+                // CTODO mix classes here
+                
                 checkAllInterfaces(tree);
                 if(errorFound) return false;
                         
@@ -137,16 +141,17 @@ public class Main extends MainSuper implements Constants {
                 
                 genCode(environment.getTypeFactory());
             }
-            
+  
             compilerPass.end();
             
-            compilerPass = compilerPass.getNextPass(); 
+            compilerPass = compilerPass.getNextPass();
+            environment.incCompilerPass(); 
         }
-        
+
         tree = null;
         
         if(!noWeaveMode()) {        
-            // CTODO weave code here
+            weaveGeneratedCode(environment.getTypeFactory());
         }
                 
         /*
@@ -175,7 +180,7 @@ public class Main extends MainSuper implements Constants {
         
         for(Iterator it=dependencyGraph.iterator(); it.hasNext(); ) {
             TypeNode node = (TypeNode)it.next();
-            node.setEnabled(false);
+            node.updateLevel();            
                    
             int level = node.getLevel();
             
@@ -186,9 +191,6 @@ public class Main extends MainSuper implements Constants {
                 passMap.put(new Integer(level), pass);
             }
                                     
-            if(node instanceof RegularTypeNode) {
-                pass.getTypesToCompile().add(node);
-            }
             else if(node instanceof CompositeTypeNode) {                
                 pass.getTypesToMix().add(node);
             }
@@ -237,6 +239,9 @@ public class Main extends MainSuper implements Constants {
         }
     }
     
+    /**
+     * generates dependency graph on source types
+     */
     protected void generateSourceDependencyGraph(JCompilationUnit[] tree) {
         System.out.println("generateDependencyGraph");        
         for (int i=0; i<tree.length; i++) {
@@ -458,10 +463,38 @@ public class Main extends MainSuper implements Constants {
     }
 
     /**
+     * IVICA
      * Performs weaving after compilation.
      * 
      * @param factory
      */
+    public void weaveGeneratedCode(TypeFactory factory) {
+        String filename;
+
+        this.classes.setSize(0);
+
+        weaver = new CaesarWeaver();
+        
+        for(Iterator it=byteCodeMap.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry entry = (Map.Entry)it.next();
+
+            CSourceClass sourceClass = (CSourceClass)entry.getKey();
+            byte[] byteCodeBuf = (byte[])entry.getValue();
+
+            weaver.addUnwovenClassFile(
+                getFileName(sourceClass), byteCodeBuf
+            );
+        }
+
+        weaveClasses();
+    }
+
+    /**
+     * Performs weaving after compilation.
+     * 
+     * @param factory
+     */
+    /*
     public void generateAndWeaveCode(TypeFactory factory) {
         CSourceClass[] classes = getClasses();
         BytecodeOptimizer optimizer = new BytecodeOptimizer(options.optimize);
@@ -516,6 +549,7 @@ public class Main extends MainSuper implements Constants {
             e.getMessage()));
         }
     }
+    */
 
     /**
      * Weaves the given classes.

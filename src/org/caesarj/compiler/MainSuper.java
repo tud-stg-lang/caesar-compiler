@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: MainSuper.java,v 1.8 2004-03-22 12:59:12 aracic Exp $
+ * $Id: MainSuper.java,v 1.9 2004-04-15 15:10:45 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -23,9 +23,11 @@ package org.caesarj.compiler;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.caesarj.classfile.ClassFileFormatException;
+import org.caesarj.classfile.ClassInfo;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.visitor.KjcPrettyPrinter;
 import org.caesarj.compiler.constants.CaesarMessages;
@@ -129,7 +131,17 @@ public abstract class MainSuper extends CompilerBase {
             for (int count = 0; count < classes.length; count++) {
                 long lastTime = System.currentTimeMillis();
 
-                classes[count].genCode(optimizer, options.destination, factory);
+                // IVICA
+                // removed: classes[count].genCode(optimizer, options.destination, factory);
+                ClassInfo classInfo = 
+                    classes[count].genClassInfo(optimizer, options.destination, factory);
+                
+                classInfo.write(options.destination);
+                byte[] codeBuf = classInfo.getByteArray();
+                
+                byteCodeMap.put(classes[count], codeBuf);                
+                // IVICA:END
+                
                 if (verboseMode() && !classes[count].isNested()) {
                     inform(
                         CaesarMessages.CLASSFILE_GENERATED,
@@ -429,4 +441,7 @@ public abstract class MainSuper extends CompilerBase {
 
     // all generated classes
     protected Vector classes = new Vector(100);
+    
+    // IVICA
+    protected HashMap byteCodeMap = new HashMap(100);
 }
