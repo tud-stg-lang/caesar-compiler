@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.9 2004-09-17 18:45:19 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.10 2004-09-22 07:52:10 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -200,6 +200,9 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         // the body of the method is not of the interesst
         AstGenerator gen = context.getEnvironment().getAstGenerator();
         for(int k = 0; k < inners.length; k++) {
+        	if (!(inners[k] instanceof CjVirtualClassDeclaration))
+        		continue;
+        	
             CjVirtualClassDeclaration inner = (CjVirtualClassDeclaration)inners[k];
             if(inner.isWrapper()) {
                 String wrappeeClass = 
