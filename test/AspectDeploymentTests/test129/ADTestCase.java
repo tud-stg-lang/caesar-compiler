@@ -1,8 +1,6 @@
 package generated.test129;
 
 import junit.framework.TestCase;
-import org.caesarj.runtime.DeploySupport;
-
 
 /**
  * Tests nested croscutting classes
@@ -28,11 +26,11 @@ public class ADTestCase extends TestCase
 		StockPricing.PerRequestDiscount pricing = new StockPricing().new PerRequestDiscount();
 		Test test = new Test();
 
-		DeploySupport.deployLocal(pricing);
+		pricing.simpleDeploy();
 
 		test.foo();
 
-		DeploySupport.undeployLocal(pricing);
+		pricing.simpleUndeploy();
 
 		assertEquals(expectedResult, result.toString());
 

@@ -1,7 +1,6 @@
 package generated.test126;
 
 import junit.framework.TestCase;
-import org.caesarj.runtime.DeploySupport;
 
 /**
  * Test local deployment
@@ -69,7 +68,7 @@ public cclass DeployA
         {
 			deploy(new AspectA().init("ta2"))
 			{
-				DeploySupport.deployLocal(g1);
+				g1.simpleDeploy();
 				a.setId("m1");
 				a.trigger();
 
@@ -79,7 +78,7 @@ public cclass DeployA
 			a.trigger();
 		}
 		a.trigger();
-		DeploySupport.undeployLocal(g1);
+		g1.simpleUndeploy();
 
 		Barrier.getInstance().check(); //Checkpoint 3
 		Barrier.getInstance().check(); //Checkpoint 4
@@ -95,7 +94,7 @@ public cclass AnotherThread implements Runnable
 
 		Barrier.getInstance().check(); //Checkpoint 1
 
-		DeploySupport.deployLocal(g2);
+		g2.simpleDeploy();
 
 		deploy(new AspectA().init("tb1"))
 		{
@@ -112,7 +111,7 @@ public cclass AnotherThread implements Runnable
 		}
 		a.trigger();
 
-		DeploySupport.undeployLocal(g2);
+		g2.simpleUndeploy();
 
 		Barrier.getInstance().check();  //Checkpoint 4
 	}
