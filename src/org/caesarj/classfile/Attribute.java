@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Attribute.java,v 1.2 2004-02-08 16:47:45 ostermann Exp $
+ * $Id: Attribute.java,v 1.3 2004-04-07 09:20:37 klose Exp $
  */
 
 package org.caesarj.classfile;
@@ -110,6 +110,10 @@ public abstract class Attribute {
       break;
     }
 
+    if (tag.equals(ExtraModifiersAttribute.AttributeName)){
+    	return new ExtraModifiersAttribute(in, cp);
+    }
+
     return new GenericAttribute(name, in, cp);
   }
 
@@ -174,6 +178,10 @@ public abstract class Attribute {
 
     default:
       break;
+    }
+
+    if (tag.equals(ExtraModifiersAttribute.AttributeName)){
+    	return new ExtraModifiersAttribute(in, cp);
     }
 
     return new GenericAttribute(name, in, cp);

@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: GenericAttribute.java,v 1.3 2004-02-09 17:34:16 ostermann Exp $
+ * $Id: GenericAttribute.java,v 1.4 2004-04-07 09:20:44 klose Exp $
  */
 
 package org.caesarj.classfile;
@@ -118,6 +118,10 @@ public class GenericAttribute extends Attribute {
     out.write(data);
   }
 
+  public byte[] getData(){
+  	return data;
+  }
+  
   // --------------------------------------------------------------------
   // DATA MEMBERS
   // --------------------------------------------------------------------
