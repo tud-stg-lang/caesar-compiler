@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.caesarj.compiler.AstGenerator;
@@ -48,7 +49,6 @@ import org.caesarj.compiler.types.CVoidType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
 import org.caesarj.compiler.typesys.CaesarTypeSystemException;
-import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
 import org.caesarj.compiler.typesys.java.JavaTypeNode;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -158,12 +158,20 @@ public class CClassPreparation implements CaesarConstants {
             null
         );
         
+        /*
         CaesarTypeNode topMost = inner.getMixin().getTopmostNode();
         
         CClass returnType = classReader.loadClass(
             typeFactory, 
             topMost.getQualifiedName().toString()    
         );
+        */
+        
+        CClass returnType = classReader.loadClass(
+            typeFactory, 
+            inner.getMixin().getQualifiedName().toString()    
+        );
+
         
         JMethodDeclaration facMethodDecl = new JMethodDeclaration(
                 decl.getTokenReference(),
@@ -177,6 +185,7 @@ public class CClassPreparation implements CaesarConstants {
                 null, null
             );  
         
+        /*
         JMethodDeclaration facIfcMethodDecl = new JMethodDeclaration(
             decl.getTokenReference(),
             ACC_PUBLIC,
@@ -188,9 +197,10 @@ public class CClassPreparation implements CaesarConstants {
             null,
             null, null
         );  
+        */
         
         decl.addMethod(facMethodDecl);
-        ifcDecl.addMethod(facIfcMethodDecl);                         
+        //ifcDecl.addMethod(facIfcMethodDecl);                         
 	    
 	}
 	
@@ -284,7 +294,7 @@ public class CClassPreparation implements CaesarConstants {
         decl.addMethod(gen.endMethod());
         
         
-        
+        /*
         gen.writeMethod(            
             "public "+wrapperClassName+" "+wrapperClassIdent+"("+wrappeeClassName+" w);"
         );
@@ -297,6 +307,7 @@ public class CClassPreparation implements CaesarConstants {
         );
         
         decl.getMixinIfcDeclaration().addMethod(gen.endMethod());
+        */
 	}
 	
     /**
@@ -387,14 +398,13 @@ public class CClassPreparation implements CaesarConstants {
                     context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT).getCClass();
             }
             
-            
             if(context.getClassReader().hasClassFile(node.getQualifiedName().toString())) {
                 return
                     context.getClassReader().loadClass(
                         context.getTypeFactory(),
                         node.getQualifiedName().toString()
                     );
-            }
+            }            
             
             // get mixin export
             // mixins are always generated from Caesar source classes
@@ -437,7 +447,6 @@ public class CClassPreparation implements CaesarConstants {
             
             superClass = (CReferenceType)superClass.checkType(context);
                        
-            
             CClass mixinIfcClass = context.getClassReader().loadClass(
         		context.getTypeFactory(),
         		node.getMixin().getQualifiedName().toString()
@@ -504,37 +513,49 @@ public class CClassPreparation implements CaesarConstants {
 
             // generate methods
             CMethod mixinMethods[] = mixinClass.getMethods();
-            CMethod methods[] = new CMethod[mixinMethods.length+1];
+            List methods = new LinkedList();
             int i;
             for (i = 0; i < mixinMethods.length; i++) {
-                methods[i] = new CSourceMethod(
-                    sourceClass,
-                    mixinMethods[i].getModifiers(),
-                    mixinMethods[i].getIdent(),
-                    mixinMethods[i].getReturnType(),
-                    mixinMethods[i].getParameters(),
-                    mixinMethods[i].getThrowables(),
-                    mixinMethods[i].getTypeVariables(),
-                    mixinMethods[i].isDeprecated(),
-                    mixinMethods[i].isSynthetic(),
-                    null // CTODO JBlock is null?
+                
+                if(
+                    mixinMethods[i].isConstructor()
+                    //|| mixinMethods[i].getIdent().startsWith("$new")
+                ) {
+                    continue;
+                }
+                
+                methods.add(
+                    new CSourceMethod(
+	                    sourceClass,
+	                    mixinMethods[i].getModifiers(),
+	                    mixinMethods[i].getIdent(),
+	                    mixinMethods[i].getReturnType(),
+	                    mixinMethods[i].getParameters(),
+	                    mixinMethods[i].getThrowables(),
+	                    mixinMethods[i].getTypeVariables(),
+	                    mixinMethods[i].isDeprecated(),
+	                    mixinMethods[i].isSynthetic(),
+	                    null // CTODO JBlock is null?
+	                )
                 );
             }
             
             // def ctor 
-            methods[i] = new CSourceMethod(
-                sourceClass,
-                ACC_PROTECTED,
-                JAV_CONSTRUCTOR,
-				new CVoidType(),
-                new CType[]{
-            		context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT)
-        		},
-                CReferenceType.EMPTY,
-                CTypeVariable.EMPTY,
-                false,
-                false,
-                null
+            methods.add(
+                new CSourceMethod(
+	                sourceClass,
+	                ACC_PROTECTED,
+	                JAV_CONSTRUCTOR,
+					new CVoidType(),
+	                new CType[]{
+	            		context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT)
+	        		},
+	                CReferenceType.EMPTY,
+	                CTypeVariable.EMPTY,
+	                false,
+	                false,
+	                null
+	            )
             );
             
             
@@ -557,7 +578,10 @@ public class CClassPreparation implements CaesarConstants {
             }
             
             sourceClass.close(
-                sourceClass.getInterfaces(), sourceClass.getSuperType(), fields, methods
+                sourceClass.getInterfaces(), 
+                sourceClass.getSuperType(), 
+                fields, 
+                (CMethod[])methods.toArray(new CMethod[methods.size()])
             );          
         }
         catch(Throwable e) {
