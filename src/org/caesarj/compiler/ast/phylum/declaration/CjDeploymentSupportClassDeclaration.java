@@ -4,23 +4,11 @@ import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.expression.CjMethodCallExpression;
-import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
-import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
-import org.caesarj.compiler.ast.phylum.statement.JBlock;
-import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
-import org.caesarj.compiler.ast.phylum.statement.JStatement;
-import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.export.CModifier;
-import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
-import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
-import org.caesarj.util.UnpositionedError;
 
 /**
  * This class declaration is only for the generated deployment support classes.
@@ -121,141 +109,6 @@ public class CjDeploymentSupportClassDeclaration extends CjClassDeclaration {
      * Sets the superclass of this deployment class if needed.
      */
     public void checkInterface(CContext context) throws PositionedError {
-
-        //Add the superClass only to those classes, whose crosscuttingClass
-        //has a crosscutting superClass
-        if (crosscuttingClass.getSuperClass() != null
-            && (CModifier
-                .contains(
-                    crosscuttingClass
-                        .getSuperClass()
-                        .getCClass()
-                        .getModifiers(),
-                    ACC_CROSSCUTTING))) {
-
-            String superClassName = null;
-            superClassName =
-                crosscuttingClass.getSuperClass().getIdent() + postfix;
-
-            try {
-
-                wouldBeSuperClass =
-                    (CReferenceType)new CClassNameType(
-                        superClassName.intern()).checkType(
-                        self);
-                if (isRegistry()
-                    && (!CModifier
-                        .contains(
-                            crosscuttingClass
-                                .getSuperClass()
-                                .getCClass()
-                                .getModifiers(),
-                            ACC_ABSTRACT))) {
-
-                    //					//setPointcuts(crosscuttingClass.getPointcuts());
-                    crosscuttingClass.setPointcuts(
-                        new CjPointcutDeclaration[0]);
-                    pointcuts = new CjPointcutDeclaration[0];
-                }
-                if (isRegistry()
-                    && (!CModifier
-                        .contains(
-                            crosscuttingClass.getModifiers(),
-                            ACC_ABSTRACT))
-                    && (!CModifier
-                        .contains(
-                            wouldBeSuperClass.getCClass().getModifiers(),
-                            ACC_ABSTRACT))) {
-                    callSuperClassToo(methods, "$deploy", superClassName);
-                    callSuperClassToo(methods, "$undeploy", superClassName);
-
-                }
-                else {
-                    setSuperClass(wouldBeSuperClass);
-                }
-            }
-            catch (UnpositionedError e) {
-
-                context.reportTrouble(e.addPosition(getTokenReference()));
-            }
-
-            if (isRegistry()
-                && CModifier.contains(
-                    wouldBeSuperClass.getCClass().getModifiers(),
-                    ACC_ABSTRACT))
-                pointcuts = crosscuttingClass.getPointcuts();
-
-        }
-
-        super.checkInterface(context);
-    }
-
-    private boolean isRegistry() {
-        boolean isRegistry = false;
-        for (int i = 0; i < interfaces.length && !isRegistry; i++) {
-            if (interfaces[i].getIdent().equals("AspectRegistry"))
-                isRegistry = true;
-        }
-        return isRegistry;
-    }
-
-    /**
-     * weaves calls to the given Method in the superclass
-     * @param method the method to call in the superClass
-     * @param methodName the name, to check for errors
-     * @param supeClassName where to weave
-     */
-    private void callSuperClassToo(
-        JMethodDeclaration methods[],
-        String methodName,
-        String superClassName) {
-        JMethodDeclaration method = null;
-        for (int i = 0; i < methods.length; i++) {
-            method = methods[i];
-            if (method.getIdent() == methodName)
-                break;
-        }
-        if (method == null)
-            throw new InconsistencyException(
-                "Method " + methodName + "not found");
-
-        JStatement[] deployStatements = method.getBlockBody().getBody();
-        JStatement[] newStatements =
-            new JStatement[deployStatements.length + 1];
-        System.arraycopy(
-            deployStatements,
-            0,
-            newStatements,
-            0,
-            deployStatements.length);
-
-        JExpression dprefix =
-            new JNameExpression(TokenReference.NO_REF, superClassName);
-        JExpression fac =
-            new JFieldAccessExpression(
-                TokenReference.NO_REF,
-                dprefix,
-                "ajc$perSingletonInstance");
-        JFormalParameter[] dparameters = method.getArgs();
-        JExpression[] args = new JExpression[dparameters.length];
-        String argString = "";
-        for (int i = 0; i < args.length; i++) {
-            args[i] =
-                new JNameExpression(
-                    TokenReference.NO_REF,
-                    dparameters[i].getIdent());
-            argString += args[i] + ", ";
-        }
-        JExpression methodCall =
-            new CjMethodCallExpression(
-                TokenReference.NO_REF,
-                fac,
-                methodName,
-                args);
-        //		System.out.println("weaved in: "+dprefix+methodName+"("+argString+")");
-        newStatements[deployStatements.length] =
-            new JExpressionStatement(TokenReference.NO_REF, methodCall, null);
-        method.setBlockBody(
-            new JBlock(TokenReference.NO_REF, newStatements, null));
+        super.checkInterface(context); 
     }
 }
