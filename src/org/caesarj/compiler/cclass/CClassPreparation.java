@@ -21,6 +21,7 @@ import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
 import org.caesarj.compiler.ast.phylum.expression.JUnqualifiedInstanceCreation;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
@@ -37,7 +38,9 @@ import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.compiler.types.CVoidType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -152,12 +155,10 @@ public class CClassPreparation implements CaesarConstants {
                                         new JUnqualifiedInstanceCreation(
                                             decl.getTokenReference(),
                                             innerClass.getAbstractType(),
-                                            JExpression.EMPTY
-											/*
+                                            //JExpression.EMPTY
 											new JExpression[]{
                                         		new JThisExpression(decl.getTokenReference())
                                     		}
-                                    		*/
                                         ),
                                         null
                                     )
@@ -300,8 +301,9 @@ public class CClassPreparation implements CaesarConstants {
             
             // generate methods
             CMethod mixinMethods[] = mixinClass.getMethods();
-            CMethod methods[] = new CMethod[mixinMethods.length];
-            for (int i = 0; i < methods.length; i++) {
+            CMethod methods[] = new CMethod[mixinMethods.length+1];
+            int i;
+            for (i = 0; i < mixinMethods.length; i++) {
                 methods[i] = new CSourceMethod(
                     sourceClass,
                     mixinMethods[i].getModifiers(),
@@ -316,11 +318,27 @@ public class CClassPreparation implements CaesarConstants {
                 );
             }
             
+            // def ctor 
+            methods[i] = new CSourceMethod(
+                    sourceClass,
+                    ACC_PROTECTED,
+                    JAV_CONSTRUCTOR,
+					new CVoidType(),
+                    new CType[]{
+                		context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT)
+            		},
+                    CReferenceType.EMPTY,
+                    CTypeVariable.EMPTY,
+                    false,
+                    false,
+                    null
+                );
+            
             
             // generate fields
             Hashtable fields = new Hashtable();
             CField mixinFields[] = mixinClass.getFields();
-            int i;
+            
             for(i=0; i<mixinFields.length; i++) {
                 CSourceField clone = new CSourceField(
                     sourceClass,

@@ -15,18 +15,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.2 2004-07-05 20:10:40 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.3 2004-07-09 10:11:18 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
+import org.caesarj.compiler.ast.templates.TDefVirtualClassCtorDeclaration;
 import org.caesarj.compiler.cclass.CaesarTypeNode;
 import org.caesarj.compiler.cclass.CaesarTypeSystem;
 import org.caesarj.compiler.cclass.JavaQualifiedName;
@@ -37,6 +42,7 @@ import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.InconsistencyException;
@@ -69,7 +75,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         super(
             where,
             modifiers,
-            implClass ? ident+"_Impl" : ident, // IVICA,
+            implClass ? ident+"_Impl" : ident,
             typeVariables,
             superClass,
             wrappee,
@@ -179,12 +185,14 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
      */    
     public void generateExport(CContext context) throws PositionedError {
         
+    	boolean defCtorFound = false;
+    	
         List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {
             CMethod m = methods[i].checkInterface(self);            
             methodList.add(m);
         }
-        
+                
         Hashtable hashFieldMap = new Hashtable();
         for (int i = 0; i < fields.length; i++) {
             CSourceField field = fields[i].checkInterface(self);
@@ -223,16 +231,27 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         
         CClassContext cc = context.getClassContext();
         
+        CType outerType = null;
+        
+        // add outer variable
         if(getCClass().getOwner() != null) {
             this.modifiers |= ACC_STATIC;
             getCClass().setModifiers(this.modifiers);
+            
+            /*
+            outerType = 
+            	javaTypeNode.getOuter().getDeclaration().getMixinIfcDeclaration().getCClass().getAbstractType();
+    		*/
+                
+            String qn = new JavaQualifiedName(getCClass().getOwner().getQualifiedName()).convertToIfcName().toString();
+            outerType = context.getClassReader().loadClass(context.getTypeFactory(), qn).getAbstractType();
             
             JFieldDeclaration outerField = new JFieldDeclaration(
         		getTokenReference(),
 				new JVariableDefinition(
 					getTokenReference(),
 					ACC_FINAL | ACC_PRIVATE,
-					javaTypeNode.getOuter().getDeclaration().getMixinIfcDeclaration().getCClass().getAbstractType(), // type
+					outerType, // type
 					"$outer",
 					null
 				),
@@ -242,6 +261,17 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
             
             addField(outerField);
         }
+        
+        // add default ctor
+        addMethod(
+    		new TDefVirtualClassCtorDeclaration(
+				getTokenReference(),
+				ACC_PUBLIC,
+				getIdent(),
+				outerType,
+				context.getTypeFactory()
+			)
+		);
         
 //      -------------------- cut here -------------------------------------
         // CTODO move this outside of this method -> a separated step
@@ -415,7 +445,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
                         null, // wrappee
                         new CReferenceType[]{ifcDecl.getCClass().getAbstractType()}, // CTODO ifcs
                         new JFieldDeclaration[0],
-                        new JMethodDeclaration[0],
+						new JMethodDeclaration[0],
                         new JTypeDeclaration[0],
                         new JPhylum[0]
                     );

@@ -15,7 +15,7 @@ public class JavaTypeGraph {
     private HashMap nodes = new HashMap();
     
     public JavaTypeGraph() {
-        CaesarTypeNode typeNode = new CaesarTypeNode(null, "java/lang/Object", false);
+        CaesarTypeNode typeNode = new CaesarTypeNode(null, "org/caesarj/runtime/CaesarObject", false);
         root = new JavaTypeNode(this, typeNode);
         root.setType(typeNode);
     }

@@ -46,8 +46,9 @@ public class JavaQualifiedName {
     }
     
     // CTODO
-    public JavaQualifiedName convertToIfcName() {        
-        return new JavaQualifiedName(qualifiedName);
+    public JavaQualifiedName convertToIfcName() {
+    	String newQualifiedName = qualifiedName.replaceAll("_Impl", "");
+        return new JavaQualifiedName(newQualifiedName);
     }
     
     public char getInnerSep() {

@@ -13,11 +13,6 @@ import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMemberDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
-import org.caesarj.compiler.ast.phylum.expression.JConstructorCall;
-import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
-import org.caesarj.compiler.ast.phylum.statement.JStatement;
-import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
@@ -198,54 +193,6 @@ public class CClassFactory implements CaesarConstants {
 	public void modifyCaesarClass() {    	
 				
 		caesarClass.setInterfaces(CReferenceType.EMPTY);
-		caesarClass.setSuperClass(null);
-		
-         JMethodDeclaration methodDecls[] = caesarClass.getMethods();
-         boolean defCtorFound = false;
-         for (int i = 0; i < methodDecls.length; i++) {             
-            if(methodDecls[i] instanceof JConstructorDeclaration) {
-                if(methodDecls[i].getParameters().length == 0) {
-                    defCtorFound = true;
-                    break;
-                }
-            }
-        }
-         
-        // CTODO
-        //if(!defCtorFound) {
-            // create def. ctor -> public CTOR() {super();}
-            JConstructorDeclaration defCtor = new JConstructorDeclaration(
-                caesarClass.getTokenReference(),
-                ACC_PUBLIC,
-                caesarClass.getIdent(),
-                new JFormalParameter[] {
-                	/*
-            		new JFormalParameter(
-        				caesarClass.getTokenReference(),
-						JFormalParameter.DES_PARAMETER,
-						environment.getTypeFactory().getPrimitiveType(TypeFactory.RFT_OBJECT),						
-						"$outer",
-						false    				
-    				)
-    				*/
-        		},
-                CReferenceType.EMPTY,
-                new JConstructorBlock(
-                    caesarClass.getTokenReference(),
-                    new JConstructorCall(
-                        caesarClass.getTokenReference(),
-                        false,
-                        null,
-                        JExpression.EMPTY
-                    ),
-                    JStatement.EMPTY
-                ),
-                null,
-                null,
-                environment.getTypeFactory()
-            );
-            
-            caesarClass.addMethod(defCtor);
-        //}
+		caesarClass.setSuperClass(null);		
 	}
 }

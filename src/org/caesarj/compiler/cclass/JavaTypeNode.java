@@ -139,7 +139,7 @@ public class JavaTypeNode {
     
     public void genOuterAndQualifiedNames() {
         if(parent == null) {
-            this.qualifiedName = new JavaQualifiedName("java/lang/Object");
+            this.qualifiedName = new JavaQualifiedName("org/caesarj/runtime/CaesarObject");
             setOuter(null);
         }
         else if(type != null) {
