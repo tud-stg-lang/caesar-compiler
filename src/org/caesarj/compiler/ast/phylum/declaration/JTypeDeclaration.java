@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.2 2004-03-22 17:21:44 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.3 2004-04-08 15:56:23 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -407,6 +407,10 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
      * @exception	PositionedError	Error catched as soon as possible
      */
     public void checkInitializers(CContext context) throws PositionedError {
+        
+        // IVICA 
+        if(!isEnabled()) return;
+        
         if (getCClass().getSuperClass() != null) {
             check(
                 context,
@@ -496,6 +500,10 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
      * @exception PositionedError Error catched as soon as possible (for subclasses)
      */
     public void checkTypeBody(CContext context) throws PositionedError {
+        
+        // IVICA
+        if(!isEnabled()) return;
+        
         context.addSourceClass(sourceClass);
 
         for (int i = 0; i < interfaces.length; i++) {
@@ -549,10 +557,21 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     public void print() {
         System.out.print(ident);
     }
+    
+    public boolean isEnabled() {
+        return enabled;
+    }
+    
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
     // ----------------------------------------------------------------------
     // PRIVATE DATA MEMBER
     // ----------------------------------------------------------------------
+
+    // IVICA
+    private boolean enabled = false; // with this flag type nodes in AST can be disabled or enabled
 
     protected int modifiers;
     protected String ident;

@@ -193,6 +193,10 @@ public class JClassDeclaration extends JTypeDeclaration {
      * @exception   PositionedError an error with reference to the source file
      */
     public void checkInterface(final CContext context) throws PositionedError {
+                
+        // IVICA don't check interface if this class is not enabled
+        if(!isEnabled()) return;
+                
         // CTODO resolve call moved here in order common java classes can be found in crosscutting classes
         // register type at CaesarBcelWorld!!!
         CaesarBcelWorld.getInstance().resolve(getCClass());
@@ -252,6 +256,9 @@ public class JClassDeclaration extends JTypeDeclaration {
      * @exception   PositionedError an error with reference to the source file
      */
     public void checkTypeBody(CContext context) throws PositionedError {
+
+        // IVICA
+        if(!isEnabled()) return;
 
         // JSR 41 2.2
         // A parameterized type may not inherit directly or indirectly form 
@@ -366,6 +373,9 @@ public class JClassDeclaration extends JTypeDeclaration {
      * @exception   PositionedError an error with reference to the source file
      */
     public void checkInitializers(CContext context) throws PositionedError {
+        
+        // IVICA
+        if(!isEnabled()) return;
 
         //Walter start:
         //self = new CClassContext(context, context.getEnvironment(), sourceClass, this);

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.4 2004-04-06 21:48:43 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.5 2004-04-08 15:56:23 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -513,6 +513,9 @@ public class CjClassDeclaration
      */
     public void checkInterface(CContext context) throws PositionedError {
         
+        // IVICA don't check interface if not enabled;
+        if(!isEnabled()) return;
+        
         //statically deployed classes are considered as aspects
         if (isStaticallyDeployed()) {
             DeploymentPreparation.prepareForStaticDeployment(
@@ -723,6 +726,9 @@ public class CjClassDeclaration
      * @exception	PositionedError	an error with reference to the source file
      */
     public void checkTypeBody(CContext context) throws PositionedError {
+        
+        // IVICA
+        if(!isEnabled()) return;
 
         if (advices != null) {
             for (int i = 0; i < advices.length; i++) {
