@@ -1,0 +1,37 @@
+<testsuite name="Test casts to dependent types" package="suits.typesystem.casts">
+
+	<common-code-base>		
+		public cclass G {
+			public cclass N {}
+		}
+	</common-code-base>
+
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="casts001" description="Check casts">
+		<test>			
+		    final G g = new G();			
+			final G gCopy = g;
+		    g.N n = (g.N)gCopy.new N();
+		</test>
+        <code></code>
+    </compile-run>		  	
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="casts002" description="Check casts">
+		<test>		
+			try {	
+			    final G g1 = new G();			
+				final G g2 = new G();
+			    g1.N n = (g1.N)g2.new N();
+			}
+			catch(ClassCastException cce) {
+				return;
+			}
+			fail();
+		</test>
+        <code></code>
+    </compile-run>		  	
+	
+
+</testsuite>

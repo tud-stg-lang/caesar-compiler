@@ -1,0 +1,60 @@
+<testsuite name="Test Wildcard Types" package="suits.typesystem.wildcards">
+
+	<common-code-base>		
+		public cclass G {
+			public cclass N {}
+		}
+	</common-code-base>
+
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="wildcard001" description="Check wildcards">
+        <code>
+			public class A {
+				public final G g = new G();
+				public g.N n = g.new N();
+				public G.N someN = n;
+			}
+        </code>
+    </compile>    	
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ASSIGNMENT_BADTYPE" id="wildcard002" description="Check wildcards">
+        <code>
+			public class A {
+				public final G g = new G();
+				public G.N someN = g.new N();
+				public g.N n = someN;  
+			}
+        </code>
+    </compile-check-error>    	
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ASSIGNMENT_BADTYPE" id="wildcard003" description="Check wildcards">
+        <code>
+			public class A {
+				public final G g = new G();
+				public void foo() {
+					G.N someN = g.new N();
+					bar( someN );
+				}
+				public void bar(g.N n) {}
+			}
+        </code>
+    </compile-check-error>    	
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="wildcard004" description="Check wildcards">
+        <code>
+			public class A {
+				public final G g = new G();
+				public void foo() {
+					bar( g.new N() );
+				}
+				public void bar(G.N n) {}
+			}
+        </code>
+    </compile>    	
+	
+
+</testsuite>

@@ -1,0 +1,41 @@
+<testsuite name="Test Implicit Dependent Types" package="suits.typesystem.implicit">
+
+	<common-code-base>		
+	</common-code-base>
+
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="implicit001" description="Check dependent types with implicit family paths.">
+        <code>
+			public cclass G {
+				public N n;
+				public cclass N {
+					public N n = G.this.n;
+					public void foo() {
+						n = G.this.n;
+					}
+				}
+			}
+        </code>
+    </compile>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="implicit002" description="Check dependent types with implicit family paths.">
+        <code>
+			public cclass G {
+				public N n;
+				public void foo() {
+					n = n.bar( n );
+				}
+				public cclass N {
+					public N bar(N n) { return n; }
+				}				
+			}
+        </code>
+    </compile>
+
+
+	<!-- ...continue... -->    
+	
+
+</testsuite>
