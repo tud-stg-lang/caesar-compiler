@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
+import org.caesarj.compiler.aspectj.CaesarAdviceKind;
+import org.caesarj.compiler.aspectj.CaesarNameMangler;
 import org.caesarj.compiler.ast.phylum.declaration.CjAdviceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjPointcutDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
@@ -126,12 +128,13 @@ public class GenerateDeploymentSupport {
 		 		List pointcuts = new LinkedList();
 		 		List advices = new LinkedList();
 		 		collectAllPointcutsAndAdvice(node, pointcuts, advices);
+		 		CjAdviceDeclaration[] adviceArr = (CjAdviceDeclaration[])advices.toArray(new CjAdviceDeclaration[0]);
+		 		CjPointcutDeclaration[] pointcutArr = (CjPointcutDeclaration[])pointcuts.toArray(new CjPointcutDeclaration[0]);
 		 		
-		 		caesarClass.setAspectInterface(utils.createAspectInterface(
-		 				(CjAdviceDeclaration[])advices.toArray(new CjAdviceDeclaration[0])));
-		 		caesarClass.setRegistryClass(utils.createSingletonAspect(
-		 				(CjPointcutDeclaration[])pointcuts.toArray(new CjPointcutDeclaration[0]), 
-		 				(CjAdviceDeclaration[])advices.toArray(new CjAdviceDeclaration[0])));
+		 		caesarClass.setAspectInterface(
+		 				utils.createAspectInterface(adviceArr));
+		 		caesarClass.setRegistryClass(
+		 				utils.createSingletonAspect(pointcutArr, adviceArr));
 		 		utils.modifyAspectClass();				
 		 	}
 		}
@@ -184,16 +187,46 @@ public class GenerateDeploymentSupport {
 	private void collectAllPointcutsAndAdvice(CaesarTypeNode node, List pointcuts, List advices) {
 		List ccLst = getCrosscuttingMixinList(node);
 		HashSet pctSet = new HashSet();
+		
+		/* counter for advice name generation */
+		int counter = 0;
+		int mixinCount = ccLst.size();
 			
  		for (Iterator it = ccLst.iterator(); it.hasNext();) {
+ 			counter++;
  			CaesarTypeNode mixin = (CaesarTypeNode)it.next();
  			CjVirtualClassDeclaration classDecl = mixin.getTypeDecl().getCorrespondingClassDeclaration();
  			
- 			/* add all advices to the list */
+ 			/* add all after advices to the list */
  			CjAdviceDeclaration declAdv[] = classDecl.getAdvices();
  			for (int i1 = 0; i1 < declAdv.length; i1++) {
- 				advices.add(declAdv[i1]);
+ 				CjAdviceDeclaration advCopy = new CjAdviceDeclaration(declAdv[i1]);
+ 				
+ 				/* generate name so that advices are in correct precedence
+ 				 * the precedence depends on the alphabetical order of names
+ 				 */
+ 				String ident;
+ 				if (declAdv[i1].getKind() == CaesarAdviceKind.After ||
+ 	 				declAdv[i1].getKind() == CaesarAdviceKind.AfterThrowing ||
+ 					declAdv[i1].getKind() == CaesarAdviceKind.AfterReturning) 
+ 				{
+ 					ident = CaesarNameMangler.adviceName(
+ 	 					"" + (mixinCount * 2 - counter),
+ 	 					advCopy.getKind(),
+ 	 					advCopy.getTokenReference().getLine());
+ 	 			}
+ 				else {
+ 					ident = CaesarNameMangler.adviceName(
+ 						"" + counter,
+ 						advCopy.getKind(),
+ 						advCopy.getTokenReference().getLine());
+ 	 				
+ 				}
+ 				advCopy.setIdent(ident);
+ 				
+ 				advices.add(advCopy);
  			}
+ 			
  			
  			/* add unique pointcuts to the list */
  			CjPointcutDeclaration declPct[] = classDecl.getPointcuts();
