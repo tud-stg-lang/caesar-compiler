@@ -56,5 +56,21 @@
         </code>
     </compile>    	
 	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ASSIGNMENT_BADTYPE" id="wildcard005" description="Check wildcards">
+        <code>
+			public cclass GG extends G {
+				public void add(N n) {}
+			}
+			public class A {
+				public final GG gg = new GG();
+				public GG.N getN() {return gg.new N();}
+				public void foo() {
+					gg.add( getN() );
+				}
+			}
+        </code>
+    </compile-check-error>    	
+	
 
 </testsuite>

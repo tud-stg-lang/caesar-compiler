@@ -54,4 +54,17 @@
         </code>
     </compile-check-error>	
 
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ASSIGNMENT_BADTYPE" id="final005" description="Check that family path is final.">
+        <code>
+			public cclass A {
+			    private final G g = new G(); 
+				public G getG() {return g;}
+				public void foo() {
+					g.N n = getG().new N();
+				}
+			}
+        </code>
+    </compile-check-error>	
+
 </testsuite>
