@@ -14,6 +14,7 @@ import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * ...
@@ -97,14 +98,14 @@ public class CClassPreparation implements CaesarConstants {
     public void prepareVirtualClasses(
         KjcEnvironment environment,
         JCompilationUnit cu
-    ) {
+    ) throws UnpositionedError {
         prepareVirtualClasses(environment, new CompilationUnitInnerAccessor(cu));
     }
 
     private void prepareVirtualClasses(
         KjcEnvironment environment,
         InnerAccessor innerAccessor
-    ) {        
+    ) throws UnpositionedError {        
         JTypeDeclaration typeDeclarations[] = innerAccessor.getInners();
         
         for (int i = 0; i < typeDeclarations.length; i++) {
@@ -117,7 +118,7 @@ public class CClassPreparation implements CaesarConstants {
                     new CClassFactory(caesarClass, environment);
 
                 factory.addNotExplicitDeclaredVirtualClasses();
-                factory.addCreateMethods();
+                factory.addCreateMethodsToOwnerClass();
                 factory.checkImplicitVirtualClassSuperType();
 
                 if(caesarClass.getInners().length > 0) {                    

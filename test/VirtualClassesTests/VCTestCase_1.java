@@ -25,13 +25,7 @@ public class VCTestCase_1 extends TestCase {
 
 public cclass _VCTestCase_1 {
     
-    public G $newG() {
-    	return new G();
-    }
     
-    public ColG $newColG() {
-    	return new ColG();
-    }
     
     public void test() {
     	// final ColG cg = new this.ColG();
@@ -45,9 +39,9 @@ public cclass _VCTestCase_1 {
     // some G algorithm
     public void doSomeGraphAlg(final G g) {
     	/*** should be *******************
-    	g.Node n1 = new g.Node(...);
-    	g.Node n2 = new g.Node(...);
-    	g.UEdge ue = new g.UEdge(...);
+    	g.Node n1 = g.new Node(...);
+    	g.Node n2 = g.new Node(...);
+    	g.UEdge ue = g.new UEdge(...);
     	**********************************/
     	G.Node n1 = g.$newNode("n1");
     	G.Node n2 = g.$newNode("n2");
@@ -59,7 +53,11 @@ public cclass _VCTestCase_1 {
 
     // some CG algorithm
     public void doSomeColGraphAlg(final ColG cg) {
-    	ColG.Edge e = (ColG.Edge)cg.getEdge("ue1"); // <- cg.Edge e = cg.getEdge("ue1");
+    	/*** should be *******************
+	    cg.Edge e = cg.getEdge("ue1");
+    	**********************************/
+    	ColG.Edge e = (ColG.Edge)cg.getEdge("ue1");
+    	
     	e.setColor(Color.RED);
     	
     	System.out.println(e);
@@ -70,18 +68,9 @@ public cclass _VCTestCase_1 {
      * G
      */
     public cclass G {
-
-        public G.Node $newNode(String name) {
-            return new G.Node(name);
-        }
-        
-        public G.Edge $newEdge(String name, G.Node n1, G.Node n2) {
-            return new G.Edge(name, n1, n2);
-        }
-        
-        public G.UEdge $newUEdge(String name, G.Node n1, G.Node n2) {
-            return new G.UEdge(name, n1, n2);
-        }
+    
+    	public G() {
+    	}
 
 		public G.Node getNode(String name) {
 			return (G.Node)nodeMap.get(name);
@@ -118,7 +107,7 @@ public cclass _VCTestCase_1 {
         	
         	public boolean isConnecting(G.Node n1, G.Node n2) {
         		return 
-        			super.isConnecting(n1,n2)
+        			super.isConnecting(n1, n2)
         			|| super.isConnecting(n2, n1);
         	}
         }
@@ -146,21 +135,11 @@ public cclass _VCTestCase_1 {
      */
     public cclass ColG extends G {
     
-        public G.Node $newNode(String name) {
-            return new ColG.Node(name);
-        }
-        
-        public G.Edge $newEdge(String name, G.Node n1, G.Node n2) {
-            return new ColG.Edge(name, n1, n2);
-        }
-        
-        public G.UEdge $newUEdge(String name, G.Node n1, G.Node n2) {
-            return new ColG.UEdge(name, n1, n2);
-        }
-        
-
-        public cclass Edge extends G.Edge {
-        	
+    	public ColG() {
+    		super();
+    	}
+    
+        public cclass Edge {
         	private Color color = null;
         
         	public Edge(String name, G.Node n1, G.Node n2) {
@@ -176,14 +155,14 @@ public cclass _VCTestCase_1 {
             }
         }
         
-        public cclass UEdge extends Edge & G.UEdge {
+
+        public cclass UEdge extends Edge {
         	public UEdge(String name, G.Node n1, G.Node n2) {
-        		// TODO -> super(name, n1, n2);
-				super(_VCTestCase_1.ColG.this, name, n1, n2);
+				super(name, n1, n2);
             }
         }
         
-        public cclass Node extends G.Node {
+        public cclass Node {
         	public Node(String name) {
         		super(name);
         	}

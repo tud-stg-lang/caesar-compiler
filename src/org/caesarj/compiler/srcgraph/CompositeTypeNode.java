@@ -29,6 +29,9 @@ public class CompositeTypeNode extends TypeNode {
         }
     }
 
+    public CCompositeType getCompositeType() {
+        return compositeType;
+    }
 
     private CCompositeType compositeType;
 }

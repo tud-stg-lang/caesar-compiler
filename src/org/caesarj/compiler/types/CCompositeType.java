@@ -1,7 +1,11 @@
 package org.caesarj.compiler.types;
 
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CCjCompositeClassProxy;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.ExportMixer;
+import org.caesarj.mixer.MixinList;
 import org.caesarj.util.UnpositionedError;
 
 /**
@@ -11,15 +15,17 @@ import org.caesarj.util.UnpositionedError;
 public class CCompositeType extends CReferenceType {   
 
     public CCompositeType(
-        String qualifiedName, 
+        MixinList mixinList, 
         CReferenceType checkedInterfaceTypes[],
         CReferenceType checkedImplTypes[]
     ) {
         super();
-        setClass(new CCjCompositeClassProxy(this, qualifiedName));
-        this.qualifiedName = qualifiedName;
+        //this.qualifiedName = "generated/_VCTestCase_1_Impl$ColG_Impl$XXX";        
+        this.qualifiedName = mixinList.generateClassName();
+        this.mixinList = mixinList;
         this.checkedInterfaceTypes = checkedInterfaceTypes;
-        this.checkedImplTypes = checkedImplTypes;        
+        this.checkedImplTypes = checkedImplTypes;
+        setClass(new CCjCompositeClassProxy(this, qualifiedName));        
     }
     
 	public CType checkType(CTypeContext context) throws UnpositionedError {
@@ -40,6 +46,10 @@ public class CCompositeType extends CReferenceType {
 
     public CReferenceType[] getClassList() {
         return checkedImplTypes; 
+    }
+    
+    public MixinList getMixinList() {
+        return mixinList;
     }
     
     /**
@@ -81,10 +91,35 @@ public class CCompositeType extends CReferenceType {
         return false;
     }
 
+    // --------------------------------------------------------------
+
+    public static CCompositeType createCompositeType(CReferenceType type1, CReferenceType type2) 
+    throws UnpositionedError {
+        try {
+            CReferenceType interfaces[] = new CReferenceType[]{type1.getCClass().getInterfaces()[0], type2.getCClass().getInterfaces()[0]};
+            CReferenceType impls[] = new CReferenceType[]{type1, type2};
+    
+            MixinList mixinList = ExportMixer.instance().mix(new CClass[]{type1.getCClass(), type2.getCClass()});
+    
+            return 
+                new CCompositeType(
+                    mixinList,
+                    interfaces,
+                    impls
+                );                
+        }
+        catch (Exception e) {
+            // TODO change error message
+            e.printStackTrace();
+			throw new UnpositionedError(CaesarMessages.CANNOT_CREATE);
+		}
+    }
 
     // --------------------------------------------------------------
 
+    private MixinList mixinList;
     private String qualifiedName;
     private CReferenceType checkedInterfaceTypes[];
     private CReferenceType checkedImplTypes[];
+	    
 }

@@ -44,11 +44,8 @@ public class CCompositeNameType extends CClassNameType {
         
         try {
             MixinList mixinList = ExportMixer.instance().mix(classes);
-            String mixedClassName = mixinList.generateClassName();
             
-            // IVICA !!!
-            mixedClassName = "generated/_VCTestCase_1_Impl$ColG_Impl$XXX";
-            return new CCompositeType(mixedClassName, checkedInterfaceTypes, checkedImplTypes);            
+            return new CCompositeType(mixinList, checkedInterfaceTypes, checkedImplTypes);            
         }
         catch (Exception e) {
             // CTODO create correct error message

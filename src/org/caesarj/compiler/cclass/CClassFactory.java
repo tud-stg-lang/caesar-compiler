@@ -6,15 +6,28 @@ import java.util.StringTokenizer;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.declaration.*;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
+import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
+import org.caesarj.compiler.ast.phylum.expression.JUnqualifiedInstanceCreation;
+import org.caesarj.compiler.ast.phylum.statement.JBlock;
+import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
+import org.caesarj.compiler.ast.phylum.statement.JStatement;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CCompositeNameType;
+import org.caesarj.compiler.types.CCompositeType;
 import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * ...
@@ -192,7 +205,7 @@ public class CClassFactory implements CaesarConstants {
 	}
 
     // this one will make problems!
-    // fullQualifiedName of (e.g.) generated.G$E will be generated/G/E 
+    // fullQualifiedName of (e.g.) generated.G$E will be generated/G/E at pre joinAll time 
     private String mapToImplClassName(String fullQualifiedName) {
         StringBuffer res = new StringBuffer();
         StringTokenizer tok = new StringTokenizer(fullQualifiedName, "/");
@@ -210,25 +223,145 @@ public class CClassFactory implements CaesarConstants {
 
 
     /**
-     * adds virutal classes not explicite declared in SubHierarchy 
+     * adds virutal classes not explicite declared in SubHierarchy will be added here
      */
     public void addNotExplicitDeclaredVirtualClasses() {
         
     }
 
     /**
-     * for all constructos H.X.C_n(c_n1, ..., c_nm) 
-     * -> H {... H.X $newX(c_n1, ... c_nm) ...} 
+     * for all constructos C_n(c_n1, ..., c_nm) {...} 
+     * -> $newX(c_n1, ... c_nm) to owner class
+     * 
+     * CTODO addCreateMethodsToOwnerClass
+     * - exceptions
      */
-	public void addCreateMethods() {
+	public void addCreateMethodsToOwnerClass() throws UnpositionedError {
+        CClass clazz         = caesarClass.getCClass();
+        CCjSourceClass owner = (CCjSourceClass)clazz.getOwner();
+
+        if(owner == null) return;
+       
+        CjClassDeclaration ownerClassDecl = (CjClassDeclaration)owner.getTypeDeclaration();//caesarClass.getOwnerDeclaration();        
         
+        // collect constructors
+        JMethodDeclaration methods[] = caesarClass.getMethods();
+        
+        for(int i=0; i<methods.length; i++) {            
+            if(!(methods[i] instanceof JConstructorDeclaration)) continue; 
+            
+			JMethodDeclaration ctor = methods[i];            
+
+            JFormalParameter[] ctorParams = ctor.getParameters();
+            JFormalParameter formalParams[] = new JFormalParameter[ctorParams.length];
+                       
+            JExpression params[] = new JExpression[ctorParams.length];
+            
+            for(int j=0; j<ctorParams.length; j++) {
+                params[j] = new JNameExpression(
+                    caesarClass.getTokenReference(),
+                    null,
+                    ctorParams[j].getIdent()
+                );
+            }
+                       
+            JStatement returnStatement = new JReturnStatement(
+                caesarClass.getTokenReference(),
+                new JUnqualifiedInstanceCreation(
+                    caesarClass.getTokenReference(),
+                    clazz.getAbstractType(),
+                    params
+                ),
+                null
+            ); 
+                       
+            JBlock body = new JBlock(
+                caesarClass.getTokenReference(),
+                new JStatement[]{returnStatement},
+                null
+            );
+                                 
+            for(int j=0; j<ctorParams.length; j++) {
+                 formalParams[j] = new JFormalParameter(
+                    caesarClass.getTokenReference(),
+                    JFormalParameter.DES_PARAMETER,
+                    ctorParams[j].getType(),
+                    ctorParams[j].getIdent(),
+                    ctorParams[j].isFinal()
+                 );
+            } 
+            
+            CClass topmostInterfaceType =
+                clazz.getInterfaces()[0].getCClass().getTopmostHierarchyInterface();
+
+            CReferenceType returnType = 
+                new CClassNameType(topmostInterfaceType.getOwner().getIdent()+'/'+caesarClass.getOriginalIdent());
+                        
+            JMethodDeclaration methodDecl = new JMethodDeclaration(
+                caesarClass.getTokenReference(),
+                ACC_PUBLIC,                
+                CTypeVariable.EMPTY,                
+                returnType,
+                "$new"+caesarClass.getOriginalIdent(),
+                formalParams,
+                CReferenceType.EMPTY,
+                body,
+                null,
+                null
+            );
+            
+            JMethodDeclaration interfaceMethodDecl = new JMethodDeclaration(
+                caesarClass.getTokenReference(),
+                ACC_PUBLIC | ACC_ABSTRACT,                
+                CTypeVariable.EMPTY,                
+                returnType,
+                "$new"+caesarClass.getOriginalIdent(),
+                formalParams,
+                CReferenceType.EMPTY,
+                null,
+                null,
+                null
+            );
+            
+            ownerClassDecl.addMethod(methodDecl);
+            ownerClassDecl.getCorrespondingInterfaceDeclaration().addMethod(interfaceMethodDecl);
+		}
 	}
     
     /**
-     * if H.X exists then
-     * H'.X -> H'.X extends H.X  
+     * for an H, H', H.X, H'.X, H' extends H -> 
+     * case1: cclass H'.X -> cclass H'.X extends H.X
+     * case2: cclass H'.X extends Y -> cclass H'.X extends Y & H.X  
      */
-    public void checkImplicitVirtualClassSuperType() {
+    public void checkImplicitVirtualClassSuperType() throws UnpositionedError {
+        CClass clazz      = caesarClass.getCClass();
+        CClass owner      = clazz.getOwner();
+        CClass superClass = clazz.getSuperClass();
         
+        if(owner == null) return;
+           
+        CClass ownerSuperClass = owner.getSuperClass();         
+        
+        if(ownerSuperClass == null) return;
+                        
+        CClass overriddenClass = ownerSuperClass.lookupClass(ownerSuperClass, clazz.getIdent());
+        
+        if(overriddenClass != null) {
+            CReferenceType newSuperType = null;
+            if(superClass.isObjectClass()) {
+                // case1 (see above)
+                newSuperType = overriddenClass.getAbstractType();
+            }
+            else {
+                // case2 (see above)
+                newSuperType = CCompositeType.createCompositeType(
+                    clazz.getSuperType(),
+                    overriddenClass.getAbstractType()
+                );
+            }
+            
+            caesarClass.setSuperClass(newSuperType);
+            clazz.setSuperClass(newSuperType);
+        }
     }
 }

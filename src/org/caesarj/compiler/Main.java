@@ -25,7 +25,10 @@ import org.caesarj.compiler.srcgraph.GraphGenerator;
 import org.caesarj.compiler.srcgraph.RegularTypeNode;
 import org.caesarj.compiler.srcgraph.SourceDependencyGraph;
 import org.caesarj.compiler.srcgraph.TypeNode;
+import org.caesarj.compiler.types.CCompositeType;
 import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.mixer.Mixer;
+import org.caesarj.mixer.MixinList;
 import org.caesarj.tools.antlr.extra.InputBuffer;
 import org.caesarj.tools.antlr.runtime.ParserException;
 import org.caesarj.util.Messages;
@@ -117,9 +120,9 @@ public class Main extends MainSuper implements Constants {
         joinAll(tree);                  
         if(errorFound) return false;
         
-        checkAllConstructorInterfaces(tree);
+        prepareVirtualClasses(environment, tree);
         
-        prepareVirtualClasses(environment, tree); // NOT IMPLEMENTED YET
+        checkAllConstructorInterfaces(tree);
         
         generateSourceDependencyGraph(tree);        
 
@@ -129,17 +132,17 @@ public class Main extends MainSuper implements Constants {
             System.out.println("--- pass: " + environment.getCompilerPass());
             compilerPass.begin();
             {
-                mixTypes(compilerPass); // NOT IMPLEMENTED YET
+                mixTypes(compilerPass);
                 
                 checkAllInterfaces(tree);
                 if(errorFound) return false;
-                        
+                
                 checkAllInitializers(tree);     
                 if(errorFound) return false;
                         
                 checkAllBodies(tree);           
                 if(errorFound) return false;
-                
+
                 genCode(environment.getTypeFactory());
             }
             compilerPass.end();
@@ -167,16 +170,35 @@ public class Main extends MainSuper implements Constants {
      */
     protected void mixTypes(CompilerPass compilerPass) {
         System.out.println("mixClasses");
+        try {
+            Vector typesToMix = compilerPass.getTypesToMix();
+            
+            for(Iterator it=typesToMix.iterator(); it.hasNext();) {
+                CompositeTypeNode node = (CompositeTypeNode)it.next();
+    			CCompositeType compositeType = node.getCompositeType();
+                MixinList mixinList = compositeType.getMixinList();
+                String generatedClassName = Mixer.instance().generateClass(mixinList);
+                System.out.println("***"+generatedClassName);
+    		}
+        }
+        catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected void prepareVirtualClasses(
         KjcEnvironment environment,
-        JCompilationUnit[] tree) {
+        JCompilationUnit[] tree) {  
         System.out.println("prepareVirtualClasses");
-        for (int i = 0; i < tree.length; i++) {
-            JCompilationUnit cu = tree[i];
-            CClassPreparation.instance().prepareVirtualClasses(environment, cu);
+        try {
+            for (int i = 0; i < tree.length; i++) {
+                JCompilationUnit cu = tree[i];
+                CClassPreparation.instance().prepareVirtualClasses(environment, cu);
+            }
         }
+        catch(UnpositionedError e) {
+			reportTrouble(e);
+		}
     }
 
 
@@ -199,7 +221,7 @@ public class Main extends MainSuper implements Constants {
                 passMap.put(new Integer(level), pass);
             }
                                     
-            else if(node instanceof CompositeTypeNode) {                
+            if(node instanceof CompositeTypeNode) {                
                 pass.getTypesToMix().add(node);
             }
         } 
