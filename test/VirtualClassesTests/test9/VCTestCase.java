@@ -22,15 +22,16 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 9: Inner Class Polymorphism: start");
 
-		OuterB ob = new OuterB();
-		OuterA.InnerA ba = ob.new InnerA();
+		final OuterB ob = new OuterB();
+		final OuterA oa = ob;
+		oa.InnerA ba = (oa.InnerA)ob.new InnerA();
 
 		String resA = ((InterfaceA)ba).queryA();
 		String resB = ((InterfaceB)ba).queryB();
 		String resC = ba.queryC();
 		String resD = ba.queryD();
 		String resE = ((InterfaceE)ba).queryE();
-		String resF = ((OuterA.InnerB)ba).queryF();
+		String resF = ((oa.InnerB)ba).queryF();
 		String result = resA + ", " + resB + ", " + resC + ", " + resD + ", "
 							 + resE + ", " + resF;
 

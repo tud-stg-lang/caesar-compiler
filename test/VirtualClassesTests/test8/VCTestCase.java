@@ -22,16 +22,17 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 8: Inner Class Type Inheritance: start");
 
-		OuterB ob = new OuterB();
-		OuterB.InnerA ba = ob.new InnerA();
+		final OuterB ob = new OuterB();
+		final OuterA oa = ob;
+		final ob.InnerA ba = ob.new InnerA();
 
 		String resA = ((InterfaceA)ba).queryA();
 		String resB = ((InterfaceB)ba).queryB();
-		String resC = ((OuterA.InnerA)ba).queryC();
+		String resC = ((oa.InnerA)ba).queryC();
 		String resD = ba.queryD();
 		String resE = ((InterfaceE)ba).queryE();
-		String resF = ((OuterA.InnerB)ba).queryF();
-		String resF1= ((OuterB.InnerB)ba).queryF();
+		String resF = ((oa.InnerB)ba).queryF();
+		String resF1= ((ob.InnerB)ba).queryF();
 		String result = resA + ", " + resB + ", " + resC + ", " + resD + ", "
 							 + resE + ", " + resF + ", " + resF1;
 

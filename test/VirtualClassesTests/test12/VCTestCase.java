@@ -23,8 +23,10 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 12: Inner Factory Methods: start");
 
-		OuterA.InnerA aa = new OuterA().new InnerA();
-		OuterB.InnerB bb = new OuterB().new InnerB();
+		final OuterA oa = new OuterA();
+		final OuterB ob = new OuterB();
+		oa.InnerA aa = oa.new InnerA();
+		ob.InnerB bb = ob.new InnerB();
 
 		String resAAA = aa.new DeepestA().queryA();
 		String resAAB = aa.new DeepestB().queryA();
@@ -34,10 +36,11 @@ public class VCTestCase extends TestCase
 		String resBBC = bb.new DeepestC().queryA();
 		String resBBD = bb.new DeepestD().queryA();
 
-		aa = bb;
-		String resAAA1 = aa.new DeepestA().queryA();
-		String resAAB1 = aa.new DeepestB().queryA();
-		String resAAC1 = aa.new DeepestC().queryA();
+		final OuterA oba = ob;
+		oba.InnerA aaa = (oba.InnerA)bb;
+		String resAAA1 = aaa.new DeepestA().queryA();
+		String resAAB1 = aaa.new DeepestB().queryA();
+		String resAAC1 = aaa.new DeepestC().queryA();
 
 		String result = resAAA + ", " + resAAB + ", " + resAAC + ", " + resBBA + ", " + resBBB + ", " + resBBC + ", " + resBBD
 			+ ", " + resAAA1 + ", " + resAAB1 + ", " + resAAC1;
