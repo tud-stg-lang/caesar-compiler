@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.18 2004-10-28 13:06:26 aracic Exp $
+ * $Id: CaesarMessages.msg,v 1.19 2004-10-28 16:08:21 aracic Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -81,6 +81,14 @@ error	CCLASS_EXTENDS_ONLY_IDENTIFIER_ALLOWED
 error	CCLASS_SUPER_NOT_FOUND
 		"Can not find the super cclass in the direct enclosing class. If you are inheriting from an implicit Caesar type, please provide an empty redefinition in the direct enclosing class."
 
+error	TOPLEVEL_CCLASS_EXTENDS_TOPLEVEL_CLASS
+		"A top-level cclass may only extend from another top-level cclass."
+
+error	CCLASS_EXTENDS_FROM_CCLASS
+		"A cclass may only extend from another cclass."
+
+error	CCLASS_CANNOT_ABSTRACT
+		"Currently Caesar compiler does not support abstract cclass-es."
 
 // MISC
 

@@ -22,5 +22,8 @@ public interface CaesarMessages extends org.caesarj.util.Messages {
   MessageDescription	CCLASS_ARRAYS_NOT_ALLOWED = new MessageDescription("Currently arrays of Caesar classes are not supported.", null, 0);
   MessageDescription	CCLASS_EXTENDS_ONLY_IDENTIFIER_ALLOWED = new MessageDescription("Only single identifier allowed in the extends clause of an inner cclass.", null, 0);
   MessageDescription	CCLASS_SUPER_NOT_FOUND = new MessageDescription("Can not find the super cclass in the direct enclosing class. If you are inheriting from an implicit Caesar type, please provide an empty redefinition in the direct enclosing class.", null, 0);
+  MessageDescription	TOPLEVEL_CCLASS_EXTENDS_TOPLEVEL_CLASS = new MessageDescription("A top-level cclass may only extend from another top-level cclass.", null, 0);
+  MessageDescription	CCLASS_EXTENDS_FROM_CCLASS = new MessageDescription("A cclass may only extend from another cclass.", null, 0);
+  MessageDescription	CCLASS_CANNOT_ABSTRACT = new MessageDescription("Currently Caesar compiler does not support abstract cclass-es.", null, 0);
   MessageDescription	FATAL_ERROR = new MessageDescription("Fatal error! Everything is going to explode. Panic! Women and children first!", null, 0);
 }
