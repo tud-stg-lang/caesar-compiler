@@ -10,7 +10,7 @@
 	<classpathentry kind="lib" path="lib/java-getopt-1.0.9.jar"/>
 	<classpathentry kind="lib" path="lib/JFlex.jar"/>
 	<classpathentry kind="lib" path="generated"/>
-	<classpathentry kind="lib" path="test/AutomaticCaesarTests"/>
+	<classpathentry kind="lib" path="test/AspectDeploymentTests"/>
 	<classpathentry kind="lib" path="test/CompileAndRunResultsWeaverTest"/>
 	<classpathentry kind="lib" path="test/UppercaseServer"/>
 	<classpathentry kind="lib" path="lib/cjbuildtools.jar"/>
