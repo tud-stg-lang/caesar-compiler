@@ -1,3 +1,15 @@
+VC_14 - not tagged yet
+- Virtual Class scoping
+	- lookup has been changed
+		- if looking up in a mixin class, first we lookup in the direct mixin interface class
+		  if we can find there what we've searched for, we stop the lookup process,
+		  otherwise it is continues as usual
+		- in the cause the lookup algorithm finds more than one interface with the same identifier,
+		  we check if they are all mixin interfaces, if so, we return the first one (which is the
+		  most specific)
+		- see CClass.lookupClass(CCLass caller, String ident) for details (IVICA Tag)
+- ...
+
 VC_13 - 22.09.2004
 - Passing Caesar CLASSPATH to aspect weaver
 	
