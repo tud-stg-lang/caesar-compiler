@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.Logger;
 import org.caesarj.compiler.CaesarParser;
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcClassReader;
@@ -22,12 +23,15 @@ import org.caesarj.compiler.types.KjcSignatureParser;
 import org.caesarj.compiler.types.KjcTypeFactory;
 import org.caesarj.compiler.types.SignatureParser;
 import org.caesarj.tools.antlr.runtime.ParserException;
+import org.caesarj.util.PositionedError;
 
 public class FjTestCase extends TestCase 
 {
-	public String[][] errormessages = new String[][] { };
-	
+    private static Logger log = Logger.getLogger(FjTestCase.class);
+    
 	protected CompilerBase compiler;
+	
+	protected List messageList = new LinkedList();
 	
 	public FjTestCase(String name) {
 		super(name);
@@ -58,11 +62,20 @@ public class FjTestCase extends TestCase
 		System.out.println( "warning - " + getClass().getName() + ": " + message );
 	}
 	
+	
+	
 	/*
 	 * Compiles and runs given test file in a separate package
 	 */
-	protected void compileAndRun(String pckgName, String testCaseName) throws Throwable 
+	protected void compileAndRun(String pckgName, String testCaseName) throws Throwable {
+	    compileAndRun(pckgName, testCaseName, new String[0]);
+	}
+	
+	protected void compileAndRun(String pckgName, String testCaseName, String compilerErrorsToCheck[]) throws Throwable 
 	{
+	    // Clean up message list
+	    messageList.clear();
+
 		// Clean up output folder
 		removeClassFiles(pckgName);
 		
@@ -102,11 +115,33 @@ public class FjTestCase extends TestCase
 		// Compile test
 		compiler.run(args);
 		
-		// Execute test
-		System.out.println("Test "+testCaseName+" starts");
-				
-		Object generatedTest = Class.forName( "generated." + pckgName + "."+ testCaseName ).newInstance();
-		((TestCase)generatedTest).runBare();				
+		if(compilerErrorsToCheck.length > 0) {
+		    // test the errors here
+		    log.info("Test starts: checking errors");
+		    checkErrors(compilerErrorsToCheck);
+		}
+		else {
+			// Execute with Caesar compiled test itself
+		    log.info("Test starts: testing with Caesar compiled test");
+					
+			Object generatedTest = Class.forName( "generated." + pckgName + "."+ testCaseName ).newInstance();
+			((TestCase)generatedTest).runBare();
+		}
+	}	
+	
+	/**
+	 * Tests the string array with error messages passed by the compiler
+	 */
+	protected void checkErrors(String[] errors) {
+	    boolean passed = true;
+	    
+	    for (Iterator it = messageList.iterator(); it.hasNext() && passed;) {
+            PositionedError error = (PositionedError) it.next();
+            
+            boolean stop = true;
+        }
+	    
+	    assertEquals(passed, true);
 	}
 	
 	/*
@@ -114,6 +149,9 @@ public class FjTestCase extends TestCase
 	 */
 	protected void compileAndRun(String testCaseName) throws Throwable 
 	{
+	    // Clean up message list
+	    messageList.clear();
+	    
 		// Clean up output folder
 		removeClassFiles(null);
 		
@@ -205,6 +243,10 @@ public class FjTestCase extends TestCase
 			}
 		}
 	}
+
+    public void addMessage(PositionedError trouble) {
+        messageList.add(trouble);
+    }
 }
 
 /*
@@ -214,11 +256,12 @@ class CompilerMock extends Main
 {
 	protected Vector allUnits;
 	protected ClassReaderMock classReader;
+	protected FjTestCase testCase;
 	
 	public CompilerMock(FjTestCase test, PrintWriter p) 
 	{
 		super(test.getWorkingDirectory(), p);
-		
+		this.testCase = test;
 		allUnits = new Vector();		
 	}
 
@@ -233,6 +276,11 @@ class CompilerMock extends Main
 		return compilationUnit;
 	}
 
+    public void reportTrouble(PositionedError trouble) {
+        testCase.addMessage(trouble);
+        super.reportTrouble(trouble);
+    }
+	
 	protected KjcEnvironment createEnvironment(KjcOptions options) 
 	{
 		if (cachedEnvironment == null) {
