@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.30 2004-10-29 13:21:45 aracic Exp $
+ * $Id: CClass.java,v 1.31 2004-11-02 17:58:01 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -128,6 +128,13 @@ public abstract class CClass extends CMember
 
     public boolean isMixin() {
         return CModifier.contains(getModifiers(), ACC_MIXIN);
+    }
+    
+    public CClass getMixinInterface() {
+        if(!isMixin() || interfaces.length != 1) {
+            throw new InconsistencyException();
+        }
+        return interfaces[0].getCClass();
     }
 
 	/**
