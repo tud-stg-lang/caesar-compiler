@@ -114,6 +114,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 		JCompilationUnit[] tree = parseFiles(environment);
 
 		if (errorFound) {return false;}
+		transformCollaborationInterfaces(environment,tree);
 		prepareJoinpointReflection(tree);
 		prepareDynamicDeployment(environment, tree);
 		createAllHelperInterfaces(environment, tree);
@@ -232,6 +233,16 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 			//tree[i].accept(new DebugVisitor());
 		}
 	}
+
+	protected void transformCollaborationInterfaces(
+		KjcEnvironment environment,
+		JCompilationUnit[] tree) {
+
+		for (int i = 0; i < tree.length; i++) {
+			tree[i].accept(getCollaborationInteraceTransformation(environment));			
+		}
+	}
+
 
 	protected void prepareDynamicDeployment(
 		KjcEnvironment environment,
@@ -387,8 +398,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 	 * In addition, the following actions are performed:
 	 * - create empty CClass placeholder for every class (to be filled later)
 	 * - register types in classreader/allLoadedClasses 
-	 * - the transformation of collaboration interfaces happens in
-	 *   this phase, too, but this should be separated from parsing ASAP
 	 */
 	protected JCompilationUnit parseFile(
 		File file,
@@ -430,9 +439,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 		try {
 			unit = getJCompilationUnit(parser);
 			compilationUnits.add(unit);
-			
-			//TODO: make this a separate step outside parsing
-			unit.accept(getCollaborationInteraceTransformation(environment));
 
 		} catch (ParserException e) {
 			reportTrouble(parser.beautifyParseError(e));
