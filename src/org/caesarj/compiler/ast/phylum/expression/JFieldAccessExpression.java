@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JFieldAccessExpression.java,v 1.27 2005-03-03 14:47:52 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.28 2005-03-04 18:17:41 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -47,6 +47,7 @@ import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.family.ContextExpression;
 import org.caesarj.compiler.family.FieldAccess;
 import org.caesarj.compiler.family.Path;
+import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
@@ -304,7 +305,11 @@ public class JFieldAccessExpression extends JExpression {
 	                    prefix = new JOwnerExpression(getTokenReference(), local);
 	                }
 	                else {
-	                    prefix = new JTypeNameExpression(getTokenReference(), field.getOwnerType());
+	                    prefix = 
+	                        new JTypeNameExpression(
+	                            getTokenReference(),
+	                            new CClassNameType(field.getOwnerType().getQualifiedName())
+                            );
 	                }
 	            }
 	            else {
@@ -349,7 +354,11 @@ public class JFieldAccessExpression extends JExpression {
 	                }
 		        }
 		        else {
-		            prefix = new JTypeNameExpression(getTokenReference(), field.getOwnerType());
+		            prefix = 
+		                new JTypeNameExpression(
+		                    getTokenReference(), 
+		                    new CClassNameType(field.getOwnerType().getQualifiedName())
+	                    );
 		        }
 	        }
 	        
@@ -459,7 +468,8 @@ public class JFieldAccessExpression extends JExpression {
 		    ((ContextExpression)family.getHead()).adaptK(+1);
         }
         else {
-	        Path prefixFam = prefix.getThisAsFamily();
+	        Path prefixFam = prefix.getThisAsFamily();	        	       
+	        
 	        if(prefixFam != null && type.isReference() && !type.isArrayType()) {
 	            Path p = new FieldAccess(field.isFinal(), prefixFam.clonePath(), field.getIdent(), (CReferenceType)type);
 	            family = p.normalize();
