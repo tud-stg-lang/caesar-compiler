@@ -14,7 +14,6 @@
 	<classpathentry kind="var" path="JUNIT_HOME/junit.jar"/>
 	<classpathentry kind="lib" path="test/StructureModelTests"/>
 	<classpathentry kind="lib" path="test/CompilerErrorsTests"/>
-	<classpathentry kind="lib" path="test/TypeSystemTests"/>
 	<classpathentry kind="lib" path="tests/bin"/>
 	<classpathentry kind="lib" path="lib/jdom.jar"/>
 	<classpathentry kind="output" path="bin"/>
