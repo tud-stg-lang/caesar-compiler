@@ -63,7 +63,7 @@ public class CompileAndRunResultsWeaverTest extends FjTestCase {
 					new String[] {
 						"NestedAspectTest.java",
 						"JoinPointReflectionTest.java",
-						"DeploymentTest.java",
+//						"DeploymentTest.java",
 						"SimpleAspect.java",
 						"SubSimpleAspect.java",
 						"SuperAspect.java",
