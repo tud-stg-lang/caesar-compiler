@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CReferenceType.java,v 1.3 2004-03-29 12:05:29 aracic Exp $
+ * $Id: CReferenceType.java,v 1.4 2004-04-01 15:05:32 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -33,7 +33,7 @@ import org.caesarj.util.UnpositionedError;
 /**
  * This class represents class type in the type structure
  */
-public abstract class CReferenceType extends CType {
+public class CReferenceType extends CType {
 
   // ----------------------------------------------------------------------
   // CONSTRUCTORS
