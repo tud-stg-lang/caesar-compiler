@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentNameType.java,v 1.12 2005-01-28 15:10:41 klose Exp $
+ * $Id: CDependentNameType.java,v 1.13 2005-02-09 16:49:16 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -165,7 +165,13 @@ public class CDependentNameType extends CClassNameType
                     throw new UnpositionedError(CaesarMessages.PLAINTYPE_WITH_PATH);
                 }
                 
-                CDependentType dt = new CDependentType((CContext)context, k, expr, t);                               
+                CDependentType dt = new CDependentType((CContext)context, k, expr, t);
+                
+                // it is forbidden for type paths to contain java elements
+                if(dt.getPath().containsJavaElements()) {
+                    throw new UnpositionedError(CaesarMessages.INNER_PLAIN_JAVA_OBJECTS_IN_PATH);
+                }
+                
                 return dt;
             }
 
