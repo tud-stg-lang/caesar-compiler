@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.9 2003-08-25 14:46:31 werner Exp $
+ * $Id: Caesar.g,v 1.10 2003-08-27 22:38:42 werner Exp $
  */
 
 /*
@@ -2178,8 +2178,9 @@ jPostfixExpression[]
       "class"
         { self = new JClassExpression(sourceRef, self, 0); }
     |    
+      self = jWrapperDestructorExpression[self]
+    |      
       self = jQualifiedNewExpression[self]
-   
     )
   |
     // allow ClassName[].class
@@ -2249,6 +2250,8 @@ jPrimaryExpression []
   "null"
     { self = new JNullLiteral(sourceRef); }
 |
+   self = jWrapperDestructorExpression[null]
+|
   ATAT LPAREN ( self = jExpression[] )? RPAREN
    {
      if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
@@ -2269,6 +2272,19 @@ jPrimaryExpression []
   ( LBRACK RBRACK { bounds++; } )*
   DOT "class"
     { self = new JClassExpression(buildTokenReference(), type, bounds); }
+;
+
+jWrapperDestructorExpression [JExpression prefix]
+  returns [JExpression self = null]
+{
+  CType				type;
+  JExpression[]			args;
+  TokenReference		sourceRef = buildTokenReference();
+}
+:
+  WDESTRUCTOR type = jTypeName[]
+  LPAREN args = jArgList[] RPAREN
+  { self = new CciWrapperDestructorExpression(sourceRef, prefix, (CReferenceType) type, args); }
 ;
 
 jUnqualifiedNewExpression []

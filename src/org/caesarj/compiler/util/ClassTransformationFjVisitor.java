@@ -167,10 +167,9 @@ public class ClassTransformationFjVisitor extends FjVisitor
 		// virtual classes need to now in order
 		// to perform the proper tranformations
 		self.setOwnerDeclaration(owner.get());
-//		if (owner.get() instanceof FjCleanClassDeclaration)
-//		{
-//			self.addAdaptMethod();
-//		}
+		//Insert adapt method if the owner is clean
+		if (owner.get() instanceof FjCleanClassDeclaration)
+			self.addAdaptMethod();
 
 		super.visitFjVirtualClassDeclaration(
 			self,

@@ -4,7 +4,7 @@ public class CastImpl {
 	public static Object checkFamily( Object expectedFamily, Child child )
 		throws RuntimeException {
 		
-		if( child._getFamily() != expectedFamily )
+		if( child._getTail()._getFamily() != expectedFamily )
 			throw new RuntimeException( "cast to given family not possible" );
 		else
 			return child;

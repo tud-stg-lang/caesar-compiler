@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldDeclaration.java,v 1.2 2003-08-26 10:15:18 werner Exp $
+ * $Id: JFieldDeclaration.java,v 1.3 2003-08-27 22:46:31 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -183,7 +183,6 @@ public class JFieldDeclaration extends JMemberDeclaration {
 				variable.getType(),
 				isDeprecated(),
 				synthetic));
-		// not synthetic
 
 		return (CSourceField) getField();
 	}

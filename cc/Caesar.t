@@ -66,6 +66,8 @@
 @literal	provides
 @literal	wraps
 @literal	wrappee
+@operator	WDESTRUCTOR	"#"
+
 
 @literal	after
 @literal	around
@@ -126,6 +128,7 @@
 @operator	SR_ASSIGN	">>="
 @operator	STAR	"*"
 @operator	STAR_ASSIGN	"*="
+
 
 @token		CHARACTER_LITERAL	"a character literal (inside simple quote)"
 @token		IDENT	"an identifier"

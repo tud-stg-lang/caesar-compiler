@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.8 2003-08-26 14:45:05 werner Exp $
+ * $Id: CaesarMessages.msg,v 1.9 2003-08-27 22:38:42 werner Exp $
  */
 
 package org.caesarj.compiler
@@ -224,21 +224,23 @@ error   WRAPPER_DEFINES_CONSTRUCTOR
 error   NON_BINDING_WRAPPER
 		"Class \"{0}\" cannot define \"wraps\" clause because it does not bind a collaboration interface."
 
+error   WRAPPER_DESTRUCTOR_NOT_FOUND
+		"Cannot find wrapper \"{0}\" with matching parameters."
+
 error   SUPER_CLASS_WRAPS
 		"Class \"{0}\" cannot define \"wraps\" clause because its super class already wraps a class."
-
 
 error   CLASS_DOES_NOT_WRAP
 		"Class \"{0}\" does not wrap any class, so \"wrappee\" is not available."
 
-error   VIRTUAL_CALLING_PRIVATE_OUTER
-		"Virtual or override class \"{0}\" cannot access private methods of the enclosing class."
-
-error   VIRTUAL_ACCESSING_OUTER_FIELD
-		"Virtual or override class \"{0}\" cannot access fields of the enclosing class."
+error   VIRTUAL_ACCESSING_OUTER_PRIVATE
+		"Virtual or override class \"{0}\" cannot access private methods or fields of the enclosing class."
 
 error   VIRTUAL_CALLING_OUTER_OUTER
 		"Virtual or override class \"{0}\" cannot call methods or access fields defined in the enclosing class of its outer class."
 
 error   WEAVELET_NESTED
 		"Weavelet class \"{0}\" cannot be an inner class."	
+
+error   METHOD_NOT_FOUND_INSIDE_VIRTUAL
+		"Cannot find method \"{0}\". Maybe it is a private method in the clean eclosing class that is not accessible inside virtual classes."

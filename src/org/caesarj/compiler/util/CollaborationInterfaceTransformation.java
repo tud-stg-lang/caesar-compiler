@@ -3,7 +3,6 @@ package org.caesarj.compiler.util;
 import org.caesarj.classfile.Constants;
 import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.Compiler;
-import org.caesarj.compiler.ParseClassContext;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.ast.CciInterfaceDeclaration;
 import org.caesarj.compiler.ast.CciWeaveletClassDeclaration;

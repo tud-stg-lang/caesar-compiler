@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CMethodNotFoundError.java,v 1.1 2003-07-05 18:29:38 werner Exp $
+ * $Id: CMethodNotFoundError.java,v 1.2 2003-08-27 22:46:06 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -47,7 +47,7 @@ public class CMethodNotFoundError extends PositionedError {
     super(where, KjcMessages.METHOD_NOT_FOUND, buildSignature(name, types));
     this.caller = caller;
   }
-
+  
   private static String buildSignature(String name, CType[] types) {
     StringBuffer	buffer = new StringBuffer();
 

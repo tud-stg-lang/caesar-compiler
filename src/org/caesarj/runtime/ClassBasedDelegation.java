@@ -1,6 +1,7 @@
 package org.caesarj.runtime;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -11,6 +12,29 @@ import java.util.Vector;
  * @author andreas
  */
 public class ClassBasedDelegation {
+	
+	/**
+	 * Map for the primitive type classes.
+	 * It is because a method can be defined with a primitive parameter.
+	 * With Class.forName("<primitive>") raises an exception, so it first
+	 * look up in this map when creating the class representation 
+	 * of method parameters.
+	 */
+	private static HashMap primitives;
+	
+	static
+	{
+		//Here they are initialized.
+		primitives = new HashMap();
+		primitives.put("byte", Byte.TYPE);
+		primitives.put("char", Character.TYPE);
+		primitives.put("short", Short.TYPE);
+		primitives.put("int", Integer.TYPE);
+		primitives.put("long", Long.TYPE);
+		primitives.put("double", Double.TYPE);
+		primitives.put("float", Float.TYPE);
+		primitives.put("boolean", Boolean.TYPE);
+	}
 	
 	/**
 	 * returns set of methods defined
@@ -100,8 +124,17 @@ public class ClassBasedDelegation {
 			StringTokenizer t = new StringTokenizer( uniqueMethodId, "/" );
 			String methodName = t.nextToken();
 			Vector parameters = new Vector();
+			
 			while( t.hasMoreTokens() ) {
-				parameters.add( Class.forName( t.nextToken() ) );
+				String parameterTypeName = t.nextToken();
+				//Here, first tries the primitives...
+				Class parameterType = (Class) primitives.get(parameterTypeName);
+				if (parameterType == null)
+				{
+					//It is not a primitive, so it is a class! :)
+					parameterType = Class.forName(parameterTypeName);
+				}
+				parameters.add(parameterType);
 			}
 			Class[] classParams = new Class[ parameters.size() ];
 			for( int i = 0; i < parameters.size(); i++ ) {
