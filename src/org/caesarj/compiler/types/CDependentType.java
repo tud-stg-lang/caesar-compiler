@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentType.java,v 1.16 2005-02-15 18:31:48 aracic Exp $
+ * $Id: CDependentType.java,v 1.17 2005-02-16 13:24:47 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -91,9 +91,12 @@ public class CDependentType extends CReferenceType {
             // this case handles dependent type without an explict path
             return plainType.isAssignableTo(context, dest);
         }
-        else if(dest.isClassType() && dest.getCClass().isObjectClass()) {
-            // assignable to Object
-            return true;
+        else if(
+            dest.isClassType() 
+            && (dest.getCClass().isObjectClass() || dest.getCClass().isCaesarObjectClass())
+        ) {        
+        	// assignable to Object
+        	return true;        
         }
         
         return false;
