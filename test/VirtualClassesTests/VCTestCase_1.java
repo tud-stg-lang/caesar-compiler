@@ -1,7 +1,8 @@
 package generated;
 
-import junit.framework.TestCase;
-import java.util.LinkedList;
+import java.awt.Color;
+import junit.framework.*;
+import java.util.*;
 
 /**
  * Test & in inner class
@@ -21,60 +22,171 @@ public class VCTestCase_1 extends TestCase {
 	}       
 }
 
+
 public cclass _VCTestCase_1 {
     
+    public G $newG() {
+    	return new G();
+    }
+    
+    public ColG $newColG() {
+    	return new ColG();
+    }
+    
     public void test() {
-        G g = new _VCTestCase_1_Impl.ColG_Impl();
-        G.UEdge ue = g.$newUEdge();
+    	// final ColG cg = new this.ColG();
+        final ColG cg = $newColG();
         
-        System.out.println("***"+ue.getClass().getName());
-        g.doSomethingWithEdge(ue);
-        System.out.println("***");
+    	doSomeGraphAlg(cg);
+	   	doSomeColGraphAlg(cg);
     }
     
     
-    public static cclass G {
-        public void doSomethingWithEdge(G.UEdge edge) {
-            System.out.println(edge.getName());
+    // some G algorithm
+    public void doSomeGraphAlg(final G g) {
+    	/*** should be *******************
+    	g.Node n1 = new g.Node(...);
+    	g.Node n2 = new g.Node(...);
+    	g.UEdge ue = new g.UEdge(...);
+    	**********************************/
+    	G.Node n1 = g.$newNode("n1");
+    	G.Node n2 = g.$newNode("n2");
+		G.UEdge ue = g.$newUEdge("ue1", n1, n2);
+		
+		System.out.println("n1->n2 ? "+ue.isConnecting(n1, n2));
+		System.out.println("n2->n1 ? "+ue.isConnecting(n2, n1));
+    }
+
+    // some CG algorithm
+    public void doSomeColGraphAlg(final ColG cg) {
+    	ColG.Edge e = (ColG.Edge)cg.getEdge("ue1"); // <- cg.Edge e = cg.getEdge("ue1");
+    	e.setColor(Color.RED);
+    	
+    	System.out.println(e);
+    }
+
+
+    /**
+     * G
+     */
+    public cclass G {
+
+        public G.Node $newNode(String name) {
+            return new G.Node(name);
         }
         
-        public G.UEdge $newUEdge() {
-            return new G_Impl.UEdge_Impl();
+        public G.Edge $newEdge(String name, G.Node n1, G.Node n2) {
+            return new G.Edge(name, n1, n2);
         }
         
-        public static cclass Edge {
+        public G.UEdge $newUEdge(String name, G.Node n1, G.Node n2) {
+            return new G.UEdge(name, n1, n2);
+        }
+
+		public G.Node getNode(String name) {
+			return (G.Node)nodeMap.get(name);
+		}
+
+		public G.Edge getEdge(String name) {
+			return (G.Edge)edgeMap.get(name);
+		}
+        
+        public cclass Edge {
+			private String name;
+			private G.Node n1, n2;
+        
+        	public Edge(String name, G.Node n1, G.Node n2) {
+        		this.name = name;
+        		this.n1 = n1;
+        		this.n2 = n2;
+        		edgeMap.put(name, this);
+        	}
+        	
+        	public boolean isConnecting(G.Node n1, G.Node n2) {
+        		return this.n1==n1 && this.n2==n2;
+        	}
+        
             public String getName() {
-                return "name";
+                return name;
             }
         }
         
-        public static cclass UEdge extends Edge {
-            
+        public cclass UEdge extends Edge {
+        	public UEdge(String name, G.Node n1, G.Node n2) {
+        		super(name, n1, n2);
+        	}
+        	
+        	public boolean isConnecting(G.Node n1, G.Node n2) {
+        		return 
+        			super.isConnecting(n1,n2)
+        			|| super.isConnecting(n2, n1);
+        	}
         }
+        
+        public cclass Node {
+        	private String name;
+        	
+        	public Node(String name) {
+				this.name = name;
+				nodeMap.put(name, this);
+        	}
+        	
+        	public String getName() {
+        		return name;
+        	}
+        }
+        
+        private HashMap nodeMap = new HashMap();
+        private HashMap edgeMap = new HashMap();
     }
     
     
-    public static cclass ColG extends G {
-        public void doSomethingWithEdge(G.UEdge edge) {
-            ColG.UEdge e = (ColG.UEdge)edge;
-            System.out.println(e.getName());
-            System.out.println(e.getColor());
+    /**
+     * ColG
+     */
+    public cclass ColG extends G {
+    
+        public G.Node $newNode(String name) {
+            return new ColG.Node(name);
         }
+        
+        public G.Edge $newEdge(String name, G.Node n1, G.Node n2) {
+            return new ColG.Edge(name, n1, n2);
+        }
+        
+        public G.UEdge $newUEdge(String name, G.Node n1, G.Node n2) {
+            return new ColG.UEdge(name, n1, n2);
+        }
+        
 
-        public G.UEdge $newUEdge() {
-            return new ColG_Impl.UEdge_Impl();
-        }        
-
-        public static cclass Edge extends G.Edge {
-            public java.awt.Color getColor() {
-                return java.awt.Color.BLACK;
+        public cclass Edge extends G.Edge {
+        	
+        	private Color color = null;
+        
+        	public Edge(String name, G.Node n1, G.Node n2) {
+        		super(name, n1, n2);
+        	}
+        
+        	public void setColor(Color color) {
+        		this.color = color;
+        	}
+        
+            public Color getColor() {
+                return color;
             }
         }
         
-        public static cclass UEdge extends Edge & G.UEdge {
-            public UEdge() {
-                super();
+        public cclass UEdge extends Edge & G.UEdge {
+        	public UEdge(String name, G.Node n1, G.Node n2) {
+        		// TODO -> super(name, n1, n2);
+				super(_VCTestCase_1.ColG.this, name, n1, n2);
             }
+        }
+        
+        public cclass Node extends G.Node {
+        	public Node(String name) {
+        		super(name);
+        	}
         }
     }
 }
