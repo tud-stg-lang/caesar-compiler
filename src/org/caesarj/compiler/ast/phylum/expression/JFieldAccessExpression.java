@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JFieldAccessExpression.java,v 1.24 2005-02-15 18:30:47 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.25 2005-02-16 16:34:44 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -44,6 +44,7 @@ import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceField;
+import org.caesarj.compiler.family.ContextExpression;
 import org.caesarj.compiler.family.FieldAccess;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CReferenceType;
@@ -444,15 +445,24 @@ public class JFieldAccessExpression extends JExpression {
     
     //IVICA: calc family type
     try {
-        // store family here 
-        Path prefixFam = prefix.getThisAsFamily();
-        if(prefixFam != null && type.isReference()) {
-            Path p = new FieldAccess(prefixFam.clonePath(), field.getIdent(), (CReferenceType)type);
-            family = p.normalize();
+        // store family here
+        if(getIdent().equals(JAV_OUTER_THIS)) {
+            thisAsFamily = prefix.getThisAsFamily().clonePath(); 
+            ((ContextExpression)thisAsFamily.getHead()).adaptK(+1);
             
-            if(field.isFinal()) {
-                thisAsFamily = p;
-            }
+            family = thisAsFamily.clonePath();
+		    ((ContextExpression)family.getHead()).adaptK(+1);
+        }
+        else {
+	        Path prefixFam = prefix.getThisAsFamily();
+	        if(prefixFam != null && type.isReference()) {
+	            Path p = new FieldAccess(prefixFam.clonePath(), field.getIdent(), (CReferenceType)type);
+	            family = p.normalize();
+	            
+	            if(field.isFinal()) {
+	                thisAsFamily = p;
+	            }
+	        }
         }
     }
     catch (UnpositionedError e) {
