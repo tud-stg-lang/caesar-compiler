@@ -9,6 +9,8 @@ import org.caesarj.kjc.CReferenceType;
 public class CciConstants
 	extends FjConstants
 {
+	public static final int SUPER_TYPE_INDEX = 1;
+	public static final int CHILD_TYPE_INDEX = 0;
 	public static final String ORDINARY_PARAMETER_PREFIX = 
 		(SEPERATOR + "param").intern();
 	public static final int DEFAULT_NUMERIC_RETURN = 0;
@@ -145,8 +147,8 @@ public class CciConstants
 	}
 
 	public static String removeCaesarInternalNames(String message) {
-		message = FjConstants.removeFamilyJ(message);
-		message = message.replaceAll(WRAPPER_CREATION_PREFIX, "" );
+		//message = FjConstants.removeFamilyJ(message);
+		//message = message.replaceAll(WRAPPER_CREATION_PREFIX, "" );
 		return message;
 	}
 		

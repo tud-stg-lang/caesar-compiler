@@ -124,6 +124,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 		if (!options.beautify) {
 			long lastTime = System.currentTimeMillis();
 
+				
 			//Handle Join Point Reflection.
 			for (int i = 0; i < tree.length; i++) {
 				tree[i].accept(new JoinPointReflectionVisitor());
@@ -135,6 +136,10 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 				cu.prepareForDynamicDeployment(environment);
 			}
 			
+			for (int i = 0; i < tree.length; i++) {
+				tree[i].accept(getClassTransformation(environment));
+			}
+						
 			System.out.println("JOIN:");
 			for (int count = 0; count < tree.length; count++) {
 				join(tree[count]);
@@ -235,6 +240,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 		return true;
 	}
 
+	
 	protected void checkInterface(JCompilationUnit cunit) {
 		cunit.accept(getMethodTransformation(cunit.getEnvironment()));
 		super.checkInterface(cunit);
@@ -383,9 +389,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 			unit = getJCompilationUnit(parser);
 			compilationUnits.add(unit);
 			unit.accept(getCollaborationInteraceTransformation(environment));
-			//unit.accept(new DebugVisitor());
-			unit.accept(getClassTransformation(environment));
-			
+
 		} catch (ParserException e) {
 			reportTrouble(parser.beautifyParseError(e));
 			unit = null;
