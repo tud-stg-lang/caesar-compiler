@@ -46,10 +46,10 @@ public cclass AST  {
 	}
 
 	public cclass AddExpression extends Expression {
-		protected AST.Expression r;
-		protected AST.Expression l;
+		protected Expression r;
+		protected Expression l;
 
-		public AST.Expression init(AST.Expression l, AST.Expression r) {
+		public Expression init(Expression l, Expression r) {
 			this.r = r;
 			this.l = l;
 			return this;
@@ -59,7 +59,7 @@ public cclass AST  {
 	public cclass Literal extends Expression {
 		protected int val;
 
-		public AST.Literal init(int val) {
+		public Literal init(int val) {
 			this.val = val;
 			return this;
 		}
@@ -109,8 +109,8 @@ public cclass NegAST extends AST {
 	public cclass Expression {}
 
 	public cclass NegExpression extends Expression {
-		protected NegAST.Expression expr;
-		public void init(NegAST.Expression expr) {
+		protected Expression expr;
+		public void init(Expression expr) {
 			this.expr = expr;
 		}
 	}

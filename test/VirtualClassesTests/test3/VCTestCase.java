@@ -20,10 +20,10 @@ public class VCTestCase extends TestCase {
         System.out.println("-------> VCTest 3: start");
 
         TestCase3 testCase = new TestCase3();
-	    TestCase3.G g = testCase.new CWG(); 	// testCase.G g = testCase.$newCG();
-        TestCase3.G.N n1 = g.new N(); 		// g.N n1 = g.new N();
-        TestCase3.G.N n2 = g.new N(); 		// g.N n2 = g.new N();
-        TestCase3.G.E e = g.new UE(); 	    // g.E = g.new E();
+        testCase.G g = testCase.new CWG();
+        g.N n1 = g.new N();
+        g.N n2 = g.new N();
+        g.E e = g.new UE();
 
         n1.setName("n1");
         n2.setName("n2");

@@ -21,8 +21,8 @@ public class VCTestCase extends TestCase {
         System.out.println("-> VCTest 2: start");
 
         TestCase2 testCase = new TestCase2();
-	    TestCase2.G g = testCase.new CG(); 		// testCase.G g = testCase.$newCG();
-        TestCase2.G.E e = g.new UE(); 	// g.E = g.new E();
+        testCase.G g = testCase.new CG();
+        g.E e = g.new UE();
         e.init("n1", "n2");
 
 		System.out.println("connecting: "+e.isConnecting("n1", "n2"));

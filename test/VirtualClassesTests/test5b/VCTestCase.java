@@ -25,8 +25,8 @@ public class VCTestCase extends TestCase
 		System.out.println("-------> VCTest 5b: Outer Class Access: start");
 
 		A a = new A();
-		A.B b = a.new B();
-		A.B.C c = b.new C();
+		a.B b = a.new B();
+		b.C c = b.new C();
 
 		a.a();
 		b.b();
