@@ -5,11 +5,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.util.InconsistencyException;
 
 /**
- * This Class mixes a list of CClass Objects to CMixedClass
+ * This Class mixes a list of CClass Objects to a mixin List CClass[]
  * 
  * @author Ivica Aracic
  */
@@ -23,36 +22,28 @@ public class ExportMixer {
     private ExportMixer() {
     }
     
-    // CTODO export mixer not implemented yet
     /**
      * mixes a List of Classes (e.g. A & B & C)
      */
-    public CClass mix(CClass[] classes) throws ExportMixerException {
-        
-        if(classes.length == 0)
-            throw new InconsistencyException("we need at least one class in the classList");
-        
-        if(classes.length == 1)
-            return classes[0];
-        
+    public CClass[] mix(CClass[] classes) throws ExportMixerException {        
+        if(classes.length <= 1)
+            throw new InconsistencyException("mixer algorithm needs at least two classes as input");
+
         // generate mixin lists
         List[] mixinLists = new List[classes.length];
         
         for(int i=0; i<classes.length; i++) {
-            // CTODO support for CSourceClass
-            if(!(classes[i] instanceof CBinaryClass))
-                throw new InconsistencyException("ExportMixer supports only CBinaryClass");
             mixinLists[i] = generateMixinList(classes[i]);
         }
         
         // mix pairwise from right to left
         // CTODO: 1) & associative?  2) mix from left to right or from right to left
-        List mixed = mixinLists[mixinLists.length-1];
+        List mixed = mixinLists[mixinLists.length-1];        
         for(int i=mixinLists.length-2; i>=0; i--) {
              mixed = mix(mixinLists[i], mixed);
         }
         
-        return generateExportFromMixinList(mixed);
+        return (CClass[])mixed.toArray(new CClass[]{});
     }
     
     /**
@@ -109,26 +100,7 @@ public class ExportMixer {
         }
         return false;
     }
-    
-    /**
-     * This method takes a list as input and transforms it to CClass
-     * Algorithm in short: Create delegate and and replace supertype
-     */
-    private CClass generateExportFromMixinList(List mixinList) {        
-        CClass[] l = (CClass[])mixinList.toArray(new CClass[]{});
-        int i = l.length-2;     
-/*
-        CClass res = l[i].cloneAndReplaceSuperType(new CReferenceType(l[i+1]));
         
-        while(i >= 0) {
-            res = l[i--].cloneAndReplaceSuperType(new CReferenceType(res));
-        }
-        
-        return res;
-*/
-        return (CClass)mixinList.get(0);
-    }
-    
     /**
      * Generates Mixin List from a export object
      */
@@ -141,5 +113,38 @@ public class ExportMixer {
         }
         return res;
     }
-
+    
+    public String generateClassName(CClass[] mixins) {
+        StringBuffer packageNames = new StringBuffer();
+        StringBuffer className    = new StringBuffer();
+        for(int i=0; i<mixins.length; i++) {
+            
+            className.append('_');
+            className.append(mixins[i].getIdent());
+            
+            if(mixins[i].getPackage().length() > 0)
+                packageNames.append(mixins[i].getPackage());
+            else 
+                packageNames.append("(default)");
+        }
+        
+        className.append('_');
+        className.append(generateHashCode(packageNames.toString()));
+        
+        return 
+            className.toString();            
+    }
+    
+    public String generateHashCode(String packageNames) {
+        if(packageNames.length() == 0)
+            throw new InconsistencyException("packageNames String must not be empty!");
+            
+        // CTODO ExportMixer needs HashAlgorithm 
+        while(packageNames.length() < 10) {
+            packageNames += packageNames;
+        }
+        
+        return packageNames.substring(0, 10);
+    }
 }
+
