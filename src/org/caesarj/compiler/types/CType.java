@@ -15,14 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CType.java,v 1.6 2005-01-13 18:20:56 klose Exp $
+ * $Id: CType.java,v 1.7 2005-01-14 17:47:24 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
 
 import org.caesarj.compiler.constants.Constants;
-import org.caesarj.compiler.context.CClassContext;
-import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.util.InconsistencyException;
@@ -34,37 +32,6 @@ import org.caesarj.util.Utils;
  * Root for type hierarchy
  */
 public abstract class CType extends Utils implements Constants {
-
-    /**
-     * Calculate the number of steps to the outer context needed to find
-     * this type.
-     * @param in The context to search in
-     * @return The number of steps
-     */
-    public int getDefDepth(CContext in){
-        int k = 0;	
-        CClass myType = getCClass();
-        
-        // find class context
-        while ( !(in instanceof CClassContext) ){
-            k++;
-            in = in.getParentContext();
-        }
-        
-        CClassContext classContext = (CClassContext) in;
-        CClass 	ctx = classContext.getCClass(),
-        		parent = myType.getOwner();
-        
-        while( ctx != parent ){
-            if (ctx == null){
-                throw new InconsistencyException( ""+myType+" cannot be found in "+in);
-            }
-            ctx = ctx.getOwner();
-            k++;
-        }
-        
-        return k;
-    }
     
   // ----------------------------------------------------------------------
   // CONSTRUCTORS

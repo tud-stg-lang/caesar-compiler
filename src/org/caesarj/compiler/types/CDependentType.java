@@ -1,6 +1,6 @@
 package org.caesarj.compiler.types;
 
-import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
@@ -17,20 +17,27 @@ public class CDependentType extends CReferenceType {
     
     private CType plainType;    /** static type of the */
     
-    private JFieldAccessExpression family; /** family expression */
+    private JExpression family; /** family expression */
     
     private int k = 0;          /** ctx(k); determines how many steps to go out 
                                     of the current context */
               
     
 ///    public CDependentType(CClassContext pos, int k, JFieldAccessExpression family, CType staticType) {
-    public CDependentType(int k, JFieldAccessExpression family, CType staticType) {
+    public CDependentType(int k, JExpression family, CType staticType) {
         this.k = k;
         this.family = family;
         this.plainType = staticType;
+        System.out.println("new CDependentType: k="+k);
     }
     
-    
+    /**
+     *
+     */
+
+    public Path getPath(CContext context) {
+        return Path.createFrom(context, family);
+    }
 
     public CClass getCClass() {
         return plainType.getCClass();
@@ -78,8 +85,10 @@ public class CDependentType extends CReferenceType {
                 // TODO create static objects and compare
                 CDependentType rightType = (CDependentType) dest;
                 
+                /*
                 Path 	rightPath  = Path.createFrom(ctx, rightType.getFamily() ),
                 		leftPath   = Path.createFrom(ctx, this.getFamily() );
+                */
                
                 /*
                 StaticObject 	rightSO = rightPath.type(ctx),
@@ -113,7 +122,7 @@ public class CDependentType extends CReferenceType {
         return k;
     }
     
-    public JFieldAccessExpression getFamily() {
+    public JExpression getFamily() {
         return family;
     }
     

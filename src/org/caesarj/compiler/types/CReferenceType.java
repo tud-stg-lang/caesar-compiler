@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CReferenceType.java,v 1.8 2004-10-17 20:59:36 aracic Exp $
+ * $Id: CReferenceType.java,v 1.9 2005-01-14 17:47:24 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -23,9 +23,13 @@ package org.caesarj.compiler.types;
 import java.util.Hashtable;
 
 import org.caesarj.compiler.CompilerBase;
+import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CBadClass;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.family.ContextExpression;
+import org.caesarj.compiler.family.Path;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.SimpleStringBuffer;
 import org.caesarj.util.UnpositionedError;
@@ -35,6 +39,42 @@ import org.caesarj.util.UnpositionedError;
  */
 public class CReferenceType extends CType {
 
+    /**
+     * Calculate the number of steps to the outer context needed to find
+     * this type.
+     * @param in The context to search in
+     * @return The number of steps
+     */
+    public int getDefDepth(CContext in){
+        int k = 0;	
+        CClass myType = getCClass();
+        
+        // find class context
+        while ( !(in instanceof CClassContext) ){
+            k++;
+            in = in.getParentContext();
+        }
+        
+        CClassContext classContext = (CClassContext) in;
+        CClass 	ctx = classContext.getCClass(),
+        		parent = myType.getOwner();
+        
+        while( ctx != parent ){
+            if (ctx == null){
+                throw new InconsistencyException( ""+myType+" cannot be found in "+in);
+            }
+            ctx = ctx.getOwner();
+            k++;
+        }
+        
+        return k;
+    }
+    
+    
+    public Path getPath(CContext context) {
+        return new ContextExpression(getDefDepth(context), null);
+    }
+    
 	// ----------------------------------------------------------------------
 	// CONSTRUCTORS
 	// ----------------------------------------------------------------------

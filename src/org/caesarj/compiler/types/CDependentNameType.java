@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CDependentNameType.java,v 1.1 2005-01-14 13:33:48 aracic Exp $
+ * $Id: CDependentNameType.java,v 1.2 2005-01-14 17:47:24 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -34,7 +34,7 @@ import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.util.InconsistencyException;
+import org.caesarj.compiler.family.Path;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
@@ -79,8 +79,6 @@ public class CDependentNameType extends CClassNameType
 	    
 	    if (expr != null){
             try {
-                int k=0;
-                
                 CContext ctx = (CContext)context;
                 CExpressionContext ectx = null;
                 //CClassContext classContext;
@@ -124,6 +122,7 @@ public class CDependentNameType extends CClassNameType
 	                //
 	                // find the first field access in the chain... x.y.z -> x
 	                //
+	                /*
 	                JFieldAccessExpression fieldAccessExpr = (JFieldAccessExpression)expr;
 	                while(fieldAccessExpr.getPrefix() instanceof JFieldAccessExpression) {
 	                    fieldAccessExpr = (JFieldAccessExpression)fieldAccessExpr.getPrefix();
@@ -136,15 +135,14 @@ public class CDependentNameType extends CClassNameType
 	                    current = current.getOwner();
 	                    k++;
 	                }
+	                */
+	                int k = Path.calcK((CContext)context, expr);
 	                
 	                //
 	                // create and return new CDependentType
 	                //
 	                CType t = clazz.getAbstractType().checkType(context);
-	                CDependentType dt = new CDependentType( 	                        					
-	                        					k, // TODO k not needed in ctor (is always 0)
-	                        					(JFieldAccessExpression)expr, 
-	                        					t);
+	                CDependentType dt = new CDependentType(k, expr, t);
 	                //System.out.println("Resolved dp "+dt);
 	                return dt;
                 }

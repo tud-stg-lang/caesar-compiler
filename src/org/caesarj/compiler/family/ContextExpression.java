@@ -1,8 +1,6 @@
 package org.caesarj.compiler.family;
 
-import org.caesarj.compiler.context.CClassContext;
-import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.util.InconsistencyException;
 
 /**
@@ -12,13 +10,11 @@ import org.caesarj.util.InconsistencyException;
  */
 public class ContextExpression extends Path {
 
+    private Path prefix;
     private int k = 0;
     
-    public ContextExpression() {
-        this(0);
-    }
-
-    public ContextExpression(int k) {
+    public ContextExpression(int k, CReferenceType type) {
+        super(type);
         this.k = k;
         
         if(k < 0)
@@ -27,34 +23,6 @@ public class ContextExpression extends Path {
         
     public int getK() {
         return k;
-    }
-    
-//    public StaticObject type(CClass context) {
-//    public StaticObject type(StaticPath sp){
-    public StaticObject type(CContext context) {
-        int n = context.getDepth(); //sp.getLength();
-        if (k > n)
-            throw new InconsistencyException();
-        if (k == n){
-            return new StaticObject(null, null);
-        }
-        else {
-           
-            CContext ctx = context;
-//            for (int p=0; p<k; ){
-            while (ctx.getDepth() > n-k){
-                ctx = ctx.getParentContext();
-            }
-            
-            if (ctx instanceof CClassContext){
-                CClass type = ((CClassContext)ctx).getCClass(); // ((StaticPath.ClassElement)element).getCClass();
-                
-                return new StaticObject(new ContextExpression(k+1), type);
-            } else {
-                throw new InconsistencyException("Invalid context expression in path");
-            }
-            
-        }        
     }
     
     public boolean equals(Path other) {
