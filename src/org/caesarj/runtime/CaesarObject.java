@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarObject.java,v 1.7 2005-03-31 10:43:20 gasiunas Exp $
+ * $Id: CaesarObject.java,v 1.8 2005-03-31 12:31:40 gasiunas Exp $
  */
 
 package org.caesarj.runtime;
@@ -54,6 +54,22 @@ public class CaesarObject implements CaesarObjectIfc {
     
 	public AspectRegistryIfc $getAspectRegistry() {
 		return null;
+	}
+	
+	public void simpleDeploy() {
+		DeploySupport.deployLocal(this);
+	}
+	
+	public void simpleUndeploy() {
+		DeploySupport.undeployLocal(this);
+	}
+	
+	public void threadDeploy() {
+		DeploySupport.deployBlock(this);
+	}
+	
+	public void threadUndeploy() {
+		DeploySupport.undeployBlock(this);
 	}
 	
 	// ... more to come ...	
