@@ -7,9 +7,12 @@ import java.util.List;
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
@@ -141,6 +144,69 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
         }
     }
     
+    /**
+     * completes the cclass interface with information about methods and fields
+     * collected in checkAllInterfaces
+     */
+    public void completeCClassInterfaces(CCompilationUnitContext context) throws PositionedError {
+        CjVirtualClassDeclaration implDecl = getCorrespondingClassDeclaration();
+        JMethodDeclaration methods[] = implDecl.getMethods();
+        
+        List interfaceMethodDecls = new LinkedList();
+        List interfaceMethods = new LinkedList();
+        
+        for (int i = 0; i < methods.length; i++) {
+            
+            CMethod method = methods[i].getMethod();
+            
+            if(!method.isConstructor() && method.isPublic() && !method.isStatic()) {
+                
+                CjMethodDeclaration decl = new CjMethodDeclaration(
+        			methods[i].getTokenReference(),
+        			ACC_PUBLIC | ACC_ABSTRACT,
+        			CTypeVariable.EMPTY,
+        			method.getReturnType(),
+        			method.getIdent(),
+        			methods[i].getParameters(),
+        			method.getExceptions(),
+        			null,
+        			null,
+        			null);
+                
+                decl.checkInterface(self);
+                
+                interfaceMethodDecls.add(decl);
+                
+                interfaceMethods.add(
+                    new CSourceMethod(
+                        this.getCClass(),
+                        ACC_PUBLIC | ACC_ABSTRACT,
+                        method.getIdent(),
+            			method.getReturnType(),
+            			method.getParameters(),
+            			method.getExceptions(),
+            			CTypeVariable.EMPTY,
+            			false,
+            			false,
+            			null
+                    )
+                );
+            }
+        }
+        
+        getCClass().addMethod(
+            (CSourceMethod[])interfaceMethods.toArray(new CSourceMethod[interfaceMethods.size()])
+        );
+        
+        addMethods(
+            (JMethodDeclaration[])interfaceMethodDecls.toArray(new JMethodDeclaration[interfaceMethodDecls.size()])
+        );
+        
+        for (int i = 0; i < inners.length; i++) {
+            inners[i].completeCClassInterfaces(context);
+        }
+    }
+    
     // IVICA generateInterface method has been splited into
     // generating sourceClass and addding inners to sourceClass as needed by CClassFactory
 	public void _generateInterface(
@@ -177,20 +243,20 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
         uniqueSourceClass = classReader.addSourceClass(sourceClass);
     }
 
-    
 	protected int getAllowedModifiers()	{
 		return 	super.getAllowedModifiers() | ACC_MIXIN_INTERFACE;
 	}	
 
     
     // IVICA added reference to corresponding CjClassDeclaration    
-    public void setCorrespondingClassDeclaration(CjClassDeclaration caesarClassDeclaration)  {
+    public void setCorrespondingClassDeclaration(CjVirtualClassDeclaration caesarClassDeclaration)  {
         this.caesarClassDeclaration = caesarClassDeclaration;
     }
     
-    public CjClassDeclaration getCorrespondingClassDeclaration() {
+    public CjVirtualClassDeclaration getCorrespondingClassDeclaration() {
         return caesarClassDeclaration;
     }
     
-    private CjClassDeclaration caesarClassDeclaration = null;
+    private CjVirtualClassDeclaration caesarClassDeclaration = null;
+
 }
