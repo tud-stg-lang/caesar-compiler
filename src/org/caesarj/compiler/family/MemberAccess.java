@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: MemberAccess.java,v 1.2 2005-02-11 18:45:22 aracic Exp $
+ * $Id: MemberAccess.java,v 1.3 2005-03-03 12:18:56 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -38,8 +38,8 @@ public abstract class MemberAccess extends Path {
     
     protected String name;
     
-    public MemberAccess(Path prefix, String field, CReferenceType type) {
-        super(prefix, type);
+    public MemberAccess(boolean finalPath, Path prefix, String field, CReferenceType type) {
+        super(finalPath, prefix, type);
         name = field;
     }   
     
@@ -52,7 +52,7 @@ public abstract class MemberAccess extends Path {
     }
     
     public String toString() {
-        return prefix+"."+name;
+        return prefix+"."+name+(isFinal()?"":"<not-final>");
     }
 
     public Path normalize() throws UnpositionedError {

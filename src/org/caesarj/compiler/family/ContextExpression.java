@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ContextExpression.java,v 1.12 2005-02-14 16:29:11 aracic Exp $
+ * $Id: ContextExpression.java,v 1.13 2005-03-03 12:18:56 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -39,7 +39,7 @@ public class ContextExpression extends Path {
     private int k = 0;
     
     public ContextExpression(Path prefix, int k, CReferenceType type) {
-        super(prefix, type);
+        super(true, prefix, type);
         this.k = k;
         
         if(k < 0)
@@ -71,7 +71,7 @@ public class ContextExpression extends Path {
     
     protected Path _normalize(Path pred, Path tail) throws UnpositionedError {
         
-        //Log.verbose("normalize: "+tail);
+        System.out.println("normalize: "+tail);
         
         if(prefix == null) {
             return tail;

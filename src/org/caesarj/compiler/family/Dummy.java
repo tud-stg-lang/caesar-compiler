@@ -20,12 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: FieldAccess.java,v 1.13 2005-03-03 12:18:56 aracic Exp $
+ * $Id: Dummy.java,v 1.1 2005-03-03 12:18:56 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
 
-import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.util.UnpositionedError;
+
 
 
 /**
@@ -33,13 +34,25 @@ import org.caesarj.compiler.types.CReferenceType;
  * 
  * @author Ivica Aracic
  */
-public class FieldAccess extends MemberAccess {
+public class Dummy extends MemberAccess {
 
-    public FieldAccess(boolean finalPath, Path prefix, String field, CReferenceType type) {
-        super(finalPath, prefix, field, type);
+    public Dummy(Path prefix) {
+        super(false, prefix, "*", null);
     }
     
     public Path clonePath() {
-        return new FieldAccess(finalPath, prefix==null ? null : prefix.clonePath(), name, type);
+        return new Dummy(prefix==null ? null : prefix.clonePath());
+    }
+    
+    public Path getTypePath() throws UnpositionedError {
+        return new ContextExpression(null, 0, null);
+    }
+    
+    public Path normalize() throws UnpositionedError {
+        return new ContextExpression(prefix, 0, null).normalize();        
+    }
+
+    public Path normalize2() throws UnpositionedError {
+        return new ContextExpression(prefix, 0, null).normalize2();        
     }
 }

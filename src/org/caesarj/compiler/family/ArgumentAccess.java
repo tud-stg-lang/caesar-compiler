@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ArgumentAccess.java,v 1.2 2005-02-09 16:51:12 aracic Exp $
+ * $Id: ArgumentAccess.java,v 1.3 2005-03-03 12:18:56 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -38,8 +38,8 @@ public class ArgumentAccess extends MemberAccess {
     private static final String ARG_PREFIX = "#";
     protected int argPos;
     
-    public ArgumentAccess(Path prefix, CReferenceType type, int argPos) {
-        super(prefix, ARG_PREFIX+argPos, type);
+    public ArgumentAccess(boolean finalPath, Path prefix, CReferenceType type, int argPos) {
+        super(finalPath, prefix, ARG_PREFIX+argPos, type);
         this.argPos = argPos;
     }
     
@@ -48,6 +48,6 @@ public class ArgumentAccess extends MemberAccess {
     }
     
     public Path clonePath() {
-        return new ArgumentAccess(prefix==null ? null : prefix.clonePath(), type, argPos);
+        return new ArgumentAccess(finalPath, prefix==null ? null : prefix.clonePath(), type, argPos);
     }
 }

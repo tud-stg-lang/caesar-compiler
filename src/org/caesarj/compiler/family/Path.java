@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Path.java,v 1.22 2005-02-25 13:45:15 aracic Exp $
+ * $Id: Path.java,v 1.23 2005-03-03 12:18:56 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -49,7 +49,6 @@ import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CClassContext;
-import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.export.CClass;
@@ -72,15 +71,28 @@ public abstract class Path {
     protected Path prefix;
     protected CReferenceType type;
     
+    protected boolean finalPath = false;
+    
     public Path getPrefix() {
         return prefix;
+    }
+    
+    public boolean isFinal() {
+        if(finalPath) {
+            if(prefix != null)
+                return prefix.isFinal();
+            else
+                return true;
+        }
+        return false;
     }
     
     public void setPrefix(Path prefix) {
         this.prefix = prefix;
     }
     
-    public Path(Path prefix, CReferenceType type) {
+    public Path(boolean finalPath, Path prefix, CReferenceType type) {
+        this.finalPath = finalPath;
         this.prefix = prefix;
         this.type = type;
     }       
@@ -146,7 +158,7 @@ public abstract class Path {
                 CReferenceType type = (CReferenceType)qc.getType(context.getTypeFactory());
                 type.setDeclContext(context);
                 
-                path.add(0, new FieldAccess(null, ANONYMOUS_FIELD_ACCESS, type) );
+                path.add(0, new FieldAccess(false, null, ANONYMOUS_FIELD_ACCESS, type) );
                 
                 done = true;
                 
@@ -169,7 +181,7 @@ public abstract class Path {
                 CType type = ac.getType(context.getTypeFactory()); 
                 
                 // CTODO: type of the method call expression or type of the field?
-                path.add(0, new FieldAccess(null, ac.getFieldIdent(), (CReferenceType)type) );
+                path.add(0, new FieldAccess(ac.getField().isFinal(), null, ac.getFieldIdent(), (CReferenceType)type) );
                 
                 tmp = ac.getPrefix();
             }
@@ -181,7 +193,7 @@ public abstract class Path {
                     k++;
                 } else {
                     // ... else add identifier to path.
-                    path.add(0, new FieldAccess(null, fa.getIdent(), (CReferenceType)fa.getType(context.getTypeFactory())) );
+                    path.add(0, new FieldAccess(fa.getField().isFinal(), null, fa.getIdent(), (CReferenceType)fa.getType(context.getTypeFactory())) );
                 }
                 tmp = fa.getPrefix();
             
@@ -196,8 +208,9 @@ public abstract class Path {
                 // then navigate to the owner
                 CClass owner = ((JThisExpression)tmp).getSelf();
                 CClass current = context.getClassContext().getCClass();
-                while(current != owner) {
-                    if(current == null) throw new InconsistencyException();
+                while(!(current == owner || current.descendsFrom( owner ))) {
+                    if(current == null) 
+                        throw new InconsistencyException();
                     current = current.getOwner();
                     k++;
                 }
@@ -207,12 +220,13 @@ public abstract class Path {
                 JLocalVariableExpression local = (JLocalVariableExpression) tmp;
                 JLocalVariable var = local.getVariable();
                                 
+                boolean isfinal = local.isFinal();
                 
                 if(var instanceof JFormalParameter) {
-                    path.add(0, new ArgumentAccess(null, (CReferenceType)var.getType(), var.getIndex()));
+                    path.add(0, new ArgumentAccess(local.isFinal(), null, (CReferenceType)var.getType(), var.getIndex()));
                 }
                 else {
-                    path.add(0, new FieldAccess(null, var.getIdent(), (CReferenceType)var.getType()));
+                    path.add(0, new FieldAccess(local.isFinal(), null, var.getIdent(), (CReferenceType)var.getType()));
                 }
 
                 
@@ -288,18 +302,20 @@ public abstract class Path {
                 tmp = ((JUnaryPromote)tmp).getExpression();
             }
             else if(tmp instanceof JTypeNameExpression) {
+                // CTODO: Disabled for now
                 JTypeNameExpression tne = (JTypeNameExpression)tmp;
-                CReferenceType type = (CReferenceType)tmp.getType(context.getTypeFactory());
-                
-                path.add(0, new FieldAccess(null, type.getCClass().getQualifiedName(), type));
-                // navigate out to the CU context
-                CContext ctx = context;
-                while(!(ctx instanceof CCompilationUnitContext)) {
-                    ctx = ctx.getParentContext();
-                    k++;
-                }
-                
-                done = true;
+//                CReferenceType type = (CReferenceType)tmp.getType(context.getTypeFactory());
+//                
+//                path.add(0, new FieldAccess(true, null, type.getCClass().getQualifiedName(), type));
+//                // navigate out to the CU context
+//                CContext ctx = context;
+//                while(!(ctx instanceof CCompilationUnitContext)) {
+//                    ctx = ctx.getParentContext();
+//                    k++;
+//                }
+//                
+//                done = true;
+                throw new UnpositionedError(CaesarMessages.ILLEGAL_PATH_ELEMENT, tne.getType(context.getTypeFactory()).getSignature());
             }
             else {
                 throw new UnpositionedError(CaesarMessages.ILLEGAL_PATH_ELEMENT, tmp.getIdent());
@@ -335,7 +351,7 @@ public abstract class Path {
     }    
     
     public boolean isAssignableTo(Path other) {        
-        return this==NULL || other.toString().equals(this.toString());
+        return this==NULL || (isFinal() && other.isFinal() && other.toString().equals(this.toString()));
     }
     
     public Path getHead() {
@@ -374,4 +390,11 @@ public abstract class Path {
         return other;
     }
 
+    /**
+     *
+     */
+
+    public String toString() {
+        return super.toString();
+    }
 }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Null.java,v 1.1 2005-02-09 16:50:29 aracic Exp $
+ * $Id: Null.java,v 1.2 2005-03-03 12:18:56 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -36,7 +36,7 @@ import org.caesarj.util.UnpositionedError;
 public class Null extends Path {
 
     Null() {
-        super(null, null);
+        super(true, null, null);
     }
     
     public Path normalize() {

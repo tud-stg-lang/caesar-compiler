@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: MethodAccess.java,v 1.3 2005-02-11 18:45:22 aracic Exp $
+ * $Id: MethodAccess.java,v 1.4 2005-03-03 12:18:56 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -37,7 +37,7 @@ import org.caesarj.util.UnpositionedError;
 public class MethodAccess extends MemberAccess {
     
     public MethodAccess(Path prefix, String name, CReferenceType type) {
-        super(prefix, name, type);
+        super(false, prefix, name, type);
     }
     
     public Path getTypePath() throws UnpositionedError {
