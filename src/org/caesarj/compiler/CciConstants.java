@@ -34,8 +34,11 @@ public class CciConstants
 		("transform").intern(); 
 
 
-	protected static final String WRAPPER_CREATION_PREFIX = 
+	protected static final String WRAPPER_CREATOR_PREFIX = 
 		(SEPERATOR + "getWrapper").intern(); 
+	protected static final String WRAPPER_DESTRUCTOR_PREFIX = 
+		(SEPERATOR + "destructWrapper").intern(); 
+				
 	public static final String WRAPPER_LOCAL_VAR = 
 		(SEPERATOR + "localWrapper").intern(); 
 	public static final String WRAPPER_LOCAL_KEY = 
@@ -44,6 +47,8 @@ public class CciConstants
 		("get").intern(); 
 	public static final String WRAPPER_MAP_PUT = 
 		("put").intern(); 
+	public static final String WRAPPER_MAP_REMOVE = 
+		("remove").intern(); 
 	public static final String WRAPPEE_FIELD_NAME = 
 		("wrappee").intern(); 
 
@@ -74,11 +79,15 @@ public class CciConstants
 				
 	public static final JavadocComment WRAPPER_MAP_JAVADOC = 
 		new JavadocComment(
-			toCaesarJavadocText("Wrapping recycling map."), true, false);
-	public static final JavadocComment WRAPPER_CREATION_JAVADOC = 
+			toCaesarJavadocText("Wrapper recycling map."), true, false);
+	public static final JavadocComment WRAPPER_CREATOR_JAVADOC = 
 		new JavadocComment(
-			toCaesarJavadocText("Wrapping recycling accessor/factory."), 
+			toCaesarJavadocText("Wrapper recycling accessor/factory."), 
 			true, false);
+	public static final JavadocComment WRAPPER_DESTRUCTOR_JAVADOC = 
+		new JavadocComment(
+			toCaesarJavadocText("Wrapper destructor method."), 
+			true, false);			
 	public static final JavadocComment WRAPPEE_FIELD_JAVADOC = 
 		new JavadocComment(
 			toCaesarJavadocText("The wrappee reference."), true, false);
@@ -112,9 +121,13 @@ public class CciConstants
 
 	public static String toWrapperMethodCreationName(String bindingType)
 	{
-		return (WRAPPER_CREATION_PREFIX + bindingType).intern();
+		return (WRAPPER_CREATOR_PREFIX + bindingType).intern();
 	}
-	
+
+	public static String toWrapperMethodDestructionName(String bindingType)
+	{
+		return (WRAPPER_DESTRUCTOR_PREFIX + bindingType).intern();
+	}	
 	
 	public static String toAdaptMethodName(String virtualType)
 	{
@@ -148,7 +161,8 @@ public class CciConstants
 
 	public static String removeCaesarInternalNames(String message) {
 		//message = FjConstants.removeFamilyJ(message);
-		//message = message.replaceAll(WRAPPER_CREATION_PREFIX, "" );
+		//message = message.replaceAll(WRAPPER_CREATOR_PREFIX, "" );
+		//message = message.replaceAll(WRAPPER_DESTRUCTOR_PREFIX, "" );
 		return message;
 	}
 		

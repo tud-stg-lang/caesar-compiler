@@ -57,15 +57,16 @@ public interface CaesarMessages extends org.caesarj.compiler.CompilerMessages {
   MessageDescription	REFERENCE_IS_NOT_PROVIDING = new MessageDescription("\"{0}\" is not a providing class.", null, 0);
   MessageDescription	BINDING_OTHER_CI = new MessageDescription("\"{0}\" does not bind the collaboration interface \"{1}\".", null, 0);
   MessageDescription	PROVIDING_OTHER_CI = new MessageDescription("\"{0}\" does not provide the collaboration interface \"{1}\".", null, 0);
-  MessageDescription	BINDING_CI_WITH_SAME_NAME = new MessageDescription("\"{0}\" cannot be declared with the same name of the collaboration interface \"{1}\".", null, 0);
+  MessageDescription	BINDING_CI_WITH_SAME_NAME = new MessageDescription("\"{0}\" cannot be declared with the same name of collaboration interface \"{1}\".", null, 0);
   MessageDescription	PROVIDING_DEFINES_CONSTRUCTOR = new MessageDescription("Providing class \"{0}\" cannot define constructors with parameters.", null, 0);
   MessageDescription	BINDING_PROVIDING_DIRECT_CREATION = new MessageDescription("Providing or binding class \"{0}\" cannot be directly created.", null, 0);
   MessageDescription	WRAPPER_DEFINES_CONSTRUCTOR = new MessageDescription("Explicity declared wrapper class \"{0}\" cannot define constructors with parameters.", null, 0);
-  MessageDescription	NON_BINDING_WRAPPER = new MessageDescription("Class \"{0}\" cannot define \"wraps\" clause because it does not bind an aspect interface.", null, 0);
+  MessageDescription	NON_BINDING_WRAPPER = new MessageDescription("Class \"{0}\" cannot define \"wraps\" clause because it does not bind a collaboration interface.", null, 0);
+  MessageDescription	WRAPPER_DESTRUCTOR_NOT_FOUND = new MessageDescription("Cannot find wrapper \"{0}\" with matching parameters.", null, 0);
   MessageDescription	SUPER_CLASS_WRAPS = new MessageDescription("Class \"{0}\" cannot define \"wraps\" clause because its super class already wraps a class.", null, 0);
   MessageDescription	CLASS_DOES_NOT_WRAP = new MessageDescription("Class \"{0}\" does not wrap any class, so \"wrappee\" is not available.", null, 0);
-  MessageDescription	VIRTUAL_CALLING_PRIVATE_OUTER = new MessageDescription("Virtual or override class \"{0}\" cannot access private methods of the enclosing class.", null, 0);
-  MessageDescription	VIRTUAL_ACCESSING_OUTER_FIELD = new MessageDescription("Virtual or override class \"{0}\" cannot access fields of the enclosing class.", null, 0);
+  MessageDescription	VIRTUAL_ACCESSING_OUTER_PRIVATE = new MessageDescription("Virtual or override class \"{0}\" cannot access private methods or fields of the enclosing class.", null, 0);
   MessageDescription	VIRTUAL_CALLING_OUTER_OUTER = new MessageDescription("Virtual or override class \"{0}\" cannot call methods or access fields defined in the enclosing class of its outer class.", null, 0);
   MessageDescription	WEAVELET_NESTED = new MessageDescription("Weavelet class \"{0}\" cannot be an inner class.", null, 0);
+  MessageDescription	METHOD_NOT_FOUND_INSIDE_VIRTUAL = new MessageDescription("Cannot find method \"{0}\". Maybe it is a private method in the clean eclosing class that is not accessible inside virtual classes.", null, 0);
 }

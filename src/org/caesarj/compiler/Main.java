@@ -138,6 +138,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 			
 			for (int i = 0; i < tree.length; i++) {
 				tree[i].accept(getClassTransformation(environment));
+				//tree[i].accept(new DebugVisitor());
 			}
 						
 			System.out.println("JOIN:");
