@@ -1,26 +1,41 @@
 package org.caesarj.compiler.types;
 
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CTypeContext;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.ExportMixer;
+import org.caesarj.compiler.export.ExportMixerException;
 import org.caesarj.util.UnpositionedError;
 
-
+/**
+ * 
+ * @author Ivica Aracic
+ */
 public class CCompositeType extends CClassNameType {   
 
     // CTODO
     public CCompositeType(CReferenceType refType[]) {
-        super("<UNDEFINED>");        
+        super("<gen>");        
         this.refType = refType;
     }
     
     public CType checkType(CTypeContext context) throws UnpositionedError {
         CReferenceType refTypeCopy[] = new CReferenceType[refType.length];
-                
-        for(int i=0; i<refType.length; i++)
+        CClass classes[] = new CClass[refType.length];
+        
+        for(int i=0; i<refType.length; i++) {
             refTypeCopy[i] = (CReferenceType)refType[i].checkType(context);
-            
-        // merge all classes here to one and map to final class name
-            
-        return new CComposite2Type(refTypeCopy[0].getCClass(), refTypeCopy);
+            classes[i] = refTypeCopy[i].getCClass();            
+        }
+        
+        // merge all classes here to one and map to final class name        
+		try {
+            CClass mixedClass = ExportMixer.instance().mix(classes);
+            return new CComposite2Type(mixedClass, refTypeCopy);
+		} 
+        catch (ExportMixerException e) {
+			throw new UnpositionedError(CaesarMessages.FORMATTED_ERROR, e.getMessage());
+		}               
     }
 
     // --------------------------------------------------------------

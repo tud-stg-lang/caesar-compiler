@@ -4,7 +4,9 @@ import org.caesarj.compiler.export.CClass;
 
 
 /**
- * This is the AST representation of the A & B & C supertype 
+ * this is type with partial mixed export,
+ * source classes with their methods and field are still missing and will be
+ * generated here 
  * 
  * @author Ivica Aracic
  */
@@ -18,7 +20,7 @@ public class CComposite2Type extends CReferenceType {
           
           
     public CClass getCClass() {
-        // merge class here!
+        // merge source classes here!
         return super.getCClass();        
     }
 
