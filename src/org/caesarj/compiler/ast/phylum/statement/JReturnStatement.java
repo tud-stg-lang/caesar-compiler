@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JReturnStatement.java,v 1.10 2005-03-10 15:02:04 aracic Exp $
+ * $Id: JReturnStatement.java,v 1.11 2005-03-24 12:16:08 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -178,7 +178,9 @@ public class JReturnStatement extends JStatement {
   // ----------------------------------------------------------------------
 
   public void recurse(IVisitor s) {
-    expr.accept(s);
+  	if(expr != null) {
+  		expr.accept(s);
+  	}
   }
 
   /**
