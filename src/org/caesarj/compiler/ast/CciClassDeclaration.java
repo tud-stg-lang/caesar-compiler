@@ -406,6 +406,7 @@ public class CciClassDeclaration
 	 */
 	public JTypeDeclaration[] transformInnerProvidingClasses()
 	{
+		verify(getProviding() != null);
 		for (int i = 0; i < inners.length; i++)
 		{
 			if (inners[i] instanceof FjClassDeclaration)
@@ -419,12 +420,13 @@ public class CciClassDeclaration
 	}
 	
 	/**
-	 * Sets the right name of the inner classes whose bind some ci. 
-	 * 
-	 * @param superOwner
+	 * Transforms the inner classes which bind some CI in virtual types. 
+	 * The current class must be a binding class (getBinding() != null).
+	 * @return JTypeDeclaration[] the new nested classes.
 	 */
-	public void transformInnerBindingClasses(String superOwner)
+	public JTypeDeclaration[] transformInnerBindingClasses(String superOwner)
 	{
+		verify(getBinding() != null);
 		for (int i = 0; i < inners.length; i++)
 		{
 			if (inners[i] instanceof FjClassDeclaration)
@@ -432,17 +434,12 @@ public class CciClassDeclaration
 				FjClassDeclaration innerClass = (FjClassDeclaration)inners[i];
 				if (innerClass.getBinding() != null)
 				{
-					innerClass.setModifiers(
-						innerClass.getModifiers() | CCI_BINDING);
-					String superClassName = superOwner + "$" + 
-						innerClass.getBindingTypeName();
-					innerClass.setSuperClass(
-						new CClassNameType(superClassName));
-					innerClass.addProvidingAcessor();
+					inners[i] = innerClass.createVirtualClassDeclaration(
+						superOwner);
 				}
-				innerClass.transformInnerBindingClasses(superOwner);
 			}
 		}
+		return inners;
 	}		
 	/**
 	 * Creates an override type. This is done when the compiler finds a 
@@ -473,6 +470,41 @@ public class CciClassDeclaration
 				null,
 				null);
 	}
+
+
+	/**
+	 * Creates an virtual type. This is done when the compiler finds a 
+	 * binding class, so it has to change its inners for virtual classes.
+	 * @param owner
+	 * @return FjOverrideClassDeclaration
+	 */
+	public FjVirtualClassDeclaration createVirtualClassDeclaration(
+		String superOwner)
+	{
+		String superClassName = superOwner + "$" + getBindingTypeName();
+
+		FjVirtualClassDeclaration result =
+			new FjVirtualClassDeclaration(
+				getTokenReference(),
+				(modifiers | CCI_BINDING) & ~FJC_CLEAN,
+				ident,
+				typeVariables,
+				new CClassNameType(superClassName),
+				new CClassNameType(superClassName),
+				null,
+				null,
+				interfaces,
+				fields,
+				methods,
+				transformInnerBindingClasses(superOwner),
+				this.body,
+				null,
+				null);
+		
+		result.addProvidingAcessor();
+		
+		return result;
+	}	
 
 	/**
 	 * Adds the providing reference accessor. The class must be a binding class.
@@ -532,8 +564,6 @@ public class CciClassDeclaration
 			null,
 			null);
 	}
-	
-
 	
 	/* DEBUG
 	 * (non-Javadoc)
