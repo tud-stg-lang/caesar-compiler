@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.26 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: JMethodCallExpression.java,v 1.27 2005-03-03 12:18:23 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -45,6 +45,7 @@ import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.family.ArgumentAccess;
 import org.caesarj.compiler.family.ContextExpression;
+import org.caesarj.compiler.family.Dummy;
 import org.caesarj.compiler.family.MethodAccess;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CArrayType;
@@ -407,9 +408,10 @@ public class JMethodCallExpression extends JExpression
 	            // factory method... make special treatement
 	            // CTODO: this is ugly, why not having own data type for factory methods
 	            family = prefix.getThisAsFamily();
+	            thisAsFamily = new Dummy(prefix.getThisAsFamily().clonePath());
 	        }
 	        else {
-		        Path returnTypePath = ((CReferenceType)type).getPath();
+		        Path returnTypePath = ((CReferenceType)type).getPath().clonePath();
 		        Path returnTypePathHead = returnTypePath.getHead();
 		        if( ((ContextExpression)returnTypePathHead).getK() == 0) {
 		            // here we have a return type depending directly on a method argument
@@ -419,12 +421,12 @@ public class JMethodCallExpression extends JExpression
 		        }
 		        else {
 		            // here we have a dependent type not depending on a method argument
-		            Path p = prefix.getThisAsFamily();
-		            
-		            p = new MethodAccess(p, method.getIdent(), null);				            
-		            p = p.append( returnTypePath ); 
+	                thisAsFamily = prefix.getThisAsFamily().clonePath();
+		            thisAsFamily = new MethodAccess(thisAsFamily, method.getIdent(), null);		            
+		            thisAsFamily = thisAsFamily.append( returnTypePath );
+		            thisAsFamily = new Dummy(thisAsFamily);
 	
-		            family = p.normalize2();
+		            family = thisAsFamily.clonePath().normalize2();
 		        }
 	        }
 	    }
