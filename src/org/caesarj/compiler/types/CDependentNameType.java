@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentNameType.java,v 1.17 2005-02-25 13:45:06 aracic Exp $
+ * $Id: CDependentNameType.java,v 1.18 2005-03-06 13:48:53 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -165,7 +165,7 @@ public class CDependentNameType extends CClassNameType
                 // create and return new CDependentType
                 CType t = clazz.getAbstractType().checkType(context);
                                 
-                CDependentType dt = new CDependentType((CContext)context, expr, t);                               
+                CDependentType dt = new CDependentType((CContext)context, ectx, expr, t);                               
                 
                 return dt.checkType(context);
             }

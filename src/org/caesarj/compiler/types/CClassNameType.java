@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassNameType.java,v 1.20 2005-02-25 16:50:11 aracic Exp $
+ * $Id: CClassNameType.java,v 1.21 2005-03-06 13:48:44 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -157,7 +157,7 @@ public class CClassNameType extends CReferenceType
             ) {
 	            // in this case we have an dependent type with a implicit family path
 	            // convert it to dependent type
-	            CDependentType depType = new CDependentType((CContext)context, null, res);
+	            CDependentType depType = new CDependentType((CContext)context, (CContext)context, null, res);
 	            return depType.checkType(context);
 	        }
 	        /*
