@@ -1,10 +1,10 @@
-package generated.typesystest09;
+package generated.typesystest102;
 
 import java.util.*;
 import org.caesarj.runtime.*;
 
 /**
- * dependent types in method signatures
+ * Test dependent types in method signatures.
  * 
  * @author Ivica Aracic
  */
@@ -22,26 +22,7 @@ public class TypeSysTestCase {
 	    			m7(b.g2, b.x2, b.n2);
 	    b.g1.X v5 = m8(b.g1, b.x1, b.n1);
 	    //	        m9(b.x1, b.g1, b.n1); // should fail
-	}
-
-	void test2() {
-	    b.x1.N n = b.n1;
-	}
-	
-	void test3() {
-		b.x1.N n1 = null;
-		b.x2.N n2 = null;
-		n1 = b.x1.n1();
-		n1 = b.x1.n2();
-		n1 = b.x1.n3(n1);
-
-		//n2 = b.x1.n1(); // should fail
-		//n1 = b.x1.n3(n2); // should fail
-		
-		b.x1.x( b.x1 );
-		//b.x1.x( b.x2 ); // should fail
-	}
-		
+	}	
 	
 	/*
 	 * methods with dependent types in the signature
@@ -71,12 +52,6 @@ public cclass B {
 
 public cclass G {
     public cclass X {
-        public N n1() { return new N(); }
-        public N n2() { {return new N();} }
-        public N n3(N n) { return n; }
-        
-        public void x(X x) {}
-        
         public cclass N {}
     }    
 }

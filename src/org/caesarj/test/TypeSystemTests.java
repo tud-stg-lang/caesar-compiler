@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: TypeSystemTests.java,v 1.10 2005-02-15 18:31:18 aracic Exp $
+ * $Id: TypeSystemTests.java,v 1.11 2005-02-21 16:45:09 aracic Exp $
  */
 
 package org.caesarj.test;
@@ -34,7 +34,7 @@ public class TypeSystemTests extends FjTestCase {
 
 	/*
 	 * Test Dependent Types defined within plain Java classes
-	 */
+	 */	
 	public void testCaesarTestCase_01() throws Throwable {
 	    compileDontRun("typesystest01");
     }
@@ -65,10 +65,6 @@ public class TypeSystemTests extends FjTestCase {
 
 	public void testCaesarTestCase_08() throws Throwable {
 	    compileDontRun("typesystest08");
-    }
-
-	public void testCaesarTestCase_09() throws Throwable {
-	    compileDontRun("typesystest09");
     }
 
 	public void testCaesarTestCase_10() throws Throwable {
@@ -103,16 +99,20 @@ public class TypeSystemTests extends FjTestCase {
 
 	public void testCaesarTestCase_52() throws Throwable {
 	    compileDontRun("typesystest52");
-    }
+    }	
 
-
-	/*
-	 * TEST ERRORS
-	 */
-	/*
+	
 	public void testCaesarTestCase_100() throws Throwable {
-	    compileAndCheckErrors("typesystest100", new String[]{""});
+	    compileDontRun("typesystest100");
     }
-    */
+    
+	public void testCaesarTestCase_101() throws Throwable {
+	    compileDontRun("typesystest101");
+    }
+    
+	public void testCaesarTestCase_102() throws Throwable {
+	    compileDontRun("typesystest102");
+    }
+    
 
 }
