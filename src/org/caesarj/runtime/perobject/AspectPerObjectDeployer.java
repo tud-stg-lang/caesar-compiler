@@ -6,7 +6,6 @@ package org.caesarj.runtime.perobject;
 import org.caesarj.runtime.aspects.AspectContainerIfc;
 import org.caesarj.runtime.aspects.AspectIfc;
 import org.caesarj.runtime.aspects.AspectRegistryIfc;
-import org.caesarj.runtime.aspects.CompositeAspectContainer;
 import org.caesarj.runtime.aspects.BasicAspectDeployer;
 
 /**
