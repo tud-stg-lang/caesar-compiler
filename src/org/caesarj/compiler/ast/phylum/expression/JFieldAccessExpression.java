@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldAccessExpression.java,v 1.13 2004-11-17 10:52:04 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.14 2004-11-23 18:28:19 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -117,6 +117,10 @@ public class JFieldAccessExpression extends JExpression {
    */
   public String getIdent() {
     return ident;
+  }
+  
+  public JExpression getPrefix() {
+      return prefix;
   }
 
   /**
