@@ -23,7 +23,7 @@ public class VCTestCase extends TestCase
 		System.out.println("-------> VCTest 8: Inner Class Type Inheritance: start");
 
 		OuterB ob = new OuterB();
-		OuterB.InnerA ba = (OuterB.InnerA)ob.new InnerA();
+		OuterB.InnerA ba = ob.new InnerA();
 
 		String resA = ((InterfaceA)ba).queryA();
 		String resB = ((InterfaceB)ba).queryB();

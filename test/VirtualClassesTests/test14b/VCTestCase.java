@@ -24,7 +24,7 @@ public class VCTestCase extends TestCase
 
 		OuterC oc = new OuterC();
 
-		String result = ((OuterC.Leaf1)oc.new Leaf1()).queryA();
+		String result = oc.new Leaf1().queryA();
 
 		System.out.println(result);
 		assertEquals(expectedResult, result);

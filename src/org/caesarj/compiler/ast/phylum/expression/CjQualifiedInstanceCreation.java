@@ -58,9 +58,21 @@ public class CjQualifiedInstanceCreation extends JExpression {
         CClass prefixClass = prefixType.getCClass();
         
         if((prefixClass.isMixinInterface() || prefixClass.isMixin()) && params.length == 0) {
+            
+            if(prefixClass.isMixin()) {
+                prefixType = prefixClass.getInterfaces()[0];
+                prefixClass = prefixType.getCClass();
+            }
+            
+            CClass returnClass = context.getClassReader().loadClass(
+                factory,
+                prefixClass.getQualifiedName()+'$'+ident
+            );
+            
             // convert to factory method
-            // a.new C() -> a.$newC()
+            // a.new C() -> (STATIC_TYPE(a).C)a.$newC()
             expr = new JMethodCallExpression(getTokenReference(), prefix, "$new"+ident, params);
+            expr = new JCastExpression(getTokenReference(), expr, returnClass.getAbstractType());
         }
         else {
             // create normal qualified instance creation

@@ -23,8 +23,8 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 12: Inner Factory Methods: start");
 
-		OuterA.InnerA aa = (OuterA.InnerA)new OuterA().new InnerA();
-		OuterB.InnerB bb = (OuterB.InnerB)new OuterB().new InnerB();
+		OuterA.InnerA aa = new OuterA().new InnerA();
+		OuterB.InnerB bb = new OuterB().new InnerB();
 
 		String resAAA = aa.new DeepestA().queryA();
 		String resAAB = aa.new DeepestB().queryA();

@@ -26,8 +26,8 @@ public class VCTestCase extends TestCase
 
 		OuterA oa = new OuterA();
 		OuterB ob = new OuterB();
-		OuterA.InnerA a1 = (OuterA.InnerA)oa.new InnerA();
-		OuterB.InnerA a2 = (OuterB.InnerA)ob.new InnerA();
+		OuterA.InnerA a1 = oa.new InnerA();
+		OuterB.InnerA a2 = ob.new InnerA();
 
 		System.out.println(a1.accessOuterA());
 		assertEquals(a1.accessOuterA(), expectedResult1);

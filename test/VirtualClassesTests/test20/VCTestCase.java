@@ -30,15 +30,15 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 20: Joins Linearization: start");
 
-		String resA = (new OuterA()).new InnerA().queryA();
-		String resB = (new OuterB()).new InnerA().queryA();
-		String resC = (new OuterC()).new InnerA().queryA();
-		String resD = (new OuterD()).new InnerA().queryA();
-		String resE = (new OuterE()).new InnerA().queryA();
-		String resF = (new OuterF()).new InnerA().queryA();
-		String resG = (new OuterG()).new InnerA().queryA();
-		String resH = (new OuterH()).new InnerA().queryA();
-		String resI = (new OuterI()).new InnerA().queryA();
+		String resA = new OuterA().new InnerA().queryA();
+		String resB = new OuterB().new InnerA().queryA();
+		String resC = new OuterC().new InnerA().queryA();
+		String resD = new OuterD().new InnerA().queryA();
+		String resE = new OuterE().new InnerA().queryA();
+		String resF = new OuterF().new InnerA().queryA();
+		String resG = new OuterG().new InnerA().queryA();
+		String resH = new OuterH().new InnerA().queryA();
+		String resI = new OuterI().new InnerA().queryA();
 		String result = resA + "; " + resB + "; " + resC + "; " + resD + "; " + resE + "; " + resF + "; " + resG
 					         + "; " + resH + "; " + resI;
 

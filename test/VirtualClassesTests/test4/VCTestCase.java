@@ -20,10 +20,10 @@ public class VCTestCase extends TestCase {
         System.out.println("-------> VCTest 4: start");
 
 		EvalNegAST ast = new EvalNegAST();
-		EvalNegAST.Literal l1 = (EvalNegAST.Literal)ast.new Literal();
-		EvalNegAST.Literal l2 = (EvalNegAST.Literal)ast.new Literal();
-		EvalNegAST.AddExpression add = (EvalNegAST.AddExpression)ast.new AddExpression();
-		EvalNegAST.NegExpression neg = (EvalNegAST.NegExpression)ast.new NegExpression();
+		EvalNegAST.Literal l1 = ast.new Literal();
+		EvalNegAST.Literal l2 = ast.new Literal();
+		EvalNegAST.AddExpression add = ast.new AddExpression();
+		EvalNegAST.NegExpression neg = ast.new NegExpression();
 
 		l1.init(5);
 		l2.init(4);

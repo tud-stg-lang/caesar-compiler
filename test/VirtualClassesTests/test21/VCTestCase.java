@@ -25,7 +25,7 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 21: Test joining extensions: start");
 
-		String result = (new OuterD()).defaultObject().queryA();
+		String result = new OuterD().defaultObject().queryA();
 
 		System.out.println(result);
 		assertEquals(result, expectedResult);

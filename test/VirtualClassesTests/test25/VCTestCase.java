@@ -30,8 +30,8 @@ public class VCTestCase extends TestCase
 		OuterA.InnerA ia = oa.new InnerA();
 
 		OuterB ob = new OuterB();
-		OuterB.InnerB ib = (OuterB.InnerB)ob.new InnerB();
-		OuterA.InnerD id = (OuterA.InnerD)oa.new InnerD();
+		OuterB.InnerB ib = ob.new InnerB();
+		OuterA.InnerD id = oa.new InnerD();
 
 		String result = oa.queryA() + "; " + ia.queryA() + "; " + ob.queryA() + "; " + ib.queryA() + "; " + id.queryA();
 

@@ -64,12 +64,12 @@ public class VCTestCase extends TestCase
 
 		OuterD d = new OuterD();
 
-		OuterD.InnerB db = (OuterD.InnerB)d.new InnerB();
-		OuterD.InnerC dc = (OuterD.InnerC)d.new InnerC();
-		OuterD.InnerD dd = (OuterD.InnerD)d.new InnerD();
-		OuterD.InnerF df = (OuterD.InnerF)d.new InnerF();
-		OuterD.InnerG dg = (OuterD.InnerG)d.new InnerG();
-		OuterD.InnerH dh = (OuterD.InnerH)d.new InnerH();
+		OuterD.InnerB db = d.new InnerB();
+		OuterD.InnerC dc = d.new InnerC();
+		OuterD.InnerD dd = d.new InnerD();
+		OuterD.InnerF df = d.new InnerF();
+		OuterD.InnerG dg = d.new InnerG();
+		OuterD.InnerH dh = d.new InnerH();
 
 		String resBA = db.queryA();
 		String resBB = db.queryB();
