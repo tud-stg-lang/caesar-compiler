@@ -176,6 +176,11 @@ public class CompilerErrorsTests extends FjTestCase {
         compileAndCheckErrors("test233", new String[]{""});
     }
 	
+	/* restricting access in overriden method protected -> private */
+	public void testCaesarTestCase_234() throws Throwable {
+        compileAndCheckErrors("test234", new String[]{""});
+    }
+	
 	/* public fields */
 	public void testCaesarTestCase_234b() throws Throwable {
         compileAndCheckErrors("test234b", new String[]{""});
