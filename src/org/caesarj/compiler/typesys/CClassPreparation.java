@@ -18,24 +18,36 @@ import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.expression.JAssignmentExpression;
+import org.caesarj.compiler.ast.phylum.expression.JCastExpression;
+import org.caesarj.compiler.ast.phylum.expression.JEqualityExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
+import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
 import org.caesarj.compiler.ast.phylum.expression.JUnqualifiedInstanceCreation;
+import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
+import org.caesarj.compiler.ast.phylum.statement.JCompoundStatement;
+import org.caesarj.compiler.ast.phylum.statement.JExpressionListStatement;
+import org.caesarj.compiler.ast.phylum.statement.JIfStatement;
 import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
+import org.caesarj.compiler.ast.phylum.statement.JVariableDeclarationStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
+import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.export.CCjMixinSourceClass;
+import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CMethod;
-import org.caesarj.compiler.export.CCjSourceClass;
-import org.caesarj.compiler.export.CCjMixinSourceClass;
 import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
@@ -122,86 +134,365 @@ public class CClassPreparation implements CaesarConstants {
 	}
          
     
+	public void generateFactoryMethod(
+        KjcEnvironment environment,
+	    JavaTypeNode inner,
+	    CjVirtualClassDeclaration decl
+    ) throws CaesarTypeSystemException {
+	    TypeFactory typeFactory = environment.getTypeFactory();
+        ClassReader classReader = environment.getClassReader();
+        
+        CjInterfaceDeclaration ifcDecl = decl.getMixinIfcDeclaration();
+        
+        CClass innerClass = inner.getCClass();
+                                    
+        JBlock creationBlock = new JBlock(
+            decl.getTokenReference(),
+            new JStatement[] {
+                new JReturnStatement(
+                    decl.getTokenReference(),
+                    new JUnqualifiedInstanceCreation(
+                        decl.getTokenReference(),
+                        innerClass.getAbstractType(),
+                        //JExpression.EMPTY
+						new JExpression[]{
+                    		new JThisExpression(decl.getTokenReference())
+                		}
+                    ),
+                    null
+                )
+            },
+            null
+        );
+        
+        CaesarTypeNode topMost = inner.getMixin().getTopmostNode();
+        
+        CClass returnType = classReader.loadClass(
+            typeFactory, 
+            topMost.getQualifiedName().toString()    
+        );
+        
+        JMethodDeclaration facMethodDecl = new JMethodDeclaration(
+                decl.getTokenReference(),
+                ACC_PUBLIC,
+                CTypeVariable.EMPTY,
+                returnType.getAbstractType(),
+                "$new"+inner.getType().getQualifiedName().getIdent(),
+                JFormalParameter.EMPTY, // formal params
+                CReferenceType.EMPTY,
+                creationBlock,
+                null, null
+            );  
+        
+        JMethodDeclaration facIfcMethodDecl = new JMethodDeclaration(
+            decl.getTokenReference(),
+            ACC_PUBLIC,
+            CTypeVariable.EMPTY,
+            returnType.getAbstractType(),
+            "$new"+inner.getType().getQualifiedName().getIdent(),
+            JFormalParameter.EMPTY, // formal params
+            CReferenceType.EMPTY,
+            null,
+            null, null
+        );  
+        
+        decl.addMethod(facMethodDecl);
+        ifcDecl.addMethod(facIfcMethodDecl);                         
+	    
+	}
+	
+	/*
+	private WeakHashMap $W_wrapper_map = new WeakHashMap();
+	
+	private W W(Wrappee $w) {
+		W res = (W)$W_wrapper_map.get($w);
+		if(res == null) {
+			res = $newW();
+			res.$initWrappee(wrappee);
+			$W_wrapper_map.put($w, res);
+		}
+		return res;
+	}
+	*/
+	public void generateWrapperSupport(
+        KjcEnvironment environment,
+	    JavaTypeNode inner,
+	    CjVirtualClassDeclaration decl
+    ) {
+	    TypeFactory typeFactory = environment.getTypeFactory();
+        ClassReader classReader = environment.getClassReader();
+        
+        CClass hashMapClass = 
+            classReader.loadClass(
+                typeFactory, 
+            	"java/util/WeakHashMap"
+            );
+        
+        CjVirtualClassDeclaration innerDecl = inner.getDeclaration();
+        CjInterfaceDeclaration innerIfcDecl = innerDecl.getMixinIfcDeclaration();
+        
+        TokenReference where = decl.getTokenReference();
+        
+        String wrapperMapName = 
+            "$"+inner.getMixin().getQualifiedName().getIdent()+"_wrapper_map";
+        
+        JFieldDeclaration hashMap =
+            new JFieldDeclaration(
+                decl.getTokenReference(),
+                new JVariableDefinition(
+                    where,
+                    ACC_PRIVATE,
+                    hashMapClass.getAbstractType(),
+                    wrapperMapName,
+                    new JUnqualifiedInstanceCreation(
+                            where,
+                        hashMapClass.getAbstractType(),
+                        JExpression.EMPTY
+                    )
+                ),
+                null, null
+            );
+        
+        decl.addField(hashMap);
+        
+        JMethodDeclaration wrapperMethod = 
+            new JMethodDeclaration(
+                where,
+                ACC_PRIVATE,
+                CTypeVariable.EMPTY,
+                innerIfcDecl.getCClass().getAbstractType(),
+                inner.getMixin().getQualifiedName().getIdent(),
+                new JFormalParameter[]{
+                    new JFormalParameter(
+                        where,
+                        JFormalParameter.DES_PARAMETER,
+                        innerDecl.getWrappee(),
+                        "$w",
+                        false
+                    )
+                },
+                CReferenceType.EMPTY,
+                new JBlock(
+                    where,
+                    new JStatement[]{
+                        new JVariableDeclarationStatement(
+                            where,
+                            new JVariableDefinition(
+                                where,
+                                ACC_PUBLIC,
+                                innerIfcDecl.getCClass().getAbstractType(),
+                                "res",
+                                new JCastExpression(
+                                    where,
+                                    new JMethodCallExpression(
+                                        where,
+                                        new JNameExpression(where, wrapperMapName),
+                                        "get",
+                                        new JExpression[]{
+                                            new JNameExpression(where, "$w")
+                                        }
+                                    ),
+                                    innerIfcDecl.getCClass().getAbstractType()
+                                )
+                            ),
+                            null
+                        ),
+                        new JIfStatement(
+                            where,
+                            new JEqualityExpression(
+                                where, 
+                                true,
+                                new JNameExpression(where, "res"),
+                                new JNullLiteral(where)
+                            ),
+                            new JCompoundStatement(
+                                where,
+                                new JStatement[] {
+                                    new JExpressionListStatement(
+                                        where,
+                                        new JExpression[]{
+                                            new JAssignmentExpression(
+		                                        where,
+		                                        new JNameExpression(where, "res"),
+		                                        new JMethodCallExpression(
+		                                            where,
+		                                            null,
+		                                            "$new"+inner.getMixin().getQualifiedName().getIdent(),
+		                                            JExpression.EMPTY
+		                                        )
+	                                        ),
+	                                        new JMethodCallExpression(
+	                                            where,
+	                                            new JNameExpression(where, "res"),
+	                                            "$initWrappee",
+	                                            new JExpression[]{
+                                                    new JNameExpression(where, "$w")
+	                                            }	                                            
+	                                        ),
+	                                        new JMethodCallExpression(
+	                                            where,
+	                                            new JNameExpression(where, wrapperMapName),
+	                                            "put",
+	                                            new JExpression[]{
+                                                    new JNameExpression(where, "$w"),
+                                                    new JNameExpression(where, "res")
+	                                            }	                                            
+	                                        )
+                                        },
+                                        null
+                                    )
+                                }
+                            ),
+                            null,
+                            null
+                        ),
+                        new JReturnStatement(
+                            where,
+                            new JNameExpression(where, "res"),
+                            null
+                        )
+                    },
+                    null
+                ),
+                null, null
+            );
+        
+        decl.addMethod(wrapperMethod);
+	}
+	
+	/*
+	private Client wrappee = null;
+	public void $initWrappee(Client wrappee) {
+		this.wrappee=wrappee;
+    }
+	*/
+	public void generateWrappeeSupport(
+        KjcEnvironment environment,
+	    JavaTypeNode wrapper,
+	    CjVirtualClassDeclaration decl
+    ) {
+	    TypeFactory typeFactory = environment.getTypeFactory();
+        ClassReader classReader = environment.getClassReader();
+        
+        TokenReference where = decl.getTokenReference();
+        
+        decl.addField(
+            new JFieldDeclaration(
+                decl.getTokenReference(),
+                new JVariableDefinition(
+                    where,
+                    ACC_PRIVATE,
+                    decl.getWrappee(),
+                    "$wrappee",
+                    new JNullLiteral(where)
+                ),
+                null, null
+            )
+        );
+        
+        JFormalParameter[] params =
+        	new JFormalParameter[]{
+                new JFormalParameter(
+                    where,
+                    JFormalParameter.DES_PARAMETER,
+                    decl.getWrappee(),
+                    "w",
+                    false
+                )
+            };
+        
+        decl.addMethod( 
+            new JMethodDeclaration(
+                where,
+                ACC_PUBLIC,
+                CTypeVariable.EMPTY,
+                typeFactory.getVoidType(),
+                "$initWrappee",
+                params,
+                CReferenceType.EMPTY,
+                new JBlock(
+                    where,
+                    new JStatement[]{                        
+                        new JExpressionListStatement(
+                            where,
+                            new JExpression[]{
+                                new JAssignmentExpression(
+                                    where,
+                                    new JNameExpression(where, "$wrappee"),
+                                    new JNameExpression(where, "w")
+                                )
+                            },
+                            null
+                        )
+                    },
+                    null
+                ),
+                null, null
+            )
+        );       
+        
+        // add method to the ifc
+        decl.getMixinIfcDeclaration().addMethod(
+            new JMethodDeclaration(
+                where,
+                ACC_PUBLIC,
+                CTypeVariable.EMPTY,
+                typeFactory.getVoidType(),
+                "$initWrappee",
+                params,
+                CReferenceType.EMPTY,
+                null, null, null
+            )
+        );
+        
+        System.out.println();
+	}
+	
     /**
      * for each inner class which corresponds to a caesar type,
-     * we generatea for each ctor of this inner class a factory method in the owner type
+     * we generate for the default ctor of this inner class a factory method in the enclosing class
+     * Furthermore, we generate wrapper support for each wrapper in the cclass.
      */
-    public void generateFactoryMethods(
+    public void generateSupportMethods(
         CompilerBase compilerBase, 
         KjcEnvironment environment
     ) throws UnpositionedError {
         try {
-            CaesarTypeSystem caesarTypeSystem = environment.getCaesarTypeSystem(); 
-            TypeFactory typeFactory = environment.getTypeFactory();
-            ClassReader classReader = environment.getClassReader();
+            CaesarTypeSystem caesarTypeSystem = environment.getCaesarTypeSystem();             
                     
             Collection allTypes = caesarTypeSystem.getJavaTypeGraph().getAllTypes();        
             
             for (Iterator it = allTypes.iterator(); it.hasNext();) {
                 JavaTypeNode item = (JavaTypeNode)it.next();                        
-                            
+                           
                 CjVirtualClassDeclaration decl = item.getDeclaration();
                 if(decl != null) {
-                    CjInterfaceDeclaration ifcDecl = decl.getMixinIfcDeclaration();
+                    
+                    if(decl.isWrapper()) {
+                        generateWrappeeSupport(
+                            environment,
+                            item,
+                            decl
+                        );
+                	}
+                    
                     for (Iterator innerIt = item.getInners().iterator(); innerIt.hasNext();) {
                         JavaTypeNode inner = (JavaTypeNode) innerIt.next();
                         
-                        // if we have a inner corresponding to a caesar type generate factory method
-                        if(!inner.isToBeGeneratedInBytecode()) {                        
-                            CClass innerClass = inner.getCClass();
-                                                        
-                            JBlock creationBlock = new JBlock(
-                                decl.getTokenReference(),
-                                new JStatement[] {
-                                    new JReturnStatement(
-                                        decl.getTokenReference(),
-                                        new JUnqualifiedInstanceCreation(
-                                            decl.getTokenReference(),
-                                            innerClass.getAbstractType(),
-                                            //JExpression.EMPTY
-											new JExpression[]{
-                                        		new JThisExpression(decl.getTokenReference())
-                                    		}
-                                        ),
-                                        null
-                                    )
-                                },
-                                null
-                            );
-                            
-                            CaesarTypeNode topMost = inner.getMixin().getTopmostNode();
-                            
-                            CClass returnType = classReader.loadClass(
-                                typeFactory, 
-                                topMost.getQualifiedName().toString()    
-                            );
-                            
-                            JMethodDeclaration facMethodDecl = new JMethodDeclaration(
-                                    decl.getTokenReference(),
-                                    ACC_PUBLIC,
-                                    CTypeVariable.EMPTY,
-                                    returnType.getAbstractType(),
-                                    "$new"+inner.getType().getQualifiedName().getIdent(),
-                                    JFormalParameter.EMPTY, // formal params
-                                    CReferenceType.EMPTY,
-                                    creationBlock,
-                                    null, null
-                                );  
-                            
-                            JMethodDeclaration facIfcMethodDecl = new JMethodDeclaration(
-                                decl.getTokenReference(),
-                                ACC_PUBLIC,
-                                CTypeVariable.EMPTY,
-                                returnType.getAbstractType(),
-                                "$new"+inner.getType().getQualifiedName().getIdent(),
-                                JFormalParameter.EMPTY, // formal params
-                                CReferenceType.EMPTY,
-                                null,
-                                null, null
-                            );  
-                            
-                            decl.addMethod(facMethodDecl);
-                            ifcDecl.addMethod(facIfcMethodDecl);                         
+                        if(!inner.isToBeGeneratedInBytecode()) {
+	                        generateFactoryMethod(
+	                            environment,
+	                            inner,
+	                            decl
+	                        );
+	                        
+	                        if(inner.getDeclaration().isWrapper()) {
+		                        generateWrapperSupport(
+		                            environment,
+		                            inner,
+		                            decl
+		                        );
+	                        }
                         }
                     }
                 }
