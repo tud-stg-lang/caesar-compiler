@@ -75,8 +75,9 @@ public class FjClassDeclaration
 		String ident,
 		CTypeVariable[] typeVariables,
 		CReferenceType superClass,
-		CReferenceType[] interfaces,
 		CReferenceType binding,
+		CReferenceType providing,
+		CReferenceType[] interfaces,
 		JFieldDeclaration[] fields,
 		JMethodDeclaration[] methods,
 		JTypeDeclaration[] inners,
@@ -90,8 +91,9 @@ public class FjClassDeclaration
 			ident,
 			typeVariables,
 			superClass,
-			interfaces,
 			binding,
+			providing,
+			interfaces,
 			fields,
 			methods,
 			inners,
@@ -109,8 +111,9 @@ public class FjClassDeclaration
 		String ident,
 		CTypeVariable[] typeVariables,
 		CReferenceType superClass,
-		CReferenceType[] interfaces,
 		CReferenceType binding,
+		CReferenceType providing,
+		CReferenceType[] interfaces,
 		JFieldDeclaration[] fields,
 		JMethodDeclaration[] methods,
 		JTypeDeclaration[] inners,
@@ -127,8 +130,9 @@ public class FjClassDeclaration
 			ident,
 			typeVariables,
 			superClass,
-			interfaces,
 			binding,
+			providing,
+			interfaces,
 			fields,
 			methods,
 			inners,
@@ -606,7 +610,7 @@ public class FjClassDeclaration
 		}
 
 		sourceClass.close(
-			getAllInterfaces(),
+			interfaces,
 			sourceClass.getSuperType(),
 			hashField,
 			methodList);
@@ -616,7 +620,7 @@ public class FjClassDeclaration
 	{
 		return ident;
 	}
-
+	
 	public void append(JMethodDeclaration newMethod)
 	{
 		Vector methods = new Vector(Arrays.asList(this.methods));
@@ -625,19 +629,6 @@ public class FjClassDeclaration
 			(JMethodDeclaration[]) Utils.toArray(
 				methods,
 				JMethodDeclaration.class);
-	}
-
-	protected FjClassDeclaration ownerDecl;
-
-	public void setOwnerDeclaration(Object ownerDecl)
-	{
-		if (ownerDecl instanceof FjClassDeclaration)
-			this.ownerDecl = (FjClassDeclaration) ownerDecl;
-	}
-
-	public FjClassDeclaration getOwnerDeclaration()
-	{
-		return ownerDecl;
 	}
 
 	public FjSourceClass getFjSourceClass()
@@ -867,6 +858,7 @@ public class FjClassDeclaration
 		adviceDeclaration.setIdent(ident);
 	}
 
+
 	/**
 	 * Generates for every nested crosscutting class the corresponding deployment support classes.
 	 */
@@ -982,7 +974,11 @@ public class FjClassDeclaration
 			| FJC_VIRTUAL
 			| FJC_OVERRIDE
 			| FJC_CLEAN
-		//Jurgens
+			| CCI_COLLABORATION
+			| CCI_BINDING
+			| CCI_PROVIDING
+			| CCI_WEAVELET
+		//Jurgen's
 		| ACC_PRIVILEGED | ACC_CROSSCUTTING | ACC_DEPLOYED;
 	}
 

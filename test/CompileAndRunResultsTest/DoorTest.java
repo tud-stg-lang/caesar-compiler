@@ -1,8 +1,8 @@
 package generated;
 import java.lang.reflect.Method;
 
-import familyj.runtime.ClassBasedDelegation;
-import familyj.runtime.GeneratedDispatching;
+import org.caesarj.runtime.ClassBasedDelegation;
+import org.caesarj.runtime.GeneratedDispatching;
 
 import junit.framework.TestCase;
 

@@ -1,5 +1,6 @@
 package org.caesarj.compiler.ast;
 
+import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
@@ -10,22 +11,18 @@ import org.caesarj.compiler.UnpositionedError;
 import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CContext;
-import org.caesarj.kjc.CMethod;
+import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CSourceClass;
-import org.caesarj.kjc.CType;
 import org.caesarj.kjc.CTypeVariable;
-import org.caesarj.kjc.JBlock;
-import org.caesarj.kjc.JConstructorBlock;
+import org.caesarj.kjc.JExpression;
 import org.caesarj.kjc.JFieldDeclaration;
-import org.caesarj.kjc.JFormalParameter;
+import org.caesarj.kjc.JMethodCallExpression;
 import org.caesarj.kjc.JMethodDeclaration;
 import org.caesarj.kjc.JPhylum;
-import org.caesarj.kjc.JReturnStatement;
-import org.caesarj.kjc.JStatement;
 import org.caesarj.kjc.JThisExpression;
 import org.caesarj.kjc.JTypeDeclaration;
-import org.caesarj.kjc.TypeFactory;
+import org.caesarj.kjc.JUnqualifiedInstanceCreation;
 
 /**
  * The AST element that represents the declaration of weavelet classes. 
@@ -33,10 +30,17 @@ import org.caesarj.kjc.TypeFactory;
  * @author Walter Augusto Werner
  */
 public class CciWeaveletClassDeclaration 
-	extends FjClassDeclaration
+	extends FjCleanClassDeclaration
 {
-	/** The type factory used to create the constructor. */
-	private TypeFactory typeFactory;
+	/**
+	 * The reference of the binding class.
+	 */
+	private CReferenceType bindingImplementation;
+	/**
+	 * The reference of the providing class.
+	 */
+	private CReferenceType providingImplementation;
+
 	/** 
 	 * The collaboration interface with the reference for the implementation
 	 * and the binding types.
@@ -70,36 +74,33 @@ public class CciWeaveletClassDeclaration
 		JTypeDeclaration[] inners,
 		JPhylum[] initializers,
 		JavadocComment javadoc,
-		JavaStyleComment[] comment,
-		TypeFactory typeFactory)
+		JavaStyleComment[] comment)
 	{
 		super(
 			where,
-			modifiers,
+			modifiers | CCI_WEAVELET,
 			ident,
 			typeVariables,
-			new CClassNameType(
-				CciConstants.toCollaborationInterfaceImplName(
-					superCollaborationInterface.getQualifiedName())),
-			interfaces,
 			null,
+			null,
+			null,
+			interfaces,
 			fields,
 			methods,
 			inners,
 			initializers,
 			javadoc,
 			comment);
-			
-			this.typeFactory = typeFactory;
-			this.superCollaborationInterface = superCollaborationInterface;
+
+		this.superCollaborationInterface = superCollaborationInterface;
 	}
-	
+
 	/**
-	 * @return A string that represents the implementation type.
+	 * @return A string that represents the providing type.
 	 */
-	public String getImplementationTypeName()
+	public String getProvidingTypeName()
 	{
-		return superCollaborationInterface.getImplementationQualifiedName();
+		return superCollaborationInterface.getProvidingQualifiedName();
 	}
 	/**
 	 * @return A string that represents the binding type.
@@ -108,233 +109,234 @@ public class CciWeaveletClassDeclaration
 	{
 		return superCollaborationInterface.getBindingQualifiedName();
 	}
-	
 	/**
-	 * Updates the cosntructors for call the super constructors of the proxies.
-	 * If it does not have one, it adds a constructor that will call the super
-	 * one.
-	 */
-	protected void updateConstructors()
-	{
-		boolean hasConstructor = false;
-		for (int i = 0; i < methods.length; i++)
-		{
-			if (methods[i] instanceof FjConstructorDeclaration)
-			{
-				((FjConstructorDeclaration)methods[i])
-					.updateWeaveletConstructor(this);
-				hasConstructor = true;
-			}
-		}
-		
-		if (! hasConstructor)
-			addMethod(createConstructor());
-
-	}
-	
-	/**
-	 * Creates a constructor without parameters that calls the super type 
-	 * constructor. The super constructor has to receive two parameters: the
-	 * implementation and the binding, so it creates two fresh objects and 
-	 * passes for the super constructor.
-	 */
-	protected JMethodDeclaration createConstructor()
-	{
-		TokenReference ref = getTokenReference();
-		//TODO: Deal with constructor parameters
-		JConstructorBlock constructorBody = new FjConstructorBlock(
-			ref, 
-			null, 
-			new JStatement[0]);
-		
-		FjConstructorDeclaration constructor = new FjConstructorDeclaration(
-			ref, 
-			ACC_PUBLIC, 
-			ident, 
-			new JFormalParameter[0], 
-			new CReferenceType[0], 
-			constructorBody, 
-			null, 
-			null, 
-			typeFactory);
-		
-		constructor.updateWeaveletConstructor(this);
-		return constructor;
-	}
-	
-	/**
-	 * Adds the methods to access the binding and implementation references.
-	 *
-	 */
-	protected void addAccessors()
-	{
-		addMethod(
-			createAccessor(
-				CciConstants.IMPLEMENTATION_FIELD_NAME, 
-				superCollaborationInterface.getImplementationType()));
-		
-		addMethod(
-			createAccessor(
-				CciConstants.BINDING_FIELD_NAME, 
-				superCollaborationInterface.getBindingType()));
-	}
-	/**
-	 * Creates an accessor method.
-	 * @param name the name of the field.
-	 * @param typeName the type of the field.
-	 * @return
-	 */
-	protected JMethodDeclaration createAccessor(String name, 
-		CReferenceType returnType)
-	{
-		JStatement[] statements =
-			new JStatement[] 
-			{
-				new JReturnStatement(
-					getTokenReference(),
-					new FjCastExpression(
-						getTokenReference(), 
-						new FjFieldAccessExpression(
-							getTokenReference(), 
-							new JThisExpression(getTokenReference()), 
-							name),
-						returnType),
-					null)
-			};
-		JBlock body = new JBlock(getTokenReference(), statements, null);
-
-		return new FjMethodDeclaration(
-			getTokenReference(), 
-			ACC_PUBLIC, 
-			new CTypeVariable[0],
-			returnType,
-			CciConstants.toAccessorMethodName(name),
-			new JFormalParameter[0],
-			new CReferenceType[0],
-			body,
-			null, null);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.caesarj.kjc.JTypeDeclaration#resolveInterfaces(org.caesarj.kjc.CContext)
-	 */
-	protected void resolveInterfaces(CContext context) 
-		throws PositionedError
-	{
-		
-		if (ownerDecl != null 
-			&& ownerDecl instanceof CciWeaveletClassDeclaration)
-		{
-			CciWeaveletClassDeclaration weavelet = 
-				(CciWeaveletClassDeclaration) ownerDecl;
-			superCollaborationInterface.setBindingType(
-				new CClassNameType(
-					weavelet.getBindingTypeName() 
-					+ "$" +
-					superCollaborationInterface.getBindingQualifiedName()));
-			superCollaborationInterface.setImplementationType(
-				new CClassNameType(
-					weavelet.getImplementationTypeName() 
-					+ "$" +
-					superCollaborationInterface
-						.getImplementationQualifiedName()));
-
-			superCollaborationInterface.setCollaborationInterfaceType(
-				new CClassNameType(
-					weavelet.getSuperCollaborationInterface().getQualifiedName() 
-					+ "$" +
-					superCollaborationInterface.getQualifiedName()));
-		}
-		try
-		{
-			superCollaborationInterface = 
-				(CciWeaveletReferenceType) 
-					superCollaborationInterface.checkType(context);
-		}
-		catch (UnpositionedError e)
-		{
-			throw e.addPosition(getTokenReference());
-		}
-		
-		super.resolveInterfaces(context);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.caesarj.kjc.JTypeDeclaration#join(org.caesarj.kjc.CContext)
-	 */
-	public void join(CContext context) throws PositionedError
-	{
-		super.join(context);
-		addAccessors();
-		updateConstructors();
-		addCrossReferenceField(getBindingTypeName(), 
-			CciConstants.BINDING_FIELD_NAME, false);
-		addCrossReferenceField(getImplementationTypeName(), 
-			CciConstants.IMPLEMENTATION_FIELD_NAME, false);	
-	}
-	
-	public void addFactoryMethods(
-		CciWeaveletClassDeclaration innerClazz, 
-		CReferenceType collaborationInterface,
-		String fieldName)
-	{
-		
-		CType returnType = new CClassNameType(
-			org.caesarj.kjc.Constants.JAV_OBJECT);
-		CMethod[] ciMethods = collaborationInterface.getCClass().getMethods();
-		boolean factoryCreated = false;
-		for (int i = 0; i < ciMethods.length; i++)
-		{
-			if (ciMethods[i].isConstructor())
-			{
-				addMethod(
-					createDelagationMethod(
-						fieldName, 
-						FjConstants.factoryMethodName(
-							collaborationInterface.getIdent()), 
-						ciMethods[i].getParameters(),
-						ciMethods[i].getTypeVariables(),
-						returnType,
-						ciMethods[i].getThrowables()));
-				factoryCreated = true;
-			}
-		}
-		if (! factoryCreated)
-		{
-			addMethod(
-				createDelagationMethod(
-					fieldName, 
-					FjConstants.factoryMethodName(collaborationInterface.getIdent()), 
-					new CType[0],
-					collaborationInterface.getCClass().getTypeVariables(),
-					returnType,
-					new CReferenceType[0]));
-		}
-	}
-
-	/**
-	 * @return
+	 * Returns the reference of the super collaboration interface.
+	 * @return CciWeaveletReferenceType
 	 */
 	public CciWeaveletReferenceType getSuperCollaborationInterface()
 	{
 		return superCollaborationInterface;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.caesarj.compiler.ast.CciClassDeclaration#constructSourceClass(org.caesarj.kjc.CClass, java.lang.String)
+	/**
+	 * Resolves the superCollaborationInterface reference.
+	 *
+	 */
+	public void resolveInterfaces(CContext context) throws PositionedError
+	{
+		try
+		{
+			superCollaborationInterface =
+				(
+					CciWeaveletReferenceType) superCollaborationInterface
+						.checkType(
+					context);
+
+			bindingImplementation =
+				(CReferenceType) new CClassNameType(
+					FjConstants.toImplName(
+						superCollaborationInterface
+							.getBindingQualifiedName()))
+							.checkType(
+					context);
+
+			providingImplementation =
+				(CReferenceType) new CClassNameType(
+					FjConstants.toImplName(
+						superCollaborationInterface
+							.getProvidingQualifiedName()))
+							.checkType(
+					context);
+		}
+		catch (UnpositionedError e)
+		{
+			throw e.addPosition(getTokenReference());
+		}
+
+		super.resolveInterfaces(context);
+	}
+
+	/**
+	 * Adds the methods to access the binding and providing references.
+	 * The method's bodies
+	 * _getBinding:
+	 *      return (<BindingType>)_getParent();
+	 * _getProviding:
+	 * 		return (<ProvidingType>)_getProvidingReference();
+	 */
+	public void addAccessors()
+	{
+		TokenReference ref = getTokenReference();
+		//Adds the binding accessor
+		CReferenceType bindingType = 
+			superCollaborationInterface.getBindingType();
+		addMethod(
+			createAccessor(
+				CciConstants.BINDING_NAME,
+				new FjCastExpression(
+					ref,
+					new FjFieldAccessExpression(
+						ref,
+						FjConstants.PARENT_NAME),
+					bindingType),
+				bindingType));
+
+		//Adds the providing accessor
+		CReferenceType providingType = 
+			superCollaborationInterface.getProvidingType();
+		addMethod(
+			createAccessor(
+				CciConstants.PROVIDING_NAME,
+				new FjCastExpression(
+					ref,
+					new JMethodCallExpression(
+							ref, 
+							new JThisExpression(ref),
+							CciConstants.toAccessorMethodName(
+								CciConstants.PROVIDING_REFERENCE_NAME),
+							JExpression.EMPTY),
+					providingType),
+				providingType));				
+		
+
+
+	}
+	/**
+	 * Checks if the weavelet extends a Collaboration Interface, and if the 
+	 * binding reference really binds this collaboration interface, and 
+	 * the providing provides the same collaboration interface as well.
+	 */
+	public void checkInterface(CContext context) 
+		throws PositionedError
+	{
+		String superCiIdent = 
+			superCollaborationInterface.getCClass().getIdent();
+		
+		//Is the super ci a collaboration interface?	
+		check(context, 
+			CModifier.contains(
+				superCollaborationInterface.getCClass().getModifiers(), 
+				CCI_COLLABORATION),
+				CaesarMessages.NON_CI,
+				superCiIdent);
+		
+		//Check if it is weaving binding and providing classes.
+		CClass binding = getSuperCollaborationInterfaceClass(
+			superCollaborationInterface.getBindingType().getCClass(), 
+			CCI_BINDING);
+			
+		CClass providing = getSuperCollaborationInterfaceClass(
+			superCollaborationInterface.getProvidingType().getCClass(), 
+			CCI_PROVIDING);
+		
+		//Does the binding reference bind something?
+		check(context, 
+			binding != null, 
+			CaesarMessages.REFERENCE_IS_NOT_BINDING,
+			getBindingTypeName());
+			
+		//Does the providing reference provide something?
+		check(context, 
+			providing != null, 
+			CaesarMessages.REFERENCE_IS_NOT_PROVIDING,
+			getProvidingTypeName());
+		
+		//Do they use the same ci?  		
+		//And do they use the same CI as 
+		//that one defined at the extends clause?
+		check(context, 
+			providing.getIdent().equals(superCiIdent), 
+			CaesarMessages.PROVIDING_OTHER_CI,
+			getProvidingTypeName(), 
+			superCiIdent);
+		
+		check(context, 
+			binding.getIdent().equals(superCiIdent), 
+			CaesarMessages.BINDING_OTHER_CI,
+			getBindingTypeName(),
+			superCiIdent);		
+		
+		super.checkInterface(context);
+	}
+	
+	/**
+	 * Generates a new argument expression for generate the constructors.
+	 * The expression will be:
+	 * 
+	 * new <BindingType>(new <ProvidingType>(), ..)
+	 */
+	protected void setSuperConstructorArgument(
+		FjConstructorDeclaration constructor,
+		JExpression superArg)
+	{
+		FjConstructorCall constructorCall = 
+			((FjConstructorBlock) constructor.getBody()).getConstructorCall();
+		JExpression[] args;
+		if (constructorCall != null)
+		{
+			JExpression[] oldArgs = constructorCall.getArguments();
+			args = new JExpression[oldArgs.length + 1];
+			System.arraycopy(oldArgs, 0, args, 1, oldArgs.length);
+		}
+		else
+			args = new JExpression[1];
+
+		args[0] = 
+			new JUnqualifiedInstanceCreation(
+				FjConstants.STD_TOKEN_REFERENCE,
+				new CClassNameType(
+					FjConstants.toImplName(
+						superCollaborationInterface
+							.getProvidingQualifiedName())),
+				new JExpression[]{superArg});
+				
+		superArg =
+			new JUnqualifiedInstanceCreation(
+				FjConstants.STD_TOKEN_REFERENCE,
+				new CClassNameType(
+					FjConstants.toImplName(
+						superCollaborationInterface
+							.getBindingQualifiedName())),
+				args);
+
+
+		super.setSuperConstructorArgument(constructor, superArg);
+	}
+	
+	/**
+	 * The standard base class constructors are different for weavelets.
+	 * It does not call the constructor defined in the same class, but instead
+	 * it calls the super constructor, building all the delegation chain 
+	 * for allow the execution of the components. 
+	 *
+	 */
+	protected FjConstructorDeclaration createStandardBaseClassConstructor(
+		FjConstructorDeclaration constructor,
+		CReferenceType superType)
+	{
+		return constructor.getStandardWeaveletClassConstructor(
+			new CClassNameType(
+				superCollaborationInterface.getProvidingQualifiedName()),
+			new CClassNameType(
+				superCollaborationInterface.getBindingQualifiedName()));
+	}
+	
+	/**
+	 * Constructs the source class which represents the weavelet.
+	 *
 	 */
 	protected CSourceClass constructSourceClass(CClass owner, String prefix)
 	{
 		return new CciWeaveletSourceClass(
-			owner, 
-			getTokenReference(), 
-			modifiers, 
-			ident, 
+			owner,
+			getTokenReference(),
+			modifiers,
+			ident,
 			prefix + ident,
 			superCollaborationInterface,
-			typeVariables, 
-			isDeprecated(), 
-			false, 
+			typeVariables,
+			isDeprecated(),
+			false,
 			this);
 	}
 

@@ -9,4 +9,5 @@ public interface FjOverrideable {
 	public void setSuperClass( CReferenceType superType );		
 	public String toSuperClass( String name );
 	public TokenReference getTokenReference();
+	public CReferenceType getProviding();
 }

@@ -145,6 +145,12 @@ public class FjConstants {
 		return methodName.startsWith( SEPERATOR )
 			&& methodName.endsWith( SELFCONTEXT_METHOD_SUFFIX );
 	}
+	public static boolean isBaseMethodName(String methodName)
+	{
+		return ! isSelfContextMethodName(methodName)
+				&& ! isImplementationMethodName(methodName);
+	}
+		
 	public static TokenReference STD_TOKEN_REFERENCE = new TokenReference( "<generated>", 0 );
 	
 	public static String uniqueMethodId( CMethod method ) {

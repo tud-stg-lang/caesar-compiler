@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.1 2003-07-05 18:29:38 werner Exp $
+ * $Id: JClassDeclaration.java,v 1.2 2003-07-30 09:24:55 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -215,15 +215,15 @@ public class JClassDeclaration extends JTypeDeclaration {
     if (instanceInit != null) {
       instanceInit.checkInterface(self);
     }
-
+	
     if (getCClass().getSuperClass() != null) {
       check(context,
             !getCClass().getSuperClass().descendsFrom(getCClass()),
 	    KjcMessages.CLASS_CIRCULARITY,
 	    ident);
     }
-
-    super.checkInterface(context, superClass);
+	super.checkInterface(context, superClass);
+    
     // Check inners
     for (int k = 0; k  < inners.length; k++) {
       if (!inners[k].getCClass().isStatic()) {

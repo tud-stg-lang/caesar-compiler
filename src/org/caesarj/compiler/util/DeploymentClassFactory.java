@@ -731,7 +731,6 @@ public class DeploymentClassFactory implements CaesarConstants {
 				CTypeVariable.EMPTY,
 				null,
 				interfaces,
-				null,//Walter
 				fields,
 				(JMethodDeclaration[]) methods.toArray(
 					new JMethodDeclaration[0]),
@@ -1353,7 +1352,6 @@ public class DeploymentClassFactory implements CaesarConstants {
 				CTypeVariable.EMPTY,
 				null,
 				interfaces,
-				null,//Walter
 				fields,
 				(JMethodDeclaration[]) methods.toArray(
 					new JMethodDeclaration[0]),
@@ -2208,7 +2206,6 @@ public class DeploymentClassFactory implements CaesarConstants {
 				CTypeVariable.EMPTY,
 				null,
 				interfaces,
-				null,//Walter
 				(FjFieldDeclaration[]) fields.toArray(
 					new FjFieldDeclaration[0]),
 				(JMethodDeclaration[]) singletonAspectMethods.toArray(

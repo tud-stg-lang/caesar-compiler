@@ -32,16 +32,27 @@ import org.caesarj.kjc.SignatureParser;
 
 public class CompileAndRunResultsCITest extends FjTestCase
 {
-
     public String[] errorfiles =
-        new String[] {
-            "ProvidedOutOfCI.java",
-            "ExpectedOutOfCI.java",
-            "CIWithoutProvidedOrExpected.java" };
+        new String[] 
+        {
+			"CIWithoutProvidedOrExpected.java",
+			"ExpectedOutOfCI.java",
+			"ProvidedOutOfCI.java",
+			"FailureOverrideMethod.java",
+			"FailureBinding.java",
+			"FailureProviding.java",
+			"FailureWeavelet.java",
+			"BadCollaborationInterface.java"
+		};
     int i;
     public String[][] errormessages = new String[][] 
     {
 		{ errorfiles[i], "1.1" },
+		{ errorfiles[++i], "1.1" },
+		{ errorfiles[++i], "1.1" },
+		{ errorfiles[++i], "1.1" },
+		{ errorfiles[++i], "1.1" },
+		{ errorfiles[++i], "1.1" },
 		{ errorfiles[++i], "1.1" },
 		{ errorfiles[++i], "1.1" }
     };
@@ -73,10 +84,16 @@ public class CompileAndRunResultsCITest extends FjTestCase
                 String[] args = new String[] {
 					"ObserverProtocolParent.java",
 					"ObserverProtocol.java",
-
-					"ObserverProtocolImpl.java"
+					"ObserverProtocolImpl.java",
+					"ObserverProtocolImplSub.java",
+					"ObserverProtocolBinding.java",
+					"ObserverProtocolBindingSub.java",
+					"ObserverProtocolWeavelet.java",
+					"ObserverProtocolWeaveletSub.java",
+					"CollaborationInterface1.java",
+					"OrdinaryInterface.java",
+					"OrdinaryCleanClass.java"
 				};
-
                 compiler = new CompilerMock(this, 
                 	new PrintWriter(System.out)
                 {

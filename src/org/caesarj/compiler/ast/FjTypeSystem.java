@@ -12,6 +12,7 @@ import org.caesarj.kjc.CContext;
 import org.caesarj.kjc.CExpressionContext;
 import org.caesarj.kjc.CField;
 import org.caesarj.kjc.CMethod;
+import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CType;
 import org.caesarj.kjc.CTypeContext;
@@ -500,15 +501,15 @@ public class FjTypeSystem
 		CTypeContext context,
 		String innerTypeName)
 	{
-
 		CClass lowerBound = null;
 		try
 		{
-			return context
+			CClass clazz = context
 				.lookupClass(
 					context.getClassContext().getCClass(),
-					innerTypeName)
-				.getAbstractType();
+					innerTypeName);
+		
+			return clazz.getAbstractType();
 		}
 		catch (UnpositionedError e)
 		{
@@ -520,84 +521,72 @@ public class FjTypeSystem
 			// interface found i.e. the most recent implementation
 			CClass[] candidates =
 				(CClass[]) e.getFormattedMessage().getParams()[1];
+
 			return candidates[0].getAbstractType();
 		}
 	}
+	
 
+
+	/**
+	 * This method was changed to consider the collaboration interfaces.
+	 * When it does consider, it returns the lower collaboration interface
+	 * that is in the hierarchy of the type found (of course, only if 
+	 * it has one :) ). The places where is found  the sign TEMPORAL are there
+	 * with this porpouse.
+	 */
 	public CReferenceType lowerBound(
 		CTypeContext context,
 		CClass owner,
 		String innerTypeName)
 		throws UnpositionedError
 	{
-//		return lowerBound(context, owner, owner, innerTypeName);
-//	}
-//
-//	public CReferenceType lowerBound(
-//		CTypeContext context,
-//		CClass owner,
-//		CClass caller,
-//		String innerTypeName)
-//		throws UnpositionedError
-//	{
-//	
-//		CClass inner = null;
-//		try
-//		{
-//			inner = owner.lookupClass(caller, innerTypeName);
-//		}
-//		catch (UnpositionedError e)
-//		{
-//			if (e.getFormattedMessage().getDescription()
-//				!= KjcMessages.CLASS_AMBIGUOUS)
-//				return null;
-//
-//			// the first candidate found is that of the first
-//			// interface found i.e. the most recent implementation
-//			CClass[] candidates =
-//				(CClass[]) e.getFormattedMessage().getParams()[1];
-//			inner = candidates[0];
-//		}
-//		if (inner != null)
-//		{
-//			CClass innerOwner = inner.getOwner();
-//			CReferenceType type = null;
-//			if (innerOwner.getQualifiedName().equals(owner.getQualifiedName()))
-//			{
-//				type =
-//					new CClassNameType(
-//						FjConstants.toIfcName(
-//							owner.getQualifiedName()
-//								+ "$"
-//								+ innerTypeName));
-//			}
-//			else
-//			{
-//				type =
-//					new CClassNameType(
-//						FjConstants.toIfcName(inner.getQualifiedName()));
-//			}
-//			
-//			return (CReferenceType) type.checkType(context);
-//		}
-		
+		return lowerBound(context, owner, innerTypeName, false);
+	}
+	public CReferenceType lowerBound(
+		CTypeContext context,
+		CClass owner,
+		String innerTypeName,
+		boolean considerCollaborationInterface)
+		throws UnpositionedError
+	{
+		//If it is a proxy, take the clean interface
+		if (FjConstants.isIfcImplName(owner.getIdent()))
+			owner = owner.getInterfaces()[0].getCClass();
+						
 		CReferenceType inner = declaresInner(owner, innerTypeName);
 		if (inner != null)
 		{
-			CReferenceType type =
+			CReferenceType type = (CReferenceType)
 				new CClassNameType(
 					FjConstants.toIfcName(
 						owner.getQualifiedName()
 							+ "$"
-							+ innerTypeName));
-			return (CReferenceType) type.checkType(context);
+							+ innerTypeName)).checkType(context);
+							
+			//TEMPORAL!
+			if (! considerCollaborationInterface
+				|| ! CModifier.contains(type.getCClass().getModifiers(), 
+					Constants.FJC_OVERRIDE))
+				return (CReferenceType) type;
+			else
+			{
+				CClass result = getClassInHierarchy(
+					type.getCClass(), Constants.CCI_COLLABORATION);
+				return result == null ? (CReferenceType) type : result.getAbstractType();
+			}
+			//TEMPORAL END ;)
+			//It was just this return... 
+			//return (CReferenceType) type;
+
+
 		}
 		if (! owner.isInterface() && owner.getSuperClass() != null)
 		{
 			try
 			{
 				return lowerBound(context, owner.getSuperClass(), 
-					innerTypeName);
+					innerTypeName, considerCollaborationInterface);
 			}
 			catch(UnpositionedError e){}
 		}
@@ -607,7 +596,7 @@ public class FjTypeSystem
 			try
 			{
 				return lowerBound(context, superInterfaces[i].getCClass(), 
-					innerTypeName);
+					innerTypeName, considerCollaborationInterface);
 			}
 			catch(UnpositionedError e){}
 		}
@@ -615,6 +604,37 @@ public class FjTypeSystem
 
 		throw new UnpositionedError(KjcMessages.CLASS_UNKNOWN, innerTypeName);
 	}
+	
+	/**
+	 * Returns the class in the hierarchy which contains the modifier passed,
+	 * or null if the class is not found. (This method is very similar
+	 * to the method getSuperCollaborationInterfaceClass defined in 
+	 * FjCleanClassDeclaration, but it returns the clazz itself instead of 
+	 * return its parent. It was not reused, since this method is here just
+	 * because of the problem of the down cast variable that are 
+	 * Collaboration Interfaces, so if when the problem is resolved, try
+	 * to merge the methods)
+	 * @return CClass
+	 */
+	public static CClass getClassInHierarchy(
+		CClass clazz, int modifier)
+	{
+		if (CModifier.contains(clazz.getModifiers(), modifier))
+			return clazz;
+
+		CClass superClass;
+		//If it is an interface the second interface is its super type.
+		if (clazz.isInterface() && clazz.getInterfaces().length > 1)
+			superClass = clazz.getInterfaces()[1].getCClass();
+		else
+			superClass = clazz.getSuperClass();
+
+		if (superClass != null)
+			return getClassInHierarchy(superClass, modifier);
+		
+		// No, it does not have a ci
+		return null;		
+	}	
 
 	public CReferenceType upperBound(CTypeContext context, CReferenceType type)
 		throws UnpositionedError

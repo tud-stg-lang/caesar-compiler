@@ -4,13 +4,16 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Vector;
 
+import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
+import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CContext;
+import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CStdType;
 import org.caesarj.kjc.CTypeVariable;
@@ -27,13 +30,14 @@ public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 	public FjCleanClassInterfaceDeclaration(
 		TokenReference tokenReference,
 		String ident,
+		int modifiers,
 		CReferenceType[] interfaces,
 		FjCleanMethodDeclaration[] methods,
 		FjCleanClassDeclaration baseDecl)
 	{
 		super(
 			tokenReference,
-			ACC_PUBLIC | ACC_INTERFACE | ACC_ABSTRACT,
+			ACC_PUBLIC | ACC_INTERFACE | ACC_ABSTRACT | modifiers,
 			ident,
 			CTypeVariable.EMPTY,
 			interfaces,
@@ -118,4 +122,28 @@ public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 			// base class this class is derived from, too
 		}
 	}
+	
+	public void checkCollaborationInterface(CContext context, 
+		String collaborationName)
+		throws PositionedError
+	{
+		boolean found = false;
+		for (int i = 0; i < interfaces.length; i++)
+		{
+			CClass interfaceClass = interfaces[i].getCClass();
+			if (CModifier.contains(interfaceClass.getModifiers(),
+					CCI_COLLABORATION)
+				&& interfaceClass.getQualifiedName().equals(collaborationName))
+			{
+				found = true;
+				break;
+			}		
+		}
+		check(
+			context,
+			found,
+			CaesarMessages.NON_CI,
+			ident);		
+	}		
+
 }

@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Constants.java,v 1.1 2003-07-05 18:29:37 werner Exp $
+ * $Id: Constants.java,v 1.2 2003-07-30 09:24:56 werner Exp $
  */
 
 package org.caesarj.classfile;
@@ -89,6 +89,9 @@ public interface Constants {
   int		CCI_COLLABORATION = 0x00040000;
   int		CCI_PROVIDED = 0x00080000;
   int		CCI_EXPECTED = 0x00100000;
+  int 		CCI_BINDING  = 0x00200000;
+  int		CCI_PROVIDING = 0x00400000;
+  int		CCI_WEAVELET = 0x00800000;  
   //Walter end
 
   int		ACC_SUPER = 0x0020;

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.4 2003-07-17 11:31:30 werner Exp $
+ * $Id: Caesar.g,v 1.5 2003-07-30 09:24:03 werner Exp $
  */
 
 /*
@@ -407,7 +407,7 @@ jClassDefinition [int modifiers]
   CReferenceType			superClass = null;
   CReferenceType[]			interfaces = CReferenceType.EMPTY;
   CReferenceType			binding = null;
-
+  CReferenceType			providing = null;  
   ParseClassContext	context = ParseClassContext.getInstance();
   TokenReference	sourceRef = buildTokenReference();
   JavadocComment	javadoc = getJavadocComment();
@@ -416,12 +416,11 @@ jClassDefinition [int modifiers]
 :
   "class" ident:IDENT
   (typeVariables = kTypeVariableDeclarationList[])?
+  (superClass = jSuperClassClause[] 
+  | binding = jBindsClause[]
+  | providing = jProvidesClause[])
   
-  superClass = jSuperClassClause[]
-  
-  ( binding = jBindsClause[]
-  | interfaces = jImplementsClause[])
-  
+  interfaces = jImplementsClause[] 
   
   jClassBlock[context]
     {
@@ -450,17 +449,49 @@ jClassDefinition [int modifiers]
 				   context.getInnerClasses(),
 				   context.getBody(),
 				   javadoc,
-				   comments,
-				   environment.getTypeFactory());
-
+				   comments);
+	  else if (providing != null || binding != null)
+	  {
+	  	if (CModifier.contains(modifiers, org.caesarj.kjc.Constants.FJC_VIRTUAL))
+            self = new FjVirtualClassDeclaration(sourceRef,
+				   modifiers,
+				   ident.getText(),
+				   typeVariables,
+				   superClass,
+				   binding,
+				   providing,				   
+				   interfaces,
+				   context.getFields(),
+				   methods,
+				   context.getInnerClasses(),
+				   context.getBody(),
+				   javadoc,
+				   comments);
+	  	 else
+            self = new FjCleanClassDeclaration(sourceRef,
+				   modifiers,
+				   ident.getText(),
+				   typeVariables,
+				   superClass,
+				   binding,
+				   providing,
+				   interfaces,
+				   context.getFields(),
+				   methods,
+				   context.getInnerClasses(),
+				   context.getBody(),
+				   javadoc,
+				   comments);
+	 }
       else if( CModifier.contains( modifiers, org.caesarj.kjc.Constants.FJC_OVERRIDE ) ) {
           self = new FjOverrideClassDeclaration(sourceRef,
 				   modifiers,
 				   ident.getText(),
 				   typeVariables,
 				   superClass,
-				   interfaces,
 				   binding,
+				   providing,
+				   interfaces,
 				   context.getFields(),
 				   methods,
 				   context.getInnerClasses(),
@@ -473,8 +504,9 @@ jClassDefinition [int modifiers]
 				   ident.getText(),
 				   typeVariables,
 				   superClass,
-				   interfaces,
 				   binding,
+				   providing,				   
+				   interfaces,
 				   context.getFields(),
 				   methods,
 				   context.getInnerClasses(),
@@ -487,8 +519,9 @@ jClassDefinition [int modifiers]
 				   ident.getText(),
 				   typeVariables,
 				   superClass,
-				   interfaces,
 				   binding,
+				   providing,				   
+				   interfaces,
 				   context.getFields(),
 				   methods,
 				   context.getInnerClasses(),
@@ -501,8 +534,9 @@ jClassDefinition [int modifiers]
 				   ident.getText(),
                    typeVariables,
 				   superClass,
-				   interfaces,
 				   binding,
+				   providing,				   
+				   interfaces,
 				   context.getFields(),
 				   methods,
 				   context.getInnerClasses(),
@@ -550,7 +584,7 @@ jSuperTypeName []
 
 // Definition of a Java Interface
 jInterfaceDefinition [int modifiers]
-  returns [CciInterfaceDeclaration self = null]
+  returns [JTypeDeclaration self = null]
 {
   CTypeVariable[]       typeVariables = CTypeVariable.EMPTY;
   CReferenceType[]		interfaces =  CReferenceType.EMPTY;
@@ -559,6 +593,7 @@ jInterfaceDefinition [int modifiers]
 }
 :
   "interface" ident:IDENT
+
   (typeVariables = kTypeVariableDeclarationList[])?
   // it might extend some other interfaces
   interfaces = jInterfaceExtends[]
@@ -568,18 +603,20 @@ jInterfaceDefinition [int modifiers]
      if (CModifier.contains(modifiers,  
      	org.caesarj.kjc.Constants.CCI_COLLABORATION)) 
      {
-     	self = new CciCollaborationInterfaceDeclaration(sourceRef,
-                                           modifiers,
-                                           ident.getText(),
-                                           typeVariables,
-                                           interfaces,
-                                           context.getFields(),
-                                           context.getMethods(),
-                                           context.getInnerClasses(),
-                                           context.getBody(),
-                                           getJavadocComment(),
-                                           getStatementComment());
-                                           
+          self = new FjCleanClassDeclaration(sourceRef,
+				   modifiers,
+				   ident.getText(),
+				   typeVariables,
+				   null,
+				   null,
+				   null,				   
+				   interfaces,
+				   JFieldDeclaration.EMPTY,
+				   context.getMethods(),
+				   context.getInnerClasses(),
+				   context.getBody(),
+				   getJavadocComment(),
+				   getStatementComment());
      }
      else
      {
@@ -606,8 +643,8 @@ jInterfaceDefinition [int modifiers]
                                             null,
                                             null,
                                             environment.getTypeFactory());
-
-        self.setAssertionClass(assertionClass);
+		if (self instanceof JInterfaceDeclaration)
+        	((JInterfaceDeclaration)self).setAssertionClass(assertionClass);
       }
 
       context.release();
@@ -636,11 +673,16 @@ jInterfaceExtends []
   ( "extends" self = jNameList[] )?
 ;
 
-// A class can bind several collaboration interfaces...
 jBindsClause[]
   returns [CReferenceType self = null]
 :
   ( "binds" self = jTypeName[] )?
+;
+
+jProvidesClause[]
+  returns [CReferenceType self = null]
+:
+  ( "provides" self = jTypeName[] )?
 ;
 
 // A class can implement several interfaces...
@@ -1060,45 +1102,18 @@ jMethodDefinition [ParseClassContext context, int modifiers, CType type, CTypeVa
 
          // check if we have a clean method, i.e. a method that
          // could be taken into a clean class's interface
-         else if (CModifier.contains(modifiers, 
-                                     Constants.ACC_PUBLIC)
-                  && ! CModifier.contains(modifiers, 
-                                          Constants.ACC_STATIC))
-         {
-             // Checks if it is a provided method         	
-             if (CModifier.contains(modifiers, 
-                                    Constants.CCI_PROVIDED))
-         	    self = new CciProvidedMethodDeclaration(sourceRef,
-                            modifiers, typeVariables, type,
-                            name.getText(), parameters, throwsList,
-                            body == null 
-                                ? null 
-                                : new JBlock(sourceRef, body, null),
-                            javadoc, comments);
-             // Checks if it is a expected method
-             else if (CModifier.contains(modifiers, 
-                                         Constants.CCI_EXPECTED))
-
-                 self = new CciExpectedMethodDeclaration(sourceRef,
-                            modifiers, typeVariables, type,
-                            name.getText(), parameters, throwsList,
-                            body == null 
-                                ? null 
-                                : new JBlock(sourceRef, body, null),
-                            javadoc, comments);
-                            
-             else
-             
-                self = new CciStandardMethodDeclaration(sourceRef,
-                            modifiers, typeVariables, type,
-                            name.getText(), parameters, throwsList,
-                            body == null 
-                                ? null 
-                                : new JBlock(sourceRef, body, null),
-                            javadoc, comments);
-             
-         }
-
+         if( (modifiers & Constants.ACC_PUBLIC) != 0
+             && (modifiers & Constants.ACC_STATIC) == 0 )
+                 self = new FjCleanMethodDeclaration(sourceRef,
+                                               modifiers,
+                                               typeVariables,
+                                               type,
+                                               name.getText(),
+                                               parameters,
+                                               throwsList,
+                                               body == null ? null : new JBlock(sourceRef, body, null),
+                                               javadoc,
+                                               comments);
 		 // check if we have private methods that might
 		 // need to receive a self parameter later
          else if( (modifiers & Constants.ACC_PRIVATE) != 0 
@@ -2302,8 +2317,9 @@ jUnqualifiedNewExpression []
 					 "", //((CReferenceType)type).getQualifiedName(),
                      CTypeVariable.EMPTY,
 					 null,
-					 CReferenceType.EMPTY,
 					 null,
+					 null,
+					 CReferenceType.EMPTY,
 					 context.getFields(),
 					 methods,
 					 context.getInnerClasses(),
@@ -2357,8 +2373,9 @@ jQualifiedNewExpression [JExpression prefix]
 				     ident.getText(),
                      CTypeVariable.EMPTY,
 				     null,
-				     CReferenceType.EMPTY,
 				     null,
+				     null,				     
+				     CReferenceType.EMPTY,
 				     context.getFields(),
 				     methods,
 				     context.getInnerClasses(),

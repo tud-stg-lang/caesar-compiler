@@ -1,6 +1,6 @@
 package generated;
 
-public interface ProvidedOutOfCI
+public interface ExpectedOutOfCI
 {
 	public String a();
 	public expected void e();

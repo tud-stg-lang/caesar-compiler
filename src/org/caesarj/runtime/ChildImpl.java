@@ -40,11 +40,12 @@ public class ChildImpl implements Child {
 	}
 	
 	public Child _getDispatcher( Object self ) {
+
 		return (Child) GeneratedDispatching.getInstance().get(
 			((Child) self)._getTarget(),
 			_getParent()._getTarget() );
 	}
-	
+
 	public void _setFamily( Object family ) {
 		_family = family;
 	}

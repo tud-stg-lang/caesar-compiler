@@ -1,6 +1,6 @@
 package generated;
 
-import familyj.runtime.Child;
+import org.caesarj.runtime.Child;
 
 public class Entities {
 	

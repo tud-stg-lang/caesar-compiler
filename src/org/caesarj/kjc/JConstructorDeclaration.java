@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JConstructorDeclaration.java,v 1.1 2003-07-05 18:29:40 werner Exp $
+ * $Id: JConstructorDeclaration.java,v 1.2 2003-07-30 09:24:55 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -57,7 +57,7 @@ public class JConstructorDeclaration extends JMethodDeclaration {
 				 JConstructorBlock body,
 				 JavadocComment javadoc,
 				 JavaStyleComment[] comments,
-                                 TypeFactory factory)
+                 TypeFactory factory)
   {
     super(where,
 	  modifiers,

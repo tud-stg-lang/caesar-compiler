@@ -40,7 +40,7 @@ public class FjQualifiedInstanceCreation
 		if( ownType == null )
 			try {
 				ownType = (CReferenceType) new FjTypeSystem().
-					lowerBound( context, getPrefixType( context ).getCClass(), cachedIdent ).
+					lowerBound( context, getPrefixType( context ).getCClass(), cachedIdent).
 						checkType( context );
 			} catch( UnpositionedError e ) {
 				throw e.addPosition( getTokenReference() );

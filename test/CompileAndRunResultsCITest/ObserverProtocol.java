@@ -1,19 +1,16 @@
 package generated;
 
-public collaboration interface ObserverProtocol
+public collaboration interface ObserverProtocol extends ObserverProtocolParent
 {
-	public provided String getName();
-	public expected String getNameExpected();
-	
-	public interface Subject
+	public override interface Subject
 	{
 		public provided void addObserver(Observer o);
 		public provided void removeObserver(Observer o);
-		public expected void changed();
-		public provided Object getState();
+		public provided void changed();
+		public expected Object getState();
     }
 	
-	public interface Observer
+	public override interface Observer
 	{
 		public expected void notify(Subject s);
 	}

@@ -1,7 +1,6 @@
 package org.caesarj.runtime;
 
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * The singleton aspect classes (the aspect registries) need to

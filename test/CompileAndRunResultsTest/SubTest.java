@@ -1,7 +1,7 @@
 package generated;
 import junit.framework.TestCase;
 
-import familyj.runtime.*;
+import org.caesarj.runtime.*;
 public class SubTest extends Test {
 	
 	public Test getThis() {

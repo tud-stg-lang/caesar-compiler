@@ -16,13 +16,13 @@ public class FjVirtualCleanClassInterfaceDeclaration
 	public FjVirtualCleanClassInterfaceDeclaration(
 		TokenReference tokenReference,
 		String ident,
+		int modifiers,
 		CReferenceType[] interfaces,
 		FjCleanMethodDeclaration[] methods,
 		FjClassDeclaration owner,
 		FjCleanClassDeclaration baseDecl ) {
-		super(tokenReference, ident, interfaces, methods, baseDecl );
+		super(tokenReference, ident, modifiers | FJC_VIRTUAL, interfaces, methods, baseDecl );
 		this.ownerDecl = owner;
-		modifiers = modifiers | FJC_VIRTUAL;
 	}
 
 	public FjClassDeclaration getOwnerDeclaration() {

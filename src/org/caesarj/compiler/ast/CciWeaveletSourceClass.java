@@ -3,19 +3,22 @@ package org.caesarj.compiler.ast;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
 import org.caesarj.kjc.CClass;
-import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.JTypeDeclaration;
 
 /**
- * @author walter
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * It represents the source class of the weavelet classes. It contains 
+ * a reference of <code>CciWeaveletReferenceType<\code> where it finds
+ * the binding and the providing references.
+ * 
+ * @author Walter Augusto Werner
  */
 public class CciWeaveletSourceClass 
-	extends CciSourceClass
+	extends FjSourceClass
 {
+	/**
+	 * The reference where I find the binding and the providing classes.
+	 */
 	private CciWeaveletReferenceType superCollaborationInterface;
 	
 	/**
@@ -51,12 +54,12 @@ public class CciWeaveletSourceClass
 			deprecated,
 			synthetic,
 			decl);
-		
 		this.superCollaborationInterface = superCollaborationInterface;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.caesarj.kjc.CClass#lookupClass(org.caesarj.kjc.CClass, java.lang.String)
+	/**
+	 * If the method is not found in the context of this class, try the 
+	 * binding and the providing references.
 	 */
 	public CClass lookupClass(CClass caller, String name)
 		throws UnpositionedError
@@ -66,7 +69,7 @@ public class CciWeaveletSourceClass
 		if (foundClass == null && superCollaborationInterface.isChecked())
 		{
 			foundClass = searchClass(superCollaborationInterface
-				.getImplementationType().getCClass(), caller, name);
+				.getProvidingType().getCClass(), caller, name);
 			if (foundClass == null)
 				foundClass = searchClass(superCollaborationInterface
 					.getBindingType().getCClass(), caller, name);
@@ -75,6 +78,15 @@ public class CciWeaveletSourceClass
 		return foundClass;
 	}
 	
+	/**
+	 * Looks for the class. It returns null if the class is not found.
+	 * 
+	 * @param searcher
+	 * @param caller
+	 * @param name
+	 * @return
+	 * @throws UnpositionedError
+	 */
 	protected CClass searchClass(CClass searcher, CClass caller, String name)
 		throws UnpositionedError
 	{
@@ -88,20 +100,4 @@ public class CciWeaveletSourceClass
 		}
 		return foundClass;		
 	}
-
-	public CReferenceType getBinding()
-	{
-		return superCollaborationInterface.getBindingType();
-	}
-
-	public CReferenceType getImplementation()
-	{
-		return superCollaborationInterface.getImplementationType();
-	}
-
-	public boolean isWeaveletClass()
-	{
-		return true;
-	}
-
 }

@@ -1,10 +1,6 @@
 package org.caesarj.runtime;
 
-import java.lang.ref.SoftReference;
 import java.lang.reflect.Modifier;
-import java.rmi.server.UID;
-import java.security.MessageDigest;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -14,11 +10,8 @@ import java.util.WeakHashMap;
 import org.caesarj.compiler.FjConstants;
 
 import de.fub.bytecode.Constants;
-import de.fub.bytecode.classfile.Field;
-import de.fub.bytecode.classfile.JavaClass;
 import de.fub.bytecode.classfile.Method;
 import de.fub.bytecode.classfile.Utility;
-import de.fub.bytecode.generic.ALOAD;
 import de.fub.bytecode.generic.ClassGen;
 import de.fub.bytecode.generic.FieldGen;
 import de.fub.bytecode.generic.IF_ACMPNE;
@@ -128,7 +121,7 @@ public class GeneratedDispatching {
 		addInterfaces( clazz, tail.getClass().getInterfaces() );
 		addConstructor( clazz, target.getClass().getName(), tail.getClass().getName(), factory );
 		addMethodsAndFields( clazz, computeDispatchMethods( clazz, target, tail, factory ) );
-
+		
 		byte b[] = clazz.getJavaClass().getBytes();
 		// uncomment the following statement for a 
 		// harddisk copy of the generated class
@@ -242,7 +235,7 @@ public class GeneratedDispatching {
 	    	Constants.PUTFIELD ) );
 	    
 	    instructions.append( InstructionConstants.THIS );
-	    instructions.append( factory.createLoad(
+	    instructions.append( InstructionFactory.createLoad(
 	    	new ObjectType( ClassBasedDelegation.class.getName() ), 3 ) );
 	    instructions.append( factory.createFieldAccess(
 	    	clazz.getClassName(),
@@ -251,7 +244,7 @@ public class GeneratedDispatching {
 	    	Constants.PUTFIELD ) );
 	    
 	    instructions.append( InstructionConstants.THIS );
-	    instructions.append( factory.createLoad(
+	    instructions.append( InstructionFactory.createLoad(
 	    	new ObjectType( GeneratedDispatching.class.getName() ), 4 ) );
 	    instructions.append( factory.createFieldAccess(
 	    	clazz.getClassName(),
@@ -298,7 +291,7 @@ public class GeneratedDispatching {
 	    	Constants.GETFIELD ) );
 
 	    // return
-	    instructions.append( factory.createReturn( childType ) );   
+	    instructions.append( InstructionFactory.createReturn( childType ) );   
 	    accessor.setMaxStack();
 	    Method m = accessor.getMethod();
 	    instructions.dispose();
@@ -436,7 +429,7 @@ public class GeneratedDispatching {
 			appendSelfParameter( clazz, targetClass.getName(), method, instructions, factory );		
 		    int j = getFirstArg() + 1;
 		    for (int i = getFirstArg(); i < argTypes.length; i++) {
-		     instructions.append( factory.createLoad(argTypes[i],j));
+		     instructions.append( InstructionFactory.createLoad(argTypes[i],j));
 		     j += argTypes[i].getSize();
 		    }
 		    
@@ -450,7 +443,7 @@ public class GeneratedDispatching {
 		    	Constants.INVOKEINTERFACE ) );
 		    	
 		    // return
-		    instructions.append( factory.createReturn( toType( method.getReturnType() ) ) );   
+		    instructions.append( InstructionFactory.createReturn( toType( method.getReturnType() ) ) );   
 		    this.method.setMaxStack();
 		}	
 		
@@ -482,7 +475,7 @@ public class GeneratedDispatching {
 		    	objectType,
 		    	Constants.GETFIELD ) );
 
-		    instructions.append( factory.createNull( objectType ) );	// push null
+		    instructions.append( InstructionFactory.createNull( objectType ) );	// push null
 
 			IF_ACMPNE ifBranch = new IF_ACMPNE(null);	// receiver == null?
     		instructions.append(ifBranch);

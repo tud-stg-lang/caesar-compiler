@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.2 2003-07-14 16:14:44 werner Exp $
+ * $Id: CaesarMessages.msg,v 1.3 2003-07-30 09:24:03 werner Exp $
  */
 
 package org.caesarj.compiler
@@ -152,11 +152,11 @@ error   PROVIDED_METHOD_FLAGS
 error   EXPECTED_METHOD_FLAGS
         "Expected method flags in \"{0}\" must be some of: expected, public, abstract"
 
-error   PROVIDED_METHOD_OUT_CI
-		"Provided method \"{0}\" must be defined in a collaboration interaface."
+error   PROVIDED_AND_EXPECTED_METHOD
+		"Method \"{0}\" cannot be provided and expected."
 
-error   EXPECTED_METHOD_OUT_CI
-		"Expected method \"{0}\" must be defined in a collaboration interaface."
+error   COLLABORATION_METHOD_OUT_CI
+		"The method \"{0}\" must be defined in a collaboration interaface."
 
 error   CI_METHOD_FLAGS
 		"Method \"{0}\" must be provided or expected."
@@ -164,22 +164,43 @@ error   CI_METHOD_FLAGS
 error   NON_CI
 		"Interface \"{0}\" must be a collaboration interface."
 
-error   EXPECTED_METHOD_IN_IMPLEMENTATION
-		"Expected method \"{0}\" cannot be implemented in an implementation class."
+error   EXPECTED_METHOD_IN_PROVIDING
+		"Expected method \"{0}\" cannot be implemented in a providing class."
 		
 error   PROVIDED_METHOD_IN_BINDING
 		"Provided method \"{0}\" cannot be implemented in a binding class."
+		
+error   MUST_IMPLEMENT_EXPECTED_METHOD
+		"Expected method \"{0}\" must be implemented by the binding class \"{1}\"."
+		
+error   MUST_IMPLEMENT_PROVIDED_METHOD
+		"Provided method \"{0}\" must be implemented by the providing class \"{1}\"."
 
 error   CI_METHOD_FLAGS_CHANGED_IN_OVERRIDING
 		"The method \"{0}\" cannot change the modifier when overriding a collaboration method."
 
-error   NESTED_TYPE_NOT_IMPLEMENTED
+error   NESTED_TYPE_NOT_PROVIDED
 		"The nested type \"{0}\" from the collaboration interface \"{1}\" must be implemented."
 
 error   NESTED_TYPE_NOT_BOUND
 		"The nested type \"{0}\" from the collaboration interface \"{1}\" must be bound."
+
+error   PROVIDING_DEFINES_OTHER_NESTED
+		"The class \"{0}\" is not defined in the collaboration interface."
 		
 error   CLASS_IMPLEMENTS_N_CIS
 		"The class \"{0}\" cannot implement more than one CI."
 		
+error   REFERENCE_IS_NOT_BINDING
+		"\"{0}\" is not a binding class."
 
+error   REFERENCE_IS_NOT_PROVIDING
+		"\"{0}\" is not a providing class."
+
+error   BINDING_OTHER_CI
+		"\"{0}\" does not bind the collaboration interface \"{1}\"."
+
+error   PROVIDING_OTHER_CI
+		"\"{0}\" does not provide the collaboration interface \"{1}\"."
+
+		

@@ -106,7 +106,6 @@ public class FjSourceClass extends CSourceClass
 	public CClass lookupClass(CClass caller, String name)
 		throws UnpositionedError
 	{
-
 		CReferenceType[] interfaces = getInterfaces();
 		CReferenceType[] innerClasses = getInnerClasses();
 

@@ -9,12 +9,13 @@ public class FjOverridingCleanClassInterfaceDeclaration
 	public FjOverridingCleanClassInterfaceDeclaration(
 		TokenReference tokenReference,
 		String ident,
+		int modifiers,
 		CReferenceType[] interfaces,
 		FjCleanMethodDeclaration[] methods,
 		FjClassDeclaration ownerDecl,
 		FjCleanClassDeclaration baseDecl ) {
-		super(tokenReference, ident, interfaces, methods, ownerDecl, baseDecl );
-		modifiers = modifiers | FJC_OVERRIDE;
+		super(tokenReference, ident, modifiers | FJC_OVERRIDE, interfaces, 
+			methods, ownerDecl, baseDecl );
 	}
 
 	public String toSuperClass(String name) {
@@ -29,4 +30,9 @@ public class FjOverridingCleanClassInterfaceDeclaration
 	{
 		return super.getAllowedModifiers() | FJC_OVERRIDE;
 	}
+	public CReferenceType getProviding()
+	{
+		return baseDecl.getProviding();
+	}
+
 }

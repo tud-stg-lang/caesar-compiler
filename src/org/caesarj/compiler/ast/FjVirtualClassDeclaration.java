@@ -40,8 +40,9 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 		String ident,
 		CTypeVariable[] typeVariables,
 		CReferenceType superClass,
-		CReferenceType[] interfaces,
 		CReferenceType binding,
+		CReferenceType providing,
+		CReferenceType[] interfaces,
 		JFieldDeclaration[] fields,
 		JMethodDeclaration[] methods,
 		JTypeDeclaration[] inners,
@@ -54,8 +55,9 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 			ident,
 			typeVariables,
 			superClass,
-			interfaces,
 			binding,
+			providing,
+			interfaces,
 			fields,
 			methods,
 			inners,
@@ -73,6 +75,8 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 		return new FjVirtualCleanClassInterfaceDeclaration(
 			tokenReference,
 			ident,
+			modifiers & (CCI_COLLABORATION | CCI_BINDING | CCI_PROVIDING 
+				| CCI_WEAVELET),			
 			interfaces,
 			methods,
 			getOwnerDeclaration(),
@@ -87,6 +91,8 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 		return new FjVirtualCleanClassIfcImplDeclaration(
 			tokenReference,
 			ident,
+			(modifiers & (CCI_COLLABORATION | CCI_BINDING | CCI_PROVIDING 
+				| CCI_WEAVELET)) | ACC_PUBLIC,			
 			interfaces,
 			methods,
 			getOwnerDeclaration(),
@@ -243,79 +249,56 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 	}
 	
 	
-	public JExpression createFactoryArgument(JExpression[] superArguments)
-	{
-		if (hasSuperClass())
-		{
-			JExpression prefix = null;
-			FjTypeSystem typeSystem = new FjTypeSystem();
-			JExpression superFactoryPrefix = null;
-			CReferenceType superType = getSuperClass();
-			if (superClassField != null)
-			{
-				prefix =
-					new FjFieldAccessExpression(
-						getTokenReference(),
-						superClassField
-							.getVariable()
-							.getIdent());
-			}
-			else if (typeSystem.declaresInner(
-				ownerDecl.getSuperClass().getCClass(), ident) != null
-				|| typeSystem.declaresInner(
-					ownerDecl.getSuperClass().getCClass(),
-					FjConstants.toProxyName(ident)) != null)
-			{
-				prefix = new FjSuperExpression(getTokenReference());
-			}
-							
-			if (prefix != null)
-			{
-				return 
-					new FjQualifiedInstanceCreation(
-						getTokenReference(),
-						prefix,
-						FjConstants.isolateIdent(
-							FjConstants.toIfcName(
-								getSuperClass().getQualifiedName())),
-						superArguments);
-
-			}
-			
-			if (ownerDecl.getImplementation() != null
-					|| ownerDecl.getBinding() != null)
-			{
-				return createFactoryArgument(getSuperClass());
-			}
-			return 
-				new FjUnqualifiedInstanceCreation(
-					getTokenReference(),
-					new CClassNameType(
-						FjConstants.toIfcName(
-							superType.getQualifiedName())),
-					superArguments);
-						
-			//return createFactoryArgument(getSuperClass());
-			
-/*			if (FjConstants.CHILD_IMPL_TYPE_NAME.replace('.', '/').equals(
-				superClass.getQualifiedName()))
-			{
-				return 
-					new FjUnqualifiedInstanceCreation(
-						getTokenReference(),
-						new CClassNameType(
-							FjConstants.toIfcName(
-								superType.getQualifiedName())),
-						superArguments);
-			}
-
-			/////OWNER NAUM TEM SUPER E A CLASSE EH UM OVERRIDEN DE UMA CI////
-			return createFactoryArgument(getSuperClass());
-			///////////////////////////////////////////////////////////////
-*/
-		}
-		return null;
-	}
+//	public JExpression createFactoryArgument(JExpression[] superArguments)
+//	{
+//		if (hasSuperClass())
+//		{
+//			JExpression prefix = null;
+//			FjTypeSystem typeSystem = new FjTypeSystem();
+//			JExpression superFactoryPrefix = null;
+//			CReferenceType superType = getSuperClass();
+//			if (superClassField != null)
+//			{
+//				prefix =
+//					new FjFieldAccessExpression(
+//						getTokenReference(),
+//						superClassField
+//							.getVariable()
+//							.getIdent());
+//			}
+//			else if (typeSystem.declaresInner(
+//				ownerDecl.getSuperClass().getCClass(), ident) != null
+//				|| typeSystem.declaresInner(
+//					ownerDecl.getSuperClass().getCClass(),
+//					FjConstants.toProxyName(ident)) != null)
+//			{
+//				prefix = new FjSuperExpression(getTokenReference());
+//			}
+//							
+//			if (prefix != null)
+//			{
+//				return 
+//					new FjQualifiedInstanceCreation(
+//						getTokenReference(),
+//						prefix,
+//						FjConstants.isolateIdent(
+//							FjConstants.toIfcName(
+//								getSuperClass().getQualifiedName())),
+//						superArguments);
+//
+//			}
+//
+//			return 
+//				new FjUnqualifiedInstanceCreation(
+//					getTokenReference(),
+//					new CClassNameType(
+//						FjConstants.toIfcName(
+//							superType.getQualifiedName())),
+//					superArguments);
+//						
+//		}
+//		return null;
+//	}
 
 
 	public Vector inherritConstructorsFromBaseClass( Hashtable markedVirtualClasses )

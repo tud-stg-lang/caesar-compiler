@@ -39,10 +39,11 @@ public class FjCleanClassIfcImplDeclaration
 			ident,
 			CTypeVariable.EMPTY,
 			new CClassNameType( FjConstants.CHILD_IMPL_TYPE_NAME ),
-			interfaces,
 			baseDecl.getBinding(),
+			baseDecl.getProviding(),
+			interfaces,
 			new JFieldDeclaration[0], // clean classes - no fields
-			FjCleanClassIfcImplDeclaration.importMethods( methods, interfaces ),
+			FjCleanClassIfcImplDeclaration.importMethods(methods, interfaces),
 			new JTypeDeclaration[0], // inners are possible
 			new JPhylum[0],
 			new JavadocComment( "Automatically generated interface implementation.", false, false ),
@@ -68,14 +69,14 @@ public class FjCleanClassIfcImplDeclaration
 
 	protected static FjMethodDeclaration[] importMethods(
 		FjCleanMethodDeclaration[] cleanMethods,
-		CReferenceType[] interfaces ) {
-			
+		CReferenceType[] interfaces) {
+		
 		FjMethodDeclaration[] implMethods = new FjMethodDeclaration[ cleanMethods.length * 2 ];
 		for( int i = 0; i < cleanMethods.length; i++ ) {
 			implMethods[ 2*i ] =
 				cleanMethods[ i ].getForwardThisToSelfMethod();
 			implMethods[ 2*i + 1 ] =
-				cleanMethods[ i ].getForwardSelfToParentMethod( interfaces[ 0 ] );
+				cleanMethods[ i ].getForwardSelfToParentMethod(interfaces[0]);
 		}
 		return implMethods;
 	}

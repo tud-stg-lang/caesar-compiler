@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBlockContext.java,v 1.1 2003-07-05 18:29:37 werner Exp $
+ * $Id: CBlockContext.java,v 1.2 2003-07-30 09:24:55 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -204,7 +204,6 @@ public class CBlockContext extends CBodyContext {
     if (localVars != null) {
       for (int i = 0; i < localsIndex; i++) {
 	JLocalVariable	var = (JLocalVariable)localVars.get(i);
-
 	if (var.getIdent() == ident) {
 	  return var;
 	}

@@ -14,13 +14,15 @@ public class FjVirtualCleanClassIfcImplDeclaration
 	public FjVirtualCleanClassIfcImplDeclaration(
 		TokenReference tokenReference,
 		String ident,
+		int modifires,
 		CReferenceType[] interfaces,
 		FjCleanMethodDeclaration[] methods,
 		FjClassDeclaration ownerDecl,
 		FjCleanClassDeclaration baseDecl ) {
-		super( tokenReference, ident, ACC_PUBLIC | ACC_STATIC, interfaces, methods, baseDecl );
+		super( tokenReference, ident, 
+			modifires | FJC_VIRTUAL | ACC_PUBLIC | ACC_STATIC, 
+			interfaces, methods, baseDecl );
 		this.ownerDecl = ownerDecl;
-		modifiers = modifiers | FJC_VIRTUAL;
 	}
 
 	public FjClassDeclaration getOwnerDeclaration() {

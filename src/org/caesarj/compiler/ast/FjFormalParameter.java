@@ -1,18 +1,20 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
 import org.caesarj.kjc.CClass;
+import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CType;
 import org.caesarj.kjc.CTypeContext;
 import org.caesarj.kjc.JAssignmentExpression;
+import org.caesarj.kjc.JCastExpression;
 import org.caesarj.kjc.JExpressionStatement;
 import org.caesarj.kjc.JFormalParameter;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.JVariableDeclarationStatement;
+import org.caesarj.kjc.KjcMessages;
 import org.caesarj.kjc.TypeFactory;
 
 public class FjFormalParameter extends JFormalParameter {
@@ -66,8 +68,7 @@ public class FjFormalParameter extends JFormalParameter {
 		int clazzModifiers = clazz.getModifiers();
 		if (((clazzModifiers & FJC_CLEAN) != 0
 			|| (clazzModifiers & FJC_VIRTUAL) != 0)
-			&& ! (FjConstants.isImplementationMethodName(method.getIdent())
-					|| CciConstants.isSettingMethodName(method.getIdent()))) 
+			&& ! (FjConstants.isImplementationMethodName(method.getIdent())))
 		{
 			// downcast in clean classes only needed
 			// in implementation method or in the method that is sets the 
@@ -75,12 +76,12 @@ public class FjFormalParameter extends JFormalParameter {
 			return;
 		}
 
-		FjTypeSystem fjts = new FjTypeSystem();
+	  	FjTypeSystem fjts = new FjTypeSystem();
 		CReferenceType lowerBound = fjts.lowerBound(
 			context,
 			getFamily().getType().getCClass(),
-			((CReferenceType) type).getIdent() );
-			
+			((CReferenceType) type).getIdent());
+ 
 		method.prependStatement(
 			new JExpressionStatement(
 				getTokenReference(),
@@ -96,9 +97,78 @@ public class FjFormalParameter extends JFormalParameter {
 							FjConstants.renameParameter( name ) ),
 						lowerBound ) ),
 				null ) );
+				
 		method.prependStatement( new JVariableDeclarationStatement( 
 			getTokenReference(),
 			new FjFamilyVariableDefinition(
+				getTokenReference(),
+				0,
+				lowerBound,
+				name,
+				null,
+				getFamily() ),
+			null ) );
+		name = FjConstants.renameParameter( name );
+	}
+	
+	/**
+	 * This method is a copy of the introduceDownCasVariable defined above. 
+	 * It is here just while the semantics of the down cast variable of
+	 * the collaboration interfaces is not defined.
+	 * The only diference in this method, is that it creates a JCastExpression
+	 * instead of FjCastExpression in the line where there is the sign 
+	 * (//TEMPORAL!), and it creates a CciFamilyVariableDefinition instead of
+	 * FjFamilyVariableDefinition that is also marked with the sign.
+	 * The parameter true was inserted also in the call to lowerBound.
+	 * @param context
+	 * @throws UnpositionedError
+	 */
+	public void introduceDownCastCollaborationInterfaceVariable(
+		CTypeContext context)
+		throws UnpositionedError 
+	{
+			
+		FjMethodDeclaration method = (FjMethodDeclaration)
+			((FjAdditionalContext) context).peekContextInfo(1);
+		JTypeDeclaration clazz = (JTypeDeclaration)
+			((FjAdditionalContext) context).peekContextInfo(2);
+
+		int clazzModifiers = clazz.getModifiers();
+		if (((clazzModifiers & FJC_CLEAN) != 0
+			|| (clazzModifiers & FJC_VIRTUAL) != 0)
+			&& ! (FjConstants.isImplementationMethodName(method.getIdent())))
+		{
+			// downcast in clean classes only needed
+			// in implementation method or in the method that is sets the 
+			//implementation or the binding reference.
+			return;
+		}
+
+		FjTypeSystem fjts = new FjTypeSystem();
+		CReferenceType lowerBound = fjts.lowerBound(
+			context,
+			getFamily().getType().getCClass(),
+			((CReferenceType) type).getIdent(), true);//TEMPORAL!
+
+		method.prependStatement(
+			new JExpressionStatement(
+				getTokenReference(),
+				new JAssignmentExpression(
+					getTokenReference(),
+					new FjNameExpression(
+						getTokenReference(),
+						name ),
+					new JCastExpression(//TEMPORAL!
+						getTokenReference(),
+						new FjNameExpression(
+							getTokenReference(),
+							FjConstants.renameParameter( name ) ),
+						lowerBound ) ),
+				null ) );
+				
+		method.prependStatement( new JVariableDeclarationStatement( 
+			getTokenReference(),
+			new CciFamilyVariableDefinition(//TEMPORAL!
 				getTokenReference(),
 				0,
 				lowerBound,
@@ -127,12 +197,12 @@ public class FjFormalParameter extends JFormalParameter {
 			getFamily().getType().getCClass(),
 			getFamily().getInnerType().getIdent() ).getCClass();
 
-		if( !upperBound.descendsFrom( lowerBound )
-		//Walter start
-			&& ! context.getClassContext().getCClass().isInterface())
-		//Walter end 
+		if( !upperBound.descendsFrom( lowerBound ))
 		{
-			introduceDownCastVariable( context );
+			if (CModifier.contains(upperBound.getModifiers(), CCI_COLLABORATION))
+				introduceDownCastCollaborationInterfaceVariable(context);
+			else
+				introduceDownCastVariable(context);
 		}
 	}
 
@@ -173,14 +243,26 @@ public class FjFormalParameter extends JFormalParameter {
 		try 
 		{
 			type = type.checkType(context);
-			return type;
+			
 		} 
 		catch (UnpositionedError cue) 
 		{
-			 context.reportTrouble(cue.addPosition(getTokenReference()));
-			 return context.getTypeFactory().createReferenceType(
-			 	TypeFactory.RFT_OBJECT);
-		}		
+			//The code bellow was not here, the only part was here is 
+			//that inside the if...
+			if (cue.getFormattedMessage().getDescription()
+				!= KjcMessages.CLASS_AMBIGUOUS)
+			{
+				context.reportTrouble(cue.addPosition(getTokenReference()));
+				return context.getTypeFactory().createReferenceType(
+				   TypeFactory.RFT_OBJECT);
+			}
+					
+			CClass[] candidates = (CClass[]) 
+				cue.getFormattedMessage().getParams()[1];
+				
+			type = candidates[0].getAbstractType();
+		}
+		return type;	
 	}
 
 }

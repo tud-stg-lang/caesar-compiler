@@ -15,23 +15,23 @@ import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
+import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.ast.FjCompilationUnit;
 import org.caesarj.compiler.ast.FjSourceClass;
-import org.caesarj.compiler.util.DebugVisitor;
-import org.caesarj.compiler.util.FamiliesInitializerFjVisitor;
-import org.caesarj.compiler.util.JoinPointReflectionVisitor;
-import org.caesarj.compiler.util.ClassTransformationFjVisitor;
-import org.caesarj.compiler.util.CollectClassesFjVisitor;
-import org.caesarj.compiler.util.FjVisitor;
-import org.caesarj.compiler.util.InheritConstructorsFjVisitor;
-import org.caesarj.compiler.util.MethodTransformationFjVisitor;
-import org.caesarj.compiler.util.ResolveSuperClassFjVisitor;
-
-import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.compiler.tools.antlr.extra.InputBuffer;
 import org.caesarj.compiler.tools.antlr.runtime.ParserException;
+import org.caesarj.compiler.util.ClassTransformationFjVisitor;
+import org.caesarj.compiler.util.CollaborationInterfaceTransformation;
+import org.caesarj.compiler.util.CollectClassesFjVisitor;
+import org.caesarj.compiler.util.DebugVisitor;
+import org.caesarj.compiler.util.FamiliesInitializerFjVisitor;
+import org.caesarj.compiler.util.FjVisitor;
+import org.caesarj.compiler.util.InheritConstructorsFjVisitor;
+import org.caesarj.compiler.util.JoinPointReflectionVisitor;
+import org.caesarj.compiler.util.MethodTransformationFjVisitor;
+import org.caesarj.compiler.util.ResolveSuperClassFjVisitor;
 import org.caesarj.kjc.BytecodeOptimizer;
 import org.caesarj.kjc.CSourceClass;
 import org.caesarj.kjc.CodeSequence;
@@ -112,7 +112,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 		for (int count = 0; count < tree.length; count++) {
 			tree[count] =
 				parseFile((File) infiles.elementAt(count), environment);
-			//tree[count].accept(new DebugVisitor());				
+			//tree[count].accept(new DebugVisitor());
 		}
 
 		infiles = null;
@@ -168,8 +168,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 
 			if (errorFound)
 				return false;
-
-
+			System.out.println("CHECK INITIALIZERS:");
 			for (int count = 0; count < tree.length; count++) {
 				checkInitializers(tree[count]);
 			}
@@ -177,7 +176,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 			if (errorFound) {
 				return false;
 			}
-
+			System.out.println("CHECK BODY:");
 			for (int count = 0; count < tree.length; count++) {
 				checkBody(tree[count]);
 				//tree[count].accept(new DebugVisitor());
@@ -290,6 +289,18 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 	}
 	
 	/**
+	 * Returns the visitor instance for transforms the CIs.
+	 * @param environment
+	 * @return
+	 */
+	protected FjVisitor getCollaborationInteraceTransformation(
+		KjcEnvironment environment) 
+	{
+		return new CollaborationInterfaceTransformation(environment);
+	}
+	
+	
+	/**
 	 * Returns the visitor instance for initializes the families.
 	 * @param environment
 	 * @return
@@ -369,7 +380,10 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 		try {
 			unit = getJCompilationUnit(parser);
 			compilationUnits.add(unit);
+			unit.accept(getCollaborationInteraceTransformation(environment));
+			//unit.accept(new DebugVisitor());
 			unit.accept(getClassTransformation(environment));
+			
 		} catch (ParserException e) {
 			reportTrouble(parser.beautifyParseError(e));
 			unit = null;

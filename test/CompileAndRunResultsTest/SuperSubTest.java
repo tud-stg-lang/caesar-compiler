@@ -12,8 +12,8 @@ public class SuperSubTest extends TestCase {
 		SuperSubOuter.SuperSubInnerSubSub s = new SuperSubOuter().new SuperSubInnerSubSub();
 		SuperSubOuter.SuperSubInnerSub _super = s.fjSuper;
 		SuperSubOuter.SuperSubInner superSuper = _super.fjSuper;
-		familyj.runtime.Child sub = superSuper.fjSub;
-		familyj.runtime.Child subSub = sub.fjSub;
+		org.caesarj.runtime.Child sub = superSuper.fjSub;
+		org.caesarj.runtime.Child subSub = sub.fjSub;
 		assertEquals( superSuper.getClass().getName(), "Class_fj_generated.SuperSubOuter$SuperSubInnerSubSub_Impl_fj_generated.SuperSubOuter$SuperSubInner_Impl" );
 		assertEquals( sub.getClass().getName(), "Class_fj_generated.SuperSubOuter$SuperSubInnerSubSub_Impl_fj_generated.SuperSubOuter$SuperSubInnerSub_Impl" );
 		assertEquals( subSub.getClass().getName(), "generated.SuperSubOuter$SuperSubInnerSubSub_Impl" );

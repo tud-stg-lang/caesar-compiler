@@ -1,27 +1,54 @@
 package generated;
 
-public class ObserverProtocolImpl implements ObserverProtocol 
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class ObserverProtocolImpl provides ObserverProtocol
 {
-	public String getName()
+	public String getNameParent(String child)
 	{
-		return "";
+		System.out.println("ObserverProtocolImpl.getNameParent(" + child + ")");
+		getNameParentExpected("ObserverProtocolImpl");
+		return "ObserverProtocolImpl";
 	}
-	override class Subject
+	
+
+	public class Subject
 	{
+		private ArrayList observers = new ArrayList();
 		public void addObserver(Observer o)
 		{
+			System.out.println("Subject.addObserver(" + o + ")");
+			observers.add(o);
 		}
 		public void removeObserver(Observer o)
 		{
+			System.out.println("Subject.removeObserver(" + o + ")");
+			getNameParent("X");
+			observers.remove(o);
+//			for (int i = 0; i < observers.length; i++)
+//			{
+//				if (observer[i] == o)
+//					observer[i] = null;	
+//			}
 		}
-		public Object getState()
+		public void changed()
 		{
-			return null;
+			System.out.println("Subject.changed()");
+//			for (int i = 0; i < observers.length; i++)
+//				if (observers[i] != null) observers[i].notify(this);
+			for (int i = 0; i < observers.size(); i++)
+				((Observer)observers.get(i)).notify(this);
+			//System.out.println(iter.next());
 		}
+
 	}
 	
-	override class Observer
+	public class Observer
 	{
-
-	}	
+		public void setSubject(Subject s)
+		{
+			System.out.println("Observer.setSubject(" + s + ")");
+		}		
+	}
 }

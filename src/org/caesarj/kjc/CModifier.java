@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CModifier.java,v 1.1 2003-07-05 18:29:39 werner Exp $
+ * $Id: CModifier.java,v 1.2 2003-07-30 09:24:55 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -176,6 +176,12 @@ public class CModifier implements Constants {
 				return 20;
 			case CCI_EXPECTED :
 				return 21;
+			case CCI_BINDING :
+				return 22;
+			case CCI_PROVIDING :
+				return 23;
+			case CCI_WEAVELET :
+				return 24;			
 			//Walter end    
 				
 			default :
@@ -233,6 +239,12 @@ public class CModifier implements Constants {
 				return "provided";
 			case CCI_EXPECTED :
 				return "expected";
+			case CCI_BINDING :
+				return "binding";
+			case CCI_PROVIDING :
+				return "providing";	
+			case CCI_WEAVELET :
+				return "weavelet";			
 			//Walter end
 			default :
 				throw new InconsistencyException();
@@ -266,7 +278,10 @@ public class CModifier implements Constants {
 		//Walter start
 		"collaboration", 
 		"provided",
-		"expected"
+		"expected",
+		"binding",
+		"providing",
+		"weavelet"
 		//Walter end
 	};
 
@@ -295,7 +310,10 @@ public class CModifier implements Constants {
 			//Walter start
 			CCI_COLLABORATION, 
 			CCI_PROVIDED, 
-			CCI_EXPECTED
+			CCI_EXPECTED,
+			CCI_BINDING,
+			CCI_PROVIDING,
+			CCI_WEAVELET
 			//Walter end
 	};
 }

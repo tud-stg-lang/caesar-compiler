@@ -6,11 +6,9 @@ import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
-import org.caesarj.compiler.UnpositionedError;
 import org.caesarj.kjc.CBodyContext;
 import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CClassContext;
-import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CContext;
 import org.caesarj.kjc.CMethod;
 import org.caesarj.kjc.CModifier;
@@ -28,7 +26,6 @@ import org.caesarj.kjc.KjcMessages;
 
 public class FjInterfaceDeclaration 
 	extends JInterfaceDeclaration 
-	implements CciNestedContainer
 {
 
 	public FjInterfaceDeclaration(
@@ -247,7 +244,7 @@ public class FjInterfaceDeclaration
 		ClassReader classReader,
 		CClass owner,
 		String prefix) {
-	    sourceClass = new CciSourceClass(owner, getTokenReference(), modifiers, ident, prefix + ident, typeVariables, isDeprecated(), false, this); 
+	    sourceClass = new FjSourceClass(owner, getTokenReference(), modifiers, ident, prefix + ident, typeVariables, isDeprecated(), false, this); 
 	
 	    setInterface(sourceClass);
 	
@@ -260,25 +257,28 @@ public class FjInterfaceDeclaration
 	    sourceClass.setInnerClasses(innerClasses);
 	    uniqueSourceClass = classReader.addSourceClass(sourceClass);
 	}
-	
-	public void fixBindingMethods(CReferenceType binding)
-	{
-		for (int i = 0; i < methods.length; i++)
-		{
-			if (methods[i] instanceof FjMethodDeclaration)
-				((FjMethodDeclaration) methods[i]).fixBindingTypes(
-					binding);
-		}
-		for (int i = 0; i < inners.length; i++)
-		{
-			if (inners[i] instanceof CciNestedContainer)
-				((CciNestedContainer)inners[i]).fixBindingMethods(binding);
-		}
-	}
-	
+
 	public JTypeDeclaration[] getInners() {
 		return inners;
 	}
+
+	
+//	public void fixBindingMethods(CReferenceType binding)
+//	{
+//		for (int i = 0; i < methods.length; i++)
+//		{
+//			if (methods[i] instanceof FjMethodDeclaration)
+//				((FjMethodDeclaration) methods[i]).fixBindingTypes(
+//					binding);
+//		}
+//		for (int i = 0; i < inners.length; i++)
+//		{
+//			if (inners[i] instanceof CciNestedContainer)
+//				((CciNestedContainer)inners[i]).fixBindingMethods(binding);
+//		}
+//	}
+	
+
 
 //	/**
 //	 * Overriden for insert the implementations as interfaces. As the 
@@ -358,7 +358,11 @@ public class FjInterfaceDeclaration
 			| ACC_STATIC
 			| ACC_STRICT
 			| ACC_INTERFACE
-			| FJC_OVERRIDE;//Walter: Override inserted because the types will override the CIs
+			| CCI_COLLABORATION
+			| CCI_BINDING
+			| CCI_PROVIDING
+			| CCI_WEAVELET;
+//		Walter: Collaboration, binding and providing inserted
 
 			
 	}	

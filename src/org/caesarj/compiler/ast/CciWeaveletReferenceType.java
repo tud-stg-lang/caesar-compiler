@@ -13,12 +13,13 @@ import org.caesarj.kjc.CTypeContext;
  * 
  * @author Walter Augusto Werner
  */
-public class CciWeaveletReferenceType extends CClassNameType
+public class CciWeaveletReferenceType 
+	extends CClassNameType
 {
 	/** The reference for the collaboration inteface type. */
 	private CReferenceType collaborationInterface;
-	/** The reference to the implementation type. */
-	private CReferenceType implementation;
+	/** The reference to the providing type. */
+	private CReferenceType providing;
 	/** The reference to the binding type. */
 	private CReferenceType binding;
 	
@@ -28,11 +29,11 @@ public class CciWeaveletReferenceType extends CClassNameType
 	 * @param binding
 	 */
 	public CciWeaveletReferenceType(CReferenceType collaborationInterface, 
-		CReferenceType implementation, CReferenceType binding)
+		CReferenceType providing, CReferenceType binding)
 	{
 		super(collaborationInterface.getQualifiedName());
 		this.collaborationInterface = collaborationInterface;
-		this.implementation = implementation;
+		this.providing = providing;
 		this.binding = binding;
 	}
 	
@@ -43,8 +44,8 @@ public class CciWeaveletReferenceType extends CClassNameType
 		throws UnpositionedError
 	{
 	
-		implementation = 
-			(CReferenceType) implementation.checkType(context);
+		providing = 
+			(CReferenceType) providing.checkType(context);
 		
 		binding = 
 			(CReferenceType) binding.checkType(context);
@@ -53,19 +54,16 @@ public class CciWeaveletReferenceType extends CClassNameType
 			(CReferenceType) collaborationInterface.checkType(context);
 		
 		setClass(collaborationInterface.getCClass());
-//		this.qualifiedName = collaborationInterface.getQualifiedName();
-//		
-//		super.checkType(context);
-		
+	
 		return this;
 	}
 	
 	/**
 	 * @return the qualified name of its implentation.
 	 */
-	public String getImplementationQualifiedName()
+	public String getProvidingQualifiedName()
 	{
-		return implementation.getQualifiedName();
+		return providing.getQualifiedName();
 	}
 	/**
 	 * @return the qualified name of its binding.
@@ -75,22 +73,9 @@ public class CciWeaveletReferenceType extends CClassNameType
 		return binding.getQualifiedName();
 	}
 	
-	public void setBindingType(CReferenceType bindingType)
-	{
-		binding = bindingType;
-	}
-	public void setCollaborationInterfaceType(
-		CReferenceType collaborationInterfaceType)
-	{
-		collaborationInterface = collaborationInterfaceType;
-	}	
-	public void setImplementationType(CReferenceType implementationType)
-	{
-		implementation = implementationType;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.caesarj.kjc.CType#getCClass()
+	/**
+	 * The valid class is the collaboration interace class.
+	 *
 	 */
 	public CClass getCClass()
 	{
@@ -98,7 +83,9 @@ public class CciWeaveletReferenceType extends CClassNameType
 	}
 
 	/**
-	 * @return
+	 * Returns the type of the binding class.
+	 * 
+	 * @return CReferenceType
 	 */
 	public CReferenceType getBindingType()
 	{
@@ -106,16 +93,16 @@ public class CciWeaveletReferenceType extends CClassNameType
 	}
 
 	/**
-	 * @return
+	 * Returns the type of the providing class.
+	 * 
+	 * @return CReferenceType
 	 */
-	public CReferenceType getImplementationType()
+	public CReferenceType getProvidingType()
 	{
-		return implementation;
+		return providing;
 	}
-
-
-	/* (non-Javadoc)
-	 * @see org.caesarj.kjc.CReferenceType#isChecked()
+	/**
+	 * Overrriden for turn the method public.
 	 */
 	public boolean isChecked()
 	{

@@ -38,14 +38,21 @@ public interface CaesarMessages extends org.caesarj.compiler.CompilerMessages {
   MessageDescription	DESCENDANT_OF_CROSSCUTTING_CLASS_NOT_DECLARED_CROSSCUTTING = new MessageDescription("descendants of crosscutting classes must be declared crosscutting", null, 0);
   MessageDescription	PROVIDED_METHOD_FLAGS = new MessageDescription("Provided method flags in \"{0}\" must be some of: provided, public, abstract", null, 0);
   MessageDescription	EXPECTED_METHOD_FLAGS = new MessageDescription("Expected method flags in \"{0}\" must be some of: expected, public, abstract", null, 0);
-  MessageDescription	PROVIDED_METHOD_OUT_CI = new MessageDescription("Provided method \"{0}\" must be defined in a collaboration interaface.", null, 0);
-  MessageDescription	EXPECTED_METHOD_OUT_CI = new MessageDescription("Expected method \"{0}\" must be defined in a collaboration interaface.", null, 0);
+  MessageDescription	PROVIDED_AND_EXPECTED_METHOD = new MessageDescription("Method \"{0}\" cannot be provided and expected.", null, 0);
+  MessageDescription	COLLABORATION_METHOD_OUT_CI = new MessageDescription("The method \"{0}\" must be defined in a collaboration interaface.", null, 0);
   MessageDescription	CI_METHOD_FLAGS = new MessageDescription("Method \"{0}\" must be provided or expected.", null, 0);
   MessageDescription	NON_CI = new MessageDescription("Interface \"{0}\" must be a collaboration interface.", null, 0);
-  MessageDescription	EXPECTED_METHOD_IN_IMPLEMENTATION = new MessageDescription("Expected method \"{0}\" cannot be implemented in an implementation class.", null, 0);
+  MessageDescription	EXPECTED_METHOD_IN_PROVIDING = new MessageDescription("Expected method \"{0}\" cannot be implemented in a providing class.", null, 0);
   MessageDescription	PROVIDED_METHOD_IN_BINDING = new MessageDescription("Provided method \"{0}\" cannot be implemented in a binding class.", null, 0);
+  MessageDescription	MUST_IMPLEMENT_EXPECTED_METHOD = new MessageDescription("Expected method \"{0}\" must be implemented by the binding class \"{1}\".", null, 0);
+  MessageDescription	MUST_IMPLEMENT_PROVIDED_METHOD = new MessageDescription("Provided method \"{0}\" must be implemented by the providing class \"{1}\".", null, 0);
   MessageDescription	CI_METHOD_FLAGS_CHANGED_IN_OVERRIDING = new MessageDescription("The method \"{0}\" cannot change the modifier when overriding a collaboration method.", null, 0);
-  MessageDescription	NESTED_TYPE_NOT_IMPLEMENTED = new MessageDescription("The nested type \"{0}\" from the collaboration interface \"{1}\" must be implemented.", null, 0);
+  MessageDescription	NESTED_TYPE_NOT_PROVIDED = new MessageDescription("The nested type \"{0}\" from the collaboration interface \"{1}\" must be implemented.", null, 0);
   MessageDescription	NESTED_TYPE_NOT_BOUND = new MessageDescription("The nested type \"{0}\" from the collaboration interface \"{1}\" must be bound.", null, 0);
+  MessageDescription	PROVIDING_DEFINES_OTHER_NESTED = new MessageDescription("The class \"{0}\" is not defined in the collaboration interface.", null, 0);
   MessageDescription	CLASS_IMPLEMENTS_N_CIS = new MessageDescription("The class \"{0}\" cannot implement more than one CI.", null, 0);
+  MessageDescription	REFERENCE_IS_NOT_BINDING = new MessageDescription("\"{0}\" is not a binding class.", null, 0);
+  MessageDescription	REFERENCE_IS_NOT_PROVIDING = new MessageDescription("\"{0}\" is not a providing class.", null, 0);
+  MessageDescription	BINDING_OTHER_CI = new MessageDescription("\"{0}\" does not bind the collaboration interface \"{1}\".", null, 0);
+  MessageDescription	PROVIDING_OTHER_CI = new MessageDescription("\"{0}\" does not provide the collaboration interface \"{1}\".", null, 0);
 }

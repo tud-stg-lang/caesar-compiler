@@ -1,12 +1,8 @@
 package org.caesarj.compiler.util;
 
-import java.util.Stack;
-
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.ast.CciCollaborationInterfaceDeclaration;
-import org.caesarj.compiler.ast.CciInterfaceDeclaration;
 import org.caesarj.compiler.ast.CciWeaveletClassDeclaration;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
@@ -105,7 +101,6 @@ public abstract class FjVisitor implements KjcVisitor {
 		Object reference;
 		public void set( Object o ) {
 			if (o == null
-				|| o instanceof CciCollaborationInterfaceDeclaration
 				|| o instanceof FjClassDeclaration
 				|| o instanceof FjCompilationUnit)
 				reference = o;
@@ -118,18 +113,13 @@ public abstract class FjVisitor implements KjcVisitor {
 
 		public void append( JTypeDeclaration decl ) {
 
-			if (reference instanceof CciCollaborationInterfaceDeclaration)
-				((CciCollaborationInterfaceDeclaration) reference).append(decl);
-			else if( reference instanceof FjClassDeclaration )
+			if( reference instanceof FjClassDeclaration )
 				((FjClassDeclaration) reference).append( decl );
 			else if( reference instanceof FjCompilationUnit )
 				((FjCompilationUnit) reference).append( decl );
 		}
 		public String getQualifiedName() {
 
-			if (reference instanceof CciCollaborationInterfaceDeclaration)
-			return ((CciCollaborationInterfaceDeclaration) reference)
-				.getCClass().getQualifiedName() + "$";
 			if( reference instanceof FjClassDeclaration )
 				return ((FjClassDeclaration) reference).getCClass().getQualifiedName() + "$";
 			else if( reference instanceof FjCompilationUnit )
@@ -182,9 +172,9 @@ public abstract class FjVisitor implements KjcVisitor {
 					body,
 					methods,
 					decls );
-			else if( self instanceof FjCleanClassDeclaration )
-				visitFjCleanClassDeclaration(
-					(FjCleanClassDeclaration) self,
+			else if (self instanceof CciWeaveletClassDeclaration)
+				visitCciWeaveletClassDeclaration(
+					(CciWeaveletClassDeclaration) self,
 					modifiers,
 					ident,
 					typeVariables,
@@ -192,10 +182,10 @@ public abstract class FjVisitor implements KjcVisitor {
 					interfaces,
 					body,
 					methods,
-					decls );
-			else if (self instanceof CciWeaveletClassDeclaration)
-				visitCciWeaveletClassDeclaration(
-					(CciWeaveletClassDeclaration) self,
+					decls );					
+			else if( self instanceof FjCleanClassDeclaration )
+				visitFjCleanClassDeclaration(
+					(FjCleanClassDeclaration) self,
 					modifiers,
 					ident,
 					typeVariables,
@@ -267,7 +257,7 @@ public abstract class FjVisitor implements KjcVisitor {
 		JPhylum[] body,
 		JMethodDeclaration[] methods,
 		JTypeDeclaration[] decls) {
-		visitFjClassDeclaration(
+		visitFjCleanClassDeclaration(
 			self,
 			modifiers,
 			ident,
@@ -380,17 +370,6 @@ public abstract class FjVisitor implements KjcVisitor {
 		JPhylum[] body,
 		JMethodDeclaration[] methods)
 	{
-		if (self instanceof CciCollaborationInterfaceDeclaration)
-		{
-			Object oldOwner = owner.get();
-			owner.set(self);
-			JTypeDeclaration[] inners = 
-				((CciCollaborationInterfaceDeclaration)self).getInners();
-			for (int i = 0; i < inners.length; i++) 
-				inners[i].accept(this);
-
-			owner.set(oldOwner);
-		}
 	}
 
 	public void visitFieldDeclaration(

@@ -135,17 +135,29 @@ public class CompileAndRunResultsTest extends FjTestCase {
 				}
 			} );
 			compiler.run( args );
-
-			// these files will raise errors
-			for( int i = 0; i < errorfiles.length; i++ ) {
-				compiler.run( new String[]{ errorfiles[ i ] } );
-			}
+			if (! errorMessageGenerated())
+				// these files will raise errors
+				for( int i = 0; i < errorfiles.length; i++ ) {
+					compiler.run( new String[]{ errorfiles[ i ] } );
+				}
 			
 		} catch( Throwable t ) {
 			t.printStackTrace();
 		} finally {
 			doSetUp = false;
 		} }
+	}
+
+	/**
+	 * @return
+	 */
+	protected boolean errorMessageGenerated()
+	{
+		for (int i = 0; i < modulator.messages.size(); i++)
+			if (((String)modulator.messages.get(i)).indexOf("error") > 0)
+				return true;
+		
+		return false;
 	}
 
 	protected void tearDown() throws Exception {
