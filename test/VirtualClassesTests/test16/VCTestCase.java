@@ -228,12 +228,12 @@ public cclass OuterB extends OuterA
 			return super.queryC() + ", " + _c;
 		}
 
-/*		// _d is ambiguous
+		// _d is ambiguous
 		public String queryD()
 		{
 			return super.queryD() + ", " + _d;
 		}
-*/
+
 		public String queryE()
 		{
 			return super.queryE() + ", " + _e;

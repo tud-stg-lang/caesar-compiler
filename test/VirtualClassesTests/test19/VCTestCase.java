@@ -191,12 +191,10 @@ public cclass OuterD extends OuterB & OuterC
 		return super.queryB() + ", " + _b;
 	}
 
-	/*
 	public String queryC()
 	{
 		return super.queryC() + ", " + _c;
 	}
-	*/
 
 	public String queryD()
 	{
