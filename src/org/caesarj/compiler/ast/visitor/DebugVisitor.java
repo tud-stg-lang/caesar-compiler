@@ -59,7 +59,7 @@ public class DebugVisitor extends DeclarationVisitor
 	 * @see at.dms.kjc.KjcVisitor#visitClassDeclaration(at.dms.kjc.JClassDeclaration, int, java.lang.String, at.dms.kjc.CTypeVariable[], java.lang.String, at.dms.kjc.CReferenceType[], at.dms.kjc.JPhylum[], at.dms.kjc.JMethodDeclaration[], at.dms.kjc.JTypeDeclaration[])
 	 */
 	public void visitClassDeclaration(
-		JClassDeclaration self,
+		CjClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JQualifiedAnonymousCreation.java,v 1.3 2004-03-22 12:59:12 aracic Exp $
+ * $Id: JQualifiedAnonymousCreation.java,v 1.4 2004-03-22 17:21:44 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -62,7 +62,7 @@ public class JQualifiedAnonymousCreation extends JExpression {
         JExpression prefix,
         String ident,
         JExpression[] params,
-        JClassDeclaration decl) {
+        CjClassDeclaration decl) {
         super(where);
 
         this.prefix = prefix;
@@ -418,5 +418,5 @@ public class JQualifiedAnonymousCreation extends JExpression {
     private CReferenceType type;
     private CClass local;
     private CMethod constructor;
-    private JClassDeclaration decl;
+    private CjClassDeclaration decl;
 }

@@ -1,6 +1,6 @@
 package generated;
 
-public class SuperAspect {
+public cclass SuperAspect {
 
 	pointcut execMethod() : execution(* m(..));
 

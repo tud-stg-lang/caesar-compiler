@@ -29,10 +29,10 @@ import org.caesarj.util.TokenReference;
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class DeploymentPreparation implements CaesarConstants {
-	private DeploymentPreparation(JClassDeclaration cd) {
+	private DeploymentPreparation(CjClassDeclaration cd) {
 		this.cd = cd;
 	}
-	private JClassDeclaration cd;
+	private CjClassDeclaration cd;
 	/**
 	 * Generates for every nested crosscutting class the corresponding deployment support classes.
 	 */
@@ -43,10 +43,10 @@ public class DeploymentPreparation implements CaesarConstants {
 			
 			newTypeDeclarations.add(typeDeclarations[i]);
 
-			if (typeDeclarations[i] instanceof JClassDeclaration) {
+			if (typeDeclarations[i] instanceof CjClassDeclaration) {
 
-				JClassDeclaration caesarClass =
-					(JClassDeclaration) typeDeclarations[i];
+				CjClassDeclaration caesarClass =
+					(CjClassDeclaration) typeDeclarations[i];
 
 				if (caesarClass.isCrosscutting() && (!caesarClass.isStaticallyDeployed()) ) {
 
@@ -83,12 +83,12 @@ public class DeploymentPreparation implements CaesarConstants {
 
 			newInners.add(cd.getInners()[i]);
 
-			if (cd.getInners()[i] instanceof JClassDeclaration)
+			if (cd.getInners()[i] instanceof CjClassDeclaration)
 			{
 
 				//create support classes for each crosscutting inner class
-				JClassDeclaration innerCaesarClass =
-					(JClassDeclaration) cd.getInners()[i];
+				CjClassDeclaration innerCaesarClass =
+					(CjClassDeclaration) cd.getInners()[i];
 				if (innerCaesarClass.isCrosscutting())
 				{
 
@@ -111,10 +111,10 @@ public class DeploymentPreparation implements CaesarConstants {
 				JTypeDeclaration[] innersInners = innerCaesarClass.getInners();
 				for (int j = 0; j < innersInners.length; j++)
 				{
-					if (innersInners[j] instanceof JClassDeclaration)
+					if (innersInners[j] instanceof CjClassDeclaration)
 					{
-						JClassDeclaration currentInnerInner =
-							(JClassDeclaration) innersInners[j];
+						CjClassDeclaration currentInnerInner =
+							(CjClassDeclaration) innersInners[j];
 						new DeploymentPreparation(currentInnerInner).prepareForDynamicDeployment(environment);
 					}
 				}
@@ -130,7 +130,7 @@ public class DeploymentPreparation implements CaesarConstants {
 		cd.generateInterface(environment.getClassReader(), cd.getOwner(), prefix);
 	}
 
-	public static void prepareForStaticDeployment(CContext context, JClassDeclaration cd) {
+	public static void prepareForStaticDeployment(CContext context, CjClassDeclaration cd) {
 		new DeploymentPreparation(cd).prepareForStaticDeployment(context);
 	}
 	private void prepareForStaticDeployment(CContext context)

@@ -9,6 +9,7 @@ package org.caesarj.compiler.ast.phylum.declaration;
 import java.util.ArrayList;
 
 import org.caesarj.compiler.KjcEnvironment;
+import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.ast.CBlockError;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
@@ -21,15 +22,7 @@ import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.*;
-import org.caesarj.compiler.context.CClassContext;
-import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.context.CField;
-import org.caesarj.compiler.context.CVariableInfo;
 import org.caesarj.compiler.export.*;
-import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.export.CMethod;
-import org.caesarj.compiler.export.CSourceField;
-import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
@@ -200,6 +193,10 @@ public class JClassDeclaration extends JTypeDeclaration {
      * @exception   PositionedError an error with reference to the source file
      */
     public void checkInterface(final CContext context) throws PositionedError {
+        // CTODO resolve call moved here in order common java classes can be found in crosscutting classes
+        // register type at CaesarBcelWorld!!!
+        CaesarBcelWorld.getInstance().resolve(getCClass());
+
         checkModifiers(context);
 
         statInit =
@@ -342,6 +339,26 @@ public class JClassDeclaration extends JTypeDeclaration {
         }
 
         self = null;
+    }
+
+    // CTODO this here is not nice at all.
+    // This method is used in generateInterfaces in TypeDeclaration
+    // It would be sufficient to use CSourceClass.
+    // I've copied this one here because of
+    // ((CCjSourceClass)classes[count]).genCodeToBuffer in Main.
+    // Should add genCodeToBuffer to CSourceClass?
+    protected CSourceClass createSourceClass(CClass owner, String prefix) {
+        return new CCjSourceClass(
+            owner,
+            getTokenReference(),
+            modifiers,
+            ident,
+            prefix + ident,
+            typeVariables,
+            isDeprecated(),
+            false,
+            this,
+            null);
     }
 
     /**

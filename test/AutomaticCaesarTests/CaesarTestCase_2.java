@@ -2,7 +2,7 @@ package generated;
 
 import junit.framework.TestCase;
 
-public class CaesarTestCase_2 extends TestCase {
+public cclass CaesarTestCase_2 extends TestCase {
 
 	public CaesarTestCase_2() {
 		super("test");
@@ -31,7 +31,7 @@ public class CaesarTestCase_2 extends TestCase {
 	}
 }
 
-deployed class StaticAspect_2 {
+deployed cclass StaticAspect_2 {
 
 	pointcut callFoo() : cflow(call(* CaesarTestCase_2.test())) && call(* CaesarTestCase_2.foo());
 
@@ -41,13 +41,13 @@ deployed class StaticAspect_2 {
 
 }
 /*
-deployed class StaticAspect_2_Sub extends StaticAspect_2 {
+deployed cclass StaticAspect_2_Sub extends StaticAspect_2 {
 	after() : callFoo() {
 		System.out.println("Hallo");
 	}
 }
 
-crosscutting class Aspect_2 {
+crosscutting cclass Aspect_2 {
 
 	public final static deployed Aspect_2 THIS = new Aspect_2();
 
@@ -58,7 +58,7 @@ crosscutting class Aspect_2 {
 	}
 }
 
-crosscutting class Aspect_2_Sub extends Aspect_2 {
+crosscutting cclass Aspect_2_Sub extends Aspect_2 {
 
 	public final static deployed Aspect_2_Sub THIS = new Aspect_2_Sub();
 

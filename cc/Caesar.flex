@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.flex,v 1.5 2004-03-17 14:34:41 aracic Exp $
+ * $Id: Caesar.flex,v 1.6 2004-03-22 17:21:43 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -23,9 +23,7 @@ package org.caesarj.compiler;
 
 import org.caesarj.util.CWarning;
 import org.caesarj.util.*;
-import org.caesarj.compiler.ast.JavaStyleComment;
-import org.caesarj.compiler.ast.JavadocComment;
-import org.caesarj.compiler.constants.*;
+import org.caesarj.compiler.ast.*;
 import org.caesarj.tools.antlr.extra.*;
 
 
@@ -173,6 +171,7 @@ E =	[eE] [+\-]? {D}+
 "void"		{ return TOKEN_LITERAL_void; }
 "volatile"		{ return TOKEN_LITERAL_volatile; }
 "while"		{ return TOKEN_LITERAL_while; }
+"cclass"		{ return TOKEN_LITERAL_cclass; }
 "wraps"		{ return TOKEN_LITERAL_wraps; }
 "wrappee"		{ return TOKEN_LITERAL_wrappee; }
 "after"		{ return TOKEN_LITERAL_after; }

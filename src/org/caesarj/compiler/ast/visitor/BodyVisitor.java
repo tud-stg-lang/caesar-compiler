@@ -2,7 +2,7 @@ package org.caesarj.compiler.ast.visitor;
 
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.declaration.JClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.ast.phylum.expression.*;
@@ -39,7 +39,7 @@ public abstract class BodyVisitor extends DeclarationVisitor {
 	}
 
 	public void visitClassDeclaration(
-		JClassDeclaration self,
+		CjClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,
@@ -361,7 +361,7 @@ public abstract class BodyVisitor extends DeclarationVisitor {
 		JExpression prefix,
 		String ident,
 		JExpression[] params,
-		JClassDeclaration decl) {
+		CjClassDeclaration decl) {
 
 		prefix.accept(this);
 		visitArgs(params);
@@ -381,7 +381,7 @@ public abstract class BodyVisitor extends DeclarationVisitor {
 		JUnqualifiedAnonymousCreation self,
 		CReferenceType type,
 		JExpression[] params,
-		JClassDeclaration decl) {
+		CjClassDeclaration decl) {
 
 		visitArgs(params);
 

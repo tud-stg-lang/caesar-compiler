@@ -9,7 +9,7 @@ import junit.framework.TestCase;
 /**
  * deployment of multiple instances vs. around advices
  */
-public class CaesarTestCase_12 extends TestCase {
+public cclass CaesarTestCase_12 extends TestCase {
 
 	public CaesarTestCase_12() {
 		super("test");
@@ -41,7 +41,7 @@ public class CaesarTestCase_12 extends TestCase {
 
 }
 
-class Aspect_12 {
+cclass Aspect_12 {
 	public Aspect_12(int i) {
 		this.i = i;
 	}

@@ -54,6 +54,7 @@
 @literal	while
 
 
+@literal	cclass
 @literal	wraps
 @literal	wrappee
 

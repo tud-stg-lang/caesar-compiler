@@ -45,7 +45,7 @@ public class JoinPointReflectionVisitor
 	 * @see org.caesarj.kjc.KjcVisitor#visitClassDeclaration(JClassDeclaration, int, String, CTypeVariable[], String, CReferenceType[], JPhylum[], JMethodDeclaration[], JTypeDeclaration[])
 	 */
 	public void visitClassDeclaration(
-		JClassDeclaration self,
+		CjClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,
@@ -56,15 +56,15 @@ public class JoinPointReflectionVisitor
 		JTypeDeclaration[] decls) {
 
 		for (int i = 0; i < body.length; i++) {
-			if (self instanceof JClassDeclaration
+			if (self instanceof CjClassDeclaration
 				&& body[i] instanceof JFieldDeclaration) {
 
 				JFieldDeclaration field = (JFieldDeclaration) body[i];
 				if ((field.getVariable().getModifiers() & ACC_DEPLOYED) != 0) {
-					((JClassDeclaration) self).addClassBlock(
+					((CjClassDeclaration) self).addClassBlock(
 						createStaticDeployBlock(
 							field.getTokenReference(),
-							(JClassDeclaration) self,
+							(CjClassDeclaration) self,
 							field));
 
 				}
@@ -82,8 +82,8 @@ public class JoinPointReflectionVisitor
 			body,
 			methods,
 			decls);
-		if (self instanceof JClassDeclaration) {
-			JClassDeclaration clazz = (JClassDeclaration) self;
+		if (self instanceof CjClassDeclaration) {
+			CjClassDeclaration clazz = (CjClassDeclaration) self;
 			CjAdviceDeclaration[] advices = clazz.getAdvices();
 			for (int i = 0; i < advices.length; i++) {
 				advices[i].accept(this);
@@ -193,7 +193,7 @@ public class JoinPointReflectionVisitor
 
 	private JClassBlock createStaticDeployBlock(
 		TokenReference where,
-		JClassDeclaration classDeclaration,
+		CjClassDeclaration classDeclaration,
 		JFieldDeclaration fieldDeclaration) {
 
 		JExpression fieldExpr =

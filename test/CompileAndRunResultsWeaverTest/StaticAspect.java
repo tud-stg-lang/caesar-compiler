@@ -1,6 +1,6 @@
 package generated;
 
-deployed public class StaticAspect {
+deployed public cclass StaticAspect {
 	
 	private StaticAspect() {}
 

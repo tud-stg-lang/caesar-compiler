@@ -32,7 +32,7 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 	 */
 	protected class Owner {
 		
-		public Owner( JClassDeclaration init ){
+		public Owner( CjClassDeclaration init ){
 			set(init);
 		}
 		public Owner( JCompilationUnit init ){
@@ -72,7 +72,7 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 			reference = null;
 		}
 
-		public void set( JClassDeclaration cd ){
+		public void set( CjClassDeclaration cd ){
 			reference = cd;
 			type = CLASSDECL;
 		}
@@ -82,9 +82,9 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 			type = COMPILATIONUNIT;
 		}
 
-		public JClassDeclaration getClassDeclaration(){
+		public CjClassDeclaration getClassDeclaration(){
 			if (!isClassDeclaration()) return null;
-			return (JClassDeclaration)reference;
+			return (CjClassDeclaration)reference;
 		}
 		
 		public JCompilationUnit getCompilationUnit(){
@@ -94,14 +94,14 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 				
 		public void append( JTypeDeclaration decl ) {
 			if (isClassDeclaration())
-				((JClassDeclaration)reference).append(decl);
+				((CjClassDeclaration)reference).append(decl);
 			else if (isCompilationUnit())
 				((JCompilationUnit)reference).append(decl);
 		}
 
 		public String getQualifiedName() {
 			if (isClassDeclaration()) 
-				return ((JClassDeclaration)reference).getCClass().getQualifiedName()+"$";
+				return ((CjClassDeclaration)reference).getCClass().getQualifiedName()+"$";
 			else if (isCompilationUnit())
 				return new String();
 			return null;
@@ -120,7 +120,7 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 	}
 	
 	public void visitClassDeclaration(
-		JClassDeclaration self,
+		CjClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,
@@ -168,7 +168,7 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 	 * @see org.caesarj.kjc.KjcVisitor#visitInnerClassDeclaration(JClassDeclaration, int, String, String, CReferenceType[], JTypeDeclaration[], JPhylum[], JMethodDeclaration[])
 	 */
 	public void visitInnerClassDeclaration(
-		JClassDeclaration self,
+		CjClassDeclaration self,
 		int modifiers,
 		String ident,
 		String superClass,
@@ -527,7 +527,7 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 		JExpression prefix,
 		String ident,
 		JExpression[] params,
-		JClassDeclaration decl) {
+		CjClassDeclaration decl) {
 	}
 
 	/**
@@ -547,7 +547,7 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 		JUnqualifiedAnonymousCreation self,
 		CReferenceType type,
 		JExpression[] params,
-		JClassDeclaration decl) {
+		CjClassDeclaration decl) {
 	}
 
 	/**

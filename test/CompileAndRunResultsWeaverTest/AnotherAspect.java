@@ -1,6 +1,6 @@
 package generated;
 
-public class AnotherAspect {
+public cclass AnotherAspect {
 
 	pointcut execMethod() : execution(* m(..));
 

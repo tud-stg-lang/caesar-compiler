@@ -27,7 +27,7 @@ import org.caesarj.util.TokenReference;
  */
 public class DeploymentClassFactory implements CaesarConstants {
 
-	private JClassDeclaration aspectClass;
+	private CjClassDeclaration aspectClass;
 	
 	private String singletonAspectName;
 	private String aspectInterfaceName;
@@ -48,7 +48,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * Constructor for CaesarDeploymentUtils.
 	 */
 	public DeploymentClassFactory(
-		JClassDeclaration aspectClass,
+		CjClassDeclaration aspectClass,
 		KjcEnvironment environment) {
 		super();
 
@@ -632,7 +632,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 * Creates a class, that handles mulitple deployed instances of the same class.
 	 */
-	public JClassDeclaration createMultiInstanceAspectClass() {
+	public CjClassDeclaration createMultiInstanceAspectClass() {
 
 		CClassNameType stackType = new CClassNameType("java/util/Stack");
 
@@ -693,7 +693,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JPhylum[] initializers = { fields[0] };
 
-		JClassDeclaration multiInstanceAspectClass =
+		CjClassDeclaration multiInstanceAspectClass =
 			new CjDeploymentSupportClassDeclaration(
 				where,
 				0,
@@ -1445,7 +1445,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * Creates the multi thread aspect class which is needed for aspect deployment
 	 * out of different threads.
 	 */
-	public JClassDeclaration createMultiThreadAspectClass() {
+	public CjClassDeclaration createMultiThreadAspectClass() {
 
 		CReferenceType hashMapType =
 			new CClassNameType("java/util/WeakHashMap");
@@ -1509,7 +1509,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JPhylum[] initializers = { perThreadMap };
 
-		JClassDeclaration multiThreadClassDeclaration =
+		CjClassDeclaration multiThreadClassDeclaration =
 			new CjDeploymentSupportClassDeclaration(
 				where,
 				0,
@@ -2271,7 +2271,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * It manages the deployment of aspects and dispatches the 
 	 * advice method calls to the deployed instances.
 	 */
-	public JClassDeclaration createSingletonAspect() {
+	public CjClassDeclaration createSingletonAspect() {
 		CjAdviceDeclaration[] advices = aspectClass.getAdvices();
 		JMethodDeclaration[] methods = aspectClass.getMethods();
 		List fields = new ArrayList();
@@ -2375,7 +2375,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		 * if the aspect is abstract. see DeploymentSupportClass.checkInterface 
 		 * for details.
 		 */
-		JClassDeclaration singletonAspect=null;
+		CjClassDeclaration singletonAspect=null;
 		
 		
 			if((!CModifier.contains(aspectClass.getModifiers(),ACC_ABSTRACT))
@@ -3107,7 +3107,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		adviceDeclaration.setIdent(ident);
 	}
 
-	private JClassDeclaration createAroundClosure(CjAdviceDeclaration advice) {
+	private CjClassDeclaration createAroundClosure(CjAdviceDeclaration advice) {
 		CReferenceType superClass =
 			new CClassNameType("org/aspectj/runtime/internal/AroundClosure");
 
@@ -3157,8 +3157,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JMethodDeclaration[] methods =
 			{ createClosureConstructor(advice), createRunMethod(advice)};
 
-		JClassDeclaration closure =
-			new JClassDeclaration(
+		CjClassDeclaration closure =
+			new CjClassDeclaration(
 				where,
 				0,
 				(advice.getIdent() + "$MultiInstanceAroundClosure").intern(),

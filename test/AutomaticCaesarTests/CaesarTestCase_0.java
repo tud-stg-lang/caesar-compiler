@@ -2,7 +2,7 @@ package generated;
 
 import junit.framework.TestCase;
 
-public class CaesarTestCase_0 extends TestCase {
+public cclass CaesarTestCase_0 extends TestCase {
 
 	public CaesarTestCase_0() {
 		super("test");
@@ -31,14 +31,14 @@ public class CaesarTestCase_0 extends TestCase {
 		result.append(":foo");
 	}
 
-	class InnerAspect {
+	cclass InnerAspect {
 	    pointcut fooCall() : call(* CaesarTestCase_0.foo());
 	
 	    before() : fooCall() {
 		result.append(":before foo");	
 	    }
 	}
-	class InnerAspect_Sub extends InnerAspect {
+	cclass InnerAspect_Sub extends InnerAspect {
 before() : fooCall() {
 		    //			result.append(":subbefore foo");	
 		}

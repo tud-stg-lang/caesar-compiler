@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.38 2004-03-22 12:59:12 aracic Exp $
+ * $Id: Caesar.g,v 1.39 2004-03-22 17:21:43 aracic Exp $
  */
 
 /*
@@ -42,15 +42,8 @@ header { package org.caesarj.compiler; }
   import org.caesarj.compiler.ast.phylum.statement.*;
   import org.caesarj.compiler.ast.phylum.variable.*;
   import org.caesarj.compiler.constants.*;
-  import org.caesarj.compiler.aspectj.CaesarAdviceKind;
-  import org.caesarj.compiler.aspectj.CaesarPatternParser;
-  import org.caesarj.compiler.aspectj.CaesarPointcut;
-  import org.caesarj.compiler.aspectj.CaesarSourceContext;
+  import org.caesarj.compiler.aspectj.*;
 
-  import org.caesarj.util.CWarning;
-  import org.caesarj.tools.antlr.extra.*;
-  import org.caesarj.compiler.ast.JavaStyleComment;
-  import org.caesarj.compiler.ast.JavadocComment;
   import org.caesarj.tools.antlr.extra.InputBuffer;
   import org.caesarj.compiler.context.*;
   import org.caesarj.compiler.types.*;
@@ -164,9 +157,9 @@ jImportDeclaration [CParseCompilationUnitContext context]
 // A type definition in a file is either a class or interface definition.
 jTypeDefinition [CParseCompilationUnitContext context]
 {
-  int			mods = 0;
-  JTypeDeclaration	decl = null;
-  TokenReference	sourceRef = buildTokenReference();
+  int              mods = 0;
+  JTypeDeclaration decl = null;
+  TokenReference   sourceRef = buildTokenReference();
 }
 :
   mods = jModifiers[]
@@ -174,6 +167,8 @@ jTypeDefinition [CParseCompilationUnitContext context]
     decl = jClassDefinition[mods]
   |
     decl = jInterfaceDefinition[mods]
+  |
+  	decl = jCClassDefinition[mods]
   )
     {
        context.addTypeDeclaration(environment.getClassReader(), decl);
@@ -383,14 +378,13 @@ jModifier []
 jClassDefinition [int modifiers]
   returns [JClassDeclaration self = null]
 {
-  CTypeVariable[]       	typeVariables = CTypeVariable.EMPTY;
-  CReferenceType			superClass = null;
-  CReferenceType[]			interfaces = CReferenceType.EMPTY;
-  CReferenceType			wrappee = null;  
-  ParseClassContext	context = ParseClassContext.getInstance();
-  TokenReference	sourceRef = buildTokenReference();
-  JavadocComment	javadoc = getJavadocComment();
-  JavaStyleComment[]	comments = getStatementComment();
+  CTypeVariable[]    typeVariables = CTypeVariable.EMPTY;
+  CReferenceType     superClass    = null;
+  CReferenceType[]   interfaces    = CReferenceType.EMPTY;
+  ParseClassContext  context       = ParseClassContext.getInstance();
+  TokenReference     sourceRef     = buildTokenReference();
+  JavadocComment     javadoc       = getJavadocComment();
+  JavaStyleComment[] comments      = getStatementComment();
 }
 :
   "class" ident:IDENT
@@ -399,7 +393,6 @@ jClassDefinition [int modifiers]
   (superClass =  jSuperClassClause[])?
 
   (interfaces = jImplementsClause[])?
-  (wrappee = jWrapsClause[])?
    
   jClassBlock[context]
   {
@@ -408,6 +401,51 @@ jClassDefinition [int modifiers]
       methods = context.getMethods();
       
           self = new JClassDeclaration(sourceRef,
+				   modifiers,
+				   ident.getText(),
+                   typeVariables,
+				   superClass,	   
+				   interfaces,
+				   context.getFields(),
+				   methods,
+				   context.getInnerClasses(),
+				   context.getBody(),
+				   javadoc,
+				   comments);
+			
+        context.release();
+    }
+;
+
+// Definition of a Java class
+jCClassDefinition [int modifiers]
+  returns [CjClassDeclaration self = null]
+{
+  CTypeVariable[]    typeVariables = CTypeVariable.EMPTY;
+  CReferenceType     superClass = null;
+  CReferenceType[]   interfaces = CReferenceType.EMPTY;
+  CReferenceType     wrappee = null;
+  ParseClassContext  context = ParseClassContext.getInstance();
+  TokenReference     sourceRef = buildTokenReference();
+  JavadocComment     javadoc = getJavadocComment();
+  JavaStyleComment[] comments = getStatementComment();
+}
+:
+  "cclass" ident:IDENT
+  (typeVariables = kTypeVariableDeclarationList[])?
+  //This is like this for prevent non-determinism
+  (superClass =  jSuperClassClause[])?
+
+  (interfaces = jImplementsClause[])?
+  (wrappee = jWrapsClause[])?
+   
+  jCClassBlock[context]
+  {
+      JMethodDeclaration[]      methods;
+
+      methods = context.getMethods();
+      
+          self = new CjClassDeclaration(sourceRef,
 				   modifiers,
 				   ident.getText(),
                    typeVariables,
@@ -427,6 +465,7 @@ jClassDefinition [int modifiers]
         context.release();
     }
 ;
+
 
 jSuperClassClause []
   returns [CReferenceType self = null]
@@ -495,6 +534,19 @@ jClassBlock [ParseClassContext context]
   RCURLY
 ;
 
+// Similar to jClassBlock, but this time cclass specific
+jCClassBlock [ParseClassContext context]
+:
+  LCURLY
+  (
+    jCMember[context]
+  |
+    SEMI
+      { reportTrouble(new CWarning(buildTokenReference(), KjcMessages.STRAY_SEMICOLON, null)); }
+  )*
+  RCURLY
+;
+
 // An interface can extend several other interfaces...
 jInterfaceExtends []
   returns [CReferenceType[] self = CReferenceType.EMPTY]
@@ -522,21 +574,19 @@ jImplementsClause[]
 // need to be some semantic checks to make sure we're doing the right thing...
 jMember [ParseClassContext context]
 {
-  int				modifiers = 0;
-  CType				type;
-  JMethodDeclaration		method;
-  CTypeVariable[]               typeVariables;
-  JTypeDeclaration		decl;
-  JVariableDefinition[]		vars;
-  JStatement[]			body = null;
-  TokenReference		sourceRef = buildTokenReference();
-  JFormalParameter[] parameters;
-  JFormalParameter extraParam = null;  
-  CaesarAdviceKind kind = null;
-  TypeFactory factory = environment.getTypeFactory();
-  CReferenceType[]		throwsList = CReferenceType.EMPTY;  
-  CjPointcutDeclaration pointcutDecl;
-  CjAdviceDeclaration adviceDecl;
+  int                   modifiers = 0;
+  CType                 type;
+  JMethodDeclaration    method;
+  CTypeVariable[]       typeVariables;
+  JTypeDeclaration      decl;
+  JVariableDefinition[] vars;
+  JStatement[]          body = null;
+  TokenReference        sourceRef = buildTokenReference();
+  JFormalParameter[]    parameters;
+  JFormalParameter      extraParam = null;  
+  CaesarAdviceKind      kind = null;
+  TypeFactory           factory = environment.getTypeFactory();
+  CReferenceType[]      throwsList = CReferenceType.EMPTY;  
 }
 :
   	(
@@ -549,6 +599,68 @@ jMember [ParseClassContext context]
       		{
         		context.addInnerDeclaration(decl);
       	}
+  		|
+    		method = jConstructorDefinition[context, modifiers]
+      		{ context.addMethodDeclaration(method); }
+  		|
+    		// method with type variables
+	    	typeVariables = kTypeVariableDeclarationList[]
+    		type = jTypeSpec[]
+    		method = jMethodDefinition [context, modifiers, type, typeVariables]
+	    	{ context.addMethodDeclaration(method); }
+	  	| 
+    		type = jTypeSpec[]
+	    	(
+	      		method = jMethodDefinition [context, modifiers, type, CTypeVariable.EMPTY]
+		        { context.addMethodDeclaration(method); }
+	    	|
+	      		vars = jVariableDefinitions[modifiers, type] SEMI
+	        	{
+		  			for (int i = 0; i < vars.length; i++) {
+			    		context.addFieldDeclaration(new JFieldDeclaration(sourceRef,
+																			vars[i],
+																			getJavadocComment(),
+																			getStatementComment()));
+			  		}
+				}
+	    	)
+		)
+	)
+	|
+		// "static { ... }" class initializer
+		"static" body = jCompoundStatement[]
+    	{ context.addBlockInitializer(new JClassBlock(sourceRef, true, body)); }
+	|
+	  	// "{ ... }" instance initializer
+	 	body = jCompoundStatement[]
+    	{ context.addBlockInitializer(new JClassBlock(sourceRef, false, body)); }  	
+;
+
+// Similar to jMemeber, but this time cclass specific
+jCMember [ParseClassContext context]
+{
+  int                   modifiers = 0;
+  CType                 type;
+  JMethodDeclaration    method;
+  CTypeVariable[]       typeVariables;
+  JTypeDeclaration      decl;
+  JVariableDefinition[] vars;
+  JStatement[]          body = null;
+  TokenReference        sourceRef = buildTokenReference();
+  JFormalParameter[]    parameters;
+  JFormalParameter      extraParam = null;  
+  CaesarAdviceKind      kind = null;
+  TypeFactory           factory = environment.getTypeFactory();
+  CReferenceType[]      throwsList = CReferenceType.EMPTY;  
+  CjPointcutDeclaration pointcutDecl;
+  CjAdviceDeclaration   adviceDecl;
+}
+:
+  	(
+   		modifiers = jModifiers[]
+   		(
+    		decl = jCClassDefinition[modifiers]              // inner class
+      		{ context.addInnerDeclaration(decl); }
   		|
     		method = jConstructorDefinition[context, modifiers]
       		{ context.addMethodDeclaration(method); }
@@ -1829,7 +1941,7 @@ jUnqualifiedNewExpression []
   CType				type;
   JExpression[]			args;
   JArrayInitializer		init = null;
-  JClassDeclaration		decl = null;
+  CjClassDeclaration		decl = null;
   ParseClassContext		context = null;
   TokenReference		sourceRef = buildTokenReference();
 }
@@ -1854,7 +1966,7 @@ jUnqualifiedNewExpression []
 
               methods = context.getMethods();
 
-	    decl = new JClassDeclaration(sourceRef,
+	    decl = new CjClassDeclaration(sourceRef,
 					 org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 					 "", //((CReferenceType)type).getQualifiedName(),
                      CTypeVariable.EMPTY,
@@ -1884,7 +1996,7 @@ jQualifiedNewExpression [JExpression prefix]
   CType				type;
   JExpression[]			args;
   JArrayInitializer		init = null;
-  JClassDeclaration		decl = null;
+  CjClassDeclaration		decl = null;
   ParseClassContext		context = null;
   TokenReference		sourceRef = buildTokenReference();
 }
@@ -1899,7 +2011,7 @@ jQualifiedNewExpression [JExpression prefix]
 
           methods = context.getMethods();
 
-	decl = new JClassDeclaration(sourceRef,
+	decl = new CjClassDeclaration(sourceRef,
 				     org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 				     ident.getText(),
                      CTypeVariable.EMPTY,

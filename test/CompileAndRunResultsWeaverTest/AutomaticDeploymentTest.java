@@ -2,7 +2,7 @@ package generated;
 
 import junit.framework.TestCase;
 
-public class AutomaticDeploymentTest extends TestCase {
+public cclass AutomaticDeploymentTest extends TestCase {
 
 	public AutomaticDeploymentTest() {
 		super("test");
@@ -43,14 +43,14 @@ public class AutomaticDeploymentTest extends TestCase {
 	}
 }
 
-class AutomaticDeploymentTestSuperAspect {
+cclass AutomaticDeploymentTestSuperAspect {
 	pointcut execMethod(StringBuffer buffer) : execution(
 		* automaticDeploymentTestMethod(..))
 		&& args(buffer);
 
 }
 
-class AutomaticDeploymentTestAspect
+cclass AutomaticDeploymentTestAspect
 	extends AutomaticDeploymentTestSuperAspect {
 
 	pointcut callMethod(StringBuffer buffer) : call(
@@ -63,13 +63,13 @@ class AutomaticDeploymentTestAspect
 
 }
 
-class AutomaticDeploymentTestSubAspect extends AutomaticDeploymentTestAspect {
+cclass AutomaticDeploymentTestSubAspect extends AutomaticDeploymentTestAspect {
 	after(StringBuffer b) : execMethod(b) {
 		b.append("after : " + thisJoinPoint.toString());
 	}
 }
 
-class DeploymentThread extends Thread {
+cclass DeploymentThread extends Thread {
 
 	public void run() {
 		deploy(new AutomaticDeploymentTestAspect()) {

@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 
 // TODO: Generate real test case 
 
-public class DeploymentTest extends TestCase {
+public cclass DeploymentTest extends TestCase {
 	
 	declare parents : DeploymentTest implements java.io.Serializable;
 	
@@ -75,7 +75,7 @@ public class DeploymentTest extends TestCase {
 
 }
 
-class AnotherThread extends Thread {
+cclass AnotherThread extends Thread {
 
 	public static Object lockObject;
 

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcVisitor.java,v 1.2 2004-03-15 14:12:08 aracic Exp $
+ * $Id: KjcVisitor.java,v 1.3 2004-03-22 17:21:44 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.visitor;
@@ -58,7 +58,7 @@ public interface KjcVisitor {
   /**
    * visits a class declaration
    */
-  void visitClassDeclaration(JClassDeclaration self,
+  void visitClassDeclaration(CjClassDeclaration self,
 			     int modifiers,
 			     String ident,
                              CTypeVariable[] typeVariables,
@@ -78,7 +78,7 @@ public interface KjcVisitor {
   /**
    * visits a class declaration
    */
-  void visitInnerClassDeclaration(JClassDeclaration self,
+  void visitInnerClassDeclaration(CjClassDeclaration self,
 				  int modifiers,
 				  String ident,
 				  String superClass,
@@ -385,7 +385,7 @@ public interface KjcVisitor {
 				       JExpression prefix,
 				       String ident,
 				       JExpression[] params,
-				       JClassDeclaration decl);
+				       CjClassDeclaration decl);
   /**
    * Visits an unqualified instance creation expression.
    */
@@ -400,7 +400,7 @@ public interface KjcVisitor {
   void visitUnqualifiedAnonymousCreation(JUnqualifiedAnonymousCreation self,
 					 CReferenceType type,
 					 JExpression[] params,
-					 JClassDeclaration decl);
+					 CjClassDeclaration decl);
 
   /**
    * Visits an unqualified instance creation expression.

@@ -1,6 +1,6 @@
 package generated;
 
-public class SimpleAspect /* extends SuperAspect*/ {
+public cclass SimpleAspect /* extends SuperAspect*/ {
 
 	pointcut callMethod(int i) : call(* m(..)) && args(i);
 

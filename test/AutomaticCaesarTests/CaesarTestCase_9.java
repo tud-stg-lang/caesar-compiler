@@ -9,7 +9,7 @@ import junit.framework.TestCase;
 /**
  * thread safity of deployment
  */
-public class CaesarTestCase_9 extends TestCase {
+public cclass CaesarTestCase_9 extends TestCase {
 
 	public CaesarTestCase_9() {
 		super("test");
@@ -40,7 +40,7 @@ public class CaesarTestCase_9 extends TestCase {
 
 }
 
-class AnotherThread_9 extends CaesarThread {
+cclass AnotherThread_9 extends CaesarThread {
 	public void run() {
 		CaesarTestCase_9.foo();
 		
@@ -53,7 +53,7 @@ class AnotherThread_9 extends CaesarThread {
 	}
 }
 
-class Aspect_9 {
+cclass Aspect_9 {
 
 	pointcut callFoo() : call(* generated.CaesarTestCase_9.foo());
 

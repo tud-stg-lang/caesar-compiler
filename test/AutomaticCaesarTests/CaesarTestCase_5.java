@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 /**
  * after returning, after throwing, usage of join point reflection
  */
-public class CaesarTestCase_5 extends TestCase {
+public cclass CaesarTestCase_5 extends TestCase {
 
 	public CaesarTestCase_5() {
 		super("test");
@@ -48,7 +48,7 @@ public class CaesarTestCase_5 extends TestCase {
 
 }
 
-class Aspect_5 {
+cclass Aspect_5 {
 
 	pointcut callFoo() : call(* CaesarTestCase_5.foo());
 

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.6 2004-03-15 11:56:53 aracic Exp $
+ * $Id: CClass.java,v 1.7 2004-03-22 17:21:44 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -26,7 +26,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.declaration.JClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
@@ -170,8 +170,8 @@ public abstract class CClass extends CMember
 	{
 		if (assertionStatusClass == null)
 		{
-			JClassDeclaration decl =
-				new JClassDeclaration(
+			CjClassDeclaration decl =
+				new CjClassDeclaration(
 					TokenReference.NO_REF,
 					0,
 					getQualifiedName() + "$" + context.getNextSyntheticIndex(),

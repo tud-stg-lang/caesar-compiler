@@ -9,7 +9,7 @@ import junit.framework.TestCase;
 /**
  * thread safity of deployment
  */
-public class CaesarTestCase_10 extends TestCase {
+public cclass CaesarTestCase_10 extends TestCase {
 
 	public CaesarTestCase_10() {
 		super("test");
@@ -29,7 +29,7 @@ public class CaesarTestCase_10 extends TestCase {
 
 }
 
-deployed class Aspect_10 {
+deployed cclass Aspect_10 {
 	pointcut execFoo() : execution(* CaesarTestCase_10.foo());
 	
 	void around() : execFoo() {

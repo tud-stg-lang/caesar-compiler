@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.1 2004-03-15 11:56:48 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.2 2004-03-22 17:21:44 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -46,597 +46,537 @@ import org.caesarj.util.UnpositionedError;
  * This class represents a Java class or interface declaration
  * in the syntax tree.
  */
-public abstract class JTypeDeclaration extends JMemberDeclaration
-{
+public abstract class JTypeDeclaration extends JMemberDeclaration {
 
-	// ----------------------------------------------------------------------
-	// CONSTRUCTORS
-	// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // CONSTRUCTORS
+    // ----------------------------------------------------------------------
 
-	/**
-	 * Constructs a type declaration node in the syntax tree.
-	 *
-	 * @param	where		the line of this node in the source code
-	 * @param	modifiers	the list of modifiers of this class
-	 * @param	ident		the simple name of this class
-	 * @param	interfaces	the interfaces implemented by this class
-	 * @param	fields		the fields defined by this class
-	 * @param	methods		the methods defined by this class
-	 * @param	inners		the inner classes defined by this class
-	 * @param	initializers	the class and instance initializers defined by this class
-	 * @param	javadoc		java documentation comments
-	 * @param	comment		other comments in the source code
-	 */
-	public JTypeDeclaration(
-		TokenReference where,
-		int modifiers,
-		String ident,
-		CTypeVariable[] typeVariables,
-		CReferenceType[] interfaces,
-		JFieldDeclaration[] fields,
-		JMethodDeclaration[] methods,
-		JTypeDeclaration[] inners,
-		JPhylum[] initializers,
-		JavadocComment javadoc,
-		JavaStyleComment[] comment)
-	{
-		super(where, javadoc, comment);
+    /**
+     * Constructs a type declaration node in the syntax tree.
+     *
+     * @param	where		the line of this node in the source code
+     * @param	modifiers	the list of modifiers of this class
+     * @param	ident		the simple name of this class
+     * @param	interfaces	the interfaces implemented by this class
+     * @param	fields		the fields defined by this class
+     * @param	methods		the methods defined by this class
+     * @param	inners		the inner classes defined by this class
+     * @param	initializers	the class and instance initializers defined by this class
+     * @param	javadoc		java documentation comments
+     * @param	comment		other comments in the source code
+     */
+    public JTypeDeclaration(
+        TokenReference where,
+        int modifiers,
+        String ident,
+        CTypeVariable[] typeVariables,
+        CReferenceType[] interfaces,
+        JFieldDeclaration[] fields,
+        JMethodDeclaration[] methods,
+        JTypeDeclaration[] inners,
+        JPhylum[] initializers,
+        JavadocComment javadoc,
+        JavaStyleComment[] comment) {
+        super(where, javadoc, comment);
 
-		this.modifiers = modifiers;
-		this.ident = ident.intern();
-		this.typeVariables = typeVariables;
-		this.interfaces = interfaces;
-		this.fields = fields;
-		this.methods = methods;
-		this.inners = inners;
-		this.body = initializers;
-	}
+        this.modifiers = modifiers;
+        this.ident = ident.intern();
+        this.typeVariables = typeVariables;
+        this.interfaces = interfaces;
+        this.fields = fields;
+        this.methods = methods;
+        this.inners = inners;
+        this.body = initializers;
+    }
 
-	/**
-	 * Defines an intermediate external representation of this class to use internally
-	 *parameters[i]
-	 */
-	public void generateInterface(
-		ClassReader classReader,
-		CClass owner,
-		String prefix)
-	{
-		sourceClass =
-			new CSourceClass(
-				owner,
-				getTokenReference(),
-				modifiers,
-				ident,
-				prefix + ident,
-				typeVariables,
-				isDeprecated(),
-				false,
-				this);
+    // CTODO think about this one
+    protected CSourceClass createSourceClass(CClass owner, String prefix) {
+        return new CSourceClass(
+            owner,
+            getTokenReference(),
+            modifiers,
+            ident,
+            prefix + ident,
+            typeVariables,
+            isDeprecated(),
+            false,
+            this);
+    }
 
-		setInterface(sourceClass);
+    /**
+     * Defines an intermediate external representation of this class to use internally
+     *parameters[i]
+     */
+    public void generateInterface(
+        ClassReader classReader,
+        CClass owner,
+        String prefix) {
+        sourceClass = createSourceClass(owner, prefix);
 
-		CReferenceType[] innerClasses = new CReferenceType[inners.length];
-		for (int i = 0; i < inners.length; i++)
-		{
-			inners[i].generateInterface(
-				classReader,
-				sourceClass,
-				sourceClass.getQualifiedName() + "$");
-			innerClasses[i] = inners[i].getCClass().getAbstractType();
-		}
+        setInterface(sourceClass);
 
-		sourceClass.setInnerClasses(innerClasses); // prevent interface
-		uniqueSourceClass = classReader.addSourceClass(sourceClass);
-	}
+        CReferenceType[] innerClasses = new CReferenceType[inners.length];
+        for (int i = 0; i < inners.length; i++) {
+            inners[i].generateInterface(
+                classReader,
+                sourceClass,
+                sourceClass.getQualifiedName() + "$");
+            innerClasses[i] = inners[i].getCClass().getAbstractType();
+        }
 
-	// ----------------------------------------------------------------------
-	// ACCESSORS
-	// ----------------------------------------------------------------------
+        sourceClass.setInnerClasses(innerClasses); // prevent interface
+        uniqueSourceClass = classReader.addSourceClass(sourceClass);
+    }
 
-	/**
-	 * Returns the declared modifiers for this type.
-	 */
-	public int getModifiers()
-	{
-		return modifiers;
-	}
+    // ----------------------------------------------------------------------
+    // ACCESSORS
+    // ----------------------------------------------------------------------
 
-	/**
-	 * Sets the declared modifiers for this type.
-	 */
-	public void setModifiers(int modifiers)
-	{
-		this.modifiers = modifiers;
-		if (sourceClass != null)
-		{
-			sourceClass.setModifiers(modifiers);
-		}
-	}
+    /**
+     * Returns the declared modifiers for this type.
+     */
+    public int getModifiers() {
+        return modifiers;
+    }
 
-	/**
-	 * Checks whether this type is nested.
-	 *
-	 * JLS 8 (introduction), JLS 9 (introduction) :
-	 * A nested type (class or interface) is any type whose declaration
-	 * occurs within the body of another class or interface. A top level
-	 * type is a type that is not a nested class.
-	 *
-	 * @return	true iff this type is nested
-	 */
-	public boolean isNested()
-	{
-		return getCClass().isNested();
-	}
+    /**
+     * Sets the declared modifiers for this type.
+     */
+    public void setModifiers(int modifiers) {
+        this.modifiers = modifiers;
+        if (sourceClass != null) {
+            sourceClass.setModifiers(modifiers);
+        }
+    }
 
-	public JFieldDeclaration[] getFields()
-	{
-		return fields;
-	}
+    /**
+     * Checks whether this type is nested.
+     *
+     * JLS 8 (introduction), JLS 9 (introduction) :
+     * A nested type (class or interface) is any type whose declaration
+     * occurs within the body of another class or interface. A top level
+     * type is a type that is not a nested class.
+     *
+     * @return	true iff this type is nested
+     */
+    public boolean isNested() {
+        return getCClass().isNested();
+    }
 
-	public JConstructorDeclaration getDefaultConstructor()
-	{
-		return defaultConstructor;
-	}
+    public JFieldDeclaration[] getFields() {
+        return fields;
+    }
 
-	public void setDefaultConstructor(JConstructorDeclaration defaultConstructor)
-	{
-		this.defaultConstructor = defaultConstructor;
-	}
+    public JConstructorDeclaration getDefaultConstructor() {
+        return defaultConstructor;
+    }
 
-	public void setIdent(String ident)
-	{
-		this.ident = ident;
-	}
+    public void setDefaultConstructor(JConstructorDeclaration defaultConstructor) {
+        this.defaultConstructor = defaultConstructor;
+    }
 
-	/**
-	 * Add a local or anonymous type declaration
-	 */
-	public void addLocalTypeDeclaration(JTypeDeclaration tDecl)
-	{
-		if (anoInners == null)
-		{
-			anoInners = new ArrayList(5);
-		}
-		anoInners.add(tDecl);
-	}
+    public void setIdent(String ident) {
+        this.ident = ident;
+    }
 
-	// ----------------------------------------------------------------------
-	// INTERFACE CHECKING
-	// ----------------------------------------------------------------------
+    /**
+     * Add a local or anonymous type declaration
+     */
+    public void addLocalTypeDeclaration(JTypeDeclaration tDecl) {
+        if (anoInners == null) {
+            anoInners = new ArrayList(5);
+        }
+        anoInners.add(tDecl);
+    }
 
-	protected CClassContext constructContext(CContext context)
-	{
-		return new CClassContext(
-			context,
-			context.getEnvironment(),
-			sourceClass,
-			this);
-	}
+    // ----------------------------------------------------------------------
+    // INTERFACE CHECKING
+    // ----------------------------------------------------------------------
 
-	/** 
-	 * In the pass the superclass of this class the interfaces must be set, 
-	 * so that they are  available for the next pass.
-	 * It is not possible to check the interface of methods, fields, ... in 
-	 * the same pass.
-	 */
-	public void join(CContext context) throws PositionedError
-	{
-		if (self == null)
-		{
-			self = constructContext(context);
-		}
+    protected CClassContext constructContext(CContext context) {
+        return new CClassContext(
+            context,
+            context.getEnvironment(),
+            sourceClass,
+            this);
+    }
 
-		try
-		{
-			for (int i = 0; i < typeVariables.length; i++)
-			{
-				typeVariables[i].checkType(self);
-			}
-		}
-		catch (UnpositionedError e)
-		{
-			throw e.addPosition(getTokenReference());
-		}
-		//Walter: this method call was inserted instead of resolve 
-		//the interfaces here.
-		resolveInterfaces(context);
-		
+    /** 
+     * In the pass the superclass of this class the interfaces must be set, 
+     * so that they are  available for the next pass.
+     * It is not possible to check the interface of methods, fields, ... in 
+     * the same pass.
+     */
+    public void join(CContext context) throws PositionedError {
+        if (self == null) {
+            self = constructContext(context);
+        }
 
-		// Check inners
-		for (int i = inners.length - 1; i >= 0; i--)
-		{
-			inners[i].join(self);
-		}
-	}
+        try {
+            for (int i = 0; i < typeVariables.length; i++) {
+                typeVariables[i].checkType(self);
+            }
+        }
+        catch (UnpositionedError e) {
+            throw e.addPosition(getTokenReference());
+        }
+        //Walter: this method call was inserted instead of resolve 
+        //the interfaces here.
+        resolveInterfaces(context);
 
-	/**
-	 * Resolves the interfaces of this type.
-	 * @param context
-	 * @throws PositionedError
-	 * @author Walter Augusto Werner
-	 */
-	protected void resolveInterfaces(CContext context) throws PositionedError
-	{
-		for (int i = 0; i < interfaces.length; i++)
-		{
-			try
-			{
-				interfaces[i] = (CReferenceType) interfaces[i].checkType(self);
-			}
-			catch (UnpositionedError e)
-			{
-				throw e.addPosition(getTokenReference());
-			}
+        // Check inners
+        for (int i = inners.length - 1; i >= 0; i--) {
+            inners[i].join(self);
+        }
+    }
 
-			CClass clazz = interfaces[i].getCClass();
+    /**
+     * Resolves the interfaces of this type.
+     * @param context
+     * @throws PositionedError
+     * @author Walter Augusto Werner
+     */
+    protected void resolveInterfaces(CContext context) throws PositionedError {
+        for (int i = 0; i < interfaces.length; i++) {
+            try {
+                interfaces[i] = (CReferenceType)interfaces[i].checkType(self);
+            }
+            catch (UnpositionedError e) {
+                throw e.addPosition(getTokenReference());
+            }
 
-			check(
-				context,
-				clazz.isInterface(),
-				KjcMessages.SUPERINTERFACE_WRONG_TYPE,
-				interfaces[i].getQualifiedName());
+            CClass clazz = interfaces[i].getCClass();
 
-			check(
-				context,
-				clazz.isAccessible(sourceClass),
-				KjcMessages.SUPERINTERFACE_NOT_ACCESSIBLE,
-				interfaces[i].getQualifiedName());
-			check(
-				context,
-				!(sourceClass.getQualifiedName() == JAV_OBJECT),
-				KjcMessages.CIRCULAR_INTERFACE,
-				interfaces[i].getQualifiedName());
-		}
+            check(
+                context,
+                clazz.isInterface(),
+                KjcMessages.SUPERINTERFACE_WRONG_TYPE,
+                interfaces[i].getQualifiedName());
 
-		sourceClass.setInterfaces(interfaces);
-	}
+            check(
+                context,
+                clazz.isAccessible(sourceClass),
+                KjcMessages.SUPERINTERFACE_NOT_ACCESSIBLE,
+                interfaces[i].getQualifiedName());
+            check(
+                context,
+                !(sourceClass.getQualifiedName() == JAV_OBJECT),
+                KjcMessages.CIRCULAR_INTERFACE,
+                interfaces[i].getQualifiedName());
+        }
 
-	/**
-	 * Second pass (quick), check interface looks good
-	 * @exception	PositionedError	an error with reference to the source file
-	 */
-	public abstract void checkInterface(CContext context)
-		throws PositionedError;
+        sourceClass.setInterfaces(interfaces);
+    }
 
-	/**
-	 * Second pass (quick), check interface looks good
-	 * @exception	PositionedError	an error with reference to the source file
-	 */
-	protected void checkInterface(CContext context, CReferenceType superClass)
-		throws PositionedError
-	{
-		//     self = new CClassContext(context, 
-		//                              context.getEnvironment(), 
-		//                              sourceClass, 
-		//                              this);
+    /**
+     * Second pass (quick), check interface looks good
+     * @exception	PositionedError	an error with reference to the source file
+     */
+    public abstract void checkInterface(CContext context)
+        throws PositionedError;
 
-		Hashtable hashField;
-		CMethod[] methodList;
-		Hashtable hashMethod;
+    /**
+     * Second pass (quick), check interface looks good
+     * @exception	PositionedError	an error with reference to the source file
+     */
+    protected void checkInterface(CContext context, CReferenceType superClass)
+        throws PositionedError {
+        //     self = new CClassContext(context, 
+        //                              context.getEnvironment(), 
+        //                              sourceClass, 
+        //                              this);
 
-		sourceClass.setSuperClass(superClass); //FIX
+        Hashtable hashField;
+        CMethod[] methodList;
+        Hashtable hashMethod;
 
-		if (!uniqueSourceClass)
-		{
-			context.reportTrouble(
-				new PositionedError(
-					getTokenReference(),
-					KjcMessages.DUPLICATE_TYPE_NAME,
-					sourceClass.getQualifiedName()));
-		}
+        sourceClass.setSuperClass(superClass); //FIX
 
-/*		
- * @TODO: Klaus: Disabled this check temporarily, but we should include it
- * once we can differentiate generated from user classes
- */
- /*if (!isNested()
-			&& sourceClass.isPublic()
-			&& !getTokenReference().getName().startsWith(ident + ".")
-			)
-		{
-			context.reportTrouble(
-				new PositionedError(
-					getTokenReference(),
-					KjcMessages.CLASS_NAME_FILENAME,
-					ident,
-					getTokenReference().getName()));
-		}
-*/
-		// If the class is an inner class, add field for this-reference.
-		// Add fields of this class
-		int generatedFields = getCClass().hasOuterThis() ? 1 : 0;
+        if (!uniqueSourceClass) {
+            context.reportTrouble(
+                new PositionedError(
+                    getTokenReference(),
+                    KjcMessages.DUPLICATE_TYPE_NAME,
+                    sourceClass.getQualifiedName()));
+        }
 
-		hashField = new Hashtable(fields.length + generatedFields + 1);
-		for (int i = fields.length - 1; i >= 0; i--)
-		{
-			CSourceField field = fields[i].checkInterface(self);
+        /*		
+         * @TODO: Klaus: Disabled this check temporarily, but we should include it
+         * once we can differentiate generated from user classes
+         */
+        /*if (!isNested()
+        			&& sourceClass.isPublic()
+        			&& !getTokenReference().getName().startsWith(ident + ".")
+        			)
+        		{
+        			context.reportTrouble(
+        				new PositionedError(
+        					getTokenReference(),
+        					KjcMessages.CLASS_NAME_FILENAME,
+        					ident,
+        					getTokenReference().getName()));
+        		}
+        */
+        // If the class is an inner class, add field for this-reference.
+        // Add fields of this class
+        int generatedFields = getCClass().hasOuterThis() ? 1 : 0;
 
-			field.setPosition(i);
-			check(
-				context,
-				hashField.put(field.getIdent(), field) == null,
-				KjcMessages.FIELD_RENAME,
-				field.getIdent());
-		}
-		if (generatedFields > 0)
-		{
-			CSourceField field = outerThis.checkInterface(self);
+        hashField = new Hashtable(fields.length + generatedFields + 1);
+        for (int i = fields.length - 1; i >= 0; i--) {
+            CSourceField field = fields[i].checkInterface(self);
 
-			field.setPosition(hashField.size());
-			check(
-				context,
-				hashField.put(JAV_OUTER_THIS, field) == null,
-				KjcMessages.FIELD_RENAME,
-				JAV_OUTER_THIS);
-		}
+            field.setPosition(i);
+            check(
+                context,
+                hashField.put(field.getIdent(), field) == null,
+                KjcMessages.FIELD_RENAME,
+                field.getIdent());
+        }
+        if (generatedFields > 0) {
+            CSourceField field = outerThis.checkInterface(self);
 
-		// Add methods of this class
-		int generatedMethods = 0;
+            field.setPosition(hashField.size());
+            check(
+                context,
+                hashField.put(JAV_OUTER_THIS, field) == null,
+                KjcMessages.FIELD_RENAME,
+                JAV_OUTER_THIS);
+        }
 
-		if (defaultConstructor != null)
-		{
-			generatedMethods += 1;
-		}
-		if (statInit != null && !statInit.isDummy())
-		{
-			generatedMethods += 1;
-		}
-		if (instanceInit != null && !instanceInit.isDummy())
-		{
-			generatedMethods += 1;
-		}
+        // Add methods of this class
+        int generatedMethods = 0;
 
-		methodList = new CMethod[methods.length + generatedMethods];
-		for (int i = 0; i < methods.length; i++)
-		{
-			methodList[i] = methods[i].checkInterface(self);
-			for (int j = 0; j < i; j++)
-			{
-				check(
-					context,
-					!methodList[i].equals(methodList[j]),
-					KjcMessages.METHOD_REDEFINE,
-					methodList[i]);
-			}
-		}
+        if (defaultConstructor != null) {
+            generatedMethods += 1;
+        }
+        if (statInit != null && !statInit.isDummy()) {
+            generatedMethods += 1;
+        }
+        if (instanceInit != null && !instanceInit.isDummy()) {
+            generatedMethods += 1;
+        }
 
-		int count = methods.length;
+        methodList = new CMethod[methods.length + generatedMethods];
+        for (int i = 0; i < methods.length; i++) {
+            methodList[i] = methods[i].checkInterface(self);
+            for (int j = 0; j < i; j++) {
+                check(
+                    context,
+                    !methodList[i].equals(methodList[j]),
+                    KjcMessages.METHOD_REDEFINE,
+                    methodList[i]);
+            }
+        }
 
-		if (defaultConstructor != null)
-		{
-			methodList[count] = defaultConstructor.checkInterface(self);
-			count++;
-		}
-		if (statInit != null)
-		{
-			if (!statInit.isDummy())
-			{
-				methodList[count] = statInit.checkInterface(self);
-				count++;
-			}
-			else
-			{
-				statInit.checkInterface(self);
-			}
-		}
-		if (instanceInit != null)
-		{
-			if (!instanceInit.isDummy())
-			{
-				methodList[count] = instanceInit.checkInterface(self);
-				count++;
-			}
-			else
-			{
-				instanceInit.checkInterface(self);
-			}
-		}
+        int count = methods.length;
 
-		// Check inners
-		for (int i = inners.length - 1; i >= 0; i--)
-		{
-			inners[i].checkInterface(self);
-		}
-		sourceClass.close(this.interfaces, superClass, hashField, methodList);
-	}
+        if (defaultConstructor != null) {
+            methodList[count] = defaultConstructor.checkInterface(self);
+            count++;
+        }
+        if (statInit != null) {
+            if (!statInit.isDummy()) {
+                methodList[count] = statInit.checkInterface(self);
+                count++;
+            }
+            else {
+                statInit.checkInterface(self);
+            }
+        }
+        if (instanceInit != null) {
+            if (!instanceInit.isDummy()) {
+                methodList[count] = instanceInit.checkInterface(self);
+                count++;
+            }
+            else {
+                instanceInit.checkInterface(self);
+            }
+        }
 
-	/**
-	 * Checks that same interface is not specified more than once
-	 *
-	 * @exception	PositionedError	Error catched as soon as possible
-	 */
-	public void checkInitializers(CContext context) throws PositionedError
-	{
-		if (getCClass().getSuperClass() != null)
-		{
-			check(
-				context,
-				!getCClass().getSuperClass().dependsOn(getCClass()),
-				KjcMessages.CLASS_CIRCULARITY,
-				ident);
-		}
+        // Check inners
+        for (int i = inners.length - 1; i >= 0; i--) {
+            inners[i].checkInterface(self);
+        }
+        sourceClass.close(this.interfaces, superClass, hashField, methodList);
+    }
 
-		for (int i = 0; i < interfaces.length; i++)
-		{
-			for (int j = 0; j < i; j++)
-			{
-				check(
-					context,
-					!interfaces[i].equals(interfaces[j]),
-					KjcMessages.INTERFACES_DUPLICATE,
-					ident,
-					interfaces[i]);
-			}
-		}
+    /**
+     * Checks that same interface is not specified more than once
+     *
+     * @exception	PositionedError	Error catched as soon as possible
+     */
+    public void checkInitializers(CContext context) throws PositionedError {
+        if (getCClass().getSuperClass() != null) {
+            check(
+                context,
+                !getCClass().getSuperClass().dependsOn(getCClass()),
+                KjcMessages.CLASS_CIRCULARITY,
+                ident);
+        }
 
-		// Checks that specified interfaces are not inherited
-		for (int i = 0; i < interfaces.length; i++)
-		{
-			CClass parent;
+        for (int i = 0; i < interfaces.length; i++) {
+            for (int j = 0; j < i; j++) {
+                check(
+                    context,
+                    !interfaces[i].equals(interfaces[j]),
+                    KjcMessages.INTERFACES_DUPLICATE,
+                    ident,
+                    interfaces[i]);
+            }
+        }
 
-			parent = sourceClass.getSuperClass();
-			if (parent != null
-				&& parent.descendsFrom(interfaces[i].getCClass()))
-			{
-				context.reportTrouble(
-					new CWarning(
-						getTokenReference(),
-						KjcMessages.INTERFACE_IMPLEMENTED_BY_SUPERCLASS,
-						interfaces[i],
-						parent.getIdent()));
-			}
+        // Checks that specified interfaces are not inherited
+        for (int i = 0; i < interfaces.length; i++) {
+            CClass parent;
 
-			for (int j = 0; j < interfaces.length; j++)
-			{
-				if (j != i
-					&& interfaces[j].getCClass().descendsFrom(
-						interfaces[i].getCClass()))
-				{
-					context.reportTrouble(
-						new CWarning(
-							getTokenReference(),
-							KjcMessages.INTERFACE_IMPLEMENTED_BY_SUPERCLASS,
-							interfaces[i],
-							interfaces[j]));
-				}
-			}
-		}
-	}
+            parent = sourceClass.getSuperClass();
+            if (parent != null
+                && parent.descendsFrom(interfaces[i].getCClass())) {
+                context.reportTrouble(
+                    new CWarning(
+                        getTokenReference(),
+                        KjcMessages.INTERFACE_IMPLEMENTED_BY_SUPERCLASS,
+                        interfaces[i],
+                        parent.getIdent()));
+            }
 
-	// ----------------------------------------------------------------------
-	// SEMANTIC ANALYSIS
-	// ----------------------------------------------------------------------
+            for (int j = 0; j < interfaces.length; j++) {
+                if (j != i
+                    && interfaces[j].getCClass().descendsFrom(
+                        interfaces[i].getCClass())) {
+                    context.reportTrouble(
+                        new CWarning(
+                            getTokenReference(),
+                            KjcMessages.INTERFACE_IMPLEMENTED_BY_SUPERCLASS,
+                            interfaces[i],
+                            interfaces[j]));
+                }
+            }
+        }
+    }
 
-	/**
-	 */
-	public void addOuterThis()
-	{
-		if (outerThis == null)
-		{
-			sourceClass.setHasOuterThis(true);
-			outerThis =
-				new JFieldDeclaration(
-					getTokenReference(),
-					new JVariableDefinition(
-						getTokenReference(),
-						ACC_PRIVATE | ACC_FINAL,
-						getOwner().getAbstractType(),
-						JAV_OUTER_THIS,
-						null),
-					null,
-					null);
-			((CSourceClass) getCClass()).addField(
-				new CSourceField(
-					getCClass(),
-					ACC_PRIVATE | ACC_FINAL,
-					JAV_OUTER_THIS,
-					getOwner().getAbstractType(),
-					false,
-					true));
-			// synthetic
-		}
-	}
+    // ----------------------------------------------------------------------
+    // SEMANTIC ANALYSIS
+    // ----------------------------------------------------------------------
 
-	/**
-	 * checkTypeBody
-	 * Check expression and evaluate and alter context
-	 * @param context the actual context of analyse
-	 * @return  a pure java expression including promote node
-	 * @exception PositionedError Error catched as soon as possible (for subclasses)
-	 */
-	public void checkTypeBody(CContext context) throws PositionedError
-	{
-		context.addSourceClass(sourceClass);
+    /**
+     */
+    public void addOuterThis() {
+        if (outerThis == null) {
+            sourceClass.setHasOuterThis(true);
+            outerThis =
+                new JFieldDeclaration(
+                    getTokenReference(),
+                    new JVariableDefinition(
+                        getTokenReference(),
+                        ACC_PRIVATE | ACC_FINAL,
+                        getOwner().getAbstractType(),
+                        JAV_OUTER_THIS,
+                        null),
+                    null,
+                    null);
+            ((CSourceClass)getCClass()).addField(
+                new CSourceField(
+                    getCClass(),
+                    ACC_PRIVATE | ACC_FINAL,
+                    JAV_OUTER_THIS,
+                    getOwner().getAbstractType(),
+                    false,
+                    true));
+            // synthetic
+        }
+    }
 
-		for (int i = 0; i < interfaces.length; i++)
-		{
-			check(
-				context,
-				!interfaces[i].getCClass().dependsOn(sourceClass),
-				KjcMessages.CIRCULAR_INTERFACE,
-				interfaces[i].getQualifiedName());
-		}
-		if (sourceClass.getOwner() != null)
-		{
-			check(
-				context,
-				sourceClass.getOwner().canDeclareStatic()
-					|| !sourceClass.isStatic(),
-				KjcMessages.INNER_DECL_STATIC_MEMBER);
-		}
-	}
+    /**
+     * checkTypeBody
+     * Check expression and evaluate and alter context
+     * @param context the actual context of analyse
+     * @return  a pure java expression including promote node
+     * @exception PositionedError Error catched as soon as possible (for subclasses)
+     */
+    public void checkTypeBody(CContext context) throws PositionedError {
+        context.addSourceClass(sourceClass);
 
-	public void analyseConditions() throws PositionedError
-	{
-		// first super
-		for (int i = 0; i < interfaces.length; i++)
-		{
-			interfaces[i].getCClass().analyseConditions();
-		}
+        for (int i = 0; i < interfaces.length; i++) {
+            check(
+                context,
+                !interfaces[i].getCClass().dependsOn(sourceClass),
+                KjcMessages.CIRCULAR_INTERFACE,
+                interfaces[i].getQualifiedName());
+        }
+        if (sourceClass.getOwner() != null) {
+            check(
+                context,
+                sourceClass.getOwner().canDeclareStatic()
+                    || !sourceClass.isStatic(),
+                KjcMessages.INNER_DECL_STATIC_MEMBER);
+        }
+    }
 
-		// then self 
-		for (int i = 0; i < methods.length; i++)
-		{
-			methods[i].analyseConditions();
-		}
-		for (int i = 0; i < inners.length; i++)
-		{
-			inners[i].analyseConditions();
-		}
-		if (anoInners != null)
-		{
-			int size = anoInners.size();
+    public void analyseConditions() throws PositionedError {
+        // first super
+        for (int i = 0; i < interfaces.length; i++) {
+            interfaces[i].getCClass().analyseConditions();
+        }
 
-			for (int i = 0; i < size; i++)
-			{
-				((JTypeDeclaration) anoInners.get(i)).analyseConditions();
-			}
-		}
-	}
-	// ----------------------------------------------------------------------
-	// PROTECTED UTILITIES
-	// ----------------------------------------------------------------------
+        // then self 
+        for (int i = 0; i < methods.length; i++) {
+            methods[i].analyseConditions();
+        }
+        for (int i = 0; i < inners.length; i++) {
+            inners[i].analyseConditions();
+        }
+        if (anoInners != null) {
+            int size = anoInners.size();
 
-	public CClass getOwner()
-	{
-		return getCClass().getOwner();
-	}
+            for (int i = 0; i < size; i++) {
+                ((JTypeDeclaration)anoInners.get(i)).analyseConditions();
+            }
+        }
+    }
+    // ----------------------------------------------------------------------
+    // PROTECTED UTILITIES
+    // ----------------------------------------------------------------------
 
-	/**
-		* DEBUG - WALTER
-		*/
-	public void print()
-	{
-		System.out.print(ident);
-	}
+    public CClass getOwner() {
+        return getCClass().getOwner();
+    }
 
-	// ----------------------------------------------------------------------
-	// PRIVATE DATA MEMBER
-	// ----------------------------------------------------------------------
+    /**
+    	* DEBUG - WALTER
+    	*/
+    public void print() {
+        System.out.print(ident);
+    }
 
-	protected int modifiers;
-	protected String ident;
+    // ----------------------------------------------------------------------
+    // PRIVATE DATA MEMBER
+    // ----------------------------------------------------------------------
 
-	protected JPhylum[] body;
-	protected JFieldDeclaration[] fields;
-	protected JMethodDeclaration[] methods;
-	protected JTypeDeclaration[] inners;
-	private ArrayList anoInners;
-	protected CReferenceType[] interfaces;
-	// Walter start
-	//private	JFieldDeclaration	outerThis;
-	protected JFieldDeclaration outerThis;
-	//Walter end
-	private JConstructorDeclaration defaultConstructor;
-	protected JInitializerDeclaration statInit;
-	protected JInitializerDeclaration instanceInit;
+    protected int modifiers;
+    protected String ident;
 
-	// Definitive data
-	protected CSourceClass sourceClass;
-	// andreeas start
-	//private	boolean			uniqueSourceClass = true;
-	protected boolean uniqueSourceClass = true;
-	//andreas end
-	protected CClassContext self;
-	protected CTypeVariable[] typeVariables;
+    protected JPhylum[] body;
+    protected JFieldDeclaration[] fields;
+    protected JMethodDeclaration[] methods;
+    protected JTypeDeclaration[] inners;
+    private ArrayList anoInners;
+    protected CReferenceType[] interfaces;
+    // Walter start
+    //private	JFieldDeclaration	outerThis;
+    protected JFieldDeclaration outerThis;
+    //Walter end
+    private JConstructorDeclaration defaultConstructor;
+    protected JInitializerDeclaration statInit;
+    protected JInitializerDeclaration instanceInit;
+
+    // Definitive data
+    protected CSourceClass sourceClass;
+    // andreeas start
+    //private	boolean			uniqueSourceClass = true;
+    protected boolean uniqueSourceClass = true;
+    //andreas end
+    protected CClassContext self;
+    protected CTypeVariable[] typeVariables;
 }

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcPrettyPrinter.java,v 1.2 2004-03-15 14:12:08 aracic Exp $
+ * $Id: KjcPrettyPrinter.java,v 1.3 2004-03-22 17:21:44 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.visitor;
@@ -126,7 +126,7 @@ public class KjcPrettyPrinter extends org.caesarj.util.Utils implements Constant
   /**
    * prints a class declaration
    */
-  public void visitClassDeclaration(JClassDeclaration self,
+  public void visitClassDeclaration(CjClassDeclaration self,
 				    int modifiers,
 				    String ident,
                                     CTypeVariable[] typeVariables,
@@ -203,7 +203,7 @@ public class KjcPrettyPrinter extends org.caesarj.util.Utils implements Constant
   /**
    * prints a class declaration
    */
-  public void visitInnerClassDeclaration(JClassDeclaration self,
+  public void visitInnerClassDeclaration(CjClassDeclaration self,
 					 int modifiers,
 					 String ident,
 					 String superClass,
@@ -1007,7 +1007,7 @@ public class KjcPrettyPrinter extends org.caesarj.util.Utils implements Constant
 					      JExpression prefix,
 					      String ident,
 					      JExpression[] params,
-					      JClassDeclaration decl)
+					      CjClassDeclaration decl)
   {
     prefix.accept(this);
     print(".new " + ident + "(");
@@ -1036,7 +1036,7 @@ public class KjcPrettyPrinter extends org.caesarj.util.Utils implements Constant
   public void visitUnqualifiedAnonymousCreation(JUnqualifiedAnonymousCreation self,
 						CReferenceType type,
 						JExpression[] params,
-						JClassDeclaration decl)
+						CjClassDeclaration decl)
   {
     print("new " + type + "(");
     visitArgs(params);

@@ -2,7 +2,7 @@ package generated;
 
 import junit.framework.TestCase;
 
-privileged public class PrivilegedAccessTest extends TestCase {
+privileged public cclass PrivilegedAccessTest extends TestCase {
 	
 	public PrivilegedAccessTest() {
 		super("test");
@@ -27,7 +27,7 @@ privileged public class PrivilegedAccessTest extends TestCase {
 
 }
 
-class PrivateAccessClass {
+cclass PrivateAccessClass {
 
 	private int privateInt = 5;
 	

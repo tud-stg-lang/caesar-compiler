@@ -2,7 +2,7 @@ package generated;
 
 import junit.framework.TestCase;
 
-public class JoinPointReflectionTest extends TestCase {
+public cclass JoinPointReflectionTest extends TestCase {
 
 	private World world = new World();
 
@@ -37,7 +37,7 @@ class World {
 
 }
 
-class ReflectionAspect {
+cclass ReflectionAspect {
 	
 	pointcut methodCall(World w, StringBuffer b) : call(* m(..)) && target(w) && args(b);
 	

@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 /**
  * privleged access
  */
-privileged public class CaesarTestCase_8 extends TestCase {
+privileged public cclass CaesarTestCase_8 extends TestCase {
 
 	public CaesarTestCase_8() {
 		super("test");
@@ -37,7 +37,7 @@ privileged public class CaesarTestCase_8 extends TestCase {
 
 }
 
-class PrivateAccessClass_8 {
+cclass PrivateAccessClass_8 {
 	
 	private String secret = ":private";
 	

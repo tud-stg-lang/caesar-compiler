@@ -2,7 +2,7 @@ package generated;
 
 import junit.framework.TestCase;
 
-public class NestedAspectTest extends TestCase {
+public cclass NestedAspectTest extends TestCase {
 
 	public NestedAspectTest() {
 		super("test");
@@ -19,7 +19,7 @@ public class NestedAspectTest extends TestCase {
 		System.out.println("NestedAspectTest: m");
 	}
 
-	public class NestedAspect {
+	public cclass NestedAspect {
 		pointcut callMethod() : call(* xyz(..));
 		
 		before() : callMethod() {
