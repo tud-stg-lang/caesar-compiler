@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CDependentNameType.java,v 1.4 2005-01-18 13:14:40 klose Exp $
+ * $Id: CDependentNameType.java,v 1.5 2005-01-18 16:10:10 klose Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -24,6 +24,7 @@ package org.caesarj.compiler.types;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
+import org.caesarj.compiler.ast.phylum.expression.JLocalVariableExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
 import org.caesarj.compiler.constants.KjcMessages;
@@ -109,7 +110,12 @@ public class CDependentNameType extends CClassNameType
                     throw e;
                 }
                 
-                if(expr instanceof JFieldAccessExpression) {                    
+                if (expr instanceof JLocalVariableExpression){
+                    // TODO implement for local variables and formal parameters
+                    
+                    
+                    
+                } else if(expr instanceof JFieldAccessExpression) {                    
 	                String pathSegs[] = qualifiedName.split("/");
 	                
 	                CClass clazz = context.getClassReader().loadClass(
