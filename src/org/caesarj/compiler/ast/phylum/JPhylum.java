@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JPhylum.java,v 1.1 2004-03-15 11:56:54 aracic Exp $
+ * $Id: JPhylum.java,v 1.2 2004-03-17 11:50:07 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -28,11 +28,12 @@ import org.caesarj.compiler.context.CContext;
 import org.caesarj.util.MessageDescription;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.Utils;
 
 /**
  * This class represents the root class for all elements of the parsing tree
  */
-public abstract class JPhylum extends org.caesarj.compiler.ast.phylum.Phylum implements Constants {
+public abstract class JPhylum extends Utils implements Constants {
 
   // ----------------------------------------------------------------------
   // CONSTRUCTORS
@@ -43,7 +44,7 @@ public abstract class JPhylum extends org.caesarj.compiler.ast.phylum.Phylum imp
    * @param where the token reference of this node
    */
   public JPhylum(TokenReference where) {
-    super(where);
+	this.where = where;
   }
 
   // ----------------------------------------------------------------------
@@ -142,4 +143,22 @@ public abstract class JPhylum extends org.caesarj.compiler.ast.phylum.Phylum imp
   public void setLineNumber(CodeSequence code) {
     code.setLineNumber(getTokenReference().getLine());
   }
+  
+ // ----------------------------------------------------------------------
+ // ACCESSORS
+ // ----------------------------------------------------------------------
+
+ /**
+  * Returns the token reference of this node in the source text.
+  * @return the entire token reference
+  */
+ public TokenReference getTokenReference() {
+   return where;
+ }
+
+ // ----------------------------------------------------------------------
+ // DATA MEMBERS
+ // ----------------------------------------------------------------------
+
+ private final TokenReference	where;		// position in the source text
 }
