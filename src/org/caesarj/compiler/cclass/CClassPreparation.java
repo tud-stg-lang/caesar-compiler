@@ -6,23 +6,45 @@
  */
 package org.caesarj.compiler.cclass;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JConstructorDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.expression.JConstructorCall;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
+import org.caesarj.compiler.ast.phylum.expression.JUnqualifiedInstanceCreation;
+import org.caesarj.compiler.ast.phylum.statement.JBlock;
+import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
+import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
+import org.caesarj.compiler.ast.phylum.statement.JStatement;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CField;
-import org.caesarj.compiler.export.*;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.export.CSourceClass;
+import org.caesarj.compiler.export.CSourceField;
+import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * ...
@@ -94,15 +116,294 @@ public class CClassPreparation implements CaesarConstants {
                 new JTypeDeclaration[0]));             
 	}
    
-
-        
-    /*
-     *
-     * GENERATED TYPES
-     *  
+    
+    /**
+     * virtual classes automatically inherit the ctors of super class
      */
+    public void checkConstructorInheritance(
+        CompilerBase compilerBase, 
+        KjcEnvironment environment
+    ) {
+        CaesarTypeSystem caesarTypeSystem = environment.getCaesarTypeSystem(); 
+        TypeFactory typeFactory = environment.getTypeFactory();
+        ClassReader classReader = environment.getClassReader();
+                
+        Collection allTypes = caesarTypeSystem.getJavaGraph().getAllTypes();        
+        
+        for (Iterator it = allTypes.iterator(); it.hasNext();) {
+            /*
+             * add inherited ctor exports to cclass
+             */
+            JavaTypeNode item = (JavaTypeNode)it.next();            
+            JavaTypeNode parent = item.getParent();
+            
+            if(item.isRoot()) continue;            
+            if(parent.isRoot()) continue;
+            
+            CjClassDeclaration decl = item.getDeclaration();
+            
+            CClass itemClass = item.getCClass();            
+            CClass parentClass = parent.getCClass();
+            
+            Collection parentCtors = new LinkedList();
+            Collection itemCtors = new LinkedList();
+            int ctorInherited = 0;
+            
+            // collect ctors of item class
+            for(int i=0; i<itemClass.getMethods().length; i++) {
+                if(itemClass.getMethods()[i].isConstructor())
+                    itemCtors.add(itemClass.getMethods()[i]);
+            }
+            
+            // collect ctors of parent class
+            for(int i=0; i<parentClass.getMethods().length; i++) {
+                if(parentClass.getMethods()[i].isConstructor())
+                    parentCtors.add(parentClass.getMethods()[i]);
+            }
+            
+            
+            // check ctor inheritance 
+            for (Iterator it1 = parentCtors.iterator(); it1.hasNext();) {
+                CMethod parentCtor = (CMethod) it1.next();
+                boolean foundInSubClass = false;
+                for (Iterator it2 = itemCtors.iterator(); it2.hasNext() && !foundInSubClass;) {
+                    CMethod itemCtor = (CMethod) it2.next();
+                    
+                    if(parentCtor.isEqualSignature(itemCtor))
+                        foundInSubClass = true;
+                }
+                
+                // add it if not found in item
+                if(!foundInSubClass) {       
+                    ctorInherited++;
+                    
+                    JConstructorBlock body = null;
+                    
+                    // create ctor body if item has declaration
+                    if(decl != null) {
+                        
+                        JExpression[] params = new JExpression[parentCtor.getParameters().length];
+                        for (int i = 0; i < params.length; i++) {
+                            params[i] = new JNameExpression(decl.getTokenReference(), ("p"+i).intern());
+                        }
+                        
+                        body = new JConstructorBlock(
+                            decl.getTokenReference(),
+                            new JConstructorCall(
+                                decl.getTokenReference(),
+                                false,
+                                null,
+                                params
+                            ),
+                            JStatement.EMPTY
+                        );
+                    }
+                    
+                    CSourceMethod inheritedCtor = new CSourceMethod(
+                        itemClass,
+                        parentCtor.getModifiers(),
+                        JAV_CONSTRUCTOR,
+                        typeFactory.getVoidType(),
+                        parentCtor.getParameters(),
+                        parentCtor.getThrowables(),
+                        parentCtor.getTypeVariables(),
+                        parentCtor.isDeprecated(),
+                        parentCtor.isSynthetic(),
+                        body
+                    );
+                    
+                    itemClass.addMethod(inheritedCtor); // CTODO performance
+             
+                    // if item has a declaration add also JConstructorDeclarations
+                    if(decl != null) {
+                        
+                        JFormalParameter formalParams[] = new JFormalParameter[parentCtor.getParameters().length];
+                        
+                        for (int i = 0; i < formalParams.length; i++) {
+                            formalParams[i] = new JFormalParameter(
+                                decl.getTokenReference(),
+                                JFormalParameter.DES_PARAMETER,
+                                parentCtor.getParameters()[i],
+                                ("p"+i).intern(),
+                                false // CTODO: final markierte ctor params                                
+                            );
+                        }
+                        
+                        JMethodDeclaration inheritedCtorDecl = new JConstructorDeclaration(
+                            decl.getTokenReference(),
+                            parentCtor.getModifiers(),
+                            item.getQualifiedName().getIdent(),
+                            formalParams,
+                            parentCtor.getThrowables(),
+                            body,
+                            null, null,
+                            typeFactory
+                        );
+                        
+                        decl.addMethod(inheritedCtorDecl); // CTODO performance
+                    }
+                }
+            }
+                
+            // add default ctor if necessery
+            if(itemCtors.size() + ctorInherited == 0) {
+                
+                TokenReference srcRef = decl != null ? decl.getTokenReference() : TokenReference.NO_REF;
+                
+                JConstructorBlock body = null;
+                
+                if(decl != null) {       
+                    body = new JConstructorBlock(
+                        srcRef,
+                        new JConstructorCall(
+                            srcRef,
+                            false,
+                            null, // expr
+                            JExpression.EMPTY
+                        ),
+                        JStatement.EMPTY
+                    );
+                
+                    JConstructorDeclaration defCtorDecl = new JConstructorDeclaration(
+                        srcRef,
+                        ACC_PUBLIC,
+                        item.getQualifiedName().getIdent(),
+                        JFormalParameter.EMPTY,
+                        CReferenceType.EMPTY,
+                        body,
+                        null, null,
+                        typeFactory
+                    );     
+                    
+                    decl.addMethod(defCtorDecl);
+                }
+                
+                CSourceMethod defCtor = new CSourceMethod(
+                    itemClass,
+                    ACC_PUBLIC,
+                    JAV_CONSTRUCTOR,
+                    typeFactory.getVoidType(),
+                    CReferenceType.EMPTY,
+                    CReferenceType.EMPTY,
+                    CTypeVariable.EMPTY,
+                    false,
+                    false,
+                    body
+                );
+                
+                itemClass.addMethod(defCtor);
+            }
+        }
+    }
     
     
+    /**
+     * for each inner class which corresponds to a caesar type,
+     * we generatea for each ctor of this inner class a factory method in the owner type
+     */
+    public void generateFactoryMethods(
+        CompilerBase compilerBase, 
+        KjcEnvironment environment
+    ) throws UnpositionedError {
+        CaesarTypeSystem caesarTypeSystem = environment.getCaesarTypeSystem(); 
+        TypeFactory typeFactory = environment.getTypeFactory();
+        ClassReader classReader = environment.getClassReader();
+                
+        Collection allTypes = caesarTypeSystem.getJavaGraph().getAllTypes();        
+        
+        for (Iterator it = allTypes.iterator(); it.hasNext();) {
+            JavaTypeNode item = (JavaTypeNode)it.next();                        
+                        
+            CjClassDeclaration decl = item.getDeclaration();
+            if(decl != null) {
+                CjInterfaceDeclaration ifcDecl = decl.getCorrespondingInterfaceDeclaration();
+                for (Iterator innerIt = item.getInners().iterator(); innerIt.hasNext();) {
+                    JavaTypeNode inner = (JavaTypeNode) innerIt.next();
+                    
+                    // if we have a inner corresponding to a caesar type generate factory method
+                    if(!inner.isToBeGeneratedInBytecode()) {                        
+                        CClass innerClass = inner.getCClass();
+                        CMethod methods[] = innerClass.getMethods();
+                        
+                        for (int i = 0; i < methods.length; i++) {
+                            if(methods[i].isConstructor()) {
+                                
+                                JExpression[] params = new JExpression[methods[i].getParameters().length];
+                                for (int j = 0; j < params.length; j++) {
+                                    params[j] = new JNameExpression(decl.getTokenReference(), ("p"+j).intern());
+                                }
+                                
+                                JBlock creationBlock = new JBlock(
+                                    decl.getTokenReference(),
+                                    new JStatement[] {
+                                        new JReturnStatement(
+                                            decl.getTokenReference(),
+                                            new JUnqualifiedInstanceCreation(
+                                                decl.getTokenReference(),
+                                                innerClass.getAbstractType(),
+                                                params
+                                            ),
+                                            null
+                                        )
+                                    },
+                                    null
+                                );
+                                
+                                JFormalParameter formalParams[] = 
+                                    new JFormalParameter[methods[i].getParameters().length];
+                                
+                                for (int j = 0; j < formalParams.length; j++) {
+                                    formalParams[j] = new JFormalParameter(
+                                        decl.getTokenReference(),
+                                        JFormalParameter.DES_PARAMETER,
+                                        methods[i].getParameters()[j],
+                                        ("p"+j).intern(),
+                                        false // CTODO: final markierte ctor params                                
+                                    );
+                                }
+                                
+                                CClass returnType = classReader.loadClass(
+                                    typeFactory, 
+                                    inner.getMixin().getQualifiedName().toString()
+                                );
+                                
+                                returnType = returnType.getTopmostHierarchyInterface();
+                                
+                                JMethodDeclaration facMethodDecl = new JMethodDeclaration(
+                                        decl.getTokenReference(),
+                                        methods[i].getModifiers(),
+                                        methods[i].getTypeVariables(),
+                                        returnType.getAbstractType(),
+                                        "$new"+inner.getType().getQualifiedName().getIdent(),
+                                        formalParams, // formal params
+                                        methods[i].getThrowables(),
+                                        creationBlock,
+                                        null, null
+                                    );  
+                                
+                                JMethodDeclaration facIfcMethodDecl = new JMethodDeclaration(
+                                    decl.getTokenReference(),
+                                    methods[i].getModifiers(),
+                                    methods[i].getTypeVariables(),
+                                    returnType.getAbstractType(),
+                                    "$new"+inner.getType().getQualifiedName().getIdent(),
+                                    formalParams, // formal params
+                                    methods[i].getThrowables(),
+                                    null,
+                                    null, null
+                                );  
+                                
+                                decl.addMethod(facMethodDecl);
+                                ifcDecl.addMethod(facIfcMethodDecl);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+
     /**
      * This step is done after types has been joined
      * 

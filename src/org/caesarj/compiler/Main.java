@@ -126,6 +126,11 @@ public class Main extends MainSuper implements Constants {
         adjustSuperTypes(tree);
         if(errorFound) return false;
         
+        checkConstructorInheritance(environment);
+        
+        generateFactoryMethods(environment);
+        if(errorFound) return false;
+        
         checkAllInterfaces(tree); 
         if(errorFound) return false;
                 
@@ -137,7 +142,7 @@ public class Main extends MainSuper implements Constants {
 
         genCode(environment.getTypeFactory());
          
-        //genMixinCopies(environment);
+        genMixinCopies(environment);
         if(errorFound) return false;
 
         tree = null;
@@ -152,8 +157,28 @@ public class Main extends MainSuper implements Constants {
         return true;
     }
 
+
+    private void checkConstructorInheritance(KjcEnvironment environment) {
+        CClassPreparation.instance().checkConstructorInheritance(
+            this,
+            environment
+        );
+    }
+    
+    private void generateFactoryMethods(KjcEnvironment environment) {
+        try {
+            CClassPreparation.instance().generateFactoryMethods(
+                this,
+                environment
+            );
+        }
+        catch (UnpositionedError e) {
+            reportTrouble(e);
+        }
+    }
     
     private void genMixinCopies(KjcEnvironment environment) {
+        
         JavaTypeGraph javaTypeGraph = environment.getCaesarTypeSystem().getJavaGraph();
         Collection typesToGenerate = javaTypeGraph.getTypesToGenerate();
         for (Iterator it = typesToGenerate.iterator(); it.hasNext();) {
@@ -164,8 +189,8 @@ public class Main extends MainSuper implements Constants {
                     item.getMixin().getQualifiedImplName(),
                     item.getQualifiedName(),
                     item.getParent().getQualifiedName(),
-                    item.getOuter() != null ? 
-                        item.getOuter().getQualifiedName() : null 
+                    item.getOuter() != null ? item.getOuter().getQualifiedName() : null, 
+                    environment.getCaesarTypeSystem()
                 );
             }
             catch (MixerException e) {
@@ -173,6 +198,7 @@ public class Main extends MainSuper implements Constants {
                 //reportTrouble(new UnpositionedError(CaesarMessages......));
             }
         }
+        
     }
 
     /**

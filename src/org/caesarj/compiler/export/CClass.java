@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.14 2004-06-17 21:10:21 aracic Exp $
+ * $Id: CClass.java,v 1.15 2004-06-23 13:06:14 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -1873,20 +1873,10 @@ public abstract class CClass extends CMember
 			true,
 			null);
 
-
-    // IVICA
-    private CClass correspondingCClass = this;
-    
-    public CClass getCorrespondingCClass() {
-        return correspondingCClass;
-    }
-    
-    public void setCorrespondingCClass(CClass correspondingCClass) {
-        this.correspondingCClass = correspondingCClass;
-    }
     
     // IVICA returns the superinterface of the topmost hierarchy
     // CTODO this is gonna be more complicated if we have composite types
+    // this should be moved to CaesarTypeGraph
     public CClass getTopmostHierarchyInterface() throws UnpositionedError {
         if(!this.isCaesarClassInterface()) return null;
         

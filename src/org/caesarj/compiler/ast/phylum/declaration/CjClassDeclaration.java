@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.18 2004-06-17 21:10:21 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.19 2004-06-23 13:06:14 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -29,10 +29,13 @@ import org.caesarj.compiler.aspectj.CaesarScope;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.expression.JConstructorCall;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JSuperExpression;
 import org.caesarj.compiler.ast.phylum.expression.JUnqualifiedInstanceCreation;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
+import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
 import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
@@ -450,15 +453,15 @@ public class CjClassDeclaration
      * we need this one in order to be able to generate exports for mixin copies
      */    
     public void generateExport(CContext context) throws PositionedError {
-        // CTODO default constructor missing
+        
         List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {
-            CMethod m = methods[i].checkInterface(self);
+            CMethod m = methods[i].checkInterface(self);            
             methodList.add(m);
         }
-
+        
         Hashtable hashFieldMap = new Hashtable();
-                for (int i = fields.length - 1; i >= 0; i--) {
+        for (int i = fields.length - 1; i >= 0; i--) {
             CSourceField field = fields[i].checkInterface(self);
             field.setPosition(i);
             hashFieldMap.put(field.getIdent(), field);
@@ -550,7 +553,13 @@ public class CjClassDeclaration
                         subNode.getQualifiedImplName().getPrefix()
                     );
                     
-                    implDecl.join(context);
+                    implDecl.join(context); // CTODO do we need this join here?
+                    
+                    implDecl.getCClass().close(
+                        implDecl.getInterfaces(),
+                        new Hashtable(),
+                        CMethod.EMPTY
+                    );
                     
                     implDecl.setCorrespondingInterfaceDeclaration(ifcDecl);
                     ifcDecl.setCorrespondingClassDeclaration(implDecl);
@@ -576,56 +585,6 @@ public class CjClassDeclaration
             getCorrespondingInterfaceDeclaration().addInners(
                 (JTypeDeclaration[])newIfcs.toArray(new JTypeDeclaration[newIfcs.size()])
             );
-            
-            
-            // generate factory methods
-            if(inners.length > 0) {
-                JMethodDeclaration factoryMethods[] = new JMethodDeclaration[inners.length];
-                JMethodDeclaration factoryIfcMethods[] = new JMethodDeclaration[inners.length];
-                for (int i = 0; i < inners.length; i++) {
-                    CjClassDeclaration inner = (CjClassDeclaration)inners[i];
-                    factoryMethods[i] = new JMethodDeclaration(
-                        getTokenReference(),
-                        ACC_PUBLIC,
-                        CTypeVariable.EMPTY,
-                        inner.getCorrespondingInterfaceDeclaration().getCClass().getTopmostHierarchyInterface().getAbstractType(),
-                        "$new"+inner.getCorrespondingInterfaceDeclaration().getCClass().getIdent(),
-                        JFormalParameter.EMPTY,
-                        CReferenceType.EMPTY,
-                        new JBlock(
-                            getTokenReference(),
-                            new JStatement[]{                                                               
-                                new JReturnStatement(
-                                    getTokenReference(),
-                                    new JUnqualifiedInstanceCreation(
-                                        getTokenReference(),
-                                        inner.getCClass().getAbstractType(),
-                                        JExpression.EMPTY
-                                    ),
-                                    null
-                                )
-                            },
-                            null
-                        ),
-                        null, null
-                    );                    
-                    
-                    factoryIfcMethods[i] = new JMethodDeclaration(
-                        getTokenReference(),
-                        ACC_PUBLIC,
-                        CTypeVariable.EMPTY,
-                        inner.getCorrespondingInterfaceDeclaration().getCClass().getTopmostHierarchyInterface().getAbstractType(),
-                        "$new"+inner.getCorrespondingInterfaceDeclaration().getCClass().getIdent(),
-                        JFormalParameter.EMPTY,
-                        CReferenceType.EMPTY,
-                        null, // block is empty 
-                        null, null
-                    );
-                }
-                
-                addMethods(factoryMethods);
-                getCorrespondingInterfaceDeclaration().addMethods(factoryIfcMethods);
-            }            
         }
         catch (Throwable e) {
             // MSG
@@ -688,11 +647,6 @@ public class CjClassDeclaration
      */
     public void checkInterface(CContext context) throws PositionedError {
 
-        // link cclass with cclass interface
-        getCClass().setCorrespondingCClass(getCorrespondingInterfaceDeclaration().getCClass());
-        getCorrespondingInterfaceDeclaration().getCClass().setCorrespondingCClass(getCClass());
-
-        
         //statically deployed classes are considered as aspects
         if (isStaticallyDeployed()) {
             DeploymentPreparation.prepareForStaticDeployment(

@@ -16,9 +16,10 @@ import java.util.Map;
  */
 public class JavaTypeGraph {
     
-    private HashMap nodes = new HashMap();
+    private HashMap origMixinMap = new HashMap();
     private JavaTypeNode root;
     private HashMap caesar2javaMap = new HashMap();
+    private HashMap nodes = new HashMap();
     
     public JavaTypeGraph() {
         CaesarTypeNode typeNode = new CaesarTypeNode(null, "java/lang/Object", false);
@@ -60,7 +61,7 @@ public class JavaTypeGraph {
                 current.addSubNode(next);
             }
             else {
-                nodes.put(t.getQualifiedName().toString(), current);
+                origMixinMap.put(t.getQualifiedName().toString(), current);
                 current.setType(t);
             }
         }
@@ -72,7 +73,7 @@ public class JavaTypeGraph {
     
     
     public JavaTypeNode getOriginalMixin(JavaQualifiedName qualifiedName) {
-        return (JavaTypeNode)nodes.get(qualifiedName.toString());
+        return (JavaTypeNode)origMixinMap.get(qualifiedName.toString());
     }
         
     public void debug() {
@@ -85,6 +86,14 @@ public class JavaTypeGraph {
     
     public JavaTypeNode getJavaTypeNode(CaesarTypeNode type) {
         return (JavaTypeNode)caesar2javaMap.get(type);
+    }
+    
+    public JavaTypeNode getNode(JavaQualifiedName qn) {
+        return (JavaTypeNode)nodes.get(qn);
+    }
+    
+    protected void registerNode(JavaQualifiedName qn, JavaTypeNode node) {
+        nodes.put(qn, node);
     }
 
     /** 

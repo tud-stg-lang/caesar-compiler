@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
@@ -35,6 +36,7 @@ public class JavaTypeNode {
     private JavaTypeNode original = null;
     private JavaTypeNode parent = null;
     private HashMap subNodes = new HashMap();
+    private List inners = new LinkedList();
     private Set mixinCopies = new HashSet();
     
     private CjClassDeclaration declaration = null;
@@ -173,17 +175,17 @@ public class JavaTypeNode {
     public void genOuterAndQualifiedNames() {
         if(parent == null) {
             this.qualifiedName = new JavaQualifiedName("java/lang/Object");
-            this.outer = null;
+            setOuter(null);
         }
         else if(type != null) {
             this.qualifiedName = type.getQualifiedImplName();
             
             if(type.getOuter() != null)
-                this.outer = compilationGraph.getJavaTypeNode(type.getOuter());
+                setOuter(compilationGraph.getJavaTypeNode(type.getOuter()));
         }
         else {
             this.qualifiedName = null;
-            this.outer = null;
+            setOuter(null);
         }
         
         for (Iterator it = subNodes.values().iterator(); it.hasNext();) {
@@ -202,8 +204,8 @@ public class JavaTypeNode {
              * calc outer
              */ 
             if(mixin.getOuter() != null) {   
-                this.outer = compilationGraph.getJavaTypeNode(mixin.getOuter());
-                this.outer = getMostSpecificOuter(this.outer);
+                setOuter(compilationGraph.getJavaTypeNode(mixin.getOuter()));
+                setOuter(getMostSpecificOuter(getOuter()));
                 
                 Collection leafs = new LinkedList();
                 this.collectLeafs(leafs);
@@ -212,8 +214,8 @@ public class JavaTypeNode {
                 JavaTypeNode nOuter = n.getOuter();
                 
                 while(nOuter != null) {
-                    if(outer.getMixin().equals(nOuter.getMixin())) {
-                        this.outer = nOuter;
+                    if(getOuter().getMixin().equals(nOuter.getMixin())) {
+                        setOuter(nOuter);
                         break;
                     }
                     nOuter = nOuter.getParent();
@@ -225,9 +227,9 @@ public class JavaTypeNode {
              * calc the qualified name
              */ 
             StringBuffer qualifiedName = new StringBuffer();
-            if(this.outer != null) {
-                this.outer.genOuterAndQNForGeneratedTypes(visited);
-                qualifiedName.append(this.outer.getQualifiedName().toString());
+            if(getOuter() != null) {
+                getOuter().genOuterAndQNForGeneratedTypes(visited);
+                qualifiedName.append(getOuter().getQualifiedName().toString());
                 qualifiedName.append('$');
             }
             else {
@@ -247,6 +249,8 @@ public class JavaTypeNode {
             this.qualifiedName = new JavaQualifiedName(qualifiedName.toString());
         }
     
+        // register in graph's node map
+        compilationGraph.registerNode(qualifiedName, this);
         
         visited.add(this);
         
@@ -260,9 +264,9 @@ public class JavaTypeNode {
         JavaTypeNode newMostSpecific = mostSpecificTillNow;         
         
         // check if our most specific is still valid
-        if(this.outer != null) {
-            if(this.outer.isSubClassOf(mostSpecificTillNow))
-                newMostSpecific = this.outer;
+        if(getOuter() != null) {
+            if(getOuter().isSubClassOf(mostSpecificTillNow))
+                newMostSpecific = getOuter();
         }
         
         if(parent != null)
@@ -290,6 +294,10 @@ public class JavaTypeNode {
 
     public boolean isLeaf() {
         return subNodes.size() == 0;
+    }
+
+    public boolean isRoot() {
+        return parent == null;
     }
     
     public void collectLeafs(Collection res) {
@@ -323,6 +331,16 @@ public class JavaTypeNode {
         }
     }
 
+    protected void setOuter(JavaTypeNode outer) {
+        if(this.outer != null)
+            this.outer.getInners().remove(this);        
+        
+        this.outer = outer;
+        
+        if(outer != null)
+            outer.getInners().add(this);
+    }
+
     public JavaTypeNode getOuter() {
         return outer;
     }
@@ -341,5 +359,9 @@ public class JavaTypeNode {
     
     public CjClassDeclaration getDeclaration() {
         return declaration;
+    }
+
+    public List getInners() {
+        return inners;
     }
 }
