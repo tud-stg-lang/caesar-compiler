@@ -15,6 +15,12 @@ import org.eclipse.jdt.internal.core.util.ToStringSorter;
  */
 public class MixinList {
     
+	/* DEBUG */
+	private static boolean appendHashcode = true;
+	public static void appendHashcode( boolean set ){
+		appendHashcode = set;
+	}
+	
     private LinkedList l = new LinkedList();
     
     public Iterator iterator() {
@@ -72,7 +78,8 @@ public class MixinList {
             }
                 
             className.append('_');
-           className.append(generateHashCode(packageNames.toString()));
+           if (appendHashcode)
+           		className.append(generateHashCode(packageNames.toString()));
                 
             return 
                 className.toString();

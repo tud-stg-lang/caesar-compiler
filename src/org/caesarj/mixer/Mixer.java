@@ -16,6 +16,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.util.ClassLoader;
+import org.caesarj.mixer.intern.ClassModifyingVisitor;
 
 public class Mixer {
     
@@ -52,6 +53,9 @@ public class Mixer {
     		if (!destinationPackage.endsWith("/"))	destinationPackage += "/";
     	}
     	
+    	/* DEBUG: Disable hashcodes for better readability */
+    	MixinList.appendHashcode(false);
+    	
     	int last = mixinList.size()-1;
     	while ( mixinList.get(last).getFullQualifiedName().equals("java/lang/Object")){
     		last--;
@@ -76,11 +80,13 @@ public class Mixer {
     			String	newClassName = 	mixinList.get(element).getPackageName() +"/"+
 										mixinList.generateClassName(element,last);
     			
+    			
+    			replacedClasses.put( thisMixin, newClassName );
     			createModifiedClass(thisMixin, newClassName, superMixin);
 
 				
     			// add the superclass of this class to the hashmap, so we don't have to load 
-    			// the classfile for our generated classes
+    			// the classfile for our generated classes later
     			superClasses.put(newClassName, superMixin);
     			thisMixin = newClassName; 
     		}
@@ -101,67 +107,44 @@ public class Mixer {
      * copying and modifiyng the classfile of <code>originalClass</code>
      */
 	private void createModifiedClass( String originalClass, String newClass, String newSuperclass ) throws MixerException{
+		ClassModifyingVisitor	visitor = new ClassModifyingVisitor(
+													originalClass,
+													newClass,
+													newSuperclass,
+													replacedClasses );
+	
 		// load class
 		JavaClass	clazz = Repository.lookupClass(originalClass);
 		ClassGen generator = new ClassGen(clazz);
 		
-		// find the CP entry for the old class and superclass symbols and modify it
-		ConstantPoolGen cp = generator.getConstantPool();
-		/*DEBUG*/System.out.println(originalClass+" -> "+newClass+" : "+newSuperclass);
-		/*DEBUG*/System.out.println("Constant pool of class "+newClass+":\n"+cp);
-
-		int classNameIndex = generator.getClassNameIndex(),
-			superclassNameIndex = generator.getSuperclassNameIndex();
+		visitor.start(clazz);
 		
-		ConstantClass 	cc = (ConstantClass)cp.getConstant(classNameIndex),
-						csc = (ConstantClass)cp.getConstant(superclassNameIndex);
-		
-		classNameIndex = cc.getNameIndex();
-		superclassNameIndex = csc.getNameIndex();
-		
-//		/*DEBUG*/System.out.println("classNameIndex is "+classNameIndex);
-		
-		cp.setConstant(classNameIndex, new ConstantUtf8(newClass));
-		cp.setConstant(superclassNameIndex, new ConstantUtf8(newSuperclass));
-		
-		generator.setConstantPool(cp);
-		
-		// modify the local variable this
-		Method[] methods = generator.getMethods();
-		for (int i=0; i<methods.length; i++){
-			Method method = methods[i];
-			LocalVariableTable table = method.getLocalVariableTable();
-			LocalVariable[] locals = table.getLocalVariableTable();
-			
-			for (int j=0; j<locals.length; j++){
-				LocalVariable local = locals[j];
-				if (local.getName().equals("this")){
-					int signatureIndex = local.getSignatureIndex();
-					/*DEBUG*/System.out.println("this index: "+signatureIndex);
-					cp.setConstant(signatureIndex, new ConstantUtf8("L"+newClass+";"));
-				}
-			}
-		}
-		
-		
-		// find all invokestatic calls and modify them
-		
-		// find all methods, that have been implicitly overriden in the hierarchy and change the dispatch
-		
-		
-		// write the classfile
-		try {
-			generator.getJavaClass().dump("bin/"+newClass+".class");
-		} catch (IOException e) {
-			throw new MixerException(e);
-		}
-		
-		
-		// find all inner classes and run recursively
-		
+		// find all inner classes and run recursively?
+		 		
 	}
 
+	boolean mustReplaceSignature( String signature ){
+		return replacedClasses.containsKey( ClassModifyingVisitor.typeFromSignature(signature));
+	}
+	
+	String getNewSignature( String signature ){
+		String type = ClassModifyingVisitor.typeFromSignature(signature);
+		type = (String) replacedClasses.get(type);
+		return replaceTypeInSignature(signature,type);
+	}
+	
     /** This hashmap holds the superclasses of all classes we've seen yet */
     HashMap	superClasses = new HashMap();
+    
+    /** This vector holds all classes that has been replaced: oldName -> newname */
+    HashMap replacedClasses = new HashMap();
 
+    boolean signatureReferences( String signature, String type){
+    	return ClassModifyingVisitor.typeFromSignature(signature).equals(type);
+    }
+    
+    String replaceTypeInSignature( String signature, String type ){
+    	return ClassModifyingVisitor.replaceType(signature,type);
+    }
+    
 }
