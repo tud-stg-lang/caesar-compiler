@@ -104,15 +104,12 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 		// create a copy as work base
 		JavaClass newClass = clazz.copy();
 	
-		System.out.println("Old constantpool:\n"+newClass.getConstantPool());
-		System.out.println(clazz.toString());
 		
 
 		Attribute	[] attributes = newClass.getAttributes();
 		for (int i = 0; i < attributes.length; i++) {
 			Attribute attribute = attributes[i];
 			if (attribute.getTag() != Constants.ATTR_INNER_CLASSES) continue;
-			System.out.println("Innerclasses.length="+ ((InnerClasses)attribute).getLength());
 		}
 		
 		// find indices of class and super class name
