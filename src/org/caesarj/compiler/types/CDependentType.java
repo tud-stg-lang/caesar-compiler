@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentType.java,v 1.21 2005-03-03 12:19:21 aracic Exp $
+ * $Id: CDependentType.java,v 1.22 2005-03-06 13:49:34 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -28,6 +28,7 @@ package org.caesarj.compiler.types;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.family.ContextExpression;
@@ -51,30 +52,54 @@ public class CDependentType extends CReferenceType {
     
     private boolean checked = false;
     
-    public CDependentType(CContext ctx, JExpression family, CType staticType) {
+    private CContext exprContext; /** the context in which the expression has been resolved */
+    
+    public CDependentType(CContext ctx, CContext exprContext, JExpression family, CType staticType) {
         setDeclContext(ctx);      
         this.family = family;
         this.plainType = staticType;
+        this.exprContext = exprContext;
     }
     
+    public CDependentType(CContext ctx, JExpression family, CType staticType, boolean adaptK) {
+    }
+    
+    /**
+     * @return the family path of the family expression
+     * NOTE: returned path should be cloned if manipulated
+     */
     public Path getPath() throws UnpositionedError {
         
         if(family == null)
             return ((CReferenceType)plainType).getPath();
         
-        // CRITICAL: no caching, this has caused errors, reason is unkown
-        //if(path != null) return path.clonePath();                 
+        // check if we have calculated path already
+        if(path != null) 
+            return path;                 
         
-        //path = family.getThisAsFamily();
-        path = Path.createFrom(declContext, family);
+        // get path from the family expression
+        path = family.getThisAsFamily().clonePath();
         
         // if this type has been resolve in the context of a caesar accessor method
         // subtract 1 from k 
         // (we want ot start our path relative to the field decl rather than the context of the accessor method)
-        if(declContext.getMethodContext() != null) {            
-            if(declContext.getMethodContext().getMethodDeclaration().getMethod().isCaesarAccessorMethod())
+        CMethodContext methodCtx = declContext.getMethodContext();
+        if(methodCtx != null) {            
+            if(methodCtx.getMethodDeclaration().getMethod().isCaesarAccessorMethod())
                 ((ContextExpression)path.getHead()).adaptK(-1);
         }
+        
+        // if the family expression has not been evaluated in the declaring context
+        // -> adapt k (e.g., field declarations which are evaluate in the Block$ ctx)
+        CContext ctx = exprContext.getBlockContext();
+        int adaptK = 0;
+        while(declContext != ctx) {
+            adaptK++;
+            ctx = ctx.getParentContext();
+        }
+        
+        if(adaptK > 0)
+            ((ContextExpression)path.getHead()).adaptK(-adaptK);
 
         return path;
     }
