@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: TestProperties.java,v 1.2 2005-03-02 09:45:55 gasiunas Exp $
+ * $Id: TestProperties.java,v 1.3 2005-03-02 17:41:42 gasiunas Exp $
  */
 
 package org.caesarj.test.suite;
@@ -33,6 +33,8 @@ import java.util.Properties;
  * @author Ivica Aracic
  */
 public class TestProperties {
+	
+	public final static String UNDEF_MESSAGE = "UNDEF_MESSAGE"; 
 
     private static TestProperties singleton = new TestProperties();
 
@@ -43,6 +45,7 @@ public class TestProperties {
     private String binDir = "tests/bin";
     private String genSrcDir = "tests/src";
     private String testDir = "tests/suits";
+    private boolean ignoreUndefMsg = false;
     
     public static TestProperties instance() {
         return singleton;
@@ -75,10 +78,17 @@ public class TestProperties {
             
             if(props.containsKey("genSrcDir"))
                 genSrcDir = props.getProperty("genSrcDir");
+            
+            if(props.containsKey("ignoreUndefMsg"))
+            	ignoreUndefMsg = getBoolValue("ignoreUndefMsg");
         }
         catch (Exception e) {
             // do nothing, just continue with default values
         }
+    }
+    
+    private boolean getBoolValue(String key) {
+    	return props.getProperty(key).trim().toLowerCase().equals("true");
     }
     
     
@@ -108,5 +118,9 @@ public class TestProperties {
     
     public String getGenSrcDir() {
         return genSrcDir;
+    }
+    
+    public boolean ignoreUndefMessages() {
+    	return ignoreUndefMsg;
     }
 }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CompileAndCheckErrorTest.java,v 1.2 2005-02-25 13:43:29 aracic Exp $
+ * $Id: CompileAndCheckErrorTest.java,v 1.3 2005-03-02 17:41:42 gasiunas Exp $
  */
 
 package org.caesarj.test.suite;
@@ -48,15 +48,18 @@ public class CompileAndCheckErrorTest extends CompileTest {
     
     public CompileAndCheckErrorTest(CaesarTestSuite testSuite, String id, String description, String codeBlock, String errorCode) {
         super(testSuite, id, description, codeBlock);
-     
-        msgDesc = findMessageDescription(KjcMessages.class, errorCode);
-        if(msgDesc == null) {
-            msgDesc = findMessageDescription(CaesarMessages.class, errorCode);
-            
-            if(msgDesc == null) {
-                throw new RuntimeException('"'+errorCode+"\" can not be found in KjcMessages or in CaesarMessages");
-            }
-        }        
+        this.errorCode = errorCode;
+        
+        if (!errorCode.equals(TestProperties.UNDEF_MESSAGE)) {
+        	msgDesc = findMessageDescription(KjcMessages.class, errorCode);
+	        if(msgDesc == null) {
+	            msgDesc = findMessageDescription(CaesarMessages.class, errorCode);
+	            
+	            if(msgDesc == null) {
+	                throw new RuntimeException('"'+errorCode+"\" can not be found in KjcMessages or in CaesarMessages");
+	            }
+	        }
+        }
     }
     
     protected MessageDescription findMessageDescription(Class clazz, String fieldName) {
@@ -74,7 +77,7 @@ public class CompileAndCheckErrorTest extends CompileTest {
     }
     
     public void compilerSuccess() {
-        fail("failed : "+getId()+" : "+getDescription());
+        fail("failed : compiler success: "+getId()+" : "+getDescription());
     }
     
     private void checkErrors(MessageDescription[] expected){
@@ -87,6 +90,12 @@ public class CompileAndCheckErrorTest extends CompileTest {
             }
         }
         PositionedError[] found = (PositionedError[]) errors.toArray( new PositionedError[0] );
+        
+        if (errorCode.equals(TestProperties.UNDEF_MESSAGE)) {
+        	if (!TestProperties.instance().ignoreUndefMessages()) {
+        		fail("failed : undefined message: " + getId() + " : "+getDescription());
+        	}
+        }
         
         if(found.length == 0)
             fail("No errors found : "+getId()+" : "+getDescription());
