@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.12 2004-03-22 12:59:12 aracic Exp $
+ * $Id: CaesarMessages.msg,v 1.13 2004-07-02 10:36:02 aracic Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -102,3 +102,11 @@ error	VIRTUAL_ACCESSING_OUTER_PRIVATE
 
 error	VIRTUAL_CALLING_OUTER_OUTER
 		"Virtual or override class \"{0}\" cannot call methods or access fields defined in the enclosing class of its outer class."
+
+				
+error	NAME_CLASH
+		"Name clash for member \"{0}\" detected."
+
+error	FATAL_ERROR
+		"Fatal error! Everything is going to explode. Panic! Women and children first!"		
+		

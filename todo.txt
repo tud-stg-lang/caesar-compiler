@@ -4,6 +4,8 @@ HIGH PRIORITY
 - Substitution of new calls
 - Name clashes -> compiler error
 - checkInterface -> redefined cclass methods have to keep complete parents throwable list
+- typesystem -> casts, family variables
+
 
 LOW PRIORITY
 
@@ -16,11 +18,19 @@ WORK DONE
 - typesystem graphs
 - extended compiler controllflow
 - class generator component
+- implements clause for cclass
+
+
+THINK ABOUT IT
+
+- abstract virtual class
+- static interfaces in cclass
+
 
 
 FUTURE WORK
 
 - Integration into eclipse GUI 
 	-> can we use type system graphs for adding extra informations to outline views
-- better constructor support
+- better constructor support -> (see c++ multiple inheritance)
 - CIs

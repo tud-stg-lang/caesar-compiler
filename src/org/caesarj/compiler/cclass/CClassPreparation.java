@@ -89,10 +89,13 @@ public class CClassPreparation implements CaesarConstants {
                     new CClassFactory(caesarClass, environment);
 
                 // create class interface                           
-                newTypeDeclarations.add(factory.createCaesarClassInterface());
+                JTypeDeclaration cclassIfcDecl = 
+                	factory.createCaesarClassInterface();               
         
                 // add implements cclass interface and rename supertype to *_Impl  
                 factory.modifyCaesarClass();
+                
+                newTypeDeclarations.add(cclassIfcDecl);
 
                 if (caesarClass.getInners().length > 0) {
                     //consider nested types

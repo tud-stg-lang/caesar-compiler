@@ -31,5 +31,5 @@ public interface CaesarMessages extends org.caesarj.util.Messages {
   
   // IVICA
   MessageDescription    NAME_CLASH = new MessageDescription("Name clash for member \"{0}\" detected.", null, 0);
-  MessageDescription    FATAL_ERROR = new MessageDescription("Fatal Error.", null, 0);
+  MessageDescription    FATAL_ERROR = new MessageDescription("Fatal error! Everything is going to explode. Panic! Women and children first!", null, 0);
 }
