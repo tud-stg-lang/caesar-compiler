@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassPreparation.java,v 1.31 2005-02-09 16:52:41 aracic Exp $
+ * $Id: CClassPreparation.java,v 1.32 2005-02-21 15:17:57 aracic Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -242,13 +242,6 @@ public class CClassPreparation implements CaesarConstants {
 	    CjVirtualClassDeclaration decl
     ) {
 	    TypeFactory typeFactory = environment.getTypeFactory();
-        ClassReader classReader = environment.getClassReader();
-        
-        CClass hashMapClass = 
-            classReader.loadClass(
-                typeFactory, 
-            	"java/util/WeakHashMap"
-            );
         
         CjVirtualClassDeclaration innerDecl = inner.getDeclaration();
         CjInterfaceDeclaration innerIfcDecl = innerDecl.getMixinIfcDeclaration();
@@ -267,7 +260,7 @@ public class CClassPreparation implements CaesarConstants {
                 new JVariableDefinition(
                     where,
                     ACC_PRIVATE,
-                    hashMapClass.getAbstractType(),
+                    new CClassNameType("java/util/WeakHashMap"),
                     wrapperMapName,
                     null
                 ),
@@ -280,12 +273,13 @@ public class CClassPreparation implements CaesarConstants {
         gen.writeMethod(
             new String[] {
                 "public "+wrapperClassName+" "+wrapperClassIdent+"("+wrappeeClassName+" w) {",
+                "final "+decl.getOriginalIdent()+" This = this;",
                 "if (w == null)",
                 "    return null;",               
                 "if("+wrapperMapName+" == null) "+wrapperMapName+" = new java.util.WeakHashMap();",
-                wrapperClassName+" res = ("+wrapperClassName+")"+wrapperMapName+".get(w);",
+                "This."+wrapperClassIdent+" res = (This."+wrapperClassIdent+")"+wrapperMapName+".get(w);",
                 "if (res == null) {",
-                "    res = this.new "+wrapperClassIdent+"();",
+                "    res = This.new "+wrapperClassIdent+"();",
                 "    res.$initWrappee(w);",
                 "    "+wrapperMapName+".put(w, res);",
                 "}",
@@ -294,16 +288,17 @@ public class CClassPreparation implements CaesarConstants {
             }
         );
         
-        decl.addMethod(gen.endMethod());
+        decl.addMethod( gen.endMethod() );        
         
         
         gen.writeMethod(
             new String[] {
                 "public "+wrapperClassName+" get"+wrapperClassIdent+"("+wrappeeClassName+" w) {",
+                "final "+decl.getOriginalIdent()+" This = this;",
                 "if (w == null)",
                 "    return null;",               
                 "if("+wrapperMapName+" == null) "+wrapperMapName+" = new java.util.WeakHashMap();",
-                wrapperClassName+" res = ("+wrapperClassName+")"+wrapperMapName+".get(w);",
+                "This."+wrapperClassIdent+" res = (This."+wrapperClassIdent+")"+wrapperMapName+".get(w);",
                 
                 "return res;",
                 "}"
