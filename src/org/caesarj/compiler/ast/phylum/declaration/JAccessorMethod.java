@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JAccessorMethod.java,v 1.5 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JAccessorMethod.java,v 1.6 2005-03-06 13:45:59 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -40,6 +40,7 @@ import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.export.CCjSourceAccessorMethod;
 import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CMember;
 import org.caesarj.compiler.export.CMethod;
@@ -71,6 +72,9 @@ public class JAccessorMethod extends JMemberDeclaration {
   public JAccessorMethod(TypeFactory factory, CSourceClass target, CMember member, boolean leftSide, boolean isSuper, int oper) {
     super(TokenReference.NO_REF, null, new JavaStyleComment[0]);
 
+    this.target = target;
+    this.member = member;
+    
     JBlock              body;
     JFormalParameter[]  parameters;
     String              ident = createIdent(target.getNextSyntheticIndex());
@@ -191,7 +195,9 @@ public class JAccessorMethod extends JMemberDeclaration {
     body = new JBlock(TokenReference.NO_REF,
                       new JStatement[] {statement},
                       null);
-    method = new CSourceMethod(target,
+    method = new CCjSourceAccessorMethod(
+                               this,
+                               target,
                                ACC_STATIC,
                                ident,
                                returnType,
@@ -242,11 +248,7 @@ public class JAccessorMethod extends JMemberDeclaration {
    */
   public void checkBody1(CClassContext context) throws PositionedError {
   }
-
-  // ----------------------------------------------------------------------
-  // CODE GENERATION
-  // ----------------------------------------------------------------------
-
+ 
   /**
    * Generates a sequence of bytescodes
    * @param	code		the code list
@@ -255,9 +257,17 @@ public class JAccessorMethod extends JMemberDeclaration {
     throw new InconsistencyException(); // nothing to do here
   }
 
-  // ----------------------------------------------------------------------
-  // DATA MEMBERS
-  // ----------------------------------------------------------------------
-
+        
+  public CMember getMember() {
+      return member;
+  }
+  
+  public CSourceClass getTarget() {
+      return target;
+  }
+  
+  
   CSourceMethod         method;
+  CSourceClass          target;
+  CMember               member;
 }
