@@ -19,7 +19,6 @@ public class JavaTypeNode {
     private static int currentId = 100;
     
     private int id;
-    private int level = 0;
     
     private JavaQualifiedName qualifiedName;
     
@@ -84,10 +83,8 @@ public class JavaTypeNode {
         
     public String toString() {
         StringBuffer res = new StringBuffer();
-        res.append('(');
+        res.append('{');
         res.append(id);        
-        res.append(") {");
-        res.append(level);
         res.append("}");
 
         res.append(" [");
@@ -162,34 +159,6 @@ public class JavaTypeNode {
 
     public CaesarTypeNode getMixin() {
         return mixin;
-    }
-
-    public void calculateCompilationLevel(int parentLevel, boolean parentInGeneratedLayer) {
-        int newLevel = parentLevel;
-        boolean thisInGeneratedLayer = isToBeGeneratedInBytecode(); 
-        
-        if(!parentInGeneratedLayer && thisInGeneratedLayer) {
-            newLevel++;
-        }
-        
-        if(newLevel > this.level)
-            this.level = newLevel;
-        
-        if(type != null) {
-            if(type.getImplDeclaration() != null) {
-                type.getImplDeclaration().setEnabledInPass(this.level);
-            }
-        }
-        
-        for (Iterator it = mixinCopies.iterator(); it.hasNext();) {
-            JavaTypeNode item = (JavaTypeNode) it.next();
-            item.calculateCompilationLevel(this.level, thisInGeneratedLayer);
-        }
-        
-        for (Iterator it = subNodes.values().iterator(); it.hasNext();) {
-            JavaTypeNode item = (JavaTypeNode) it.next();
-            item.calculateCompilationLevel(this.level, thisInGeneratedLayer);
-        }
     }
 
     public void calculateOuterAndQualifiedName() {

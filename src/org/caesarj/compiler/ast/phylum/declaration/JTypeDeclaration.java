@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.9 2004-05-19 16:29:03 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.10 2004-06-01 10:54:29 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -432,11 +432,6 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
      */
     public void checkInitializers(CContext context) throws PositionedError {
         
-        
-        
-        // IVICA 
-        if(!checkEnabled(context)) return;
-        
         if (getCClass().getSuperClass() != null) {
             check(
                 context,
@@ -527,9 +522,6 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
      */
     public void checkTypeBody(CContext context) throws PositionedError {
         
-        // IVICA
-        if(!checkEnabled(context)) return;
-        
         context.addSourceClass(sourceClass);
 
         for (int i = 0; i < interfaces.length; i++) {
@@ -594,18 +586,6 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     }
     
 
-    public boolean checkEnabled(CContext context) {
-        return context.getCompilerPass() == getEnabledInPass();
-    }
-    
-    public int getEnabledInPass() {
-        return enabledInPass;
-    }
-    
-    public void setEnabledInPass(int enabledInPass) {
-        this.enabledInPass = enabledInPass;
-    }
-    
     public CReferenceType[] getInterfaces() {
         return interfaces;
     }
@@ -613,9 +593,6 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     // ----------------------------------------------------------------------
     // PRIVATE DATA MEMBER
     // ----------------------------------------------------------------------
-
-    // IVICA
-    private int enabledInPass = 0; // with this flag type nodes in AST can be disabled or enabled
 
     protected int modifiers;
     protected String ident;

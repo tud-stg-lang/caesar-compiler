@@ -65,9 +65,6 @@ public class JavaTypeGraph {
         // add dependencies between mixin original and copies
         root.calculateMixinCopyDependencies();
 
-        // calculate
-        root.calculateCompilationLevel(0, false);
-
         // calculate names        
         root.calculateOuterAndQualifiedName();
     }

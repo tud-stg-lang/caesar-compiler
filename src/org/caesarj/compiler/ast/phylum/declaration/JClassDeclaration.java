@@ -192,11 +192,7 @@ public class JClassDeclaration extends JTypeDeclaration {
      * such as Classes, Interfaces, Methods, Constructors and Fields
      * @exception   PositionedError an error with reference to the source file
      */
-    public void checkInterface(final CContext context) throws PositionedError {
-                
-        // IVICA don't check interface if this class is not enabled
-        if(!checkEnabled(context)) return;
-                
+    public void checkInterface(final CContext context) throws PositionedError {                
         // CTODO resolve call moved here in order common java classes can be found in crosscutting classes
         // register type at CaesarBcelWorld!!!
         CaesarBcelWorld.getInstance().resolve(getCClass());
@@ -257,10 +253,6 @@ public class JClassDeclaration extends JTypeDeclaration {
      * @exception   PositionedError an error with reference to the source file
      */
     public void checkTypeBody(CContext context) throws PositionedError {
-
-        // IVICA
-        if(!checkEnabled(context)) return;
-
         // JSR 41 2.2
         // A parameterized type may not inherit directly or indirectly form 
         // java.lang.Throwable
@@ -375,18 +367,7 @@ public class JClassDeclaration extends JTypeDeclaration {
      * Check that initializers are correct
      * @exception   PositionedError an error with reference to the source file
      */
-    public void checkInitializers(CContext context) throws PositionedError {
-        
-        // IVICA don't check initializers if not enabled
-        if(!checkEnabled(context)) {
-            // just check inners
-            for (int i = inners.length - 1; i >= 0; i--) {
-                inners[i].checkInitializers(context);
-            }
-
-            return;
-        } 
-
+    public void checkInitializers(CContext context) throws PositionedError {        
         //Walter start:
         //self = new CClassContext(context, context.getEnvironment(), sourceClass, this);
         self = constructContext(context);

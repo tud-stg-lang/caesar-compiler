@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcEnvironment.java,v 1.2 2004-04-15 15:09:12 aracic Exp $
+ * $Id: KjcEnvironment.java,v 1.3 2004-06-01 10:54:29 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -78,16 +78,6 @@ public class KjcEnvironment {
 		return options.generic;
 	}
     
-    public int getCompilerPass() {
-        return compilerPass;
-    }
-    
-    public void incCompilerPass() {
-        compilerPass++;
-    }
-
-    private int compilerPass = 0; // IVICA compilerPass
-
 	private final ClassReader classReader;
 	private final TypeFactory typeFactory;
 	private final KjcOptions options;

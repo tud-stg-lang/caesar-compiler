@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JInterfaceDeclaration.java,v 1.3 2004-04-15 15:06:40 aracic Exp $
+ * $Id: JInterfaceDeclaration.java,v 1.4 2004-06-01 10:54:29 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -113,9 +113,6 @@ public class JInterfaceDeclaration extends JTypeDeclaration {
 	 * @exception	PositionedError	an error with reference to the source file
 	 */
 	public void checkInterface(CContext context) throws PositionedError {
-		// IVICA
-		if (!checkEnabled(context))	return;
-
 		checkModifiers(context);
 
 		statInit = constructStaticInitializers(context);
@@ -199,10 +196,6 @@ public class JInterfaceDeclaration extends JTypeDeclaration {
 	 * @exception	PositionedError	an error with reference to the source file
 	 */
 	public void checkInitializers(CContext context) throws PositionedError {
-
-		// IVICA
-        if (!checkEnabled(context)) return;
-
 		//    CInterfaceContext self = new CInterfaceContext(context, context.getEnvironment(), sourceClass, this);
 		//Walter start
 		//self = new CInterfaceContext(context, context.getEnvironment(), sourceClass, this);
@@ -228,9 +221,6 @@ public class JInterfaceDeclaration extends JTypeDeclaration {
 	 * @exception	PositionedError	an error with reference to the source file
 	 */
 	public void checkTypeBody(CContext context) throws PositionedError {
-		// IVICA
-        if (!checkEnabled(context)) return;
-
 		//    CInterfaceContext self = new CInterfaceContext(context, context.getEnvironment(), sourceClass, this);
 
 		for (int i = 0; i < inners.length; i++) {

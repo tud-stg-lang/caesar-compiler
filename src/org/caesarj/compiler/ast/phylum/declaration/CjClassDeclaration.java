@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.12 2004-04-27 13:27:39 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.13 2004-06-01 10:54:29 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -513,18 +513,7 @@ public class CjClassDeclaration
      * super implementation of the method also.
      */
     public void checkInterface(CContext context) throws PositionedError {
-        
-        // IVICA don't check interface if not enabled;
-        if(!checkEnabled(context)) {
-            
-            // just recurse into inners and then return
-            for (int i = inners.length - 1; i >= 0; i--) {
-                inners[i].checkInterface(context);
-            }
-
-            return;
-        } 
-        
+                
         // IVICA supertype could be composite, check it here
         try {
             setSuperClass((CReferenceType)getSuperClass().checkType(self));
@@ -741,16 +730,6 @@ public class CjClassDeclaration
      */
     public void checkTypeBody(CContext context) throws PositionedError {
         
-        // IVICA don't check type body if not enabled
-        if(!checkEnabled(context)) {
-            // just recurse into inners and then return
-            for (int i = inners.length - 1; i >= 0; i--) {
-                inners[i].checkTypeBody(context);
-            }
-
-            return;
-        } 
-
         if (advices != null) {
             for (int i = 0; i < advices.length; i++) {
                 advices[i].checkBody1(self);

@@ -15,8 +15,8 @@ import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.cclass.CClassPreparation;
 import org.caesarj.compiler.cclass.CaesarTypeSystem;
-import org.caesarj.compiler.cclass.TypeGraphGenerator;
-import org.caesarj.compiler.cclass.TypeGraph;
+import org.caesarj.compiler.cclass.CaesarTypeGraphGenerator;
+import org.caesarj.compiler.cclass.CaesarTypeGraph;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
@@ -35,7 +35,8 @@ import org.caesarj.util.Utils;
 /**
  * The entry point of the Caesar compiler.
  * 
- * @author Jürgen Hallpap, Ivica Aracic
+ * @author Jürgen Hallpap
+ * @author Ivica Aracic
  */
 public class Main extends MainSuper implements Constants {
 
@@ -115,44 +116,37 @@ public class Main extends MainSuper implements Constants {
         joinAll(tree);                  
         if(errorFound) return false;
         
-        //prepareVirtualClasses(environment, tree);
-        
-        //checkAllConstructorInterfaces(tree); // CTODO: <- see checkBody for new calls below
+        generateAllInterfaces(tree);
         
         generateSourceDependencyGraph(tree);
         caesarTypeSystem.generate();
-
-        CompilerPass compilerPass = generateCompilerPassInfo();
-            
-        while(compilerPass != null) {       
-            System.out.println("--- pass: " + environment.getCompilerPass());
-            compilerPass.begin();
-            {
-                checkAllInterfaces(tree);
-                if(errorFound) return false;
-                
-                checkAllInitializers(tree);     
-                if(errorFound) return false;
-                        
-                checkAllBodies(tree); // CTODO: remove new checks here            
-                if(errorFound) return false;
-
-                genCode(environment.getTypeFactory());
-            }
-            compilerPass.end();
-            
-            compilerPass = compilerPass.getNextPass();            
-            environment.incCompilerPass(); 
-        }
         
-        // CTODO: checkBody for new calls
+        // CTODO createImplicitTypes....
+        
+        // CTODO join generated types
+        
+        // CTODO adjust super types
+
+        checkAllInterfaces(tree);
+        if(errorFound) return false;
+        
+        // CTODO generate & register exports for all missing mixin chain parts
+        
+        checkAllInitializers(tree);     
+        if(errorFound) return false;
+                
+        checkAllBodies(tree);
+        if(errorFound) return false;
+
+        genCode(environment.getTypeFactory());
+        
+        // CTODO gen bytecode for mixin copies
 
         tree = null;
         
         if(!noWeaveMode())      
             weaveGeneratedCode(environment.getTypeFactory());
         
-
         if(verboseMode())
             inform(CaesarMessages.COMPILATION_ENDED);
 
@@ -160,29 +154,6 @@ public class Main extends MainSuper implements Constants {
         return true;
     }
 
-
-	protected void prepareVirtualClasses(
-        KjcEnvironment environment,
-        JCompilationUnit[] tree) {  
-        System.out.println("prepareVirtualClasses");
-        try {
-            for (int i = 0; i < tree.length; i++) {
-                JCompilationUnit cu = tree[i];
-                CClassPreparation.instance().prepareVirtualClasses(environment, cu);
-            }
-        }
-        catch(UnpositionedError e) {
-			reportTrouble(e);
-		}
-    }
-
-
-	/**
-     * Here CompilerPassInfo List gets created
-     */
-    protected CompilerPass generateCompilerPassInfo() {        
-        return null;       
-	}
 
 	/**
      * - create advice attribute for AspectJ weaver if necessary
@@ -217,13 +188,13 @@ public class Main extends MainSuper implements Constants {
     protected void generateSourceDependencyGraph(JCompilationUnit[] tree) {
         System.out.println("generateDependencyGraph");        
         for (int i=0; i<tree.length; i++) {
-            TypeGraphGenerator.instance().generateGraph(caesarTypeSystem.getExplicitGraph(), tree[i]);
-            TypeGraphGenerator.instance().generateGraph(caesarTypeSystem.getCompleteGraph(), tree[i]);
+            CaesarTypeGraphGenerator.instance().generateGraph(caesarTypeSystem.getExplicitGraph(), tree[i]);
+            CaesarTypeGraphGenerator.instance().generateGraph(caesarTypeSystem.getCompleteGraph(), tree[i]);
         }
     }
 
     // IVICA 
-    protected void checkAllConstructorInterfaces(JCompilationUnit[] tree) {
+    protected void generateAllInterfaces(JCompilationUnit[] tree) {
         try {
             System.out.println("checkAllConstructorInterfaces");
             for (int count = 0; count < tree.length; count++) {

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CContext.java,v 1.4 2004-04-15 15:07:48 aracic Exp $
+ * $Id: CContext.java,v 1.5 2004-06-01 10:54:29 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -142,12 +142,6 @@ public abstract class CContext extends org.caesarj.util.Utils implements CTypeCo
   // ACCESSORS (INFOS)
   // ----------------------------------------------------------------------
   
-  // IVICA getCompilerPass()
-  public int getCompilerPass() {
-      return environment.getCompilerPass();
-  }
-
-
   /** 
    * JLS 8.1.2: A statement or expression occurs in a static context if and 
    * only if the innermost method, constructor, instance initializer, static 
