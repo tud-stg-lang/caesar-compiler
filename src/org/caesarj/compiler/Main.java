@@ -33,7 +33,6 @@ import org.caesarj.util.Utils;
 /**
  * The entry point of the Caesar compiler.
  * 
- * 
  * @author Jürgen Hallpap
  */
 public class Main extends org.caesarj.compiler.MainSuper implements Constants {
@@ -97,30 +96,22 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
             return false;
         }
 
-        JCompilationUnit[] tree = parseFiles(environment);
-        if (errorFound) return false;
+        JCompilationUnit[] tree = 
+            parseFiles(environment);    if(errorFound) return false;
         
         prepareCaesarClasses(environment, tree);
         
         prepareJoinpointReflection(tree);
         
         prepareDynamicDeployment(environment, tree);
-        
-        System.out.println("joinAll");
-        joinAll(tree);
-        if (errorFound) return false;
-        
-        System.out.println("checkAllInterfaces");
-        checkAllInterfaces(tree);
-        if (errorFound) return false;
-        
-        System.out.println("checkAllInitializers");
-        checkAllInitializers(tree);
-        if (errorFound) return false;
-        
-        System.out.println("checkAllBodies");
-        checkAllBodies(tree);
-        if (errorFound) return false;
+                
+        joinAll(tree);                  if(errorFound) return false;
+                
+        checkAllInterfaces(tree);       if(errorFound) return false;
+                
+        checkAllInitializers(tree);     if(errorFound) return false;
+                
+        checkAllBodies(tree);           if(errorFound) return false;
         
         if (noWeaveMode()) {
             genCode(environment.getTypeFactory());
@@ -158,6 +149,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
      *   Probably related to support for Generics a la GJ
      */
     protected void checkAllBodies(JCompilationUnit[] tree) {
+        System.out.println("checkAllBodies");
         for (int count = 0; count < tree.length; count++) {
             checkBody(tree[count]);
             if (!options._java && !options.beautify) {
@@ -174,6 +166,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
      * - more (TBD)
      */
     protected void checkAllInitializers(JCompilationUnit[] tree) {
+        System.out.println("checkAllInitializers");
         for (int count = 0; count < tree.length; count++) {
             checkInitializers(tree[count]);
         }
@@ -200,6 +193,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
      * - check pointcuts if necessary 
      */
     protected void checkAllInterfaces(JCompilationUnit[] tree) {
+        System.out.println("checkAllInterfaces");
         for (int count = 0; count < tree.length; count++) {
             checkInterface(tree[count]);
             //tree[count].accept(new DebugVisitor());
@@ -209,18 +203,27 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
     protected void prepareDynamicDeployment(
         KjcEnvironment environment,
         JCompilationUnit[] tree) {
+        System.out.println("prepareDynamicDeployment");
         //Modify and generate support classes for dynamic deployment.
         for (int i = 0; i < tree.length; i++) {
             JCompilationUnit cu = tree[i];
             DeploymentPreparation.prepareForDynamicDeployment(environment, cu);
-
         }
     }
 
+    /**
+     * Following things happen here:
+     * - create interface for cclass with original cclass name
+     * - set the superinterface of interface to original cclass name
+     * - append _Impl to superclass of each cclass
+     * 
+     * CTODO prepareCaesarClasses
+     * - binary supertype of cclass has to be cclass (needs integration of karl's work)
+     */
     protected void prepareCaesarClasses(
         KjcEnvironment environment,
         JCompilationUnit[] tree) {
-        //Modify and generate support classes for dynamic deployment.
+        System.out.println("prepareCaesarClasses");
         for (int i = 0; i < tree.length; i++) {
             JCompilationUnit cu = tree[i];
             CClassPreparation.instance().prepareCaesarClass(environment, cu);
@@ -229,6 +232,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
     }
 
     protected void prepareJoinpointReflection(JCompilationUnit[] tree) {
+        System.out.println("prepareJoinpointReflection");
         //Handle Join Point Reflection.
         for (int i = 0; i < tree.length; i++) {
             tree[i].accept(new JoinPointReflectionVisitor());
@@ -236,6 +240,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
     }
 
     protected JCompilationUnit[] parseFiles(KjcEnvironment environment) {
+        System.out.println("parseFiles");
         JCompilationUnit[] tree = new JCompilationUnit[infiles.size()];
         for (int count = 0; count < tree.length; count++) {
             tree[count] =
