@@ -17,9 +17,7 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
-// FJTODO assertPrefix call is important for around advices (proceed)!
-// don't forget problems with pullup of this class!
-// wrapee handling also done here!
+// FJTODO 
 // it will be best to keep this one and JMethodCallExpression separated  
 public class FjMethodCallExpression extends JMethodCallExpression {
 
