@@ -111,7 +111,4 @@ public class FjFieldDeclaration extends JFieldDeclaration {
 	public boolean isChecked() {
 		return isChecked;
 	}
-	public void setFamily(FjFamily family) {
-		this.family = family;
-	}
 }

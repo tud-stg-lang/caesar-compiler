@@ -66,15 +66,17 @@ public class FjVariableDefinition extends JVariableDefinition {
 				
 				CField referedField = clazz.getField(qualifier);	
 
+				/* FJRM
 				family = fjts.resolveFamily(context, clazz, 
 						qualifier, remainder);
-
+		
 				if (family != null)
 				{
 					FjFamilyContext.getInstance().setFamilyOf(this, family);
 					field.setFamily(family);
 					type = family.getInnerType();
 				}
+				*/
 			}
 			//It can be a type that must be lower bound
 			else if (! type.checked())
@@ -99,11 +101,12 @@ public class FjVariableDefinition extends JVariableDefinition {
 		catch (ClassCastException e) 
 		{// we are not in a class => continue 
 		}
+		/* FJRM
 		catch (UnpositionedError e) 
 		{
 			context.reportTrouble(e.addPosition(getTokenReference()));
 		}
-		
+		*/
 	}	
 	
 	public void analyse(CBodyContext context) throws PositionedError {		
