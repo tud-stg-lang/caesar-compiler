@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CDependentNameType.java,v 1.3 2005-01-17 18:11:20 aracic Exp $
+ * $Id: CDependentNameType.java,v 1.4 2005-01-18 13:14:40 klose Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -106,8 +106,6 @@ public class CDependentNameType extends CClassNameType
                 try{
                     expr = expr.analyse(ectx);
                 } catch (Exception e){
-                    // TODO just for debugging
- //                   e.printStackTrace();
                     throw e;
                 }
                 
