@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: FileUtils.java,v 1.1 2005-02-24 17:16:53 aracic Exp $
+ * $Id: FileUtils.java,v 1.2 2005-02-28 13:48:47 aracic Exp $
  */
 
 package org.caesarj.test.suite;
@@ -49,9 +49,9 @@ public class FileUtils {
         delAllFiles(dir, "");
     }
     
-    public static List findAllFiles(File dir, String suffix) {
+    public static List findAllFiles(File dir, String pattern) {
         List res = new LinkedList();
-        findAllFiles(dir, res, suffix);
+        findAllFiles(dir, res, pattern);
         return res;
     }
     
@@ -59,16 +59,16 @@ public class FileUtils {
         return findAllFiles(dir, "");
     }
     
-    private static void findAllFiles(File dir, List lst, String suffix) {
+    private static void findAllFiles(File dir, List lst, String pattern) {
         File[] files = dir.listFiles();
         if (files == null)
             return;
 
         for (int i = 0; i < files.length; i++) {
             if (files[i].isDirectory()) {
-                findAllFiles(files[i], lst, suffix);
+                findAllFiles(files[i], lst, pattern);
             }
-            else if (files[i].getName().endsWith(suffix)) {
+            else if (files[i].getName().matches(pattern)) {
                 lst.add(files[i]);
             }
         }

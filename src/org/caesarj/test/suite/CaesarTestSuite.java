@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTestSuite.java,v 1.1 2005-02-24 17:16:53 aracic Exp $
+ * $Id: CaesarTestSuite.java,v 1.2 2005-02-28 13:48:47 aracic Exp $
  */
 
 package org.caesarj.test.suite;
@@ -59,7 +59,7 @@ public class CaesarTestSuite extends TestSuite {
         return packagePrefix;
     }
     
-    public static CaesarTestSuite parseXml(File file) throws Exception {
+    public static CaesarTestSuite parseXml(String idFilter, File file) throws Exception {
         CaesarTestSuite res = new CaesarTestSuite(file, file.getName());
         
         SAXBuilder builder = new SAXBuilder();
@@ -95,6 +95,9 @@ public class CaesarTestSuite extends TestSuite {
                 id = item.getAttributeValue("id");
                 description = item.getAttributeValue("description");
                 codeBlock = item.getChildText("code") + commonCodeBase;
+                
+                if( !id.matches(idFilter) ) 
+                    continue;
                 
 	            if(item.getName().equals("compile-check-error")) {
 	                String errorCode = item.getAttributeValue("error");
