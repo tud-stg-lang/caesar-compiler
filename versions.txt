@@ -1,11 +1,29 @@
-VC_7 ...
+VC_9 - ...
+
+
+VC_8 - 08.07.2004
+- inner cclass always static ->
+	* outer passed as extra ctor parameter (work todo)
+	* outer accessed via interface (work todo)
+
+
+VC_7 - ??.07.2004
+- added extra AST Elements for virtual class and cclass interface
+- added caesar specific compiler messages
+- interface generation changed ->
+	* support classes for dynamic interfaces not implemented by impl class itself,
+	  but rather by cclass interface
+- ctors reduced to only default paramter-less one ->
+	* using of init methods
+- Class Mixer reduced to Class Generator only ->
+	features: copy class, replace outer, replace super
 
 
 VC_6 - 28.06.2004
 - type graphs ->
- 	explicit (as declared in caesar code), 
-	complete (including implicit types), 
-	java (mapped back to java)
+ 	* explicit (as declared in caesar code), 
+	* complete (including implicit types), 
+	* java (mapped back to java)
 - super type adjustment
 - cclass interface creation
 - implicit type creation
