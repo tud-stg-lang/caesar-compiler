@@ -810,6 +810,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 		/* Format line for advice method call on variable 'aspObj' */
 		String strAdviceMethodCall = "$aspObj." + advice.getIdent() + "(";
 		
+		int proceedParamCnt = advice.getProceedParameters().length;
+		
 		JFormalParameter[] params = advice.getParameters();
 		for (int i1 = 0; i1 < params.length; i1++) {
 			if (i1 > 0) {
@@ -818,7 +820,10 @@ public class DeploymentClassFactory implements CaesarConstants {
 			if (params[i1].getIdent() == "aroundClosure") {
 				strAdviceMethodCall += "$nextCall";
 			}
-			else {
+			else if (i1 < proceedParamCnt) { /* normal advice parameter */
+				strAdviceMethodCall += castFromObject(params[i1].getType(), "arg["+i1+"]");
+			}
+			else { /* joinpoint reflection parameter */
 				strAdviceMethodCall += params[i1].getIdent();
 			}
 		}
@@ -826,7 +831,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		
 		if (advice.getReturnType() != typeFactory.getVoidType()) {
 			if (advice.getReturnType().isPrimitive()) {
-				strAdviceMethodCall = createPrimTypeWrapper(advice, strAdviceMethodCall);
+				strAdviceMethodCall = createPrimTypeWrapper(advice.getReturnType(), strAdviceMethodCall);
 			}
 			strAdviceMethodCall = "$retval = " + strAdviceMethodCall;
 		}
@@ -856,40 +861,82 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 * Wraps the primitive value of the expr in a ReferenceType.
 	 */
-	private String createPrimTypeWrapper(CjAdviceDeclaration advice, String strExpr) {
+	private String createPrimTypeWrapper(CType type, String strExpr) {
 		
-		CType returnType = advice.getReturnType();
-		
-		if (returnType instanceof CIntType) {
+		if (type instanceof CIntType) {
 			return "new java.lang.Integer(" + strExpr + ")";
 		}
 
-		if (returnType instanceof CFloatType) {
+		if (type instanceof CFloatType) {
 			return "new java.lang.Float(" + strExpr + ")";
 		}
 
-		if (returnType instanceof CDoubleType) {
+		if (type instanceof CDoubleType) {
 			return "new java.lang.Double(" + strExpr + ")";
 		}
 
-		if (returnType instanceof CByteType) {
+		if (type instanceof CByteType) {
 			return "new java.lang.Byte(" + strExpr + ")";
 		}
 
-		if (returnType instanceof CCharType) {
+		if (type instanceof CCharType) {
 			return "new java.lang.Character(" + strExpr + ")";
 		}
 
-		if (returnType instanceof CBooleanType) {
+		if (type instanceof CBooleanType) {
 			return "new java.lang.Boolean(" + strExpr + ")";
 		}
 
-		if (returnType instanceof CLongType) {
+		if (type instanceof CLongType) {
 			return "new java.lang.Long(" + strExpr + ")";
 		}
 
-		if (returnType instanceof CShortType) {
+		if (type instanceof CShortType) {
 			return "new java.lang.Short(" + strExpr + ")";
+		}
+
+		return null;
+	}
+	
+	/**
+	 * Wraps the primitive value of the expr in a ReferenceType.
+	 */
+	private String castFromObject(CType type, String strExpr) {
+		
+		if (!type.isPrimitive()) {
+			return "((" + type.toString() + ")(" + strExpr + "))";
+		}
+		
+		if (type instanceof CIntType) {
+			return "((java.lang.Integer)(" + strExpr + ")).intValue()";
+		}
+
+		if (type instanceof CFloatType) {
+			return "((java.lang.Float)(" + strExpr + ")).floatValue()";
+		}
+
+		if (type instanceof CDoubleType) {
+			return "((java.lang.Double)(" + strExpr + ")).doubleValue()";
+		}
+
+		if (type instanceof CByteType) {
+			return "((java.lang.Byte)(" + strExpr + ")).byteValue()";
+		}
+
+		if (type instanceof CCharType) {
+			return "((java.lang.Character)(" + strExpr + ")).charValue()";
+		}
+
+		if (type instanceof CBooleanType) {
+			return "((java.lang.Boolean)(" + strExpr + ")).booleanValue()";
+		}
+
+		if (type instanceof CLongType) {
+			return "((java.lang.Long)(" + strExpr + ")).longValue()";
+		}
+
+		if (type instanceof CShortType) {
+			return "((java.lang.Short)(" + strExpr + ")).shortValue()";
 		}
 
 		return null;
