@@ -41,8 +41,14 @@ public class ContextExpression extends Path {
         }
         else {
             if(k == 0) {
-                pred.prefix = prefix;
-                return prefix._normalize(pred, tail);
+                if(pred == null) {
+                    // this one covers the case where x.y.ctx(0)
+                    return tail.prefix._normalize(null, tail.prefix);
+                }
+                else {
+                    pred.prefix = prefix;
+                	return prefix._normalize(pred, tail);
+                }
             }
             else if(prefix instanceof ContextExpression) {
                 this.k += ((ContextExpression)prefix).getK();
