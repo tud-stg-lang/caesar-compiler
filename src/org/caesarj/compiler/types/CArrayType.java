@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CArrayType.java,v 1.3 2004-03-29 12:05:29 aracic Exp $
+ * $Id: CArrayType.java,v 1.4 2004-07-23 16:38:30 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -199,8 +199,15 @@ public class CArrayType extends CReferenceType {
         throw new UnpositionedError(KjcMessages.OVERSIZED_ARRAY_BOUND, baseType);
       }
       baseType = baseType.checkType(context);
-      setClass(context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT).getCClass());
+            
+      //setClass(context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT).getCClass());
     }
+    
+    // IVICA:
+    // getErasure returns already checked baseType, block above is not executed
+    // workaround is to move setClass here:
+    setClass(context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT).getCClass());
+    
     return this;
   }
 
@@ -216,7 +223,7 @@ public class CArrayType extends CReferenceType {
     if (!isChecked()) {
       throw new InconsistencyException("type not checked");
     }
-
+    
     return super.getCClass();
   }
   // ----------------------------------------------------------------------
