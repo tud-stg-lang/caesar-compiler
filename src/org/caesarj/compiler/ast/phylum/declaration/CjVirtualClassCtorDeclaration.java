@@ -1,16 +1,13 @@
 package org.caesarj.compiler.ast.phylum.declaration;
 
-import org.caesarj.compiler.ast.phylum.expression.JAssignmentExpression;
-import org.caesarj.compiler.ast.phylum.expression.JCastExpression;
 import org.caesarj.compiler.ast.phylum.expression.JConstructorCall;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
-import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
+import org.caesarj.compiler.ast.phylum.statement.JEmptyStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
-import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
@@ -113,6 +110,10 @@ public class CjVirtualClassCtorDeclaration extends JConstructorDeclaration {
     private static JStatement genOuterInitializer(
         TokenReference where,
         CType outerType) {
+        
+        return new JEmptyStatement(where, null);
+        
+        /*
         return new JExpressionStatement(where, new JAssignmentExpression(
             where,
             new JNameExpression(where, CaesarConstants.OUTER_FIELD),
@@ -120,5 +121,6 @@ public class CjVirtualClassCtorDeclaration extends JConstructorDeclaration {
                 where,
                 new JNameExpression(where, "_$outer"),
                 outerType)), null);
+        */
     }
 }
