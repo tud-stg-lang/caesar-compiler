@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjVirtualClassDeclaration.java,v 1.24 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.25 2005-03-29 09:46:04 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -573,7 +573,29 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         return superClasses;
     }
     
+    public void setAspectInterface(CjInterfaceDeclaration aspectIfc)  {
+        this.aspectIfc = aspectIfc;
+    }
+    
+    public void setRegistryClass(CjClassDeclaration registryCls)  {
+        this.registryCls = registryCls;
+    }
+    
+    public CjInterfaceDeclaration getAspectInterface()  {
+        return aspectIfc;
+    }
+    
+    public CjClassDeclaration getRegistryClass()  {
+        return registryCls;
+    }
+        
     private CjMixinInterfaceDeclaration mixinIfcDecl = null;
-
+    
     private CReferenceType[] superClasses;
+    
+    /* generated deployment support classes (can be null) */
+    private CjInterfaceDeclaration aspectIfc = null;
+	
+	private CjClassDeclaration registryCls = null;
+
 }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JoinPointReflectionVisitor.java,v 1.20 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: JoinPointReflectionVisitor.java,v 1.21 2005-03-29 09:47:01 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -85,7 +85,7 @@ public class JoinPointReflectionVisitor implements IVisitor, CaesarConstants  {
     			JFieldDeclaration field = (JFieldDeclaration) self.getBody()[i];
     			if ((field.getVariable().getModifiers() & ACC_DEPLOYED) != 0) {
     				((CjClassDeclaration) self).addClassBlock(
-    					DeploymentPreparation.createStaticFieldDeployBlock(
+    					StaticDeploymentPreparation.createStaticFieldDeployBlock(
     						field.getTokenReference(),
     						(CjClassDeclaration) self,
     						field));

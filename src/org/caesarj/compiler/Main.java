@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.89 2005-03-22 10:20:10 gasiunas Exp $
+ * $Id: Main.java,v 1.90 2005-03-29 09:47:37 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -49,7 +49,8 @@ import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.joincollab.JoinCollaborations;
-import org.caesarj.compiler.joinpoint.DeploymentPreparation;
+import org.caesarj.compiler.joinpoint.GenerateDeploymentSupport;
+import org.caesarj.compiler.joinpoint.JoinDeploymentSupport;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.compiler.typesys.graph.CaesarTypeGraphGenerator;
@@ -488,10 +489,15 @@ public class Main extends MainSuper implements Constants {
         KjcEnvironment environment,
         JCompilationUnit[] tree) {
         Log.verbose("prepareDynamicDeployment");
+        
         //Modify and generate support classes for dynamic deployment.
+        GenerateDeploymentSupport genDeplSupport = new GenerateDeploymentSupport(this, environment);
+        genDeplSupport.generateSupportClasses();
+        
+        //Join generated deployment support declarations 
         for (int i = 0; i < tree.length; i++) {
             JCompilationUnit cu = tree[i];
-            DeploymentPreparation.prepareForDynamicDeployment(this, cu);
+            JoinDeploymentSupport.prepareForDynamicDeployment(this, cu);
         }
     }
 

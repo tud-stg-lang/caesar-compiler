@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentPreparation.java,v 1.26 2005-03-22 10:20:10 gasiunas Exp $
+ * $Id: JoinDeploymentSupport.java,v 1.1 2005-03-29 09:47:01 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -29,29 +29,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.caesarj.compiler.AstGenerator;
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
-import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
-import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
-import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
-import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
-import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
-import org.caesarj.compiler.ast.phylum.statement.JStatement;
-import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.types.CClassNameType;
-import org.caesarj.compiler.types.CType;
 import org.caesarj.util.PositionedError;
-import org.caesarj.util.TokenReference;
 
 /**
  * @author Ostermann
@@ -59,13 +46,8 @@ import org.caesarj.util.TokenReference;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class DeploymentPreparation implements CaesarConstants {
-	private DeploymentPreparation(CjClassDeclaration cd, KjcEnvironment environment) {
-		this.cd = cd;
-		this.environment = environment;
-	}
-	private CjClassDeclaration cd;
-	private KjcEnvironment environment;
+public class JoinDeploymentSupport implements CaesarConstants {
+	
 	/**
 	 * Generates for every nested crosscutting class the corresponding deployment support classes.
 	 */
@@ -82,25 +64,17 @@ public class DeploymentPreparation implements CaesarConstants {
 
 				CjVirtualClassDeclaration caesarClass =
 					(CjVirtualClassDeclaration) typeDeclarations[i];
-
-				if (caesarClass.isCrosscutting()) {
-
-					DeploymentClassFactory utils =
-						new DeploymentClassFactory(
-							caesarClass,
-							cu.getEnvironment());
+				
+				if (caesarClass.getRegistryClass() != null) {
 					
-					//	add the deployment support classes to the enclosing class
-					CjInterfaceDeclaration aspectIfc = utils.createAspectInterface();
+					// add the deployment support classes to the enclosing class
+					CjInterfaceDeclaration aspectIfc = caesarClass.getAspectInterface();
 					newTypeDeclarations.add(aspectIfc);
 					
-					CjClassDeclaration registryCls = utils.createSingletonAspect();
+					CjClassDeclaration registryCls = caesarClass.getRegistryClass();
 					newTypeDeclarations.add(registryCls);
 					
-					// modify the aspect class									
-					utils.modifyAspectClass();
-					
-					//join the modified and new classes
+					// join the modified and new classes
 					try {
 						aspectIfc.join(ownerCtx);
 						registryCls.join(ownerCtx);	
@@ -111,13 +85,13 @@ public class DeploymentPreparation implements CaesarConstants {
 					}
 
 					if (caesarClass.isStaticallyDeployed()) {
-						new DeploymentPreparation(caesarClass, cu.getEnvironment()).prepareForStaticDeployment(registryCls);					
+						StaticDeploymentPreparation.prepareForStaticDeployment(caesarClass, cu.getEnvironment());					
 					}
 				}
 				
 				if (caesarClass.getInners().length > 0) {
 					//consider nested types
-					new DeploymentPreparation(caesarClass, cu.getEnvironment()).prepareForDynamicDeployment(cu.getEnvironment());
+					new JoinDeploymentSupport().prepareForDynamicDeployment(caesarClass, cu.getEnvironment());
 				}
 			}
 		}
@@ -127,7 +101,7 @@ public class DeploymentPreparation implements CaesarConstants {
 		}
 	}
 	
-	private void prepareForDynamicDeployment(KjcEnvironment environment)
+	private void prepareForDynamicDeployment(CjClassDeclaration cd, KjcEnvironment environment)
 	{
 	    List newInners = new LinkedList();
 	    CContext ownerCtx = (CContext)cd.getTypeContext();
@@ -139,7 +113,7 @@ public class DeploymentPreparation implements CaesarConstants {
 				//create support classes for each crosscutting inner class
 				CjVirtualClassDeclaration innerCaesarClass =
 					(CjVirtualClassDeclaration) cd.getInners()[i];
-				if (innerCaesarClass.isCrosscutting())
+				if (innerCaesarClass.getRegistryClass() != null)
 				{
 					DeploymentClassFactory utils =
 						new DeploymentClassFactory(
@@ -147,15 +121,12 @@ public class DeploymentPreparation implements CaesarConstants {
 							environment);
 
 					//add the deployment support classes to the enclosing class
-					CjInterfaceDeclaration aspectIfc = utils.createAspectInterface();
+					CjInterfaceDeclaration aspectIfc = innerCaesarClass.getAspectInterface();
 					newInners.add(aspectIfc);
 					
-					CjClassDeclaration registryCls = utils.createSingletonAspect();
+					CjClassDeclaration registryCls = innerCaesarClass.getRegistryClass();
 					newInners.add(registryCls);
-					
-					//modify the aspect class		
-					utils.modifyAspectClass();
-					
+										
 					//join the modified and new classes
 					try {
 						aspectIfc.join(ownerCtx);
@@ -175,7 +146,7 @@ public class DeploymentPreparation implements CaesarConstants {
 					{
 						CjClassDeclaration currentInnerInner =
 							(CjClassDeclaration) innersInners[j];
-						new DeploymentPreparation(currentInnerInner, environment).prepareForDynamicDeployment(environment);
+						new JoinDeploymentSupport().prepareForDynamicDeployment(currentInnerInner, environment);
 					}
 				}
 			}
@@ -210,96 +181,5 @@ public class DeploymentPreparation implements CaesarConstants {
 				}
 			}
 		}
-	}
-			
-	/*
-	 * Creates static initalization block:
-	 * 
-	 * {
-	 *    DeploySupport.deployBlock(<field>);
-	 * }
-	 * 
-	 */
-	public static JClassBlock createStaticFieldDeployBlock(
-		TokenReference where,
-		CjClassDeclaration classDeclaration,
-		JFieldDeclaration fieldDeclaration) {
-
-		JExpression prefix =
-            new JTypeNameExpression(
-                where,
-                new CClassNameType(CAESAR_DEPLOY_SUPPORT_CLASS));
-
-        JExpression deployStatementCall =
-            new JMethodCallExpression(
-                where,
-                prefix,
-                "deployLocal",
-                new JExpression[] {new JNameExpression(where, fieldDeclaration.getVariable().getIdent())});
-
-		JStatement[] body = { new JExpressionStatement(where, deployStatementCall, null) };
-
-		return new JClassBlock(where, true, body);
-	}
-	
-	/*
-	 * Creates static initalization block:
-	 * 
-	 * {
-	 *    DeploySupport.deployBlock(<field>);
-	 * }
-	 * 
-	 */
-	private JClassBlock createStaticClassDeployBlock(
-			TokenReference where,
-			CjClassDeclaration classDeclaration,
-			JFieldDeclaration fieldDeclaration) { 
-			
-		AstGenerator gen = environment.getAstGenerator();
-		
-		String srcClassName = classDeclaration.getCClass().getQualifiedName();
-		srcClassName = srcClassName.replace('/', '.');
-		srcClassName = srcClassName.replace('$', '.');
-			
-		/* Format advice body */
-	    String[] block = new String[] {
-	    	"{",
-	    		"$staticInstance = new " + srcClassName + "(null);",
-				"org.caesarj.runtime.DeploySupport.deployLocal($staticInstance);",								
-			"}"
-	    };
-	    
-	    gen.writeBlock(block);
-	    	    	     
-		JStatement[] body = gen.endBlock();
-		return new JClassBlock(where, true, body);
-	}
-
-	private void prepareForStaticDeployment(CjClassDeclaration registryDecl)
-	{
-		CType singletonType = new CClassNameType(cd.getIdent());
-		JVariableDefinition aspectInstanceVar =
-			new JVariableDefinition(
-				TokenReference.NO_REF,
-				ACC_PUBLIC | ACC_FINAL | ACC_STATIC,
-				singletonType,
-				STATIC_INSTANCE_FIELD,
-				null);
-		
-		JFieldDeclaration field = new JFieldDeclaration(
-										cd.getTokenReference(),
-										aspectInstanceVar,
-										true,
-										null,
-										null);
-		field.setGenerated();
-		
-		/* add the field to the registry class, because it is automatically loaded */
-		cd.addField(field);
-				
-		cd.addClassBlock(createStaticClassDeployBlock(
-			cd.getTokenReference(),
-			cd,
-			field));
 	}
 }
