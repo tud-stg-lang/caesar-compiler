@@ -12,6 +12,7 @@
  
  <!-- Define global properties -->
  <property name="bin" location="bin"/>
+ <property name="tmpbin" location="tmpbin"/>
  <property name="source" location="src/org/caesarj"/>
  <property name="packageBase" location="src"></property>
  <property name="inputFiles" location="cc"></property>
@@ -46,20 +47,35 @@
  </target>
 
  <!-- pack for distribution -->
- <target name="dist" depends="compile">
+ <target name="dist" depends="compile, rmic">
  	<delete dir="${dist}"/>
+ 	<delete dir="${tmpbin}"/>
  	<mkdir dir="${dist}"/>
+ 	<mkdir dir="${tmpbin}"/>
  	
- 	<jar basedir="bin" jarfile="${dist}/caesar-compiler.jar">
-		<include name="**/*"/>		
-		<exclude name="org/caesarj/runtime/**/*"/>
+ 	<jar basedir="${bin}" jarfile="${dist}/caesar-runtime.jar">
+ 		<include name="org/caesarj/runtime/**/*"/>
  	</jar>
-
- 	<jar basedir="bin" jarfile="${dist}/caesar-runtime.jar">
-		<include name="org/caesarj/runtime/**/*"/>
+ 	 	
+ 	<unjar src="${libs}/log4j-1.2.8.jar" dest="${tmpbin}"/>
+ 	<unjar src="${libs}/java-getopt-1.0.9.jar" dest="${tmpbin}"/>    
+ 	<unjar src="${libs}/cjbuildtools.jar" dest="${tmpbin}"/>
+ 	
+ 	<jar jarfile="${dist}/caesar-compiler.jar">
+ 		<fileset dir="${bin}" includes="**/*" />
+ 		<fileset dir="${tmpbin}" includes="**/*" />		
  	</jar>
+ 	
+ 	<delete dir="${tmpbin}"/> 	
  </target>
- 
+
+ <!-- Generate stubs for remote runtime classes -->
+ <target name="rmic" depends="compile">
+	<echo message="Compiling RMI classes..."/>
+	<rmic base="${bin}" 
+		classname="org.caesarj.runtime.rmi.AspectRegistryServer"/>
+    <echo message="RMI compilation completed!"></echo>
+ </target> 
  
  <!-- Compile-only target -->
  <target name="compile" depends="clean, msggen, parser" description="compile the source files">
