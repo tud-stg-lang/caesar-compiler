@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Path.java,v 1.16 2005-02-11 18:45:22 aracic Exp $
+ * $Id: Path.java,v 1.17 2005-02-14 19:21:16 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -38,6 +38,7 @@ import org.caesarj.compiler.ast.phylum.expression.JLocalVariableExpression;
 import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
 import org.caesarj.compiler.ast.phylum.expression.JQualifiedInstanceCreation;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
+import org.caesarj.compiler.ast.phylum.expression.JUnaryPromote;
 import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
@@ -271,6 +272,10 @@ public abstract class Path {
             else if(tmp instanceof JCastExpression) {
                 // CTODO: ignore for now
                 tmp = ((JCastExpression)tmp).getExpression();
+            }
+            else if(tmp instanceof JUnaryPromote) {
+                // CTODO: ignore for now
+                tmp = ((JUnaryPromote)tmp).getExpression();
             }
             else {
                 throw new UnpositionedError(CaesarMessages.ILLEGAL_PATH_ELEMENT, tmp.getIdent());
