@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassNameType.java,v 1.19 2005-01-26 16:10:59 aracic Exp $
+ * $Id: CClassNameType.java,v 1.20 2005-02-25 16:50:11 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -137,9 +137,38 @@ public class CClassNameType extends CReferenceType
 	
 	public CType checkType(CTypeContext context) throws UnpositionedError {
 	    CType res = _checkType(context);
+	    
+	    // store the context in which this reference type has been resolved
 	    if(res instanceof CReferenceType && context instanceof CContext) {
 	        ((CReferenceType)res).setDeclContext((CContext)context);
 	    }
+	    
+	    // if we have a caesar reference which has been resolved as an CClassOrInterfaceType
+	    // then map this type to a CDependentType with a implicit this expression
+	    if(res.isChecked() && res.isCaesarReference()) {	        
+	        CReferenceType refType = (CReferenceType)res;
+	        
+	        CClass ctxClass = context.getClassContext().getCClass();
+	        
+	        if(
+	            refType.getCClass().isNested()
+	            && (ctxClass.isMixin() || ctxClass.isMixinInterface())
+	            && qualifiedName.indexOf('/') < 0
+            ) {
+	            // in this case we have an dependent type with a implicit family path
+	            // convert it to dependent type
+	            CDependentType depType = new CDependentType((CContext)context, null, res);
+	            return depType.checkType(context);
+	        }
+	        /*
+	        else if( refType.getCClass().isNested() ) {
+	            // we have a nested cclass which has been defined without a family path
+	            // CTODO: not allowed for now
+	            throw new UnpositionedError(...);
+	        }
+	        */
+	    }
+	    
 	    return res;
 	}
 	
