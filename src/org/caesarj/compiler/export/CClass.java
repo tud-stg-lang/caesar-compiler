@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.18 2004-07-05 20:10:40 aracic Exp $
+ * $Id: CClass.java,v 1.19 2004-07-09 13:25:14 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -31,6 +31,7 @@ import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.cclass.JavaQualifiedName;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CField;
@@ -1705,6 +1706,14 @@ public abstract class CClass extends CMember
 			}
 			return false;
 		}
+	}
+	
+	public String convertToIfcQn() {
+		return new JavaQualifiedName(getQualifiedName()).convertToIfcName().toString();
+	}
+	
+	public String convertToImplQn() {
+		return new JavaQualifiedName(getQualifiedName()).convertToImplName().toString();
 	}
 
 	public CReferenceType getSubstitution(
