@@ -20,11 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.15 2005-01-25 16:15:32 klose Exp $
+ * $Id: JMethodCallExpression.java,v 1.16 2005-02-04 19:08:42 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
+
+import java.util.HashMap;
 
 import org.caesarj.compiler.ast.CMethodNotFoundError;
 import org.caesarj.compiler.ast.visitor.IVisitor;
@@ -39,7 +41,10 @@ import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceMethod;
+import org.caesarj.compiler.family.FieldAccess;
+import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CArrayType;
+import org.caesarj.compiler.types.CDependentType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CThrowableInfo;
 import org.caesarj.compiler.types.CType;
@@ -267,8 +272,14 @@ public class JMethodCallExpression extends JExpression
 					method.getIdent(),
 					prefix.getType(factory)));
 		}
-
+		
+		
 		argTypes = method.getParameters();
+		
+		HashMap params = new HashMap();
+		Path argPaths[] = new Path[argTypes.length];
+		Path argTypePaths[] = new Path[argTypes.length];
+		
 		for (int i = 0; i < argTypes.length; i++)
 		{
 			if (args[i] instanceof JTypeNameExpression)
@@ -279,8 +290,56 @@ public class JMethodCallExpression extends JExpression
 					KjcMessages.VAR_UNKNOWN,
 					((JTypeNameExpression) args[i]).getQualifiedName());
 			}
+			
+			//
+			// IVICA: family type-checks on method calls
+			//
+			try {			    			   
+			    if(argTypes[i].isReference()) {
+			        
+			        CReferenceType refType = (CReferenceType)argTypes[i];
+			                 
+				    System.out.println("++++  "+refType.getPath());
+				    
+				    argPaths[i] = Path.createFrom(context, args[i]);			    
+				    System.out.println(">>>>  "+argPaths[i]);
+				    
+				    argTypePaths[i] = argPaths[i].normalize();
+				    System.out.println("     >>>>  "+argTypePaths[i]);
+				    
+				    if(argTypes[i].isDependentType()) {
+				        CDependentType depType = (CDependentType)refType;
+				        
+				        // the family of this dependent type starts with a parameter
+				        if(depType.getK() == 0) {
+				            // use the path of the dependent parameter type
+				            // and substitute the parameter access ( ctx(0).param ) with the 
+				            // passed path of the argument expression
+				            Path depTypePath = depType.getPath();
+				            FieldAccess fa = (FieldAccess)depTypePath.getHeadPred();
+				            
+				            depTypePath = depTypePath.substituteFirstAccess( argPaths[fa.getParamPos()] );
+				            				            
+				            check(
+								context,
+								depTypePath.equals( argTypePaths[i] ),
+								KjcMessages.ASSIGNMENT_BADTYPE,
+								argTypePaths[i].toString(),
+								depTypePath.toString());
+				            
+				        }
+				    }
+			    }
+			}
+			catch (UnpositionedError e) {
+                e.addPosition(getTokenReference());
+            }
+			//////////////////////////////////////////////
+			
 			args[i] = args[i].convertType(context, argTypes[i]);
-		}
+		}				
+		
+		/////////////////////////////////////////////////
 
 		// Mark method as used if it is a source method
 		if (method instanceof CSourceMethod)
