@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JReturnStatement.java,v 1.7 2005-02-21 15:18:27 aracic Exp $
+ * $Id: JReturnStatement.java,v 1.8 2005-02-25 13:45:41 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -30,6 +30,7 @@ import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CContext;
@@ -43,7 +44,6 @@ import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -151,8 +151,12 @@ public class JReturnStatement extends JStatement {
 	          	      KjcMessages.ASSIGNMENT_BADTYPE, 	rFam+"."+expr.getType(factory).getCClass().getIdent(),   
 	          	      lFam+"."+returnType.getCClass().getIdent() );
 	            }
-	            else if(lFam!=null ^ rFam!=null) {
-	                throw new InconsistencyException("(error required here)... trying to assign an object with family to an object without family");
+	            else {
+	                check(
+	                    context,
+	                    !(lFam!=null ^ rFam!=null),
+	                    CaesarMessages.ILLEGAL_PATH
+	                );	            	                
 	            }
           }
       }
