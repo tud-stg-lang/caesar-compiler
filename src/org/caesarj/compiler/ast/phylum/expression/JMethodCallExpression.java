@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.30 2005-03-06 13:46:56 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.31 2005-03-06 14:12:00 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -365,58 +365,63 @@ public class JMethodCallExpression extends JExpression
 		    && getIdent().startsWith(JAV_ACCESSOR)
 		    && method.isSynthetic()
 	    ) { 
-	        int k = 0;		      
-            
-            CCjSourceAccessorMethod accessorMethod = (CCjSourceAccessorMethod)method;
-            JAccessorMethod accessorMethodDecl = accessorMethod.getDecl();
-            
-            CClass clazz = accessorMethod.getOwner();
-	        //CClass clazz = argTypes[0].getCClass();
-            
-            CContext ctx = context.getBlockContext();
-            
-            // ... find first class context ... 
-            while (!(ctx instanceof CClassContext)){
-                ctx = ctx.getParentContext();
-                k++;
-            }
-            // ... and search for the correct outer class.
-            while ( ((CClassContext)ctx).getCClass() != clazz) {
-                ctx = ctx.getParentContext();
-                k++;
+            try {
+    	        int k = 0;		      
                 
-                check(
-                    context,
-                    !(ctx == null || ctx.getClassContext() == null ),                        
-                    CaesarMessages.ILLEGAL_PATH_ELEMENT, 
-                    "accessor method not returning a outer reference"
-                );
+                CCjSourceAccessorMethod accessorMethod = (CCjSourceAccessorMethod)method;
+                JAccessorMethod accessorMethodDecl = accessorMethod.getDecl();
                 
-                // this is necessary for nested classes
-                // the check above ensures that this is going to terminate
-                while(!(ctx instanceof CClassContext)) {
+                CClass clazz = accessorMethod.getOwner();
+    	        //CClass clazz = argTypes[0].getCClass();
+                
+                CContext ctx = context.getBlockContext();
+                
+                // ... find first class context ... 
+                while (!(ctx instanceof CClassContext)){
                     ctx = ctx.getParentContext();
                     k++;
                 }
-            }                		       
-	                    
-            CMember accessedMember = accessorMethodDecl.getMember();
-            if(accessedMember instanceof CField) {
-                CField accessedField = (CField)accessedMember;
-                if(accessedField.getIdent().equals(JAV_OUTER_THIS)) {
-                    family = new ContextExpression(null, k+2, null);
-                    thisAsFamily = new ContextExpression(null, k+1, null);        
+                // ... and search for the correct outer class.
+                while ( ((CClassContext)ctx).getCClass() != clazz) {
+                    ctx = ctx.getParentContext();
+                    k++;
+                    
+                    check(
+                        context,
+                        !(ctx == null || ctx.getClassContext() == null ),                        
+                        CaesarMessages.ILLEGAL_PATH_ELEMENT, 
+                        "accessor method not returning a outer reference"
+                    );
+                    
+                    // this is necessary for nested classes
+                    // the check above ensures that this is going to terminate
+                    while(!(ctx instanceof CClassContext)) {
+                        ctx = ctx.getParentContext();
+                        k++;
+                    }
+                }                		       
+    	                    
+                CMember accessedMember = accessorMethodDecl.getMember();
+                if(accessedMember instanceof CField) {
+                    CField accessedField = (CField)accessedMember;
+                    if(accessedField.getIdent().equals(JAV_OUTER_THIS)) {
+                        family = new ContextExpression(null, k+2, null);
+                        thisAsFamily = new ContextExpression(null, k+1, null);        
+                    }
+                    else {                    
+                        thisAsFamily = 
+                            new FieldAccess(
+                                accessedField.isFinal(),
+                                new ContextExpression(null, k, null),
+                                accessedField.getIdent(),
+                                (CReferenceType)accessedField.getType()
+                            );
+                        family = thisAsFamily.clonePath().normalize();
+                    }
                 }
-                else {
-                    family = new ContextExpression(null, k, null);
-                    thisAsFamily = 
-                        new FieldAccess(
-                            accessedField.isFinal(),
-                            new ContextExpression(null, k, null),
-                            accessedField.getIdent(),
-                            (CReferenceType)accessedField.getType()
-                        );
-                }
+            }
+            catch (UnpositionedError e) {
+                throw e.addPosition(getTokenReference());
             }
 		}
         else if( type.isCaesarReference() ) {
