@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CMember.java,v 1.4 2004-10-15 11:12:54 aracic Exp $
+ * $Id: CMember.java,v 1.5 2004-10-29 13:21:56 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -157,6 +157,10 @@ public abstract class CMember extends org.caesarj.util.Utils implements Constant
    */
   public boolean isPublic() {
     return CModifier.contains(modifiers, ACC_PUBLIC);
+  }
+  
+  public boolean isPackageVisible() {
+      return !(isPublic() || isProtected() || isPrivate());
   }
 
   /**
