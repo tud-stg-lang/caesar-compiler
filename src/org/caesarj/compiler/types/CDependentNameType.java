@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentNameType.java,v 1.15 2005-02-15 18:32:05 aracic Exp $
+ * $Id: CDependentNameType.java,v 1.16 2005-02-16 16:32:12 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -177,7 +177,7 @@ public class CDependentNameType extends CClassNameType
             }
 
         } 
-        catch (Exception e){
+        catch (PositionedError e){
             // If the message of a positioned error is in passThrough, the
             // exception is thrown further. Otherwise, a TYPE_UNKNOWN error
             // is thrown at the end of the function.
@@ -186,15 +186,13 @@ public class CDependentNameType extends CClassNameType
                     KjcMessages.UNINITIALIZED_LOCAL_VARIABLE,
                     KjcMessages.VAR_UNKNOWN
             };
-            
-            if (e instanceof PositionedError){
-                PositionedError pe = (PositionedError)e;
-                for (int i=0; i<passThrough.length; i++){
-                    if (pe.hasDescription(passThrough[i])){
-                        throw new UnpositionedError(passThrough[i], pe.getMessageParameters() );
-                    }
+                        
+            PositionedError pe = (PositionedError)e;
+            for (int i=0; i<passThrough.length; i++){
+                if (pe.hasDescription(passThrough[i])){
+                    throw new UnpositionedError(passThrough[i], pe.getMessageParameters() );
                 }
-            }
+            }            
         }
         
         // Throw a default error message
