@@ -66,7 +66,11 @@ public class Tools {
 	 * Get the inner class entries of a java class
 	 */
 	public static InnerClass[]	getInnerClasses( JavaClass clazz ){
-		return getInnerClassesAttribute(clazz).getInnerClasses();
+		InnerClasses	ic = getInnerClassesAttribute(clazz);
+		if (ic==null){
+			return new InnerClass[0];
+		}
+		return ic.getInnerClasses();
 	}
 	
 	/**
