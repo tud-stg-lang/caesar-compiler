@@ -1,4 +1,19 @@
-VC_9 - ...
+VC_9 - 23.07.2004
+- ACC_MIXIN modifier added for cclass
+- CaesarObject as root for all cclass types has been introduced
+- Unit tests has been extended and reorganized 
+	- separate compilation of tests
+	- every test in separated package
+- Caesar type graph has been redesigned (org.caesarj.compiler.typesys)
+	- No separated graphs for complete and declaration graphs
+	- graph transofrmations moved to separate graph visitors
+- Bytecode generation for method calls has been patched, 
+  introduction of AdditionalGenerationContext for keeping the reference for current caller
+  ( KOPI I condemn you! ;) )
+	- super call uses direct super of caller as target, rather than the owner of the method
+	- access to fields declared in one of parents uses caller as target
+	- same for virtual calls and interface calls
+	Consequences for: aspectj pointcuts, mixin copies and method calls
 
 
 VC_8 - 08.07.2004
