@@ -224,7 +224,10 @@ public class DeploymentClassFactory implements CaesarConstants {
 		//implement the aspect interface
 		aspectClass.addInterface(
 			new CClassNameType(qualifiedAspectInterfaceName));
-
+        
+        aspectClass.addInterface(            
+            new CClassNameType("org/caesarj/runtime/AspectIfc"));
+        
 		//add support methods
 		List newMethods = new ArrayList();
 		boolean cleanMethodsRequired = (aspectClass instanceof FjCleanClassDeclaration);
