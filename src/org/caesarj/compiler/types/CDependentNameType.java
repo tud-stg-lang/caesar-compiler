@@ -15,13 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CDependentNameType.java,v 1.8 2005-01-20 14:07:34 klose Exp $
+ * $Id: CDependentNameType.java,v 1.9 2005-01-21 16:59:30 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
 
 
 import org.caesarj.compiler.KjcEnvironment;
+import org.caesarj.compiler.ast.phylum.expression.CjAccessorCallExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
 import org.caesarj.compiler.ast.phylum.expression.JLocalVariableExpression;
@@ -114,7 +115,12 @@ public class CDependentNameType extends CClassNameType
         try{
             expr = expr.analyse(ectx);
         
-            if(expr instanceof JFieldAccessExpression || expr instanceof JLocalVariableExpression || expr instanceof JOwnerExpression) {                    
+            if(
+                expr instanceof JFieldAccessExpression 
+                || expr instanceof JLocalVariableExpression 
+                || expr instanceof JOwnerExpression
+                || expr instanceof CjAccessorCallExpression
+            ) {                    
                 TypeFactory factory = context.getTypeFactory();              
                 CClass clazz;
                 
