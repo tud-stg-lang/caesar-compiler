@@ -5,7 +5,9 @@ import java.util.Stack;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantUtf8;
+import org.caesarj.compiler.cclass.CaesarTypeSystem;
 import org.caesarj.compiler.cclass.JavaQualifiedName;
+import org.caesarj.compiler.cclass.JavaTypeNode;
 import org.caesarj.mixer2.intern.ClassModifyingVisitor;
 
 public class ClassGenerator {
@@ -79,9 +81,9 @@ public class ClassGenerator {
         JavaQualifiedName mixinQN,
         JavaQualifiedName newClassQN,
         JavaQualifiedName newSuperQN,
-        JavaQualifiedName newOuterQN
+        JavaQualifiedName newOuterQN,
+		CaesarTypeSystem	typeSystem
     ) throws MixerException {
-
        System.out.println("Mixing "+newClassQN);
        System.out.println("\tmixin: "+mixinQN);
        System.out.println("\tsuper: "+newSuperQN);
@@ -103,7 +105,11 @@ public class ClassGenerator {
      * This method creates a new class <code>newClass</code> which extends <code>newSuperClass</code> by
      * copying and modifiyng the classfile of <code>originalClass</code>
      */
-	protected void createModifiedClass( String originalClass, String newClass, String newSuperclass, String newOuterClass ) throws MixerException {
+	protected void createModifiedClass( 
+			String originalClass, 
+			String newClass, 
+			String newSuperclass, 
+			String newOuterClass ) throws MixerException {
 		ClassModifyingVisitor.modify(originalClass,newClass,newSuperclass,newOuterClass);
 	}
 	
