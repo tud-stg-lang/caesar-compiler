@@ -20,7 +20,6 @@ import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.FjSourceClass;
-import org.caesarj.compiler.family.CollectClassesFjVisitor;
 import org.caesarj.compiler.family.FamiliesInitializerFjVisitor;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
@@ -43,7 +42,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 
 	private CaesarMessageHandler messageHandler;
 	private Set errorMessages;
-	private CollectClassesFjVisitor inherritConstructors;
 
 
 	// The used weaver. An instance ist created when it's needed in generateAndWeaveCode
