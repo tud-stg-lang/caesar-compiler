@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CDependentNameType.java,v 1.5 2005-01-18 16:10:10 klose Exp $
+ * $Id: CDependentNameType.java,v 1.6 2005-01-19 13:42:17 klose Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -26,6 +26,7 @@ import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
 import org.caesarj.compiler.ast.phylum.expression.JLocalVariableExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
+import org.caesarj.compiler.ast.phylum.expression.JOwnerExpression;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
@@ -107,39 +108,25 @@ public class CDependentNameType extends CClassNameType
                 try{
                     expr = expr.analyse(ectx);
                 } catch (Exception e){
+                    // TODO [karl] Overwork handling of exceptions here, e.g. "Local not initialized errors"
+                    // should not be handeled as "Type not found"-errors as it is now. (This happens because
+                    // these exceptions are caught below and an generic UnpositionedError is thrown in the
+                    // last line) 
                     throw e;
                 }
                 
-                if (expr instanceof JLocalVariableExpression){
-                    // TODO implement for local variables and formal parameters
+                
+                if(expr instanceof JFieldAccessExpression || expr instanceof JLocalVariableExpression || expr instanceof JOwnerExpression) {                    
+                    TypeFactory factory = context.getTypeFactory();              
+                    CClass clazz = null;
                     
-                    
-                    
-                } else if(expr instanceof JFieldAccessExpression) {                    
-	                String pathSegs[] = qualifiedName.split("/");
+                    String pathSegs[] = qualifiedName.split("/");
 	                
-	                CClass clazz = context.getClassReader().loadClass(
+	                clazz = context.getClassReader().loadClass(
 	                    context.getTypeFactory(),
 	                    expr.getType(context.getTypeFactory()).getCClass().getQualifiedName()+"$"+pathSegs[pathSegs.length-1]
 	                );
-	                
-	                //
-	                // find the first field access in the chain... x.y.z -> x
-	                //
-	                /*
-	                JFieldAccessExpression fieldAccessExpr = (JFieldAccessExpression)expr;
-	                while(fieldAccessExpr.getPrefix() instanceof JFieldAccessExpression) {
-	                    fieldAccessExpr = (JFieldAccessExpression)fieldAccessExpr.getPrefix();
-	                } 
-	                
-	                CClass owner = fieldAccessExpr.getField().getOwner();
-	                CClass current = context.getClassContext().getCClass();
-	                while(current != owner) {
-	                    if(current == null) throw new InconsistencyException();
-	                    current = current.getOwner();
-	                    k++;
-	                }
-	                */
+
 	                int k = Path.calcK((CContext)context, expr);
 	                
 	                //
@@ -147,7 +134,6 @@ public class CDependentNameType extends CClassNameType
 	                //
 	                CType t = clazz.getAbstractType().checkType(context);
 	                CDependentType dt = new CDependentType((CContext)context, k, expr, t);
-	                //System.out.println("Resolved dp "+dt);
 	                return dt;
                 }
             }
