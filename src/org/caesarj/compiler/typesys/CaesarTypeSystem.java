@@ -1,6 +1,8 @@
 package org.caesarj.compiler.typesys;
 
 import org.caesarj.compiler.typesys.graph.CaesarTypeGraph;
+import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
+import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.compiler.typesys.java.JavaTypeGraph;
 import org.caesarj.compiler.typesys.visitor.AddImplicitTypesAndRelationsVisitor;
 import org.caesarj.compiler.typesys.visitor.DumpTypesVisitor;
@@ -23,6 +25,19 @@ public class CaesarTypeSystem {
 	public JavaTypeGraph getJavaTypeGraph() {
 		return javaTypeGraph;
 	}
+	
+	public String findInContextOf(String classQn, String contextClassQn) {
+	    CaesarTypeGraph g = getCaesarTypeGraph();
+        CaesarTypeNode prefixN = caesarTypeGraph.getType(new JavaQualifiedName(classQn));
+        CaesarTypeNode contextN = caesarTypeGraph.getType(new JavaQualifiedName(contextClassQn));
+        
+        CaesarTypeNode n = prefixN.getTypeInContextOf(contextN);
+        
+        if(n != null)
+            return n.getQualifiedName().toString();
+            
+        return null;
+    }
 	
 	public void generate() {
 		DumpTypesVisitor dumpTypesVisitor = new DumpTypesVisitor(caesarTypeGraph);

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.49 2004-09-08 19:49:25 aracic Exp $
+ * $Id: Caesar.g,v 1.50 2004-09-08 21:49:52 aracic Exp $
  */
 
 /*
@@ -1892,7 +1892,7 @@ jPostfixExpression[]
 	} else if(((JNameExpression)self).getName().equals("proceed")) {
 	  self = new CjProceedExpression(sourceRef, args);	
 	} else {
-	  self = new JMethodCallExpression(sourceRef,
+	  self = new CjMethodCallExpression(sourceRef,
 					   ((JNameExpression)self).getPrefix(),
 					   ((JNameExpression)self).getName(),
 					   args);

@@ -5042,7 +5042,7 @@ private static final int MAX_LOOKAHEAD = 2;
 						} else if(((JNameExpression)self).getName().equals("proceed")) {
 						  self = new CjProceedExpression(sourceRef, args);	
 						} else {
-						  self = new JMethodCallExpression(sourceRef,
+						  self = new CjMethodCallExpression2(sourceRef,
 										   ((JNameExpression)self).getPrefix(),
 										   ((JNameExpression)self).getName(),
 										   args);

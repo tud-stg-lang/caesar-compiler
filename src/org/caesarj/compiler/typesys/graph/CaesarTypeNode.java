@@ -112,8 +112,10 @@ public class CaesarTypeNode {
 	}
 
 	
-	public void addEnclosedBy(BidirectionalRelation relation) {
+	public void addEnclosedBy(BidirectionalRelation relation) {	    
 		addToList(relation, enclosedBy);
+		if(enclosedBy.size() > 1)
+		    throw new InconsistencyException("multiple outers not supported yet");
 	}
 
 	public void addEnclosingFor(BidirectionalRelation relation) {
@@ -209,6 +211,65 @@ public class CaesarTypeNode {
             return (CaesarTypeNode)topMostList.get(0);
         }	    
 	}
+	
+	/**
+	 * returns the type of this Node in context of the node n.
+	 * B extends A ->
+	 * A.A in context of B is B.A
+	 */
+	public CaesarTypeNode getTypeInContextOf(CaesarTypeNode n) {
+	    List l1 = new LinkedList();
+	    List l2 = new LinkedList();
+	    
+	    // generated lists
+	    genOuterList(l1);
+	    n.genOuterList(l2);
+	    
+	    CaesarTypeNode thisOuterChain[] = 
+	        (CaesarTypeNode[])l1.toArray(new CaesarTypeNode[l1.size()]);
+	    CaesarTypeNode contextOuterChain[] = 
+	        (CaesarTypeNode[])l2.toArray(new CaesarTypeNode[l2.size()]);
+	    
+	    // check subtype relations
+	    int j;
+	    CaesarTypeNode currentOuter = null;
+	    for(j=0; j<thisOuterChain.length-1 && j<contextOuterChain.length; j++) {
+	        currentOuter = contextOuterChain[j];
+	        if(!contextOuterChain[j].isSubtypeOf(thisOuterChain[j]))
+	            return null;
+        }	    	   	   
+
+	    if(currentOuter == null)
+	        return null;
+	    
+	    for (int i = j; i < thisOuterChain.length; i++) {
+            currentOuter = currentOuter.lookupInner(thisOuterChain[i].getQualifiedName().getIdent());
+        }
+	    
+	    return currentOuter;
+    }
+	
+	private void genOuterList(List l) {
+	    l.add(0, this);
+	    if(enclosedBy.size()>0) {
+	        CaesarTypeNode o = ((OuterInnerRelation)enclosedBy.get(0)).getOuterNode();	        
+	        o.genOuterList(l);
+        }
+    }
+	
+	public boolean isSubtypeOf(CaesarTypeNode n) {
+	    if(this.qualifiedName.equals(n.getQualifiedName())) {
+	        return true;
+        }
+	    
+	    for (Iterator it = parents(); it.hasNext();) {
+            SuperSubRelation rel = (SuperSubRelation) it.next();
+            if(rel.getSuperNode().isSubtypeOf(n))
+                return true;
+        }
+	    
+	    return false;
+    }
 	
     public String toString() {
         StringBuffer res = new StringBuffer();
