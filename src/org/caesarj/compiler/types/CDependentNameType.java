@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentNameType.java,v 1.11 2005-01-26 16:11:21 aracic Exp $
+ * $Id: CDependentNameType.java,v 1.12 2005-01-28 15:10:41 klose Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -34,6 +34,7 @@ import org.caesarj.compiler.ast.phylum.expression.JLocalVariableExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JOwnerExpression;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
@@ -41,7 +42,9 @@ import org.caesarj.compiler.context.CClassBodyContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.context.CTypeContext;
+import org.caesarj.compiler.context.CVariableInfo;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.util.MessageDescription;
@@ -112,7 +115,21 @@ public class CDependentNameType extends CClassNameType
         } else if (context instanceof CBlockContext){
             env = ((CBlockContext)context).getEnvironment();
             ectx = new CExpressionContext( (CBlockContext)context, env );
-        
+            
+        } else if (context instanceof CMethodContext){
+            CMethodContext mc = (CMethodContext)context;
+            env  = mc.getEnvironment();
+            JFormalParameter[] params = mc.getFormalParameter();
+            CBlockContext block = new CBlockContext(mc, env, params.length );
+            
+            // Add formal parameters to block-context and mark them initialized
+            for (int i = 0; i < params.length; i++) {
+                block.addVariable( params[i] );
+                block.setVariableInfo(i, CVariableInfo.INITIALIZED);
+            }
+            
+            ectx = new CExpressionContext( block, env  );
+            
         } else {
             throw new UnpositionedError(KjcMessages.TYPE_UNKNOWN, qualifiedName);
         }
@@ -158,7 +175,8 @@ public class CDependentNameType extends CClassNameType
             // is thrown at the end of the function.
             final MessageDescription[] passThrough = new MessageDescription[]{
                     KjcMessages.UNINITIALIZED_FIELD_USED,
-                    KjcMessages.UNINITIALIZED_LOCAL_VARIABLE
+                    KjcMessages.UNINITIALIZED_LOCAL_VARIABLE,
+                    KjcMessages.VAR_UNKNOWN
             };
             
             if (e instanceof PositionedError){

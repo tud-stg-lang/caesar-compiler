@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclaration.java,v 1.39 2005-01-27 15:17:43 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.40 2005-01-28 15:10:41 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.caesarj.compiler.ClassReader;
+import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
@@ -41,6 +42,7 @@ import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;
@@ -496,9 +498,14 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
                 List formalParamTypes = new LinkedList();
                 for (int j = 0; j < formalParams.length; j++) {                    
                     if(formalParams[j].getType() instanceof CClassNameType) {
+                        KjcEnvironment env = self.getEnvironment();
+                        CContext methodContext = new CMethodContext(
+                                					((CClassContext)self), 
+                                					env,
+                                					methods[i] );
                         t = formalParams[j].getType();
                         CClassNameType nt = (CClassNameType)t;
-                        t = new CDependentNameType(nt.getQualifiedName()).checkType(self);
+                        t = new CDependentNameType(nt.getQualifiedName()).checkType(methodContext);
                         
                         formalParams[j].setType(t);            
                         formalParamTypes.add(t);
