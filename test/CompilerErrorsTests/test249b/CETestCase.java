@@ -10,7 +10,7 @@ public cclass OuterA {
 	public cclass InnerA wraps String {
 
 		public void m() {
-			$wrappee = "boom!";
+			wrappee = "boom!";
 		}
 	}
 }

@@ -8,7 +8,7 @@ package generated.test248;
 public cclass OuterA {
 
 	public void m() {
-
-		System.out.prinln($outer.toString());
+	    // This shouldn't bee possible at all
+		System.out.println(outer().toString());
 	}
 }

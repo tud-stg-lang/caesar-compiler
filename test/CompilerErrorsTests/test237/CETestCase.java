@@ -13,7 +13,7 @@ public cclass OuterA {
 	public cclass InnerA {
 
 		public void n() {
-			$outer.m();
+			OuterA.this.m();
 		}
 	}
 }

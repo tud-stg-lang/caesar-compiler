@@ -20,7 +20,7 @@ public cclass OuterB extends OuterA {
 	public cclass InnerA {
 
 		public void m() {
-			InnerA a1 = $outer.getA().new InnerA();
+			InnerA a1 = OuterB.this.getA().new InnerA();
 		}
 	}
 }

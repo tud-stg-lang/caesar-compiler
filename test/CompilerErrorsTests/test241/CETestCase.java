@@ -12,7 +12,7 @@ public cclass OuterA {
 	public cclass InnerA {
 
 		public void m() {
-			int a = $outer.v;
+			int a = OuterA.this.v;
 		}
 	}
 }
