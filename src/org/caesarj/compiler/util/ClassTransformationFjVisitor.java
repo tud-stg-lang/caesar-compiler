@@ -164,8 +164,8 @@ public class ClassTransformationFjVisitor extends FjVisitor {
 			CciCollaborationInterfaceDeclaration collaborationInterface = 
 				(CciCollaborationInterfaceDeclaration)self;
 				
-			collaborationInterface.addSelfContextMethods(
-				environment.getTypeFactory());
+			/*collaborationInterface.addSelfContextMethods(
+				environment.getTypeFactory());*/
 
 			collaborationInterface.initInnersAsCollaboration();
 			

@@ -70,13 +70,10 @@ public class CciCollaborationInterfaceDeclaration
 			javadoc,
 			comment);
 	}
-	
-	public String getIdent()
-	{
-		return ident;
-	}
-	
-	
+
+	/**
+	 * Is it a collaboration interface?
+	 */
 	public boolean isCollaborationInterface()
 	{
 		return true;

@@ -3,10 +3,7 @@ package org.caesarj.compiler;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashSet;
-import java.util.Set;
 
-import org.caesarj.classfile.InterfaceConstant;
 import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CMethod;
 import org.caesarj.kjc.CReferenceType;

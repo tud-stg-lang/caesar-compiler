@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JCastExpression.java,v 1.1 2003-07-05 18:29:39 werner Exp $
+ * $Id: JCastExpression.java,v 1.2 2003-07-11 11:58:34 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -58,6 +58,15 @@ public class JCastExpression extends JExpression {
    */
   public CType getType(TypeFactory factory) {
     return dest;
+  }
+  
+  /**
+   * WAlTER NEW
+   *
+   * @return the type of this expression
+   */
+  public void setType(CType type) {
+	dest = type;
   }
 
   // ----------------------------------------------------------------------

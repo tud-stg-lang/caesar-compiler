@@ -89,16 +89,25 @@ public abstract class CciMethodDeclaration
 		          || isInCollaborationInterface(clazz.getOwner()));
 	}
 	
+	/**
+	 * @return Is it a provided method?
+	 */
 	public boolean isProvided()
 	{
 		return false;
 	}
 	
+	/**
+	 * @return Is it an expected method?
+	 */
 	public boolean isExpected()
 	{
 		return false;
 	}
-
+	
+	/**
+	 * Creates the source method representation of this method.
+	 */
 	protected FjSourceMethod createSourceMethod(
 		CSourceMethod oldExport,
 		FjFamily[] families)

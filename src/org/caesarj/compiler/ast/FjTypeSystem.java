@@ -596,14 +596,15 @@ public class FjTypeSystem
 	{
 		
 		CReferenceType inner = declaresInner(owner, innerTypeName);
-		if (inner != null)
+		if (inner != null
+			&& (inner.getCClass().getModifiers() 
+				& Constants.FJC_OVERRIDE)	== 0)
 		{
-			if ((inner.getCClass().getModifiers() & Constants.FJC_OVERRIDE)	== 0)
-				return (CReferenceType) new CClassNameType(
-					FjConstants.toIfcName(
-						owner.getQualifiedName()
-							+ "$"
-							+ innerTypeName)).checkType(context);
+			return (CReferenceType) new CClassNameType(
+				FjConstants.toIfcName(
+					owner.getQualifiedName()
+						+ "$"
+						+ innerTypeName)).checkType(context);
 		}
 		
 		if (! owner.isInterface())

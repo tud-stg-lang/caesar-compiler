@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.1 2003-07-05 18:29:38 werner Exp $
+ * $Id: JTypeDeclaration.java,v 1.2 2003-07-11 11:58:34 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -228,8 +228,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration
 		//Walter: this method call was inserted instead of resolve 
 		//the interfaces here.
 		resolveInterfaces(context);
-		// If the class is an inner class, add field for this-reference.
-		sourceClass.setInterfaces(interfaces);
+		
 
 		// Check inners
 		for (int i = inners.length - 1; i >= 0; i--)
@@ -276,6 +275,8 @@ public abstract class JTypeDeclaration extends JMemberDeclaration
 				KjcMessages.CIRCULAR_INTERFACE,
 				interfaces[i].getQualifiedName());
 		}
+
+		sourceClass.setInterfaces(interfaces);
 	}
 
 	/**
@@ -504,7 +505,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration
 					getTokenReference(),
 					new JVariableDefinition(
 						getTokenReference(),
-						ACC_PRIVATE | ACC_FINAL,
+						ACC_PUBLIC | ACC_FINAL,
 						getOwner().getAbstractType(),
 						JAV_OUTER_THIS,
 						null),
@@ -513,7 +514,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration
 			((CSourceClass) getCClass()).addField(
 				new CSourceField(
 					getCClass(),
-					ACC_PRIVATE | ACC_FINAL,
+					ACC_PUBLIC | ACC_FINAL,
 					JAV_OUTER_THIS,
 					getOwner().getAbstractType(),
 					false,

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodDeclaration.java,v 1.1 2003-07-05 18:29:40 werner Exp $
+ * $Id: JMethodDeclaration.java,v 1.2 2003-07-11 11:58:34 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -543,7 +543,8 @@ public class JMethodDeclaration extends JMemberDeclaration
 			if (i > 0)
 				System.out.print(", ");
 			System.out.print(
-				parameters[i].getType() + " " + parameters[i].name);
+				((CReferenceType)parameters[i].getType()).getQualifiedName()
+				 + " " + parameters[i].name);
 		}
 		System.out.print(")");
 	}

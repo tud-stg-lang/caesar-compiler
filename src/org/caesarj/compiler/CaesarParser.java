@@ -426,7 +426,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		CReferenceType			superClass = null;
 		CciWeaveletReferenceType	superCI = null;  
 		CReferenceType[]			interfaces = CReferenceType.EMPTY;
-		CReferenceType[]			bindings = CReferenceType.EMPTY;  
+		CReferenceType[]			bindings = null;  
 		ParseClassContext	context = ParseClassContext.getInstance();
 		TokenReference	sourceRef = buildTokenReference();
 		JavadocComment	javadoc = getJavadocComment();
@@ -1453,7 +1453,7 @@ private static final int MAX_LOOKAHEAD = 2;
 	private final CReferenceType[]  jBindsClause(
 		
 	) throws RecognitionException, TokenStreamException {
-		CReferenceType[] self = CReferenceType.EMPTY;
+		CReferenceType[] self = null;
 		
 		
 		{
@@ -5864,7 +5864,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				CTypeVariable.EMPTY,
 								     null,
 								     CReferenceType.EMPTY,
-								     CReferenceType.EMPTY,
+								     null,
 								     context.getFields(),
 								     methods,
 								     context.getInnerClasses(),
@@ -6143,7 +6143,7 @@ private static final int MAX_LOOKAHEAD = 2;
 						CTypeVariable.EMPTY,
 											 null,
 											 CReferenceType.EMPTY,
-											 CReferenceType.EMPTY,
+											 null,
 											 context.getFields(),
 											 methods,
 											 context.getInnerClasses(),

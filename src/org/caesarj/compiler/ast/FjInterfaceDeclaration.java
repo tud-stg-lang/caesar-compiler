@@ -185,12 +185,12 @@ public class FjInterfaceDeclaration extends JInterfaceDeclaration {
 		((FjInterfaceContext) self).popContextInfo();
 	}
 
-/**
- * I just copied it here, after I will see if everything is needed.
- * @param context
- * @throws PositionedError
- * @author Walter Augusto Werner
- */
+	/**
+	 * I just copied it here, after I will see if everything is needed.
+	 * @param context
+	 * @throws PositionedError
+	 * @author Walter Augusto Werner
+	 */
 	public void initFamilies(CClassContext context) 
 		throws PositionedError
 		
@@ -251,7 +251,7 @@ public class FjInterfaceDeclaration extends JInterfaceDeclaration {
 		}
 		if (instanceInit != null) 
 		{
-			if (!instanceInit.isDummy()) 
+			if (! instanceInit.isDummy()) 
 				methodList[i++] = instanceInit.checkInterface(self);
 			else
 				instanceInit.checkInterface(self);
@@ -275,8 +275,6 @@ public class FjInterfaceDeclaration extends JInterfaceDeclaration {
 				((FjInterfaceDeclaration)inners[j]).initFamilies(innerContext);
 							
 		}
-
-			
 	}
 	
 	public void generateInterface(
@@ -357,10 +355,11 @@ public class FjInterfaceDeclaration extends JInterfaceDeclaration {
 						throw e.addPosition(getTokenReference());
 					}
 					interfaces = newInterfaces;
-					//LiXO/////////////////////////////////
+					sourceClass.setInterfaces(interfaces);
+					//if it arrives here, it is a inner virtual class that 
+					//overrides a super virtual type.
 					modifiers = modifiers | FJC_OVERRIDE;
 					sourceClass.setModifiers(modifiers);
-					///////////////////////////////////////
 				}				
 			}
 		}

@@ -12,6 +12,7 @@ import org.caesarj.kjc.JExpressionStatement;
 import org.caesarj.kjc.JFormalParameter;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.JVariableDeclarationStatement;
+import org.caesarj.kjc.TypeFactory;
 
 public class FjFormalParameter extends JFormalParameter {
 
@@ -159,4 +160,24 @@ public class FjFormalParameter extends JFormalParameter {
 	public FjFamily getFamily() {
 		return family;
 	}
+	/* (non-Javadoc)
+	 * @see org.caesarj.kjc.JFormalParameter#checkInterface(org.caesarj.kjc.CTypeContext)
+	 * Walter
+	 */
+	public CType checkInterface(CTypeContext context)
+	{
+		try 
+		{
+			type = type.checkType(context);
+			return type;
+		} 
+		catch (UnpositionedError cue) 
+		{
+			System.out.println("Erro: " + context.getClassContext().getCClass().getQualifiedName());
+			 context.reportTrouble(cue.addPosition(getTokenReference()));
+			 return context.getTypeFactory().createReferenceType(
+			 	TypeFactory.RFT_OBJECT);
+		}		
+	}
+
 }

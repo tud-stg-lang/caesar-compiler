@@ -157,10 +157,14 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 			if (errorFound) {
 				return false;
 			}
-
+			
+			System.out.println("INIT FAMILY:");
 			//Walter: Now the families are initializated in a new round
 			for (int count = 0; count < tree.length; count++)
+			{
 				initFamilies(tree[count]);
+				//tree[count].accept(new DebugVisitor());
+			}
 
 			if (errorFound)
 				return false;

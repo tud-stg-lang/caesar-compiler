@@ -420,7 +420,8 @@ public class FjClassDeclaration
 				}
 			}
 			throw e;
-		}
+		} 
+
 	}
 
 	public void checkInterface(CContext context) throws PositionedError
@@ -618,7 +619,7 @@ public class FjClassDeclaration
 		}
 
 		sourceClass.close(
-			sourceClass.getInterfaces(),
+			getAllInterfaces(),
 			sourceClass.getSuperType(),
 			hashField,
 			methodList);

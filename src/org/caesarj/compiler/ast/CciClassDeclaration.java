@@ -2,7 +2,6 @@ package org.caesarj.compiler.ast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 
 import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.FjConstants;
@@ -281,6 +280,8 @@ public class CciClassDeclaration
 					: bindings[i], 
 				true);
 		}
+	
+		sourceClass.setInterfaces(getAllInterfaces());
 
 	}
 	
@@ -343,7 +344,10 @@ public class CciClassDeclaration
 			? new CReferenceType[0]
 			: implementations;
 	}
-	
+	/**
+	 * Sets the implementations of the class
+	 * @param implementations
+	 */
 	public void setImplementations(CReferenceType[] implementations)
 	{
 		this.implementations = implementations;
@@ -407,12 +411,17 @@ public class CciClassDeclaration
 			this);
 	}
 	
-		
+	/**
+	 * @return the super class of the class.
+	 */
 	public CReferenceType getSuperClass()
 	{
 		return superClass;
 	}	
 	
+	/**
+	 * Constructs a context.
+	 */
 	protected CClassContext constructContext(CContext context)
 	{
 		

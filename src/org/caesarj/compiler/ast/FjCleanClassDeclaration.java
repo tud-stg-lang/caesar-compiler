@@ -389,12 +389,8 @@ public class FjCleanClassDeclaration extends FjClassDeclaration
 			if (this.methods[i] instanceof FjMethodDeclaration)
 			{
 				FjMethodDeclaration[] transformedMethods =
-					(
-						(
-							FjMethodDeclaration) this
-								.methods[i])
-								.getSelfContextMethods(
-						selfType);
+					((FjMethodDeclaration) this.methods[i])
+							.getSelfContextMethods(selfType);
 				for (int j = 0; j < transformedMethods.length; j++)
 				{
 					methodVector.add(transformedMethods[j]);

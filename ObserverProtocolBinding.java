@@ -1,8 +1,8 @@
 package generated;
 
-public clean class ObserverProtocolBinding binds ObserverProtocol 
+public class ObserverProtocolBinding binds ObserverProtocol 
 {
-	public String getNameParentExpected(String child)
+	public Object getNameParentExpected(String child)
 	{
 		return "";
 	}

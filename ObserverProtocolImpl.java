@@ -3,7 +3,7 @@ package generated;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public clean class ObserverProtocolImpl implements ObserverProtocol 
+public class ObserverProtocolImpl implements ObserverProtocol 
 {
 	public String getNameParent(String child)
 	{
@@ -19,6 +19,7 @@ public clean class ObserverProtocolImpl implements ObserverProtocol
 		}
 		public void removeObserver(Observer o)
 		{
+			getNameParent("X");
 			observers.remove(o);
 		}
 		public void changed()

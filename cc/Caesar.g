@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.1 2003-07-05 18:26:10 werner Exp $
+ * $Id: Caesar.g,v 1.2 2003-07-11 11:58:01 werner Exp $
  */
 
 /*
@@ -644,7 +644,7 @@ jInterfaceExtends []
 jBindsClause[]
   returns [CReferenceType[] self = CReferenceType.EMPTY]
 :
-  ( "binds" self = jNameList[] )?
+  ( "binds" self = jNameList[]/*jTypeName[]*/ )?
 ;
 
 // A class can implement several interfaces...
@@ -2304,7 +2304,7 @@ jUnqualifiedNewExpression []
 	    decl = new FjClassDeclaration(sourceRef,
 					 org.caesarj.kjc.Constants.ACC_FINAL, // JLS 15.9.5
 					 "", //((CReferenceType)type).getQualifiedName(),
-                                         CTypeVariable.EMPTY,
+                     CTypeVariable.EMPTY,
 					 null,
 					 CReferenceType.EMPTY,
 					 CReferenceType.EMPTY,

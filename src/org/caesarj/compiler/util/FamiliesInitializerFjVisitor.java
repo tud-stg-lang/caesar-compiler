@@ -117,8 +117,9 @@ public class FamiliesInitializerFjVisitor
 			body,
 			methods,
 			decls);
+
 		((FjClassContext) context).popContextInfo();
 		context = context.getParentContext();
-
+		
 	}
 }

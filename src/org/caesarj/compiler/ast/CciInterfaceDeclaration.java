@@ -83,6 +83,7 @@ public class CciInterfaceDeclaration
 		return false;
 	}
 	
+
 	/**
 	 * Adds the self context methods to the interface. It is done only
 	 * for collaboration interfaces and their inner interfaces. 
@@ -264,6 +265,15 @@ public class CciInterfaceDeclaration
 			proxyMethods.toArray(new JMethodDeclaration[proxyMethods.size()]);
 	}
 	
+	/**
+	 * Creates a constructor for the proxy. This constructor has two parameters:
+	 * the implementation and the binding that will be woven by the weavelet
+	 * class that will extend the proxy.
+	 * @param ownerName
+	 * @param ownerHasSuper
+	 * @param typeFactory
+	 * @return
+	 */
 	protected JMethodDeclaration createProxyConstructor(String ownerName, 
 		boolean ownerHasSuper, TypeFactory typeFactory)
 	{
@@ -273,6 +283,7 @@ public class CciInterfaceDeclaration
 			? ident
 			: ownerName + "$" + ident;
 		
+		//Two parameters: the implementation and the binding
 		parameters[0] = new FjFormalParameter(
 			getTokenReference(),
 			JLocalVariable.DES_PARAMETER,
@@ -287,6 +298,8 @@ public class CciInterfaceDeclaration
 			CciConstants.BINDING_FIELD_NAME,
 			false);
 		
+		//Two assigment expressions to set the fields implementation and
+		//binding.
 		JStatement[] statements = new JStatement[]
 		{
 			new JExpressionStatement(
@@ -315,6 +328,7 @@ public class CciInterfaceDeclaration
 				null)
 		};
 		JConstructorCall constructorCall = null;
+		//if it has a super type calls the super constructor.
 		if (ownerHasSuper)
 		{
 			JExpression[] arguments = new JExpression[]
@@ -331,10 +345,12 @@ public class CciInterfaceDeclaration
 				false, 
 				arguments);
 		}
+		
 		JConstructorBlock constructorBody = new FjConstructorBlock(
 			getTokenReference(), 
 			constructorCall, 
 			statements);
+			
 		return new FjConstructorDeclaration(
 			getTokenReference(), 
 			ACC_PUBLIC, 
