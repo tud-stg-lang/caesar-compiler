@@ -14,12 +14,18 @@ public class TypeSysTestCase {
 	        g.N nn; // <- CP: $this0
 	        nn = n; // <- CP: -- " --
 	    }
-
 	    
 	    public class Y {	    
 		    public void test() {
 		        g.N nnn; // <- CP: accessor method 
 		        nnn = n; // <- CP: -- " --
+		    }
+		    
+		    public class Z {	    
+			    public void test() {
+			        g.N nnnn; // <- CP: 2 x accessor method 
+			        nnnn = n; // <- CP: -- " --
+			    }
 		    }
 	    }
     }	
