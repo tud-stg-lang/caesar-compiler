@@ -77,7 +77,7 @@ public cclass DeployA
 {
     public void test()
     {
-		IntAspect arr[] = new IntAspect[] {
+		Object[] arr = new Object[] {
 			new IntAspect().init("a"),
 			new IntAspect().init("b"),
 			new IntAspect().init("c"),
