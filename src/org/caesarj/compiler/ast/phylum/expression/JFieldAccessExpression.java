@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JFieldAccessExpression.java,v 1.18 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.19 2005-01-27 15:19:19 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -259,22 +259,114 @@ public class JFieldAccessExpression extends JExpression {
 
     CClass	local = context.getClassContext().getCClass();
 
-    findPrefix(local, new CExpressionContext(context, context.getEnvironment(), false, false));
+    //findPrefix(local, new CExpressionContext(context, context.getEnvironment(), false, false));
+    // the method body inserted here
+    {
+	    if (prefix != null) {
+	        prefix = prefix.analyse(context);
+	        check(
+	            context,
+	            prefix.getType(factory).isClassType(),
+	            KjcMessages.FIELD_BADACCESS,
+	            prefix.getType(factory));
+	        constantPrefix = prefix instanceof JTypeNameExpression;
+	    }
+	    else {
+	        constantPrefix = true;
+	
+	        try {
+	            field = context.lookupField(
+	                local,
+	                null /* primary == null */,
+	                ident);
+	            if (field == null) {
+	                field = context.getClassContext().lookupOuterField(
+	                    local,
+	                    null,
+	                    ident); // $$$ Why searching again
+	            }
+	        }
+	        catch (UnpositionedError e) {
+	            throw e.addPosition(getTokenReference());
+	        }
+	        
+	        check(context, field != null, KjcMessages.FIELD_UNKNOWN, ident);
+	
+	        if( local.isMixin() ) {	            
+	            if(local.getDepth() == field.getOwner().getDepth()) {
+	              	//IVICA: use "this" as target for the field calls within a cclass
+	                prefix = new JOwnerExpression(getTokenReference(), local);	                
+	            }
+	            else {
+	                // return accessor method for this field access
+	                
+	                // check it is not an write access
+	                check(context, !context.isLeftSide(), CaesarMessages.READ_ONLY_ACCESS_TO_CCLASS_FIELDS);        
+	                
+	                //if(!context.isLeftSide()) {
+	                    return
+	        	        	new CjAccessorCallExpression(
+	        	        	    getTokenReference(),
+	        	        	    prefix,
+	        	        	    ident        	    
+	        	        	).analyse(context);
+	                /*}
+	                else {
+	                    return
+		                	new CjAccessorCallExpression(
+		                	    getTokenReference(),
+		                	    prefix,
+		                	    new JNullLiteral(getTokenReference()),
+		                	    ident        	    
+		                	).analyse(context);
+	                }*/
+	            }
+	        }
+	        else {
+	            if (!field.isStatic()) {
+		            check(
+		                context,
+		                !local.isStatic() || local.descendsFrom(field.getOwner()),
+		                KjcMessages.FIELD_STATICERR,
+		                ident);
+		            
+		            prefix = new JOwnerExpression(getTokenReference(), field.getOwner());		            
+		        }
+		        else {
+		            prefix = new JTypeNameExpression(getTokenReference(), field.getOwnerType());
+		        }
+	        }
+	        
+	        
+	        prefix = prefix.analyse(context);
+	    }
+    }    
     
     
     // IVICA: if we have a cclass, and want to acces the public field, map to accessor method
     CType prefixType = prefix.getType(factory); 
     if(prefixType.getCClass().isMixinInterface()) {
         
-        // CTODO: check here that the field access is read only
+        // check it is not an write access
         check(context, !context.isLeftSide(), CaesarMessages.READ_ONLY_ACCESS_TO_CCLASS_FIELDS);        
         
-        return
-        	new CjAccessorCallExpression(
-        	    getTokenReference(),
-        	    prefix,
-        	    ident        	    
-        	).analyse(context);
+        //if(!context.isLeftSide()) {
+            return
+	        	new CjAccessorCallExpression(
+	        	    getTokenReference(),
+	        	    prefix,
+	        	    ident        	    
+	        	).analyse(context);
+        /*}
+        else {
+            return
+	        	new CjAccessorCallExpression(
+	        	    getTokenReference(),
+	        	    prefix,
+	        	    new JNullLiteral(getTokenReference()),
+	        	    ident        	    
+	        	).analyse(context);
+        }*/
     }
     // --- end ---
     
@@ -439,61 +531,61 @@ public class JFieldAccessExpression extends JExpression {
    * @exception PositionedError
    *                Error catched as soon as possible
    */
-    protected void findPrefix(CClass local, CExpressionContext context)
-        throws PositionedError {
-        TypeFactory factory = context.getTypeFactory();
-
-        if (prefix != null) {
-            prefix = prefix.analyse(context);
-            check(
-                context,
-                prefix.getType(factory).isClassType(),
-                KjcMessages.FIELD_BADACCESS,
-                prefix.getType(factory));
-            constantPrefix = prefix instanceof JTypeNameExpression;
-        }
-        else {
-            constantPrefix = true;
-
-            try {
-                field = context.lookupField(
-                    local,
-                    null /* primary == null */,
-                    ident);
-                if (field == null) {
-                    field = context.getClassContext().lookupOuterField(
-                        local,
-                        null,
-                        ident); // $$$ Why searching again
-                }
-            }
-            catch (UnpositionedError e) {
-                throw e.addPosition(getTokenReference());
-            }
-            
-            check(context, field != null, KjcMessages.FIELD_UNKNOWN, ident);
-
-            if (!field.isStatic()) {
-                check(
-                    context,
-                    !local.isStatic() || local.descendsFrom(field.getOwner()),
-                    KjcMessages.FIELD_STATICERR,
-                    ident);
-                
-                //prefix = new JOwnerExpression(getTokenReference(), field.getOwner());
-                //IVICA: use "this" as target for the field calls within a cclass                
-                prefix = context.getClassContext().getCClass().isMixin() ?
-                    new JOwnerExpression(getTokenReference(), context.getClassContext().getCClass())
-                    : new JOwnerExpression(getTokenReference(), field.getOwner());
-                
-            }
-            else {
-                prefix = new JTypeNameExpression(getTokenReference(), field.getOwnerType());
-            }
-            
-            prefix = prefix.analyse(context);
-        }
-    }
+//    protected void findPrefix(CClass local, CExpressionContext context)
+//        throws PositionedError {
+//        TypeFactory factory = context.getTypeFactory();
+//
+//        if (prefix != null) {
+//            prefix = prefix.analyse(context);
+//            check(
+//                context,
+//                prefix.getType(factory).isClassType(),
+//                KjcMessages.FIELD_BADACCESS,
+//                prefix.getType(factory));
+//            constantPrefix = prefix instanceof JTypeNameExpression;
+//        }
+//        else {
+//            constantPrefix = true;
+//
+//            try {
+//                field = context.lookupField(
+//                    local,
+//                    null /* primary == null */,
+//                    ident);
+//                if (field == null) {
+//                    field = context.getClassContext().lookupOuterField(
+//                        local,
+//                        null,
+//                        ident); // $$$ Why searching again
+//                }
+//            }
+//            catch (UnpositionedError e) {
+//                throw e.addPosition(getTokenReference());
+//            }
+//            
+//            check(context, field != null, KjcMessages.FIELD_UNKNOWN, ident);
+//
+//            if (!field.isStatic()) {
+//                check(
+//                    context,
+//                    !local.isStatic() || local.descendsFrom(field.getOwner()),
+//                    KjcMessages.FIELD_STATICERR,
+//                    ident);
+//                
+//                //prefix = new JOwnerExpression(getTokenReference(), field.getOwner());
+//                //IVICA: use "this" as target for the field calls within a cclass                
+//                prefix = context.getClassContext().getCClass().isMixin() ?
+//                    new JOwnerExpression(getTokenReference(), context.getClassContext().getCClass())
+//                    : new JOwnerExpression(getTokenReference(), field.getOwner());
+//                
+//            }
+//            else {
+//                prefix = new JTypeNameExpression(getTokenReference(), field.getOwnerType());
+//            }
+//            
+//            prefix = prefix.analyse(context);
+//        }
+//    }
 
   /**
    * Checks is access to prefix is okay
