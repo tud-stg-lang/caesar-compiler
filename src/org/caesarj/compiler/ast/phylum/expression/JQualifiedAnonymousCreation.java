@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JQualifiedAnonymousCreation.java,v 1.1 2004-03-15 11:56:51 aracic Exp $
+ * $Id: JQualifiedAnonymousCreation.java,v 1.2 2004-03-17 15:23:11 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -238,10 +238,12 @@ public class JQualifiedAnonymousCreation extends JExpression {
     decl.setDefaultConstructor(cstr);
     decl.join(context.getClassContext());
     decl.checkInterface(context.getClassContext());
+    /* FJRM !!! is done in checkInterface step above
 	//Walter start
 	if (decl instanceof JClassDeclaration)
 		((JClassDeclaration)decl).initFamilies(context.getClassContext());
-	//Walter end    
+	//Walter end	
+	*/    
     if (context.isStaticContext()) {
       decl.getCClass().setModifiers(decl.getCClass().getModifiers() | ACC_STATIC);
     } else {

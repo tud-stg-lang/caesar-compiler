@@ -101,7 +101,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 		JCompilationUnit[] tree = parseFiles(environment);
 
 		if (errorFound) {return false;}
-		//transformCollaborationInterfaces(environment,tree);
 		prepareJoinpointReflection(tree);
 		prepareDynamicDeployment(environment, tree);
 		joinAll(tree);
@@ -113,10 +112,8 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 		checkAllBodies(tree);
 		if (errorFound) { return false;	}
 		if (noWeaveMode()) {
-			//just generate the code
 			genCode(environment.getTypeFactory());
 		} else {
-			//generate code and perform weaving
 			generateAndWeaveCode(environment.getTypeFactory());
 		}
 
