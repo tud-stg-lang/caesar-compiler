@@ -103,96 +103,97 @@ public class CCjSourceClass extends CSourceClass
 		}
 	}
 
-	public CClass lookupClass(CClass caller, String name)
-		throws UnpositionedError
-	{
-		CReferenceType[] interfaces = getInterfaces();
-		CReferenceType[] innerClasses = getInnerClasses();
-
-		// andreas start copy from CClass.lookupClass( ... )
-
-		CClass[] candidates =
-			new CClass[(interfaces == null) ? 1 : interfaces.length + 1];
-		int length = 0;
-
-		if (innerClasses != null && (name.indexOf('/') == -1))
-		{
-			for (int i = 0; i < innerClasses.length; i++)
-			{
-				CClass innerClass = innerClasses[i].getCClass();
-
-				if (innerClass.getIdent().equals(name))
-					if (innerClass.isAccessible(caller))
-						return innerClass;
-			}
-		}
-
-		if (interfaces != null)
-		{
-			for (int i = 0; i < interfaces.length; i++)
-			{
-				// Walter: check if the interface does not descend from this
-				// Walter: it is for check circularity in the hierarchy, 
-				// Walter: and prevent stack overflows
-				if (!interfaces[i].getCClass().descendsFrom(this))
-				{
-					CClass superFound =
-						interfaces[i].getCClass().lookupClass(caller, name);
-
-					if (superFound != null)
-						candidates[length++] = superFound;
-				}
-			}
-		}
-
-		if (superClassType != null)
-		{
-			// Walter: check if the superClass does not descend from this
-			// Walter: it is for check circularity in the hierarchy, 
-			// Walter: and prevent stack overflows
-			if (!superClassType.getCClass().descendsFrom(this))
-			{
-				CClass superFound =
-					superClassType.getCClass().lookupClass(caller, name);
-
-				if (superFound != null)
-					candidates[length++] = superFound;
-			}
-		}
-		if (length == 0)
-		{
-			return null;
-		}
-		else if (length == 1)
-		{
-			return candidates[0];
-		}
-		else
-		{
-			// found the same class?
-
-			for (; length > 1; length--)
-				if (candidates[0] != candidates[length - 1])
-					break;
-
-			if (length == 1)
-				return candidates[0];
-			else
-				/* JLS 8.5 A class may inherit two or more type declarations with 
-				   the same name, either from two interfaces or from its superclass 
-				   and an interface. A compile-time error occurs on any attempt to 
-				   refer to any ambiguously inherited class or interface by its simple 
-				   name. */
-				throw new UnpositionedError(KjcMessages.CLASS_AMBIGUOUS,
-				// andreas start: throw candidates up, too
-				//name);
-				name, candidates);
-			// andreas end
-
-		}
-
-		// andreas end
-	}
+//
+//	public CClass lookupClass(CClass caller, String name)
+//		throws UnpositionedError
+//	{
+//		CReferenceType[] interfaces = getInterfaces();
+//		CReferenceType[] innerClasses = getInnerClasses();
+//
+//		// andreas start copy from CClass.lookupClass( ... )
+//
+//		CClass[] candidates =
+//			new CClass[(interfaces == null) ? 1 : interfaces.length + 1];
+//		int length = 0;
+//
+//		if (innerClasses != null && (name.indexOf('/') == -1))
+//		{
+//			for (int i = 0; i < innerClasses.length; i++)
+//			{
+//				CClass innerClass = innerClasses[i].getCClass();
+//
+//				if (innerClass.getIdent().equals(name))
+//					if (innerClass.isAccessible(caller))
+//						return innerClass;
+//			}
+//		}
+//
+//		if (interfaces != null)
+//		{
+//			for (int i = 0; i < interfaces.length; i++)
+//			{
+//				// Walter: check if the interface does not descend from this
+//				// Walter: it is for check circularity in the hierarchy, 
+//				// Walter: and prevent stack overflows
+//				if (!interfaces[i].getCClass().descendsFrom(this))
+//				{
+//					CClass superFound =
+//						interfaces[i].getCClass().lookupClass(caller, name);
+//
+//					if (superFound != null)
+//						candidates[length++] = superFound;
+//				}
+//			}
+//		}
+//
+//		if (superClassType != null)
+//		{
+//			// Walter: check if the superClass does not descend from this
+//			// Walter: it is for check circularity in the hierarchy, 
+//			// Walter: and prevent stack overflows
+//			if (!superClassType.getCClass().descendsFrom(this))
+//			{
+//				CClass superFound =
+//					superClassType.getCClass().lookupClass(caller, name);
+//
+//				if (superFound != null)
+//					candidates[length++] = superFound;
+//			}
+//		}
+//		if (length == 0)
+//		{
+//			return null;
+//		}
+//		else if (length == 1)
+//		{
+//			return candidates[0];
+//		}
+//		else
+//		{
+//			// found the same class?
+//
+//			for (; length > 1; length--)
+//				if (candidates[0] != candidates[length - 1])
+//					break;
+//
+//			if (length == 1)
+//				return candidates[0];
+//			else
+//				/* JLS 8.5 A class may inherit two or more type declarations with 
+//				   the same name, either from two interfaces or from its superclass 
+//				   and an interface. A compile-time error occurs on any attempt to 
+//				   refer to any ambiguously inherited class or interface by its simple 
+//				   name. */
+//				throw new UnpositionedError(KjcMessages.CLASS_AMBIGUOUS,
+//				// andreas start: throw candidates up, too
+//				//name);
+//				name, candidates);
+//			// andreas end
+//
+//		}
+//
+//		// andreas end
+//	}
 
 
 	/**
