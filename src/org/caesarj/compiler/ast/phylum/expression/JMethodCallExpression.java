@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodCallExpression.java,v 1.2 2004-07-22 13:12:01 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.3 2004-07-22 15:37:45 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -628,15 +628,9 @@ public class JMethodCallExpression extends JExpression
 
 		setLineNumber(code);
 
-		boolean forceNonVirtual = false;
-
 		if (!method.isStatic())
 		{
 			prefix.genCode(context, false);
-			if (prefix instanceof JSuperExpression)
-			{
-				forceNonVirtual = true;
-			}
 		}
 		else if (prefix != null)
 		{
@@ -654,22 +648,27 @@ public class JMethodCallExpression extends JExpression
 		// IVICA: when setting target for method calls
 		// use direct super for super calls 
 		// and caller class for this calls instead of owner of the CMethod
+
 		if(prefix instanceof JSuperExpression) {
 		    method.genCode(
 		        context, 
-		        forceNonVirtual, 
+		        true, 
 		        callerClass.getSuperClass().getQualifiedName());		    		   
-		}
-		else if(prefix == null) {
-		    method.genCode(
-		        context, 
-		        forceNonVirtual, 
-		        callerClass.getQualifiedName());		    		   		    
-		}
+		}	
 		else {
-		    method.genCode(context, forceNonVirtual);
+		    String prefixTarget = null;
+			if(prefix == null || prefix instanceof JOwnerExpression) {
+			    prefixTarget = callerClass.getQualifiedName();
+			}
+			else {
+			    prefixTarget = prefix.getType(context.getTypeFactory()).getCClass().getQualifiedName();
+			}
+			
+	        method.genCode(
+	            context, 
+	            false, 
+	            prefixTarget);		    		   		    
 		}
-		
 		
 
 		if (discardValue)
