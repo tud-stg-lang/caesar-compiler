@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.4 2003-08-11 22:44:05 werner Exp $
+ * $Id: CaesarMessages.msg,v 1.5 2003-08-14 00:31:37 werner Exp $
  */
 
 package org.caesarj.compiler
@@ -208,6 +208,15 @@ error   PROVIDING_DEFINES_CONSTRUCTOR
 
 error   BINDING_PROVIDING_DIRECT_CREATION
 		"Providing or binding class \"{0}\" cannot be directly created."
+
+error   WRAPPER_DEFINES_CONSTRUCTOR
+		"Explicity declared wrapper class \"{0}\" cannot define constructors."
+
+error   NON_BINDING_WRAPPER
+		"Class \"{0}\" cannot defines \"wraps\" clause because it does not bind an aspect interface."
+
+error   CLASS_DOES_NOT_WRAP
+		"Class \"{0}\" does not wrap any class, so \"wrappee\" is not available."
 
 error   VIRTUAL_CALLING_PRIVATE_OUTER
 		"Virtual or override class \"{0}\" cannot access private methods of the enclosing class."

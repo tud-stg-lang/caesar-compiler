@@ -131,7 +131,10 @@ public class FjUnqualifiedInstanceCreation extends JUnqualifiedInstanceCreation
 				|| FjTypeSystem.getClassInHierarchy(
 					clazz,
 					(CCI_COLLABORATION | CCI_PROVIDING))
-					== null,
+					== null
+				|| FjTypeSystem.getClassInHierarchy(
+					context.getClassContext().getCClass(),
+					CCI_WEAVELET) != null,
 			CaesarMessages.BINDING_PROVIDING_DIRECT_CREATION,
 			clazz.getQualifiedName());		
 	}

@@ -24,9 +24,9 @@ public class ClassTransformationFjVisitor extends FjVisitor
 
 	protected KjcEnvironment environment;
 	
+
 	public ClassTransformationFjVisitor(KjcEnvironment environment)
 	{
-		super();
 		this.environment = environment;
 	}
 
@@ -107,7 +107,9 @@ public class ClassTransformationFjVisitor extends FjVisitor
 	{
 
 		self.setTypeFactory(environment.getTypeFactory());
+		
 
+		
 		// Put self's clean interface into the
 		// containing class or compilationunit
 		FjCleanClassInterfaceDeclaration ifcDecl =

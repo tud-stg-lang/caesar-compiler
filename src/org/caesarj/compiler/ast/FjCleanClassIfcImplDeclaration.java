@@ -41,6 +41,7 @@ public class FjCleanClassIfcImplDeclaration
 			new CClassNameType( FjConstants.CHILD_IMPL_TYPE_NAME ),
 			baseDecl.getBinding(),
 			baseDecl.getProviding(),
+			null,
 			interfaces,
 			new JFieldDeclaration[0], // clean classes - no fields
 			FjCleanClassIfcImplDeclaration.importMethods(methods, interfaces),
@@ -79,6 +80,32 @@ public class FjCleanClassIfcImplDeclaration
 				cleanMethods[ i ].getForwardSelfToParentMethod(interfaces[0]);
 		}
 		return implMethods;
+	}
+	
+	/**
+	 * Adds a clean method, importing it to this context.
+	 * 
+	 * @param methodToAdd
+	 */
+	public void addMethod(FjCleanMethodDeclaration methodToAdd)
+	{
+		FjMethodDeclaration[] importedMethods = 
+			importMethods(
+				new FjCleanMethodDeclaration[]{methodToAdd}, 
+				interfaces);
+
+		JMethodDeclaration[] newMethods =
+			new JMethodDeclaration[methods.length + importedMethods.length];
+
+		System.arraycopy(methods, 0, newMethods, 0, methods.length);
+		System.arraycopy(
+			importedMethods,
+			0,
+			newMethods,
+			methods.length,
+			importedMethods.length);
+
+		methods = newMethods;
 	}
 
 	public FjCleanClassDeclaration getBaseClass() {

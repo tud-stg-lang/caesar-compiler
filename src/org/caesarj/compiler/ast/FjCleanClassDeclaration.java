@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import org.caesarj.classfile.Constants;
 import org.caesarj.compiler.CaesarMessages;
+import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
@@ -27,6 +28,7 @@ import org.caesarj.kjc.JNullLiteral;
 import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JStatement;
 import org.caesarj.kjc.JTypeDeclaration;
+import org.caesarj.kjc.JUnqualifiedInstanceCreation;
 import org.caesarj.kjc.TypeFactory;
 import org.caesarj.util.MessageDescription;
 import org.caesarj.util.Utils;
@@ -43,6 +45,7 @@ public class FjCleanClassDeclaration
 		CReferenceType superClass,
 		CReferenceType binding,
 		CReferenceType providing,
+		CReferenceType wrappee,
 		CReferenceType[] interfaces,
 		JFieldDeclaration[] fields,
 		JMethodDeclaration[] methods,
@@ -59,6 +62,7 @@ public class FjCleanClassDeclaration
 			superClass,
 			binding,
 			providing,
+			wrappee,
 			interfaces,
 			fields,
 			methods,
@@ -345,13 +349,14 @@ public class FjCleanClassDeclaration
 			{
 				if (inners[i] instanceof FjVirtualClassDeclaration)
 				{
-					((FjVirtualClassDeclaration) inners[i]).setTypeFactory(
-						typeFactory);
+					FjVirtualClassDeclaration inner = 
+						(FjVirtualClassDeclaration) inners[i];
+					
+					inner.setTypeFactory(typeFactory);
 					cleanMethods =
 						append(
 							cleanMethods,
-							((FjVirtualClassDeclaration) inners[i])
-								.getFactoryMethods());
+								inner.getFactoryMethods());
 				}
 			}
 		}
@@ -523,7 +528,7 @@ public class FjCleanClassDeclaration
 	 * or null if it does not find one. 
 	 * @return CReferenceType
 	 */
-	protected CReferenceType getSuperCollaborationInterface(
+	public CReferenceType getSuperCollaborationInterface(
 		CClass clazz, int modifier)
 	{
 		CClass returnClass = getSuperCollaborationInterfaceClass(
@@ -650,6 +655,7 @@ public class FjCleanClassDeclaration
 	public void checkTypeBody(CContext context) 
 		throws PositionedError
 	{
+		checkWrapper(context);
 		CReferenceType superCi;
 		// The methods must be in the right place, 
 		// and the nested classes must be implemented	
@@ -708,6 +714,19 @@ public class FjCleanClassDeclaration
 				CaesarMessages.EXPECTED_METHOD_IN_PROVIDING, null);
 		}
 		super.checkTypeBody(context);
+	}
+
+	/**
+	 * Only virtual or override classes can wrap!
+	 */
+	protected void checkWrapper(CContext context)
+		throws PositionedError
+	{
+		check(context, 
+			wrappee == null,
+			CaesarMessages.NON_BINDING_WRAPPER,
+			getCClass().getQualifiedName());
+		
 	}
 
 	/**
@@ -896,5 +915,51 @@ public class FjCleanClassDeclaration
 		methods = (JMethodDeclaration[])emptyMethods.toArray(
 			new JMethodDeclaration[emptyMethods.size()]);
 	}
-	
+
+
+	/**
+	 * Insert the wrapper mappings in the body reference of the class.
+	 * It is for the compiler insert the right initialization.
+	 */
+	public void insertWrapperMappingsInitialization(ArrayList wrapperMappings)
+	{
+		JPhylum[] newBody = new JPhylum[body.length + wrapperMappings.size()];
+		System.arraycopy(body, 0, newBody, 0, body.length);
+		
+		JFieldDeclaration[] fields = 
+			(JFieldDeclaration[]) 
+				wrapperMappings.toArray(
+					new JFieldDeclaration[wrapperMappings.size()]);
+					
+		System.arraycopy(fields, 0, newBody, body.length, fields.length);
+		body = newBody;
+	}
+
+
+	/**
+	 * Creates a field declaration which will contain all 
+	 * instances of the wrappers of the type passed.
+	 * 
+	 * @param binding inner type that will be contained in the map.
+	 */
+	public JFieldDeclaration createWrapperMap(
+		String mapName)
+	{
+		TokenReference ref = getTokenReference();
+
+		return
+			new FjFieldDeclaration(
+				ref, 
+				new FjVariableDefinition(
+					ref, 
+					ACC_PRIVATE | ACC_FINAL,
+					CciConstants.WRAPPER_MAP_TYPE,
+					mapName,
+					new JUnqualifiedInstanceCreation(
+						ref, 
+						CciConstants.WRAPPER_MAP_TYPE, 
+						JExpression.EMPTY)),
+				CciConstants.WRAPPER_MAP_JAVADOC,
+				new JavaStyleComment[0]);
+	}
 }

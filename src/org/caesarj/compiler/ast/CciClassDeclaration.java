@@ -20,28 +20,18 @@ import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CSourceClass;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.Constants;
-import org.caesarj.kjc.JBinaryExpression;
 import org.caesarj.kjc.JBlock;
-import org.caesarj.kjc.JCastExpression;
 import org.caesarj.kjc.JClassDeclaration;
-import org.caesarj.kjc.JEqualityExpression;
 import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.JExpressionStatement;
-import org.caesarj.kjc.JFieldAccessExpression;
 import org.caesarj.kjc.JFieldDeclaration;
 import org.caesarj.kjc.JFormalParameter;
-import org.caesarj.kjc.JIfStatement;
-import org.caesarj.kjc.JLocalVariable;
 import org.caesarj.kjc.JMethodCallExpression;
 import org.caesarj.kjc.JMethodDeclaration;
-import org.caesarj.kjc.JNullLiteral;
 import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JReturnStatement;
 import org.caesarj.kjc.JStatement;
 import org.caesarj.kjc.JThisExpression;
 import org.caesarj.kjc.JTypeDeclaration;
-import org.caesarj.kjc.JVariableDeclarationStatement;
-import org.caesarj.kjc.JVariableDefinition;
 import org.caesarj.kjc.KjcMessages;
 import org.caesarj.util.Utils;
 
@@ -64,7 +54,12 @@ public class CciClassDeclaration
 	 * The CIs that the class provides.
 	 */
 	protected CReferenceType providing;
-	
+
+	/** 
+	 * The reference of the wrappee.
+	 */
+	protected CReferenceType wrappee;
+		
 	/**
 	 * The owner reference. It was pulled up.
 	 */
@@ -93,6 +88,7 @@ public class CciClassDeclaration
 		CReferenceType superClass,
 		CReferenceType binding,
 		CReferenceType providing,
+		CReferenceType wrappee,
 		CReferenceType[] interfaces,
 		JFieldDeclaration[] fields,
 		JMethodDeclaration[] methods,
@@ -117,6 +113,7 @@ public class CciClassDeclaration
 			
 		this.providing = providing;
 		this.binding = binding;
+		this.wrappee = wrappee;
 	}
 
 	/**
@@ -148,7 +145,15 @@ public class CciClassDeclaration
 	{
 		return providing;
 	}
-	
+
+	/**
+	 * @return CReferenceType the Wrappee type.
+	 */
+	public CReferenceType getWrappee()
+	{
+		return wrappee;
+	}
+		
 	/**
 	 * @return CReferenceType the super class of the class.
 	 */
@@ -318,7 +323,7 @@ public class CciClassDeclaration
 	{
 		List tempList = Arrays.asList(fields);
 		ArrayList oldFields = new ArrayList(tempList.size() + newFields.size());
-		
+		oldFields.addAll(tempList);
 		oldFields.addAll(newFields);
 		fields = 
 			(JFieldDeclaration[]) 
@@ -459,6 +464,7 @@ public class CciClassDeclaration
 				null,
 				null,
 				providing,
+				null,
 				interfaces,
 				fields,
 				methods,
@@ -526,212 +532,7 @@ public class CciClassDeclaration
 			null,
 			null);
 	}
-	public void addWrapperRecyclingStructure()
-	{
-		ArrayList wrappingMappings = new ArrayList(inners.length);
-		ArrayList wrappingMethods = new ArrayList(inners.length);
-		for (int i = 0; i < inners.length; i++)
-		{
-			if (inners[i] instanceof CciClassDeclaration
-				&& CModifier.contains(inners[i].getModifiers(), CCI_BINDING))
-			{
-				CciClassDeclaration innerDecl = (CciClassDeclaration) inners[i];
-				wrappingMappings.add(
-					createWrapperMapping(innerDecl));
-				wrappingMethods.add(
-					createWrapperRecyclingMethod(innerDecl));
-			}
-		}
-		
-		if (wrappingMappings.size() > 0)
-			addFields(wrappingMappings);
-		if (wrappingMethods.size() > 0)
-			addMethods(wrappingMethods);
-		
-	}
-
-	/**
-	 * Creates a field declaration which will contain all 
-	 * instances of the wrappers of the type passed.
-	 * 
-	 * @param binding inner type that will be contained in the map.
-	 */
-	protected JFieldDeclaration createWrapperMapping(
-		CciClassDeclaration binding)
-	{
-		TokenReference ref = getTokenReference();
-		String mapName = 
-			CciConstants.toWrappingMapName(binding.getIdent());
-		return
-			new FjFieldDeclaration(
-				ref, 
-				new FjVariableDefinition(
-					ref, 
-					ACC_PRIVATE,
-					CciConstants.WRAPPING_MAP_TYPE,
-					mapName,
-					new CciInternalUnqualifiedInstanceCreation(
-						ref, 
-						CciConstants.WRAPPING_MAP_TYPE, 
-						JExpression.EMPTY)),
-				false,
-				CciConstants.WRAPPING_MAP_JAVADOC,
-				new JavaStyleComment[0]);
-	}
-
-	/**
-	 * 
-	 */
-	protected JMethodDeclaration createWrapperRecyclingMethod(
-		CciClassDeclaration binding)
-	{
-		TokenReference ref = getTokenReference();
-		String methodName = 
-			CciConstants.toWrappingMethodCreationName(binding.getIdent());
-
-		JStatement[] statements = new JStatement[]
-		{
-			//LocalType wrapper = (LocalType) map.get(_getObjectId(wrappee))
-			new JVariableDeclarationStatement(
-				ref,
-				new JVariableDefinition(
-					ref, 
-					0, 
-					new CClassNameType(binding.getIdent()), 
-					CciConstants.WRAPPING_LOCAL_VAR,
-					new JCastExpression(
-						ref, 
-						new FjMethodCallExpression(
-							ref, 
-							new JFieldAccessExpression(
-								ref, 
-								new JThisExpression(ref), 
-								CciConstants.toWrappingMapName(binding.getIdent())),
-							CciConstants.WRAPPING_MAP_ACCESS,
-							new JExpression[]
-							{
-		
-								new JMethodCallExpression(
-									ref, 
-									new JThisExpression(ref), 
-									CciConstants.WRAPPEE_ID_METHOD_NAME, 
-									new JExpression[]
-									{
-										new FjNameExpression(
-											ref, 
-											null, 
-											CciConstants.WRAPPEE_PARAMETER_NAME)
-									})
-							}),
-					new CClassNameType(binding.getIdent()))),
-				null),
-
-			//if (wrapper == null)
-			//{
-			//	wrapper = new Binding(wrappee)
-			//	map.put(getObjectId(wrappee), wrapper)
-			//}
-			new JIfStatement(
-				ref, 
-				new JEqualityExpression(
-					ref, 
-					true, 
-					new FjNameExpression(
-						ref,
-						CciConstants.WRAPPING_LOCAL_VAR), 
-						new JNullLiteral(ref)),
-				new JBlock(
-					ref, 
-					new JStatement[]
-					{
-						//wrapper = new Binding(wrappee)
-						new JExpressionStatement(
-							ref,
-							new FjAssignmentExpression(
-								ref, 
-								new FjNameExpression(
-									ref, 
-									CciConstants.WRAPPING_LOCAL_VAR), 
-								new FjUnqualifiedInstanceCreation(
-									ref, 
-									new CClassNameType(binding.getIdent()), 
-									new JExpression[]
-									{
-										new FjNameExpression(
-											ref, 
-											CciConstants.WRAPPEE_PARAMETER_NAME)
-									})),
-							null),
-						//map.put(getObjectId(wrappee), wrapper)
-						new JExpressionStatement(
-							ref,
-							new FjMethodCallExpression(
-								ref,
-								new JFieldAccessExpression(
-									ref, 
-									new JThisExpression(ref), 
-									CciConstants.toWrappingMapName(
-										binding.getIdent())),
-								CciConstants.WRAPPING_MAP_PUT,
-								new JExpression[]
-								{
-									new JMethodCallExpression(
-										ref, 
-										new JThisExpression(ref), 
-										CciConstants.WRAPPEE_ID_METHOD_NAME, 
-										new JExpression[]
-										{
-											new FjNameExpression(
-												ref, 
-												null, 
-												CciConstants
-													.WRAPPEE_PARAMETER_NAME)
-										}),
-									new FjNameExpression(
-										ref, 
-										CciConstants.WRAPPING_LOCAL_VAR)						
-								}),
-							null),
-					},
-					null),
-				null,
-				null),//endIf
-			
-			//return wrapper
-			new JReturnStatement(
-				ref,
-				new FjNameExpression(ref, CciConstants.WRAPPING_LOCAL_VAR),
-				null)
-		};
-		
-		JBlock methodBody = new JBlock(
-			ref,
-			statements,
-			null);
-			
-		FjFormalParameter[] parameters = new FjFormalParameter[]
-		{
-			new FjFormalParameter(
-				ref, 
-				JLocalVariable.DES_PARAMETER, 
-				new CClassNameType(JAV_OBJECT), 
-				CciConstants.WRAPPEE_PARAMETER_NAME, 
-				false)
-		};
-		
-		return 
-			new FjMethodDeclaration(
-				ref, 
-				ACC_PUBLIC, 
-				typeVariables, 
-				new CClassNameType(binding.getIdent()),
-				methodName,
-				parameters,
-				CReferenceType.EMPTY,
-				methodBody,
-				CciConstants.WRAPPING_CREATION_JAVADOC,
-				new JavaStyleComment[0]);
-	}
+	
 
 	
 	/* DEBUG

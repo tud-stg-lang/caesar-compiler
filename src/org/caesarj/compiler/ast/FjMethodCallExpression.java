@@ -2,6 +2,7 @@ package org.caesarj.compiler.ast;
 
 import org.caesarj.classfile.Constants;
 import org.caesarj.compiler.CaesarMessages;
+import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
@@ -10,6 +11,7 @@ import org.caesarj.kjc.CBlockContext;
 import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CExpressionContext;
 import org.caesarj.kjc.CMethod;
+import org.caesarj.kjc.CMethodNotFoundError;
 import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CType;
@@ -28,6 +30,13 @@ import org.caesarj.kjc.TypeFactory;
 public class FjMethodCallExpression extends JMethodCallExpression {
 
 	protected JExpression[] unanalysedArgs;
+	
+	/**
+	 * The name of the type. (It could not be created 
+	 * an abstraction for wrapper recycling operator, because it would cause
+	 * a non-determinism in the language.
+	 */
+	protected CReferenceType wrapperType;
 	
 	/**
 	 * The analyse method is called more than once. This flag is used for 
@@ -79,9 +88,10 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		throws PositionedError 
 	{
 		JExpression expression;
-		if (isWithinImplementationMethod(context) && isSuperMethodCall())
+		if (isWithinImplementationMethod(context) && ! isWrapperRecycling() 
+			&& isSuperMethodCall())
 			expression = handleSuperCall( context );
-		else if (isWithinImplementationMethod(context) 
+		else if (isWithinImplementationMethod(context) && ! isWrapperRecycling()
 				&& isThisMethodCall(context))
 			expression = handleThisCall( context );
 		else 
@@ -89,7 +99,11 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 			assertPrefixIsSet(context);
 			checkFamilies(context);
 			resetPrefix();
-			expression = analyseExpression(context);
+			//If wrapper is not null, it is a wrapper recycling operator
+			if (isWrapperRecycling())
+				expression = handleWrapperRecyclingCall(context);
+			else
+				expression = analyseExpression(context);
 		}
 		
 		//Walter: Cast the type for the most specific one.
@@ -108,6 +122,48 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		return expression;
 	}
 	
+	/**
+	 * Returns true if the method is a wrapper recycling call.
+	 * @return
+	 */
+	private boolean isWrapperRecycling()
+	{
+		return wrapperType != null;
+	}
+
+	/**
+	 * Transforms a wrapper recycling call into a method call casting it 
+	 * to the right type.
+	 * @param context
+	 * @return
+	 */
+	protected JExpression handleWrapperRecyclingCall(CExpressionContext context)
+		throws PositionedError
+	{
+	
+		TokenReference ref = getTokenReference();
+		new FjCastExpression(
+			ref,
+			new FjMethodCallExpression(
+				getTokenReference(),
+				prefix,
+				ident,
+				args),
+			wrapperType).analyse(context);		
+		
+		FjCastExpression result = 
+			new FjCastExpression(
+				ref,
+				new FjMethodCallExpression(
+					ref,
+					prefix,
+					ident,
+					args),
+				wrapperType);		
+
+		return result.analyse(context);
+	}
+
 	/**
 	 * Analyses the expression! :)
 	 * If it does not find the field this$0 is because it is a virtual 
@@ -154,18 +210,6 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 			}
 			throw e;
 		}			
-	}
-
-	protected boolean isOuterOwner(CClass owner)
-	{
-		if (method == null)
-			return false; 
-		else if (owner.descendsFrom(method.getOwner()))
-			return true;
-		else if (owner.getOwner() == null)
-			return false;
-		return isOuterOwner(owner.getOwner());
-			
 	}
 
 	protected void assertPrefixIsSet(CExpressionContext context)
@@ -470,14 +514,63 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		}
 		return null;
 	}
+	/**
+	 * Overridden for allow the wrapper recycling construction.
+	 * If the method is not found, it tries the wrapper recycling method. 
+	 *
+	 */
+	protected void findMethod(
+		CExpressionContext context,
+		CClass local,
+		CType[] argTypes)
+		throws PositionedError
+	{
+		try
+		{
+			super.findMethod(context, local, argTypes);
+		}
+		catch (CMethodNotFoundError e)
+		{
+			//if it does not find the method it may be 
+			//the wrapper recycling operator
+			String wrapperTypeName = CciConstants.toBaseMethodName(ident);
+			String methodName = CciConstants.toWrapperMethodCreationName(
+				wrapperTypeName);
 
+			if (CciConstants.isSelfContextMethodName(ident))
+				ident = FjConstants.selfContextMethodName(methodName);
+			else if (CciConstants.isImplementationMethodName(ident))
+				ident = FjConstants.implementationMethodName(methodName);
+			else
+				ident = methodName;
+
+			super.findMethod(context, local, argTypes);
+			try
+			{
+				wrapperType = 
+					(CReferenceType) 
+						new FjTypeSystem()
+							.lowerBound(
+								context.getClassContext(),
+								prefix == null
+									? local 
+									: prefix.getType(context.getTypeFactory())
+										.getCClass(), 
+								wrapperTypeName);
+			}
+			catch (UnpositionedError e1)
+			{
+				throw e1.addPosition(getTokenReference());
+			}
+		}
+	}
 	protected void setMethod(CExpressionContext context)
 		throws PositionedError {
 		CClass local = context.getClassContext().getCClass();
 		CType[] argTypes = getArgumentTypes(context, args);
 		findMethod(context, local, argTypes);
 		
-		//If the method is not private and called in a clean 
+		//If the method is not private and it is called in a clean 
 		//class it must go to the clean interface
 		//It is for allow calling outer this methods.
 		CClass methodOwner = method.getOwner();
@@ -566,6 +659,8 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 			return true;
 		else if (FjConstants.isFactoryMethodName(ident))
 			return true;
+		else if (isWrapperRecycling())
+			return true;			
 		return false;
 	}
 
@@ -594,7 +689,8 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 	}
 
 	protected boolean isSuperMethodCall() {
-		return ((prefix != null) && (prefix instanceof JSuperExpression));
+		return ((prefix != null) && (prefix instanceof JSuperExpression) 
+			&& ((JSuperExpression)prefix).getPrefix() == null);
 	}
 
 	public FjFamily getFamily(CExpressionContext context)
@@ -621,12 +717,23 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 					(result != null) ? result.first() : null,
 					(CReferenceType) getMethod(context).getReturnType());
 		}
+//		//if it is a wrapper recycling it has the same semantics 
+//		//of a qualified creation
+//		else if (wrapperType != null)
+//		{
+//			result = prefix.toFamily(context.getBlockContext());
+//			result =
+//				fc.addTypesFamilies(
+//					(result != null)? result.first() : null,
+//					wrapperType);			
+//		}
 		resetPrefix();
 		return result;
 	}
 
 	public FjFamily toFamily(CBlockContext context) throws PositionedError {
-		if (ident == FjConstants.GET_PARENT_METHOD_NAME)
+		if (ident == FjConstants.GET_PARENT_METHOD_NAME 
+			|| ident == FjConstants.GET_TARGET_METHOD_NAME)
 			return new FjSuperExpression(getTokenReference()).toFamily(context);
 		return null;
 	}

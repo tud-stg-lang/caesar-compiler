@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.7 2003-08-14 00:31:37 werner Exp $
+ * $Id: Caesar.g,v 1.8 2003-08-14 00:34:07 werner Exp $
  */
 
 /*
@@ -2205,8 +2205,7 @@ jPostfixExpression[]
         { self = new JClassExpression(sourceRef, self, 0); }
     |    
       self = jQualifiedNewExpression[self]
-    |
-      self = jWrapperRecyclingExpression[self]      
+   
     )
   |
     // allow ClassName[].class
@@ -2419,19 +2418,6 @@ jQualifiedNewExpression [JExpression prefix]
   )
 ;
 
-jWrapperRecyclingExpression [JExpression prefix]
-  returns [JExpression self = null]
-{
-  CType				type;
-  JExpression[]			args;
-  ParseClassContext		context = null;
-  TokenReference		sourceRef = buildTokenReference();
-}
-:
-  "wrapper" ident : IDENT
-  LPAREN args = jArgList[] RPAREN
-  { self = new CciWrapperRecyclingExpression(sourceRef, prefix, ident.getText(), args); }
-;
 
 jArgList []
   returns [JExpression[] self = JExpression.EMPTY]

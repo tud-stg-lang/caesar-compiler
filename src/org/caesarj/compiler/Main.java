@@ -42,6 +42,7 @@ import org.caesarj.kjc.KjcMessages;
 import org.caesarj.kjc.TypeFactory;
 import org.caesarj.util.Message;
 import org.caesarj.util.Utils;
+import org.omg.CORBA.Environment;
 
 /**
  * The entry point of the Caesar compiler.
@@ -235,7 +236,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 	}
 
 	protected void checkInterface(JCompilationUnit cunit) {
-		cunit.accept(getMethodTransformation());
+		cunit.accept(getMethodTransformation(cunit.getEnvironment()));
 		super.checkInterface(cunit);
 	}
 
@@ -284,7 +285,8 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 		cunit.accept(getFamiliesInitializer(cunit.getEnvironment()));
 	}
 
-	protected FjVisitor getClassTransformation(KjcEnvironment environment) {
+	protected FjVisitor getClassTransformation(KjcEnvironment environment) 
+	{
 		return new ClassTransformationFjVisitor(environment);
 	}
 	
@@ -296,7 +298,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 	protected FjVisitor getCollaborationInteraceTransformation(
 		KjcEnvironment environment) 
 	{
-		return new CollaborationInterfaceTransformation(environment);
+		return new CollaborationInterfaceTransformation(environment, this);
 	}
 	
 	
@@ -317,8 +319,8 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 		return inherritConstructors;
 	}
 
-	protected FjVisitor getMethodTransformation() {
-		return new MethodTransformationFjVisitor();
+	protected FjVisitor getMethodTransformation(KjcEnvironment environment) {
+		return new MethodTransformationFjVisitor(environment);
 	}
 
 	protected ResolveSuperClassFjVisitor getResolveSuperClass(

@@ -3,7 +3,6 @@ package org.caesarj.compiler.ast;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,13 +31,10 @@ import org.caesarj.kjc.CSourceClass;
 import org.caesarj.kjc.CType;
 import org.caesarj.kjc.CTypeContext;
 import org.caesarj.kjc.CTypeVariable;
-import org.caesarj.kjc.JLocalVariable;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.KjcMessages;
 import org.caesarj.kjc.TypeFactory;
 import org.caesarj.util.Utils;
-
-import sun.misc.Cleaner;
 
 public class FjSourceClass extends CSourceClass
 {

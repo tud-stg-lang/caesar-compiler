@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.2 2003-07-11 11:58:34 werner Exp $
+ * $Id: JTypeDeclaration.java,v 1.3 2003-08-14 00:36:22 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -505,7 +505,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration
 					getTokenReference(),
 					new JVariableDefinition(
 						getTokenReference(),
-						ACC_PUBLIC | ACC_FINAL,
+						ACC_PRIVATE | ACC_FINAL,
 						getOwner().getAbstractType(),
 						JAV_OUTER_THIS,
 						null),
@@ -514,7 +514,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration
 			((CSourceClass) getCClass()).addField(
 				new CSourceField(
 					getCClass(),
-					ACC_PUBLIC | ACC_FINAL,
+					ACC_PRIVATE | ACC_FINAL,
 					JAV_OUTER_THIS,
 					getOwner().getAbstractType(),
 					false,

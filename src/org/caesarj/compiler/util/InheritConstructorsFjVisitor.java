@@ -56,13 +56,16 @@ public class InheritConstructorsFjVisitor
 		while( nextVirtualClass != null ) {
 			Vector constructorsAppended = 
 				nextVirtualClass.inherritConstructorsFromBaseClass( markedClasses );
-			for( int i = 0; i < constructorsAppended.size(); i++ ) {
-				UnpositionedError warning =	new UnpositionedError(
-					CaesarMessages.MISSING_CONSTRUCTOR,
-					constructorsAppended.elementAt( i ).toString(),
-					FjConstants.toIfcName( nextVirtualClass.getIdent() ) );
-				messages.add( warning.addPosition( nextVirtualClass.getTokenReference() ) );
-			}			
+			if (nextVirtualClass.getWrappee() == null)
+			{
+				for( int i = 0; i < constructorsAppended.size(); i++ ) {
+					UnpositionedError warning =	new UnpositionedError(
+						CaesarMessages.MISSING_CONSTRUCTOR,
+						constructorsAppended.elementAt( i ).toString(),
+						FjConstants.toIfcName( nextVirtualClass.getIdent() ) );
+					messages.add( warning.addPosition( nextVirtualClass.getTokenReference() ) );
+				}
+			}
 			nextVirtualClass = (FjVirtualClassDeclaration) findNext();
 		}
 		

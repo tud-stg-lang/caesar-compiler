@@ -18,6 +18,7 @@ import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CStdType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.JFieldDeclaration;
+import org.caesarj.kjc.JMethodDeclaration;
 import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.util.Utils;
@@ -61,7 +62,7 @@ public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 			FjMethodDeclaration.class);
 	}
 
-	protected static FjMethodDeclaration[] importMethods(FjCleanMethodDeclaration[] cleanMethods)
+	public static FjMethodDeclaration[] importMethods(FjCleanMethodDeclaration[] cleanMethods)
 	{
 
 		FjMethodDeclaration[] abstractMethods =
@@ -78,6 +79,48 @@ public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 		return abstractMethods;
 	}
 
+	/**
+	 * Adds a clean method, importing it to this context.
+	 * 
+	 * @param methodToAdd
+	 */
+	public void addMethod(FjCleanMethodDeclaration methodToAdd)
+	{
+		FjMethodDeclaration[] importedMethods = 
+			importMethods(
+				new FjCleanMethodDeclaration[]{methodToAdd});
+
+		JMethodDeclaration[] newMethods =
+			new JMethodDeclaration[methods.length + importedMethods.length];
+
+		System.arraycopy(methods, 0, newMethods, 0, methods.length);
+		System.arraycopy(
+			importedMethods,
+			0,
+			newMethods,
+			methods.length,
+			importedMethods.length);
+
+		methods = newMethods;
+	}
+
+	/**
+	 * Adds a non clean method.
+	 * 
+	 * @param methodToAdd
+	 */
+	public void addMethod(JMethodDeclaration methodToAdd)
+	{
+		JMethodDeclaration[] newMethods =
+			new JMethodDeclaration[methods.length + 1];
+
+		System.arraycopy(methods, 0, newMethods, 1, methods.length);
+		
+		newMethods[0] = methodToAdd;
+
+		methods = newMethods;
+	}
+	
 	public FjCleanClassDeclaration getBaseClass()
 	{
 		return baseDecl;

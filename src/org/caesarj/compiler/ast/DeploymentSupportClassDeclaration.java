@@ -88,6 +88,7 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
 			superClass,
 			null,
 			null,
+			null,
 			interfaces,
 			fields,
 			methods,

@@ -1,10 +1,10 @@
 package org.caesarj.compiler.ast;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Vector;
 
 import org.caesarj.compiler.CaesarMessages;
+import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
@@ -15,21 +15,24 @@ import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CContext;
 import org.caesarj.kjc.CMethod;
-import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CSourceClass;
 import org.caesarj.kjc.CSourceField;
 import org.caesarj.kjc.CType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.Constants;
+import org.caesarj.kjc.JBlock;
 import org.caesarj.kjc.JExpression;
 import org.caesarj.kjc.JFieldDeclaration;
 import org.caesarj.kjc.JFormalParameter;
 import org.caesarj.kjc.JMethodDeclaration;
 import org.caesarj.kjc.JPhylum;
+import org.caesarj.kjc.JReturnStatement;
 import org.caesarj.kjc.JStatement;
+import org.caesarj.kjc.JThisExpression;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.JVariableDefinition;
+import org.caesarj.kjc.TypeFactory;
 
 public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 	implements FjResolveable {
@@ -45,6 +48,7 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 		CReferenceType superClass,
 		CReferenceType binding,
 		CReferenceType providing,
+		CReferenceType wrappee,
 		CReferenceType[] interfaces,
 		JFieldDeclaration[] fields,
 		JMethodDeclaration[] methods,
@@ -60,6 +64,7 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 			superClass,
 			binding,
 			providing,
+			wrappee,
 			interfaces,
 			fields,
 			methods,
@@ -67,7 +72,6 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 			initializers,
 			javadoc,
 			comment);
-		// Walter: the "binding" and "providing" were inserted as parameter.			
 	}
 
 	protected FjCleanClassInterfaceDeclaration newInterfaceDeclaration(
@@ -191,65 +195,8 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 		}
 		return methods;
 	}
+
 	
-	private CMethod[] getConstructors(CClass clazz)
-	{
-		CMethod[] classMethods = clazz.getMethods();
-		ArrayList constructors = new ArrayList(classMethods.length);
-		for (int i = 0; i < classMethods.length; i++)
-			if (classMethods[i].isConstructor())
-				constructors.add(classMethods[i]);
-		
-		return (CMethod[])constructors.toArray(
-			new CMethod[constructors.size()]);
-	}
-	
-//	private CMethod getConstructor(CClass clazz, CType[] parameters)
-//	{
-//		CMethod[] classMethods = clazz.getMethods();
-//		for (int i = 0; i < classMethods.length; i++)
-//		{
-//			if (classMethods[i].isConstructor())
-//			{
-//				CType[] methodParams = classMethods[i].getParameters();
-//				
-//				if (methodParams.length == parameters.length)
-//				{
-//					boolean found = true;
-//					for (int j = 0; j < parameters.length; j++)
-//					{
-//						if (! methodParams[j].equals(parameters[i], null))
-//						{
-//							found = false;
-//							break;
-//						}
-//					}
-//					if (found)
-//						return classMethods[i];
-//				}
-//			}
-//		}
-//		return null;
-//	}
-//	private JExpression createFactoryArgument(CReferenceType classType)
-//	{
-//		CReferenceType superClass = classType.getCClass().getSuperType();
-//		
-//		if (FjConstants.CHILD_IMPL_TYPE_NAME.equals(
-//			superClass.getQualifiedName()))
-//			return
-//				new JUnqualifiedInstanceCreation(
-//					getTokenReference(), 
-//					new CClassNameType(FjConstants.toImplName(
-//						classType.getQualifiedName())),
-//					JExpression.EMPTY);
-//
-//		return new JUnqualifiedInstanceCreation(
-//					getTokenReference(),
-//					new CClassNameType(FjConstants.toImplName(
-//						classType.getQualifiedName())),
-//					new JExpression[]{createFactoryArgument(superClass)});
-//	}
 	
 	public Vector inherritConstructorsFromBaseClass( Hashtable markedVirtualClasses )
 		throws PositionedError {
@@ -309,7 +256,7 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 					getTokenReference(),
 					new JVariableDefinition(
 						getTokenReference(),
-						ACC_PUBLIC | ACC_FINAL,
+						ACC_PRIVATE | ACC_FINAL,
 						outerType,
 						JAV_OUTER_THIS,
 						null),
@@ -318,7 +265,7 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 			((CSourceClass) getCClass()).addField(
 				new CSourceField(
 					getCClass(),
-					ACC_PUBLIC | ACC_FINAL,
+					ACC_PRIVATE | ACC_FINAL,
 					JAV_OUTER_THIS,
 					outerType,
 					false,
@@ -445,4 +392,116 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 		}
 		return false;
 	}
+
+	/**
+	 * Only binding classes can wrap!
+	 */
+	protected void checkWrapper(CContext context)
+		throws PositionedError
+	{
+		check(
+			context,
+			wrappee == null || binding != null 
+			|| getSuperCollaborationInterface(getCClass(), CCI_BINDING) != null,
+			CaesarMessages.NON_BINDING_WRAPPER,
+			getCClass().getQualifiedName());
+	}
+
+
+	/**
+	 * Adds the field wrappee and inserts the parameter and initialization
+	 * in the constructors.
+	 */
+	public void addInternalWrapperRecyclingStructure(TypeFactory typeFactory)
+		throws PositionedError
+	{
+		verify(wrappee != null);
+		addField(createWrappeeField());
+		FjConstructorDeclaration[] constructors = getConstructors();
+		for (int i = 0; i < constructors.length; i++)
+			constructors[i].addWrappeeParameter(wrappee);
+	}
+	
+	/**
+	 * Creates a field declaration which will contain all 
+	 * instances of the wrappers of the type passed.
+	 * 
+	 * @param binding inner type that will be contained in the map.
+	 */
+	protected JFieldDeclaration createWrappeeField()
+	{
+		TokenReference ref = getTokenReference();
+
+		return
+			new FjFieldDeclaration(
+				ref, 
+				new FjVariableDefinition(
+					ref, 
+					ACC_PRIVATE,
+					new CClassNameType(wrappee.getQualifiedName()),
+					CciConstants.WRAPPEE_FIELD_NAME,
+					null),
+				false,
+				CciConstants.WRAPPEE_FIELD_JAVADOC,
+				new JavaStyleComment[0]);
+	}
+	
+	public void addAdaptMethod()
+	{
+		TokenReference ref = getTokenReference();
+		JBlock body = 
+			new JBlock(
+				ref, 
+				new JStatement[]
+				{
+					new JReturnStatement(
+						ref, 
+						new JThisExpression(ref), 
+						null)
+				},
+				null);
+				
+		JFormalParameter[] parameters = 
+			new JFormalParameter[]
+			{
+				new JFormalParameter(
+					ref, 
+					JVariableDefinition.DES_PARAMETER, 
+					new CClassNameType(JAV_OBJECT), 
+					CciConstants.ADAPT_METHOD_PARAM_NAME, 
+					false)
+			};
+
+		String methodName = CciConstants.toAdaptMethodName(ident);
+		JMethodDeclaration adaptMethod = 
+			new JMethodDeclaration(
+				ref,
+				ACC_PUBLIC,
+				typeVariables,
+				new CClassNameType(JAV_OBJECT),
+				methodName,
+				parameters,
+				CReferenceType.EMPTY,
+				body,
+				CciConstants.ADAPT_METHOD_JAVADOC,
+				new JavaStyleComment[0]);
+
+		JMethodDeclaration adaptAbstractMethod = 
+			new JMethodDeclaration(
+				ref,
+				ACC_PUBLIC,
+				typeVariables,
+				new CClassNameType(JAV_OBJECT),
+				methodName,
+				parameters,
+				CReferenceType.EMPTY,
+				null,
+				CciConstants.ADAPT_METHOD_JAVADOC,
+				new JavaStyleComment[0]);
+
+				
+		append(adaptMethod);
+		//getCleanInterface().append(adaptAbstractMethod);
+	}
+
 }

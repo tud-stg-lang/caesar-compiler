@@ -5,7 +5,6 @@ import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
-import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CExpressionContext;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.JExpression;

@@ -17,7 +17,6 @@ public interface Child {
 	Child _getDispatcher( Object self );
 	void _setFamily( Object family );
 	Object _getFamily();
-	Object _getObjectId(Object object);
 	
 	// an object's methods
     public int hashCode();

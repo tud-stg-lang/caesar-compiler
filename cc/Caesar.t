@@ -66,8 +66,6 @@
 @literal	provides
 @literal	wraps
 @literal	wrappee
-@literal	wrapper
-
 
 @literal	after
 @literal	around

@@ -1,10 +1,13 @@
 package org.caesarj.compiler.util;
 
 import org.caesarj.classfile.Constants;
+import org.caesarj.compiler.Compiler;
+import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.ast.CciWeaveletClassDeclaration;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
 import org.caesarj.compiler.ast.FjCompilationUnit;
+import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
 import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
@@ -17,6 +20,7 @@ import org.caesarj.kjc.JPackageName;
 import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.KjcEnvironment;
+import org.caesarj.kjc.TypeFactory;
 
 /**
  * This class makes the transformations in the collaboration interfaces and
@@ -32,12 +36,15 @@ import org.caesarj.kjc.KjcEnvironment;
 public class CollaborationInterfaceTransformation 
 	extends FjVisitor
 {
-	
-
 	/**
 	 * The environment for generate the interfaces of the classes.
 	 */
 	protected KjcEnvironment environment;
+
+	/**
+	 * The compiler to report errors.
+	 */
+	protected Compiler compiler;	
 	
 	/**
 	 * A "family" of collaboration interfaces must be transformed only by the 
@@ -57,9 +64,11 @@ public class CollaborationInterfaceTransformation
 	 */
 	private FjCleanClassDeclaration lastBindingClass;
 	
-	public CollaborationInterfaceTransformation(KjcEnvironment environment)
+	public CollaborationInterfaceTransformation(KjcEnvironment environment, 
+		Compiler compiler)
 	{
 		this.environment = environment;
+		this.compiler = compiler;
 	}
 	/**
 	 * It will generate the interface of everything that is created...
@@ -145,7 +154,6 @@ public class CollaborationInterfaceTransformation
 		JMethodDeclaration[] methods,
 		JTypeDeclaration[] decls)
 	{
-		
 		if (CModifier.contains(modifiers, Constants.CCI_COLLABORATION)
 				&& lastCollaborationInterface == null)
 		{
@@ -190,11 +198,10 @@ public class CollaborationInterfaceTransformation
 			superClass = self.getBindingTypeName();
 			self.transformInnerBindingClasses(superClass);
 			self.addProvidingAcessor();
-			//self.addWrapperRecyclingStructure();
 			// My super class is the binding class.
 			self.setSuperClass(new CClassNameType(
 				superClass));
-			
+
 			lastBindingClass = self;
 		}
 
@@ -220,7 +227,7 @@ public class CollaborationInterfaceTransformation
 			lastBindingClass = null;			
 	}
 	/**
-	 * 
+	 * Sets super class and create acessors.
 	 */
 	public void visitCciWeaveletClassDeclaration(
 		CciWeaveletClassDeclaration self,
@@ -236,8 +243,49 @@ public class CollaborationInterfaceTransformation
 		superClass = self.getBindingTypeName();
 		self.setSuperClass(new CClassNameType(superClass));
 		self.addAccessors();
-		// TODO Auto-generated method stub
+		
 		super.visitCciWeaveletClassDeclaration(
+			self,
+			modifiers,
+			ident,
+			typeVariables,
+			superClass,
+			interfaces,
+			body,
+			methods,
+			decls);
+	}
+
+
+	/**
+	 * Generates code for wrapper when it is explicitly declared.
+	 */
+	public void visitFjVirtualClassDeclaration(
+		FjVirtualClassDeclaration self,
+		int modifiers,
+		String ident,
+		CTypeVariable[] typeVariables,
+		String superClass,
+		CReferenceType[] interfaces,
+		JPhylum[] body,
+		JMethodDeclaration[] methods,
+		JTypeDeclaration[] decls)
+	{
+		if (self.getWrappee() != null)
+		{
+			try
+			{
+				TypeFactory typeFactory = environment.getTypeFactory();
+				self.setTypeFactory(typeFactory);
+				self.addInternalWrapperRecyclingStructure(typeFactory);
+		
+			}
+			catch (PositionedError e)
+			{
+				compiler.reportTrouble(e);
+			}
+		}
+		super.visitFjVirtualClassDeclaration(
 			self,
 			modifiers,
 			ident,

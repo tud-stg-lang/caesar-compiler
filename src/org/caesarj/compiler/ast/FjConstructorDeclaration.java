@@ -15,12 +15,21 @@ import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CMember;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CSourceMethod;
+import org.caesarj.kjc.JArrayInitializer;
+import org.caesarj.kjc.JAssignmentExpression;
 import org.caesarj.kjc.JBlock;
+import org.caesarj.kjc.JCastExpression;
 import org.caesarj.kjc.JConstructorBlock;
 import org.caesarj.kjc.JConstructorDeclaration;
+import org.caesarj.kjc.JEqualityExpression;
 import org.caesarj.kjc.JExpression;
 import org.caesarj.kjc.JExpressionStatement;
+import org.caesarj.kjc.JFieldAccessExpression;
 import org.caesarj.kjc.JFormalParameter;
+import org.caesarj.kjc.JIfStatement;
+import org.caesarj.kjc.JLocalVariable;
+import org.caesarj.kjc.JNewArrayExpression;
+import org.caesarj.kjc.JNullLiteral;
 import org.caesarj.kjc.JReturnStatement;
 import org.caesarj.kjc.JStatement;
 import org.caesarj.kjc.JThisExpression;
@@ -153,6 +162,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			null,
 			cachedTypeFactory);
 	}
+
 	/**
 	 * Creates a constructor which receives a parameter whose type is the
 	 * Collaboration Interface that one of its ancestors binds or provides.
@@ -600,98 +610,286 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 		return method;
 	}
 	
-	//Walter NEW
-	public void updateWeaveletConstructor(CReferenceType providingType, 
-		CReferenceType bindingType)
+	/**
+	 * Creates the abstract method which creates the instances of the wrappers.
+	 * it is a method with only name and signature.
+	 * Signature:
+	 * public Object _getWrapper<WrapperTypeName>(...)
+	 * 
+	 * @return
+	 */
+	public FjCleanMethodDeclaration createAbstractWrapperInitializationMethod() 
 	{
-		FjConstructorCall constructorCall = 
-			((FjConstructorBlock)getBody()).getConstructorCall();
-
+		return new FjCleanMethodDeclaration(
+			getTokenReference(),
+			Constants.ACC_PUBLIC,
+			typeVariables,
+			new CClassNameType(JAV_OBJECT),
+			CciConstants.toWrapperMethodCreationName(
+				FjConstants.toIfcName(ident)),
+			parameters,
+			exceptions,
+			null,
+			null,
+			null);
+	}	
+	/**
+	 * Creates the key expression for access the wrapper maps.
+	 * 
+	 * @return
+	 */
+	public JExpression createKeyExpression()
+	{
+		TokenReference ref = getTokenReference();
+		JExpression[] arrayInitializerElements = 
+			new JExpression[parameters.length];
+		
+		for (int i = 0; i < parameters.length; i++)
+			arrayInitializerElements[i] = 
+				new FjNameExpression(ref, parameters[i].getIdent());
+				
+		return 
+			new JUnqualifiedInstanceCreation(
+				ref,
+				CciConstants.WRAPPER_KEY_TYPE,
+				new JExpression[]
+				{
+					new JNewArrayExpression(
+						ref, 
+						new CClassNameType(JAV_OBJECT),
+						new JExpression[1],
+						new JArrayInitializer(
+							ref,
+							arrayInitializerElements))					
+				}
+			);
 	}
-	
-//	//Walter
-//	public void updateConstructor(String ciType, String fieldName)
-//	{
-//		JFormalParameter[] newParameters = 
-//			new JFormalParameter[parameters.length + 1];
-//			
-//		System.arraycopy(parameters, 0, newParameters, 1, parameters.length);
-//		newParameters[0] = 
-//			new FjFormalParameter(
-//				getTokenReference(), 
-//				JFormalParameter.DES_PARAMETER, 
-//				new CClassNameType(ciType), 
-//				fieldName, 
-//				false);
-//
-//		FjConstructorCall constructorCall = 
-//			((FjConstructorBlock)body).getConstructorCall();
-//
-//		JExpression[] arguments = constructorCall.getArguments();
-//
-//		JExpression[] newArguments = new JExpression[arguments.length + 1];
-//		System.arraycopy(arguments, 0, newArguments, 1, arguments.length);
-//		newArguments[0] =
-//			new FjNameExpression(
-//				getTokenReference(),
-//				fieldName);
-//
-//		constructorCall.setArguments(newArguments);
-//		
-//		JStatement[] statements = body.getBody();
-//		JStatement[] newStatements = new JStatement[statements.length + 1];
-//		
-//		System.arraycopy(statements, 0, newStatements, 0, statements.length);
-//		
-//		newStatements[statements.length] = 
-//			new JExpressionStatement(
-//				getTokenReference(),
-//				new FjAssignmentExpression(
-//					getTokenReference(), 
-//					new FjFieldAccessExpression(
-//						getTokenReference(), 
-//						new FjThisExpression(getTokenReference()), 
-//						fieldName), 
-//					new FjNameExpression(
-//						getTokenReference(), 
-//						fieldName)),
-//				null);
-//		
-//		body = new FjConstructorBlock(getTokenReference(), 
-//			constructorCall, newStatements);
-//	}
 
-//Statements do updateWeaveletConstructor antigo.
-//	new JExpressionStatement(ref,
-//		new FjAssignmentExpression(ref, 
-//			new FjFieldAccessExpression(ref, 
-//				CciConstants.IMPLEMENTATION_FIELD_NAME),
-//			new FjUnqualifiedInstanceCreation(ref,
-//				new CClassNameType(owner.getImplementationTypeName()), 
-//				new JExpression[0])),
-//		null),
-//	new JExpressionStatement(ref,
-//		new FjAssignmentExpression(ref, 
-//			new FjFieldAccessExpression(ref, 
-//				CciConstants.BINDING_FIELD_NAME),
-//			new FjUnqualifiedInstanceCreation(ref,
-//				new CClassNameType(owner.getBindingTypeName()), 
-//				new JExpression[0])),
-//		null),
-//	new JExpressionStatement(ref,
-//		new FjMethodCallExpression(ref, 
-//			new FjThisExpression(ref), 
-//			CciConstants.toSettingMethodName(
-//				CciConstants.BINDING_FIELD_NAME),
-//			implementationCallArgs),
-//		null),
-//	new JExpressionStatement(ref,
-//		new FjMethodCallExpression(ref, 
-//			new FjThisExpression(ref), 
-//			CciConstants.toSettingMethodName(
-//				CciConstants.IMPLEMENTATION_FIELD_NAME),
-//			bindingCallArgs),
-//		null)
+	/**
+	 * Creates a constructor which receives the wrappee reference as parameter
+	 * and sets it to the field wrappee in the class.
+	 * 
+	 * Signature:
+	 * <TypeName>(<WrappeeType> _internalWrappee)
+	 * Body:
+	 * this.wrappee = _internalWrappee;
+	 * 
+	 * @param typeFactory
+	 * @return
+	 */
+	protected void addWrappeeParameter(
+		CReferenceType wrappee)
+		throws PositionedError
+	{
+		if (parameters.length > 0)
+		{
+			throw
+				new PositionedError(
+					getTokenReference(), 
+					CaesarMessages.WRAPPER_DEFINES_CONSTRUCTOR,
+					ident);			
+		}
+			
+		TokenReference ref = getTokenReference();
+		FjConstructorBlock oldBlock = (FjConstructorBlock) getBody();
+		JStatement[] oldBody = oldBlock .getBody();
+		JStatement[] constructorBody = new JStatement[oldBody.length + 1];
+		System.arraycopy(oldBody, 0, constructorBody, 1, oldBody.length);
+		constructorBody[0] =
+			new JExpressionStatement(
+				ref, 
+				new JAssignmentExpression(
+					ref,
+					new FjFieldAccessExpression(
+						ref,
+						new FjThisExpression(ref),
+						CciConstants.WRAPPEE_FIELD_NAME),
+					new JCastExpression(
+						ref,
+						new FjNameExpression(
+							ref,
+							CciConstants.WRAPPEE_PARAMETER_NAME),
+						new CClassNameType(wrappee.getQualifiedName()))),
+				null);
+			
+		body = 
+			new FjConstructorBlock(
+				ref, 
+				null,
+				constructorBody);
+				
+		parameters = 
+			new FjFormalParameter[]
+			{
+				new FjFormalParameter(
+					ref,
+					JLocalVariable.DES_PARAMETER,
+					new CClassNameType(JAV_OBJECT),
+					CciConstants.WRAPPEE_PARAMETER_NAME,
+					false)
+			};
+	}
+
+	/**
+	 * Creates the method used to get references with the 
+	 * wrapper recycling operartor.
+	 * 
+	 * Signature:
+	 * public Object _getWrapper<WrapperTypeName>(...)
+	 * 
+	 * Body:
+	 * Object key = <keyExpression>;
+	 * Object _localWrapper = _<wrapperType>.get(key);
+	 * if (_localWrapper == null)
+	 * {
+	 * 		_localWrapper = new <WrapperType>(...);
+	 * 		_<wrapperType>.put(key, _localWrapper);
+	 * }
+	 * return _localWrapper;
+	 * 
+	 */	
+	public FjCleanMethodDeclaration createWrapperInstantiationMethod(
+		JExpression keyExpression, String mapName)
+	{
+		
+		TokenReference ref = getTokenReference();
+		String methodName = 
+			CciConstants.toWrapperMethodCreationName(
+				FjConstants.toIfcName(ident));
+
+		FjFormalParameter[] newParameters = 
+			new FjFormalParameter[parameters.length];
+		JExpression[] constructorArgs = new JExpression[parameters.length];
+		
+		for (int i = 0; i < newParameters.length; i++)
+		{
+			newParameters[i] = (FjFormalParameter)
+				 ((FjFormalParameter) parameters[i]).clone();
+			constructorArgs[i] = 
+				new FjNameExpression(ref, newParameters[i].getIdent());
+		}
+
+
+		JStatement[] statements = new JStatement[]
+		{
+			//Object key = <keyExpression>
+			new JVariableDeclarationStatement(
+				ref,
+				new JVariableDefinition(
+					ref, 
+					0, 
+					new CClassNameType(JAV_OBJECT), 
+					CciConstants.WRAPPER_LOCAL_KEY,
+					keyExpression),
+				null),
+
+			//Object wrapper = map.get(key)
+			new JVariableDeclarationStatement(
+				ref,
+				new JVariableDefinition(
+					ref, 
+					0, 
+					new CClassNameType(JAV_OBJECT), 
+					CciConstants.WRAPPER_LOCAL_VAR,
+					new FjMethodCallExpression(
+						ref, 
+						new JFieldAccessExpression(
+							ref, 
+							new JThisExpression(ref), 
+							mapName),
+						CciConstants.WRAPPER_MAP_ACCESS,
+						new JExpression[]
+						{
+							new FjNameExpression(
+								ref, 
+								CciConstants.WRAPPER_LOCAL_KEY)
+						})),
+				null),
+
+			//if (wrapper == null)
+			//{
+			//	wrapper = new Binding(wrappee)
+			//	map.put(key, wrapper)
+			//}
+			new JIfStatement(
+				ref, 
+				new JEqualityExpression(
+					ref, 
+					true, 
+					new FjNameExpression(
+						ref,
+						CciConstants.WRAPPER_LOCAL_VAR), 
+						new JNullLiteral(ref)),
+				new JBlock(
+					ref, 
+					new JStatement[]
+					{
+						//wrapper = new Wapper(wrappee)
+						new JExpressionStatement(
+							ref,
+							new FjAssignmentExpression(
+								ref, 
+								new FjNameExpression(
+									ref, 
+									CciConstants.WRAPPER_LOCAL_VAR), 
+								new CciInternalUnqualifiedInstanceCreation(
+									ref, 
+									new CClassNameType(
+										FjConstants.toIfcName(ident)), 
+									constructorArgs)),
+							null),
+						//map.put(key, wrapper)
+						new JExpressionStatement(
+							ref,
+							new FjMethodCallExpression(
+								ref,
+								new JFieldAccessExpression(
+									ref, 
+									new JThisExpression(ref), 
+									mapName),
+								CciConstants.WRAPPER_MAP_PUT,
+								new JExpression[]
+								{
+									new FjNameExpression(
+										ref, 
+										CciConstants
+											.WRAPPER_LOCAL_KEY),
+									new FjNameExpression(
+										ref, 
+										CciConstants.WRAPPER_LOCAL_VAR)						
+								}),
+							null),
+					},
+					null),
+				null,
+				null),//endIf
+		
+			//return wrapper
+			new JReturnStatement(
+				ref,
+				new FjNameExpression(ref, CciConstants.WRAPPER_LOCAL_VAR),
+				null)
+		};
+	
+		JBlock methodBody = new JBlock(
+			ref,
+			statements,
+			null);
+		
+	
+		return 
+			new FjCleanMethodDeclaration(
+				ref, 
+				ACC_PUBLIC, 
+				typeVariables, 
+				new CClassNameType(JAV_OBJECT),
+				methodName,
+				newParameters,
+				CReferenceType.EMPTY,
+				methodBody,
+				CciConstants.WRAPPER_CREATION_JAVADOC,
+				new JavaStyleComment[0]);
+	}
 
 	/**
 	 * DEBUG - WALTER
@@ -711,65 +909,4 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 		System.out.println();
 
 	}
-	
-//	/**
-//	 * Walter New
-//	 *
-//	 */
-//	public void addImplementationParameter(CReferenceType implementationType, 
-//		boolean callSuper) 
-//	{
-//		TokenReference ref = getTokenReference();
-//		JFormalParameter[] newParameters = new JFormalParameter[
-//			parameters.length + 1];
-//		
-//		newParameters[0] = 
-//			new FjFormalParameter(
-//				ref, 
-//				JVariableDefinition.DES_PARAMETER,
-//				implementationType,
-//				CciConstants.IMPLEMENTATION_FIELD_NAME,
-//				false);
-//				
-//		System.arraycopy(parameters, 0, newParameters, 1, parameters.length);
-//		
-//		parameters = newParameters;
-//		
-//		if (callSuper)
-//		{
-//			setSuperArg(
-//				new FjNameExpression(
-//					ref, 
-//					null, 
-//					CciConstants.IMPLEMENTATION_FIELD_NAME));
-//		}
-//				
-//		JStatement[] statements = body.getBody();
-//		JStatement[] newStatements = new JStatement[statements.length + 1];
-//		
-//		newStatements[0] = 
-//			new JExpressionStatement(
-//				ref,
-//				new FjAssignmentExpression(
-//					ref, 
-//					new FjFieldAccessExpression(
-//						ref, 
-//						new FjThisExpression(ref), 
-//						CciConstants.IMPLEMENTATION_FIELD_NAME),
-//					new FjNameExpression(
-//						ref, 
-//						null, 
-//						CciConstants.IMPLEMENTATION_FIELD_NAME)),
-//				null);
-//				
-//		System.arraycopy(statements, 0, newStatements, 1, statements.length);
-//
-//		body =
-//			new FjConstructorBlock(
-//				body.getTokenReference(),
-//				((FjConstructorBlock)body).getConstructorCall(),
-//				newStatements);
-//
-//	}
-	
 }
