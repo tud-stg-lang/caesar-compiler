@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JVariableDefinition.java,v 1.5 2004-10-27 17:22:46 aracic Exp $
+ * $Id: JVariableDefinition.java,v 1.6 2004-11-23 18:28:36 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -65,6 +65,10 @@ public class JVariableDefinition extends JLocalVariable {
   // ACCESSORS
   // ----------------------------------------------------------------------
 
+  public void setType(CType type) {
+      this.type = type;
+  }
+  
   /**
    * hasInitializer
    * @return	true if there is an initializer
