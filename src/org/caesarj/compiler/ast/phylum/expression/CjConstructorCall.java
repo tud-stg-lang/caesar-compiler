@@ -18,12 +18,14 @@ public class CjConstructorCall extends JConstructorCall {
 		JExpression[] arguments) {
 		super(where, functorIsThis, expr, arguments);
 		
+		/*
 		cacheFunctorIsThis = functorIsThis;
 		cacheExpr = expr;
 		cacheArguments = arguments;
+		*/
 	}
 
-
+	/*	
 	public JExpression[] getArguments() {
 		return cacheArguments;
 	}
@@ -38,8 +40,10 @@ public class CjConstructorCall extends JConstructorCall {
 		this.arguments = arguments;
 		cacheArguments = arguments;
 	}
+	
 
 	private boolean cacheFunctorIsThis;
 	private JExpression cacheExpr;
 	private JExpression[] cacheArguments;
+*/
 }

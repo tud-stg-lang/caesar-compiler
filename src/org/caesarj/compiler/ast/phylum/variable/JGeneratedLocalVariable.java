@@ -15,15 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JGeneratedLocalVariable.java,v 1.1 2004-03-15 11:56:53 aracic Exp $
+ * $Id: JGeneratedLocalVariable.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
 
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.visitor.KjcVisitor;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.TokenReference;
 
 /**
@@ -51,15 +49,4 @@ public class JGeneratedLocalVariable extends JLocalVariable {
     super(where, modifiers, DES_GENERATED, type, name, value);
   }
 
-  // ----------------------------------------------------------------------
-  // CODE GENERATION
-  // ----------------------------------------------------------------------
-
-  /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public void accept(KjcVisitor p) {
-    throw new InconsistencyException();
-  }
 }

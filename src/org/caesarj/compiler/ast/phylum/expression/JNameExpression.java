@@ -15,14 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JNameExpression.java,v 1.2 2004-03-15 13:04:29 aracic Exp $
+ * $Id: JNameExpression.java,v 1.3 2004-09-06 13:31:35 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.ast.CLineError;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
-import org.caesarj.compiler.ast.visitor.KjcVisitor;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
@@ -30,7 +30,11 @@ import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.util.*;
+import org.caesarj.util.InconsistencyException;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
+import org.caesarj.util.Utils;
 
 /**
  * JLS 6.5.6 Expression Names.
@@ -113,6 +117,8 @@ public class JNameExpression extends JExpression
 	{
 		return ident;
 	}
+	
+	
 
 	/**
 	 * @return the prefix of this name expression
@@ -423,15 +429,6 @@ public class JNameExpression extends JExpression
 	// ----------------------------------------------------------------------
 
 	/**
-	 * Accepts the specified visitor
-	 * @param	p		the visitor
-	 */
-	public void accept(KjcVisitor p)
-	{
-		p.visitNameExpression(this, prefix, ident);
-	}
-
-	/**
 	 * Generates JVM bytecode to evaluate this expression.
 	 *
 	 * @param	code		the bytecode sequence
@@ -442,13 +439,15 @@ public class JNameExpression extends JExpression
 		throw new InconsistencyException();
 	}
 
+	public void recurse(IVisitor s) {
+	    if(prefix != null)
+	        prefix.accept(s);
+    }
+	
 	// ----------------------------------------------------------------------
 	// DATA MEMBERS
 	// ----------------------------------------------------------------------
 
 	private JExpression prefix;
-	//Walter start
-	//private String		ident;
 	protected String ident;
-	//Walter end
 }

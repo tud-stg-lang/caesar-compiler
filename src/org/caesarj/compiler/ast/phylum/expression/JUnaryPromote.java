@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JUnaryPromote.java,v 1.1 2004-03-15 11:56:51 aracic Exp $
+ * $Id: JUnaryPromote.java,v 1.2 2004-09-06 13:31:35 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
-import org.caesarj.compiler.ast.visitor.KjcVisitor;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CTypeContext;
@@ -100,18 +100,6 @@ public class JUnaryPromote extends JExpression {
   // ----------------------------------------------------------------------
 
   /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public void accept(KjcVisitor p) {
-    if (needCheck) {
-      p.visitUnaryPromoteExpression(this, expr, type);
-    } else {
-      expr.accept(p);
-    }
-  }
-
-  /**
    * Generates JVM bytecode to evaluate this expression.
    *
    * @param	code		the bytecode sequence
@@ -134,6 +122,10 @@ public class JUnaryPromote extends JExpression {
     }
   }
 
+  public void recurse(IVisitor s) {
+    expr.accept(s);
+  }
+  
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------

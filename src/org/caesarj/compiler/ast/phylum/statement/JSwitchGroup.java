@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JSwitchGroup.java,v 1.1 2004-03-15 11:56:48 aracic Exp $
+ * $Id: JSwitchGroup.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -24,7 +24,7 @@ import java.util.Vector;
 
 import org.caesarj.compiler.ast.CLineError;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.visitor.KjcVisitor;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeLabel;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
@@ -106,8 +106,13 @@ public class JSwitchGroup extends JPhylum {
    * Accepts the specified visitor
    * @param	p		the visitor
    */
-  public void accept(KjcVisitor p) {
-    p.visitSwitchGroup(this, labels, stmts);
+  public void recurse(IVisitor s) {
+    for (int i = 0; i < labels.length; i++) {
+        labels[i].accept(s);
+    }
+    for (int i = 0; i < stmts.length; i++) {
+        stmts[i].accept(s);
+    }
   }
 
   /**
@@ -151,6 +156,8 @@ public class JSwitchGroup extends JPhylum {
     }
   }
 
+  public JSwitchLabel[] getLabels() {return labels;}
+  
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------

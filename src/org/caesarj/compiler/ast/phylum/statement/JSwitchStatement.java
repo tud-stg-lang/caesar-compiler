@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JSwitchStatement.java,v 1.1 2004-03-15 11:56:48 aracic Exp $
+ * $Id: JSwitchStatement.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -24,8 +24,8 @@ import java.util.Vector;
 
 import org.caesarj.classfile.SwitchInstruction;
 import org.caesarj.compiler.ast.JavaStyleComment;
-import org.caesarj.compiler.ast.phylum.expression.*;
-import org.caesarj.compiler.ast.visitor.*;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeLabel;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
@@ -160,9 +160,11 @@ public class JSwitchStatement extends JStatement {
    * Accepts the specified visitor
    * @param	p		the visitor
    */
-  public void accept(KjcVisitor p) {
-    super.accept(p);
-    p.visitSwitchStatement(this, expr, groups);
+  public void recurse(IVisitor s) {
+    expr.accept(s);
+    for (int i = 0; i < groups.length; i++) {
+        groups[i].accept(s);
+    }
   }
 
   /**
@@ -202,7 +204,11 @@ public class JSwitchStatement extends JStatement {
     endLabel = null;
   }
 
+  
 
+	public JExpression getExpression() {return expr;}
+	public JSwitchGroup[] getGroups() {return groups;}
+	
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------

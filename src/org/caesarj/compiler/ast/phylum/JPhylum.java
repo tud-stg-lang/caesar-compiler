@@ -15,13 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JPhylum.java,v 1.2 2004-03-17 11:50:07 aracic Exp $
+ * $Id: JPhylum.java,v 1.3 2004-09-06 13:31:36 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
 
 import org.caesarj.compiler.ast.CLineError;
-import org.caesarj.compiler.ast.visitor.KjcVisitor;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.context.CContext;
@@ -130,12 +130,6 @@ public abstract class JPhylum extends Utils implements Constants {
   // ----------------------------------------------------------------------
 
   /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public abstract void accept(KjcVisitor p);
-
-  /**
    * Sets the line number of this phylum in the code sequence.
    *
    * @param	code		the bytecode sequence
@@ -154,6 +148,17 @@ public abstract class JPhylum extends Utils implements Constants {
   */
  public TokenReference getTokenReference() {
    return where;
+ }
+ 
+ public void accept(IVisitor visitor) {
+     if(visitor.start(this)) {
+         recurse(visitor);
+         visitor.end();
+     }
+ }
+ 
+ public void recurse(IVisitor p) {
+     // default impl: do nothing
  }
 
  // ----------------------------------------------------------------------

@@ -15,12 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFormalParameter.java,v 1.2 2004-03-15 13:04:29 aracic Exp $
+ * $Id: JFormalParameter.java,v 1.3 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
 
-import org.caesarj.compiler.ast.visitor.*;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.context.CVariableInfo;
@@ -109,19 +108,7 @@ public class JFormalParameter extends JLocalVariable {
     }
     context.setVariableInfo(getIndex(), CVariableInfo.INITIALIZED);
   }
-
-  // ----------------------------------------------------------------------
-  // CODE GENERATION
-  // ----------------------------------------------------------------------
-
-  /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public void accept(KjcVisitor p) {
-    p.visitFormalParameters(this, isFinal(), getType(), getIdent());
-  }
-
+  
   // ----------------------------------------------------------------------
   // PUBLIC CONSTANTS
   // ----------------------------------------------------------------------

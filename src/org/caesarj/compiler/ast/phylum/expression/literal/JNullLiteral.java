@@ -15,18 +15,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JNullLiteral.java,v 1.1 2004-03-15 11:56:52 aracic Exp $
+ * $Id: JNullLiteral.java,v 1.2 2004-09-06 13:31:35 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression.literal;
 
-import org.caesarj.compiler.ast.phylum.expression.*;
-import org.caesarj.compiler.ast.visitor.*;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
 /**
@@ -93,14 +93,6 @@ public class JNullLiteral extends JLiteral {
   // ----------------------------------------------------------------------
   // CODE GENERATION
   // ----------------------------------------------------------------------
-
-  /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public void accept(KjcVisitor p) {
-    p.visitNullLiteral();
-  }
 
   /**
    * Generates JVM bytecode to evaluate this expression.

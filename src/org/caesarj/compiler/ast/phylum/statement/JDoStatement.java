@@ -15,15 +15,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JDoStatement.java,v 1.1 2004-03-15 11:56:49 aracic Exp $
+ * $Id: JDoStatement.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
 
 import org.caesarj.compiler.ast.CBlockError;
 import org.caesarj.compiler.ast.JavaStyleComment;
-import org.caesarj.compiler.ast.phylum.expression.*;
-import org.caesarj.compiler.ast.visitor.*;
+import org.caesarj.compiler.ast.phylum.expression.JAssignmentExpression;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeLabel;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
@@ -128,9 +129,9 @@ public class JDoStatement extends JLoopStatement {
    * Accepts the specified visitor
    * @param	p		the visitor
    */
-  public void accept(KjcVisitor p) {
-    super.accept(p);
-    p.visitDoStatement(this, cond, body);
+  public void recurse(IVisitor s) {
+    cond.accept(s);
+    body.accept(s);
   }
 
   /**
@@ -155,6 +156,9 @@ public class JDoStatement extends JLoopStatement {
     code.popContext(this);
   }
 
+  public JExpression getCondition() {return cond;}
+  public JStatement getBody() {return body;}
+  
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------

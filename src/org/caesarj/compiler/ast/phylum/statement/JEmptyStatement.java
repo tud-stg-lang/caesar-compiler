@@ -15,66 +15,64 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JEmptyStatement.java,v 1.1 2004-03-15 11:56:48 aracic Exp $
+ * $Id: JEmptyStatement.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
 
 import org.caesarj.compiler.ast.JavaStyleComment;
-import org.caesarj.compiler.ast.visitor.*;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
 /**
  * JLS 14.6: Empty Statement.
- *
+ * 
  * An empty statement does nothing.
  */
 public class JEmptyStatement extends JStatement {
 
-  // ----------------------------------------------------------------------
-  // CONSTRUCTORS
-  // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // CONSTRUCTORS
+    // ----------------------------------------------------------------------
 
-  /**
-   * Construct a node in the parsing tree
-   * @param	where		the line of this node in the source code
-   */
-  public JEmptyStatement(TokenReference where, JavaStyleComment[] comments) {
-    super(where, comments);
-  }
+    /**
+     * Construct a node in the parsing tree
+     * 
+     * @param where
+     *            the line of this node in the source code
+     */
+    public JEmptyStatement(TokenReference where, JavaStyleComment[] comments) {
+        super(where, comments);
+    }
 
-  // ----------------------------------------------------------------------
-  // SEMANTIC ANALYSIS
-  // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // SEMANTIC ANALYSIS
+    // ----------------------------------------------------------------------
 
-  /**
-   * Analyses the statement (semantically).
-   * @param	context		the analysis context
-   * @exception	PositionedError	the analysis detected an error
-   */
-  public void analyse(CBodyContext context) {
-  }
+    /**
+     * Analyses the statement (semantically).
+     * 
+     * @param context
+     *            the analysis context
+     * @exception PositionedError
+     *                the analysis detected an error
+     */
+    public void analyse(CBodyContext context) {
+    }
 
-  // ----------------------------------------------------------------------
-  // CODE GENERATION
-  // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // CODE GENERATION
+    // ----------------------------------------------------------------------
 
-  /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public void accept(KjcVisitor p) {
-    super.accept(p);
-    p.visitEmptyStatement(this);
-  }
-
-  /**
-   * Generates a sequence of bytescodes
-   * @param	code		the code list
-   */
-  public void genCode(GenerationContext context) {
-    // nothing to do here
-  }
+    /**
+     * Generates a sequence of bytescodes
+     * 
+     * @param code
+     *            the code list
+     */
+    public void genCode(GenerationContext context) {
+        // nothing to do here
+    }
 }

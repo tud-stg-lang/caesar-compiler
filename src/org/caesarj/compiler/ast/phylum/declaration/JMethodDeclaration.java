@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodDeclaration.java,v 1.4 2004-04-05 15:16:39 aracic Exp $
+ * $Id: JMethodDeclaration.java,v 1.5 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -35,7 +35,7 @@ import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
 import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
-import org.caesarj.compiler.ast.visitor.KjcVisitor;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBinaryTypeContext;
@@ -469,28 +469,9 @@ public class JMethodDeclaration extends JMemberDeclaration {
      * Accepts the specified visitor
      * @param	p		the visitor
      */
-    public void accept(KjcVisitor p) {
-        super.accept(p);
-
-        p.visitMethodDeclaration(
-            this,
-            modifiers,
-            typeVariables,
-            returnType,
-            ident,
-            parameters,
-            exceptions,
-            body);
-
-        printBridges(p);
-    }
-
-    public void printBridges(KjcVisitor p) {
-        if (bridgesToPrint != null) {
-            for (int i = 0; i < bridgesToPrint.size(); i++) {
-                ((JMethodDeclaration)bridgesToPrint.get(i)).accept(p);
-            }
-        }
+    public void recurse(IVisitor s) {
+        if(body != null)
+            body.accept(s);
     }
 
     /**
@@ -499,24 +480,6 @@ public class JMethodDeclaration extends JMemberDeclaration {
      */
     public void genCode(GenerationContext context) {
         throw new InconsistencyException(); // nothing to do here
-    }
-
-    /**
-     * WALTER - DEBUG
-     * @see at.dms.kjc.JTypeDeclaration#print()
-     */
-    public void print() {
-        System.out.print(CModifier.toString(modifiers));
-        System.out.print(returnType + " " + ident + "(");
-        for (int i = 0; i < parameters.length; i++) {
-            if (i > 0)
-                System.out.print(", ");
-            System.out.print(
-                ((CReferenceType)parameters[i].getType()).getQualifiedName()
-                    + " "
-                    + parameters[i].getIdent());
-        }
-        System.out.print(")");
     }
 
     /**

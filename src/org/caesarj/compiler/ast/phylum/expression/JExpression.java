@@ -15,21 +15,27 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JExpression.java,v 1.2 2004-03-15 17:52:04 aracic Exp $
+ * $Id: JExpression.java,v 1.3 2004-09-06 13:31:35 aracic Exp $
  */ 
  
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.ast.CLineError;
-import org.caesarj.compiler.ast.phylum.expression.literal.JLiteral;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.visitor.KjcVisitor;
+import org.caesarj.compiler.ast.phylum.expression.literal.JLiteral;
 import org.caesarj.compiler.codegen.CodeLabel;
 import org.caesarj.compiler.codegen.CodeSequence;
-import org.caesarj.compiler.context.*;
+import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.compiler.context.CTypeContext;
+import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.util.*;
+import org.caesarj.util.InconsistencyException;
+import org.caesarj.util.MessageDescription;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * Root class for all expressions
@@ -201,7 +207,7 @@ public abstract class JExpression extends JPhylum {
    *
    * @return	the intentifier
    */
-  public String getIdent() {
+  public String getIdent() {      
     throw new InconsistencyException(this + " is not an l-value");
   }
 
@@ -283,12 +289,6 @@ public abstract class JExpression extends JPhylum {
   // ----------------------------------------------------------------------
   // CODE GENERATION
   // ----------------------------------------------------------------------
-
-  /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public abstract void accept(KjcVisitor p);
 
   /**
    * Generates JVM bytecode to evaluate this expression.

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JSynchronizedStatement.java,v 1.1 2004-03-15 11:56:48 aracic Exp $
+ * $Id: JSynchronizedStatement.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -110,14 +110,10 @@ public class JSynchronizedStatement extends JStatement {
   // CODE GENERATION
   // ----------------------------------------------------------------------
 
-  /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public void accept(KjcVisitor p) {
-    super.accept(p);
-    p.visitSynchronizedStatement(this, cond, body);
-  }
+	public void recurse(IVisitor s) {
+	    cond.accept(s);
+	    body.accept(s);
+	}
 
   /**
    * Generates a sequence of bytescodes
@@ -169,6 +165,9 @@ public class JSynchronizedStatement extends JStatement {
     code.addExceptionHandler(errorPC, errorPCend, errorPC, null);
   }
 
+  public JExpression getCondition() {return cond;}
+  public JStatement getBody() {return body;}
+  
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------

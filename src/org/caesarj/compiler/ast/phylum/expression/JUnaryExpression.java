@@ -15,11 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JUnaryExpression.java,v 1.1 2004-03-15 11:56:51 aracic Exp $
+ * $Id: JUnaryExpression.java,v 1.2 2004-09-06 13:31:35 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
@@ -53,6 +54,10 @@ public abstract class JUnaryExpression extends JExpression {
    */
   public CType getType(TypeFactory factory) {
     return type;
+  }
+  
+  public void recurse(IVisitor s) {
+    expr.accept(s);
   }
 
   // ----------------------------------------------------------------------

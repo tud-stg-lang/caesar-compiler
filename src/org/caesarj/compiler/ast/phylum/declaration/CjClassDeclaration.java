@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.22 2004-07-02 12:33:40 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.23 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -34,8 +34,7 @@ import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
-import org.caesarj.compiler.ast.visitor.KjcPrettyPrinter;
-import org.caesarj.compiler.ast.visitor.KjcVisitor;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
@@ -189,45 +188,6 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
     // ----------------------------------------------------------------------
     // CODE GENERATION
     // ----------------------------------------------------------------------
-
-    /**
-     * Accepts the specified visitor
-     * @param	p		the visitor
-     */
-    public void accept(KjcVisitor p) {
-        super.accept(p);
-
-        p.visitClassDeclaration(
-            this,
-            modifiers,
-            ident,
-            typeVariables,
-            getSuperClass() != null ? getSuperClass().toString() : null,
-            interfaces,
-            body,
-            methods,
-            inners);
-    }
-
-    /**
-     * Generate the code in pure java form
-     * It is useful to debug and tune compilation process
-     * @param	p		the printwriter into the code is generated
-     */
-    public void genInnerJavaCode(KjcPrettyPrinter p) {
-        super.accept(p);
-
-        p.visitInnerClassDeclaration(
-            this,
-            modifiers,
-            ident,
-            getSuperClass() != null ? getSuperClass().toString() : null,
-            interfaces,
-            inners,
-            body,
-            methods);
-    }
-
     public void setMethods(JMethodDeclaration[] methods) {
         this.methods = methods;
     }
@@ -618,5 +578,20 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
 
     protected int getInternalModifiers() {
         return ACC_PRIVILEGED | ACC_CROSSCUTTING | ACC_DEPLOYED;
+    }
+    
+    public void recurse(IVisitor p) {
+        super.recurse(p);
+        for (int i = 0; i < advices.length; i++) {
+            advices[i].accept(p);
+        }
+        for (int i = 0; i < pointcuts.length; i++) {
+            pointcuts[i].accept(p);
+        }
+        /*
+        for (int i = 0; i < declares.length; i++) {
+            declares[i].traverse(visitorSet);
+        } 
+        */      
     }
 }

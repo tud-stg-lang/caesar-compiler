@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassBlock.java,v 1.1 2004-03-15 11:56:49 aracic Exp $
+ * $Id: JClassBlock.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -73,7 +73,7 @@ public class JClassBlock extends JBlock {
   public boolean isStaticInitializer() {
     return isStatic;
   }
-
+  
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------

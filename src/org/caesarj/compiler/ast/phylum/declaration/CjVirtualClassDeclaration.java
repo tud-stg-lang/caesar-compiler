@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.7 2004-07-21 08:45:11 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.8 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -449,7 +449,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     protected int getAllowedModifiers() {
         return super.getAllowedModifiers() | ACC_MIXIN;
     }
-    
+        
     /**
      * reference to corresponding mixin interface
      */     

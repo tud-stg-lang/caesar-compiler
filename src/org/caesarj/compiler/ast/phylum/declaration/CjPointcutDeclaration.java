@@ -14,9 +14,9 @@ import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.FjClassContext;
+import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CSourceMethod;
-import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
@@ -162,9 +162,8 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 
 		return rpd;
 	}
-
 	
-public String toString(){
+	public String toString(){
 		return pointcut.toString();
 	}
 

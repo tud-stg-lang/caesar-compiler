@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JInstanceofExpression.java,v 1.1 2004-03-15 11:56:51 aracic Exp $
+ * $Id: JInstanceofExpression.java,v 1.2 2004-09-06 13:31:35 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
-import org.caesarj.compiler.ast.visitor.KjcVisitor;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
@@ -106,14 +106,6 @@ public class JInstanceofExpression extends JExpression {
   // ----------------------------------------------------------------------
 
   /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public void accept(KjcVisitor p) {
-    p.visitInstanceofExpression(this, expr, dest);
-  }
-
-  /**
    * Generates JVM bytecode to evaluate this expression.
    *
    * @param	code		the bytecode sequence
@@ -131,6 +123,10 @@ public class JInstanceofExpression extends JExpression {
     if (discardValue) {
       code.plantPopInstruction(getType(factory));
     }
+  }
+  
+  public void recurse(IVisitor s) {
+      expr.accept(s);
   }
 
   // ----------------------------------------------------------------------

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JCompilationUnit.java,v 1.6 2004-06-15 16:41:29 aracic Exp $
+ * $Id: JCompilationUnit.java,v 1.7 2004-09-06 13:31:36 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -27,7 +27,7 @@ import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
-import org.caesarj.compiler.ast.visitor.KjcVisitor;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.export.CClass;
@@ -69,13 +69,24 @@ public class JCompilationUnit extends JPhylum {
 	// ACCESSORS
 	// ----------------------------------------------------------------------
 
-	/**
-	 * @return the package name of this compilation unit
-	 */
+	/*
 	public String getPackageName() {
 		verify(packageName != null);
 		return packageName.getName();
 	}
+	*/
+	
+	public JPackageName getPackageName() {		
+		return packageName;
+	}
+	
+	public JClassImport[] getImportedClasses() {
+	    return importedClasses;
+    }
+
+	public JPackageImport[] getImportedPackages() {
+	    return importedPackages;
+    }
 
 	/**
 	 * @return	the name of the file associated with this compilation unit
@@ -373,13 +384,10 @@ public class JCompilationUnit extends JPhylum {
 	 * Accepts the specified visitor
 	 * @param	p		the visitor
 	 */
-	public void accept(KjcVisitor p) {
-		p.visitCompilationUnit(
-			this,
-			packageName,
-			importedPackages,
-			importedClasses,
-			typeDeclarations);
+	public void recurse(IVisitor p) {
+		for (int i = 0; i < typeDeclarations.length; i++) {
+            typeDeclarations[i].accept(p);
+        }
 	}
 
 	// ----------------------------------------------------------------------
@@ -409,10 +417,10 @@ public class JCompilationUnit extends JPhylum {
 	}
 
 	/**
-		 * Replaces the first parameter for the second in the compilation unit.
-		 * @param decl
-		 * @param newDecl
-		 */
+	 * Replaces the first parameter for the second in the compilation unit.
+	 * @param decl
+	 * @param newDecl
+	 */
 	public void replace(JTypeDeclaration decl, JTypeDeclaration newDecl) {
 		for (int i = 0; i < typeDeclarations.length; i++) {
 			if (typeDeclarations[i] == decl) {

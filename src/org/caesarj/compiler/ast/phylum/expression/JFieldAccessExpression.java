@@ -15,13 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldAccessExpression.java,v 1.4 2004-07-21 08:45:10 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.5 2004-09-06 13:31:35 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.ast.phylum.expression.literal.JLiteral;
-import org.caesarj.compiler.ast.visitor.KjcVisitor;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeLabel;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
@@ -30,8 +30,9 @@ import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CInitializerContext;
 import org.caesarj.compiler.context.CVariableInfo;
 import org.caesarj.compiler.context.GenerationContext;
-import org.caesarj.compiler.export.*;
+import org.caesarj.compiler.export.CCjPrivilegedField;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceField;
@@ -651,14 +652,6 @@ public class JFieldAccessExpression extends JExpression {
   // ----------------------------------------------------------------------
 
   /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public void accept(KjcVisitor p) {
-    p.visitFieldExpression(this, prefix, getIdent());
-  }
-
-  /**
    * Generates JVM bytecode to evaluate this expression.
    *
    * @param	code		the bytecode sequence
@@ -778,6 +771,10 @@ public class JFieldAccessExpression extends JExpression {
     boolean             isSuper;
   }
 
+  public void recurse(IVisitor s) {
+    prefix.accept(s);
+  }
+  
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------

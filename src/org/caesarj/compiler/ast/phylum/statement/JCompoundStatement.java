@@ -15,13 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JCompoundStatement.java,v 1.1 2004-03-15 11:56:48 aracic Exp $
+ * $Id: JCompoundStatement.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
 
 import org.caesarj.compiler.ast.CLineError;
-import org.caesarj.compiler.ast.visitor.*;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.GenerationContext;
@@ -78,8 +78,10 @@ public class JCompoundStatement extends JStatement {
    * Accepts the specified visitor
    * @param	p		the visitor
    */
-  public void accept(KjcVisitor p) {
-    p.visitCompoundStatement(this, body);
+  public void recurse(IVisitor s) {
+    for (int i = 0; i < body.length; i++) {
+        body[i].accept(s);
+    }
   }
 
   /**
@@ -92,6 +94,8 @@ public class JCompoundStatement extends JStatement {
     }
   }
 
+  public JStatement[] getBody() {return body;}
+  
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------

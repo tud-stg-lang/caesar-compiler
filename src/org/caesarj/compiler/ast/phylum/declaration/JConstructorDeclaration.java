@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JConstructorDeclaration.java,v 1.2 2004-07-21 08:45:11 aracic Exp $
+ * $Id: JConstructorDeclaration.java,v 1.3 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -24,7 +24,6 @@ import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
-import org.caesarj.compiler.ast.visitor.KjcVisitor;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CClassContext;
@@ -185,19 +184,6 @@ public class JConstructorDeclaration extends JMethodDeclaration {
   // CODE GENERATION
   // ----------------------------------------------------------------------
 
-  /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public void accept(KjcVisitor p) {
-    genComments(p);
-    p.visitConstructorDeclaration(this,
-				  modifiers,
-				  ident,
-				  parameters,
-				  exceptions,
-				  (JConstructorBlock)body);
-  }
 	/**
 	 * 
 	 */
@@ -206,5 +192,4 @@ public class JConstructorDeclaration extends JMethodDeclaration {
 		// TODO Auto-generated method stub
 		super.genCode(context);
 	}
-
 }

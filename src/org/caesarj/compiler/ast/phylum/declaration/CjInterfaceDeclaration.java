@@ -126,20 +126,5 @@ public class CjInterfaceDeclaration extends JInterfaceDeclaration {
 			| ACC_PRIVILEGED 
 			| ACC_CROSSCUTTING 
 			| ACC_DEPLOYED;
-	}	
-	
-	public void print()	{
-		System.out.print(CModifier.toString(modifiers));
-		System.out.print("interface ");
-		super.print();
-		System.out.print(" extends ");
-		for (int i = 0; i < interfaces.length; i++)	{
-			if (i > 0)
-				System.out.print(", ");
-			System.out.print(interfaces[i]);
-		}
-		
-		System.out.println();
-		
-	}    
+	}		
 }

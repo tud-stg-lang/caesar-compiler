@@ -15,13 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JBreakStatement.java,v 1.1 2004-03-15 11:56:48 aracic Exp $
+ * $Id: JBreakStatement.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
 
 import org.caesarj.compiler.ast.JavaStyleComment;
-import org.caesarj.compiler.ast.visitor.*;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
@@ -80,15 +79,6 @@ public class JBreakStatement extends JStatement {
   // ----------------------------------------------------------------------
 
   /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public void accept(KjcVisitor p) {
-    super.accept(p);
-    p.visitBreakStatement(this, label);
-  }
-
-  /**
    * Generates a sequence of bytescodes
    * @param	code		the code list
    */
@@ -102,7 +92,7 @@ public class JBreakStatement extends JStatement {
 
     target = null;
   }
-
+  
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------

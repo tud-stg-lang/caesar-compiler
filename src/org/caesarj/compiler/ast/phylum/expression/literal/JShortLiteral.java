@@ -15,14 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JShortLiteral.java,v 1.1 2004-03-15 11:56:52 aracic Exp $
+ * $Id: JShortLiteral.java,v 1.2 2004-09-06 13:31:35 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression.literal;
 
 import org.caesarj.classfile.PushLiteralInstruction;
-import org.caesarj.compiler.ast.phylum.expression.*;
-import org.caesarj.compiler.ast.visitor.*;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CTypeContext;
@@ -134,15 +133,6 @@ public class JShortLiteral extends JLiteral {
   // ----------------------------------------------------------------------
   // CODE GENERATION
   // ----------------------------------------------------------------------
-
-  /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public void accept(KjcVisitor p) {
-    p.visitShortLiteral(value);
-  }
-
   /**
    * Generates JVM bytecode to evaluate this expression.
    *

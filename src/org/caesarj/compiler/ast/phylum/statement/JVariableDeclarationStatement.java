@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JVariableDeclarationStatement.java,v 1.1 2004-03-15 11:56:48 aracic Exp $
+ * $Id: JVariableDeclarationStatement.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -23,7 +23,7 @@ package org.caesarj.compiler.ast.phylum.statement;
 import org.caesarj.compiler.ast.CLineError;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
-import org.caesarj.compiler.ast.visitor.*;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CVariableInfo;
@@ -122,9 +122,10 @@ public class JVariableDeclarationStatement extends JStatement {
    * Accepts the specified visitor
    * @param	p		the visitor
    */
-  public void accept(KjcVisitor p) {
-    super.accept(p);
-    p.visitVariableDeclarationStatement(this, vars);
+  public void recurse(IVisitor s) {
+    for (int i = 0; i < vars.length; i++) {
+        vars[i].accept(s);
+    }
   }
 
   /**
@@ -143,6 +144,8 @@ public class JVariableDeclarationStatement extends JStatement {
       }
     }
   }
+  
+  public JVariableDefinition[] getVariables() {return vars;}
 
   // ----------------------------------------------------------------------
   // DATA MEMBERS

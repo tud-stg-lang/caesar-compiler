@@ -15,12 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JBinaryExpression.java,v 1.1 2004-03-15 11:56:52 aracic Exp $
+ * $Id: JBinaryExpression.java,v 1.2 2004-09-06 13:31:35 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.classfile.PushLiteralInstruction;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeLabel;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.context.GenerationContext;
@@ -118,6 +119,11 @@ public abstract class JBinaryExpression extends JExpression {
     code.plantJumpInstruction(cond ? opc_ifne : opc_ifeq, label);
   }
 
+  public void recurse(IVisitor s) {
+      left.accept(s);
+      right.accept(s);
+  }
+  
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------

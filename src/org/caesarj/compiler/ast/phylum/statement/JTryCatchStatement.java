@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTryCatchStatement.java,v 1.1 2004-03-15 11:56:48 aracic Exp $
+ * $Id: JTryCatchStatement.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -23,7 +23,7 @@ package org.caesarj.compiler.ast.phylum.statement;
 import java.util.Enumeration;
 
 import org.caesarj.compiler.ast.JavaStyleComment;
-import org.caesarj.compiler.ast.visitor.*;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeLabel;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
@@ -238,12 +238,12 @@ public class JTryCatchStatement extends JStatement {
   // CODE GENERATION
   // ----------------------------------------------------------------------
 
-  /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public void accept(KjcVisitor p) {
-    p.visitTryCatchStatement(this, tryClause, catchClauses);
+  
+  public void recurse(IVisitor s) {
+   tryClause.accept(s);
+   for (int i = 0; i < catchClauses.length; i++) {
+    catchClauses[i].accept(s);
+}
   }
 
   /**
@@ -268,6 +268,9 @@ public class JTryCatchStatement extends JStatement {
     code.plantLabel(nextLabel);			//	next:	...
   }
 
+  public JBlock getTryClause() {return tryClause;}
+  public JCatchClause[] getCatchClauses() {return catchClauses;}
+  
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------

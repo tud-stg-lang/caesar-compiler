@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JSwitchLabel.java,v 1.1 2004-03-15 11:56:48 aracic Exp $
+ * $Id: JSwitchLabel.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -23,14 +23,18 @@ package org.caesarj.compiler.ast.phylum.statement;
 import org.caesarj.compiler.ast.CLineError;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.visitor.KjcVisitor;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CSwitchGroupContext;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.util.*;
+import org.caesarj.util.InconsistencyException;
+import org.caesarj.util.MessageDescription;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * This class represents a parameter declaration in the syntax tree
@@ -123,12 +127,8 @@ public class JSwitchLabel extends JPhylum {
   // CODE GENERATION
   // ----------------------------------------------------------------------
 
-  /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public void accept(KjcVisitor p) {
-    p.visitSwitchLabel(this, expr);
+  public void recurse(IVisitor s) {
+    expr.accept(s);
   }
 
   // ----------------------------------------------------------------------

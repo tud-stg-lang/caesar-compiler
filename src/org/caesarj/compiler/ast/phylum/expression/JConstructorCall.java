@@ -15,14 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JConstructorCall.java,v 1.1 2004-03-15 11:56:51 aracic Exp $
+ * $Id: JConstructorCall.java,v 1.2 2004-09-06 13:31:35 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.ast.CMethodNotFoundError;
 import org.caesarj.compiler.ast.phylum.variable.JGeneratedLocalVariable;
-import org.caesarj.compiler.ast.visitor.*;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeLabel;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
@@ -239,16 +239,6 @@ public class JConstructorCall extends JExpression {
  // ----------------------------------------------------------------------
   // CODE GENERATION
   // ----------------------------------------------------------------------
-
-  /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public void accept(KjcVisitor p) {
-    exprContext = null;
-    p.visitConstructorCall(this, functorIsThis, arguments);
-  }
-
   /**
    * Generates JVM bytecode to evaluate this expression.
    *
@@ -303,6 +293,14 @@ public class JConstructorCall extends JExpression {
     // The return type is void : there is no result value.
   }
 
+  public void recurse(IVisitor s) {
+    if(expr != null)
+        expr.accept(s);
+    for (int i = 0; i < arguments.length; i++) {
+        arguments[i].accept(s);
+    }
+  }
+  
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------

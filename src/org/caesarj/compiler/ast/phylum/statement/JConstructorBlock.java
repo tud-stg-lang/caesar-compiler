@@ -15,13 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JConstructorBlock.java,v 1.1 2004-03-15 11:56:48 aracic Exp $
+ * $Id: JConstructorBlock.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
 
-import org.caesarj.compiler.ast.phylum.expression.*;
-import org.caesarj.compiler.ast.visitor.*;
+import org.caesarj.compiler.ast.phylum.expression.JConstructorCall;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CConstructorContext;
@@ -142,8 +144,9 @@ public class JConstructorBlock extends JBlock {
    * Accepts the specified visitor
    * @param	p		the visitor
    */
-  public void accept(KjcVisitor p) {
-    p.visitConstructorBlockStatement(this, constructorCall, body, getComments());
+  public void recurse(IVisitor s) {
+      super.recurse(s);
+      constructorCall.accept(s);
   }
 
    /**
@@ -175,6 +178,9 @@ public class JConstructorBlock extends JBlock {
     //    code.plantNoArgInstruction(opc_return);
   }
 
+  public JConstructorCall getConstructorCall() {return constructorCall;}
+  public JStatement getInitializerCall() {return initializerCall;}
+  
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------

@@ -15,13 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JThisExpression.java,v 1.4 2004-07-21 08:45:10 aracic Exp $
+ * $Id: JThisExpression.java,v 1.5 2004-09-06 13:31:35 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.ast.phylum.variable.JGeneratedLocalVariable;
-import org.caesarj.compiler.ast.visitor.KjcVisitor;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
@@ -274,14 +274,6 @@ public class JThisExpression extends JExpression {
 	// ----------------------------------------------------------------------
 
 	/**
-	 * Accepts the specified visitor
-	 * @param	p		the visitor
-	 */
-	public void accept(KjcVisitor p) {
-		p.visitThisExpression(this, prefix);
-	}
-
-	/**
 	 * Generates JVM bytecode to evaluate this expression.
 	 *
 	 * @param	code		the bytecode sequence
@@ -307,6 +299,10 @@ public class JThisExpression extends JExpression {
 		return prefix;
 	}
 
+    public void recurse(IVisitor s) {
+        prefix.accept(s);  
+    }
+	
 	// ----------------------------------------------------------------------
 	// DATA MEMBERS
 	// ----------------------------------------------------------------------

@@ -373,8 +373,10 @@ public class Main extends MainSuper implements Constants {
     protected void prepareJoinpointReflection(JCompilationUnit[] tree) {
         System.out.println("prepareJoinpointReflection");
         //Handle Join Point Reflection.
-        for (int i = 0; i < tree.length; i++) {
-            tree[i].accept(new JoinPointReflectionVisitor());
+        JoinPointReflectionVisitor joinPointReflection = 
+            new JoinPointReflectionVisitor();
+        for (int i = 0; i < tree.length; i++) {            
+            tree[i].accept(joinPointReflection);
         }
     }
 

@@ -7,6 +7,7 @@ import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CBodyContext;
@@ -223,4 +224,12 @@ public class CjDeployStatement extends JStatement implements CaesarConstants {
 
 	}
 
+	public JExpression getAspectExpression() {return aspectExpression;}
+	
+	public JStatement getBody() {return body;}
+	
+	public void recurse(IVisitor s) {
+        aspectExpression.accept(s);
+        body.accept(s);
+    }
 }

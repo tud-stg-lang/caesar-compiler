@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CMethodContext.java,v 1.4 2004-09-03 08:04:27 gasiunas Exp $
+ * $Id: CMethodContext.java,v 1.5 2004-09-06 13:31:36 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -27,12 +27,10 @@ import java.util.Hashtable;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
-import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CThrowableInfo;
 import org.caesarj.compiler.types.CTypeVariable;
-import org.caesarj.util.CWarning;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;

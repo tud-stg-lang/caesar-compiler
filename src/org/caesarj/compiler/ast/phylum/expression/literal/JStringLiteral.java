@@ -15,20 +15,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JStringLiteral.java,v 1.1 2004-03-15 11:56:52 aracic Exp $
+ * $Id: JStringLiteral.java,v 1.2 2004-09-06 13:31:35 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression.literal;
 
 import org.caesarj.classfile.PushLiteralInstruction;
-import org.caesarj.compiler.ast.phylum.expression.*;
-import org.caesarj.compiler.ast.visitor.*;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.InconsistencyException;
+import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
 /**
@@ -147,31 +147,6 @@ public class JStringLiteral extends JLiteral {
   // ----------------------------------------------------------------------
   // CODE GENERATION
   // ----------------------------------------------------------------------
-
-  /**
-   * Accepts the specified visitor
-   * @param	p		the visitor
-   */
-  public void accept(KjcVisitor p) {
-    StringBuffer s = new StringBuffer();
-    for (int i = 0; i < value.length(); i++) {
-      char c = value.charAt(i);
-      switch (c) {
-      case '\n' : s.append("\\n"); break;
-      case '\r' : s.append("\\r"); break;
-      case '\t' : s.append("\\t"); break;
-      case '\b' : s.append("\\b"); break;
-      case '\f' : s.append("\\f"); break;
-      case '\"' : s.append("\\\""); break;
-      case '\'' : s.append("\\\'"); break;
-      case '\\' : s.append("\\\\"); break;
-      default:
-	s.append(c);
-      }
-    }
-    value = s.toString();
-    p.visitStringLiteral(value);
-  }
 
   /**
    * Generates JVM bytecode to evaluate this expression.

@@ -21,8 +21,16 @@ import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
-import org.caesarj.compiler.context.*;
-import org.caesarj.compiler.export.*;
+import org.caesarj.compiler.context.CBodyContext;
+import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.context.CVariableInfo;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CField;
+import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.export.CModifier;
+import org.caesarj.compiler.export.CSourceField;
+import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
@@ -649,10 +657,6 @@ public class JClassDeclaration extends JTypeDeclaration {
         return variableInfos;
     }
 
-    public JMethodDeclaration[] getMethods() {
-        return methods;
-    }
-    
     public void setSuperClass(CReferenceType superClass) {
         this.superClass = superClass;
     }

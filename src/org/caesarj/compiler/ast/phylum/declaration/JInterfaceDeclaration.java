@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JInterfaceDeclaration.java,v 1.4 2004-06-01 10:54:29 aracic Exp $
+ * $Id: JInterfaceDeclaration.java,v 1.5 2004-09-06 13:31:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -29,7 +29,6 @@ import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
-import org.caesarj.compiler.ast.visitor.KjcVisitor;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CClassContext;
@@ -301,28 +300,5 @@ public class JInterfaceDeclaration extends JTypeDeclaration {
 			return null;
 		}
 	}
-
-	// ----------------------------------------------------------------------
-	// CODE GENERATION
-	// ----------------------------------------------------------------------
-
-	/**
-	 * Accepts the specified visitor
-	 * @param	p		the visitor
-	 */
-	public void accept(KjcVisitor p) {
-		super.accept(p);
-		p.visitInterfaceDeclaration(
-			this,
-			getCClass().getModifiers(),
-			sourceClass.getIdent(),
-			interfaces,
-			body,
-			methods);
-	}
-
-	// ----------------------------------------------------------------------
-	// PRIVATE DATA MEMBERS
-	// ----------------------------------------------------------------------
 
 }
