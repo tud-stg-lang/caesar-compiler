@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JVariableDefinition.java,v 1.16 2005-02-21 15:18:06 aracic Exp $
+ * $Id: JVariableDefinition.java,v 1.17 2005-02-25 13:45:25 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -28,6 +28,7 @@ package org.caesarj.compiler.ast.phylum.variable;
 import org.caesarj.compiler.ast.phylum.expression.JArrayInitializer;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CClassContext;
@@ -207,12 +208,11 @@ public class JVariableDefinition extends JLocalVariable {
 		          	      lFam+"."+getType().getCClass().getIdent() );
 		            }
 		            else {
-		                check(
-		                    context,
-		                    !(lFam!=null ^ rFam!=null),
-		                    KjcMessages.ASSIGNMENT_BADTYPE,
-		                    rFam, lFam
-	                    );
+		    	        check(
+		    	            context,
+		    	            !(lFam!=null ^ rFam!=null),
+		    	            CaesarMessages.ILLEGAL_PATH
+		    	        );	 
 		            }
                 }
                 catch (UnpositionedError e) {
