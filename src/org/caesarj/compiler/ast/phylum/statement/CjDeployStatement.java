@@ -29,7 +29,7 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Jürgen Hallpap
  */
-public class DeployStatement extends JStatement implements CaesarConstants {
+public class CjDeployStatement extends JStatement implements CaesarConstants {
 
 	/** 
 	 * Static counter for deployStatements,
@@ -60,7 +60,7 @@ public class DeployStatement extends JStatement implements CaesarConstants {
 	 * @param body
 	 * @param comments
 	 */
-	public DeployStatement(
+	public CjDeployStatement(
 		TokenReference where,
 		JExpression aspectExpression,
 		JStatement body,

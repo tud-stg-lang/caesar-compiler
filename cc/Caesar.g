@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.36 2004-03-17 14:34:41 aracic Exp $
+ * $Id: Caesar.g,v 1.37 2004-03-17 18:43:50 aracic Exp $
  */
 
 /*
@@ -2255,7 +2255,7 @@ jDeployStatement []
   "deploy" LPAREN aspectToDeploy = jExpression[] RPAREN
   body = jStatement[]
     {
-      self = new DeployStatement(sourceRef, aspectToDeploy, body, getStatementComment());
+      self = new CjDeployStatement(sourceRef, aspectToDeploy, body, getStatementComment());
     }
 ;
 

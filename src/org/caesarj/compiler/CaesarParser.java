@@ -3441,10 +3441,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		return self;
 	}
 	
-	private final DeployStatement  jDeployStatement(
+	private final CjDeployStatement  jDeployStatement(
 		
 	) throws RecognitionException, TokenStreamException {
-		DeployStatement self = null;
+		CjDeployStatement self = null;
 		
 		
 		JExpression	aspectToDeploy;
@@ -3459,7 +3459,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		body=jStatement();
 		if ( inputState.guessing==0 ) {
 			
-			self = new DeployStatement(sourceRef, aspectToDeploy, body, getStatementComment());
+			self = new CjDeployStatement(sourceRef, aspectToDeploy, body, getStatementComment());
 			
 		}
 		return self;
