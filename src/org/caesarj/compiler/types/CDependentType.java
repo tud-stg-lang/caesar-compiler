@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentType.java,v 1.20 2005-02-25 16:49:23 aracic Exp $
+ * $Id: CDependentType.java,v 1.21 2005-03-03 12:19:21 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -91,7 +91,8 @@ public class CDependentType extends CReferenceType {
             throw new UnpositionedError(CaesarMessages.PLAINTYPE_WITH_PATH);
         }                               
         
-        if(family != null && family.getThisAsFamily() == null) {
+        if(family != null) {
+            if(family.getThisAsFamily() == null || !family.getThisAsFamily().isFinal())
             throw new UnpositionedError(CaesarMessages.ILLEGAL_PATH);
         }
         
@@ -156,7 +157,12 @@ public class CDependentType extends CReferenceType {
     public String toString() {
         StringBuffer res = new StringBuffer();
                 
-        res.append(path);        
+        try {
+            res.append(getPath());
+        }
+        catch (Throwable e) {
+            res.append("<PATH?>");
+        }
         res.append(".");
         res.append(plainType);
         
