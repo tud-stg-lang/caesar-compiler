@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.9 2004-04-21 14:20:42 aracic Exp $
+ * $Id: CClass.java,v 1.10 2004-04-27 13:27:54 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -1863,6 +1863,27 @@ public abstract class CClass extends CMember
 			null);
 
 
+    // IVICA returns the superinterface of the topmost hierarchy
+    // CTODO this is gonna be more complicated if we have composite types
+    public CClass getTopmostHierarchyInterface() throws UnpositionedError {
+        if(!this.isCaesarClassInterface()) return null;
+        
+        CClass res = this;
+        
+        if(owner != null) {
+            CReferenceType interfaces[] = owner.getInterfaces();
+            
+            for(int i=0; i<interfaces.length; i++) {
+                CClass overriddenClass = interfaces[i].getCClass().lookupClass(interfaces[i].getCClass(), getIdent());
+                if(overriddenClass != null) {
+                    res = overriddenClass.getTopmostHierarchyInterface();
+                }
+
+            }
+        }
+        
+        return res;
+    }
 
     // IVICA maps from qualified name to impl qualified name
     // for example generated/G$Edge -> generated/G_Impl$Edge
