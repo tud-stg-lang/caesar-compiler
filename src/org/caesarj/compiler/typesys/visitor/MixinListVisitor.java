@@ -69,17 +69,17 @@ public class MixinListVisitor implements ICaesarTypeVisitor {
             
             List superClassMixinLists = new LinkedList();
             
+            if(t.isFurtherbinding()) {
+            	LinkedList s = new LinkedList();
+                createMixinList(s, outerMixinList, m+1, qualifiedName);
+                superClassMixinLists.add(s);
+            }
+            
             for (Iterator it = t.declaredParents(); it.hasNext();) {
                 CaesarTypeNode superType = ((SuperSubRelation)it.next()).getSuperNode();
                 LinkedList l = new LinkedList();
                 createMixinList(l, outerMixinList, 0, superType.getQualifiedName());
                 superClassMixinLists.add(l);
-            }
-            
-            if(t.isFurtherbinding()) {
-            	LinkedList s = new LinkedList();
-                createMixinList(s, outerMixinList, m+1, qualifiedName);
-                superClassMixinLists.add(s);
             }
             
             if(superClassMixinLists.size() > 0) {
