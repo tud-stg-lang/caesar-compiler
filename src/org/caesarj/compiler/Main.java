@@ -18,7 +18,6 @@ import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
-import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.types.TypeFactory;
@@ -33,7 +32,6 @@ import org.caesarj.tools.antlr.runtime.ParserException;
 import org.caesarj.util.Messages;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.UnpositionedError;
-import org.caesarj.util.Utils;
 
 /**
  * The entry point of the Caesar compiler.
@@ -142,6 +140,7 @@ public class Main extends MainSuper implements Constants {
         checkAllBodies(tree);
         if(errorFound) return false;
 
+        byteCodeMap = new ByteCodeMap(options.destination);
         genCode(environment.getTypeFactory());
          
         genMixinCopies(environment);
@@ -176,7 +175,11 @@ public class Main extends MainSuper implements Constants {
     {
         JavaTypeGraph javaTypeGraph = environment.getCaesarTypeSystem().getJavaTypeGraph();
         Collection typesToGenerate = javaTypeGraph.getTypesToGenerate();
-        ClassGenerator generator = new ClassGenerator(options.destination, options.destination);
+        
+        ClassGenerator generator = new ClassGenerator(
+        								options.destination, 
+										options.destination, 
+										byteCodeMap);
         
         for (Iterator it = typesToGenerate.iterator(); it.hasNext();) {
             JavaTypeNode item = (JavaTypeNode) it.next();
@@ -516,15 +519,13 @@ public class Main extends MainSuper implements Constants {
 
         weaver = new CaesarWeaver();
         
-        for(Iterator it=byteCodeMap.entrySet().iterator(); it.hasNext(); ) {
+        for(Iterator it=byteCodeMap.iterator(); it.hasNext(); ) {
             Map.Entry entry = (Map.Entry)it.next();
 
-            CSourceClass sourceClass = (CSourceClass)entry.getKey();
+            String fileName = (String)entry.getKey();
             byte[] byteCodeBuf = (byte[])entry.getValue();
 
-            weaver.addUnwovenClassFile(
-                getFileName(sourceClass), byteCodeBuf
-            );
+            weaver.addUnwovenClassFile(fileName, byteCodeBuf);
         }
 
         weaveClasses();
@@ -632,29 +633,6 @@ public class Main extends MainSuper implements Constants {
         }
     }
 
-    protected String getFileName(CSourceClass sourceClass) {
-        String destination = options.destination;
-        String[] classPath =
-            Utils.splitQualifiedName(sourceClass.getQualifiedName());
-        if (destination == null || destination.equals("")) {
-            destination = System.getProperty("user.dir");
-        }
-
-        if (classPath[0] != null && !classPath[0].equals("")) {
-            // the class is part of a package
-            destination += File.separator
-                + classPath[0].replace('/', File.separatorChar);
-        }
-
-        String filename =
-            destination
-                + File.separatorChar
-                + classPath[classPath.length
-                - 1]
-                + ".class";
-        return filename;
-    }
-
     public boolean noWeaveMode() {
         //XXX Should be determined by the compiler options.
         return false;
@@ -665,7 +643,7 @@ public class Main extends MainSuper implements Constants {
 
         messageHandler = new CaesarMessageHandler(this);
         CaesarBcelWorld world = CaesarBcelWorld.getInstance();
-        world.setMessageHandler(messageHandler);
+        world.setMessageHandler(messageHandler);        
     }
 
     /**

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: MainSuper.java,v 1.10 2004-04-16 14:27:12 aracic Exp $
+ * $Id: MainSuper.java,v 1.11 2004-08-04 12:48:36 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -23,7 +23,6 @@ package org.caesarj.compiler;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.Vector;
 
 import org.caesarj.classfile.ClassFileFormatException;
@@ -139,7 +138,7 @@ public abstract class MainSuper extends CompilerBase {
                 classInfo.write(options.destination);
                 byte[] codeBuf = classInfo.getByteArray();
                 
-                byteCodeMap.put(classes[count], codeBuf);                
+                byteCodeMap.addSourceClass(classes[count], codeBuf);                
                 // IVICA:END
                 
                 if (verboseMode() && !classes[count].isNested()) {
@@ -442,6 +441,6 @@ public abstract class MainSuper extends CompilerBase {
     // all generated classes
     protected Vector classes = new Vector(100);
     
-    // IVICA byteCodeMap
-    protected HashMap byteCodeMap = new HashMap(100);
+    // VAIDAS byteCodeMap
+    protected ByteCodeMap byteCodeMap = null;
 }
