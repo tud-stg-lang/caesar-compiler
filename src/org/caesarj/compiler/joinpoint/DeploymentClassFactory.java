@@ -3,7 +3,6 @@ package org.caesarj.compiler.joinpoint;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.caesarj.compiler.CaesarConstants;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.aspectj.CaesarNameMangler;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
@@ -58,6 +57,7 @@ import org.caesarj.compiler.ast.JVariableDefinition;
 import org.caesarj.compiler.ast.JWhileStatement;
 import org.caesarj.compiler.ast.PointcutDeclaration;
 import org.caesarj.compiler.ast.ProceedDeclaration;
+import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.types.CArrayType;
 import org.caesarj.compiler.types.CBooleanType;

@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.caesarj.compiler.FjConstants;
+import org.caesarj.compiler.constants.FjConstants;
 
 import de.fub.bytecode.Constants;
 import de.fub.bytecode.classfile.Method;

@@ -1,6 +1,6 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.CaesarMessages;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;

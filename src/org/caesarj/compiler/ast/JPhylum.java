@@ -15,13 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JPhylum.java,v 1.1 2004-02-08 16:47:43 ostermann Exp $
+ * $Id: JPhylum.java,v 1.2 2004-02-08 20:27:57 ostermann Exp $
  */
 
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.Constants;
 import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.util.MessageDescription;
 import org.caesarj.util.PositionedError;
@@ -30,7 +30,7 @@ import org.caesarj.util.TokenReference;
 /**
  * This class represents the root class for all elements of the parsing tree
  */
-public abstract class JPhylum extends org.caesarj.compiler.Phylum implements Constants {
+public abstract class JPhylum extends org.caesarj.compiler.ast.Phylum implements Constants {
 
   // ----------------------------------------------------------------------
   // CONSTRUCTORS

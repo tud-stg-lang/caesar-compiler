@@ -15,15 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JPrefixExpression.java,v 1.1 2004-02-08 16:47:42 ostermann Exp $
+ * $Id: JPrefixExpression.java,v 1.2 2004-02-08 20:27:57 ostermann Exp $
  */
 
 package org.caesarj.compiler.ast;
 
 import org.caesarj.classfile.IincInstruction;
 import org.caesarj.classfile.PushLiteralInstruction;
-import org.caesarj.compiler.KjcMessages;
 import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.context.CVariableInfo;

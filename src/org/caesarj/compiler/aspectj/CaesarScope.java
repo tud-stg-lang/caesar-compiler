@@ -15,10 +15,10 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.IScope;
 import org.aspectj.weaver.patterns.PatternNode;
-import org.caesarj.compiler.CaesarConstants;
-import org.caesarj.compiler.ast.FjClassContext;
 import org.caesarj.compiler.ast.JClassImport;
 import org.caesarj.compiler.ast.JPackageImport;
+import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.util.UnpositionedError;
 

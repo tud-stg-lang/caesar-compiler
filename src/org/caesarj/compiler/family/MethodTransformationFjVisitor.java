@@ -1,8 +1,6 @@
 package org.caesarj.compiler.family;
 
 import org.caesarj.classfile.Constants;
-import org.caesarj.compiler.CciConstants;
-import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
@@ -16,6 +14,8 @@ import org.caesarj.compiler.ast.JFieldDeclaration;
 import org.caesarj.compiler.ast.JMethodDeclaration;
 import org.caesarj.compiler.ast.JPhylum;
 import org.caesarj.compiler.ast.JTypeDeclaration;
+import org.caesarj.compiler.constants.CciConstants;
+import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;

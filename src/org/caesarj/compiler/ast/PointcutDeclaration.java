@@ -3,13 +3,13 @@ package org.caesarj.compiler.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.aspectj.CaesarFormalBinding;
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.aspectj.CaesarScope;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;

@@ -1,11 +1,9 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.CaesarConstants;
-import org.caesarj.compiler.JavaStyleComment;
-import org.caesarj.compiler.JavadocComment;
-import org.caesarj.compiler.KjcMessages;
 import org.caesarj.compiler.aspectj.CaesarAdviceKind;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
+import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.export.CClass;

@@ -1,9 +1,7 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.CciConstants;
-import org.caesarj.compiler.FjConstants;
-import org.caesarj.compiler.JavaStyleComment;
-import org.caesarj.compiler.JavadocComment;
+import org.caesarj.compiler.constants.CciConstants;
+import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CStdType;

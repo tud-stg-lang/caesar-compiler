@@ -2,11 +2,9 @@ package org.caesarj.compiler.ast;
 
 
 import org.caesarj.classfile.Constants;
-import org.caesarj.compiler.CaesarMessages;
-import org.caesarj.compiler.CciConstants;
-import org.caesarj.compiler.FjConstants;
-import org.caesarj.compiler.JavaStyleComment;
-import org.caesarj.compiler.JavadocComment;
+import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.compiler.constants.CciConstants;
+import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.export.CMember;
 import org.caesarj.compiler.export.CSourceMethod;
@@ -518,7 +516,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 				getTokenReference(),
 				Constants.ACC_PUBLIC,
 				typeVariables,
-				new CClassNameType(org.caesarj.compiler.Constants.JAV_OBJECT),
+				new CClassNameType(org.caesarj.compiler.constants.Constants.JAV_OBJECT),
 				FjConstants.factoryMethodName(FjConstants.toIfcName(ident)),
 				newParameters,
 				exceptions,

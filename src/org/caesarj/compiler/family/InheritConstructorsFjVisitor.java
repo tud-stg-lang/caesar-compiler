@@ -2,11 +2,11 @@ package org.caesarj.compiler.family;
 
 import java.util.Vector;
 
-import org.caesarj.compiler.CaesarMessages;
-import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.JCompilationUnit;
+import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.UnpositionedError;
 

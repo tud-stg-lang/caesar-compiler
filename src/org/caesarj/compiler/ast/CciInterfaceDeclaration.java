@@ -2,9 +2,7 @@ package org.caesarj.compiler.ast;
 
 import java.util.ArrayList;
 
-import org.caesarj.compiler.CaesarMessages;
-import org.caesarj.compiler.JavaStyleComment;
-import org.caesarj.compiler.JavadocComment;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CompilerBase.java,v 1.1 2004-02-08 16:47:55 ostermann Exp $
+ * $Id: CompilerBase.java,v 1.2 2004-02-08 20:28:00 ostermann Exp $
  */
 
 package org.caesarj.tools.antlr.extra;
@@ -27,10 +27,11 @@ import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.util.Vector;
 
-import org.caesarj.compiler.util.*;
-import org.caesarj.util.*;
 import org.caesarj.util.Message;
 import org.caesarj.util.MessageDescription;
+import org.caesarj.util.Messages;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.UnpositionedError;
 import org.caesarj.util.Utils;
 
 /**

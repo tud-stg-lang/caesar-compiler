@@ -1,6 +1,5 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.export.CSourceMethod;

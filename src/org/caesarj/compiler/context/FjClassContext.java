@@ -1,13 +1,12 @@
-package org.caesarj.compiler.ast;
+package org.caesarj.compiler.context;
 
 import java.util.EmptyStackException;
 import java.util.Stack;
 
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.aspectj.CaesarFormalBinding;
-import org.caesarj.compiler.context.CClassContext;
-import org.caesarj.compiler.context.CCompilationUnitContext;
-import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.ast.FjAdditionalContext;
+import org.caesarj.compiler.ast.JTypeDeclaration;
 import org.caesarj.compiler.export.CSourceClass;
 
 public class FjClassContext

@@ -1,7 +1,6 @@
 package org.caesarj.compiler.family;
 
 import org.caesarj.classfile.Constants;
-import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.CciInterfaceDeclaration;
 import org.caesarj.compiler.ast.CciWeaveletClassDeclaration;
@@ -18,6 +17,7 @@ import org.caesarj.compiler.ast.JPackageImport;
 import org.caesarj.compiler.ast.JPackageName;
 import org.caesarj.compiler.ast.JPhylum;
 import org.caesarj.compiler.ast.JTypeDeclaration;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;

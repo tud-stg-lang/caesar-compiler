@@ -3,12 +3,11 @@ package org.caesarj.compiler.ast;
 import java.util.Hashtable;
 
 import org.caesarj.compiler.ClassReader;
-import org.caesarj.compiler.JavaStyleComment;
-import org.caesarj.compiler.JavadocComment;
-import org.caesarj.compiler.KjcMessages;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;

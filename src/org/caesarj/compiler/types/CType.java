@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CType.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: CType.java,v 1.2 2004-02-08 20:28:00 ostermann Exp $
  */
 
 package org.caesarj.compiler.types;
 
-import org.caesarj.compiler.Constants;
+import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.util.InconsistencyException;

@@ -4,9 +4,7 @@ import java.util.Arrays;
 import java.util.Vector;
 
 import org.caesarj.classfile.Constants;
-import org.caesarj.compiler.FjConstants;
-import org.caesarj.compiler.JavaStyleComment;
-import org.caesarj.compiler.JavadocComment;
+import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;

@@ -1,25 +1,32 @@
 // $ANTLR 1.5A: "cc/Caesar.g" -> "CaesarParser.java"$
  package org.caesarj.compiler; 
-import org.caesarj.tools.antlr.runtime.*;
+import java.util.ArrayList;
 
-  import java.util.ArrayList;
-
-  import org.caesarj.compiler.ast.*;
-  
-  import org.caesarj.compiler.aspectj.CaesarAdviceKind;
-  import org.caesarj.compiler.aspectj.CaesarPatternParser;
-  import org.caesarj.compiler.aspectj.CaesarPointcut;
-  import org.caesarj.compiler.aspectj.CaesarSourceContext;
-
-  import org.caesarj.compiler.CWarning;
-  import org.caesarj.tools.antlr.extra.*;
-  import org.caesarj.compiler.JavaStyleComment;
-  import org.caesarj.compiler.JavadocComment;
-  import org.caesarj.tools.antlr.extra.InputBuffer;
-  import org.caesarj.compiler.context.*;
-  import org.caesarj.compiler.types.*;
-  import org.caesarj.compiler.export.*;
-  import org.caesarj.util.*;
+import org.caesarj.compiler.aspectj.CaesarAdviceKind;
+import org.caesarj.compiler.aspectj.CaesarPatternParser;
+import org.caesarj.compiler.aspectj.CaesarPointcut;
+import org.caesarj.compiler.aspectj.CaesarSourceContext;
+import org.caesarj.compiler.ast.*;
+import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.compiler.constants.Constants;
+import org.caesarj.compiler.constants.KjcMessages;
+import org.caesarj.compiler.context.CParseCompilationUnitContext;
+import org.caesarj.compiler.export.CModifier;
+import org.caesarj.compiler.types.CArrayType;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.tools.antlr.extra.CompilerBase;
+import org.caesarj.tools.antlr.extra.InputBuffer;
+import org.caesarj.tools.antlr.runtime.BitSet;
+import org.caesarj.tools.antlr.runtime.NoViableAltException;
+import org.caesarj.tools.antlr.runtime.RecognitionException;
+import org.caesarj.tools.antlr.runtime.Token;
+import org.caesarj.tools.antlr.runtime.TokenStreamException;
+import org.caesarj.util.CWarning;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
 
 public class CaesarParser extends org.caesarj.tools.antlr.extra.Parser
        implements CaesarTokenTypes

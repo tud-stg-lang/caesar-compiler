@@ -1,7 +1,6 @@
 package org.caesarj.compiler.family;
 
 import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.ast.FjClassContext;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjInterfaceDeclaration;
 import org.caesarj.compiler.ast.FjVisitor;
@@ -15,6 +14,7 @@ import org.caesarj.compiler.ast.JPhylum;
 import org.caesarj.compiler.ast.JTypeDeclaration;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;

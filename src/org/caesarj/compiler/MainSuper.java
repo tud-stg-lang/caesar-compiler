@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: MainSuper.java,v 1.1 2004-02-08 16:47:51 ostermann Exp $
+ * $Id: MainSuper.java,v 1.2 2004-02-08 20:28:00 ostermann Exp $
  */
 
 package org.caesarj.compiler;
@@ -26,18 +26,23 @@ import java.io.PrintWriter;
 import java.util.Vector;
 
 import org.caesarj.classfile.ClassFileFormatException;
-import org.caesarj.compiler.ast.*;
 import org.caesarj.compiler.ast.JCompilationUnit;
+import org.caesarj.compiler.ast.KjcPrettyPrinter;
+import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
 import org.caesarj.compiler.types.CStdType;
 import org.caesarj.compiler.types.KjcSignatureParser;
 import org.caesarj.compiler.types.KjcTypeFactory;
 import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.compiler.util.*;
-import org.caesarj.tools.antlr.extra.*;
-import org.caesarj.util.*;
+import org.caesarj.tools.antlr.extra.CompilerBase;
+import org.caesarj.util.CWarning;
 import org.caesarj.util.InconsistencyException;
+import org.caesarj.util.Messages;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 import org.caesarj.util.Utils;
 
 /**

@@ -15,19 +15,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JInstanceofExpression.java,v 1.1 2004-02-08 16:47:44 ostermann Exp $
+ * $Id: JInstanceofExpression.java,v 1.2 2004-02-08 20:27:58 ostermann Exp $
  */
 
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.CWarning;
-import org.caesarj.compiler.KjcMessages;
 import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.util.CWarning;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;

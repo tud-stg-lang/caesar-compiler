@@ -1,4 +1,4 @@
-package org.caesarj.compiler;
+package org.caesarj.compiler.constants;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -10,9 +10,9 @@ import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.util.*;
-import org.caesarj.util.*;
 import org.caesarj.util.InconsistencyException;
+import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 public class FjConstants {
 	public static final String SEPERATOR = "_".intern();

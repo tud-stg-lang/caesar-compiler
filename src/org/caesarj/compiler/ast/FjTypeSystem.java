@@ -1,10 +1,10 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.CaesarMessages;
-import org.caesarj.compiler.CciConstants;
-import org.caesarj.compiler.Constants;
-import org.caesarj.compiler.FjConstants;
-import org.caesarj.compiler.KjcMessages;
+import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.compiler.constants.CciConstants;
+import org.caesarj.compiler.constants.Constants;
+import org.caesarj.compiler.constants.FjConstants;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;

@@ -1,38 +1,32 @@
 package org.caesarj.compiler.ast;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Vector;
 
-import org.caesarj.compiler.CaesarConstants;
-import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.ClassReader;
-import org.caesarj.compiler.JavaStyleComment;
-import org.caesarj.compiler.JavadocComment;
-import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.KjcMessages;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarDeclare;
-import org.caesarj.compiler.aspectj.CaesarNameMangler;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.aspectj.CaesarScope;
+import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
+import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.export.CSourceField;
-import org.caesarj.compiler.joinpoint.DeploymentClassFactory;
+import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
-import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -256,7 +250,7 @@ public class FjClassDeclaration
 		return inners;
 	}
 
-	protected void setInners(JTypeDeclaration[] d)
+	public void setInners(JTypeDeclaration[] d)
 	{
 		inners = d;
 	}
@@ -394,7 +388,7 @@ public class FjClassDeclaration
 		//statically deployed classes are considered as aspects
 		if (isStaticallyDeployed())
 		{
-			prepareForStaticDeployment(context);
+			new DeploymentPreparation(this).prepareForStaticDeployment(context);
 
 			modifiers |= ACC_FINAL;
 		}
@@ -653,195 +647,12 @@ public class FjClassDeclaration
 		this.perClause = perClause;
 	}
 
-	protected void prepareForStaticDeployment(CContext context)
-	{
-		for (int i = 0; i < advices.length; i++)
-		{
-			createAdviceMethodName(advices[i]);
 
-			if (advices[i].isAroundAdvice())
-			{
-				//create a proceed method for around advices
-				addMethod(createProceedMethod(advices[i]));
-			}
-		}
-
-		CType singletonType = new CClassNameType(getIdent());
-		FjVariableDefinition aspectInstanceVar =
-			new FjVariableDefinition(
-				TokenReference.NO_REF,
-				ACC_PUBLIC | ACC_FINAL | ACC_STATIC,
-				singletonType,
-				PER_SINGLETON_INSTANCE_FIELD,
-				null);
-		addField(
-			new FjFieldDeclaration(
-				getTokenReference(),
-				aspectInstanceVar,
-				true,
-				null,
-				null));
-		addMethod(createSingletonAjcClinitMethod(context.getTypeFactory()));
-
-		addMethod(createAspectOfMethod());
-		addClassBlock(createSingletonAspectClinit());
-	}
-
-	protected FjMethodDeclaration createSingletonAjcClinitMethod(TypeFactory typeFactory)
-	{
-		JStatement[] body = { createSingletonClinitMethodStatement_1()};
-		return new FjMethodDeclaration(
-			TokenReference.NO_REF,
-			ACC_PRIVATE | ACC_STATIC,
-			CTypeVariable.EMPTY,
-			typeFactory.getVoidType(),
-			AJC_CLINIT_METHOD,
-			JFormalParameter.EMPTY,
-			CReferenceType.EMPTY,
-			new JBlock(TokenReference.NO_REF, body, null),
-			null,
-			null);
-	}
-	private FjMethodDeclaration createAspectOfMethod() {
-
-		CType singletonType = new CClassNameType(getFjSourceClass().getQualifiedName());
-		JExpression expr =
-			new FjFieldAccessExpression(
-				TokenReference.NO_REF,
-				null,
-				PER_SINGLETON_INSTANCE_FIELD);
-		JStatement[] body = { new JReturnStatement(TokenReference.NO_REF, expr, null)};
-		return new FjMethodDeclaration(
-			TokenReference.NO_REF,
-			ACC_PUBLIC | ACC_STATIC,
-			CTypeVariable.EMPTY,
-			singletonType,
-			ASPECT_OF_METHOD,
-			FjFormalParameter.EMPTY,
-			CReferenceType.EMPTY,
-			new JBlock(TokenReference.NO_REF, body, null),
-			null,
-			null);
-	}
-
-	/**
-	 * Creates the following statement:
-	 * 
-	 * ajc$perSingletonInstance = new AnAspect$SingletonAspect();
-	 */
-	protected JStatement createSingletonClinitMethodStatement_1()
-	{
-		JExpression left =
-			new FjNameExpression(
-				TokenReference.NO_REF,
-				PER_SINGLETON_INSTANCE_FIELD);
-		JExpression right =
-			new CciInternalUnqualifiedInstanceCreation(
-				TokenReference.NO_REF,
-				new CClassNameType(getIdent()),
-				JExpression.EMPTY);
-		return new JExpressionStatement(
-			TokenReference.NO_REF,
-			new FjAssignmentExpression(TokenReference.NO_REF, left, right),
-			null);
-	}
-
-	protected JClassBlock createSingletonAspectClinit()
-	{
-
-		CReferenceType type =
-			new CClassNameType(getFjSourceClass().getQualifiedName());
-		JExpression prefix = new JTypeNameExpression(getTokenReference(), type);
-
-		JExpression expr =
-			new FjMethodCallExpression(
-				getTokenReference(),
-				prefix,
-				AJC_CLINIT_METHOD,
-				JExpression.EMPTY);
-
-		JStatement[] body =
-			{ new JExpressionStatement(getTokenReference(), expr, null)};
-
-		return new JClassBlock(getTokenReference(), true, body);
-	}
-
-	/**
-	 * Changes the name of the given advice.
-	 */
-	protected void createAdviceMethodName(AdviceDeclaration adviceDeclaration)
-	{
-		String ident =
-			CaesarNameMangler.adviceName(
-				getCClass().getQualifiedName(),
-				adviceDeclaration.getKind(),
-				adviceDeclaration.getTokenReference().getLine());
-		adviceDeclaration.setIdent(ident);
-	}
 
     public boolean isCrosscutting() {
     	return CModifier.contains(modifiers, ACC_CROSSCUTTING);
     }
 
-	/**
-	 * Generates for every nested crosscutting class the corresponding deployment support classes.
-	 */
-	public void prepareForDynamicDeployment(KjcEnvironment environment)
-	{
-		List newInners = new ArrayList();
-
-		for (int i = 0; i < inners.length; i++)
-		{
-
-			newInners.add(inners[i]);
-
-			if (inners[i] instanceof FjClassDeclaration)
-			{
-
-				//create support classes for each crosscutting inner class
-				FjClassDeclaration innerCaesarClass =
-					(FjClassDeclaration) inners[i];
-				if (innerCaesarClass.isCrosscutting())
-				{
-
-					DeploymentClassFactory utils =
-						new DeploymentClassFactory(
-							innerCaesarClass,
-							environment);
-
-					//modify the aspect class		
-					utils.modifyAspectClass();
-
-					//add the deployment support classes to the enclosing class
-					newInners.add(utils.createAspectInterface());
-					newInners.add(utils.createMultiInstanceAspectClass());
-					newInners.add(utils.createMultiThreadAspectClass());
-					newInners.add(utils.createSingletonAspect());
-				}
-
-				//handle the inners of the inners
-				JTypeDeclaration[] innersInners = innerCaesarClass.getInners();
-				for (int j = 0; j < innersInners.length; j++)
-				{
-					if (innersInners[j] instanceof FjClassDeclaration)
-					{
-						FjClassDeclaration currentInnerInner =
-							(FjClassDeclaration) innersInners[j];
-						currentInnerInner.prepareForDynamicDeployment(
-							environment);
-					}
-				}
-			}
-
-		}
-
-		inners =
-			(JTypeDeclaration[]) newInners.toArray(new JTypeDeclaration[0]);
-
-		//Important! Regenerate the interface of the enclosing class.				
-		String prefix = getCClass().getPackage().replace('.', '/') + "/";
-		generateInterface(environment.getClassReader(), getOwner(), prefix);
-	}
 
 	public void checkTypeBody(CContext context) throws PositionedError
 	{
@@ -857,22 +668,6 @@ public class FjClassDeclaration
 		super.checkTypeBody(context);
 	}
 
-	/**
-	 * Creates the proceed method for around advices.
-	 * */
-	private JMethodDeclaration createProceedMethod(AdviceDeclaration advice)
-	{
-		ProceedDeclaration proceedMethodDeclaration =
-			new ProceedDeclaration(
-				advice.getTokenReference(),
-				advice.getReturnType(),
-				advice.getIdent() + PROCEED_METHOD,
-				advice.getProceedParameters(),
-				advice.getIdent());
-		//attach proceed-method to the adviceDeclaration
-		advice.setProceedMethodDeclaration(proceedMethodDeclaration);
-		return proceedMethodDeclaration;
-	}
 
 	/**
 	 * Constructs the class context.

@@ -1,6 +1,6 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.FjConstants;
+import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.util.TokenReference;
 

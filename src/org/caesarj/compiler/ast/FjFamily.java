@@ -3,7 +3,7 @@ package org.caesarj.compiler.ast;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import org.caesarj.compiler.FjConstants;
+import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CField;

@@ -1,6 +1,5 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;

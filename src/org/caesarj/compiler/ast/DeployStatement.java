@@ -1,8 +1,7 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.CaesarConstants;
-import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CSimpleBodyContext;

@@ -1,6 +1,6 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.FjConstants;
+import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.util.PositionedError;

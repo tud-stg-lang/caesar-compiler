@@ -17,17 +17,27 @@ import org.caesarj.compiler.ast.FjSourceClass;
 import org.caesarj.compiler.ast.FjVisitor;
 import org.caesarj.compiler.ast.JCompilationUnit;
 import org.caesarj.compiler.codegen.CodeSequence;
-import org.caesarj.compiler.delegation.*;
+import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.compiler.constants.CciConstants;
+import org.caesarj.compiler.constants.Constants;
+import org.caesarj.compiler.constants.KjcMessages;
+import org.caesarj.compiler.delegation.ClassTransformationFjVisitor;
 import org.caesarj.compiler.export.CSourceClass;
-import org.caesarj.compiler.family.*;
-import org.caesarj.compiler.joinpoint.*;
+import org.caesarj.compiler.family.CollaborationInterfaceTransformation;
+import org.caesarj.compiler.family.CollectClassesFjVisitor;
+import org.caesarj.compiler.family.FamiliesInitializerFjVisitor;
+import org.caesarj.compiler.family.InheritConstructorsFjVisitor;
+import org.caesarj.compiler.family.MethodTransformationFjVisitor;
+import org.caesarj.compiler.family.ResolveSuperClassFjVisitor;
+import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
 import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.compiler.util.*;
-import org.caesarj.tools.antlr.extra.*;
+import org.caesarj.tools.antlr.extra.CompilerBase;
 import org.caesarj.tools.antlr.extra.InputBuffer;
 import org.caesarj.tools.antlr.runtime.ParserException;
-import org.caesarj.util.*;
+import org.caesarj.util.Messages;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.UnpositionedError;
 import org.caesarj.util.Utils;
 
 /**
@@ -358,6 +368,8 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 		try {
 			unit = getJCompilationUnit(parser);
 			compilationUnits.add(unit);
+			
+			//TODO: make this a separate step outside parsing
 			unit.accept(getCollaborationInteraceTransformation(environment));
 
 		} catch (ParserException e) {

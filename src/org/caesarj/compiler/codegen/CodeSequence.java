@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CodeSequence.java,v 1.1 2004-02-08 16:47:55 ostermann Exp $
+ * $Id: CodeSequence.java,v 1.2 2004-02-08 20:28:00 ostermann Exp $
  */
 
 /**
@@ -54,7 +54,7 @@ import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.util.InconsistencyException;
 
-public final class CodeSequence extends org.caesarj.util.Utils implements org.caesarj.compiler.Constants {
+public final class CodeSequence extends org.caesarj.util.Utils implements org.caesarj.compiler.constants.Constants {
 
   // --------------------------------------------------------------------
   // CONSTRUCTORS
@@ -77,7 +77,7 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
    */
   public static CodeSequence getCodeSequence() {
     CodeSequence	seq;
-    if (!org.caesarj.compiler.Constants.ENV_USE_CACHE || stack.empty()) {
+    if (!org.caesarj.compiler.constants.Constants.ENV_USE_CACHE || stack.empty()) {
       seq = new CodeSequence();
     } else {
       seq = (CodeSequence)stack.pop();
@@ -93,7 +93,7 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
    * Release a code sequence
    */
   public void release() {
-    if (org.caesarj.compiler.Constants.ENV_USE_CACHE) {
+    if (org.caesarj.compiler.constants.Constants.ENV_USE_CACHE) {
       stack.push(this);
       handlers.clear();
       lines.clear();
@@ -458,7 +458,7 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
     // if there is a label planted as last instruction, add a dummy
     // instruction at the end: it will never be reached
     if (labelAtEnd) {
-      plantNoArgInstruction(org.caesarj.compiler.Constants.opc_nop);
+      plantNoArgInstruction(org.caesarj.compiler.constants.Constants.opc_nop);
     }
 
     try {

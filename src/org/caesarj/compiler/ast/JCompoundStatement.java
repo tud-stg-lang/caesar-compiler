@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JCompoundStatement.java,v 1.1 2004-02-08 16:47:43 ostermann Exp $
+ * $Id: JCompoundStatement.java,v 1.2 2004-02-08 20:27:59 ostermann Exp $
  */
 
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.KjcMessages;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.util.PositionedError;

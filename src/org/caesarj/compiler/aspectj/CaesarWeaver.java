@@ -10,7 +10,7 @@ import java.util.List;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
-import org.caesarj.compiler.CaesarMessages;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.util.Message;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;

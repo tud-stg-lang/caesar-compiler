@@ -1,6 +1,5 @@
 package org.caesarj.compiler.delegation;
 
-import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
@@ -16,6 +15,7 @@ import org.caesarj.compiler.ast.JPackageImport;
 import org.caesarj.compiler.ast.JPackageName;
 import org.caesarj.compiler.ast.JPhylum;
 import org.caesarj.compiler.ast.JTypeDeclaration;
+import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;

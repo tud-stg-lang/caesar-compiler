@@ -15,15 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassImport.java,v 1.1 2004-02-08 16:47:43 ostermann Exp $
+ * $Id: JClassImport.java,v 1.2 2004-02-08 20:27:58 ostermann Exp $
  */
 
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.CWarning;
-import org.caesarj.compiler.JavaStyleComment;
-import org.caesarj.compiler.KjcMessages;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.tools.antlr.extra.CompilerBase;
+import org.caesarj.util.CWarning;
 import org.caesarj.util.TokenReference;
 
 /**

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.joinpoint.DeploymentClassFactory;
+import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.util.TokenReference;
 
 /**
@@ -98,7 +99,7 @@ public class FjCompilationUnit extends JCompilationUnit {
 
 				if (caesarClass.getInners().length > 0) {
 					//consider nested types
-					caesarClass.prepareForDynamicDeployment(environment);
+					new DeploymentPreparation(caesarClass).prepareForDynamicDeployment(environment);
 				}
 			}
 		}

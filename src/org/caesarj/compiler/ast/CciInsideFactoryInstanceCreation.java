@@ -1,7 +1,7 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.types.CReferenceType;

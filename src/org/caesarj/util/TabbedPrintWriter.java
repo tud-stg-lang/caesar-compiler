@@ -15,10 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: TabbedPrintWriter.java,v 1.1 2003-07-05 18:29:43 werner Exp $
+ * $Id: TabbedPrintWriter.java,v 1.1 2004-02-08 20:28:01 ostermann Exp $
  */
 
-package org.caesarj.compiler;
+package org.caesarj.util;
 
 import java.io.PrintWriter;
 import java.io.Writer;

@@ -1,8 +1,8 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.CaesarMessages;
-import org.caesarj.compiler.FjConstants;
-import org.caesarj.compiler.KjcMessages;
+import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.compiler.constants.FjConstants;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CClassNameType;

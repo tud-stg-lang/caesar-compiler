@@ -1,10 +1,9 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.CaesarMessages;
-import org.caesarj.compiler.JavaStyleComment;
-import org.caesarj.compiler.JavadocComment;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CField;
+import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CMember;
 import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.util.PositionedError;

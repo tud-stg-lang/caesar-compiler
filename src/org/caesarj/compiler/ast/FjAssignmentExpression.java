@@ -1,6 +1,6 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.KjcMessages;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.types.CType;

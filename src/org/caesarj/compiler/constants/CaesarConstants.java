@@ -1,4 +1,5 @@
-package org.caesarj.compiler;
+package org.caesarj.compiler.constants;
+
 
 
 /**

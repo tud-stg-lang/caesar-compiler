@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.caesarj.classfile.Constants;
-import org.caesarj.compiler.CaesarConstants;
 import org.caesarj.compiler.ast.AdviceDeclaration;
 import org.caesarj.compiler.ast.CaesarVisitor;
 import org.caesarj.compiler.ast.FjClassDeclaration;
@@ -24,6 +23,7 @@ import org.caesarj.compiler.ast.JPhylum;
 import org.caesarj.compiler.ast.JStatement;
 import org.caesarj.compiler.ast.JTypeDeclaration;
 import org.caesarj.compiler.ast.JTypeNameExpression;
+import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;

@@ -1,6 +1,5 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.export.CMethod;

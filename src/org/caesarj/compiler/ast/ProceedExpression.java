@@ -1,6 +1,6 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.CaesarConstants;
+import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CClassNameType;

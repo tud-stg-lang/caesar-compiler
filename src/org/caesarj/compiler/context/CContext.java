@@ -15,15 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CContext.java,v 1.1 2004-02-08 16:47:37 ostermann Exp $
+ * $Id: CContext.java,v 1.2 2004-02-08 20:28:00 ostermann Exp $
  */
 
 package org.caesarj.compiler.context;
 
 import org.caesarj.compiler.ClassReader;
-import org.caesarj.compiler.Constants;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.JLocalVariable;
+import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;

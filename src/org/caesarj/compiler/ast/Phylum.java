@@ -15,26 +15,29 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JavadocComment.java,v 1.1 2003-07-05 18:29:43 werner Exp $
+ * $Id: Phylum.java,v 1.1 2004-02-08 20:27:58 ostermann Exp $
  */
 
-package org.caesarj.compiler;
+package org.caesarj.compiler.ast;
+
+import org.caesarj.util.TokenReference;
+import org.caesarj.util.Utils;
 
 /**
- * A simple character constant
+ * This class represents the root class for all elements of the parsing tree
  */
-public class JavadocComment extends JavaStyleComment {
+public abstract class Phylum extends Utils {
 
   // ----------------------------------------------------------------------
   // CONSTRUCTORS
   // ----------------------------------------------------------------------
 
   /**
-   * Construct a node in the parsing tree
-   * @param	text		the string representation of this comment
+   * construct an element of the parsing tree
+   * @param where the token reference of this node
    */
-  public JavadocComment(String text, boolean spaceBefore, boolean spaceAfter) {
-    super(text, false, spaceBefore, spaceAfter);
+  public Phylum(TokenReference where) {
+    this.where = where;
   }
 
   // ----------------------------------------------------------------------
@@ -42,16 +45,16 @@ public class JavadocComment extends JavaStyleComment {
   // ----------------------------------------------------------------------
 
   /**
-   * Return if this javadoc comment contains a deprecated clause
+   * Returns the token reference of this node in the source text.
+   * @return the entire token reference
    */
-  public boolean isDeprecated() {
-    return text.indexOf("@deprecated") >= 0;
+  public TokenReference getTokenReference() {
+    return where;
   }
 
-  /**
-   *
-   */
-  public String getParams() {
-    return text;
-  }
+  // ----------------------------------------------------------------------
+  // DATA MEMBERS
+  // ----------------------------------------------------------------------
+
+  private final TokenReference	where;		// position in the source text
 }

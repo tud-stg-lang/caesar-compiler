@@ -15,30 +15,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Phylum.java,v 1.2 2004-02-08 16:47:51 ostermann Exp $
+ * $Id: JavaStyleComment.java,v 1.1 2004-02-08 20:27:58 ostermann Exp $
  */
 
-package org.caesarj.compiler;
-
-import org.caesarj.compiler.util.*;
-import org.caesarj.util.*;
-import org.caesarj.util.Utils;
+package org.caesarj.compiler.ast;
 
 /**
- * This class represents the root class for all elements of the parsing tree
+ * A simple character constant
  */
-public abstract class Phylum extends Utils {
+public class JavaStyleComment {
 
   // ----------------------------------------------------------------------
   // CONSTRUCTORS
   // ----------------------------------------------------------------------
 
   /**
-   * construct an element of the parsing tree
-   * @param where the token reference of this node
+   * Construct a node in the parsing tree
+   * @param	text		the string representation of this comment
+   * @param	!!! COMPLETE
    */
-  public Phylum(TokenReference where) {
-    this.where = where;
+  public JavaStyleComment(String text, boolean isLineComment, boolean spaceBefore, boolean spaceAfter) {
+    this.text = text;
+    this.isLineComment = isLineComment;
+    this.spaceBefore = spaceBefore;
+    this.spaceAfter = spaceAfter;
   }
 
   // ----------------------------------------------------------------------
@@ -46,16 +46,39 @@ public abstract class Phylum extends Utils {
   // ----------------------------------------------------------------------
 
   /**
-   * Returns the token reference of this node in the source text.
-   * @return the entire token reference
+   *
    */
-  public TokenReference getTokenReference() {
-    return where;
+  public String getText() {
+    return text;
+  }
+
+  /**
+   *
+   */
+  public boolean isLineComment() {
+    return isLineComment;
+  }
+
+  /**
+   *
+   */
+  public boolean hadSpaceBefore() {
+    return spaceBefore;
+  }
+
+  /**
+   *
+   */
+  public boolean hadSpaceAfter() {
+    return spaceAfter;
   }
 
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------
 
-  private final TokenReference	where;		// position in the source text
+  protected	String		text;
+  private final boolean		isLineComment;
+  private final boolean		spaceBefore;
+  private final boolean		spaceAfter;
 }

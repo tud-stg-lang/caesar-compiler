@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CSourceClass.java,v 1.1 2004-02-08 16:47:45 ostermann Exp $
+ * $Id: CSourceClass.java,v 1.2 2004-02-08 20:28:00 ostermann Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -34,7 +34,6 @@ import org.caesarj.classfile.InnerClassInfo;
 import org.caesarj.classfile.InstructionOverflowException;
 import org.caesarj.classfile.LocalVariableOverflowException;
 import org.caesarj.classfile.MethodInfo;
-import org.caesarj.compiler.KjcMessages;
 import org.caesarj.compiler.ast.JCheckedExpression;
 import org.caesarj.compiler.ast.JExpression;
 import org.caesarj.compiler.ast.JFieldAccessExpression;
@@ -45,6 +44,7 @@ import org.caesarj.compiler.ast.JOwnerExpression;
 import org.caesarj.compiler.ast.JThisExpression;
 import org.caesarj.compiler.ast.JTypeDeclaration;
 import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;

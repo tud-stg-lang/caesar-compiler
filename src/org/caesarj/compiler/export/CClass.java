@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.1 2004-02-08 16:47:45 ostermann Exp $
+ * $Id: CClass.java,v 1.2 2004-02-08 20:28:00 ostermann Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -25,12 +25,12 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import org.caesarj.compiler.KjcMessages;
 import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.JFieldDeclaration;
 import org.caesarj.compiler.ast.JMethodDeclaration;
 import org.caesarj.compiler.ast.JPhylum;
 import org.caesarj.compiler.ast.JTypeDeclaration;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.context.CTypeContext;

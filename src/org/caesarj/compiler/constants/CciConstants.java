@@ -1,5 +1,6 @@
-package org.caesarj.compiler;
+package org.caesarj.compiler.constants;
 
+import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 
