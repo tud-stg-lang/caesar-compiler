@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JVariableDefinition.java,v 1.13 2005-02-11 18:45:22 aracic Exp $
+ * $Id: JVariableDefinition.java,v 1.14 2005-02-15 18:33:01 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -32,6 +32,7 @@ import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.compiler.family.ContextExpression;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CArrayType;
 import org.caesarj.compiler.types.CClassNameType;
@@ -189,10 +190,20 @@ public class JVariableDefinition extends JLocalVariable {
                 try {
 		            Path rFam = expr.getFamily();
 		            Path lFam = ((CReferenceType)getType()).getPath();
-		            System.out.println("ASSIGNEMENT (line "+getTokenReference().getLine()+"):");
+		            System.out.println("INITIALIZER (line "+getTokenReference().getLine()+"):");
 		            System.out.println("\t"+lFam+" <= "+rFam);
 		            if(lFam != null && rFam != null) {
-		                System.out.println();
+		                
+		                // we are outside a method and the family of the expression is from the initializer method
+		                CType exprType = expr.getType(context.getTypeFactory());
+		                if(
+		                    ((CReferenceType)exprType).getDeclContext().getInitializerContext() != null
+		                    && context.getMethodContext() == null
+	                    ) {
+		                    // adapt the initializer context
+		                    ((ContextExpression)rFam.getHead()).adaptK(-3);
+		                }
+		                
 		                check(context,
 		          	      rFam.isAssignableTo( lFam ),
 		          	      KjcMessages.ASSIGNMENT_BADTYPE, 	rFam+"."+expr.getType(factory).getCClass().getIdent(),   
