@@ -36,6 +36,21 @@ public cclass X {
 	}		
 	
 	public void doSomethingWithSome(Client c) {
+	    try {
+	        getW(c).print();
+	    }
+	    catch(NullPointerException e) {
+	        System.out.println(e.getMessage());
+	    }
+	    
 		W(c).print();
+		getW(c).print();
 	}
+}
+
+public cclass Y extends X {
+    public void x() {
+        W(null);
+        getW(null);
+    }
 }
