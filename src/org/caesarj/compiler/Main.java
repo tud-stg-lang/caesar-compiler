@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.93 2005-03-31 14:06:10 thiago Exp $
+ * $Id: Main.java,v 1.94 2005-03-31 14:10:50 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -31,7 +31,6 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
