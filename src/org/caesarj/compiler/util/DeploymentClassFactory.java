@@ -262,17 +262,18 @@ public class DeploymentClassFactory implements CaesarConstants {
 	private FjMethodDeclaration createAspectClassAdviceMethod(AdviceDeclaration advice) {
 		JStatement[] body = { createAspectClassAdviceStatement_1(advice)};
 
-		return new FjMethodDeclaration(
-			where,
-			ACC_PUBLIC | ACC_SYNCHRONIZED,
-			CTypeVariable.EMPTY,
-			advice.getReturnType(),
-			advice.getIdent(),
-			advice.getParameters(),
-			advice.getExceptions(),
-			new JBlock(where, body, null),
-			null,
-			null);
+		return
+		new FjCleanMethodDeclaration(
+					where,
+					ACC_PUBLIC | ACC_SYNCHRONIZED,
+					CTypeVariable.EMPTY,
+					advice.getReturnType(),
+					advice.getIdent(),
+					advice.getParameters(),
+					advice.getExceptions(),
+					new JBlock(where, body, null),
+					null,
+					null);
 	}
 
 	/**
