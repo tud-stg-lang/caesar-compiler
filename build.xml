@@ -62,7 +62,7 @@
  	<unjar src="${libs}/cjbuildtools.jar" dest="${tmpbin}"/>
  	
  	<jar jarfile="${dist}/caesar-compiler.jar">
- 		<fileset dir="${bin}" includes="**/*" />
+ 		<fileset dir="${bin}" includes="**/*" excludes="org/caesarj/test/**"/>
  		<fileset dir="${tmpbin}" includes="**/*" />		
  	</jar>
  	
