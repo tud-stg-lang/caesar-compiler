@@ -8,7 +8,12 @@ VC_14 - not tagged yet
 		  we check if they are all mixin interfaces, if so, we return the first one (which is the
 		  most specific)
 		- see CClass.lookupClass(CCLass caller, String ident) for details (IVICA Tag)
-- ...
+- VC Method redefinition mechanism changed
+- check for cycles in cclass interface pulled up to joinAll pass
+  -> no StackOverflowError in generateCaesarTyleGraph pass anymore
+- every cclass has to be declared as public (temporary limitation),
+  otherwise the modifier is set automatically to public and a compiler warning is thrown  
+- log4j added for debug logging  
 
 VC_13 - 22.09.2004
 - Passing Caesar CLASSPATH to aspect weaver
