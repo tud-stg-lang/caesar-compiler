@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.19 2004-10-28 16:08:21 aracic Exp $
+ * $Id: CaesarMessages.msg,v 1.20 2004-10-29 12:49:09 aracic Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -89,6 +89,22 @@ error	CCLASS_EXTENDS_FROM_CCLASS
 
 error	CCLASS_CANNOT_ABSTRACT
 		"Currently Caesar compiler does not support abstract cclass-es."
+
+error	TOPLEVEL_CCLASS_WRAPS
+		"Wraps clause not allowed for a top-level cclass."
+
+error	CCLASS_CTOR_PUBLIC
+		"cclass constructor has to be public."
+
+error	OVERRIDE_WRAPPER
+		"Can not override an existing wrappee."
+
+error	CCLASS_PUBLIC_PACKAGE_FIELD
+		"public or package visible fields are not allowed within a cclass."
+		
+error	CCLASS_PACKAGE_METHOD
+		"package visible methods are not allowed within a cclass."
+
 
 // MISC
 
