@@ -240,12 +240,13 @@ public class JClassDeclaration extends JTypeDeclaration {
         }
         super.checkInterface(context, getSuperClass());
 
-        // Check inners
+        // add outer this to innner types
         for (int k = 0; k < inners.length; k++) {
             if (!inners[k].getCClass().isStatic()) {
                 inners[k].addOuterThis();
             }
         }
+        
     }
 
     /**

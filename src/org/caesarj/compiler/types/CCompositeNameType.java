@@ -29,18 +29,16 @@ public class CCompositeNameType extends CClassNameType {
         CReferenceType checkedImplTypes[]      = new CReferenceType[refType.length];
         
         for(int i=0; i<refType.length; i++) {
+            checkedInterfaceTypes[i] = 
+                (CReferenceType)refType[i].checkType(context);
+
             checkedImplTypes[i] = 
                 (CReferenceType)(
                     new CClassNameType(
-                        mapToImplClassName(
-                            refType[i].getQualifiedName()
-                        )
+                        checkedInterfaceTypes[i].getImplQualifiedName()
                     )
                 ).checkType(context);
-            
-            checkedInterfaceTypes[i] = 
-                (CReferenceType)refType[i].checkType(context);
-            
+                        
             classes[i] = checkedImplTypes[i].getCClass();
         }
         
@@ -49,8 +47,8 @@ public class CCompositeNameType extends CClassNameType {
             String mixedClassName = mixinList.generateClassName();
             
             // IVICA !!!
-            mixedClassName = "XXX";
-            return new CCompositeType("$gen/"+mixedClassName, checkedInterfaceTypes, checkedImplTypes);            
+            mixedClassName = "generated/_VCTestCase_1_Impl$ColG_Impl$XXX";
+            return new CCompositeType(mixedClassName, checkedInterfaceTypes, checkedImplTypes);            
         }
         catch (Exception e) {
             // CTODO create correct error message
@@ -58,21 +56,6 @@ public class CCompositeNameType extends CClassNameType {
 		}
     }
 
-    // CTODO !!! code replication, see CClassFactory
-    private String mapToImplClassName(String fullQualifiedName) {
-        StringBuffer res = new StringBuffer();
-        StringTokenizer tok = new StringTokenizer(fullQualifiedName, "/");
-        
-        while(tok.hasMoreTokens()) {
-            String token = tok.nextToken();
-            res.append(token);
-            res.append("_Impl");
-            if(tok.hasMoreTokens())
-                res.append('/');
-        }
-        
-        return res.toString();
-    }
 
     public CClassNameType[] getTypeList() {
         return refType;

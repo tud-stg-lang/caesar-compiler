@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassNameType.java,v 1.2 2004-02-08 20:28:00 ostermann Exp $
+ * $Id: CClassNameType.java,v 1.3 2004-04-21 14:21:02 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -122,7 +122,7 @@ public class CClassNameType extends CReferenceType
 	{
 		return qualifiedName == null ? super.getQualifiedName() : qualifiedName;
 	}
-
+    
 	/**
 	 * Returns the class object associated with this type
 	 *
