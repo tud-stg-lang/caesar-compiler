@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjAdviceDeclaration.java,v 1.10 2005-03-29 15:48:19 gasiunas Exp $
+ * $Id: CjAdviceDeclaration.java,v 1.11 2005-04-04 09:46:19 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -73,6 +73,9 @@ public class CjAdviceDeclaration
     /** Advice method ident */
     private String adviceMethodIdent = "undef";
     
+    /** Relative orderNr of the advice, used to determine its precedence */
+    private int orderNr = 0;
+    
     public CjAdviceDeclaration(
         TokenReference where,
         int modifiers,
@@ -98,6 +101,7 @@ public class CjAdviceDeclaration
 
         this.pointcut = pointcut;
         this.kind = kind;
+        this.orderNr = where.getLine();
 
         if (kind == CaesarAdviceKind.Around) {
             addAroundClosureParameter();
@@ -126,6 +130,7 @@ public class CjAdviceDeclaration
         this.extraArgumentFlags = decl.extraArgumentFlags;
         this.proceedParameters = decl.proceedParameters;
         this.adviceMethodIdent = decl.adviceMethodIdent;
+        this.orderNr = decl.orderNr;
     }
 
     /**
@@ -267,7 +272,8 @@ public class CjAdviceDeclaration
             context,
             context.getCClass(),
             parameters,
-            getTokenReference());
+            getTokenReference(),
+			orderNr);
     }
 
     public CCjAdvice getCaesarAdvice() {
@@ -280,5 +286,13 @@ public class CjAdviceDeclaration
     
     public void setAdviceMethodIdent(String ident) {
         this.adviceMethodIdent = ident;
+    }
+    
+    public int getOrderNr() {
+    	return orderNr;
+    }
+    
+    public void setOrderNr(int orderNr) {
+    	this.orderNr = orderNr;
     }
 }
