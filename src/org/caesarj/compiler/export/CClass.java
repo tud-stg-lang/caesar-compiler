@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.12 2004-06-04 10:57:12 klose Exp $
+ * $Id: CClass.java,v 1.13 2004-06-08 14:06:29 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -1589,13 +1589,18 @@ public abstract class CClass extends CMember
 	/**
 	 * Adds a method.
 	 */
-	public void addMethod(CSourceMethod method)
-	{
-		CMethod[] tmp = new CMethod[methods.length + 1];
-		System.arraycopy(methods, 0, tmp, 0, methods.length);
-		tmp[methods.length] = method;
-		methods = tmp;
-	}
+    public void addMethod(CSourceMethod method)
+    {
+        addMethod(new CSourceMethod[]{method});
+    }
+
+    public void addMethod(CSourceMethod m[])
+    {
+        CMethod[] tmp = new CMethod[methods.length + m.length];
+        System.arraycopy(methods, 0, tmp, 0, methods.length);
+        System.arraycopy(m, 0, tmp, methods.length, m.length);
+        methods = tmp;
+    }
 
 	/**
 	 * Adds a inner class.

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JCompilationUnit.java,v 1.4 2004-06-04 15:12:50 aracic Exp $
+ * $Id: JCompilationUnit.java,v 1.5 2004-06-08 14:07:01 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -247,15 +247,15 @@ public class JCompilationUnit extends JPhylum {
 	 * Second pass (quick), check interface looks good
 	 * @exception	PositionedError	an error with reference to the source file
 	 */
-	public void checkInterface(CompilerBase compiler) throws PositionedError {
-		CCompilationUnitContext context;
+    public void checkInterface(CompilerBase compiler) throws PositionedError {
+        CCompilationUnitContext context;
 
-		context = new CCompilationUnitContext(compiler, environment, export);
+        context = new CCompilationUnitContext(compiler, environment, export);
 
-		for (int i = 0; i < typeDeclarations.length; i++) {
-			typeDeclarations[i].checkInterface(context);
-		}
-	}
+        for (int i = 0; i < typeDeclarations.length; i++) {
+            typeDeclarations[i].checkInterface(context);
+        }
+    }
 
 	private CClass loadOuterClass(
 		CompilerBase compiler,

@@ -7,18 +7,11 @@
 package org.caesarj.compiler.cclass;
 
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
-import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JClassDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.constants.CaesarConstants;
-import org.caesarj.compiler.export.CBinaryClass;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.types.CCompositeType;
-import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.util.InconsistencyException;
 
 /**
  * Generated source graph.
@@ -82,7 +75,7 @@ public class CaesarTypeGraphGenerator implements CaesarConstants {
             g.getTopClassRoot().add(thisNode);
         }
 
-        thisNode.setDeclaration(decl);
+        //thisNode.setDeclaration(decl);
         
         // recurse into inners (here we can be sure all inners has ACC_CCLASS_INTERFACE)
 		JTypeDeclaration inners[] = decl.getInners();        

@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
+import org.caesarj.compiler.export.CClass;
 import org.caesarj.mixer.NameGenerator;
 
 
@@ -33,6 +35,9 @@ public class JavaTypeNode {
     private JavaTypeNode parent = null;
     private HashMap subNodes = new HashMap();
     private Set mixinCopies = new HashSet();
+    
+    private CjClassDeclaration declaration = null;
+    private CClass clazz = null;
     
     JavaTypeGraph compilationGraph;
     
@@ -251,7 +256,32 @@ public class JavaTypeNode {
         }
     }
 
+    public void getAllTypes(Collection res) {        
+        res.add(this);
+        
+        for (Iterator it = subNodes.values().iterator(); it.hasNext();) {
+            JavaTypeNode item = (JavaTypeNode) it.next();
+            item.getAllTypes(res);
+        }
+    }
+
     public JavaTypeNode getOuter() {
         return outer;
+    }
+
+    public CClass getCClass() {
+        return clazz;
+    }
+
+    public void setCClass(CClass clazz) {
+        this.clazz = clazz;
+    }
+
+    public void setDeclaration(CjClassDeclaration declaration) {
+        this.declaration = declaration;
+    }
+    
+    public CjClassDeclaration getDeclaration() {
+        return declaration;
     }
 }

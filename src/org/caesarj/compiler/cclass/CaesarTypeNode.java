@@ -1,20 +1,13 @@
 package org.caesarj.compiler.cclass;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.naming.ldap.HasControls;
-
-import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.mixer.Linearizator;
 import org.caesarj.mixer.MixerException;
-import org.caesarj.mixer.MixinList;
 import org.caesarj.util.InconsistencyException;
 
 /**
@@ -41,7 +34,7 @@ public class CaesarTypeNode {
     private CaesarTypeNode outer = null;
     private List parents = new LinkedList(); // of CaesarType
     
-    private CjInterfaceDeclaration declaration = null;
+    //private CjInterfaceDeclaration declaration = null;
        
     private boolean binary = false;
     private boolean implicit;
@@ -272,6 +265,7 @@ public class CaesarTypeNode {
         return qualifiedName;
     }
 
+    /*
     public CjInterfaceDeclaration getIfcDeclaration() {
         return declaration;
     }
@@ -283,7 +277,7 @@ public class CaesarTypeNode {
     public void setDeclaration(CjInterfaceDeclaration declaration) {        
         this.declaration = declaration;
     }
-    
+    */
     
     /**
      * NOTE: this will only work in a complete type graph

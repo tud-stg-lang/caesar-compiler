@@ -10,14 +10,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
+import org.caesarj.compiler.Main;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.statement.JBlock;
+import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
@@ -26,10 +30,13 @@ import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceField;
+import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
+
+import sun.rmi.runtime.GetThreadPoolAction;
 
 /**
  * ...
@@ -47,8 +54,7 @@ public class CClassPreparation implements CaesarConstants {
     private CClassPreparation() {
     }
 
-    /* CLASS PREPARATION BLOCK
-     * 
+    /**     
      * This step is done before joinAll step
      * 
      * - generate cclass interface
@@ -101,8 +107,114 @@ public class CClassPreparation implements CaesarConstants {
             (JTypeDeclaration[]) newTypeDeclarations.toArray(
                 new JTypeDeclaration[0]));             
 	}
+
+    
+    /*
+     *
+     * CTORS
+     *  
+     */
+    
+    public void handleConstructorInheritance(CompilerBase compilerBase, KjcEnvironment environment) {
+        CaesarTypeSystem caesarTypeSystem = environment.getCaesarTypeSystem(); 
+        TypeFactory typeFactory = environment.getTypeFactory();
+        ClassReader classReader = environment.getClassReader();
+                        
+        // CTODO it shouldn't be getAllTypes, but rather getAllSourceTypes
+        // ignoring for now
+        Collection sourceTypes = caesarTypeSystem.getJavaGraph().getAllTypes();
+        
+        for (Iterator it = sourceTypes.iterator(); it.hasNext();) {
+            JavaTypeNode item = (JavaTypeNode) it.next();
+            
+            if(item.getParent() != null) {                
+                CClass clazz = item.getCClass();
+                CClass superClass = clazz.getSuperClass();                
+                
+                CMethod[] clazzMethods = clazz.getMethods();
+                CMethod[] superClassMethods = superClass.getMethods();
+                
+                List superCtorList = new LinkedList();
+                List clazzCtorList = new LinkedList();
+                
+                for(int i=0; i<clazzMethods.length; i++)
+                    if(clazzMethods[i].isConstructor())
+                        clazzCtorList.add(clazzMethods[i]);
+
+                for(int i=0; i<superClassMethods.length; i++)
+                    if(superClassMethods[i].isConstructor())
+                        superCtorList.add(superClassMethods[i]);
+                    
+                CMethod clazzCtors[] = (CMethod[])clazzCtorList.toArray(new CMethod[clazzCtorList.size()]);
+                CMethod superCtors[] = (CMethod[])superCtorList.toArray(new CMethod[superCtorList.size()]);
+                
+                List newCtors = new LinkedList();
+                
+                for (int i = 0; i < superCtors.length; i++) {
+                    CMethod superCtor = superCtors[i];
+                    boolean methodFound = false;
+
+                    for (int j = 0; j < clazzCtors.length && !methodFound; j++) {
+                        CMethod clazzCtor = clazzCtors[j];
+                        
+                        if(clazzCtor.isEqualSignature(superCtor))
+                            methodFound = true;
+                    }
+                    
+                    if(!methodFound) {
+                        // inherit this ctor
+                        
+                        // CTODO insert super statement
+                        JBlock body = new JBlock(
+                            TokenReference.NO_REF,
+                            new JStatement[]{},
+                            null
+                        );
+
+                        
+                        CSourceMethod sourceMethod = new CSourceMethod(
+                            clazz,
+                            superCtor.getModifiers(),
+                            superCtor.getIdent(),
+                            superCtor.getReturnType(),
+                            superCtor.getParameters(),
+                            superCtor.getThrowables(),
+                            superCtor.getTypeVariables(),
+                            superCtor.isDeprecated(),
+                            superCtor.isSynthetic(),
+                            body
+                        );                        
+                        
+                        newCtors.add(sourceMethod);
+                        
+                        if(item.getDeclaration() != null) {
+                            // add default impl. to declaration (if not generated type)
+                        }
+                    }
+                }
+                
+                if(newCtors.size() > 0) {
+                    CSourceMethod ctors[] = 
+                        (CSourceMethod[])newCtors.toArray(new CSourceMethod[newCtors.size()]);
+                    clazz.addMethod(ctors);
+                }
+            }            
+        }
+    }
+
+        
+    /*
+     *
+     * GENERATED TYPES
+     *  
+     */
     
     
+    /**
+     * This step is done after types has been joined
+     * 
+     * We are generating here missing mixin chain parts
+     */
     public void generateMissingMixinChainParts(
         CompilerBase compilerBase, 
         KjcEnvironment environment,
@@ -121,7 +233,8 @@ public class CClassPreparation implements CaesarConstants {
             JavaTypeNode item = (JavaTypeNode) it.next();
             
             if(!isAlreadyGenerated(item, context)) {
-                generateCClass(item, context);
+                CClass clazz = generateCClass(item, context);
+                item.setCClass(clazz);
             }
         }
     }
@@ -130,34 +243,34 @@ public class CClassPreparation implements CaesarConstants {
         return context.getClassReader().hasClassFile(item.getQualifiedName().toString());   
     }
     
-    public CClass generateCClass(JavaTypeNode item, CContext context) {
+    public CClass generateCClass(JavaTypeNode node, CContext context) {
         // CTODO we need binary/source flag for CaesarTypeNode
         // for now consider everything as non-binary
         try {
             // get mixin export
             CReferenceType mixinType = 
-                context.getTypeFactory().createType(item.getMixin().getQualifiedImplName().toString(), false);
+                context.getTypeFactory().createType(node.getMixin().getQualifiedImplName().toString(), false);
             
             mixinType = (CReferenceType)mixinType.checkType(context);
             CClass mixinClass = mixinType.getCClass();
 
             // find owner
             CClass owner = null;
-            JavaTypeNode outer = item.getOuter();
+            JavaTypeNode outer = node.getOuter();
             if(outer != null) {
                 CReferenceType ownerType = 
                     context.getTypeFactory().createType(outer.getType().getQualifiedImplName().toString(), false);
                 
                 ownerType = (CReferenceType)ownerType.checkType(context);
-                owner = mixinType.getCClass();                
+                owner = ownerType.getCClass();                
             }
                         
             CSourceClass sourceClass = new CSourceClass(
                 owner,
                 TokenReference.NO_REF, // CTODO token reference for generated source classes?
                 mixinClass.getModifiers(),
-                item.getQualifiedName().getIdent(),
-                item.getQualifiedName().toString(),
+                node.getQualifiedName().getIdent(),
+                node.getQualifiedName().toString(),
                 CTypeVariable.EMPTY,
                 false, // deprecated?
                 false, // synthetic?
@@ -165,7 +278,7 @@ public class CClassPreparation implements CaesarConstants {
             );
 
             // generate super type
-            JavaTypeNode itemParent = item.getParent();
+            JavaTypeNode itemParent = node.getParent();
             CReferenceType superClass = null;
             if(itemParent != null) {
                 if(
@@ -189,9 +302,24 @@ public class CClassPreparation implements CaesarConstants {
             
             superClass = (CReferenceType)superClass.checkType(context);
             
+
+            CMethod mixinMethods[] = mixinClass.getMethods();
+            CMethod methods[] = new CMethod[mixinMethods.length];
+            for (int i = 0; i < methods.length; i++) {
+                methods[i] = new CSourceMethod(
+                    sourceClass,
+                    mixinMethods[i].getModifiers(),
+                    mixinMethods[i].getIdent(),
+                    mixinMethods[i].getReturnType(),
+                    mixinMethods[i].getParameters(),
+                    mixinMethods[i].getThrowables(),
+                    mixinMethods[i].getTypeVariables(),
+                    mixinMethods[i].isDeprecated(),
+                    mixinMethods[i].isSynthetic(),
+                    null // CTODO JBlock is null?
+                );
+            }
             
-            // generate methods            
-            CMethod methods[] = new CMethod[0]; 
             
             // generate fields
             Hashtable fields = new Hashtable();
@@ -202,8 +330,8 @@ public class CClassPreparation implements CaesarConstants {
                     mixinFields[i].getModifiers(),
                     mixinFields[i].getIdent(),
                     mixinFields[i].getType(),
-                    false, // deprecated
-                    false // synthetic
+                    mixinFields[i].isDeprecated(),
+                    mixinFields[i].isSynthetic()
                 );
                 
                 clone.setPosition(i);
@@ -211,13 +339,17 @@ public class CClassPreparation implements CaesarConstants {
             }
             
             // generate interfaces
-            CReferenceType interfaces[] = new CReferenceType[0];
+            CReferenceType interfaces[] = new CReferenceType[]{mixinClass.getAbstractType()};
+            
+            sourceClass.setInnerClasses(new CReferenceType[0]);
             
             sourceClass.close(interfaces, superClass, fields, methods);
-            
+                        
             
             // add to class reader
             context.getClassReader().addSourceClass(sourceClass);
+            
+            return sourceClass;
         }
         catch(Throwable e) {
             e.printStackTrace();
@@ -227,11 +359,17 @@ public class CClassPreparation implements CaesarConstants {
     }
     
     
+    /*
+     * 
+     * INNER ACCESSORS
+     * 
+     */
+    
     /**
      * Offers common access interface for cu and class inners
      *  
      * @author Ivica Aracic
-     */
+     */    
     interface InnerAccessor {
         JTypeDeclaration[] getInners();
         void addInners(JTypeDeclaration[] inners);
@@ -279,5 +417,6 @@ public class CClassPreparation implements CaesarConstants {
             cu.setInners(newInners);
         }
     }
+
 
 }

@@ -88,9 +88,28 @@ public class JavaTypeGraph {
         return (JavaTypeNode)caesar2javaMap.get(type);
     }
 
+    /** 
+     * @return preorder sorted list of types which has to be generated 
+     */
     public Collection getTypesToGenerate() {
         Collection res = new LinkedList();
         root.getTypesToGenerate(res);
         return res;
+    }
+
+    /**
+     * @return preorder sorted list of all types
+     */
+    public Collection getAllTypes() {
+        Collection res = new LinkedList();
+        root.getAllTypes(res);
+        return res;
+    }
+    
+    /**
+     * CTODO getAllSourceTypes
+     */
+    public Collection getAllSourceTypes() {
+        return null;
     }
 }

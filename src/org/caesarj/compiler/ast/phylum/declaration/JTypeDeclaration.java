@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.12 2004-06-04 15:12:45 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.13 2004-06-08 14:06:43 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -311,14 +311,13 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     
     public void adjustSuperType(CContext context) throws PositionedError {
     }
-
+    
 
     /**
      * Second pass (quick), check interface looks good
      * @exception	PositionedError	an error with reference to the source file
      */
-    public abstract void checkInterface(CContext context)
-        throws PositionedError;
+    public abstract void checkInterface(CContext context) throws PositionedError;
 
     /**
      * Second pass (quick), check interface looks good

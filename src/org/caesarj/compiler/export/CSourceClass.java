@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CSourceClass.java,v 1.5 2004-04-08 10:56:59 aracic Exp $
+ * $Id: CSourceClass.java,v 1.6 2004-06-08 14:06:29 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -184,6 +184,7 @@ public class CSourceClass extends CClass {
         CClass superClass;
         Hashtable superOuters;
 
+        
         if (superClassType != null
             && (superClass = superClassType.getCClass()) instanceof CSourceClass
             && (superOuters = ((CSourceClass)superClass).outers) != null) {
@@ -198,6 +199,7 @@ public class CSourceClass extends CClass {
                 }
             }
         }
+        
 
         CReferenceType[] innerClasses = getInnerClasses();
 

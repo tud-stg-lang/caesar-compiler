@@ -15,16 +15,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.15 2004-06-04 15:12:45 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.16 2004-06-08 14:06:43 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
 
 import org.caesarj.compiler.aspectj.CaesarDeclare;
-import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.aspectj.CaesarScope;
 import org.caesarj.compiler.ast.JavaStyleComment;
@@ -39,20 +44,23 @@ import org.caesarj.compiler.cclass.JavaQualifiedName;
 import org.caesarj.compiler.cclass.JavaTypeNode;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.CaesarMessages;
-import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.context.FjClassContext;
-import org.caesarj.compiler.export.*;
+import org.caesarj.compiler.export.CCjAdvice;
+import org.caesarj.compiler.export.CCjSourceClass;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.export.CModifier;
+import org.caesarj.compiler.export.CSourceClass;
+import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
-import org.caesarj.util.UnpositionedError;
 import org.caesarj.util.Utils;
 
 /**
@@ -465,10 +473,8 @@ public class CjClassDeclaration
         // CTODO default constructor missing
         List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {
-            if(methods[i] instanceof JConstructorDeclaration) {
-                CMethod m = methods[i].checkInterface(self);
-                methodList.add(m);
-            }
+            CMethod m = methods[i].checkInterface(self);
+            methodList.add(m);
         }
 
         Hashtable hashFieldMap = new Hashtable();
@@ -505,6 +511,9 @@ public class CjClassDeclaration
 
             CaesarTypeNode typeNode = typeSystem.getCompleteGraph().getType(qualifiedName);
             JavaTypeNode javaTypeNode = typeSystem.getJavaGraph().getJavaTypeNode(typeNode);
+            
+            javaTypeNode.setCClass(getCClass());
+            javaTypeNode.setDeclaration(this);
             
             /*
              * add implicit subtypes
@@ -625,6 +634,11 @@ public class CjClassDeclaration
             getCClass().setSuperClass(superTypeRef);
             setSuperClass(superTypeRef);
             
+            setInterfaces(
+                new CReferenceType[]{
+                    getCorrespondingInterfaceDeclaration().getCClass().getAbstractType()
+                }
+            );
             
             for(int i=0; i<inners.length; i++) {
                 inners[i].adjustSuperType(context);
@@ -638,7 +652,6 @@ public class CjClassDeclaration
     }   
     
     
-
     /**
      * Resolves the binding and providing references. Of course it calls the
      * super implementation of the method also.

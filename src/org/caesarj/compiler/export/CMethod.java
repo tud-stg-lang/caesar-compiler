@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CMethod.java,v 1.3 2004-03-15 11:56:53 aracic Exp $
+ * $Id: CMethod.java,v 1.4 2004-06-08 14:06:29 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -279,6 +279,26 @@ public abstract class CMethod extends CMember {
     }
   }
 
+  // IVICA
+  /**
+   * checks the signature without checking the owner 
+   */
+  public boolean isEqualSignature(CMethod other) {
+      if (getIdent() != other.getIdent()) {
+        return false;
+      } else if (parameters.length != other.parameters.length) {
+        return false;
+      } else {
+        for (int i = 0; i < parameters.length; i++) {
+    if (!parameters[i].equals(other.parameters[i])) {
+      return false;
+    }
+        }
+        return true;
+      }
+    }
+
+  
   /**
    * Is this method applicable to the specified invocation (JLS 15.12.2.1) ?
    * @param	ident		method invocation name

@@ -128,9 +128,10 @@ public class Main extends MainSuper implements Constants {
         adjustSuperTypes(tree);
         if(errorFound) return false;
         
-        // CTODO handle c'tor inheritance for virtual types here
-        
         checkAllInterfaces(tree); 
+        if(errorFound) return false;
+                
+        handleConstructorInheritance(environment);
         if(errorFound) return false;
         
         checkAllInitializers(tree);
@@ -167,7 +168,13 @@ public class Main extends MainSuper implements Constants {
         );
     }
     
-
+    protected void handleConstructorInheritance(KjcEnvironment environment) {
+        CClassPreparation.instance().handleConstructorInheritance(
+            this,
+            environment
+        );
+    }
+    
     /**
      * - create implicit types
      * - join created types
