@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjClassDeclaration.java,v 1.33 2005-04-04 09:46:50 gasiunas Exp $
+ * $Id: CjClassDeclaration.java,v 1.34 2005-04-05 16:50:18 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.Vector;
 
 import org.caesarj.compiler.aspectj.CaesarDeclare;
+import org.caesarj.compiler.aspectj.CaesarDeclareScope;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
-import org.caesarj.compiler.aspectj.CaesarScope;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
@@ -538,20 +538,8 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
             //the advices should be treated like methods
             getCjSourceClass().addMethod((CCjAdvice)advices[j].getMethod());
         }
-
-        //consider declares
-        if (declares != null) {
-            for (int j = 0; j < declares.length; j++) {
-                declares[j].resolve(
-                    new CaesarScope(
-                        (FjClassContext)constructContext(context),
-                        getCjSourceClass()));
-            }
-
-            getCjSourceClass().setDeclares(declares);
-        }
     }
-
+    
     public CCjSourceClass getCjSourceClass() {
         return (CCjSourceClass)sourceClass;
     }
@@ -628,6 +616,18 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
      * @exception	PositionedError	an error with reference to the source file
      */
     public void checkTypeBody(CContext context) throws PositionedError {
+    	
+    	// resolve declares
+        if (declares != null) {
+            for (int j = 0; j < declares.length; j++) {
+                declares[j].resolve(
+                    new CaesarDeclareScope(
+                        (FjClassContext)constructContext(context),
+                        getCjSourceClass()));
+            }
+
+            getCjSourceClass().setDeclares(declares);
+        }
         
         // check that we do not override a wrapper
         if(wrappee != null) {
