@@ -17,8 +17,7 @@
  <property name="libs" location="lib"/>
  
  <!-- Compile-only target -->
- <target name="compile" description="compile the source files"
- 	depends="scanner, parser">
+ <target name="compile" description="compile the source files">
   <javac srcdir="src"
   		 classpath="${packageBase};
   				lib/aspectjtools.jar;
@@ -32,17 +31,17 @@
  <target name="scanner" description="Generate the scanner using JFlex">
 
   <!-- 1. TOKDEF: Translates Caesar.t into CaesarTokenTypes.java & .txt.
-  		These files are then copied into the compiler dir.  -->
+		(The task is forced to set the working directory to the directory where
+		the output files should be placed because lexgen drops the output just
+		into the workling directory of the VM). -->  
   <echo message="TOKDEF"/>
   <java fork="true"
-  		dir="${inputFiles}"
+  		dir="${source}/compiler"
    		classname="org.caesarj.compiler.tools.lexgen.Main"
         classpath="bin;${libs}/java-getopt-1.0.9.jar">
    <arg value="-ditf"/>
    <arg value="${inputFiles}/caesar.t"/>
   </java>
-  <copy file="${inputFiles}/CaesarTokenTypes.java" todir="${source}/compiler"></copy>
-  <copy file="${inputFiles}/CaesarTokenTypes.txt" todir="${source}/compiler"></copy>
 
   <!-- 2. LEXINC: Creates the .flex file -->
   <echo message="LEXINC"/>
@@ -69,7 +68,8 @@
  <!-- Target for generating the parser -->
  <target name="parser" description="Generating parser using ANTLR">
   <!--  Translate Caesar.g into CaesarParsar.
-  		(The task is forced to set the working appropriate working directory because
+  		(The task is forced to set the working directory to the directory where
+  		the ouput files should be placed because
   		JFlex doesn't correctly handle a given output path)  -->
   <java 
   		fork="true"
@@ -78,14 +78,13 @@
  		classpath="bin;${libs}/java-getopt-1.0.9.jar">
    	<arg value="${inputFiles}/Caesar.g"/>
   </java>
-  
 
  </target>
  
  <!-- The complete building target -->
  <target name="complete" description="do complete build">
-  <!-- Compile will call the parser&scanner targets due to
-   		its depends-attribute -->
+  <antcall target="scanner"/>
+  <antcall target="parser"/>
   <antcall target="compile"/>
  </target>
  
