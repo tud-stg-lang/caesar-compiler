@@ -236,23 +236,28 @@ public class CaesarTypeNode {
 	        (CaesarTypeNode[])l2.toArray(new CaesarTypeNode[l2.size()]);
 	    
 	    // check subtype relations
-	    int j;
-	    CaesarTypeNode currentOuter = null;
-	    	    
-	    for(j=0; j<thisOuterChain.length-1 && j<contextOuterChain.length; j++) {
-	        currentOuter = contextOuterChain[j];
-	        if(!contextOuterChain[j].isSubtypeOf(thisOuterChain[j]))
-	            return null;
-        }
-	    
-	    if(currentOuter == null)
-	        return null;
 
-	    for (int i = j; i < thisOuterChain.length; i++) {
-            currentOuter = currentOuter.lookupInner(thisOuterChain[i].getQualifiedName().getIdent());
+	    // s = max(thisOuterChain.length-1, contextOuterChain.length)
+	    int s = thisOuterChain.length - 2; 
+	    if(s > contextOuterChain.length - 1)
+	        s = contextOuterChain.length - 1;
+	    
+	    for(int j=s; j>=0; j--) {
+	        CaesarTypeNode t = contextOuterChain[j];
+	        	        
+	        for(int i=j+1; i<thisOuterChain.length; i++) {
+	            t = t.lookupInner(thisOuterChain[i].getQualifiedName().getIdent());
+	            if(t == null)
+	                break;
+	        }
+
+	        if(t != null) {
+	            if(t.isSubtypeOf(this))
+	                return t;
+            }
         }
 	    
-	    return currentOuter;
+	    return null;
     }
 	
 	private void genOuterList(List l) {
@@ -274,6 +279,21 @@ public class CaesarTypeNode {
         }
 	    
 	    return false;
+	    
+	    
+	    /*
+	    // would this here work?
+	    // more efficient method?
+	    boolean res = false;
+	    if(getMixinList().size() <= n.getMixinList().size()) {
+	        res = true;
+	        for (Iterator it = getMixinList().iterator(); it.hasNext() && res;) {                
+                if(!n.getMixinList().contains(it.next()))
+                    res = false;
+            }
+	    }
+	    return res;
+	    */
     }
 	
     public String toString() {
