@@ -9,35 +9,26 @@ import junit.framework.TestCase;
  */
 public class TypeSysTestCase extends TestCase {
 
-	public TypeSysTestCase()	{
+	public TypeSysTestCase() {
 		super("test");
 	}
 	
 	public static StringBuffer res = new StringBuffer();
+
+	public X x1 = new X();	
+	public X x2 = new X();	
 	
-	final G g1 = new G();
-	final G g2 = new G();	
-	g1.N x = g1.new N();
-	g1.N y = x;
+	public x1.g.N n1;
+	public x2.g.N n2;
 	
+	class X {
+		public final G g = new G();		
+		public g.N n;
+	}
 	
 	public void test() {	
-	    g1.N n1 = null;
-	    g1.N n2 = null;
-	    
-	    {
-	    	g1.N n3 = null;
-	    	
-	    	// ctx(1).n1 = ctx(1).n2
-			n1 = n2;	    
-			
-			for(int i=0; i<0; i++) {
-			
-				// ctx(3).g1.N n4 
-				// @ generated.typesystest01 -> TypeSysTestCase -> test -> B -> B -> B
-				g1.N n4 = null;
-			}
-		}
+		x1.n = n1;
+		x2.n = n1;
 	}
 	
 	/*

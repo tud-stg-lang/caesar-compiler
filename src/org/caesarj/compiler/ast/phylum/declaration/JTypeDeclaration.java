@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.32 2004-11-23 09:35:03 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.33 2004-11-23 18:28:01 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -30,8 +30,6 @@ import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.KjcMessages;
-import org.caesarj.compiler.context.CBlockContext;
-import org.caesarj.compiler.context.CClassBodyContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
@@ -522,49 +520,17 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
             if(t instanceof CClassNameType) {
                 // this one couldn't be resolved in checkInterface pass
                 
-                               
-                refresh = true;
-                
-                
+                // try again
+                // we can deeper dependencies than 1
+                // however, in this first impl. we assume the simple case
                 try {
-//                    JMethodDeclaration m = null;
-//                    for (int j = methods.length-1; j >= 0; j--) {
-//                        if(methods[j].getIdent().equals("Block$"))
-//                            m = methods[i];
-//                    }
-//                    
-//                    if(m == null) {
-//                       m=	new JMethodDeclaration(
-//                    	        new TokenReference("",0),
-//                    	        0,
-//                    	        new CVoidType(),
-//                    	        "$BLOCK",
-//                    	        new JFormalParameter[0],
-//                    	        new CReferenceType[0],
-//                    	        new JBlock(null, new JStatement[0],null),
-//                    	        new JavadocComment("",false,false),
-//                    	        new JavaStyleComment[0] ); 
-//
-//                       m.
-//                    	 throw new InconsistencyException();
-//                    }
-                    
-                    CBlockContext ctx = new CBlockContext(
-                            new CClassBodyContext(self,context.getEnvironment()), 
-                            //                        new CMethodContext(
-//                            self, 
-//                            context.getEnvironment(),
-//                            m
-//                        ),
-                        context.getEnvironment(),
-                        0
-                    );
-                    
-                    t = t.checkType(ctx);
+                                       
+                    t = t.checkType(self);
                     
                     System.out.println("Dependent type: "+t.toString());
                     
                     fields[i].getField().setType(t);
+                    fields[i].getVariable().setType(t);
                 }
                 catch (UnpositionedError e) {
                     throw e.addPosition(fields[i].getTokenReference());
