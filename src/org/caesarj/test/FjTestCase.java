@@ -23,6 +23,7 @@ import org.caesarj.compiler.types.KjcSignatureParser;
 import org.caesarj.compiler.types.KjcTypeFactory;
 import org.caesarj.compiler.types.SignatureParser;
 import org.caesarj.tools.antlr.runtime.ParserException;
+import org.caesarj.util.MessageDescription;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.UnpositionedError;
 
@@ -80,16 +81,16 @@ public class FjTestCase extends TestCase
 		((TestCase)generatedTest).runBare();
 	}
 	
-	protected void compileAndCheckErrors(String pckgName, String compilerErrorsToCheck[]) throws Throwable {
+	protected void compileAndCheckErrorMessage(String pckgName, MessageDescription expectedError) throws Throwable {
 	    // Clean up message list
 	    positionedErrorList.clear();
 	    unpositionedErrorList.clear();
 
 	    boolean success = compile(pckgName);
 	    
-	    log.info("Test starts: checking errors");
+	    assertTrue(!success);
 	    
-	    assertTrue(!success);	    
+	    checkError(expectedError);
 	}
 	
 	protected boolean compile(String pckgName) throws Throwable 
@@ -137,23 +138,16 @@ public class FjTestCase extends TestCase
 	/**
 	 * Tests the string array with error messages passed by the compiler
 	 */
-	protected void checkErrors(String[] errors) {
-	    boolean passed = true;
+	protected void checkError(MessageDescription errorDescription) {
+	    boolean passed;
+	    PositionedError error = null;
+
+	    // we expect exactly one positioned error
+	    assertTrue(positionedErrorList.size() == 1 && unpositionedErrorList.size() == 0);
 	    
-	    /*
-	    for (Iterator it = positionedErrorList.iterator(); it.hasNext() && passed;) {
-            PositionedError error = (PositionedError) it.next();
-            
-            boolean stop = true;
-        }
-        */
-	    passed = positionedErrorList.size() > 0 && unpositionedErrorList.size() == 0;
-	    
-	    if(!passed) {
-	        boolean stop = true;
-	    }
-	    
-	    assertTrue(passed);
+	    // and it has to have the required errorDescription	    
+	    error = (PositionedError)positionedErrorList.get(0);
+	    assertEquals(errorDescription, error.getFormattedMessage().getDescription());
 	}
 	
 	/*
