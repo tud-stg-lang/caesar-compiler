@@ -353,6 +353,10 @@ public class CaesarTypeNode {
         return res;
     }
 
+    public boolean inheritsFromCaesarObject() {
+        return inheritsFrom.size() == 0;
+    }
+    
     public boolean isTopLevelClass() {
         return enclosedBy.size() == 0;
     }
