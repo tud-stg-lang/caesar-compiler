@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JAssignmentExpression.java,v 1.17 2005-02-16 12:02:59 aracic Exp $
+ * $Id: JAssignmentExpression.java,v 1.18 2005-02-25 13:46:18 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -139,7 +139,7 @@ public class JAssignmentExpression extends JBinaryExpression {
 	        check(
 	            context,
 	            !(lFam!=null ^ rFam!=null),
-	            CaesarMessages.ASSIGNMENT_MIXEDTYPES
+	            CaesarMessages.ILLEGAL_PATH
 	        );	 
 	    }
     }
