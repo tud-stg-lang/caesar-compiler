@@ -34,7 +34,8 @@ import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CMethod;
-import org.caesarj.compiler.export.CSourceClass;
+import org.caesarj.compiler.export.CCjSourceClass;
+import org.caesarj.compiler.export.CCjMixinSourceClass;
 import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
@@ -262,7 +263,8 @@ public class CClassPreparation implements CaesarConstants {
             }
             
             // get mixin export
-            CClass mixinClass = context.getClassReader().loadClass(
+            // mixins are always generated from Caesar source classes
+            CCjSourceClass mixinClass = (CCjSourceClass)context.getClassReader().loadClass(
         		context.getTypeFactory(),
         		node.getMixin().getQualifiedImplName().toString()
     		);
@@ -274,7 +276,7 @@ public class CClassPreparation implements CaesarConstants {
                 owner = generateCClass(outer, context);                
             }
                         
-            CSourceClass sourceClass = new CSourceClass(
+            CCjSourceClass sourceClass = new CCjMixinSourceClass(
                 owner,
                 TokenReference.NO_REF, // CTODO token reference for generated source classes?
                 mixinClass.getModifiers(),
@@ -283,14 +285,13 @@ public class CClassPreparation implements CaesarConstants {
                 CTypeVariable.EMPTY,
                 false, // deprecated?
                 false, // synthetic?
-                null // CTODO: declaration unit is null?
+                null, // CTODO: declaration unit is null?
+				mixinClass
             );
             
             if(owner != null) {
             	//sourceClass.setHasOuterThis(true);
                 sourceClass.setModifiers(sourceClass.getModifiers() | ACC_STATIC);
-                
-                
             }
 
             
