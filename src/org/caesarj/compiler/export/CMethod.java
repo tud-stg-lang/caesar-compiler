@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CMethod.java,v 1.6 2004-07-22 13:11:19 aracic Exp $
+ * $Id: CMethod.java,v 1.7 2004-07-23 13:15:29 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -715,7 +715,7 @@ public abstract class CMethod extends CMember {
         genCode(context, nonVirtual, getPrefixName());
     }
     
-    public void genCode(GenerationContext context, boolean nonVirtual, String nonIfcCallTarget) {
+    public void genCode(GenerationContext context, boolean nonVirtual, String callTarget) {
         CodeSequence code = context.getCodeSequence();
 
         if (getOwner().isInterface()) {
@@ -726,7 +726,7 @@ public abstract class CMethod extends CMember {
             }
 
             code.plantInstruction(new InvokeinterfaceInstruction(
-                getPrefixName(),
+                callTarget, //getPrefixName(),
                 getIdent(),
                 getSignature(),
                 size + 1)); // this
@@ -747,7 +747,7 @@ public abstract class CMethod extends CMember {
 
             code.plantMethodRefInstruction(
                 opcode, 
-                nonIfcCallTarget,
+                callTarget, //getPrefixName(),
                 getIdent(), 
                 getSignature()
             );
