@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Path.java,v 1.19 2005-02-16 16:31:40 aracic Exp $
+ * $Id: Path.java,v 1.20 2005-02-17 17:41:10 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -154,7 +154,6 @@ public abstract class Path {
                 
                 // getOuterSteps is relative to the method context - 1
                 // however, we could have a call from the method body
-                CContext ctx = context;
                 while(context.getMethodContext() != null) {
                     context = context.getParentContext();
                     k++;
