@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import junit.framework.TestCase;
 
+// TODO: Generate real test case 
+
 public class DeploymentTest extends TestCase {
 	
 	declare parents : DeploymentTest implements java.io.Serializable;

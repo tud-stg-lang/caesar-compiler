@@ -14,6 +14,7 @@ import org.caesarj.kjc.JMethodDeclaration;
 import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JStatement;
 import org.caesarj.kjc.JTypeDeclaration;
+import org.caesarj.util.InconsistencyException;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
@@ -157,8 +158,8 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
 										ACC_ABSTRACT)
 					))
 						{
-					callSuperClassToo(methods[0],"$deploy",superClassName);
-					callSuperClassToo(methods[1],"$undeploy",superClassName);
+					callSuperClassToo(methods,"$deploy",superClassName);
+					callSuperClassToo(methods,"$undeploy",superClassName);
 			    		
 			    		
 				}else{
@@ -195,11 +196,14 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
  * @param methodName the name, to check for errors
  * @param supeClassName where to weave
  */
-		private void callSuperClassToo(JMethodDeclaration method,String methodName, String superClassName) {
-		if(method.getIdent()!=methodName){
-			System.out.println(methodName+" Statement not found");
-			return;
+	private void callSuperClassToo(JMethodDeclaration methods[],String methodName, String superClassName) {
+		JMethodDeclaration method = null;
+		for (int i = 0; i<methods.length; i++) {
+			method = methods[i];
+			if (method.getIdent() == methodName) break;	
 		}
+		if (method == null) throw new InconsistencyException("Method " + methodName + "not found");
+
 		JStatement[] deployStatements=method.getBlockBody().getBody();
 		JStatement[] newStatements = new JStatement[deployStatements.length + 1];
 		System.arraycopy(deployStatements, 0, newStatements, 0, deployStatements.length);

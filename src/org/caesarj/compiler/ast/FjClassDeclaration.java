@@ -147,7 +147,7 @@ public class FjClassDeclaration
 		this.advices = advices;
 		this.declares = declares;
 		// structural detection of crosscutting property
-		if (advices.length > 0)
+		if ((advices.length > 0) || (pointcuts.length > 0))
 		     this.modifiers |= ACC_CROSSCUTTING;
 	}
 

@@ -63,7 +63,7 @@ public class CompileAndRunResultsWeaverTest extends FjTestCase {
 					new String[] {
 						"NestedAspectTest.java",
 						"JoinPointReflectionTest.java",
-//						"DeploymentTest.java",
+						"DeploymentTest.java",
 						"SimpleAspect.java",
 						"SubSimpleAspect.java",
 						"SuperAspect.java",
@@ -145,9 +145,9 @@ public class CompileAndRunResultsWeaverTest extends FjTestCase {
 		doGeneratedTest("JoinPointReflectionTest");
 	}
 
-/*	public void testDeploymentTest() throws Throwable {
+	public void testDeploymentTest() throws Throwable {
 		doGeneratedTest("DeploymentTest");
-	}*/
+	}
 
 	public void testAutomaticDeploymentTest() throws Throwable {
 		doGeneratedTest("AutomaticDeploymentTest");
