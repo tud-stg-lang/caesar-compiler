@@ -1,7 +1,7 @@
 package org.caesarj.compiler.types;
 
-import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
+import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
 
@@ -14,39 +14,74 @@ import org.caesarj.compiler.export.CClass;
  */
 public class CDependentType extends CReferenceType {
     
-    private JPhylum[] pos; 	   	/** determines the position in the ast 
-                                    (starting with the class) */
+    private CClassContext pos;         /** position of this type */
     
     private CType plainType;    /** static type of the */
     
-    private JExpression family; /** family expression */
+    private JFieldAccessExpression family; /** family expression */
     
     private int k = 0;          /** ctx(k); determines how many steps to go out 
                                     of the current context */
+              
     
-    public CDependentType(JExpression family, CType staticType) {
+    public CDependentType(CClassContext pos, int k, JFieldAccessExpression family, CType staticType) {
+        this.pos = pos;
+        this.k = k;
         this.family = family;
         this.plainType = staticType;
     }
     
+    
+
     public CClass getCClass() {
         return plainType.getCClass();
     }
     
-    public JPhylum[] getPos() {
-        return pos;
-    }
+    /*
+    public String makePath() {
+        StringBuffer res = new StringBuffer();
+        res.append("ctx("+k+")");
+        if(family != null) {
+            JFieldAccessExpression e = family;
+            LinkedList l = new LinkedList();
+            while(e != null) {
+                l.add(0, e.getIdent());
+                if(e.getPrefix() instanceof JFieldAccessExpression) {
+                    e = (JFieldAccessExpression)e.getPrefix();
+                }
+                else {
+                    e = null;
+                }
+            }
+            
+            for (Iterator it = l.iterator(); it.hasNext();) {
+                res.append("."+it.next());
+            }
+        }
+        return res.toString();
+    }     
+    */
     
-    public void setPos(JPhylum[] path) {
-        this.pos = path;
-    }
-    
+    /**
+     * simply check the plain type here
+     * family checks are done in a separate step after analyse has been executed
+     */
     public boolean isAssignableTo(CTypeContext context, CType dest) {
         // only a dependent type is assignable to another dependet type
         if(dest instanceof CDependentType) {
             CDependentType other = (CDependentType)dest;
             
-            if( plainType.isAssignableTo(context, other.getPlainType()) ) {
+            // check if plain types are subtypes
+            if( plainType.isAssignableTo(context, other.plainType) ) {
+                
+                /*
+                String p1 = makePath();
+                String p2 = other.makePath();
+                System.out.println("this: "+p1+"    other: "+p2);
+                
+                return p1.equals(p2);
+                */
+                
                 return true;
             }
         }
@@ -56,7 +91,7 @@ public class CDependentType extends CReferenceType {
     
 
     public boolean isChecked() {
-        return plainType.isChecked() && pos != null;
+        return plainType.isChecked();
     }
 
     // not castable for now
@@ -64,7 +99,13 @@ public class CDependentType extends CReferenceType {
         return false;
     }
     
+    public int getK() {
+        return k;
+    }
     
+    public JFieldAccessExpression getFamily() {
+        return family;
+    }
     
     public CType getPlainType() {
         return plainType;
