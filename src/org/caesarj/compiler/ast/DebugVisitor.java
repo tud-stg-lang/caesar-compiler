@@ -9,7 +9,7 @@ import org.caesarj.compiler.types.CTypeVariable;
 /**
  * @author Walter Augusto Werner
  */
-public class DebugVisitor extends FjVisitor
+public class DebugVisitor extends DeclarationVisitor
 {
 	private int ident;
 	private String identValue;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.caesarj.compiler.ast.AdviceDeclaration;
-import org.caesarj.compiler.ast.CaesarVisitor;
+import org.caesarj.compiler.ast.BodyVisitor;
 import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.FjFormalParameter;
 import org.caesarj.compiler.ast.FjMethodCallExpression;
@@ -37,7 +37,7 @@ import org.caesarj.util.TokenReference;
  * @author Jürgen Hallpap
  */
 public class JoinPointReflectionVisitor
-	extends CaesarVisitor
+	extends BodyVisitor
 	implements CaesarConstants  {
 
 	private boolean needsThisJoinPoint = false;

@@ -13,7 +13,7 @@ import org.caesarj.util.PositionedError;
  * 
  * Adds my new types to kopi's visitor.
  */
-public abstract class FjVisitor implements KjcVisitor {
+public abstract class DeclarationVisitor implements KjcVisitor {
 
 	protected Owner owner;
 
@@ -137,7 +137,7 @@ public abstract class FjVisitor implements KjcVisitor {
 		}
 	}
 	
-	public FjVisitor() {
+	public DeclarationVisitor() {
 		this.owner = new Owner();
 	}
 	

@@ -10,12 +10,12 @@ import org.caesarj.compiler.types.CTypeVariable;
  * This visitor implementation visits almost 
  * every node in the Caesar AST.
  */
-public abstract class CaesarVisitor extends FjVisitor {
+public abstract class BodyVisitor extends DeclarationVisitor {
 
 	/**
 	 * Constructor for CaesarVisitor.
 	 */
-	public CaesarVisitor() {
+	public BodyVisitor() {
 		super();
 	}
 

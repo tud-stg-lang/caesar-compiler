@@ -13,7 +13,7 @@ import org.caesarj.compiler.KjcOptions;
 import org.caesarj.compiler.Main;
 import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
-import org.caesarj.compiler.ast.FjVisitor;
+import org.caesarj.compiler.ast.DeclarationVisitor;
 import org.caesarj.compiler.ast.JClassImport;
 import org.caesarj.compiler.ast.JCompilationUnit;
 import org.caesarj.compiler.ast.JMethodDeclaration;
@@ -320,7 +320,7 @@ public class CompileAndRunResultsCITest extends FjTestCase
             allUnits.add(compilationUnit);
             return compilationUnit;
         }
-        protected FjVisitor getClassTransformation(KjcEnvironment environment)
+        protected DeclarationVisitor getClassTransformation(KjcEnvironment environment)
         {
             if (modulator == null)
                 modulator = new ClassModulatingFjVisitorMock(environment);

@@ -9,7 +9,7 @@ import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.FjInterfaceDeclaration;
 import org.caesarj.compiler.ast.FjOverrideClassDeclaration;
 import org.caesarj.compiler.ast.FjOverrideable;
-import org.caesarj.compiler.ast.FjVisitor;
+import org.caesarj.compiler.ast.DeclarationVisitor;
 import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.JClassImport;
 import org.caesarj.compiler.ast.JCompilationUnit;
@@ -24,7 +24,7 @@ import org.caesarj.compiler.types.CTypeVariable;
 
 import sun.misc.Queue;
 
-public class ResolveSuperClassFjVisitor extends FjVisitor {
+public class ResolveSuperClassFjVisitor extends DeclarationVisitor {
 	
 	protected CompilerBase compiler;
 	protected Queue traversationOrder;

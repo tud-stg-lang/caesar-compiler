@@ -8,7 +8,7 @@ import org.caesarj.compiler.ast.CciWeaveletClassDeclaration;
 import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
 import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
-import org.caesarj.compiler.ast.FjVisitor;
+import org.caesarj.compiler.ast.DeclarationVisitor;
 import org.caesarj.compiler.ast.JClassImport;
 import org.caesarj.compiler.ast.JCompilationUnit;
 import org.caesarj.compiler.ast.JInterfaceDeclaration;
@@ -37,7 +37,7 @@ import org.caesarj.util.PositionedError;
  * @author Walter Augusto Werner
  */
 public class CollaborationInterfaceTransformation 
-	extends FjVisitor
+	extends DeclarationVisitor
 {
 	/**
 	 * The environment for generate the interfaces of the classes.

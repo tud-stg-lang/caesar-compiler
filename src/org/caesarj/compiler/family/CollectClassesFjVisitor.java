@@ -5,7 +5,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.caesarj.compiler.ast.JClassDeclaration;
-import org.caesarj.compiler.ast.FjVisitor;
+import org.caesarj.compiler.ast.DeclarationVisitor;
 import org.caesarj.compiler.ast.JMethodDeclaration;
 import org.caesarj.compiler.ast.JPhylum;
 import org.caesarj.compiler.ast.JTypeDeclaration;
@@ -13,7 +13,7 @@ import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.PositionedError;
 
-public class CollectClassesFjVisitor extends FjVisitor {
+public class CollectClassesFjVisitor extends DeclarationVisitor {
 
 	protected Hashtable allClasses;
 	protected Hashtable markedClasses;

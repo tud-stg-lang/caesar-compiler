@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.17 2004-02-12 10:04:12 ostermann Exp $
+ * $Id: Caesar.g,v 1.18 2004-02-23 12:12:26 klose Exp $
  */
 
 /*
@@ -392,7 +392,7 @@ jModifier []
 
 // Definition of a Java class
 jClassDefinition [int modifiers]
-  returns [FjClassDeclaration self = null]
+  returns [JClassDeclaration self = null]
 {
   CTypeVariable[]       	typeVariables = CTypeVariable.EMPTY;
   CReferenceType			superClass = null;
@@ -526,7 +526,7 @@ jClassDefinition [int modifiers]
 				   context.getAdvices(),
 				   context.getDeclares());
       } else {
-          self = new FjClassDeclaration(sourceRef,
+          self = new JClassDeclaration(sourceRef,
 				   modifiers,
 				   ident.getText(),
                    typeVariables,
@@ -2029,7 +2029,7 @@ jUnqualifiedNewExpression []
   CType				type;
   JExpression[]			args;
   JArrayInitializer		init = null;
-  FjClassDeclaration		decl = null;
+  JClassDeclaration		decl = null;
   ParseClassContext		context = null;
   TokenReference		sourceRef = buildTokenReference();
 }
@@ -2054,7 +2054,7 @@ jUnqualifiedNewExpression []
 
               methods = context.getMethods();
 
-	    decl = new FjClassDeclaration(sourceRef,
+	    decl = new JClassDeclaration(sourceRef,
 					 org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 					 "", //((CReferenceType)type).getQualifiedName(),
                      CTypeVariable.EMPTY,
@@ -2086,7 +2086,7 @@ jQualifiedNewExpression [JExpression prefix]
   CType				type;
   JExpression[]			args;
   JArrayInitializer		init = null;
-  FjClassDeclaration		decl = null;
+  JClassDeclaration		decl = null;
   ParseClassContext		context = null;
   TokenReference		sourceRef = buildTokenReference();
 }
@@ -2101,7 +2101,7 @@ jQualifiedNewExpression [JExpression prefix]
 
           methods = context.getMethods();
 
-	decl = new FjClassDeclaration(sourceRef,
+	decl = new JClassDeclaration(sourceRef,
 				     org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 				     ident.getText(),
                      CTypeVariable.EMPTY,

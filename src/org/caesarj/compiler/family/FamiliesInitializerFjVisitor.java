@@ -4,7 +4,7 @@ import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.FjInterfaceDeclaration;
-import org.caesarj.compiler.ast.FjVisitor;
+import org.caesarj.compiler.ast.DeclarationVisitor;
 import org.caesarj.compiler.ast.JClassImport;
 import org.caesarj.compiler.ast.JCompilationUnit;
 import org.caesarj.compiler.ast.JInterfaceDeclaration;
@@ -30,7 +30,7 @@ import org.caesarj.util.PositionedError;
  * @author Walter Augusto Werner
  */
 public class FamiliesInitializerFjVisitor 
-	extends FjVisitor
+	extends DeclarationVisitor
 {
 	private KjcEnvironment environment;
 	private CompilerBase compiler;

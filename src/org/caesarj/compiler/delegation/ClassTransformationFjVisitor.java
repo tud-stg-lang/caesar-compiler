@@ -7,7 +7,7 @@ import org.caesarj.compiler.ast.FjCleanClassIfcImplDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassInterfaceDeclaration;
 
 import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
-import org.caesarj.compiler.ast.FjVisitor;
+import org.caesarj.compiler.ast.DeclarationVisitor;
 import org.caesarj.compiler.ast.JClassImport;
 import org.caesarj.compiler.ast.JCompilationUnit;
 import org.caesarj.compiler.ast.JMethodDeclaration;
@@ -21,7 +21,7 @@ import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 
 
-public class ClassTransformationFjVisitor extends FjVisitor
+public class ClassTransformationFjVisitor extends DeclarationVisitor
 {
 
 	protected KjcEnvironment environment;

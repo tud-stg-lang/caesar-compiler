@@ -15,7 +15,7 @@ import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.FjSourceClass;
-import org.caesarj.compiler.ast.FjVisitor;
+import org.caesarj.compiler.ast.DeclarationVisitor;
 import org.caesarj.compiler.ast.JCompilationUnit;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
@@ -337,7 +337,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 	 * @param environment
 	 * @return the visitor instance that transforms FamilyJ to Java.
 	 */
-	protected FjVisitor getClassTransformation(KjcEnvironment environment) 
+	protected DeclarationVisitor getClassTransformation(KjcEnvironment environment) 
 	{
 		return new ClassTransformationFjVisitor(environment);
 	}
@@ -347,7 +347,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 	 * @param environment
 	 * @return
 	 */
-	protected FjVisitor getCollaborationInteraceTransformation(
+	protected DeclarationVisitor getCollaborationInteraceTransformation(
 		KjcEnvironment environment) 
 	{
 		return new CollaborationInterfaceTransformation(environment, this);
@@ -359,7 +359,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 	 * @param environment
 	 * @return the visitor instance for initializes the families.
 	 */
-	protected FjVisitor getFamiliesInitializer(KjcEnvironment environment)
+	protected DeclarationVisitor getFamiliesInitializer(KjcEnvironment environment)
 	{
 		return new FamiliesInitializerFjVisitor(this, environment);
 	}
@@ -371,7 +371,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 		return inherritConstructors;
 	}
 
-	protected FjVisitor getMethodTransformation(KjcEnvironment environment) {
+	protected DeclarationVisitor getMethodTransformation(KjcEnvironment environment) {
 		return new MethodTransformationFjVisitor(environment);
 	}
 

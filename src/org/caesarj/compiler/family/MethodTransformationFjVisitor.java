@@ -9,7 +9,7 @@ import org.caesarj.compiler.ast.FjCleanClassInterfaceDeclaration;
 import org.caesarj.compiler.ast.FjCleanMethodDeclaration;
 import org.caesarj.compiler.ast.FjConstructorDeclaration;
 import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
-import org.caesarj.compiler.ast.FjVisitor;
+import org.caesarj.compiler.ast.DeclarationVisitor;
 import org.caesarj.compiler.ast.JFieldDeclaration;
 import org.caesarj.compiler.ast.JMethodDeclaration;
 import org.caesarj.compiler.ast.JPhylum;
@@ -21,7 +21,7 @@ import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 
-public class MethodTransformationFjVisitor extends FjVisitor {
+public class MethodTransformationFjVisitor extends DeclarationVisitor {
 
 	/**
 	 * The environment for generate the interfaces of the classes.
