@@ -33,6 +33,7 @@ import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JCompoundStatement;
 import org.caesarj.compiler.ast.phylum.statement.JExpressionListStatement;
+import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
 import org.caesarj.compiler.ast.phylum.statement.JIfStatement;
 import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
@@ -236,7 +237,8 @@ public class CClassPreparation implements CaesarConstants {
         String wrapperMapName = 
             "$"+inner.getMixin().getQualifiedName().getIdent()+"_wrapper_map";
         
-        JFieldDeclaration hashMap =
+        // TODO map = new WeakHashMap() didn't work
+        decl.addField(
             new JFieldDeclaration(
                 decl.getTokenReference(),
                 new JVariableDefinition(
@@ -244,16 +246,11 @@ public class CClassPreparation implements CaesarConstants {
                     ACC_PRIVATE,
                     hashMapClass.getAbstractType(),
                     wrapperMapName,
-                    new JUnqualifiedInstanceCreation(
-                            where,
-                        hashMapClass.getAbstractType(),
-                        JExpression.EMPTY
-                    )
+                    null
                 ),
                 null, null
-            );
-        
-        decl.addField(hashMap);
+            )
+        );
         
         JMethodDeclaration wrapperMethod = 
             new JMethodDeclaration(
@@ -275,6 +272,30 @@ public class CClassPreparation implements CaesarConstants {
                 new JBlock(
                     where,
                     new JStatement[]{
+                        new JIfStatement(
+                            where,
+                            new JEqualityExpression(
+                                where, 
+                                true,
+                                new JNameExpression(where, wrapperMapName),
+                                new JNullLiteral(where)
+                            ),
+                            new JExpressionStatement(
+                                where,
+                                new JAssignmentExpression(
+                                    where,
+                                    new JNameExpression(where, wrapperMapName),
+                                    new JUnqualifiedInstanceCreation(
+                                        where,
+                                        hashMapClass.getAbstractType(),
+                                        JExpression.EMPTY
+                                    )
+                                ),
+                                null
+                            ),
+                            null,
+                            null
+                        ),
                         new JVariableDeclarationStatement(
                             where,
                             new JVariableDefinition(
@@ -360,94 +381,6 @@ public class CClassPreparation implements CaesarConstants {
         decl.addMethod(wrapperMethod);
 	}
 	
-	/*
-	private Client wrappee = null;
-	public void $initWrappee(Client wrappee) {
-		this.wrappee=wrappee;
-    }
-	*/
-	public void generateWrappeeSupport(
-        KjcEnvironment environment,
-	    JavaTypeNode wrapper,
-	    CjVirtualClassDeclaration decl
-    ) {
-	    TypeFactory typeFactory = environment.getTypeFactory();
-        ClassReader classReader = environment.getClassReader();
-        
-        TokenReference where = decl.getTokenReference();
-        
-        decl.addField(
-            new JFieldDeclaration(
-                decl.getTokenReference(),
-                new JVariableDefinition(
-                    where,
-                    ACC_PRIVATE,
-                    decl.getWrappee(),
-                    "$wrappee",
-                    new JNullLiteral(where)
-                ),
-                null, null
-            )
-        );
-        
-        JFormalParameter[] params =
-        	new JFormalParameter[]{
-                new JFormalParameter(
-                    where,
-                    JFormalParameter.DES_PARAMETER,
-                    decl.getWrappee(),
-                    "w",
-                    false
-                )
-            };
-        
-        decl.addMethod( 
-            new JMethodDeclaration(
-                where,
-                ACC_PUBLIC,
-                CTypeVariable.EMPTY,
-                typeFactory.getVoidType(),
-                "$initWrappee",
-                params,
-                CReferenceType.EMPTY,
-                new JBlock(
-                    where,
-                    new JStatement[]{                        
-                        new JExpressionListStatement(
-                            where,
-                            new JExpression[]{
-                                new JAssignmentExpression(
-                                    where,
-                                    new JNameExpression(where, "$wrappee"),
-                                    new JNameExpression(where, "w")
-                                )
-                            },
-                            null
-                        )
-                    },
-                    null
-                ),
-                null, null
-            )
-        );       
-        
-        // add method to the ifc
-        decl.getMixinIfcDeclaration().addMethod(
-            new JMethodDeclaration(
-                where,
-                ACC_PUBLIC,
-                CTypeVariable.EMPTY,
-                typeFactory.getVoidType(),
-                "$initWrappee",
-                params,
-                CReferenceType.EMPTY,
-                null, null, null
-            )
-        );
-        
-        System.out.println();
-	}
-	
     /**
      * for each inner class which corresponds to a caesar type,
      * we generate for the default ctor of this inner class a factory method in the enclosing class
@@ -466,16 +399,7 @@ public class CClassPreparation implements CaesarConstants {
                 JavaTypeNode item = (JavaTypeNode)it.next();                        
                            
                 CjVirtualClassDeclaration decl = item.getDeclaration();
-                if(decl != null) {
-                    
-                    if(decl.isWrapper()) {
-                        generateWrappeeSupport(
-                            environment,
-                            item,
-                            decl
-                        );
-                	}
-                    
+                if(decl != null) {                    
                     for (Iterator innerIt = item.getInners().iterator(); innerIt.hasNext();) {
                         JavaTypeNode inner = (JavaTypeNode) innerIt.next();
                         

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.24 2004-09-10 22:41:00 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.25 2004-09-10 23:31:19 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -33,7 +33,16 @@ import org.caesarj.compiler.aspectj.CaesarScope;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.expression.JAssignmentExpression;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
+import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
+import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
+import org.caesarj.compiler.ast.phylum.statement.JExpressionListStatement;
+import org.caesarj.compiler.ast.phylum.statement.JStatement;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
+import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CClassContext;
@@ -50,6 +59,7 @@ import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.compiler.types.CVoidType;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -184,6 +194,61 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
         // structural detection of crosscutting property
         if ((advices.length > 0) || (pointcuts.length > 0))
             this.modifiers |= ACC_CROSSCUTTING;
+        
+        // add wrappee field and method
+        if(wrappee != null) {
+            addField(
+                new JFieldDeclaration(
+                    where,
+                    new JVariableDefinition(
+                        where,
+                        ACC_PRIVATE,
+                        wrappee,
+                        "$wrappee",
+                        new JNullLiteral(where)
+                    ),
+                    null, null
+                )
+            );
+            
+            addMethod( 
+                new JMethodDeclaration(
+                    where,
+                    ACC_PUBLIC,
+                    CTypeVariable.EMPTY,
+                    new CVoidType(),
+                    "$initWrappee",
+                    new JFormalParameter[]{
+                        new JFormalParameter(
+                            where,
+                            JFormalParameter.DES_PARAMETER,
+                            wrappee,
+                            "w",
+                            false
+                        )
+                    },
+                    CReferenceType.EMPTY,
+                    new JBlock(
+                        where,
+                        new JStatement[]{                        
+                            new JExpressionListStatement(
+                                where,
+                                new JExpression[]{
+                                    new JAssignmentExpression(
+                                        where,
+                                        new JNameExpression(where, "$wrappee"),
+                                        new JNameExpression(where, "w")
+                                    )
+                                },
+                                null
+                            )
+                        },
+                        null
+                    ),
+                    null, null
+                )
+            ); 
+        }
     }
     
     public void join(CContext context) throws PositionedError {

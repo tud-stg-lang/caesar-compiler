@@ -132,8 +132,6 @@ public class Main extends MainSuper implements Constants {
         adjustSuperTypes(tree);
         if(errorFound) return false;
         
-        // TODO support methods for wrappee has to be directly after joinAll
-        // otherwise problems when composing with &
         generateSupportMembers(environment);
         if(errorFound) return false;
         
