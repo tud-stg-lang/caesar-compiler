@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.22 2005-02-16 17:54:04 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.23 2005-02-21 15:19:03 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -440,9 +440,12 @@ public class JMethodCallExpression extends JExpression
 		        CReferenceType refType = (CReferenceType)argTypes[i];
 		        
 		        Log.verbose("handling parameter "+i);
-		        
-			    argPaths[i] = Path.createFrom(context.getBlockContext(), args[i]);			    
-			    argTypePaths[i] = argPaths[i].normalize();
+		        		        
+//			    argPaths[i] = Path.createFrom(context.getBlockContext(), args[i]);			    
+//			    argTypePaths[i] = argPaths[i].normalize();
+			    
+		        argPaths[i] = args[i].getThisAsFamily();
+		        argTypePaths[i] = args[i].getFamily();
 			    
 			    Log.verbose("expr:"+argPaths[i]+" -> fam:"+argTypePaths[i]);
 			    
