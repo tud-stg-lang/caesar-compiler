@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.88 2005-03-10 10:42:58 gasiunas Exp $
+ * $Id: Main.java,v 1.89 2005-03-22 10:20:10 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -172,14 +172,14 @@ public class Main extends MainSuper implements Constants {
         
         prepareJoinpointReflection(tree);
         
-        prepareDynamicDeployment(environment, tree);
-                
         joinAll(tree);                  
         if(errorFound) return false;
         
         generateCaesarTypeSystem(environment, tree);
         if(errorFound) return false;
-
+        
+        prepareDynamicDeployment(environment, tree);
+        
         createMixinCloneTypeInfo(environment, tree[0]);
         
         createImplicitCaesarTypes(tree);
@@ -491,7 +491,7 @@ public class Main extends MainSuper implements Constants {
         //Modify and generate support classes for dynamic deployment.
         for (int i = 0; i < tree.length; i++) {
             JCompilationUnit cu = tree[i];
-            DeploymentPreparation.prepareForDynamicDeployment(environment, cu);
+            DeploymentPreparation.prepareForDynamicDeployment(this, cu);
         }
     }
 

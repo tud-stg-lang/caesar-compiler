@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JCompilationUnit.java,v 1.11 2005-01-24 16:52:59 aracic Exp $
+ * $Id: JCompilationUnit.java,v 1.12 2005-03-22 10:20:10 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -398,6 +398,14 @@ public class JCompilationUnit extends JPhylum {
 	 */
 	public CCompilationUnit getExport() {
 		return export;
+	}
+	
+	/**
+	 * Creates compilation unit context
+	 * @return CCompilationUnitContext
+	 */
+	public CCompilationUnitContext createContext(CompilerBase compiler) {
+		return new CCompilationUnitContext(compiler, environment, export);
 	}
 
 	// ----------------------------------------------------------------------

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.38 2005-03-22 08:42:20 aracic Exp $
+ * $Id: DeploymentClassFactory.java,v 1.39 2005-03-22 10:20:10 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -62,6 +62,7 @@ import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CBooleanType;
 import org.caesarj.compiler.types.CByteType;
 import org.caesarj.compiler.types.CCharType;
@@ -170,7 +171,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		}
 
 		CReferenceType[] superInterfaces =
-			{ new CClassNameType(CAESAR_ASPECT_IFC)};
+			{ typeFactory.createType(CAESAR_ASPECT_IFC, true)};
 
 		CjInterfaceDeclaration aspectInterface =
 			new CjInterfaceDeclaration(
@@ -185,10 +186,12 @@ public class DeploymentClassFactory implements CaesarConstants {
 				null,
 				null);
 
+		/* generate export information for the new interface */
+		CClass owner = aspectClass.getOwner();
 		aspectInterface.generateInterface(
 			environment.getClassReader(),
-			aspectClass.getOwner(),
-			packagePrefix);
+			owner,
+			owner == null ? packagePrefix : owner.getQualifiedName() + '$');
 
 		return aspectInterface;
 	}
@@ -219,10 +222,10 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		//IVICA: implement the aspect interface
 		aspectClass.getMixinIfcDeclaration().addInterface(
-			new CClassNameType(qualifiedAspectInterfaceName));
+				typeFactory.createType(qualifiedAspectInterfaceName, false));
         
         aspectClass.getMixinIfcDeclaration().addInterface(            
-            new CClassNameType(CAESAR_ASPECT_IFC));
+        		typeFactory.createType(CAESAR_ASPECT_IFC, true));
         
 		//add support methods
 		List newMethods = new ArrayList();
@@ -374,7 +377,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		// Implement the CaesarSingletonAspectIfc
 		CReferenceType[] interfaces =
-			{ new CClassNameType(CAESAR_ASPECT_REGISTRY_IFC_CLASS)};
+			{ typeFactory.createType(CAESAR_ASPECT_REGISTRY_IFC_CLASS, true)};
 
 		int modifiers = ACC_PUBLIC;
 		if (aspectClass.getOwner() != null) {
@@ -393,10 +396,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 			singletonAspectName,
 			null,
 			interfaces,
-			(JFieldDeclaration[]) fields.toArray(
-				new JFieldDeclaration[0]),
-			(JMethodDeclaration[]) singletonAspectMethods.toArray(
-				new JMethodDeclaration[0]),
+			(JFieldDeclaration[]) fields.toArray(new JFieldDeclaration[0]),
+			(JMethodDeclaration[]) singletonAspectMethods.toArray(new JMethodDeclaration[0]),
 			(JTypeDeclaration[]) inners.toArray(new JTypeDeclaration[0]),
 			initializers,
 			null,
@@ -414,10 +415,12 @@ public class DeploymentClassFactory implements CaesarConstants {
 		aspectClass.setDeclares(null);
 		aspectClass.setMethods(aspectClassMethods);
 
+		/* generate export information for the new class */
+		CClass owner = aspectClass.getOwner();
 		singletonAspect.generateInterface(
 			environment.getClassReader(),
-			aspectClass.getOwner(),
-			packagePrefix);
+			owner,
+			owner == null ? packagePrefix : owner.getQualifiedName() + '$');
 
 		return singletonAspect;
 	}

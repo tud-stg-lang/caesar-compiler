@@ -20,20 +20,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentPreparation.java,v 1.25 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: DeploymentPreparation.java,v 1.26 2005-03-22 10:20:10 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.caesarj.compiler.AstGenerator;
+import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
@@ -46,8 +47,10 @@ import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CType;
+import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
 /**
@@ -66,9 +69,11 @@ public class DeploymentPreparation implements CaesarConstants {
 	/**
 	 * Generates for every nested crosscutting class the corresponding deployment support classes.
 	 */
-	public static void prepareForDynamicDeployment(KjcEnvironment environment, JCompilationUnit cu) {
+	public static void prepareForDynamicDeployment(CompilerBase compiler, JCompilationUnit cu) {
 		List newTypeDeclarations = new ArrayList();
 		JTypeDeclaration typeDeclarations[] = cu.getInners();
+		CContext ownerCtx = cu.createContext(compiler);
+		
 		for (int i = 0; i < typeDeclarations.length; i++) {
 			
 			newTypeDeclarations.add(typeDeclarations[i]);
@@ -83,39 +88,54 @@ public class DeploymentPreparation implements CaesarConstants {
 					DeploymentClassFactory utils =
 						new DeploymentClassFactory(
 							caesarClass,
-							environment);
-
-					//modify the aspect class									
-					utils.modifyAspectClass();
-
-					//add the deployment support classes to the enclosing class							
-					newTypeDeclarations.add(utils.createAspectInterface());					
-					CjClassDeclaration registryDecl = utils.createSingletonAspect();
-					newTypeDeclarations.add(registryDecl);
+							cu.getEnvironment());
 					
+					//	add the deployment support classes to the enclosing class
+					CjInterfaceDeclaration aspectIfc = utils.createAspectInterface();
+					newTypeDeclarations.add(aspectIfc);
+					
+					CjClassDeclaration registryCls = utils.createSingletonAspect();
+					newTypeDeclarations.add(registryCls);
+					
+					// modify the aspect class									
+					utils.modifyAspectClass();
+					
+					//join the modified and new classes
+					try {
+						aspectIfc.join(ownerCtx);
+						registryCls.join(ownerCtx);	
+						caesarClass.getMixinIfcDeclaration().join(ownerCtx);
+					}
+					catch (PositionedError err) {
+						System.out.println(err.getMessage());
+					}
+
 					if (caesarClass.isStaticallyDeployed()) {
-						new DeploymentPreparation(caesarClass, environment).prepareForStaticDeployment(registryDecl);					
+						new DeploymentPreparation(caesarClass, cu.getEnvironment()).prepareForStaticDeployment(registryCls);					
 					}
 				}
 				
 				if (caesarClass.getInners().length > 0) {
 					//consider nested types
-					new DeploymentPreparation(caesarClass, environment).prepareForDynamicDeployment(environment);
+					new DeploymentPreparation(caesarClass, cu.getEnvironment()).prepareForDynamicDeployment(cu.getEnvironment());
 				}
 			}
 		}
-		cu.setInners((JTypeDeclaration[]) newTypeDeclarations.toArray(new JTypeDeclaration[0]));
+		if (newTypeDeclarations.size() > typeDeclarations.length) {
+			cu.setInners((JTypeDeclaration[]) newTypeDeclarations.toArray(new JTypeDeclaration[0]));
+			rejoinMixinInterfaces(cu.getInners(), ownerCtx);
+		}
 	}
 	
 	private void prepareForDynamicDeployment(KjcEnvironment environment)
 	{
 	    List newInners = new LinkedList();
+	    CContext ownerCtx = (CContext)cd.getTypeContext();
 	    
 		for (int i = 0; i < cd.getInners().length; i++)
 		{
-			if (cd.getInners()[i] instanceof CjClassDeclaration)
+			if (cd.getInners()[i] instanceof CjVirtualClassDeclaration)
 			{
-
 				//create support classes for each crosscutting inner class
 				CjVirtualClassDeclaration innerCaesarClass =
 					(CjVirtualClassDeclaration) cd.getInners()[i];
@@ -126,12 +146,25 @@ public class DeploymentPreparation implements CaesarConstants {
 							innerCaesarClass,
 							environment);
 
+					//add the deployment support classes to the enclosing class
+					CjInterfaceDeclaration aspectIfc = utils.createAspectInterface();
+					newInners.add(aspectIfc);
+					
+					CjClassDeclaration registryCls = utils.createSingletonAspect();
+					newInners.add(registryCls);
+					
 					//modify the aspect class		
 					utils.modifyAspectClass();
-
-					//add the deployment support classes to the enclosing class
-					newInners.add(utils.createAspectInterface());
-					newInners.add(utils.createSingletonAspect());
+					
+					//join the modified and new classes
+					try {
+						aspectIfc.join(ownerCtx);
+						registryCls.join(ownerCtx);
+						innerCaesarClass.getMixinIfcDeclaration().join(ownerCtx);
+					}
+					catch (PositionedError err) {
+						System.out.println(err.getMessage());
+					}
 				}
 
 				//handle the inners of the inners
@@ -146,28 +179,39 @@ public class DeploymentPreparation implements CaesarConstants {
 					}
 				}
 			}
-
 		}
 
-		String prefix = cd.getCClass().getQualifiedName() + '$';
-		
-		// IVICA: refresh the class without recreating the CjSourceClass
-		if(newInners.size() > 0)
+		if (newInners.size() > 0)
 		{
-			for (Iterator it = newInners.iterator(); it.hasNext();) 
-			{
-	            JTypeDeclaration decl = (JTypeDeclaration)it.next();
-	
-	            decl.generateInterface(
-			        environment.getClassReader(), cd.getCClass(), prefix);
-	        } 
-			
 			// add new declarations as inners to cd
 			// note that addInners will update the export object in cd
 			cd.addInners((JTypeDeclaration[])newInners.toArray(new JTypeDeclaration[0]));
+			rejoinMixinInterfaces(cd.getInners(), ownerCtx);
 		}
 	}
 	
+	/**
+	 * Rejoin the mixin interfaces of the crosscutting Caesar classes
+	 * 
+	 * @param decl			array of type declarations
+	 * @param ownerCtx		owner context
+	 */
+	private static void rejoinMixinInterfaces(JTypeDeclaration[] decl, CContext ownerCtx) {
+		for (int i = 0; i < decl.length; i++) {
+			if (decl[i] instanceof CjVirtualClassDeclaration) {
+				CjVirtualClassDeclaration caesarClass =	(CjVirtualClassDeclaration)decl[i];
+				if (caesarClass.isCrosscutting()) {
+					try {
+						caesarClass.getMixinIfcDeclaration().join(ownerCtx);
+					}
+					catch (PositionedError err) {
+						System.out.println(err.getMessage());
+					}	
+				}
+			}
+		}
+	}
+			
 	/*
 	 * Creates static initalization block:
 	 * 
