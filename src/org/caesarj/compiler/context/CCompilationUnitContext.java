@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCompilationUnitContext.java,v 1.7 2005-02-11 18:45:22 aracic Exp $
+ * $Id: CCompilationUnitContext.java,v 1.8 2005-02-16 16:32:45 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -193,7 +193,11 @@ public class CCompilationUnitContext extends CContext {
 	public CCompilationUnit getCunit() {
 		return cunit;
 	}
-
+	
+	public String toString() {
+	    return "CU-ctx";
+	}
+	
 	// ----------------------------------------------------------------------
 	// DATA MEMBERS
 	// ----------------------------------------------------------------------

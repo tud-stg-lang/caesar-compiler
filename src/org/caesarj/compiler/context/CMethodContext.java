@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CMethodContext.java,v 1.9 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CMethodContext.java,v 1.10 2005-02-16 16:32:45 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -220,6 +220,11 @@ public class CMethodContext extends CContext {
   public Hashtable getThrowables() {
     return throwables;
   }
+  
+	public String toString() {
+	    return "M-ctx("+decl.getIdent()+") <- "+parent;
+	}
+
 
   // ----------------------------------------------------------------------
   // DATA MEMBERS
