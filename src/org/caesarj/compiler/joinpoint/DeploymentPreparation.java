@@ -17,6 +17,7 @@ import org.caesarj.compiler.ast.phylum.expression.*;
 import org.caesarj.compiler.ast.phylum.statement.*;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
+import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.types.*;
@@ -247,11 +248,15 @@ public class DeploymentPreparation implements CaesarConstants {
 			new JNameExpression(
 				TokenReference.NO_REF,
 				PER_SINGLETON_INSTANCE_FIELD);
+		
+		JExpression[] constrArgs = new JExpression[1];
+		constrArgs[0] = new JNullLiteral(TokenReference.NO_REF);
+		
 		JExpression right =
 			new JUnqualifiedInstanceCreation(
 				TokenReference.NO_REF,
 				new CClassNameType(cd.getIdent()),
-				JExpression.EMPTY);
+				constrArgs);
 		return new JExpressionStatement(
 			TokenReference.NO_REF,
 			new CjAssignmentExpression(TokenReference.NO_REF, left, right),
