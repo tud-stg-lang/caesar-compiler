@@ -127,7 +127,8 @@ public class ClassTransformationFjVisitor extends FjVisitor
 		// its superclass clean-interface-implementation
 		CReferenceType ifcType =
 			new CClassNameType(owner.getQualifiedName() + ifcDecl.getIdent());
-		self.addInterface(ifcType);
+		// Important: add interface at canonical position 0!
+		self.addInterface(ifcType,0);
 		self.setSuperClass();
 		implDecl.setSuperClass(self.getSuperClass());
 

@@ -395,8 +395,13 @@ public class FjCleanClassDeclaration
 
 	public void addInterface(CReferenceType ifc)
 	{
+		addInterface(ifc, interfaces.length);
+	}
+
+	public void addInterface(CReferenceType ifc, int index)
+	{
 		Vector interfaces = new Vector(Arrays.asList(this.interfaces));
-		interfaces.add(ifc);
+		interfaces.add(index,ifc);
 		this.interfaces =
 			(CReferenceType[]) Utils.toArray(interfaces, CReferenceType.class);
 	}

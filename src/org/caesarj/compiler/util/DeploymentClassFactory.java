@@ -13,6 +13,8 @@ import org.caesarj.compiler.ast.DeploymentSupportClassDeclaration;
 import org.caesarj.compiler.ast.FjAssignmentExpression;
 import org.caesarj.compiler.ast.FjCastExpression;
 import org.caesarj.compiler.ast.FjClassDeclaration;
+import org.caesarj.compiler.ast.FjCleanClassDeclaration;
+import org.caesarj.compiler.ast.FjCleanMethodDeclaration;
 import org.caesarj.compiler.ast.FjFieldAccessExpression;
 import org.caesarj.compiler.ast.FjFieldDeclaration;
 import org.caesarj.compiler.ast.FjFormalParameter;
@@ -226,13 +228,14 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		//add support methods
 		List newMethods = new ArrayList();
+		boolean cleanMethodsRequired = (aspectClass instanceof FjCleanClassDeclaration);
 
-		newMethods.add(createAspectClassDeployMethod());
-		newMethods.add(createAspectClassUndeployMethod());
-		newMethods.add(createGetDeploymentThreadMethod());
-		newMethods.add(createSetDeploymentThreadMethod());
-		newMethods.add(createGetSingletonAspectMethod());
-		newMethods.add(createGetThreadLocalDeployedInstancesMethod());
+		newMethods.add(createAspectClassDeployMethod(cleanMethodsRequired));
+		newMethods.add(createAspectClassUndeployMethod(cleanMethodsRequired));
+		newMethods.add(createGetDeploymentThreadMethod(cleanMethodsRequired));
+		newMethods.add(createSetDeploymentThreadMethod(cleanMethodsRequired));
+		newMethods.add(createGetSingletonAspectMethod(cleanMethodsRequired));
+		newMethods.add(createGetThreadLocalDeployedInstancesMethod(cleanMethodsRequired));
 
 		aspectClass.addMethods(
 			(JMethodDeclaration[]) newMethods.toArray(
@@ -374,7 +377,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 * Creates the deploy method for single instance aspects.
 	 */
-	private FjMethodDeclaration createAspectClassDeployMethod() {
+	private FjMethodDeclaration createAspectClassDeployMethod(boolean cleanMethod) {
 		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
 
 		FjFormalParameter param =
@@ -395,17 +398,30 @@ public class DeploymentClassFactory implements CaesarConstants {
 				createAspectClassDeployStatement_4(),
 				createAspectClassDeployStatement_5()};
 
-		return new FjMethodDeclaration(
-			where,
-			ACC_PUBLIC | ACC_SYNCHRONIZED,
-			CTypeVariable.EMPTY,
-			ifcType,
-			DEPLOY_METHOD,
-			deployParam,
-			CReferenceType.EMPTY,
-			new JBlock(where, body, null),
-			null,
-			null);
+		return cleanMethod?
+			new FjCleanMethodDeclaration(
+						where,
+						ACC_PUBLIC | ACC_SYNCHRONIZED,
+						CTypeVariable.EMPTY,
+						ifcType,
+						DEPLOY_METHOD,
+						deployParam,
+						CReferenceType.EMPTY,
+						new JBlock(where, body, null),
+						null,
+						null):
+			
+			new FjMethodDeclaration(
+				where,
+				ACC_PUBLIC | ACC_SYNCHRONIZED,
+				CTypeVariable.EMPTY,
+				ifcType,
+				DEPLOY_METHOD,
+				deployParam,
+				CReferenceType.EMPTY,
+				new JBlock(where, body, null),
+				null,
+				null);
 
 	}
 
@@ -569,7 +585,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 * Creates the undeploy method for a single instance aspect.
 	 */
-	private FjMethodDeclaration createAspectClassUndeployMethod() {
+	private FjMethodDeclaration createAspectClassUndeployMethod(boolean cleanMethod) {
 
 		JStatement[] statements =
 			{
@@ -580,17 +596,29 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JBlock body = new JBlock(where, statements, null);
 
 		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
-		return new FjMethodDeclaration(
-			where,
-			ACC_PUBLIC | ACC_SYNCHRONIZED,
-			CTypeVariable.EMPTY,
-			ifcType,
-			UNDEPLOY_METHOD,
-			FjFormalParameter.EMPTY,
-			CReferenceType.EMPTY,
-			body,
-			null,
-			null);
+		return cleanMethod?  
+			new FjCleanMethodDeclaration(
+				where,
+				ACC_PUBLIC | ACC_SYNCHRONIZED,
+				CTypeVariable.EMPTY,
+				ifcType,
+				UNDEPLOY_METHOD,
+				FjFormalParameter.EMPTY,
+				CReferenceType.EMPTY,
+				body,
+				null,
+				null):
+			new FjMethodDeclaration(
+				where,
+				ACC_PUBLIC | ACC_SYNCHRONIZED,
+				CTypeVariable.EMPTY,
+				ifcType,
+				UNDEPLOY_METHOD,
+				FjFormalParameter.EMPTY,
+				CReferenceType.EMPTY,
+				body,
+				null,
+				null);
 
 	}
 
@@ -654,7 +682,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * 
 	 * return singletonAspectType.ajc$perSingletonInstance
 	 */
-	private FjMethodDeclaration createGetSingletonAspectMethod() {
+	private FjMethodDeclaration createGetSingletonAspectMethod(boolean cleanMethod) {
 
 		CReferenceType singletonType =
 			new CClassNameType(qualifiedSingletonAspectName);
@@ -669,17 +697,30 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CReferenceType ifcType =
 			new CClassNameType(CAESAR_SINGLETON_ASPECT_IFC_CLASS);
 
-		return new FjMethodDeclaration(
-			where,
-			ACC_PUBLIC | ACC_SYNCHRONIZED,
-			CTypeVariable.EMPTY,
-			ifcType,
-			GET_SINGLETON_ASPECT_METHOD,
-			FjFormalParameter.EMPTY,
-			CReferenceType.EMPTY,
-			new JBlock(where, body, null),
-			null,
-			null);
+		return cleanMethod?
+			new FjCleanMethodDeclaration(
+				where,
+				ACC_PUBLIC | ACC_SYNCHRONIZED,
+				CTypeVariable.EMPTY,
+				ifcType,
+				GET_SINGLETON_ASPECT_METHOD,
+				FjFormalParameter.EMPTY,
+				CReferenceType.EMPTY,
+				new JBlock(where, body, null),
+				null,
+				null):
+		 
+			new FjMethodDeclaration(
+				where,
+				ACC_PUBLIC | ACC_SYNCHRONIZED,
+				CTypeVariable.EMPTY,
+				ifcType,
+				GET_SINGLETON_ASPECT_METHOD,
+				FjFormalParameter.EMPTY,
+				CReferenceType.EMPTY,
+				new JBlock(where, body, null),
+				null,
+				null);
 	}
 
 	/**
@@ -723,10 +764,10 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		methods.add(createMultiInstanceDeployMethod());
 		methods.add(createMultiInstanceUndeployMethod());
-		methods.add(createSetDeploymentThreadMethod());
-		methods.add(createGetDeploymentThreadMethod());
+		methods.add(createSetDeploymentThreadMethod(false));
+		methods.add(createGetDeploymentThreadMethod(false));
 		methods.add(createMultiInstanceGetDeployedInstancesMethod());
-		methods.add(createGetThreadLocalDeployedInstancesMethod());
+		methods.add(createGetThreadLocalDeployedInstancesMethod(false));
 
 		AdviceDeclaration[] adviceMethods = aspectClass.getAdvices();
 		List inners = new ArrayList();
@@ -1544,8 +1585,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		methods.add(createMultiThreadDeployMethod());
 		methods.add(createMultiThreadUndeployMethod());
-		methods.add(createSetDeploymentThreadMethod());
-		methods.add(createGetDeploymentThreadMethod());
+		methods.add(createSetDeploymentThreadMethod(false));
+		methods.add(createGetDeploymentThreadMethod(false));
 		methods.add(createMultiThreadGetDeployedInstancesMethod());
 		methods.add(createMultiThreadGetThreadLocalDeployedInstancesMethod());
 
@@ -2251,31 +2292,43 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * Creates the getDeploymentThread method for all implementors
 	 * of the aspect interface.
 	 */
-	private FjMethodDeclaration createGetDeploymentThreadMethod() {
+	private FjMethodDeclaration createGetDeploymentThreadMethod(boolean cleanMethod) {
 		JExpression fieldExpr =
 			new FjFieldAccessExpression(where, DEPLOYMENT_THREAD);
 		JStatement[] body = { new JReturnStatement(where, fieldExpr, null)};
 
 		CType type = new CClassNameType(QUALIFIED_THREAD_CLASS);
 
-		return new FjMethodDeclaration(
-			where,
-			ACC_PUBLIC | ACC_SYNCHRONIZED,
-			CTypeVariable.EMPTY,
-			type,
-			GET_DEPLOYMENT_THREAD_METHOD,
-			FjFormalParameter.EMPTY,
-			CReferenceType.EMPTY,
-			new JBlock(where, body, null),
-			null,
-			null);
+		return cleanMethod? 
+			new FjCleanMethodDeclaration(
+				where,
+				ACC_PUBLIC | ACC_SYNCHRONIZED,
+				CTypeVariable.EMPTY,
+				type,
+				GET_DEPLOYMENT_THREAD_METHOD,
+				FjFormalParameter.EMPTY,
+				CReferenceType.EMPTY,
+				new JBlock(where, body, null),
+				null,
+				null):
+			new FjMethodDeclaration(
+				where,
+				ACC_PUBLIC | ACC_SYNCHRONIZED,
+				CTypeVariable.EMPTY,
+				type,
+				GET_DEPLOYMENT_THREAD_METHOD,
+				FjFormalParameter.EMPTY,
+				CReferenceType.EMPTY,
+				new JBlock(where, body, null),
+				null,
+				null);
 	}
 
 	/**
 	 * Creates the setDeploymentThread method for all implementors
 	 * of the aspect interface.
 	 */
-	private FjMethodDeclaration createSetDeploymentThreadMethod() {
+	private FjMethodDeclaration createSetDeploymentThreadMethod(boolean cleanMethod) {
 		CType type = new CClassNameType(QUALIFIED_THREAD_CLASS);
 
 		JExpression fieldExpr =
@@ -2301,7 +2354,19 @@ public class DeploymentClassFactory implements CaesarConstants {
 					DEPLOYMENT_THREAD,
 					false)};
 
-		return new FjMethodDeclaration(
+		return cleanMethod ? 		
+		  new FjCleanMethodDeclaration(where,
+			ACC_PUBLIC | ACC_SYNCHRONIZED,
+			CTypeVariable.EMPTY,
+			typeFactory.getVoidType(),
+			SET_DEPLOYMENT_THREAD_METHOD,
+			params,
+			CReferenceType.EMPTY,
+			new JBlock(where, body, null),
+			null,
+			null) :
+			
+		  new FjMethodDeclaration(
 			where,
 			ACC_PUBLIC | ACC_SYNCHRONIZED,
 			CTypeVariable.EMPTY,
@@ -2938,24 +3003,37 @@ public class DeploymentClassFactory implements CaesarConstants {
 			null);
 	}
 
-	private JMethodDeclaration createGetThreadLocalDeployedInstancesMethod() {
+	private JMethodDeclaration createGetThreadLocalDeployedInstancesMethod(boolean cleanMethod) {
 
 		CType deployableType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
 
 		JStatement[] body =
 			{ new JReturnStatement(where, new FjThisExpression(where), null)};
 
-		return new FjMethodDeclaration(
-			where,
-			ACC_PUBLIC,
-			CTypeVariable.EMPTY,
-			deployableType,
-			GET_THREAD_LOCAL_DEPLOYED_INSTANCES_METHOD,
-			FjFormalParameter.EMPTY,
-			CReferenceType.EMPTY,
-			new JBlock(where, body, null),
-			null,
-			null);
+		return cleanMethod?
+			new FjCleanMethodDeclaration(
+				where,
+				ACC_PUBLIC,
+				CTypeVariable.EMPTY,
+				deployableType,
+				GET_THREAD_LOCAL_DEPLOYED_INSTANCES_METHOD,
+				FjFormalParameter.EMPTY,
+				CReferenceType.EMPTY,
+				new JBlock(where, body, null),
+				null,
+				null):
+			 
+			new FjMethodDeclaration(
+				where,
+				ACC_PUBLIC,
+				CTypeVariable.EMPTY,
+				deployableType,
+				GET_THREAD_LOCAL_DEPLOYED_INSTANCES_METHOD,
+				FjFormalParameter.EMPTY,
+				CReferenceType.EMPTY,
+				new JBlock(where, body, null),
+				null,
+				null);
 	}
 
 	private JMethodDeclaration createMultiThreadGetThreadLocalDeployedInstancesMethod() {

@@ -10,6 +10,7 @@ import org.caesarj.kjc.JFieldDeclaration;
 import org.caesarj.kjc.JMethodDeclaration;
 import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JTypeDeclaration;
+import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.PositionedError;
@@ -115,9 +116,17 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
 			&& (crosscuttingClass.getSuperClass().getCClass().getModifiers()
 				& ACC_CROSSCUTTING)
 				!= 0) {
-
-			String superClassName =
+					
+			String superClassName = null;
+			// test klaus
+			if (crosscuttingClass instanceof FjCleanClassDeclaration) {
+				String sc = 
+				  crosscuttingClass.getSuperClass().getIdent();
+				superClassName = sc.substring(0,sc.length()  - FjConstants.PROXY_POSTFIX.length());
+			} else {
+			  superClassName =
 				crosscuttingClass.getSuperClass().getIdent() + postfix;
+			}				
 
 			try {
 

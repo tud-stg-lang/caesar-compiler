@@ -51,7 +51,7 @@ public class FjConstants {
 	private static final String PARAM_PREFIX = "renamed".intern();
 	
 	private static final String IMPL_POSTFIX = "_Impl".intern();
-	protected static final String PROXY_POSTFIX = "_Proxy".intern();
+	public static final String PROXY_POSTFIX = "_Proxy".intern();
 	public static final String IMPLEMENTATION_METHOD_SUFFIX = ( SEPERATOR + "implementation").intern();
 	public static String implementationMethodName( String methodName ) {
 		return (SEPERATOR + methodName + IMPLEMENTATION_METHOD_SUFFIX ).intern();

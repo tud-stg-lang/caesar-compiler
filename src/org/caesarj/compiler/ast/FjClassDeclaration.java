@@ -942,6 +942,7 @@ public class FjClassDeclaration
 			| FJC_VIRTUAL
 			| FJC_OVERRIDE
 			| FJC_CLEAN
+			| ACC_CROSSCUTTING  // Klaus
 			| getInternalModifiers();
 	}
 	
@@ -953,7 +954,7 @@ public class FjClassDeclaration
 				| CCI_WEAVELET
 				//Jurgen's
 				| ACC_PRIVILEGED 
-				| ACC_CROSSCUTTING 
+//				| ACC_CROSSCUTTING 
 				| ACC_DEPLOYED;
 	}
 
