@@ -3,7 +3,7 @@ package generated.test231;
 import junit.framework.TestCase;
 
 /**
- * Purpose: constructor with wrong name
+ * Purpose: non-public cclass
  *
  * @author Vaidas Gasiunas
  */
