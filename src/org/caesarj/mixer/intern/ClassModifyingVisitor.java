@@ -5,31 +5,26 @@
 package org.caesarj.mixer.intern;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Stack;
+import java.util.Vector;
 
-
+import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Attribute;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.ConstantClass;
-import org.apache.bcel.classfile.ConstantUtf8;
-import org.apache.bcel.classfile.DescendingVisitor;
-import org.apache.bcel.classfile.EmptyVisitor;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.InnerClass;
-import org.apache.bcel.classfile.InnerClasses;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.LocalVariable;
-import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
-import org.apache.bcel.util.Class2HTML;
-import org.caesarj.mixer.Mixer;
+import org.apache.bcel.verifier.GraphicalVerifier;
+import org.caesarj.classfile.NameAndTypeConstant;
+import org.caesarj.compiler.cclass.JavaQualifiedName;
+import org.caesarj.mixer.ClassGenerator;
 import org.caesarj.mixer.MixerException;
+
 
 /**
  * Modify a <code>JavaClass</code> to have a different class and superclass name.
@@ -43,12 +38,7 @@ import org.caesarj.mixer.MixerException;
  */
 public class ClassModifyingVisitor extends EmptyVisitor {
 
-	/** This Stack holds the current outer class */
-	protected static Stack	outerClasses = new Stack();
-	
-	protected static String getOuterClassName(){
-		return (String) outerClasses.peek();
-	}
+	protected String[]	outerClasses;// = new String[]{"example/Aprime"};
 	
 	protected static String	outputDirectory = "bin/";
 	
@@ -57,30 +47,33 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 	}
 	
 	
-	protected String oldClassName, newClassName, newSuperclassName;
-
-	protected ClassGen		classGenerator;
-	protected ConstantPoolGen cpoolGenerator;
+	protected String 	oldClassName, 
+						newClassName, 
+						newSuperclassName,
+						newOuterClassName,
+						oldOuterClassName;
 
 	public static	void modify( 
 			String className, 
 			String newClassName, 
 			String newSuperclassName, 
-			HashMap replaceTypes) throws MixerException{
-		
-		if (replaceTypes == null)		replaceTypes = new HashMap();
+			String outerClassName,
+			String [] outers ) throws MixerException{
 		
 		ClassModifyingVisitor	visitor = new ClassModifyingVisitor( 
 												className, 
 												newClassName, 
 												newSuperclassName, 
-												replaceTypes );
+												outerClassName, 
+												outers );
 		
 		JavaClass	clazz = Repository.lookupClass(className);
 		
-		outerClasses.push( newClassName );
+		if (clazz == null) {
+			throw new MixerException("Class not found "+ className);
+		}
+		
 		visitor.run(clazz);
-		outerClasses.pop();
 	}
 	
 	
@@ -89,43 +82,119 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 	 * @param oldClassName	The original class name
 	 * @param newClassName	The new class name
 	 * @param newSuperclassName	The new name of super class
-	 * @param replaceTypes	A map with the names of types to replace in the class
+	 * @param outerClassName	name of the outerclass
 	 */
 	protected ClassModifyingVisitor( 
 			String oldClassName, 
 			String newClassName, 
-			String newSuperclassName, 
-			HashMap	replaceTypes ){
+			String newSuperclassName,
+			String outerClassName,
+			String []outers ) {
 		this.oldClassName = oldClassName;
 		this.newClassName = newClassName;
 		this.newSuperclassName = newSuperclassName;
-		this.replaceTypes = replaceTypes;
+		this.newOuterClassName = outerClassName;
+		outerClasses = outers;
+	
 	}
 	
-
+	
 	protected void run(JavaClass clazz) throws MixerException {
-		// open a class genrerator to modify the class
-		classGenerator = new ClassGen(clazz);
-		// retrieve constant pool generator and index values for class & superclass name
-		cpoolGenerator = classGenerator.getConstantPool();
-		int classNameIndex = classGenerator.getClassNameIndex(),
-			superclassNameIndex = classGenerator.getSuperclassNameIndex();
-		ConstantClass 	cc = (ConstantClass)cpoolGenerator.getConstant(classNameIndex),
-						csc = (ConstantClass)cpoolGenerator.getConstant(superclassNameIndex);
+		oldOuterClassName =  Tools.getOuterClass(clazz,oldClassName);
+		// create a copy as work base
+		JavaClass newClass = clazz.copy();
+	
+		
+
+		Attribute	[] attributes = newClass.getAttributes();
+		for (int i = 0; i < attributes.length; i++) {
+			Attribute attribute = attributes[i];
+			if (attribute.getTag() != Constants.ATTR_INNER_CLASSES) continue;
+		}
+		
+		// find indices of class and super class name
+		int classNameIndex = newClass.getClassNameIndex(),
+		superclassNameIndex = newClass.getSuperclassNameIndex();
+		ConstantClass 	cc = (ConstantClass)newClass.getConstantPool().getConstant(classNameIndex),
+						csc = (ConstantClass)newClass.getConstantPool().getConstant(superclassNameIndex);
 		classNameIndex = cc.getNameIndex();
 		superclassNameIndex = csc.getNameIndex();
 		
-		// set the new class & superclass name
-		classGenerator.setClassName(newClassName);
-		if (newSuperclassName != null)
-			classGenerator.setSuperclassName(newSuperclassName);
+		// Set new class & superclass name
+		newClass.getConstantPool().setConstant(superclassNameIndex, new ConstantUtf8(newSuperclassName));
+		newClass.getConstantPool().setConstant(classNameIndex, new ConstantUtf8(newClassName));
+		
 		
 		// visit fields, methods and local variables to replace type references
-		new DescendingVisitor(clazz, this).visit();
+		new DescendingVisitor(newClass, this).visit();
+		
+///		System.out.println( newClass.getConstantPool() );
+		
+		// Delete all inner class references 
+		Attribute[] atts = newClass.getAttributes();
+		Vector	v = new Vector();
+		for (int i = 0; i < atts.length; i++) {
+			Attribute attribute = atts[i];
+			if (attribute.getTag() == org.apache.bcel.Constants.ATTR_INNER_CLASSES){
+				InnerClasses ic = (InnerClasses)attribute;
+				ic.setInnerClasses(new InnerClass[0]);
+				ic.setLength(2);
+				
+			}
+			v.add( attribute );
+		}
+		atts = (Attribute[]) v.toArray(new Attribute[0]);
+		newClass.setAttributes(atts);
+		
+		// take a look at all methodrefs
+		modifyMethodRefs(newClass);
+/*		KK
+		// Add reference to the outer-class-file 
+		if (!oldOuterClassName.equals(newOuterClassName)){
+			JavaClass outer = Repository.lookupClass(newOuterClassName);
+			if (outer == null)	{
+				System.err.println("Waring: Referenced outer class "+newOuterClassName+" doesn't exist.");
+			}
+			else {
+				
+				InnerClass c = Tools.createInnerClass( 
+										outer, 
+										newOuterClassName, 
+										newClassName );
+				InnerClasses a = Tools.getInnerClassesAttribute(outer);
+				a.setInnerClasses( Tools.add(c, a.getInnerClasses() ) );
+				
+				
+				System.out.println(outer);
+				writeClass(outer);
+			}
+		}
+*/
+		// at last, write the classfile
+		writeClass( newClass );
+	
+	}
 
-		classGenerator.setConstantPool(cpoolGenerator);
+	void modifyMethodRefs( JavaClass clazz ){
+		ConstantPool cp = clazz.getConstantPool();
+		for (int i=1; i<cp.getLength(); i++){
+			Constant c = cp.getConstant(i);
+			if (c.getTag() == Constants.CONSTANT_Methodref){
+				ConstantMethodref mr = (ConstantMethodref) c;
+				String targetClassName = mr.getClass(cp);
 
-		writeClass( classGenerator.getJavaClass());
+				if (Tools.isPrefix(targetClassName, oldClassName)){
+					String newTargetClass = Tools.getNewOuterName(
+												oldClassName,
+												targetClassName,
+												outerClasses);
+					int classIndex = mr.getClassIndex();
+					ConstantClass cc = (ConstantClass)cp.getConstant(classIndex);
+					int nameIndex = cc.getNameIndex();
+					cp.setConstant(nameIndex, new ConstantUtf8(newTargetClass));
+				}
+			}
+		}
 	}
 
 
@@ -146,116 +215,60 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 	public void visitLocalVariable(LocalVariable variable) {
 		// Change the type of the local variable this
 		if (variable.getName().equals("this") ){
-			
 			int index = variable.getSignatureIndex();
-			cpoolGenerator.setConstant(index, 
+			variable.getConstantPool().setConstant(index, 
 					new ConstantUtf8( 
-							getNewSignature( variable.getSignature() ) ) );
-		}
-
+							new ObjectType(newClassName).getSignature()));
+		} 
 		super.visitLocalVariable(variable);
 	}
-	
-	public void visitInnerClass(InnerClass inner) {
-		// Read names of inner and outer class out of the attribute
-		ConstantClass	outerClass = ((ConstantClass) cpoolGenerator.getConstant(inner.getOuterClassIndex()));
-		int nameIndex = outerClass.getNameIndex();
-		String outerClassName = ((ConstantUtf8)cpoolGenerator.getConstant(nameIndex)).getBytes();
 
-		ConstantClass	innerClass = ((ConstantClass ) cpoolGenerator.getConstant(inner.getInnerClassIndex()));
-		nameIndex = innerClass.getNameIndex();
-		String innerClassName = ((ConstantUtf8)cpoolGenerator.getConstant(nameIndex)).getBytes();
-		
-		nameIndex = inner.getInnerNameIndex();
-		String innerName = ((ConstantUtf8)cpoolGenerator.getConstant(nameIndex)).getBytes();
-
-		// Check if it is an inner class of the current class 
-		if (innerClassName.equals(oldClassName+"$"+innerName)){
-
-			// Set correct new class names 
-			int newNameIndex = cpoolGenerator.addUtf8(newClassName+"$"+innerName);
-			innerClass.setNameIndex(newNameIndex);
-
-			newNameIndex = cpoolGenerator.addUtf8(newClassName);
-			outerClass.setNameIndex( newNameIndex );
-			
-			// Create a map with the new current classes name 
-			HashMap	newMap = (HashMap) replaceTypes.clone();
-			newMap.put(oldClassName.replace('/','.'), newClassName.replace('/','.'));
-			
-			// and proceed to inner class
-			try{
-				ClassModifyingVisitor.modify(oldClassName+"$"+innerName,newClassName+"$"+innerName, null, newMap );
-			} catch( MixerException e ){
-				e.printStackTrace();
-			}
-			
-		} 
-		// or, if it is a reference to the outer class 
-		else if (oldClassName.equals(innerClassName) ){
-			// Set new class names
-			int newNameIndex;
-			
-			newNameIndex = cpoolGenerator.addUtf8(newClassName);
-			innerClass.setNameIndex(newNameIndex);
-
-			newNameIndex = cpoolGenerator.addUtf8(getOuterClassName());
-			outerClass.setNameIndex( newNameIndex );
-			
-		}
-		
-		super.visitInnerClass(inner);
-	}
-
-	
 	public void visitField(Field field) {
-		if ( mustReplaceSignature(field.getSignature())){
+		// and of outer this
+		if (field.getName().startsWith("this$")){
 			int index = field.getSignatureIndex();
-			cpoolGenerator.setConstant(index, 
+			field.getConstantPool().setConstant(index,
 					new ConstantUtf8( 
-							getNewSignature( field.getSignature() ) ) );
+							new ObjectType(newOuterClassName).getSignature()));
 		}
 		super.visitField(field);
 	}
-
-	
-	/* A map of all type-names that have to be replaced */
-	protected HashMap	replaceTypes;
 	
 	
-	/*
-	 * Some tool functions to handle signatures&types
-	 */
-	
-	boolean mustReplaceSignature( String signature ){
-		return replaceTypes.containsKey( ClassModifyingVisitor.typeFromSignature(signature));
-	}
-	
-	/**
-	 * Looks up the referenced type in the replaceTypes map, and replaces the
-	 * type in this signature with the on found (if any).
-	 */
-	String getNewSignature( String signature ){
-		String type = ClassModifyingVisitor.typeFromSignature(signature);
-		type = (String) replaceTypes.get(type);
-		return replaceType(signature,type);
-	}
-
-	public static String	typeFromSignature( String signature ){
-		Type	t = Type.getType(signature);
-		return t.toString();
-	}
-	
-	public static String	replaceType( String signature, String with ){
-		// method
-		if (signature.startsWith("()")){
-			return "()"+replaceType( signature.substring(2), with );
+	public void visitMethod(Method obj) {
+		// we search for outer-class-access functions, which
+		// are static, have exactly one argument of this class' type and
+		// return an instance of the outer class' type
+		if (obj.getName().startsWith("access$")){
+			if (!obj.isStatic() ) return;
+			
+			String returnType = Type.getReturnType(obj.getSignature()).toString(); 
+			
+			if (!Tools.sameClass(returnType,oldOuterClassName)) return;
+			Type[]	argTypes = Type.getArgumentTypes(obj.getSignature());
+			if (argTypes.length != 1) return;
+			
+			// construct the new signature & use it to overwrite the old one
+			String newSignature = "(L"+newClassName+";)L"+newOuterClassName+";";// + " Just a little test";
+			
+			int index = obj.getSignatureIndex();
+			
+			obj.getConstantPool().setConstant(index, new ConstantUtf8(newSignature));
 		}
-		// array
-		else if (signature.startsWith("[")){
-			return "["+replaceType( signature.substring(1), with );
+		// and we check for constructors 
+		else if (obj.getName().equals("<init>")){
+			Type[]	argTypes = Type.getArgumentTypes(obj.getSignature());
+			if (argTypes.length != 1) return;
+			
+			if (Tools.sameClass(argTypes[0].toString(),oldOuterClassName)){
+				// construct the new signature & use it to overwrite the old one
+				String newSignature = "(L"+newOuterClassName+";)V";
+				
+				int index = obj.getSignatureIndex();
+				
+				obj.getConstantPool().setConstant(index, new ConstantUtf8(newSignature));
+			}
 		}
-		return "L"+with+";";
 	}
-	
+
 }
