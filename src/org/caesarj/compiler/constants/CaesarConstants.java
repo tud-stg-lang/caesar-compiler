@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarConstants.java,v 1.11 2005-02-11 18:45:22 aracic Exp $
+ * $Id: CaesarConstants.java,v 1.12 2005-02-16 13:24:05 aracic Exp $
  */
 
 package org.caesarj.compiler.constants;
@@ -110,6 +110,9 @@ public interface CaesarConstants extends Constants {
     
     public static final String CAESAR_OBJECT_IFC =
         "org/caesarj/runtime/CaesarObjectIfc";
+    
+    public static final String CAESAR_CAST_SUPPORT =
+        "org/caesarj/runtime/CastSupport";
     
     public static final String ASPECT_CONTAINER_IFC =  
     	"org/caesarj/runtime/aspects/AspectContainerIfc";
