@@ -24,6 +24,7 @@ import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.runtime.AdditionalCaesarTypeInformation;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
 
@@ -31,7 +32,8 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
 		TokenReference where, 
 		int modifiers,
 		String ident, 		
-		CReferenceType[] interfaces, 
+		CReferenceType[] extendedTypes,
+		CReferenceType[] implementedTypes,
 		JFieldDeclaration[] fields,
 		JMethodDeclaration[] methods, 
 		JTypeDeclaration[] inners,
@@ -41,12 +43,19 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
 			where, 
 			modifiers | ACC_MIXIN_INTERFACE, 
 			ident, 
-			interfaces, 
+			null, 
 			fields,
 			methods, 
 			inners, 
 			initializers, 
 			null, null);
+		
+		this.interfaces = new CReferenceType[extendedTypes.length+implementedTypes.length];
+		this.extendedTypes = extendedTypes;
+		this.implementedTypes = implementedTypes;
+		
+		System.arraycopy(extendedTypes, 0, interfaces, 0, extendedTypes.length);
+		System.arraycopy(implementedTypes, 0, interfaces, extendedTypes.length, implementedTypes.length);
 	}
 	
 	protected AdditionalCaesarTypeInformation constructAdditionalTypeInformation(CaesarTypeNode n) {	    
@@ -78,10 +87,8 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
                 superClasses.add(parentName);
         }
 	    
-	    for (int i = 0; i < interfaces.length; i++) {
-            String ifcName = interfaces[i].getQualifiedName();
-            if(!incrementFor.contains(ifcName) && !superClasses.contains(ifcName))
-                superIfcs.add(ifcName);
+	    for (int i = 0; i < implementedTypes.length; i++) {            
+            superIfcs.add(implementedTypes[i].getQualifiedName());
         }
 	    
         AdditionalCaesarTypeInformation addInfo = new AdditionalCaesarTypeInformation(
@@ -105,16 +112,80 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
 	 *   CTODO this step is repeated later on in checkInterfaces -> optimization needed
 	 */
 	public void join(CContext context) throws PositionedError {
-	    super.join(context);
 	    
-	    for (int i = 0; i < interfaces.length; i++) {
+	    super.join(context);    	    	  
+	    
+	    try {	        
+		    for (int i = 0; i < extendedTypes.length; i++) {
+	            extendedTypes[i] = (CReferenceType)extendedTypes[i].checkType(self); 
+	        }
+		    
+		    for (int i = 0; i < implementedTypes.length; i++) {
+	            implementedTypes[i] = (CReferenceType)implementedTypes[i].checkType(self); 
+	        }
+	    }
+	    catch (UnpositionedError e) {
+            throw e.addPosition(getTokenReference());
+        }
+	    
+	    for (int i = 0; i < extendedTypes.length; i++) {
+	        // check that all extended types are mixin interfaces
+            check(
+                context,
+                extendedTypes[i].getCClass().isMixinInterface(),
+                CaesarMessages.CCLASS_EXTENDS_FROM_CCLASS);
+	        
+	        // check that a top-level class extends from another top-level class
+	        if(!getCClass().isNested()) {
+	            check(
+	                context,
+	                !extendedTypes[i].getCClass().isNested(),
+	                CaesarMessages.TOPLEVEL_CCLASS_EXTENDS_TOPLEVEL_CLASS);
+	        }
+	        
+	        // check circularities
 	        check(
                 context,
-                !interfaces[i].getCClass().descendsFrom(getCClass()),
+                !extendedTypes[i].getCClass().descendsFrom(getCClass()),
                 KjcMessages.CLASS_CIRCULARITY,
                 ident);
-        }	   
+	    }
+	    
+	    
+	    for (int i = 0; i < implementedTypes.length; i++) {
+	        // check that we do not have cclass-es in the implements clause of a cclass
+	        check(
+                context,
+                !implementedTypes[i].getCClass().isMixinInterface(),
+                KjcMessages.SUPERINTERFACE_WRONG_TYPE,
+                implementedTypes[i].getCClass().getQualifiedName());
+	    }
+	    
     }
+	
+	public void addInterface(CReferenceType[] newIfcs) {
+        super.addInterface(newIfcs);
+        
+        CReferenceType[] newInterfaces =
+            new CReferenceType[implementedTypes.length + newIfcs.length];
+
+        System.arraycopy(implementedTypes, 0, newInterfaces, 0, implementedTypes.length);
+        System.arraycopy(newIfcs, 0, newInterfaces, implementedTypes.length, newIfcs.length);
+
+        implementedTypes = newInterfaces;
+    }	
+	
+	private void addMixinInterfaces(CReferenceType[] newIfcs) {
+	    super.addInterface(newIfcs);
+
+        CReferenceType[] newInterfaces =
+            new CReferenceType[extendedTypes.length + newIfcs.length];
+
+        System.arraycopy(extendedTypes, 0, newInterfaces, 0, extendedTypes.length);
+        System.arraycopy(newIfcs, 0, newInterfaces, extendedTypes.length, newIfcs.length);
+
+        extendedTypes = newInterfaces;
+	}
 	
     public void adjustSuperType(CContext context) throws PositionedError {
         try {
@@ -148,7 +219,7 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
             }
             
             // add missing implicit relations 
-            addInterface((CReferenceType[])ifcList.toArray(new CReferenceType[ifcList.size()]));
+            addMixinInterfaces((CReferenceType[])ifcList.toArray(new CReferenceType[ifcList.size()]));
             getCClass().setInterfaces(this.interfaces);
             
             for(int i=0; i<inners.length; i++) {
@@ -274,4 +345,6 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
     
     private CjVirtualClassDeclaration caesarClassDeclaration = null;
 
+	private CReferenceType[] extendedTypes;
+	private CReferenceType[] implementedTypes;
 }
