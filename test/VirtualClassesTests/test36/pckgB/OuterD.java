@@ -6,7 +6,7 @@ import java.rmi.Remote;
 
 public cclass OuterD extends OuterC
 {
-	cclass InnerC implements Remote
+	public cclass InnerC implements Remote
 	{
 		public String getA() { return super.getA() + ":D.C"; }
 	}
