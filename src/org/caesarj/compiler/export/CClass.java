@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.25 2004-10-06 11:32:24 aracic Exp $
+ * $Id: CClass.java,v 1.26 2004-10-10 19:20:29 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -714,7 +714,25 @@ public abstract class CClass extends CMember
 	 */
 	public CClass lookupClass(CClass caller, String name)
 		throws UnpositionedError
-	{
+	{	    
+	    
+	    // IVICA: changed lookup for mixin classes
+	    // if we are in a mixin class and the mixin interface has been set
+	    // (this is the case after adjustSuperTypes pass is finished)
+	    // then looking types is only done in the direct mixin interface CClass,
+	    // since all (explicit and implicit) types are contained
+	    if(this.isMixin() && this.getInterfaces().length > 0) {	        
+	        CReferenceType[] inners =
+	            this.getInterfaces()[0].getCClass().getInnerClasses();
+	            
+	        for (int i = 0; i < inners.length; i++) {
+                if(inners[i].getCClass().getIdent().equals(name))
+                    return inners[i].getCClass();
+            }
+	    }
+	    
+	    //System.out.println("~~~ this="+this.getQualifiedName()+", caller="+caller.getQualifiedName()+", name="+name);
+	    
 		CClass[] candidates =
 			new CClass[(interfaces == null) ? 1 : interfaces.length + 1];
 		int length = 0;
@@ -797,11 +815,17 @@ public abstract class CClass extends CMember
 
 				for (; length > 1; length--)
 				{
-					if (candidates[0] != candidates[length - 1])
-					{
+				    // IVICA: added && !(candidates[0].isMixinInterface() && candidates[length - 1].isMixinInterface())
+				    // if we have found more than one mixin ifc, then it is ok to choose the first one, 
+				    // which is the most specific one 
+					if(
+					    candidates[0] != candidates[length - 1] 
+                        && !(candidates[0].isMixinInterface() && candidates[length - 1].isMixinInterface())
+                    ) {
 						break;
 					}
 				}
+				
 				if (length == 1)
 				{
 					return candidates[0];
