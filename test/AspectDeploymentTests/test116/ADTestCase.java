@@ -28,7 +28,7 @@ public class ADTestCase extends TestCase
     {
 		System.out.println("-------> ADTest 16: Weaving mixins: start");
 
-        new DeployA_Impl(null).test();
+        new DeployA().test();
 
         System.out.println(result);
         assertEquals(expectedResult, result.toString());
@@ -41,9 +41,9 @@ public cclass DeployA
 {
     public void test()
     {
-		OuterD od = new OuterD_Impl(null);
+		OuterD od = new OuterD();
 
-		deploy(new AspectA_Impl(null))
+		deploy(new AspectA())
         {
         	od.doB();
         }

@@ -24,7 +24,7 @@ public class ADTestCase extends TestCase
     {
 		System.out.println("-------> ADTest 1: Inner Aspects Inheritance Sequence: start");
 
-        new OuterA_Impl(null).init(result).test();
+        new OuterA().init(result).test();
 
         System.out.println(result);
         assertEquals(expectedResult, result.toString());
@@ -53,17 +53,17 @@ cclass OuterA
 	 */
 	public void test()
 	{
-		deploy($newInnerAspect())
+		deploy(new InnerAspect())
 		{
 			foo();
 		}
 
-		deploy($newInnerAspect_Sub())
+		deploy(new InnerAspect_Sub())
 		{
 			foo();
 		}
 
-		deploy($newInnerAspect_Sub_Sub())
+		deploy(new InnerAspect_Sub_Sub())
 		{
 			foo();
 		}

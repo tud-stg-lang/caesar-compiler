@@ -27,7 +27,7 @@ public class ADTestCase extends TestCase
     {
 		System.out.println("-------> ADTest 9: Deployment Thread Safety: start");
 
-        new DeployA_Impl(null).test();
+        new DeployA().test();
 
         System.out.println(result);
         assertEquals(expectedResult, result.toString());
@@ -45,7 +45,7 @@ public cclass DeployA
 {
     public void test()
     {
-        deploy(new Aspect_Impl(null))
+        deploy(new Aspect())
         {
             Thread anotherThread = new AnotherThread();
             anotherThread.start();

@@ -35,7 +35,7 @@ public class ADTestCase extends TestCase
 
 	public void test()
 	{
-		deploy(new AspectB_Impl(null))
+		deploy(new AspectB())
 		{
 			foo();
 		}
@@ -62,7 +62,7 @@ deployed cclass StaticAspectA {
 
 cclass AspectA
 {
-	public final static deployed AspectA THIS = new AspectA_Impl(null);
+	public final static deployed AspectA THIS = new AspectA();
 
 	pointcut execFoo() : execution(* ADTestCase.foo());
 
@@ -74,7 +74,7 @@ cclass AspectA
 
 cclass AspectB extends AspectA
 {
-	public final static deployed AspectB THIS = new AspectB_Impl(null);
+	public final static deployed AspectB THIS = new AspectB();
 
 	after() : execFoo()
 	{

@@ -50,7 +50,7 @@ public class ADTestCase extends TestCase
     {
 		System.out.println("-------> ADTest 20: Deploy Multiple Objects: start");
 
-        new DeployA_Impl(null).test();
+        new DeployA().test();
 
         System.out.println(result);
         assertEquals(expectedResult, result.toString());
@@ -63,13 +63,13 @@ public cclass DeployA
 {
     public void test()
     {
-		Runnable threadA = new ThreadA_Impl(null);
+		Runnable threadA = new ThreadA();
         new Thread(threadA).start();
 
-		OuterA oa = new OuterA_Impl(null).init("1");
+		OuterA oa = new OuterA().init("1");
 
-		AspectD a = (AspectD)new AspectD_Impl(null).init("a");
-		AspectD b = (AspectD)new AspectD_Impl(null).init("b");
+		AspectD a = (AspectD)new AspectD().init("a");
+		AspectD b = (AspectD)new AspectD().init("b");
 
 		deploy(a)
         {
@@ -101,10 +101,10 @@ cclass ThreadA implements Runnable
 {
 	public void run()
 	{
-		OuterA oa = new OuterA_Impl(null).init("2");
+		OuterA oa = new OuterA().init("2");
 
-		AspectD c = (AspectD)new AspectD_Impl(null).init("c");
-		AspectD d = (AspectD)new AspectD_Impl(null).init("d");
+		AspectD c = (AspectD)new AspectD().init("c");
+		AspectD d = (AspectD)new AspectD().init("d");
 
 		Barrier.getInstance().check(); // 1st checkpoint
 

@@ -40,7 +40,7 @@ public class ADTestCase extends TestCase
     {
 		System.out.println("-------> ADTest 13: Crosscutting Virtual Classes: start");
 
-        new DeployA_Impl(null).test();
+        new DeployA().test();
 
         System.out.println(result);
         assertEquals(expectedResult, result.toString());
@@ -53,26 +53,26 @@ public cclass DeployA
 {
     public void test()
     {
-		OuterC oc = new OuterC_Impl(null);
-		OuterC.InnerA ca = (OuterC.InnerA)oc.$newInnerA();
-		OuterC.InnerB cb = (OuterC.InnerB)oc.$newInnerB();
-		OuterC.InnerC cc = (OuterC.InnerC)oc.$newInnerC();
-		OuterC.InnerD cd = (OuterC.InnerD)oc.$newInnerD();
-		OuterC.InnerE ce = (OuterC.InnerE)oc.$newInnerE();
-		OuterC.InnerF cf = (OuterC.InnerF)oc.$newInnerF();
+		OuterC oc = new OuterC();
+		OuterC.InnerA ca = oc.new InnerA();
+		OuterC.InnerB cb = oc.new InnerB();
+		OuterC.InnerC cc = oc.new InnerC();
+		OuterC.InnerD cd = oc.new InnerD();
+		OuterC.InnerE ce = oc.new InnerE();
+		OuterC.InnerF cf = oc.new InnerF();
 
-		OuterB ob = new OuterB_Impl(null);
-		OuterB.InnerA ba = (OuterB.InnerA)ob.$newInnerA();
-		OuterB.InnerB bb = (OuterB.InnerB)ob.$newInnerB();
-		OuterB.InnerC bc = (OuterB.InnerC)ob.$newInnerC();
-		OuterB.InnerD bd = (OuterB.InnerD)ob.$newInnerD();
+		OuterB ob = new OuterB();
+		OuterB.InnerA ba = ob.new InnerA();
+		OuterB.InnerB bb = ob.new InnerB();
+		OuterB.InnerC bc = ob.new InnerC();
+		OuterB.InnerD bd = ob.new InnerD();
 
-		OuterA oa = new OuterA_Impl(null);
-		OuterA.InnerA aa = (OuterA.InnerA)oa.$newInnerA();
-		OuterA.InnerB ab = (OuterA.InnerB)oa.$newInnerB();
-		OuterA.InnerC ac = (OuterA.InnerC)oc.$newInnerC();
+		OuterA oa = new OuterA();
+		OuterA.InnerA aa = oa.new InnerA();
+		OuterA.InnerB ab = oa.new InnerB();
+		OuterA.InnerC ac = oc.new InnerC();
 
-		deploy(new AspectA_Impl(null))
+		deploy(new AspectA())
         {
         	ca.doA(); ADTestCase.result.append("\n");
         	cb.doA(); ADTestCase.result.append("\n");

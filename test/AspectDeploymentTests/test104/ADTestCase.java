@@ -26,7 +26,7 @@ public class ADTestCase extends TestCase
 	{
 		System.out.println("-------> ADTest 4: Aspect Precedence: start");
 
-		new DeployA_Impl(null).test();
+		new DeployA().test();
 
 		System.out.println(result.toString());
 		assertEquals(expectedResult, result.toString());
@@ -39,11 +39,11 @@ cclass DeployA
 {
     public void test()
     {
-        deploy(new AspectA_Impl(null))
+        deploy(new AspectA())
         {
-            deploy(new AspectB_Impl(null))
+            deploy(new AspectB())
             {
-                deploy(new AspectC_Impl(null))
+                deploy(new AspectC())
                 {
                     foo();
                 }

@@ -32,7 +32,7 @@ public class ADTestCase extends TestCase
     {
 		System.out.println("-------> ADTest 19: Deploy robustness: start");
 
-        new DeployA_Impl(null).test();
+        new DeployA().test();
 
         System.out.println(result);
         assertEquals(expectedResult, result.toString());
@@ -45,11 +45,11 @@ public cclass DeployA
 {
     public void test()
     {
-		OuterA oa = new OuterA_Impl(null);
+		OuterA oa = new OuterA();
 
-		AspectA a = new AspectA_Impl(null).init("a");
+		AspectA a = new AspectA().init("a");
 		AspectA b = null;
-		Object  c = new AspectA_Impl(null).init("b");
+		Object  c = new AspectA().init("b");
 		Object  d  = new ClassA();
 
 		deploy(a) // normal Caesar aspect

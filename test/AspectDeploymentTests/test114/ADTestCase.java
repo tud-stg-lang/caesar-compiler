@@ -56,16 +56,16 @@ public cclass DeployA
 {
     public void test()
     {
-		OuterA oa = new OuterA_Impl(null);
-		OuterB ob = new OuterB_Impl(null);
-		OuterC oc = new OuterC_Impl(null);
-		OuterD od = new OuterD_Impl(null);
-		OuterE oe = new OuterE_Impl(null);
-		OuterF of = new OuterF_Impl(null);
-		OuterG og = new OuterG_Impl(null);
-		OuterH oh = new OuterH_Impl(null);
+		OuterA oa = new OuterA();
+		OuterB ob = new OuterB();
+		OuterC oc = new OuterC();
+		OuterD od = new OuterD();
+		OuterE oe = new OuterE();
+		OuterF of = new OuterF();
+		OuterG og = new OuterG();
+		OuterH oh = new OuterH();
 
-		deploy(new AspectA_Impl(null))
+		deploy(new AspectA())
         {
         	oa.doA(); ADTestCase.result.append("-");
 			oa.doB(); ADTestCase.result.append("-");

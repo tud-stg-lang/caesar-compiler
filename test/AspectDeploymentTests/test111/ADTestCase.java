@@ -24,7 +24,7 @@ public class ADTestCase extends TestCase
     {
 		System.out.println("-------> ADTest 11: Static Aspect Inherits Abstract Aspect: start");
 
-        new OuterA_Impl(null).test();
+        new OuterA().test();
 
 		System.out.println(result);
         assertEquals(expectedResult, result.toString());

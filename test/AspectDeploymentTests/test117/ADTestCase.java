@@ -28,7 +28,7 @@ public class ADTestCase extends TestCase
     {
 		System.out.println("-------> ADTest 17: Conditional pointcuts: start");
 
-        new DeployA_Impl(null).test();
+        new DeployA().test();
 
         System.out.println(result);
         assertEquals(expectedResult, result.toString());
@@ -41,10 +41,10 @@ public cclass DeployA
 {
     public void test()
     {
-		OuterA a1 = new OuterA_Impl(null).init(1);
-		OuterA a2 = new OuterA_Impl(null).init(-1);
+		OuterA a1 = new OuterA().init(1);
+		OuterA a2 = new OuterA().init(-1);
 
-		deploy(new AspectA_Impl(null))
+		deploy(new AspectA())
         {
         	a1.doA();
         	a2.doA();

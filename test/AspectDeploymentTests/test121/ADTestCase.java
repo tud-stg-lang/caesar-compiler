@@ -26,7 +26,7 @@ public class ADTestCase extends TestCase
     {
 		System.out.println("-------> ADTest 21: Test exception softening: start");
 
-        new ClassA_Impl(null).test();
+        new ClassA().test();
 
         System.out.println(result);
         assertEquals(expectedResult, result.toString());

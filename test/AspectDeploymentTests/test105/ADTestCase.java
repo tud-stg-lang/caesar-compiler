@@ -26,7 +26,7 @@ public class ADTestCase extends TestCase
 	{
 		System.out.println("-------> ADTest 5: Returning, Throwing, Reflection: start");
 
-		new DeployA_Impl(null).test();
+		new DeployA().test();
 
 		System.out.println(result);
 		assertEquals(expectedResult, result.toString());
@@ -39,7 +39,7 @@ cclass DeployA
 {
     public void test()
     {
-        deploy(new AspectA_Impl(null))
+        deploy(new AspectA())
         {
             foo();
 

@@ -28,7 +28,7 @@ public class ADTestCase extends TestCase
     {
 		System.out.println("-------> ADTest 18: Advices on inherited poincuts: start");
 
-        new DeployA_Impl(null).test();
+        new DeployA().test();
 
         System.out.println(result);
         assertEquals(expectedResult, result.toString());
@@ -41,9 +41,9 @@ public cclass DeployA
 {
     public void test()
     {
-		OuterA oa = new OuterA_Impl(null);
+		OuterA oa = new OuterA();
 
-		deploy(new AspectD_Impl(null))
+		deploy(new AspectD())
         {
         	oa.doA();
         }

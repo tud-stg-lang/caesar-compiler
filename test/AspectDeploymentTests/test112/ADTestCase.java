@@ -27,7 +27,7 @@ public class ADTestCase extends TestCase
     {
 		System.out.println("-------> ADTest 12: Deploy Multiple Instances with Around : start");
 
-        new DeployA_Impl(null).test();
+        new DeployA().test();
 
         System.out.println(result);
         assertEquals(expectedResult, result.toString());
@@ -46,13 +46,13 @@ public cclass DeployA
 {
     public void test()
     {
-		deploy(new AspectA_Impl(null).init(1))
+		deploy(new AspectA().init(1))
         {
-            deploy(new AspectA_Impl(null).init(2))
+            deploy(new AspectA().init(2))
             {
-                deploy(new AspectA_Impl(null).init(3))
+                deploy(new AspectA().init(3))
                 {
-                    deploy(new AspectA_Impl(null).init(4))
+                    deploy(new AspectA().init(4))
                     {
                         ADTestCase.foo("string");
                     }

@@ -23,7 +23,7 @@ public class ADTestCase extends TestCase
 	{
 		System.out.println("-------> ADTest 3: Abstract Pointcuts: start");
 
-		deploy(new ConcreteAspect_Impl(null))
+		deploy(new ConcreteAspect())
 		{
 			foo();
 		}
