@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectDeploymentTests.java,v 1.22 2005-04-05 17:45:48 gasiunas Exp $
+ * $Id: AspectDeploymentTests.java,v 1.23 2005-04-06 12:00:10 gasiunas Exp $
  */
 
 package org.caesarj.test;
@@ -215,5 +215,10 @@ public class AspectDeploymentTests extends FjTestCase
 	/*  Test pointcut references */
 	public void testCaesarTestCase_37() throws Throwable {
 		compileAndRun("test137", "ADTestCase");
+	}
+	
+	/*  Test linearization of crosscuts */
+	public void testCaesarTestCase_38() throws Throwable {
+		compileAndRun("test138", "ADTestCase");
 	}
 }
