@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodCallExpression.java,v 1.4 2004-09-02 13:45:41 gasiunas Exp $
+ * $Id: JMethodCallExpression.java,v 1.5 2004-09-03 08:04:54 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -145,10 +145,6 @@ public class JMethodCallExpression extends JExpression
 
 		findMethod(context, local, argTypes);
 
-/*		V.G. Exception checking temporarily switched off,
- *           because current implementation does not take 
- *           to account exception softening 
-   
  		CReferenceType[] exceptions = method.getThrowables();
 
 		for (int i = 0; i < exceptions.length; i++)
@@ -169,7 +165,7 @@ public class JMethodCallExpression extends JExpression
 				}
 			}
 		}
-*/
+
 		CClass access = method.getOwner();
 
 		if (prefix == null && !method.isStatic())
