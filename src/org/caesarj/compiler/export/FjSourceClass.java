@@ -12,9 +12,11 @@ import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.context.CTypeContext;
+import org.caesarj.compiler.family.FjTypeSystem;
 import org.caesarj.compiler.joinpoint.PrivilegedAccessHandler;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
 import org.caesarj.compiler.types.CReferenceType;
@@ -38,7 +40,7 @@ public class FjSourceClass extends CSourceClass
 
 	protected List resolvedPointcuts = new ArrayList();
 	
-	// FJRM protected FjTypeSystem typeSystem = new FjTypeSystem();
+	protected FjTypeSystem typeSystem = new FjTypeSystem();
 
 	public FjSourceClass(
 		CClass owner,
@@ -612,7 +614,6 @@ public class FjSourceClass extends CSourceClass
 		resolvedPointcuts.add(rpd);
 	}
 	
-	/* FJRM
 	public CReferenceType getOwnerType()
 	{
 		CClass owner = getOwner();
@@ -626,7 +627,9 @@ public class FjSourceClass extends CSourceClass
 		}
 		return super.getOwnerType();
 	}
-
+	/**
+	 * 
+	 */
 	public boolean isDefinedInside(CClass outer)
 	{
 		if (this == outer || typeSystem.cleanInterface(this) == outer)
@@ -642,6 +645,5 @@ public class FjSourceClass extends CSourceClass
 			return getOwner().isDefinedInside(outer);
 		}		
 	}
-	*/
 
 }
