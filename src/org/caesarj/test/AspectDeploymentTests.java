@@ -146,4 +146,9 @@ public class AspectDeploymentTests extends FjTestCase
 	public void testCaesarTestCase_28() throws Throwable {
 		compileAndRun("test128", "ADTestCase");
 	}
+	
+	/* Test nested crosscutting classes */
+	public void testCaesarTestCase_29() throws Throwable {
+		compileAndRun("test129", "ADTestCase");
+	}
 }
