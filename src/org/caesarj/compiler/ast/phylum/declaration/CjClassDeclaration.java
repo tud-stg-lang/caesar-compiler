@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.2 2004-03-22 17:21:44 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.3 2004-04-05 15:17:27 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -157,7 +157,7 @@ public class CjClassDeclaration
         super(
             where,
             modifiers,
-            ident,
+            ident+"_Impl", // IVICA
             typeVariables,
             superClass,
             interfaces,
@@ -171,6 +171,20 @@ public class CjClassDeclaration
         this.pointcuts = pointcuts;
         this.advices = advices;
         this.declares = declares;
+       
+       
+        // IVICA 
+        originalIdent = ident;
+        
+        //rename constructors
+        for(int i=0; i<methods.length; i++) {
+            JMethodDeclaration method = methods[i];
+            if(method instanceof JConstructorDeclaration) {
+                method.ident = (method.ident + "_Impl").intern();
+            }
+        }
+        
+        
         // structural detection of crosscutting property
         if ((advices.length > 0) || (pointcuts.length > 0))
             this.modifiers |= ACC_CROSSCUTTING;
@@ -409,6 +423,8 @@ public class CjClassDeclaration
      * Integration of FjClassDeclaration (Karl Klose)
      */
 
+    protected String originalIdent;
+
     /** The declared advices */
     protected CjAdviceDeclaration[] advices;
 
@@ -447,6 +463,10 @@ public class CjClassDeclaration
 
     public CTypeContext getTypeContext() {
         return self;
+    }
+
+    public String getOriginalIdent() {
+        return originalIdent;
     }
 
     /**
