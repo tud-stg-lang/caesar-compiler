@@ -1,4 +1,4 @@
-<testsuite name="TypeSystem Test Final" package="suits.typesystem.final">
+<testsuite name="TypeSystem Test Final" package="suits.typesystem.finalfam">
 
 	<common-code-base>
 		public cclass G {
@@ -8,7 +8,7 @@
 
 
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="ASSIGNMENT_BADTYPE" id="final001" description="Check that family path is final.">
+    <compile-check-error error="ILLEGAL_PATH" id="final001" description="Check that family path is final.">
         <code>
 			public class A {
 			    public G g1 = new G(); 
@@ -16,5 +16,59 @@
 			}
         </code>
     </compile-check-error>    	
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ILLEGAL_PATH" id="final002" description="Check that family path is final.">
+        <code>
+			public cclass A {
+			    public G g1 = new G(); 
+			}
+			public cclass B {
+				public final A a = new A();
+			    public a.g1.N an1 = a.g1.new N(); 
+			}
+        </code>
+    </compile-check-error>    	
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ILLEGAL_PATH" id="final003" description="Check that family path is final.">
+        <code>
+			public cclass A {
+			    public final G g1 = new G(); 
+			}
+			public cclass B {
+				public A a = new A();
+			    public a.g1.N an1 = a.g1.new N(); 
+			}
+        </code>
+    </compile-check-error>    	
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ILLEGAL_PATH" id="final004" description="Check that family path is final.">
+        <code>
+			public class A {
+			    public G g = new G(); 
+
+				public g.N getN() {return null;}
+			}
+        </code>
+    </compile-check-error>   
+
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ILLEGAL_PATH" id="final005" description="Check that family path is final.">
+        <code>
+			public cclass Graph {
+				public cclass Node {}
+
+				private Graph g;
+				
+				public void foo() {
+					 Node n = g.new Node();
+				}
+			} 	
+        </code>
+    </compile-check-error> 
+
 
 </testsuite>

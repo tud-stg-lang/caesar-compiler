@@ -139,4 +139,19 @@
         </code>
     </compile>
 
+<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="DECLARATION_DEPENDENCY_ORDER" id="methods009" description="Check the declaration order of aarguments.">
+        <code>
+			public class A {
+				final B b = new B();
+						
+				void foo() {				   
+				    m(b.x1, b.g1);
+				}	
+				
+				void m(g.X x, final G g) { }
+			}			
+        </code>
+    </compile-check-error>
+
 </testsuite>

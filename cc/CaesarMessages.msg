@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.26 2005-02-14 16:27:23 aracic Exp $
+ * $Id: CaesarMessages.msg,v 1.27 2005-02-25 13:42:56 aracic Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -121,6 +121,8 @@ error	INNER_PLAIN_JAVA_OBJECTS_IN_PATH
 error	ILLEGAL_PATH_ELEMENT
 		"{0} is an illegal path element."
 
+error	ILLEGAL_PATH
+		"Illegal family path. The reason could be that a dependent type path is not final."
+
 error	DECLARATION_DEPENDENCY_ORDER
 		"The declaration of the first variable access in the path has to be before the declaration of the dependent type."
-		

@@ -117,10 +117,10 @@
     </compile>
 	
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-	<compile id="ctrlstructs002" description="Check dependent type declarations in a switch structure with brackets.">
+	<compile id="ctrlstructs003" description="Check dependent type declarations in a switch structure with brackets.">
         <code>
 			public class A {
-			    final G g = null; 
+			    final G g = new G(); 
 			    g.N n;
 			    
 			    public void foo() {
@@ -138,5 +138,15 @@
 			}
         </code>     
     </compile>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+	<compile-check-error error="VAR_UNKNOWN" id="syntax" description="Check dependent type declarations in a switch structure with brackets.">
+        <code>
+			public class A {
+			    final G g = new G(); 
+			    gg.N n;			    
+			}
+        </code>     
+    </compile-check-error>
 
 </testsuite>

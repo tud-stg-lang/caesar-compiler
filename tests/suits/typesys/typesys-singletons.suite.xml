@@ -1,0 +1,82 @@
+<testsuite name="TypeSystem Test Singletons" package="suits.typesystem.singletons">
+
+	<common-code-base>
+		public cclass G {
+			public cclass N {}
+        }
+	</common-code-base>
+
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="singleton001" description="Test family declaration in a singleton.">
+        <code>
+			public class Singleton {
+			    public static final G g = new G(); 
+			}
+			public class A {
+				Singleton.g.N n = Singleton.g.new N();
+			}
+        </code>
+    </compile>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="singleton002" description="Test family declaration in a singleton.">
+        <code>
+			public class Singleton {
+			    public static final G g = new G(); 
+			}
+			public class A {
+				Singleton.g.N n;
+				public void foo() {
+					n = Singleton.g.new N();
+				}
+			}
+        </code>
+    </compile>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="singleton003" description="Test family declaration in a singleton.">
+        <code>
+			public class Singleton {
+			    public static final G g = new G(); 
+			}
+			public class A {
+				public void foo() {
+					Singleton.g.N n = Singleton.g.new N();
+				}
+			}
+        </code>
+    </compile>
+
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="singleton004" description="Test family declaration in a singleton.">
+        <code>
+			public class Singleton {
+			    public static final G g = new G(); 
+			}
+			public class A {				
+				public void foo(Singleton.g.N n) {}
+				public void bar() {
+					foo( Singleton.g.new N() );
+				}
+			}
+        </code>
+    </compile>
+
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="singleton005" description="Test family declaration in a singleton.">
+        <code>
+			public class Singleton {
+			    public static final G g = new G(); 
+			}
+			public class A {				
+				public void foo(final G g, g.N n) {}
+				public void bar() {
+					foo( Singleton.g, Singleton.g.new N() );
+				}
+			}
+        </code>
+    </compile>
+
+    
+</testsuite>
