@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassNameType.java,v 1.13 2004-11-23 18:30:21 aracic Exp $
+ * $Id: CClassNameType.java,v 1.14 2004-11-24 11:44:34 klose Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -31,6 +31,7 @@ import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CField;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -178,7 +179,15 @@ public class CClassNameType extends CReferenceType
 	                //
 	                int k = 0;
 	                CClass contextClass = classContext.getCClass();	                
-	                CClass tmp = fieldAccessExpr.getType(env.getTypeFactory()).getCClass().getOwner();
+	                CField field ;
+	                try {
+	                    field = contextClass.lookupField( contextClass, null, fieldAccessExpr.getIdent() );
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        throw new InconsistencyException();
+                    }
+	                
+	                CClass tmp = field.getOwner();
 	                
 	                while(contextClass != tmp && tmp != null) {
 	                    tmp = tmp.getOwner();

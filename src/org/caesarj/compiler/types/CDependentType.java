@@ -68,7 +68,7 @@ public class CDependentType extends CReferenceType {
      */
     public boolean isAssignableTo(CTypeContext context, CType dest) {
         // only a dependent type is assignable to another dependet type
-        if(dest instanceof CDependentType) {
+        if(dest.isDependentType()) {
             CDependentType other = (CDependentType)dest;
             
             // check if plain types are subtypes
@@ -90,6 +90,10 @@ public class CDependentType extends CReferenceType {
     }
     
 
+    public boolean isDependentType() {
+        return true;
+    }
+    
     public boolean isChecked() {
         return plainType.isChecked();
     }

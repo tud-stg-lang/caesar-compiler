@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CType.java,v 1.4 2004-10-17 20:59:36 aracic Exp $
+ * $Id: CType.java,v 1.5 2004-11-24 11:44:34 klose Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -161,6 +161,10 @@ public abstract class CType extends Utils implements Constants {
     return type;
   }
 
+  public boolean isDependentType(){
+      return false;
+  }
+  
   // ----------------------------------------------------------------------
   // INTERFACE CHECKING
   // ----------------------------------------------------------------------

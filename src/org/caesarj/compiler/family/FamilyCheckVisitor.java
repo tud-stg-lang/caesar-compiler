@@ -60,15 +60,16 @@ public class FamilyCheckVisitor implements IVisitor, CaesarConstants  {
         
         // both are dependent types or both are not dependent types
         if(
-            (left.getType(null) instanceof CDependentType)
-            ^ (right.getType(null) instanceof CDependentType)
+                left.getType(null).isDependentType()!=right.getType(null).isDependentType()
+//            (left.getType(null) instanceof CDependentType)
+//            ^ (right.getType(null) instanceof CDependentType)
         ) {
             System.err.println("~~~ can not mix dependent and non-dependent types, line "+self.getTokenReference().getLine());
             throw new InconsistencyException();
         }
         
         // if one of them is dependent type then check family
-        if(left.getType(null) instanceof CDependentType) {            
+        if(left.getType(null).isDependentType()) {            
             System.out.println("check family at line "+self.getTokenReference().getLine());
             
             CClass contextClass = getCurrentCClass();

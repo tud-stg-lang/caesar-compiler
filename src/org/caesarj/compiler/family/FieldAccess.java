@@ -47,7 +47,7 @@ public class FieldAccess extends Path {
 	        	        
 	        TypeDecl typeDecl = null;
 	        
-	        if(fType instanceof CDependentType) {
+	        if(fType.isDependentType()) {
 	            CDependentType dependType = (CDependentType)fType;
 	            Path memDefPath = Path.createFrom( f.getOwner(), dependType.getFamily() );
 	            typeDecl = new TypeDecl(memDefPath, dependType.getIdent());
