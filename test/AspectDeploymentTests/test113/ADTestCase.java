@@ -23,18 +23,18 @@ public class ADTestCase extends TestCase
 
 	// incorrect!!!
     public String expectedResult =
-    	":before cutAA:B.A.A-" +										// C.A
-    	":before cutAA:before cutCA:C.B.A-"	+							// C.B
-    	":before cutAA:before cutCA:C.C.A:after cutAC:after cutCC-" +	// C.C
-    	":before cutAA:B.D.A:after cutAC-" +							// C.D
-    	":before cutAA:C.E.A-" +										// C.E
-    	":before cutAA:C.F.A-" +										// C.F
-    	":before cutAA:B.A.A-" +										// B.A
-    	":before cutAA:B.B.A-" +										// B.B
-    	":before cutAA:A.C.A:after cutAC-" +							// B.C
-    	":before cutAA:B.D.A:after cutAC-" +							// B.D
-    	":before cutAA:A.A.A-" +										// A.A
-    	":before cutAA:A.B.A-" +										// A.B
+    	":before cutAA:B.A.A\n" +										// C.A
+    	":before cutAA:before cutCA:C.B.A\n"	+							// C.B
+    	":before cutAA:before cutCA:C.C.A:after cutAC:after cutCC\n" +	// C.C
+    	":before cutAA:B.D.A:after cutAC\n" +							// C.D
+    	":before cutAA:C.E.A\n" +										// C.E
+    	":before cutAA:C.F.A\n" +										// C.F
+    	":before cutAA:B.A.A\n" +										// B.A
+    	":before cutAA:B.B.A\n" +										// B.B
+    	":before cutAA:A.C.A:after cutAC\n" +							// B.C
+    	":before cutAA:B.D.A:after cutAC\n" +							// B.D
+    	":before cutAA:A.A.A\n" +										// A.A
+    	":before cutAA:A.B.A\n" +										// A.B
     	":before cutAA:C.C.A:after cutAC";								// A.C
 
     public void test()
@@ -75,20 +75,20 @@ public cclass DeployA
 
 		deploy(new AspectA_Impl(null))
         {
-        	ca.doA(); ADTestCase.result.append("-");
-        	cb.doA(); ADTestCase.result.append("-");
-        	cc.doA(); ADTestCase.result.append("-");
-        	cd.doA(); ADTestCase.result.append("-");
-        	ce.doA(); ADTestCase.result.append("-");
-        	cf.doA(); ADTestCase.result.append("-");
+        	ca.doA(); ADTestCase.result.append("\n");
+        	cb.doA(); ADTestCase.result.append("\n");
+        	cc.doA(); ADTestCase.result.append("\n");
+        	cd.doA(); ADTestCase.result.append("\n");
+        	ce.doA(); ADTestCase.result.append("\n");
+        	cf.doA(); ADTestCase.result.append("\n");
 
-        	ba.doA(); ADTestCase.result.append("-");
-        	bb.doA(); ADTestCase.result.append("-");
-        	bc.doA(); ADTestCase.result.append("-");
-        	bd.doA(); ADTestCase.result.append("-");
+        	ba.doA(); ADTestCase.result.append("\n");
+        	bb.doA(); ADTestCase.result.append("\n");
+        	bc.doA(); ADTestCase.result.append("\n");
+        	bd.doA(); ADTestCase.result.append("\n");
 
-        	aa.doA(); ADTestCase.result.append("-");
-			ab.doA(); ADTestCase.result.append("-");
+        	aa.doA(); ADTestCase.result.append("\n");
+			ab.doA(); ADTestCase.result.append("\n");
         	ac.doA();
         }
     }
