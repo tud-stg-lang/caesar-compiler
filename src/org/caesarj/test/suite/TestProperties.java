@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: TestProperties.java,v 1.1 2005-02-28 13:48:47 aracic Exp $
+ * $Id: TestProperties.java,v 1.2 2005-03-02 09:45:55 gasiunas Exp $
  */
 
 package org.caesarj.test.suite;
@@ -41,6 +41,7 @@ public class TestProperties {
     
     private String workingDir = "tests";
     private String binDir = "tests/bin";
+    private String genSrcDir = "tests/src";
     private String testDir = "tests/suits";
     
     public static TestProperties instance() {
@@ -71,6 +72,9 @@ public class TestProperties {
 
             if(props.containsKey("testDir"))
                 testDir = props.getProperty("testDir");
+            
+            if(props.containsKey("genSrcDir"))
+                genSrcDir = props.getProperty("genSrcDir");
         }
         catch (Exception e) {
             // do nothing, just continue with default values
@@ -100,5 +104,9 @@ public class TestProperties {
     
     public String getWorkingDir() {
         return workingDir;
+    }
+    
+    public String getGenSrcDir() {
+        return genSrcDir;
     }
 }

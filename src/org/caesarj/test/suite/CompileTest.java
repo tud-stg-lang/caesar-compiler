@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CompileTest.java,v 1.1 2005-02-24 17:16:53 aracic Exp $
+ * $Id: CompileTest.java,v 1.2 2005-03-02 09:45:55 gasiunas Exp $
  */
 
 package org.caesarj.test.suite;
@@ -67,7 +67,7 @@ public class CompileTest extends CaesarTest {
     }
     
     protected String getJavaFileName() {
-        return getTestSuite().getFile().getAbsolutePath()+"."+getId()+".java";
+        return getTestSuite().getOutputPath()+"."+getId()+".java";
     }
     
     protected StringBuffer genJavaCodeBlock() {
@@ -79,12 +79,14 @@ public class CompileTest extends CaesarTest {
     
     public void test() throws Throwable {
         // Create compiler
+    	File f = new File( getJavaFileName() );
+    	f.getParentFile().mkdirs();
+    	
         PrintWriter pw = new PrintWriter( new FileOutputStream( getJavaFileName()+".log" ) );
         CompilerMock compiler = new CompilerMock("tests", pw);
 
         StringBuffer genJavaCodeBlock = genJavaCodeBlock();
         
-        File f = new File( getJavaFileName() );
         FileOutputStream fos = new FileOutputStream(f);
         fos.write(genJavaCodeBlock.toString().getBytes());
         fos.close();        

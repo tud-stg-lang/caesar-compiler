@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AllTests.java,v 1.3 2005-02-28 13:48:47 aracic Exp $
+ * $Id: AllTests.java,v 1.4 2005-03-02 09:45:55 gasiunas Exp $
  */
 
 package org.caesarj.test.suite;
@@ -45,6 +45,8 @@ public class AllTests {
 		TestSuite suite = new TestSuite("Caesar Test Suite");
 		
 		File workingDir = new File( TestProperties.instance().getWorkingDir() );
+		File genSrcDir = new File( TestProperties.instance().getGenSrcDir() );
+		File testDir =  new File( TestProperties.instance().getTestDir() );
 		
 		// clear all java and class files
 		FileUtils.delAllFiles(workingDir, ".+\\.class");
@@ -52,14 +54,18 @@ public class AllTests {
 		FileUtils.delAllFiles(workingDir, ".+\\.log");
 		
 		List testSuits = FileUtils.findAllFiles(
-		    new File( TestProperties.instance().getTestDir() ), 
+		    testDir, 
 		    TestProperties.instance().getSuiteSearchPattern()
 	    );			
 		
 		for (Iterator it = testSuits.iterator(); it.hasNext();) {
             File f = (File) it.next();
+            
+            String outputPath = genSrcDir.getAbsolutePath() +
+            	f.getAbsolutePath().substring(testDir.getAbsolutePath().length());            
+            
             CaesarTestSuite s = 
-                CaesarTestSuite.parseXml(TestProperties.instance().getTestFilter(), f);
+                CaesarTestSuite.parseXml(TestProperties.instance().getTestFilter(), f, outputPath);
             
             if(s.countTestCases() > 0) {
                 suite.addTest( s );
@@ -71,5 +77,5 @@ public class AllTests {
     
     public static void main(String[] args) throws Exception {
         Test suite = suite();
-    }
+    }    
 }
