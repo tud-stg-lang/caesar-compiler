@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.86 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: Main.java,v 1.87 2005-03-03 16:23:37 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.StructureModelManager;
+import org.aspectj.asm.StructureModel;
 import org.caesarj.compiler.asm.CaesarAsmBuilder;
 import org.caesarj.compiler.asm.StructureModelDump;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
@@ -77,6 +77,14 @@ public class Main extends MainSuper implements Constants {
     // The used weaver. An instance ist created when it's needed in generateAndWeaveCode
     private CaesarWeaver weaver;
 
+	/**
+     * This is the structure model constructed during compilation.
+     * In the end of the compilation, it represents the structure of the program and can
+     * be used, for example, by the Eclipse Plug-in, in order to get information and 
+     * display for the user.
+     */
+    protected StructureModel model;
+
     protected static boolean buildAsm = false;
     protected static boolean printAsm = false;
     
@@ -111,10 +119,15 @@ public class Main extends MainSuper implements Constants {
      * Overriden in order to introduce some additional passes in the
      * compiler control flow.
      */
-    public boolean run(String[] args) {
+    public boolean run(String[] args) {   
+	    // Make sure we have an instance of the structure model
+    	if (model == null) {
+    		model = new StructureModel();
+    	}
+    
     	if(Main.buildAsm){
     		// starting to build CaesarAsm........
-    		CaesarAsmBuilder.preBuild(StructureModelManager.INSTANCE.getStructureModel());
+    		CaesarAsmBuilder.preBuild(model);
     		//System.out.println("after preBuid");
     	}
     	
@@ -236,11 +249,11 @@ public class Main extends MainSuper implements Constants {
         CodeSequence.endSession();
         
         if(Main.buildAsm){
-        	CaesarAsmBuilder.postBuild(StructureModelManager.INSTANCE.getStructureModel());
+        	CaesarAsmBuilder.postBuild(model);
         	if(Main.printAsm){
         		StructureModelDump dump = new StructureModelDump(System.out);
                 System.out.println("== model after weaving ===============");
-                dump.print("", StructureModelManager.INSTANCE.getStructureModel().getRoot());
+                dump.print("", model.getRoot());
                 System.out.println("======================================");
         	}
         }
@@ -271,7 +284,7 @@ public class Main extends MainSuper implements Constants {
 	        	// iterating over the compilationunits and adding appropriate Nodes to 
 	        	// the StructureModel.
 	        	//System.out.println("before AsmBuilder.build");
-	        	CaesarAsmBuilder.build(cu[i], StructureModelManager.INSTANCE.getStructureModel());
+	        	CaesarAsmBuilder.build(cu[i], model);
 	        	//System.out.println("after AsmBuilder.build");
 	        }
 		}
@@ -698,10 +711,9 @@ public class Main extends MainSuper implements Constants {
         world.setMessageHandler(messageHandler);
                 
         // TODO make this optional, as command line argument
-        CaesarBcelWorld.getInstance().getWorld().setModel(
-            StructureModelManager.INSTANCE.getStructureModel());
+        CaesarBcelWorld.getInstance().getWorld().setModel(model);
         
-        StructureModelManager.INSTANCE.getStructureModel().setRoot(
+        model.setRoot(
             new ProgramElementNode(
                 "<root>", 
                 ProgramElementNode.Kind.FILE_JAVA, 
