@@ -6,7 +6,7 @@ import java.util.Stack;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.aspectj.CaesarFormalBinding;
 import org.caesarj.compiler.ast.FjAdditionalContext;
-import org.caesarj.compiler.ast.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.export.CSourceClass;
 
 public class FjClassContext

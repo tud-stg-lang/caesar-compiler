@@ -13,10 +13,10 @@ import org.aspectj.weaver.ResolvedTypeX.ConcreteName;
 import org.aspectj.weaver.ResolvedTypeX.Name;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
-import org.caesarj.compiler.ast.FjSourceClass;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.export.FjSourceClass;
 import org.caesarj.compiler.types.CReferenceType;
 
 /**

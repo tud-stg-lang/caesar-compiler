@@ -15,24 +15,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: LanguageExtensions.java,v 1.3 2004-02-09 17:33:55 ostermann Exp $
+ * $Id: LanguageExtensions.java,v 1.4 2004-03-15 11:56:54 aracic Exp $
  */
 
 package org.caesarj.compiler;
 
 import org.caesarj.classfile.ClassfileConstants2;
-import org.caesarj.compiler.ast.JEqualityExpression;
-import org.caesarj.compiler.ast.JExpression;
-import org.caesarj.compiler.ast.JExpressionStatement;
-import org.caesarj.compiler.ast.JFieldDeclaration;
-import org.caesarj.compiler.ast.JFormalParameter;
-import org.caesarj.compiler.ast.JIfStatement;
-import org.caesarj.compiler.ast.JLocalVariable;
-import org.caesarj.compiler.ast.JMethodCallExpression;
-import org.caesarj.compiler.ast.JStatement;
-import org.caesarj.compiler.ast.JStringLiteral;
-import org.caesarj.compiler.ast.JThisExpression;
-import org.caesarj.compiler.ast.JVariableDefinition;
+import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
+import org.caesarj.compiler.ast.phylum.expression.JEqualityExpression;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
+import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
+import org.caesarj.compiler.ast.phylum.expression.literal.JStringLiteral;
+import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
+import org.caesarj.compiler.ast.phylum.statement.JIfStatement;
+import org.caesarj.compiler.ast.phylum.statement.JStatement;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
+import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
+import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CStdType;

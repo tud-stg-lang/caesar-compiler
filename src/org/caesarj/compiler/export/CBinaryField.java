@@ -15,22 +15,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBinaryField.java,v 1.1 2004-02-08 16:47:45 ostermann Exp $
+ * $Id: CBinaryField.java,v 1.2 2004-03-15 11:56:53 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
 
 import org.caesarj.classfile.FieldInfo;
-import org.caesarj.compiler.ast.JBooleanLiteral;
-import org.caesarj.compiler.ast.JByteLiteral;
-import org.caesarj.compiler.ast.JCharLiteral;
-import org.caesarj.compiler.ast.JDoubleLiteral;
-import org.caesarj.compiler.ast.JFloatLiteral;
-import org.caesarj.compiler.ast.JIntLiteral;
-import org.caesarj.compiler.ast.JLiteral;
-import org.caesarj.compiler.ast.JLongLiteral;
-import org.caesarj.compiler.ast.JShortLiteral;
-import org.caesarj.compiler.ast.JStringLiteral;
+import org.caesarj.compiler.ast.phylum.expression.literal.JBooleanLiteral;
+import org.caesarj.compiler.ast.phylum.expression.literal.JByteLiteral;
+import org.caesarj.compiler.ast.phylum.expression.literal.JCharLiteral;
+import org.caesarj.compiler.ast.phylum.expression.literal.JDoubleLiteral;
+import org.caesarj.compiler.ast.phylum.expression.literal.JFloatLiteral;
+import org.caesarj.compiler.ast.phylum.expression.literal.JIntLiteral;
+import org.caesarj.compiler.ast.phylum.expression.literal.JLiteral;
+import org.caesarj.compiler.ast.phylum.expression.literal.JLongLiteral;
+import org.caesarj.compiler.ast.phylum.expression.literal.JShortLiteral;
+import org.caesarj.compiler.ast.phylum.expression.literal.JStringLiteral;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.types.CType;

@@ -5,6 +5,12 @@ import org.caesarj.tools.antlr.runtime.*;
   import java.util.ArrayList;
 
   import org.caesarj.compiler.ast.*;
+  import org.caesarj.compiler.ast.phylum.*;
+  import org.caesarj.compiler.ast.phylum.expression.*;
+  import org.caesarj.compiler.ast.phylum.expression.literal.*;
+  import org.caesarj.compiler.ast.phylum.declaration.*;
+  import org.caesarj.compiler.ast.phylum.statement.*;
+  import org.caesarj.compiler.ast.phylum.variable.*;
   import org.caesarj.compiler.constants.*;
   import org.caesarj.compiler.aspectj.CaesarAdviceKind;
   import org.caesarj.compiler.aspectj.CaesarPatternParser;

@@ -1,24 +1,22 @@
 package org.caesarj.compiler.family;
 
 import java.util.Hashtable;
-import java.util.Vector;
 
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.Main;
-import org.caesarj.compiler.ast.JClassDeclaration;
-import org.caesarj.compiler.ast.FjInterfaceDeclaration;
-import org.caesarj.compiler.ast.FjOverrideClassDeclaration;
-import org.caesarj.compiler.ast.FjOverrideable;
-import org.caesarj.compiler.ast.DeclarationVisitor;
-import org.caesarj.compiler.ast.JClassDeclaration;
-import org.caesarj.compiler.ast.JClassImport;
-import org.caesarj.compiler.ast.JCompilationUnit;
-import org.caesarj.compiler.ast.JInterfaceDeclaration;
-import org.caesarj.compiler.ast.JMethodDeclaration;
-import org.caesarj.compiler.ast.JPackageImport;
-import org.caesarj.compiler.ast.JPackageName;
-import org.caesarj.compiler.ast.JPhylum;
-import org.caesarj.compiler.ast.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.JClassImport;
+import org.caesarj.compiler.ast.phylum.JCompilationUnit;
+import org.caesarj.compiler.ast.phylum.JPackageImport;
+import org.caesarj.compiler.ast.phylum.JPackageName;
+import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.declaration.FjInterfaceDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.FjOverrideClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.FjOverrideable;
+import org.caesarj.compiler.ast.phylum.declaration.JClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JInterfaceDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.ast.visitor.DeclarationVisitor;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 

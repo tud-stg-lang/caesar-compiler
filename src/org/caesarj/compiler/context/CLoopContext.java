@@ -15,14 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CLoopContext.java,v 1.1 2004-02-08 16:47:37 ostermann Exp $
+ * $Id: CLoopContext.java,v 1.2 2004-03-15 11:56:53 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
 
 import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.ast.JLoopStatement;
-import org.caesarj.compiler.ast.JStatement;
+import org.caesarj.compiler.ast.phylum.statement.JLoopStatement;
+import org.caesarj.compiler.ast.phylum.statement.JStatement;
 
 /**
  * This class provides the contextual information for the semantic

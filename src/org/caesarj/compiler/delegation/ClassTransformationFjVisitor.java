@@ -1,20 +1,20 @@
 package org.caesarj.compiler.delegation;
 
 import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.ast.JClassDeclaration;
-import org.caesarj.compiler.ast.FjCleanClassDeclaration;
-import org.caesarj.compiler.ast.FjCleanClassIfcImplDeclaration;
-import org.caesarj.compiler.ast.FjCleanClassInterfaceDeclaration;
 
-import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
-import org.caesarj.compiler.ast.DeclarationVisitor;
-import org.caesarj.compiler.ast.JClassImport;
-import org.caesarj.compiler.ast.JCompilationUnit;
-import org.caesarj.compiler.ast.JMethodDeclaration;
-import org.caesarj.compiler.ast.JPackageImport;
-import org.caesarj.compiler.ast.JPackageName;
-import org.caesarj.compiler.ast.JPhylum;
-import org.caesarj.compiler.ast.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.JClassImport;
+import org.caesarj.compiler.ast.phylum.JCompilationUnit;
+import org.caesarj.compiler.ast.phylum.JPackageImport;
+import org.caesarj.compiler.ast.phylum.JPackageName;
+import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.declaration.FjCleanClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.FjCleanClassIfcImplDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.FjCleanClassInterfaceDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.FjVirtualClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.ast.visitor.DeclarationVisitor;
 import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;

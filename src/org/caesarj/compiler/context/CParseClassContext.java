@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CParseClassContext.java,v 1.1 2004-02-08 16:47:37 ostermann Exp $
+ * $Id: CParseClassContext.java,v 1.2 2004-03-15 11:56:53 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -23,11 +23,11 @@ package org.caesarj.compiler.context;
 import java.util.ArrayList;
 import java.util.Stack;
 
-import org.caesarj.compiler.ast.JClassBlock;
-import org.caesarj.compiler.ast.JFieldDeclaration;
-import org.caesarj.compiler.ast.JMethodDeclaration;
-import org.caesarj.compiler.ast.JPhylum;
-import org.caesarj.compiler.ast.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
 
 public class CParseClassContext {
   public static CParseClassContext getInstance() {

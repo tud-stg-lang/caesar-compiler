@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CSourceMethod.java,v 1.1 2004-02-08 16:47:45 ostermann Exp $
+ * $Id: CSourceMethod.java,v 1.2 2004-03-15 11:56:53 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -27,7 +27,7 @@ import org.caesarj.classfile.CodeEnv;
 import org.caesarj.classfile.CodeInfo;
 import org.caesarj.classfile.MethodDescription;
 import org.caesarj.classfile.MethodInfo;
-import org.caesarj.compiler.ast.JBlock;
+import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;

@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CThrowableInfo.java,v 1.1 2004-02-08 16:47:47 ostermann Exp $
+ * $Id: CThrowableInfo.java,v 1.2 2004-03-15 11:56:55 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
 
-import org.caesarj.compiler.ast.JPhylum;
+import org.caesarj.compiler.ast.phylum.JPhylum;
 
 /**
  * This class represents a throw <throwable> information during check

@@ -4,6 +4,7 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 
 import org.caesarj.compiler.KjcEnvironment;
+import org.caesarj.compiler.ast.phylum.declaration.*;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CInterfaceContext;

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CSwitchBodyContext.java,v 1.2 2004-02-08 20:28:00 ostermann Exp $
+ * $Id: CSwitchBodyContext.java,v 1.3 2004-03-15 11:56:53 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -24,8 +24,8 @@ package org.caesarj.compiler.context;
 import java.util.Hashtable;
 
 import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.ast.JStatement;
-import org.caesarj.compiler.ast.JSwitchStatement;
+import org.caesarj.compiler.ast.phylum.statement.JStatement;
+import org.caesarj.compiler.ast.phylum.statement.JSwitchStatement;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.util.UnpositionedError;

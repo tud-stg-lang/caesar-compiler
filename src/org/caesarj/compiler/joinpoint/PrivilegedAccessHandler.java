@@ -6,12 +6,12 @@ import java.util.Map;
 
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMember;
-import org.caesarj.compiler.ast.FjSourceClass;
-import org.caesarj.compiler.ast.FjSourceField;
-import org.caesarj.compiler.ast.PrivilegedField;
-import org.caesarj.compiler.ast.PrivilegedMethod;
 import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.export.FjSourceClass;
+import org.caesarj.compiler.export.FjSourceField;
+import org.caesarj.compiler.export.PrivilegedField;
+import org.caesarj.compiler.export.PrivilegedMethod;
 
 /**
  * Handles the privileged access to invisible (private, protected, package-access) fields and methods.

@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.caesarj.compiler.ast.JFormalParameter;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.types.CClassNameType;

@@ -1,4 +1,3 @@
-// Generated from C:\Programme\eclipse\workspace\Caesar\cc/caesar.t
 package org.caesarj.compiler;
 
 public interface CaesarTokenTypes {

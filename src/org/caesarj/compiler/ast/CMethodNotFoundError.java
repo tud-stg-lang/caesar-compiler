@@ -15,11 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CMethodNotFoundError.java,v 1.2 2004-02-08 20:27:58 ostermann Exp $
+ * $Id: CMethodNotFoundError.java,v 1.3 2004-03-15 11:56:49 aracic Exp $
  */
 
 package org.caesarj.compiler.ast;
 
+import org.caesarj.compiler.ast.phylum.expression.*;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.util.PositionedError;

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: ParseClassContext.java,v 1.7 2004-03-14 11:03:26 aracic Exp $
+ * $Id: ParseClassContext.java,v 1.8 2004-03-15 11:56:53 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -24,13 +24,13 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import org.caesarj.compiler.aspectj.CaesarDeclare;
-import org.caesarj.compiler.ast.AdviceDeclaration;
-import org.caesarj.compiler.ast.JClassBlock;
-import org.caesarj.compiler.ast.JFieldDeclaration;
-import org.caesarj.compiler.ast.JMethodDeclaration;
-import org.caesarj.compiler.ast.JPhylum;
-import org.caesarj.compiler.ast.JTypeDeclaration;
-import org.caesarj.compiler.ast.PointcutDeclaration;
+import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.declaration.AdviceDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.PointcutDeclaration;
+import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
 
 
 public class ParseClassContext {

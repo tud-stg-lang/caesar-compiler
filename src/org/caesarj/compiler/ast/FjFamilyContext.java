@@ -4,7 +4,11 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.family.FjCompositFamily;
+import org.caesarj.compiler.family.FjFamily;
+import org.caesarj.compiler.family.FjTypeSystem;
 import org.caesarj.compiler.types.CReferenceType;
 
 public class FjFamilyContext {
@@ -34,7 +38,7 @@ public class FjFamilyContext {
 	}
 
 		
-	protected FjFamily lookupFamily( JLocalVariable var ) {
+	public FjFamily lookupFamily( JLocalVariable var ) {
 		return (FjFamily) nameFamilies.get( var );
 	}
 	

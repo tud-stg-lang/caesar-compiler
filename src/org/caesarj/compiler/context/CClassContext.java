@@ -15,17 +15,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassContext.java,v 1.4 2004-03-14 11:03:26 aracic Exp $
+ * $Id: CClassContext.java,v 1.5 2004-03-15 11:56:52 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
 
 import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.ast.JExpression;
-import org.caesarj.compiler.ast.JFieldDeclaration;
-import org.caesarj.compiler.ast.JLocalVariable;
-import org.caesarj.compiler.ast.JOuterLocalVariableExpression;
-import org.caesarj.compiler.ast.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JOuterLocalVariableExpression;
+import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;

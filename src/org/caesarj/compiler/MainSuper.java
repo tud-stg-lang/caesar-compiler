@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: MainSuper.java,v 1.6 2004-03-14 11:03:26 aracic Exp $
+ * $Id: MainSuper.java,v 1.7 2004-03-15 11:56:54 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -26,8 +26,8 @@ import java.io.PrintWriter;
 import java.util.Vector;
 
 import org.caesarj.classfile.ClassFileFormatException;
-import org.caesarj.compiler.ast.JCompilationUnit;
-import org.caesarj.compiler.ast.KjcPrettyPrinter;
+import org.caesarj.compiler.ast.phylum.JCompilationUnit;
+import org.caesarj.compiler.ast.visitor.KjcPrettyPrinter;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.export.CSourceClass;

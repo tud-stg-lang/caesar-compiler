@@ -15,13 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CInterfaceContext.java,v 1.1 2004-02-08 16:47:37 ostermann Exp $
+ * $Id: CInterfaceContext.java,v 1.2 2004-03-15 11:56:53 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
 
 import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.ast.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.util.UnpositionedError;
 
