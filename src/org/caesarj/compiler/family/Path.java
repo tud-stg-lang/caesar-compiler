@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Path.java,v 1.13 2005-02-04 19:09:07 aracic Exp $
+ * $Id: Path.java,v 1.14 2005-02-07 18:23:54 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -64,17 +64,25 @@ public abstract class Path {
     Path prefix;
     CReferenceType type;
     
-    private Path getPrefix() {
+    public Path getPrefix() {
         return prefix;
-    }      
+    }
+    
+    public void setPrefix(Path prefix) {
+        this.prefix = prefix;
+    }
     
     public Path(Path prefix, CReferenceType type) {
         this.prefix = prefix;
         this.type = type;
-    }
+    }       
     
     public CReferenceType getType() {
         return type;
+    }
+
+    public Path getTypePath() throws UnpositionedError {
+        return type.getPath();
     }
 
     /**
@@ -106,8 +114,7 @@ public abstract class Path {
      * @param expr	The expression containing the path
      */
     public static Path createFrom(CContext context, JExpression expr) throws UnpositionedError {    	
-        List 	nameList = new LinkedList();	// stores the field access identifiers (Strings)
-        List 	typeList = new LinkedList();	// stores the corresponding types (CTypes)
+        List	path = new LinkedList();
         int 	k =0;
         JExpression tmp = expr;
         
@@ -116,12 +123,12 @@ public abstract class Path {
         while (!done){
             if(tmp instanceof JQualifiedInstanceCreation){
                 JQualifiedInstanceCreation qc = (JQualifiedInstanceCreation) tmp;
-                nameList.add(0, ANONYMOUS_FIELD_ACCESS );
                 
                 CReferenceType type = (CReferenceType)qc.getType(context.getTypeFactory());
                 type.setDeclContext(context);
                 
-                typeList.add(type);
+                path.add(0, new FieldAccess(null, ANONYMOUS_FIELD_ACCESS, type) );
+                
                 done = true;
                 
             }
@@ -132,10 +139,10 @@ public abstract class Path {
             }
             else if(tmp instanceof CjAccessorCallExpression) {
                 CjAccessorCallExpression ac = (CjAccessorCallExpression)tmp;
-                nameList.add(0, ac.getFieldIdent());
                 CType type = ac.getType(context.getTypeFactory()); 
                 
-                typeList.add(0, type);
+                path.add(0, new FieldAccess(null, ac.getFieldIdent(), (CReferenceType)type) );
+                
                 tmp = ac.getPrefix();
             }
             else if (tmp instanceof JFieldAccessExpression){
@@ -147,8 +154,7 @@ public abstract class Path {
                     k++;
                 } else {
                     // ... else add identifier to path.
-                    nameList.add(0, fa.getIdent());    
-                    typeList.add(0, fa.getType(context.getTypeFactory()));
+                    path.add(0, new FieldAccess(null, fa.getIdent(), (CReferenceType)fa.getType(context.getTypeFactory())) );
                 }
                 tmp = fa.getPrefix();
             
@@ -174,13 +180,11 @@ public abstract class Path {
                 int pos = local.getVariable().getPosition();
                 
                 if(var instanceof JFormalParameter) {
-                    nameList.add(0, "#"+(pos-1));
+                    path.add(0, new ArgumentAccess(null, (CReferenceType)var.getType(), pos-1));
                 }
                 else {
-                    nameList.add(0, var.getIdent());
+                    path.add(0, new FieldAccess(null, var.getIdent(), (CReferenceType)var.getType()));
                 }
-                
-                typeList.add(0, var.getType());
 
                 
                 if (var instanceof JFormalParameter) {
@@ -234,8 +238,7 @@ public abstract class Path {
                     // handle for now as a field
                     // consider that we could have more than one method call
                     // f1.f2.f3.m1().m2().m3()
-                    nameList.add(0, me.getIdent());    
-                    typeList.add(0, me.getType(context.getTypeFactory()));
+                    path.add(0, new MethodAccess(null, me.getIdent(), (CReferenceType)me.getType(context.getTypeFactory())));
                     tmp = me.getPrefix();
                 }
 //                else {
@@ -254,40 +257,21 @@ public abstract class Path {
                 
         // Construct path        
         Path result = new ContextExpression(null, k, null);
-        
-        
-        Iterator it1, it2;
-        for (it1 = nameList.iterator(), it2=typeList.iterator(); it1.hasNext();) {
-            String name = (String) it1.next();
-            CReferenceType refType = (CReferenceType)it2.next();
+                
+        for (Iterator it = path.iterator(); it.hasNext();) {
+            Path p = (Path) it.next();
 
-            /*
-             * In the case we have a nested Java class which is not defined in the context
-             * of the owner of that type, we throw an exception.
-             * Reason: 
-             * 1) Java inner classes may not be annotated with a path to a family.
-             * 2) Even if so, subtype relations are different than those defined for Caesar types
-             *    e.g.: Y y1 = x.new Y(); Y y2 = x2.new Y(); y1 = y2; // ok 
-             */            
-            if(refType.getCClass().isNested() && !refType.getCClass().isMixinInterface()) {                
+            if(p.getType().getCClass().isNested() && !p.getType().getCClass().isMixinInterface()) {                
                 throw new UnpositionedError(CaesarMessages.INNER_PLAIN_JAVA_OBJECTS_IN_PATH);
             }            
             
-            try {
-	            if(name.startsWith("#")) {
-	                int pos = Integer.parseInt( name.substring(1) );                    
-	                result = new FieldAccess(result, name, refType, pos);
-	            }
-	            else { 
-	                result = new FieldAccess(result, name, refType);
-	        	}
-            }
-            catch (Exception e) {
-                throw new InconsistencyException("invalid identifier for a parameter: "+name);
-            }
+            p.prefix = result;
+            result = p;
         }        
+        
         return result;        
     }
+    
 
     public boolean equals(Path other) {
         return other.toString().equals(this.toString());
@@ -318,8 +302,15 @@ public abstract class Path {
     
     public abstract Path normalize() throws UnpositionedError;
     
+    public abstract Path normalize2() throws UnpositionedError;
+    
     protected abstract Path _normalize(Path pred, Path tail) throws UnpositionedError;
     
     protected abstract Path clonePath();
+
+    public Path append(Path other) {
+        other.getHead().prefix = this;
+        return other;
+    }
 
 }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.16 2005-02-04 19:08:42 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.17 2005-02-07 18:23:54 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -41,7 +41,8 @@ import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceMethod;
-import org.caesarj.compiler.family.FieldAccess;
+import org.caesarj.compiler.family.ArgumentAccess;
+import org.caesarj.compiler.family.MethodAccess;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CArrayType;
 import org.caesarj.compiler.types.CDependentType;
@@ -309,16 +310,16 @@ public class JMethodCallExpression extends JExpression
 				    
 				    if(argTypes[i].isDependentType()) {
 				        CDependentType depType = (CDependentType)refType;
+				        Path depTypePath = depType.getPath();
 				        
 				        // the family of this dependent type starts with a parameter
 				        if(depType.getK() == 0) {
 				            // use the path of the dependent parameter type
 				            // and substitute the parameter access ( ctx(0).param ) with the 
-				            // passed path of the argument expression
-				            Path depTypePath = depType.getPath();
-				            FieldAccess fa = (FieldAccess)depTypePath.getHeadPred();
+				            // passed path of the argument expression				            
+				            ArgumentAccess fa = (ArgumentAccess)depTypePath.getHeadPred();
 				            
-				            depTypePath = depTypePath.substituteFirstAccess( argPaths[fa.getParamPos()] );
+				            depTypePath = depTypePath.substituteFirstAccess( argPaths[fa.getArgPos()] );
 				            				            
 				            check(
 								context,
@@ -326,7 +327,24 @@ public class JMethodCallExpression extends JExpression
 								KjcMessages.ASSIGNMENT_BADTYPE,
 								argTypePaths[i].toString(),
 								depTypePath.toString());
+				        }
+				        else {
+				            // this dependent type does not depend on a family defined
+				            // in the signature of the method
 				            
+				            Path p = Path.createFrom(context, prefix);
+				            				            
+				            p = new MethodAccess(p, method.getIdent(), null);				            
+				            p = p.append( depTypePath ); 
+				            
+				            Path pNorm = p.normalize2();
+				            
+				            check(
+								context,
+								pNorm.equals( argTypePaths[i] ),
+								KjcMessages.ASSIGNMENT_BADTYPE,
+								argTypePaths[i].toString(),
+								pNorm.toString());
 				        }
 				    }
 			    }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: FieldAccess.java,v 1.11 2005-02-07 18:23:54 aracic Exp $
+ * $Id: ArgumentAccess.java,v 1.1 2005-02-07 18:23:54 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -33,13 +33,21 @@ import org.caesarj.compiler.types.CReferenceType;
  * 
  * @author Ivica Aracic
  */
-public class FieldAccess extends MemberAccess {
+public class ArgumentAccess extends MemberAccess {
 
-    public FieldAccess(Path prefix, String field, CReferenceType type) {
-        super(prefix, field, type);
+    private static final String ARG_PREFIX = "#";
+    protected int argPos;
+    
+    public ArgumentAccess(Path prefix, CReferenceType type, int argPos) {
+        super(prefix, ARG_PREFIX+argPos, type);
+        this.argPos = argPos;
+    }
+    
+    public int getArgPos() {
+        return argPos;
     }
     
     protected Path clonePath() {
-        return new FieldAccess(prefix==null ? null : prefix.clonePath(), name, type);
+        return new ArgumentAccess(prefix==null ? null : prefix.clonePath(), type, argPos);
     }
 }

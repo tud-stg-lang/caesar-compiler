@@ -20,12 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: FieldAccess.java,v 1.11 2005-02-07 18:23:54 aracic Exp $
+ * $Id: MethodAccess.java,v 1.1 2005-02-07 18:23:54 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
 
 import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.util.UnpositionedError;
 
 
 /**
@@ -33,13 +34,31 @@ import org.caesarj.compiler.types.CReferenceType;
  * 
  * @author Ivica Aracic
  */
-public class FieldAccess extends MemberAccess {
+public class MethodAccess extends MemberAccess {
+    
+    public MethodAccess(Path prefix, String name, CReferenceType type) {
+        super(prefix, name, type);
+    }
+    
+    public Path getTypePath() throws UnpositionedError {
+        return new ContextExpression(null, 0, null);
+    }       
+    
+    /**
+     *
+     */
 
-    public FieldAccess(Path prefix, String field, CReferenceType type) {
-        super(prefix, field, type);
+    public Path normalize() throws UnpositionedError {
+        Path typePath = type.getPath().clonePath();
+        Path typePathHeadPred = typePath.getHeadPred();
+        Path typePathHead = typePath.getHead();
+        // keep the method name in the context
+        typePathHead.prefix =  this.clonePath();
+        
+        return typePathHead._normalize(typePathHeadPred, typePath);
     }
     
     protected Path clonePath() {
-        return new FieldAccess(prefix==null ? null : prefix.clonePath(), name, type);
+        return new MethodAccess(prefix==null ? null : prefix.clonePath(), name, type);
     }
 }

@@ -20,12 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: FieldAccess.java,v 1.11 2005-02-07 18:23:54 aracic Exp $
+ * $Id: MemberAccess.java,v 1.1 2005-02-07 18:23:54 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
 
 import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.util.UnpositionedError;
 
 
 /**
@@ -33,13 +34,41 @@ import org.caesarj.compiler.types.CReferenceType;
  * 
  * @author Ivica Aracic
  */
-public class FieldAccess extends MemberAccess {
-
-    public FieldAccess(Path prefix, String field, CReferenceType type) {
-        super(prefix, field, type);
+public abstract class MemberAccess extends Path {
+    
+    protected String name;
+    
+    public MemberAccess(Path prefix, String field, CReferenceType type) {
+        super(prefix, type);
+        name = field;
+    }   
+    
+    public String getName() {
+        return name;
     }
     
-    protected Path clonePath() {
-        return new FieldAccess(prefix==null ? null : prefix.clonePath(), name, type);
+    private Path getReceiver() {
+        return null;
     }
+    
+    public String toString() {
+        return prefix+"."+name;
+    }
+
+    public Path normalize() throws UnpositionedError {
+        Path typePath = type.getPath().clonePath();
+        Path typePathHeadPred = typePath.getHeadPred();
+        Path typePathHead = typePath.getHead();
+        typePathHead.prefix = prefix.clonePath();
+        
+        return typePathHead._normalize(typePathHeadPred, typePath);
+    }
+    
+    public Path normalize2() throws UnpositionedError {
+        return _normalize(null, this);
+    }
+
+    protected Path _normalize(Path pred, Path tail) throws UnpositionedError {
+        return prefix._normalize(this, tail);
+    }       
 }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ContextExpression.java,v 1.8 2005-01-26 16:09:16 aracic Exp $
+ * $Id: ContextExpression.java,v 1.9 2005-02-07 18:23:54 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -58,6 +58,10 @@ public class ContextExpression extends Path {
         return this.clonePath();
     }
     
+    public Path normalize2() {
+        return normalize();
+    }
+    
     protected Path _normalize(Path pred, Path tail) throws UnpositionedError {
         
         System.out.println("\t----->"+tail);
@@ -85,7 +89,7 @@ public class ContextExpression extends Path {
                     return this._normalize(pred, tail);
             }
             else {
-                Path typePath = prefix.getType().getPath().clonePath();
+                Path typePath = prefix.getTypePath().clonePath();
                 Path typePathHead = typePath.getHead();
                 //Path typePathHeadPred = typePath.getHeadPred();
                 

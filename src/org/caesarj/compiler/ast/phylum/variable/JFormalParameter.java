@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JFormalParameter.java,v 1.6 2005-01-27 15:20:02 aracic Exp $
+ * $Id: JFormalParameter.java,v 1.7 2005-02-07 18:23:55 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -29,7 +29,6 @@ import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.context.CVariableInfo;
 import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
