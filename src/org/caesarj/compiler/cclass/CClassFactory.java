@@ -67,6 +67,7 @@ public class CClassFactory implements CaesarConstants {
             if(
                 !(cclassMethods[i] instanceof JConstructorDeclaration)
                 && ((cclassMethods[i].getModifiers() & JMemberDeclaration.ACC_PUBLIC) != 0)
+                && ((cclassMethods[i].getModifiers() & JMemberDeclaration.ACC_STATIC) == 0)
             )      
                 interfaceMethods.add(createInterfaceMethod(cclassMethods[i]));
 		}
@@ -116,9 +117,6 @@ public class CClassFactory implements CaesarConstants {
 		return cclassInterface;
 	}
 
-	/**
-	 * Creates an advice method for the aspect interface.
-	 */
 	private JMethodDeclaration createInterfaceMethod(JMethodDeclaration m) {
 		return new CjMethodDeclaration(
 			where,
