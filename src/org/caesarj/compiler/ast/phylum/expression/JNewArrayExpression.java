@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JNewArrayExpression.java,v 1.3 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JNewArrayExpression.java,v 1.4 2005-03-24 13:23:46 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -193,7 +193,9 @@ public class JNewArrayExpression extends JExpression {
 
   public void recurse(IVisitor s) {
       for (int i = 0; i < dims.length; i++) {
-        dims[i].accept(s);
+      	if(dims[i] != null) {
+      		dims[i].accept(s);
+      	}
       }
       init.accept(s);
   }
