@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.flex,v 1.1 2004-02-23 09:49:42 klose Exp $
+ * $Id: Caesar.flex,v 1.2 2004-02-28 17:58:06 ostermann Exp $
  */
 
 package org.caesarj.compiler;
@@ -173,10 +173,7 @@ E =	[eE] [+\-]? {D}+
 "void"		{ return TOKEN_LITERAL_void; }
 "volatile"		{ return TOKEN_LITERAL_volatile; }
 "while"		{ return TOKEN_LITERAL_while; }
-"virtual"		{ return TOKEN_LITERAL_virtual; }
-"override"		{ return TOKEN_LITERAL_override; }
-"clean"		{ return TOKEN_LITERAL_clean; }
-"==="		{ return TOKEN_FJEQUAL; }
+"cclass"		{ return TOKEN_LITERAL_cclass; }
 "collaboration"		{ return TOKEN_LITERAL_collaboration; }
 "provided"		{ return TOKEN_LITERAL_provided; }
 "expected"		{ return TOKEN_LITERAL_expected; }
@@ -184,7 +181,8 @@ E =	[eE] [+\-]? {D}+
 "provides"		{ return TOKEN_LITERAL_provides; }
 "wraps"		{ return TOKEN_LITERAL_wraps; }
 "wrappee"		{ return TOKEN_LITERAL_wrappee; }
-"#"		{ return TOKEN_WDESTRUCTOR; }
+"~"		{ return TOKEN_WDESTRUCTOR; }
+"#"		{ return TOKEN_PATHMARKER; }
 "after"		{ return TOKEN_LITERAL_after; }
 "around"		{ return TOKEN_LITERAL_around; }
 "before"		{ return TOKEN_LITERAL_before; }

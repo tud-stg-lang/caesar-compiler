@@ -21,7 +21,7 @@ import org.caesarj.util.Utils;
 public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 {
 
-	FjCleanClassDeclaration baseDecl;
+	CaesarClassDeclaration baseDecl;
 
 	public FjCleanClassInterfaceDeclaration(
 		TokenReference tokenReference,
@@ -29,7 +29,7 @@ public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 		int modifiers,
 		CReferenceType[] interfaces,
 		FjCleanMethodDeclaration[] methods,
-		FjCleanClassDeclaration baseDecl)
+		CaesarClassDeclaration baseDecl)
 	{
 		super(
 			tokenReference,
@@ -127,7 +127,7 @@ public class FjCleanClassInterfaceDeclaration extends FjInterfaceDeclaration
 		methods = newMethods;
 	}
 	
-	public FjCleanClassDeclaration getBaseClass()
+	public CaesarClassDeclaration getBaseClass()
 	{
 		return baseDecl;
 	}

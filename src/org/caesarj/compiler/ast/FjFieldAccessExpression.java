@@ -37,28 +37,7 @@ public class FjFieldAccessExpression extends JFieldAccessExpression {
 	public JExpression analyse(CExpressionContext context)
 		throws PositionedError {
 
-		if( ident == FjConstants.SUPER ) {
-			JExpression fjSuper = new FjCastExpression(
-				getTokenReference(),
-				new FjMethodCallExpression(
-					getTokenReference(),
-					new JTypeNameExpression(
-						getTokenReference(),
-						new CClassNameType( FjConstants.CLASS_BASED_DELEGATION_TYPE ) ),
-					FjConstants.CLASS_BASED_DELEGATION_SUPER,
-					new JExpression[] { prefix } ),
-				findSuperType( context ) );
-			return fjSuper.analyse( context );
-		} else if( ident == FjConstants.SUB ) {
-			JExpression fjSub = new FjMethodCallExpression(
-				getTokenReference(),
-				new JTypeNameExpression(
-					getTokenReference(),
-					new CClassNameType( FjConstants.CLASS_BASED_DELEGATION_TYPE ) ),
-				FjConstants.CLASS_BASED_DELEGATION_SUB,
-				new JExpression[] { prefix } );
-			return fjSub.analyse( context );
-		} else if( (prefix instanceof JLocalVariableExpression) &&
+     if( (prefix instanceof JLocalVariableExpression) &&
 			((JLocalVariableExpression) prefix).getIdent().equals( FjConstants.SELF_NAME ) ) {
 			return new FjFieldAccessExpression(
 				getTokenReference(),

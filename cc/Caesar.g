@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.18 2004-02-23 12:12:26 klose Exp $
+ * $Id: Caesar.g,v 1.19 2004-02-28 17:58:06 ostermann Exp $
  */
 
 /*
@@ -365,14 +365,6 @@ jModifier []
   "transient" { self = org.caesarj.classfile.ClassfileConstants2.ACC_TRANSIENT; }
 |
   "volatile" { self = org.caesarj.classfile.ClassfileConstants2.ACC_VOLATILE; }
-// andreas start
-|
-  "virtual" { self = org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL; }
-|
-  "override" { self = org.caesarj.classfile.ClassfileConstants2.FJC_OVERRIDE; }
-|
-  "clean" { self = org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN; }
-// andreas end
 |
 	"privileged" { self = org.caesarj.classfile.ClassfileConstants2.ACC_PRIVILEGED; }
 |

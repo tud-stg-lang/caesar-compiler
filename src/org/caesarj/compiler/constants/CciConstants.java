@@ -154,8 +154,6 @@ public class CciConstants
 	}
 	public static String toBaseMethodName(String methodName)
 	{
-		methodName = methodName.replaceAll( SELFCONTEXT_METHOD_SUFFIX, "" );
-		methodName = methodName.replaceAll( IMPLEMENTATION_METHOD_SUFFIX, "" );
 		methodName = methodName.replaceAll( SEPERATOR, "" );
 		return methodName;
 	}

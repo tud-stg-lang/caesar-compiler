@@ -29,21 +29,7 @@ public class FjThisExpression extends JThisExpression {
 		super(where, prefix);
 	}
 
-	public JExpression analyse(CExpressionContext context)
-		throws PositionedError {
-		
-		if( isWithinImplementationMethod( context ) && transformToSelf )
-			return new FjNameExpression (
-				getTokenReference(),
-				FjConstants.SELF_NAME ).analyse( context );
-		else
-			return super.analyse(context);
-	}
 
-	protected boolean isWithinImplementationMethod( CExpressionContext context ) {		
-		return FjConstants.isImplementationMethodName(
-			context.getMethodContext().getCMethod().getIdent() );
-	}	
 
 	public FjFamily getFamily(CExpressionContext context)
 		throws PositionedError {

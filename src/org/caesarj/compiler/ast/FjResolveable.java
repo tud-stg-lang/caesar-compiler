@@ -8,6 +8,6 @@ import org.caesarj.util.PositionedError;
 public interface FjResolveable {
 	JClassDeclaration getOwnerDeclaration();
 	void setSuperClass( CReferenceType superType );
-	FjCleanClassDeclaration getBaseClass();
+	CaesarClassDeclaration getBaseClass();
 	void check(CContext context, boolean cond, MessageDescription description, Object param) throws PositionedError;
 }

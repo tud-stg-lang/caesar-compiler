@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcVisitor.java,v 1.4 2004-02-23 11:46:39 klose Exp $
+ * $Id: KjcVisitor.java,v 1.5 2004-02-28 17:58:05 ostermann Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -90,7 +90,7 @@ public interface KjcVisitor {
 				JMethodDeclaration[] methods,
 				JTypeDeclaration[] decls);
 
-	void visitFjCleanClassDeclaration(FjCleanClassDeclaration self,
+	void visitFjCleanClassDeclaration(CaesarClassDeclaration self,
 				int modifiers,
 				String ident,
 				CTypeVariable[] typeVariables,

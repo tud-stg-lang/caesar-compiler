@@ -89,7 +89,7 @@ public class CciInterfaceDeclaration
 	 * @return
 	 * @throws PositionedError
 	 */
-	public FjCleanClassDeclaration createCleanClassRepresentation()
+	public CaesarClassDeclaration createCleanClassRepresentation()
 		throws PositionedError
 	{
 		CClassNameType superClass = null;
@@ -104,7 +104,7 @@ public class CciInterfaceDeclaration
 					ident);
 		}		
 		
-		return new FjCleanClassDeclaration(
+		return new CaesarClassDeclaration(
 			getTokenReference(),
 			modifiers & ~(ACC_INTERFACE | ACC_ABSTRACT) 
 				| FJC_CLEAN | CCI_COLLABORATION,

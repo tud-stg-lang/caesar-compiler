@@ -13,7 +13,7 @@ public class FjOverridingCleanClassInterfaceDeclaration
 		CReferenceType[] interfaces,
 		FjCleanMethodDeclaration[] methods,
 		JClassDeclaration ownerDecl,
-		FjCleanClassDeclaration baseDecl ) {
+		CaesarClassDeclaration baseDecl ) {
 		super(tokenReference, ident, modifiers | FJC_OVERRIDE, interfaces, 
 			methods, ownerDecl, baseDecl );
 	}

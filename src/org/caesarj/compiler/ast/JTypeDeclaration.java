@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.2 2004-02-08 20:27:57 ostermann Exp $
+ * $Id: JTypeDeclaration.java,v 1.3 2004-02-28 17:58:05 ostermann Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -598,13 +598,6 @@ public abstract class JTypeDeclaration extends JMemberDeclaration
 		return getCClass().getOwner();
 	}
 
-	/**
-		* DEBUG - WALTER
-		*/
-	public void print()
-	{
-		System.out.print(ident);
-	}
 
 	// ----------------------------------------------------------------------
 	// PRIVATE DATA MEMBER

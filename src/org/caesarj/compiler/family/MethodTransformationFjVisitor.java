@@ -3,7 +3,7 @@ package org.caesarj.compiler.family;
 
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.JClassDeclaration;
-import org.caesarj.compiler.ast.FjCleanClassDeclaration;
+import org.caesarj.compiler.ast.CaesarClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassIfcImplDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassInterfaceDeclaration;
 import org.caesarj.compiler.ast.FjCleanMethodDeclaration;
@@ -35,7 +35,7 @@ public class MethodTransformationFjVisitor extends DeclarationVisitor {
 	
 	
 	public void visitFjCleanClassDeclaration(
-		FjCleanClassDeclaration self,
+		CaesarClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,
@@ -91,15 +91,15 @@ public class MethodTransformationFjVisitor extends DeclarationVisitor {
 			
 			//It will generated the structure of the wrapper only if 
 			//it is a binding or extends a binding class.
-			FjCleanClassDeclaration cleanOwner = null;
+			CaesarClassDeclaration cleanOwner = null;
 			String mapName = null;			
-			if (owner instanceof FjCleanClassDeclaration
+			if (owner instanceof CaesarClassDeclaration
 				&& (CModifier.contains(self.getModifiers(), 
 						CaesarConstants.CCI_BINDING)
 					|| self.getSuperCollaborationInterface(
 						self.getCClass(), CaesarConstants.CCI_BINDING) != null))
 			{
-				cleanOwner = (FjCleanClassDeclaration) owner;
+				cleanOwner = (CaesarClassDeclaration) owner;
 				mapName = CciConstants.toWrapperMapName(
 					FjConstants.toIfcName(ident));
 			}

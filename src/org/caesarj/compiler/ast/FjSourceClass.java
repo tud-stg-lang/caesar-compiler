@@ -623,8 +623,7 @@ public class FjSourceClass extends CSourceClass
 	{
 		CClass owner = getOwner();
 		if (owner != null
-			&& CModifier.contains(owner.getModifiers(), 
-				FJC_CLEAN | FJC_VIRTUAL | FJC_OVERRIDE)
+			&& owner.isCaesarClass()
 			&& FjConstants.isBaseName(ident))
 		{
 			return

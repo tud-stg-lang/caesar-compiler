@@ -551,7 +551,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   javadoc,
 							   comments);
 				  	 else
-			self = new FjCleanClassDeclaration(sourceRef,
+			self = new CaesarClassDeclaration(sourceRef,
 							   modifiers | org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN,
 							   ident.getText(),
 							   typeVariables,
@@ -604,7 +604,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   javadoc,
 							   comments);
 			} else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN ) ) {
-			self = new FjCleanClassDeclaration(sourceRef,
+			self = new CaesarClassDeclaration(sourceRef,
 							   modifiers,
 							   ident.getText(),
 							   typeVariables,

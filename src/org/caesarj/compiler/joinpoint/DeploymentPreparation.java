@@ -12,9 +12,9 @@ import java.util.List;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.aspectj.CaesarNameMangler;
 import org.caesarj.compiler.ast.AdviceDeclaration;
+import org.caesarj.compiler.ast.CaesarClassDeclaration;
 import org.caesarj.compiler.ast.CciInternalUnqualifiedInstanceCreation;
 import org.caesarj.compiler.ast.FjAssignmentExpression;
-import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.FjFieldAccessExpression;
 import org.caesarj.compiler.ast.FjFieldDeclaration;
 import org.caesarj.compiler.ast.FjFormalParameter;
@@ -24,6 +24,7 @@ import org.caesarj.compiler.ast.FjNameExpression;
 import org.caesarj.compiler.ast.FjVariableDefinition;
 import org.caesarj.compiler.ast.JBlock;
 import org.caesarj.compiler.ast.JClassBlock;
+import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.JCompilationUnit;
 import org.caesarj.compiler.ast.JExpression;
 import org.caesarj.compiler.ast.JExpressionStatement;
@@ -50,10 +51,10 @@ import org.caesarj.util.TokenReference;
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class DeploymentPreparation implements CaesarConstants {
-	private DeploymentPreparation(JClassDeclaration cd) {
+	private DeploymentPreparation(CaesarClassDeclaration cd) {
 		this.cd = cd;
 	}
-	private JClassDeclaration cd;
+	private CaesarClassDeclaration cd;
 	/**
 	 * Generates for every nested crosscutting class the corresponding deployment support classes.
 	 */
@@ -64,10 +65,10 @@ public class DeploymentPreparation implements CaesarConstants {
 			
 			newTypeDeclarations.add(typeDeclarations[i]);
 
-			if (typeDeclarations[i] instanceof JClassDeclaration) {
+			if (typeDeclarations[i] instanceof CaesarClassDeclaration) {
 
-				JClassDeclaration caesarClass =
-					(JClassDeclaration) typeDeclarations[i];
+				CaesarClassDeclaration caesarClass =
+					(CaesarClassDeclaration) typeDeclarations[i];
 
 				if (caesarClass.isCrosscutting() && (!caesarClass.isStaticallyDeployed()) ) {
 
@@ -104,12 +105,12 @@ public class DeploymentPreparation implements CaesarConstants {
 
 			newInners.add(cd.getInners()[i]);
 
-			if (cd.getInners()[i] instanceof JClassDeclaration)
+			if (cd.getInners()[i] instanceof CaesarClassDeclaration)
 			{
 
 				//create support classes for each crosscutting inner class
-				JClassDeclaration innerCaesarClass =
-					(JClassDeclaration) cd.getInners()[i];
+				CaesarClassDeclaration innerCaesarClass =
+					(CaesarClassDeclaration) cd.getInners()[i];
 				if (innerCaesarClass.isCrosscutting())
 				{
 
@@ -134,8 +135,8 @@ public class DeploymentPreparation implements CaesarConstants {
 				{
 					if (innersInners[j] instanceof JClassDeclaration)
 					{
-						JClassDeclaration currentInnerInner =
-							(JClassDeclaration) innersInners[j];
+						CaesarClassDeclaration currentInnerInner =
+							(CaesarClassDeclaration) innersInners[j];
 						new DeploymentPreparation(currentInnerInner).prepareForDynamicDeployment(environment);
 					}
 				}
@@ -151,9 +152,10 @@ public class DeploymentPreparation implements CaesarConstants {
 		cd.generateInterface(environment.getClassReader(), cd.getOwner(), prefix);
 	}
 
-	public static void prepareForStaticDeployment(CContext context, JClassDeclaration cd) {
+	public static void prepareForStaticDeployment(CContext context, CaesarClassDeclaration cd) {
 		new DeploymentPreparation(cd).prepareForStaticDeployment(context);
 	}
+	
 	private void prepareForStaticDeployment(CContext context)
 	{
 		for (int i = 0; i < cd.getAdvices().length; i++)

@@ -266,8 +266,7 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 			KjcMessages.METHOD_ABSTRACT_STRICT);
 		
 		//These checks must be done only for base methods...
-		if (FjConstants.isBaseMethodName(ident) 
-			&& ! FjConstants.isFactoryMethodName(ident)
+		if (! FjConstants.isFactoryMethodName(ident)
 			&& ! CciConstants.isAdaptMethodName(ident))
 		{
 			if (inCollaborationInterface)

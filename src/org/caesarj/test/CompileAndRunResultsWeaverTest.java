@@ -12,7 +12,7 @@ import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.KjcOptions;
 import org.caesarj.compiler.Main;
 import org.caesarj.compiler.ast.JClassDeclaration;
-import org.caesarj.compiler.ast.FjCleanClassDeclaration;
+import org.caesarj.compiler.ast.CaesarClassDeclaration;
 import org.caesarj.compiler.ast.DeclarationVisitor;
 import org.caesarj.compiler.ast.JClassImport;
 import org.caesarj.compiler.ast.JCompilationUnit;
@@ -240,7 +240,7 @@ public class CompileAndRunResultsWeaverTest extends FjTestCase {
 		Vector cleanClassInterfacesCreated = new Vector();
 		Vector cleanClassesVisited = new Vector();
 		public void visitFjCleanClassDeclaration(
-			FjCleanClassDeclaration self,
+			CaesarClassDeclaration self,
 			int modifiers,
 			String ident,
 			CTypeVariable[] typeVariables,

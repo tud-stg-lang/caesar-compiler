@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.compiler.aspectj.CaesarDeclare;
+import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.CciConstants;
 import org.caesarj.compiler.constants.FjConstants;
@@ -23,45 +24,26 @@ import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 import org.caesarj.util.Utils;
 
-public class FjCleanClassDeclaration 
+public class CaesarClassDeclaration 
 	extends JClassDeclaration
 {
+	/*
+	 * Integration of FjClassDeclaration (Karl Klose)
+	 */
 	
-	public FjCleanClassDeclaration(
-		TokenReference where,
-		int modifiers,
-		String ident,
-		CTypeVariable[] typeVariables,
-		CReferenceType superClass,
-		CReferenceType binding,
-		CReferenceType providing,
-		CReferenceType wrappee,
-		CReferenceType[] interfaces,
-		JFieldDeclaration[] fields,
-		JMethodDeclaration[] methods,
-		JTypeDeclaration[] inners,
-		JPhylum[] initializers,
-		JavadocComment javadoc,
-		JavaStyleComment[] comment)
-	{
-		super(
-			where,
-			modifiers,
-			ident,
-			typeVariables,
-			superClass,
-			binding,
-			providing,
-			wrappee,
-			interfaces,
-			fields,
-			methods,
-			inners,
-			initializers,
-			javadoc,
-			comment);
-	}
-	public FjCleanClassDeclaration(
+	/** The declared advices */
+	protected AdviceDeclaration[] advices;
+	/** e.g. declare precedence */
+	protected CaesarDeclare[] declares;
+
+	/** e.g. perSingleton, perCflow,..*/
+	protected CaesarPointcut perClause;
+
+	/** The declared pointcuts */
+	protected PointcutDeclaration[] pointcuts;
+
+	
+	public CaesarClassDeclaration(
 		TokenReference where,
 		int modifiers,
 		String ident,
@@ -82,23 +64,30 @@ public class FjCleanClassDeclaration
 		CaesarDeclare[] declares) {
 			super(
 				where,
-				modifiers,
+				modifiers & ACC_CAESARCLASS,
 				ident,
 				typeVariables,
 				superClass,
-				binding,
-				providing,
-				wrappee,
 				interfaces,
 				fields,
 				methods,
 				inners,
 				initializers,
 				javadoc,
-				comment, 
-				pointcuts, 
-				advices, 
-				declares);
+				comment);
+
+			this.providing = providing;
+			this.binding = binding;
+			this.wrappee = wrappee;
+			this.advices = advices;
+			this.declares = declares;
+			this.pointcuts = pointcuts;
+			
+				
+			// structural detection of crosscutting property
+			if ((advices.length > 0) || (pointcuts.length > 0))
+				 this.modifiers |= ACC_CROSSCUTTING;
+				
 			
 		}
 
@@ -119,7 +108,38 @@ public class FjCleanClassDeclaration
 			(modifiers & FJC_CLEAN) == 0 || getOwner() == null,
 			CaesarMessages.CLEAN_CLASS_NO_INNER);
 
+		//statically deployed classes are considered as aspects
+		if (isStaticallyDeployed())
+		{
+			DeploymentPreparation.prepareForStaticDeployment(context, (JClassDeclaration)this);
+
+			modifiers |= ACC_FINAL;
+		}
+
+
+
 		super.checkInterface(context);
+
+		if (binding != null)
+			binding = resolveCollabortationInterface(context, binding);
+	
+		if (providing != null)
+			providing = resolveCollabortationInterface(context, providing);
+
+
+		if (isPrivileged() || isStaticallyDeployed())
+		{
+			getFjSourceClass().setPerClause(
+				CaesarPointcut.createPerSingleton()
+				);
+		}
+
+		//ckeckInterface of the pointcuts
+		for (int j = 0; j < pointcuts.length; j++)
+		{
+			pointcuts[j].checkInterface(self);
+		}
+		
 
 		// ... define package access or protected methods
 		for (int i = 0; i < methods.length; i++)
@@ -404,7 +424,7 @@ public class FjCleanClassDeclaration
 		return result;
 	}
 
-	public FjCleanClassDeclaration getBaseClass()
+	public CaesarClassDeclaration getBaseClass()
 	{
 		return this;
 	}
@@ -740,6 +760,16 @@ public class FjCleanClassDeclaration
 			checkCIMethods(context, superCi, false, CCI_EXPECTED, 
 				CaesarMessages.EXPECTED_METHOD_IN_PROVIDING, null);
 		}
+		
+		if (advices != null)
+		{
+			for (int i = 0; i < advices.length; i++)
+			{
+				advices[i].checkBody1(self);
+			}
+		}
+
+		
 		super.checkTypeBody(context);
 	}
 
@@ -964,5 +994,284 @@ public class FjCleanClassDeclaration
 					methods,
 					inners);
 	}
+	public PointcutDeclaration[] getPointcuts()
+	{
+		return pointcuts;
+	}
+
+	public AdviceDeclaration[] getAdvices()
+	{
+		return advices;
+	}
+
+	public void setPointcuts(PointcutDeclaration[] pointcuts)
+	{
+		this.pointcuts = pointcuts;
+	}
+
+	public void setAdvices(AdviceDeclaration[] advices)
+	{
+		this.advices = advices;
+	}
+
+	/**
+	 * Returns the precedenceDeclaration.
+	 * @return Declare
+	 */
+	public CaesarDeclare[] getDeclares()
+	{
+		return declares;
+	}
+
+	/**
+	 * Sets the precedenceDeclaration.
+	 * @param precedenceDeclaration The precedenceDeclaration to set
+	 */
+	public void setDeclares(CaesarDeclare[] declares)
+	{
+		this.declares = declares;
+	}
+
+	/**
+	 * Sets the perClause.
+	 * @param perClause The perClause to set
+	 */
+	public void setPerClause(CaesarPointcut perClause)
+	{
+		this.perClause = perClause;
+	}
+
+	public boolean isCrosscutting() {
+		return CModifier.contains(modifiers, ACC_CROSSCUTTING);
+	}
+
+	/**
+	* Resolves the collaboration interface passed as parameter.
+	* Returns the ci checked.
+	* @param context
+	* @param ci
+	* @return CReferenceType 
+	* @throws PositionedError
+	*/
+   protected CReferenceType resolveCollabortationInterface(
+	   CContext context, CReferenceType ci)
+	   throws PositionedError		
+   {
+	   try
+	   {
+		   ci = (CReferenceType) ci.checkType(context);
+	   }
+	   catch (UnpositionedError e)
+	   {
+		   if (e.getFormattedMessage().getDescription()
+			   != KjcMessages.CLASS_AMBIGUOUS)
+			   throw e.addPosition(getTokenReference());
+					
+		   CClass[] candidates = (CClass[]) 
+			   e.getFormattedMessage().getParams()[1];
+				
+		   ci = candidates[0].getAbstractType();
+	   }
+	   return ci;	
+   }
+	
+   /**
+	* Transforms the inner classes in overriden types. The current class
+	* must be a providing class (getProviding() != null).
+	* @return JTypeDeclaration[] the new nested classes.
+	*/
+   public JTypeDeclaration[] transformInnerProvidingClasses()
+   {
+	   for (int i = 0; i < inners.length; i++)
+	   {
+		   if (inners[i] instanceof JClassDeclaration)
+		   {
+			   inners[i] = 
+				   ((JClassDeclaration)inners[i]) 
+					 .createOverrideClassDeclaration(this);
+		   }
+	   }
+	   return inners;
+   }
+	
+   /**
+	* Transforms the inner classes which bind some CI in virtual types. 
+	* The current class must be a binding class (getBinding() != null).
+	* @return JTypeDeclaration[] the new nested classes.
+	*/
+   public JTypeDeclaration[] transformInnerBindingClasses(
+	   JClassDeclaration owner)
+   {
+	   for (int i = 0; i < inners.length; i++)
+	   {
+		   if (inners[i] instanceof JClassDeclaration)
+		   {
+			   JClassDeclaration innerClass = (JClassDeclaration)inners[i];
+			   if (innerClass.getBinding() != null)
+			   {
+				   innerClass.setOwnerDeclaration(owner);
+				   inners[i] = innerClass.createVirtualClassDeclaration(
+					   owner);
+			   }
+			   else
+				   innerClass.transformInnerBindingClasses(this);
+		   }
+	   }
+	   return inners;
+   }		
+   /**
+	* Creates an override type. This is done when the compiler finds a 
+	* providing class, so it has to change its inners for an overriding classe.
+	* @param owner
+	* @return FjOverrideClassDeclaration
+	*/
+   public FjOverrideClassDeclaration createOverrideClassDeclaration(
+	   JClassDeclaration owner)
+   {
+	   providing = new CClassNameType(owner.getProviding().getQualifiedName() 
+		   + "$" + ident);
+	   return 
+		   new FjOverrideClassDeclaration(
+			   getTokenReference(),
+			   modifiers | CCI_PROVIDING,
+			   ident,
+			   typeVariables,
+			   null,
+			   null,
+			   providing,
+			   wrappee,
+			   interfaces,
+			   fields,
+			   methods,
+			   transformInnerProvidingClasses(),
+			   this.body,
+			   null,
+			   null);
+   }
+
+
+   /**
+	* Creates an virtual type. This is done when the compiler finds a 
+	* binding class, so it has to change its inners for virtual classes.
+	* @param owner
+	* @return FjOverrideClassDeclaration
+	*/
+   public FjVirtualClassDeclaration createVirtualClassDeclaration(
+	   JClassDeclaration owner)
+   {
+	   String superClassName = getBindingTypeName();
+
+	   FjVirtualClassDeclaration result =
+		   new FjVirtualClassDeclaration(
+			   getTokenReference(),
+			   (modifiers | CCI_BINDING) & ~FJC_CLEAN,
+			   ident,
+			   typeVariables,
+			   new CClassNameType(superClassName),
+			   new CClassNameType(superClassName),
+			   null,
+			   wrappee,
+			   interfaces,
+			   fields,
+			   methods,
+			   transformInnerBindingClasses(this),
+			   this.body,
+			   null,
+			   null);
+
+	   result.addProvidingAcessor();
+		
+	   return result;
+   }	
+
+   /**
+	* Adds the providing reference accessor. The class must be a binding class.
+	* The method will actually return a dispatcher of self in this context.
+	*/
+   public void addProvidingAcessor()
+   {
+	   TokenReference ref = getTokenReference();
+	   //Adds the implementation accessor.
+	   addMethod(
+		   createAccessor(
+			   CciConstants.PROVIDING_REFERENCE_NAME,
+			   new JMethodCallExpression(
+				   ref,
+				   new JThisExpression(ref),
+				   FjConstants.GET_DISPATCHER_METHOD_NAME,
+				   new JExpression[]
+				   {
+					   new FjNameExpression(
+							   ref,
+							   FjConstants.SELF_NAME)
+				   }),
+			   FjConstants.CHILD_TYPE));	
+   }
+	
+
+   /**
+	* Creates an accessor method.
+	* @param accessedName The name to be accessed
+	* @param returnExpression The return expression
+	* @param returnType The return type
+	* @return FjCleanMethodDeclaration
+	*/
+   protected FjCleanMethodDeclaration createAccessor(
+	   String accessedName, 
+	   JExpression returnExpression, 
+	   CReferenceType returnType)
+   {
+	   JStatement[] statements =
+		   new JStatement[] {
+				new JReturnStatement(
+				   getTokenReference(),
+				   returnExpression,
+				   null)};
+					
+	   JBlock body = new JBlock(getTokenReference(), statements, null);
+	
+	   return new FjCleanMethodDeclaration(
+		   getTokenReference(),
+		   ACC_PUBLIC,
+		   new CTypeVariable[0],
+		   returnType,
+		   CciConstants.toAccessorMethodName(accessedName),
+		   new JFormalParameter[0],
+		   new CReferenceType[0],
+		   body,
+		   null,
+		   null);
+   }
+   public boolean isStaticallyDeployed()
+   {
+	   return (modifiers & ACC_DEPLOYED) != 0;
+   }
+   public void initFamilies(CClassContext context) throws PositionedError
+   {
+   	   super.initFamilies(context);
+
+	   //ckeckInterface of the advices
+	   for (int j = 0; j < advices.length; j++)
+	   {
+		   advices[j].checkInterface(self);
+		   //during the following compiler passes
+		   //the advices should be treated like methods
+		   getFjSourceClass().addMethod((CaesarAdvice) advices[j].getMethod());
+	   }
+
+	   //consider declares
+	   if (declares != null)
+	   {
+		   for (int j = 0; j < declares.length; j++)
+		   {
+			   declares[j].resolve(
+				   new CaesarScope(
+					   (FjClassContext) constructContext(context),
+					   getFjSourceClass()));
+		   }
+
+		   getFjSourceClass().setDeclares(declares);
+	   }		
+   }
 
 }

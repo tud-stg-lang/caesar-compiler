@@ -21,7 +21,7 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
-public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
+public class FjVirtualClassDeclaration extends CaesarClassDeclaration
 	implements FjResolveable {
 
 	/** if inheriting a fields' inner type */
@@ -103,11 +103,11 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 	{
 		//If it is a binding class, it cannot be declared with the same
 		//as a collaboration interface
-		if (ownerDecl instanceof FjCleanClassDeclaration)
+		if (ownerDecl instanceof CaesarClassDeclaration)
 		{
 				
 			CClass superCI = getSuperCollaborationInterfaceClass(
-				((FjCleanClassDeclaration) ownerDecl)
+				((CaesarClassDeclaration) ownerDecl)
 					.getCleanInterface().getCClass(), CCI_BINDING);
 	
 			
@@ -228,10 +228,10 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 		}
 	}
 	protected static class UncheckedConstructors extends Constructors {
-		public UncheckedConstructors( FjCleanClassDeclaration classDecl ) {
+		public UncheckedConstructors( CaesarClassDeclaration classDecl ) {
 			super( findConstructors( classDecl ) );
 		}
-		private static Vector findConstructors( FjCleanClassDeclaration classDecl ) {
+		private static Vector findConstructors( CaesarClassDeclaration classDecl ) {
 			FjConstructorDeclaration[] methods = classDecl.getConstructors();
 			Vector constructors = new Vector();
 			for( int i = 0; i < methods.length; i++ ) {

@@ -24,7 +24,7 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 	 */
 	protected class Owner {
 		
-		public Owner( FjCleanClassDeclaration init ){
+		public Owner( CaesarClassDeclaration init ){
 			set(init);
 		}
 		public Owner( JClassDeclaration init ){
@@ -70,14 +70,14 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 			reference = null;
 		}
 
-		public void set( FjCleanClassDeclaration ccd ){
+		public void set( CaesarClassDeclaration ccd ){
 			reference = ccd;
 			type = CLEANCLASSDECL;
 		}
 
 		public void set( JClassDeclaration cd ){
 			reference = cd;
-			if (cd instanceof FjCleanClassDeclaration)
+			if (cd instanceof CaesarClassDeclaration)
 			{
 				type = CLEANCLASSDECL;
 			}
@@ -109,9 +109,9 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 			return (CciInterfaceDeclaration)reference;
 		}
 
-		public FjCleanClassDeclaration getCleanClassDeclaration(){
+		public CaesarClassDeclaration getCleanClassDeclaration(){
 			if (!isCleanClassDeclaration()) return null;
-			return (FjCleanClassDeclaration)reference;
+			return (CaesarClassDeclaration)reference;
 		}
 		
 		public void append( JTypeDeclaration decl ) {
@@ -201,7 +201,7 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 	}
 	
 	public void visitFjCleanClassDeclaration(
-		FjCleanClassDeclaration self,
+		CaesarClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,

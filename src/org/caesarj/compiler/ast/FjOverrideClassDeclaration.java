@@ -188,8 +188,8 @@ public class FjOverrideClassDeclaration
 				FjConstants.toFullQualifiedBaseName(
 					getSuperClass().getQualifiedName(),
 					self);
-			FjCleanClassDeclaration classDecl =
-				(FjCleanClassDeclaration) markedVirtualClasses.get(
+			CaesarClassDeclaration classDecl =
+				(CaesarClassDeclaration) markedVirtualClasses.get(
 					superClassKey);
 			if (classDecl != null)
 				constructorsToSupport = new UncheckedConstructors(classDecl);
@@ -244,7 +244,7 @@ public class FjOverrideClassDeclaration
 								ref, 
 								new FjNameExpression(
 									ref,
-									((FjCleanClassDeclaration)ownerDecl)
+									((CaesarClassDeclaration)ownerDecl)
 										.getCleanInterface().getIdent())),
 							FjConstants.GET_TAIL_METHOD_NAME, 
 							JExpression.EMPTY)),

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CModifier.java,v 1.2 2004-02-08 20:27:59 ostermann Exp $
+ * $Id: CModifier.java,v 1.3 2004-02-28 17:58:05 ostermann Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -159,14 +159,6 @@ public class CModifier implements Constants {
 				return 12;
 			case ACC_STRICT :
 				return 13;
-				// andreas start
-			case FJC_VIRTUAL :
-				return 14;
-			case FJC_OVERRIDE :
-				return 15;
-			case FJC_CLEAN :
-				return 16;
-				// andreas end
 			case ACC_CROSSCUTTING:
 				return 17;
 			case ACC_DEPLOYED:
@@ -219,14 +211,6 @@ public class CModifier implements Constants {
 				return "abstract";
 			case ACC_STRICT :
 				return "strictfp";
-				// andreas start
-			case FJC_VIRTUAL :
-				return "virtual";
-			case FJC_OVERRIDE :
-				return "override";
-			case FJC_CLEAN :
-				return "clean";
-				// andreas end
 			case ACC_PRIVILEGED :
 				return "privileged";
 			case ACC_CROSSCUTTING :
@@ -300,11 +284,6 @@ public class CModifier implements Constants {
 			ACC_INTERFACE,
 			ACC_ABSTRACT,
 			ACC_STRICT,
-			//andreas start
-			FJC_VIRTUAL,
-		    FJC_OVERRIDE,
-			FJC_CLEAN,
-			//andreas end
 			ACC_PRIVILEGED,
 			ACC_CROSSCUTTING, 
 			ACC_DEPLOYED,

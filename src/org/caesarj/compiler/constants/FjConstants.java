@@ -18,8 +18,6 @@ public class FjConstants {
 	public static final String SEPERATOR = "_".intern();
 	public static final String THIS_NAME = "this".intern();
 	public static final String OUTER_THIS_NAME = "outerThis".intern();
-	public static final String SUPER = "fjSuper".intern();
-	public static final String SUB = "fjSub".intern();
 	public static final String SELF_NAME = (SEPERATOR + "self").intern();
 	public static final String TARGET_NAME = (SEPERATOR + "target").intern();
 	public static final String TAIL_NAME = (SEPERATOR + "tail").intern();
@@ -53,22 +51,12 @@ public class FjConstants {
 	private static final String PARAM_PREFIX = "renamed".intern();
 	
 	private static final String IMPL_POSTFIX = "_Impl".intern();
-	public static final String PROXY_POSTFIX = "_Proxy".intern();
-	public static final String IMPLEMENTATION_METHOD_SUFFIX = ( SEPERATOR + "implementation").intern();
-	public static String implementationMethodName( String methodName ) {
-		return (SEPERATOR + methodName + IMPLEMENTATION_METHOD_SUFFIX ).intern();
-	}
-	public static final String SELFCONTEXT_METHOD_SUFFIX = ( SEPERATOR + "selfContext").intern();
-	public static String selfContextMethodName( String methodName ) {
-		return (SEPERATOR + methodName + SELFCONTEXT_METHOD_SUFFIX ).intern();
-	}
+
 	public static String baseName( String className ) {
 		return typeName(className + IMPL_POSTFIX);
 	}
 	public static String toImplName( String className ) {
-		if( isIfcImplName( className ) )
-			return baseName( className.substring( 0, className.lastIndexOf( PROXY_POSTFIX ) ) );
-		else if( isIfcName( className ) )
+		if( isIfcName( className ) )
 			return baseName( className );
 		else if( isBaseName( className ) )
 			return className;
@@ -84,7 +72,6 @@ public class FjConstants {
 			if( !mostOuterType.getCClass().isInterface() )
 				mostOuterIsClean = false;
 		}			
-		className = className.replaceAll( PROXY_POSTFIX, "" );
 		className = className.replaceAll( IMPL_POSTFIX, "" );
 		className = className.replaceAll( "\\$", IMPL_POSTFIX + "\\$" );
 		className = className.replaceAll( "$", IMPL_POSTFIX );
@@ -93,33 +80,18 @@ public class FjConstants {
 		return className;
 	}
 	public static String toIfcName( String className ) {
-		if( isIfcImplName( className ) )
-			return cleanInterfaceName( className.substring( 0, className.lastIndexOf( PROXY_POSTFIX ) ) );
-		else if( isBaseName( className ) )
+		if( isBaseName( className ) )
 			return cleanInterfaceName( className.substring( 0, className.lastIndexOf( IMPL_POSTFIX ) ) );
 		else if( isIfcName( className ) )
 			return typeName( className );
 		else
 			return null;
 	}
-	public static String toProxyName( String className ) {
-		if( isBaseName( className ) )
-			return cleanInterfaceImplementationName( className.substring( 0, className.lastIndexOf( IMPL_POSTFIX ) ) );
-		else if( isIfcName( className ) )
-			return cleanInterfaceImplementationName( className );
-		else if( isIfcImplName( className ) )
-			return typeName( className );
-		else
-			return null;
-	}
 	public static boolean isIfcName( String className ) {
-		return !isBaseName( className ) && !isIfcImplName( className );
+		return !isBaseName( className );
 	}
 	public static boolean isBaseName( String className ) {
 		return className.endsWith( IMPL_POSTFIX );
-	}
-	public static boolean isIfcImplName( String className ) {
-		return className.endsWith( PROXY_POSTFIX );
 	}
 	public static boolean isFactoryMethodName( String methodName ) {
 		return methodName.matches("[" + SEPERATOR + "]+" + FACTORY_PREFIX 
@@ -127,9 +99,6 @@ public class FjConstants {
 	}
 	public static String cleanInterfaceName( String className ) {
 		return typeName( className );
-	}
-	public static String cleanInterfaceImplementationName( String className ) {
-		return typeName(className + PROXY_POSTFIX);
 	}
 	public static String factoryMethodName( String className ) {
 		return typeName(SEPERATOR + FACTORY_PREFIX + toIfcName( className ));
@@ -139,19 +108,6 @@ public class FjConstants {
 	}
 	protected static String typeName( String nearlyTypeName ) {
 		return nearlyTypeName.replace( '.', '/' ).intern();
-	}
-	public static boolean isImplementationMethodName( String methodName ) {
-		return methodName.startsWith( SEPERATOR )
-			&& methodName.endsWith( IMPLEMENTATION_METHOD_SUFFIX );
-	}
-	public static boolean isSelfContextMethodName( String methodName ) {
-		return methodName.startsWith( SEPERATOR )
-			&& methodName.endsWith( SELFCONTEXT_METHOD_SUFFIX );
-	}
-	public static boolean isBaseMethodName(String methodName)
-	{
-		return ! isSelfContextMethodName(methodName)
-				&& ! isImplementationMethodName(methodName);
 	}
 		
 	public static TokenReference STD_TOKEN_REFERENCE = new TokenReference( "<generated>", 0 );
@@ -228,9 +184,6 @@ public class FjConstants {
 	public static String removeFamilyJ( String message ) {
 		message = message.replaceAll( SEPERATOR+FACTORY_PREFIX, "" );
 		message = message.replaceAll( IMPL_POSTFIX, "" );
-		message = message.replaceAll( PROXY_POSTFIX, "" );
-		message = message.replaceAll( SELFCONTEXT_METHOD_SUFFIX, "" );
-		message = message.replaceAll( IMPLEMENTATION_METHOD_SUFFIX, "" );
 		message = message.replaceAll( "." + SEPERATOR, "." );		
 		return message;
 	}

@@ -56,6 +56,9 @@ public class FjFormalParameter extends JFormalParameter {
 		throws UnpositionedError 
 	{
 			
+	    //TODO: Needs to be revisited to complete family typechecker
+	    
+	    /*
 		FjMethodDeclaration method = (FjMethodDeclaration)
 			((FjAdditionalContext) context).peekContextInfo(1);
 		JTypeDeclaration clazz = (JTypeDeclaration)
@@ -108,7 +111,7 @@ public class FjFormalParameter extends JFormalParameter {
 					getFamily() ),
 				null));
 
-		name = FjConstants.renameParameter(name);
+		name = FjConstants.renameParameter(name); */
 	}
 	
 	/**
@@ -132,14 +135,16 @@ public class FjFormalParameter extends JFormalParameter {
 				ref,
 				FjConstants.renameParameter(name));
 		
+		//TODO: revisit when adding family type checking again
+		/*
 		CClass lowerBoundOwner = lowerBound.getCClass().getOwner();
 		int clazzModifiers = lowerBoundOwner.getModifiers();
 		if (CModifier.contains(clazzModifiers, (FJC_CLEAN | FJC_VIRTUAL)))
 		{
-			if (clazz instanceof FjCleanClassDeclaration)
+			if (clazz instanceof CaesarClassDeclaration)
 			{
-				FjCleanClassDeclaration cleanClass = 
-					(FjCleanClassDeclaration) clazz;
+				CaesarClassDeclaration cleanClass = 
+					(CaesarClassDeclaration) clazz;
 				//If it depends on this it must be adapted
 				if (family.isThis()) 
 				{
@@ -165,10 +170,10 @@ public class FjFormalParameter extends JFormalParameter {
 				{
 					JClassDeclaration fjOwnerClass = 
 						cleanClass.getOwnerDeclaration();
-					if (fjOwnerClass instanceof FjCleanClassDeclaration)
+					if (fjOwnerClass instanceof CaesarClassDeclaration)
 					{
 						FjCleanClassInterfaceDeclaration cleanOwnerInterface = 
-							((FjCleanClassDeclaration) fjOwnerClass).getCleanInterface();
+							((CaesarClassDeclaration) fjOwnerClass).getCleanInterface();
 						if (typeSystem.declaresInner(
 								cleanOwnerInterface.getCClass(), 
 								lowerBound.getIdent()) != null)
@@ -193,7 +198,7 @@ public class FjFormalParameter extends JFormalParameter {
 				
 				}
 			}
-		}
+		}*/
 		//Returns the simple parameter access.
 		return parameterAccess;
 	}

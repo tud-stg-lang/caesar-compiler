@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JInitializerDeclaration.java,v 1.2 2004-02-08 20:27:57 ostermann Exp $
+ * $Id: JInitializerDeclaration.java,v 1.3 2004-02-28 17:58:05 ostermann Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -134,10 +134,6 @@ public class JInitializerDeclaration extends JMethodDeclaration {
           }
  
           topLevelClass = clazz;
-
-          if (clazz.isInterface()) {
-            clazz = clazz.getAssertionStatusClass(context);
-          }
 
           clazzName = clazz.getIdent();
           if (clazzName.lastIndexOf('/') > 0) {

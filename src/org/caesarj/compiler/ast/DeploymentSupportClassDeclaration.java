@@ -17,9 +17,9 @@ import org.caesarj.util.UnpositionedError;
  * 
  * @author Jürgen Hallpap
  */
-public class DeploymentSupportClassDeclaration extends JClassDeclaration {
+public class DeploymentSupportClassDeclaration extends CaesarClassDeclaration {
 
-	private JClassDeclaration crosscuttingClass;
+	private CaesarClassDeclaration crosscuttingClass;
 
 	private String postfix;
 
@@ -36,7 +36,7 @@ public class DeploymentSupportClassDeclaration extends JClassDeclaration {
 		JPhylum[] initializers,
 		JavadocComment javadoc,
 		JavaStyleComment[] comment,
-		JClassDeclaration crosscuttingClass,
+		CaesarClassDeclaration crosscuttingClass,
 		String postfix) {
 		this(
 			where,
@@ -74,8 +74,9 @@ public class DeploymentSupportClassDeclaration extends JClassDeclaration {
 		PointcutDeclaration[] pointcuts,
 		AdviceDeclaration[] advices,
 		CaesarDeclare[] declares,
-		JClassDeclaration crosscuttingClass,
+	    CaesarClassDeclaration crosscuttingClass,
 		String postfix) {
+
 		super(
 			where,
 			modifiers,
@@ -116,7 +117,7 @@ public class DeploymentSupportClassDeclaration extends JClassDeclaration {
 					
 			String superClassName = null;
 			// test klaus
-			if (crosscuttingClass instanceof FjCleanClassDeclaration) {
+			if (crosscuttingClass instanceof CaesarClassDeclaration) {
 				
 //				String sc = 
 //				  crosscuttingClass.getSuperClass().getIdent();
@@ -136,7 +137,7 @@ public class DeploymentSupportClassDeclaration extends JClassDeclaration {
 				
 //					//setPointcuts(crosscuttingClass.getPointcuts());
 					crosscuttingClass.setPointcuts(new PointcutDeclaration[0]);
-					pointcuts=new PointcutDeclaration[0];
+					this.pointcuts=new PointcutDeclaration[0];
 				}							
 				if(isRegistry()&&
 					(!CModifier.contains(

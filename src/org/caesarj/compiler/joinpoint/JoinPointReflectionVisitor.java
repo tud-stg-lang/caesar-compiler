@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.caesarj.compiler.ast.AdviceDeclaration;
 import org.caesarj.compiler.ast.BodyVisitor;
-import org.caesarj.compiler.ast.JClassDeclaration;
+import org.caesarj.compiler.ast.CaesarClassDeclaration;
 import org.caesarj.compiler.ast.FjFormalParameter;
 import org.caesarj.compiler.ast.FjMethodCallExpression;
 import org.caesarj.compiler.ast.FjNameExpression;
@@ -92,8 +92,8 @@ public class JoinPointReflectionVisitor
 			body,
 			methods,
 			decls);
-		if (self instanceof JClassDeclaration) {
-			JClassDeclaration clazz = (JClassDeclaration) self;
+		if (self instanceof CaesarClassDeclaration) {
+			CaesarClassDeclaration clazz = (CaesarClassDeclaration) self;
 			AdviceDeclaration[] advices = clazz.getAdvices();
 			for (int i = 0; i < advices.length; i++) {
 				advices[i].accept(this);

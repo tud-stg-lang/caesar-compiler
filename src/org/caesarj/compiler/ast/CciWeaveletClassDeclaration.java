@@ -19,7 +19,7 @@ import org.caesarj.util.UnpositionedError;
  * @author Walter Augusto Werner
  */
 public class CciWeaveletClassDeclaration 
-	extends FjCleanClassDeclaration
+	extends CaesarClassDeclaration
 {
 	/**
 	 * The reference of the binding class.

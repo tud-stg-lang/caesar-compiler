@@ -28,8 +28,7 @@ public class FjReturnStatement extends JReturnStatement {
 		CClass contextClass = context.getClassContext().getCClass();
 		CClass returnClass = returnType.getCClass();
 
-		if( !((returnClass.getModifiers() & Constants.FJC_VIRTUAL) != 0) )
-			return;
+		if(!returnClass.isCaesarClass()) return;
 
 		FjTypeSystem fjts = new FjTypeSystem();
 		CExpressionContext expressionContext = new CExpressionContext( context, context.getEnvironment() );

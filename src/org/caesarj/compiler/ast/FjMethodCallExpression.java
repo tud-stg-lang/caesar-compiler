@@ -220,18 +220,6 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 			}
 						
 		}
-		else if (e instanceof CMethodNotFoundError)
-		{
-			CClass local = context.getClassContext().getCClass();
-			if (CModifier.contains(local.getModifiers(), FJC_VIRTUAL)
-				&& CModifier.contains(
-					local.getOwner().getModifiers(), FJC_CLEAN | FJC_VIRTUAL))
-				return new PositionedError(
-					getTokenReference(), 
-					CaesarMessages.METHOD_NOT_FOUND_INSIDE_VIRTUAL,
-					e.getFormattedMessage().getParams()[0]);
-
-		}
 				
 		return e;
 		
@@ -367,8 +355,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		CClass clazz = context.getClassContext().getCClass();
 		CReferenceType parentType = clazz.getSuperClass().getInterfaces()[0];
 		//If it is in a binding or providing class it cannot call super
-		if (! FjConstants.isIfcImplName(clazz.getIdent())
-			&& ! FjConstants.isFactoryMethodName(ident)
+		if (! FjConstants.isFactoryMethodName(ident)
 			&& ! CciConstants.isAdaptMethodName(ident)
 			&& CModifier.contains(clazz.getModifiers(), 
 				(CCI_BINDING | CCI_PROVIDING)))

@@ -49,10 +49,7 @@
 "void"		{ return TOKEN_LITERAL_void; }
 "volatile"		{ return TOKEN_LITERAL_volatile; }
 "while"		{ return TOKEN_LITERAL_while; }
-"virtual"		{ return TOKEN_LITERAL_virtual; }
-"override"		{ return TOKEN_LITERAL_override; }
-"clean"		{ return TOKEN_LITERAL_clean; }
-"==="		{ return TOKEN_FJEQUAL; }
+"cclass"		{ return TOKEN_LITERAL_cclass; }
 "collaboration"		{ return TOKEN_LITERAL_collaboration; }
 "provided"		{ return TOKEN_LITERAL_provided; }
 "expected"		{ return TOKEN_LITERAL_expected; }
@@ -60,7 +57,8 @@
 "provides"		{ return TOKEN_LITERAL_provides; }
 "wraps"		{ return TOKEN_LITERAL_wraps; }
 "wrappee"		{ return TOKEN_LITERAL_wrappee; }
-"#"		{ return TOKEN_WDESTRUCTOR; }
+"~"		{ return TOKEN_WDESTRUCTOR; }
+"#"		{ return TOKEN_PATHMARKER; }
 "after"		{ return TOKEN_LITERAL_after; }
 "around"		{ return TOKEN_LITERAL_around; }
 "before"		{ return TOKEN_LITERAL_before; }

@@ -6,7 +6,7 @@ import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.CciInterfaceDeclaration;
 import org.caesarj.compiler.ast.CciWeaveletClassDeclaration;
 import org.caesarj.compiler.ast.JClassDeclaration;
-import org.caesarj.compiler.ast.FjCleanClassDeclaration;
+import org.caesarj.compiler.ast.CaesarClassDeclaration;
 import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.DeclarationVisitor;
 import org.caesarj.compiler.ast.JClassImport;
@@ -59,13 +59,13 @@ public class CollaborationInterfaceTransformation
 	 * A "family" of providing classes must be transformed only by the 
 	 * most outer owner.
 	 */
-	private FjCleanClassDeclaration lastProvidingClass;
+	private CaesarClassDeclaration lastProvidingClass;
 	
 	/**
 	 * A "family" of binding classes must be transformed only by the 
 	 * most outer owner.
 	 */
-	private FjCleanClassDeclaration lastBindingClass;
+	private CaesarClassDeclaration lastBindingClass;
 	
 	public CollaborationInterfaceTransformation(KjcEnvironment environment, 
 		CompilerBase compiler)
@@ -146,7 +146,7 @@ public class CollaborationInterfaceTransformation
 	 *
 	 */
 	public void visitFjCleanClassDeclaration(
-		FjCleanClassDeclaration self,
+		CaesarClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,
@@ -334,7 +334,7 @@ public class CollaborationInterfaceTransformation
 				{
 					try
 					{
-						FjCleanClassDeclaration classRepresentation 
+						CaesarClassDeclaration classRepresentation 
 							= self.createCleanClassRepresentation();
 						
 						owner.getCompilationUnit().replace(
