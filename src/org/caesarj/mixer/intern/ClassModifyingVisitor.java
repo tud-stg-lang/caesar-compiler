@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ClassModifyingVisitor.java,v 1.13 2005-01-24 16:52:58 aracic Exp $
+ * $Id: ClassModifyingVisitor.java,v 1.14 2005-02-09 16:48:18 aracic Exp $
  */
 
 package org.caesarj.mixer.intern;
@@ -48,6 +48,7 @@ import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
+import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.mixer.MixerException;
 
 /**
@@ -195,7 +196,7 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 		Method[] methods = gen.getMethods();
 		for (int i = 0; i < methods.length; i++) {
 			Method method = methods[i];
-			if (method.getName().startsWith("$new")){
+			if (method.getName().startsWith(CaesarConstants.FACTORY_METHOD_PREFIX)){
 				gen.removeMethod(method);
 			}
 		}
