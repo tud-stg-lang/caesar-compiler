@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.27 2004-10-15 15:38:37 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.28 2004-10-29 13:22:48 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -45,6 +45,7 @@ import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
@@ -197,7 +198,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
                         where,
                         ACC_PRIVATE,
                         wrappee,
-                        "$wrappee",
+                        WRAPPER_WRAPPEE_FIELD,
                         new JNullLiteral(where)
                     ),
                     null, null
@@ -209,7 +210,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
                     where,
                     ACC_PUBLIC,
                     new CVoidType(),
-                    "$initWrappee",
+                    WRAPPER_WRAPPEE_INIT,
                     new JFormalParameter[]{
                         new JFormalParameter(
                             where,
@@ -228,7 +229,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
                                 new JExpression[]{
                                     new JAssignmentExpression(
                                         where,
-                                        new JNameExpression(where, "$wrappee"),
+                                        new JNameExpression(where, WRAPPER_WRAPPEE_FIELD),
                                         new JNameExpression(where, "w")
                                     )
                                 },
@@ -245,6 +246,14 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
     
     public void join(CContext context) throws PositionedError {
         super.join(context);
+        
+        // IVICA: top-level class may not use the wraps clause
+        if(!getCClass().isNested()) {
+	        check(
+	            context,
+	            wrappee == null,
+	            CaesarMessages.TOPLEVEL_CCLASS_WRAPS);
+        }
         
         if(wrappee != null) {
             try {
@@ -421,7 +430,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
         }
 
         /*
-         * ivica
+         * IVICA
          * the following block was originally in initFamilies Method 
          */
         int generatedFields = getCClass().hasOuterThis() ? 1 : 0;
@@ -599,6 +608,15 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
      * @exception	PositionedError	an error with reference to the source file
      */
     public void checkTypeBody(CContext context) throws PositionedError {
+        
+        // check that we do not override a wrapper
+        if(wrappee != null) {
+            check(
+                context,
+                !getSuperClass().getCClass().isWrapper(),
+                CaesarMessages.OVERRIDE_WRAPPER
+                );
+        }
         
         if (advices != null) {
             for (int i = 0; i < advices.length; i++) {
