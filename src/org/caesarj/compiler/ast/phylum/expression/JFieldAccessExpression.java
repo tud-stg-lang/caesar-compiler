@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JFieldAccessExpression.java,v 1.19 2005-01-27 15:19:19 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.20 2005-02-04 19:08:20 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -330,7 +330,13 @@ public class JFieldAccessExpression extends JExpression {
 		                KjcMessages.FIELD_STATICERR,
 		                ident);
 		            
-		            prefix = new JOwnerExpression(getTokenReference(), field.getOwner());		            
+		            // CTODO, this could make etrouble again
+//		            if (field.getOwner().isMixin()) {
+//	                	prefix = new JOwnerExpression(getTokenReference(), context.getClassContext().getCClass());
+//	                }
+//	                else {
+	                	prefix = new JOwnerExpression(getTokenReference(), field.getOwner());
+//	                }
 		        }
 		        else {
 		            prefix = new JTypeNameExpression(getTokenReference(), field.getOwnerType());
