@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.34 2005-01-14 13:33:48 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.35 2005-01-21 17:03:28 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -455,18 +455,33 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     
     public void checkDependentTypes(CContext ctx) throws PositionedError {
         
+        // check fields
         for (int i = 0; i < fields.length; i++) {
             CType t = fields[i].getType(ctx.getTypeFactory());
             try {
                 if(t instanceof CClassNameType) {
                     CClassNameType nt = (CClassNameType)t;
-                    if(nt.getQualifiedName().equals("g/N") && getIdent().equals("Y"))
-                        t = new CDependentNameType("TypeSysTestCase/this/g/N").checkType(self);
-                    else 
-                        t = new CDependentNameType(nt.getQualifiedName()).checkType(self);
+                    t = new CDependentNameType(nt.getQualifiedName()).checkType(self);
                     
                     fields[i].getField().setType(t);
                     fields[i].getVariable().setType(t);
+                }
+            }
+            catch (UnpositionedError e) {
+                e.addPosition(fields[i].getTokenReference());
+            }
+        }
+        
+        // check method return types
+        for (int i = 0; i < methods.length; i++) {
+            CType t = methods[i].getReturnType();
+            try {
+                if(t instanceof CClassNameType) {
+                    CClassNameType nt = (CClassNameType)t;
+                    t = new CDependentNameType(nt.getQualifiedName()).checkType(self);
+                    
+                    methods[i].setReturnType(t);
+                    methods[i].getMethod().setReturnType(t);
                 }
             }
             catch (UnpositionedError e) {
