@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.21 2004-10-29 13:17:47 aracic Exp $
+ * $Id: CaesarMessages.msg,v 1.22 2004-11-23 09:31:58 aracic Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -100,11 +100,8 @@ error	OVERRIDE_WRAPPER
 		"Can not override an existing wrappee."
 
 error	CCLASS_PACKAGE_VISIBILITY
-		"no package visibility for cclass members."
+		"No package visibility for cclass members."
 
-
-// MISC
-
-error	FATAL_ERROR
-		"Fatal error! Everything is going to explode. Panic! Women and children first!"		
+error	ERROR_ADJUSTING_MIXIN_SUPERTYPE
+		"Error adjusting mixin's super type."
 		
