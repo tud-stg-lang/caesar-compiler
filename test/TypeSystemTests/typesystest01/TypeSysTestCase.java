@@ -20,10 +20,24 @@ public class TypeSysTestCase extends TestCase {
 	g1.N x = g1.new N();
 	g1.N y = x;
 	
+	
 	public void test() {	
 	    g1.N n1 = null;
 	    g1.N n2 = null;
-	    n1 = x;
+	    
+	    {
+	    	g1.N n3 = null;
+	    	
+	    	// ctx(1).n1 = ctx(1).n2
+			n1 = n2;	    
+			
+			for(int i=0; i<0; i++) {
+			
+				// ctx(3).g1.N n4 
+				// @ generated.typesystest01 -> TypeSysTestCase -> test -> B -> B -> B
+				g1.N n4 = null;
+			}
+		}
 	}
 	
 	/*
