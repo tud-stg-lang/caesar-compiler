@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTypeNode.java,v 1.15 2005-03-10 10:42:58 gasiunas Exp $
+ * $Id: CaesarTypeNode.java,v 1.16 2005-03-29 09:47:27 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.graph;
@@ -148,7 +148,7 @@ public class CaesarTypeNode {
 	
 	public boolean isAbstract() {
 		/* determine if the class is abstract */
-		if (isDeclaredType()) {
+		if (typeDecl != null) {
 			return (typeDecl.getCorrespondingClassDeclaration().getModifiers() & ClassfileConstants2.ACC_ABSTRACT) != 0;
 		}
 		else {
@@ -160,6 +160,18 @@ public class CaesarTypeNode {
 				}				
 			}
 			return isAbstr;
+		}
+	}
+	
+	public boolean canBeInstantiated() {
+		if (isAbstract()) {
+			return false;
+		}
+		if (isTopLevelClass()) {
+			return true;
+		}
+		else {
+			return getOuter().canBeInstantiated();
 		}
 	}
 
@@ -428,4 +440,52 @@ public class CaesarTypeNode {
     public boolean isTopLevelClass() {
         return enclosedBy.size() == 0;
     }
+    
+    /**
+     *  Crosscutting information 
+     */
+    
+    /* the class has pointcuts and advice different from its direct super */
+	private boolean uniqueCrosscutting = false;
+	
+	/* aspect registry must be generated for the class */
+	private boolean needsAspectRegistry = false;
+    
+    public boolean declaredCrosscutting() {
+		if (typeDecl != null) {
+			return typeDecl.getCorrespondingClassDeclaration().isCrosscutting();
+		}
+		else {
+			return false;
+		}
+	}
+	
+	public boolean isCrosscutting() {
+		if (declaredCrosscutting()) {
+			return true;
+		}
+		for (Iterator it = getMixinList().iterator(); it.hasNext();) {
+            CaesarTypeNode item = (CaesarTypeNode) it.next();
+            if (item.declaredCrosscutting()) {
+            	return true;
+            }
+        }
+		return false;
+	}
+	
+	public boolean isUniqueCrosscutting() {
+		return uniqueCrosscutting;
+	}
+	
+	public void setUniqueCrosscutting() {
+		uniqueCrosscutting = true;
+	}
+	
+	public boolean needsAspectRegistry() {
+		return needsAspectRegistry;
+	}
+	
+	public void setNeedsAspectRegistry() {
+		needsAspectRegistry = true;
+	}
 }
