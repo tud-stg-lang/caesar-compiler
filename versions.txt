@@ -1,3 +1,15 @@
+VC_12 - 17.09.2004
+- Aspect deployment
+    - The amount of generated code for deployment support is significantly reduced.
+      Now only Registry class is generated. Other support classes are now used as normal
+      runtime classes.
+    - The larger part of deployment generation is rewritten using code snippets.
+    - Multiple aspect deployment strategies enabled. Runtime library provides thread based
+      aspect deployment and aspect deployment on entire JVM process.
+    - The semantics of around advices in case of multiple aspect instances is changed.
+      Now the proceed() arguments of one around advice call are passed as arguments
+      to the call of the around advice of the next aspect instance. 
+
 VC_11 - 13.08.2004
 - Aspect deployment
     - Old "deploy" block translation restored. DeploySupport class used again. 
