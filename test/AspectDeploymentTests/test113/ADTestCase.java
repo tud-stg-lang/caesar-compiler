@@ -21,14 +21,13 @@ public class ADTestCase extends TestCase
 
     public static StringBuffer result = new StringBuffer();
 
-	// incorrect!!!
-    public String expectedResult =
-    	":before cutAA:B.A.A\n" +										// C.A
-    	":before cutAA:before cutCA:C.B.A\n"	+							// C.B
+	public String expectedResult =
+    	":before cutAA:before cutCA:B.A.A\n" +							// C.A
+    	":before cutAA:before cutCA:C.B.A\n"	+						// C.B
     	":before cutAA:before cutCA:C.C.A:after cutAC:after cutCC\n" +	// C.C
-    	":before cutAA:B.D.A:after cutAC\n" +							// C.D
-    	":before cutAA:C.E.A\n" +										// C.E
-    	":before cutAA:C.F.A\n" +										// C.F
+    	":before cutAA:before cutCA:B.D.A:after cutAC:after cutCC\n" +	// C.D
+    	":before cutAA:before cutCA:C.E.A\n" +							// C.E
+    	":before cutAA:before cutCA:C.F.A\n" +							// C.F
     	":before cutAA:B.A.A\n" +										// B.A
     	":before cutAA:B.B.A\n" +										// B.B
     	":before cutAA:A.C.A:after cutAC\n" +							// B.C
@@ -169,7 +168,7 @@ public cclass OuterB extends OuterA
 			ADTestCase.result.append(":B.B.A");
 		}
 	}
-	
+
 	// scoping workaround
 	public cclass InnerC {}
 
@@ -186,7 +185,7 @@ public cclass OuterC extends OuterB
 {
     // scoping workaround
     public cclass InnerA {}
-    
+
 	public cclass InnerB
 	{
 		public void doA()
