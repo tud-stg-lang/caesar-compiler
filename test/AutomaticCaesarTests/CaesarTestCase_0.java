@@ -2,45 +2,56 @@ package generated;
 
 import junit.framework.TestCase;
 
-public cclass CaesarTestCase_0 extends TestCase {
+public class CaesarTestCase_0 extends TestCase {
 
-	public CaesarTestCase_0() {
-		super("test");
-	}
+    public StringBuffer result = new StringBuffer();
 
-	public StringBuffer result = new StringBuffer();
+    public String expectedResult =
+        "|before-foo|foo|subbefore-foo|before-foo|before-foo|foo";        
 
-	public String expectedResult =
-	    //		":before foo:foo:subbefore foo:before foo:foo";
-		":before foo:foo:before foo:foo";
+    public CaesarTestCase_0() {
+        super("test");
+    }
+    
+    public void test() {
+        TestCase_0 cObj = new TestCase_0(result);
+        cObj.test();    
+        assertEquals(expectedResult, result.toString());
+    }
+}
+
+cclass TestCase_0 {    
+    StringBuffer result;
+    
+    public TestCase_0(StringBuffer result) {
+        this.result = result;
+    }
 
 	public void test() {
 		deploy(new InnerAspect()) {
 			foo();
+            
+            deploy(new InnerAspect_Sub()) {
+                foo();
+            }
 		}
-		deploy(new InnerAspect_Sub()) {
-			foo();
-		}
-
-	
-		
-		assertEquals(expectedResult, result.toString());
 	}
 
 	public void foo() {
-		result.append(":foo");
+		result.append("|foo");
 	}
 
 	cclass InnerAspect {
-	    pointcut fooCall() : call(* CaesarTestCase_0.foo());
+	    pointcut fooCall() : call(* TestCase_0.foo());
 	
 	    before() : fooCall() {
-		result.append(":before foo");	
+		  result.append("|before-foo");	
 	    }
 	}
-	cclass InnerAspect_Sub extends InnerAspect {
-before() : fooCall() {
-		    //			result.append(":subbefore foo");	
+	
+    cclass InnerAspect_Sub extends InnerAspect {
+        before() : fooCall() {
+            result.append("|subbefore-foo");	
 		}
 	}
 }

@@ -13,7 +13,7 @@ public class VCTestCase_0 extends TestCase {
 	public StringBuffer result = new StringBuffer();
 
 	public void test() {
-        B b = new B_Impl();
+        B b = new B();
         A a = b;
         
         System.out.println(a.a());
@@ -32,6 +32,12 @@ public cclass A {
 public cclass B extends A {
     public String b() {
         return "B.b";
+    }
+}
+
+public cclass C extends A {
+    public String c() {
+        return "C.c";
     }
 }
 
