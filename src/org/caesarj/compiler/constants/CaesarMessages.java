@@ -25,5 +25,9 @@ public interface CaesarMessages extends org.caesarj.util.Messages {
   MessageDescription	TOPLEVEL_CCLASS_EXTENDS_TOPLEVEL_CLASS = new MessageDescription("A top-level cclass may only extend from another top-level cclass.", null, 0);
   MessageDescription	CCLASS_EXTENDS_FROM_CCLASS = new MessageDescription("A cclass may only extend from another cclass.", null, 0);
   MessageDescription	CCLASS_CANNOT_ABSTRACT = new MessageDescription("Currently Caesar compiler does not support abstract cclass-es.", null, 0);
+  MessageDescription	TOPLEVEL_CCLASS_WRAPS = new MessageDescription("Wraps clause not allowed for a top-level cclass.", null, 0);
+  MessageDescription	CCLASS_CTOR_PUBLIC = new MessageDescription("cclass constructor has to be public.", null, 0);
+  MessageDescription	OVERRIDE_WRAPPER = new MessageDescription("Can not override an existing wrappee.", null, 0);
+  MessageDescription	CCLASS_PACKAGE_VISIBILITY = new MessageDescription("no package visibility for cclass members.", null, 0);
   MessageDescription	FATAL_ERROR = new MessageDescription("Fatal error! Everything is going to explode. Panic! Women and children first!", null, 0);
 }
