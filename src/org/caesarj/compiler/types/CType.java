@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CType.java,v 1.8 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CType.java,v 1.9 2005-02-09 16:48:34 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -130,6 +130,10 @@ public abstract class CType extends Utils implements Constants {
    */
   public boolean isReference() {
     return false;
+  }
+  
+  public boolean isCaesarReference() {
+      return isReference() && getCClass().isMixinInterface();
   }
 
   /**
