@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JSuperExpression.java,v 1.4 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JSuperExpression.java,v 1.5 2005-02-21 15:18:33 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -137,6 +137,12 @@ public class JSuperExpression extends JExpression {
     check(context, 
           !context.getMethodContext().getCMethod().isStatic(), 
           KjcMessages.BAD_SUPER_STATIC);
+    
+    
+    // IVICA store family: JSuperExpression is same as JThisExpression
+    JExpression thisExpr = new JThisExpression(getTokenReference()).analyse(context);
+    family = thisExpr.getFamily();
+    thisAsFamily = thisExpr.getThisAsFamily();
 
     return this;
   }
