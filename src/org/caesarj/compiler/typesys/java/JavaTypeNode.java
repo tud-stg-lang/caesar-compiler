@@ -17,7 +17,7 @@ import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
  * 
  * @author Ivica Aracic
  */
-public class JavaTypeNode {
+public class JavaTypeNode {       
     
     private static Object idLock = new Object();
     private static int currentId = 100;
@@ -70,20 +70,20 @@ public class JavaTypeNode {
         return mixin.getQualifiedName();
     }
 
-    public void debug(int level) {
+    public void debug(int level, StringBuffer sb) {
 
-        System.out.print("("+id+") ");
+        sb.append("("+id+") ");
         
         for(int i=0; i<level; i++)
-            System.out.print("  ");
+            sb.append("  ");
          
-        System.out.println(this);
-        System.out.println();
+        sb.append(this);
+        sb.append("\n\n");
         
         for (Iterator it = subNodes.values().iterator(); it.hasNext();) {
             JavaTypeNode item = (JavaTypeNode) it.next();
             
-            item.debug(level+1);
+            item.debug(level+1, sb);
         }
     }
         

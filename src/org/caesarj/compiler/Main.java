@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.aspectj.asm.ProgramElementNode;
 import org.aspectj.asm.StructureModelManager;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
@@ -44,6 +45,8 @@ import org.caesarj.util.UnpositionedError;
  */
 public class Main extends MainSuper implements Constants {
 
+    private static Logger log = Logger.getLogger(Main.class);
+    
     private CaesarMessageHandler messageHandler;
     private Set errorMessages;
 
@@ -97,9 +100,7 @@ public class Main extends MainSuper implements Constants {
         
         options.destination = checkDestination(options.destination);
         
-        if (verboseMode()) {
-            inform(CaesarMessages.COMPILATION_STARTED, new Integer(infiles.size()));
-        }
+        log.info("compilation started");
 
         try {
             infiles = verifyFiles(infiles);
@@ -180,10 +181,7 @@ public class Main extends MainSuper implements Constants {
         tree = null;
         
         if(!noWeaveMode())
-            weaveGeneratedCode(environment.getTypeFactory());
-        
-        if(verboseMode())
-            inform(CaesarMessages.COMPILATION_ENDED);
+            weaveGeneratedCode(environment.getTypeFactory());               
                
         CodeSequence.endSession();
         
@@ -196,13 +194,14 @@ public class Main extends MainSuper implements Constants {
         }
         */
 
+        log.info("compilation ended");
         
         return true;
     }
 
 
     protected void completeCClassInterfaces(JCompilationUnit[] tree) {
-        System.out.println("completeCClassInterfaces");
+        log.info("completeCClassInterfaces");
         for (int count = 0; count < tree.length; count++) {    
             try {
                 tree[count].completeCClassInterfaces(this);
@@ -219,7 +218,7 @@ public class Main extends MainSuper implements Constants {
 
     // checks that the plain method redefinition mechanism still works with VCs 
     protected void checkVirtualClassMethodSignatures(JCompilationUnit[] tree) {
-        System.out.println("checkVirtualClassMethodSignatures");
+        log.info("checkVirtualClassMethodSignatures");
         for (int count = 0; count < tree.length; count++) {    
             try {
                 tree[count].checkVirtualClassMethodSignatures(this);
@@ -344,7 +343,7 @@ public class Main extends MainSuper implements Constants {
      *   Probably related to support for Generics a la GJ
      */
     protected void checkAllBodies(JCompilationUnit[] tree) {
-        System.out.println("checkAllBodies");
+        log.info("checkAllBodies");
         for (int count = 0; count < tree.length; count++) {
             checkBody(tree[count]);
         }
@@ -354,7 +353,7 @@ public class Main extends MainSuper implements Constants {
      * generates dependency graph on source types
      */
     protected void generateCaesarTypeSystem(KjcEnvironment environment, JCompilationUnit[] tree) {
-        System.out.println("generateCaesarTypeSystem");        
+        log.info("generateCaesarTypeSystem");        
         for (int i=0; i<tree.length; i++) {        	
             CaesarTypeGraphGenerator.instance().generateGraph(
         		environment.getCaesarTypeSystem().getCaesarTypeGraph(), tree[i]
@@ -372,7 +371,7 @@ public class Main extends MainSuper implements Constants {
      * - more (TBD)
      */
     protected void checkAllInitializers(JCompilationUnit[] tree) {
-        System.out.println("checkAllInitializers");
+        log.info("checkAllInitializers");
         for (int count = 0; count < tree.length; count++) {
             checkInitializers(tree[count]);
         }
@@ -396,7 +395,7 @@ public class Main extends MainSuper implements Constants {
      * - check pointcuts if necessary 
      */
     protected void checkAllInterfaces(JCompilationUnit[] tree) {
-        System.out.println("checkAllInterfaces");
+        log.info("checkAllInterfaces");
         for (int count = 0; count < tree.length; count++) {
             checkInterface(tree[count]);
             //tree[count].accept(new DebugVisitor());
@@ -406,7 +405,7 @@ public class Main extends MainSuper implements Constants {
     protected void prepareDynamicDeployment(
         KjcEnvironment environment,
         JCompilationUnit[] tree) {
-        System.out.println("prepareDynamicDeployment");
+        log.info("prepareDynamicDeployment");
         //Modify and generate support classes for dynamic deployment.
         for (int i = 0; i < tree.length; i++) {
             JCompilationUnit cu = tree[i];
@@ -423,7 +422,7 @@ public class Main extends MainSuper implements Constants {
     protected void prepareCaesarClasses(
         KjcEnvironment environment,
         JCompilationUnit[] tree) {
-        System.out.println("prepareCaesarClasses");
+        log.info("prepareCaesarClasses");
         for (int i = 0; i < tree.length; i++) {
             JCompilationUnit cu = tree[i];
             CClassPreparation.instance().prepareCaesarClass(environment, cu);
@@ -431,7 +430,7 @@ public class Main extends MainSuper implements Constants {
     }
 
     protected void prepareJoinpointReflection(JCompilationUnit[] tree) {
-        System.out.println("prepareJoinpointReflection");
+        log.info("prepareJoinpointReflection");
         //Handle Join Point Reflection.
         JoinPointReflectionVisitor joinPointReflection = 
             new JoinPointReflectionVisitor();
@@ -441,7 +440,7 @@ public class Main extends MainSuper implements Constants {
     }
 
     protected JCompilationUnit[] parseFiles(KjcEnvironment environment) {
-        System.out.println("parseFiles");
+        log.info("parseFiles");
         JCompilationUnit[] tree = new JCompilationUnit[infiles.size()];
         for (int count = 0; count < tree.length; count++) {
             tree[count] =
@@ -466,7 +465,7 @@ public class Main extends MainSuper implements Constants {
      */
 
     protected void joinAll(JCompilationUnit[] tree) {
-        System.out.println("joinAll");
+        log.info("joinAll");
         JCompilationUnit cunit;
 
         for (int i = 0; i < tree.length; i++) {
@@ -543,12 +542,7 @@ public class Main extends MainSuper implements Constants {
             unit = null;
         }
 
-        if (verboseMode()) {
-            inform(
-                CaesarMessages.FILE_PARSED,
-                file.getPath(),
-                new Long(System.currentTimeMillis() - lastTime));
-        }
+        log.debug("file parsed: "+file.getPath());
 
         try {
             buffer.close();
@@ -594,68 +588,6 @@ public class Main extends MainSuper implements Constants {
     }
 
     /**
-     * Performs weaving after compilation.
-     * 
-     * @param factory
-     */
-    /*
-    public void generateAndWeaveCode(TypeFactory factory) {
-        CSourceClass[] classes = getClasses();
-        BytecodeOptimizer optimizer = new BytecodeOptimizer(options.optimize);
-        byte[] classBuffer;
-        String filename;
-
-        this.classes.setSize(0);
-
-        weaver = new CaesarWeaver();
-        try {
-            for (int count = 0; count < classes.length; count++) {
-                long lastTime = System.currentTimeMillis();
-
-                classBuffer =
-                    classes[count].genCodeToBuffer(
-                        optimizer,
-                        options.destination,
-                        factory);
-
-                weaver.addUnwovenClassFile(
-                    getFileName(classes[count]),
-                    classBuffer);
-
-                if (verboseMode() && !classes[count].isNested()) {
-                    inform(
-                        CaesarMessages.CLASSFILE_GENERATED,
-                        classes[count].getQualifiedName().replace('/', '.'),
-                        new Long(System.currentTimeMillis() - lastTime));
-                }
-
-                classes[count] = null;
-            }
-
-            weaveClasses();
-
-        }
-        catch (PositionedError e) {
-            reportTrouble(e);
-        }
-        catch (ClassFileFormatException e) {
-            e.printStackTrace();
-            reportTrouble(
-                new UnpositionedError(
-                    Messages.FORMATTED_ERROR,
-                    e.getMessage()));
-        }
-        catch (IOException e) {
-            reportTrouble(new UnpositionedError(
-                Messages.IO_EXCEPTION,
-                "classfile",
-            //!!!FIXME !!!
-            e.getMessage()));
-        }
-    }
-    */
-
-    /**
      * Weaves the given classes.
      * The weaver is also responsible for file output.
      * 
@@ -668,24 +600,18 @@ public class Main extends MainSuper implements Constants {
         //leads to better performance
         bcelWorld.setXnoInline(true);
 
-        if (verboseMode()) {
-            inform(CaesarMessages.WEAVING_STARTED);
-        }
+        log.info("weaver started");
 
-        try {
-
+        try {            
             //perform weaving
             weaver.performWeaving(bcelWorld);
 
-            if (verboseMode()) {
-                for (int i = 0; i < weaver.fileCount(); i++) {
-                    inform(
-                        CaesarMessages.WROTE_CLASS_FILE,
-                        weaver.getFileName(i));
-                }
-                inform(CaesarMessages.WEAVING_ENDED);
+            for (int i = 0; i < weaver.fileCount(); i++) {
+                log.debug("weaver wrote class file: "+weaver.getFileName(i));
             }
-
+            
+            log.info("weaver finished");
+            
         }
         catch (IOException e) {
             reportTrouble(new UnpositionedError(CaesarMessages.WEAVING_FAILED));

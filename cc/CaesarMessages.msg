@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.14 2004-07-02 16:23:06 aracic Exp $
+ * $Id: CaesarMessages.msg,v 1.15 2004-10-15 15:33:55 aracic Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -23,45 +23,6 @@ package org.caesarj.compiler.constants
 prefix Caesar
 
 parent org.caesarj.util.Messages
-
-
-
-info	COMPILATION_STARTED 
-		"[ start compilation in verbose mode ]"
-		
-info	FILE_PARSED 
-		"[ parsed {0} in {1} ms ]"
-
-info	INTERFACES_CHECKED
-		"[ checked interfaces in {0} ms ]"
-
-info	BODY_CHECKED
-		"[ checked body of {0} in {1} ms ]"
-
-info	CONDITION_CHECKED
-		"[ checked condition of {0} in {1} ms ]"
-
-info	CLASSFILE_GENERATED
-		"[ optimized and generated {0} in {1} ms ]"
-
-info	JAVA_CODE_GENERATED
-		"[ generated {0} ]"
-
-info	CLASS_LOADED 
-		"[ loaded {0} ]"
-	
-info	COMPILATION_ENDED 
-		"[ compilation ended ]"
-
-
-info 	WEAVING_STARTED
-		"[ weaving started ]"
-		
-info 	WEAVING_ENDED
-		"[ weaving ended ]"		
-
-info	WROTE_CLASS_FILE
-		"[ wrote class file: {0} ]"
 
 error	WEAVING_FAILED
 		"weaving failed"
@@ -97,18 +58,22 @@ error	DESCENDANT_OF_CROSSCUTTING_CLASS_NOT_DECLARED_CROSSCUTTING
 		"descendants of crosscutting classes must be declared crosscutting"
 
 
-error	VIRTUAL_ACCESSING_OUTER_PRIVATE
-		"Virtual or override class \"{0}\" cannot access private methods or fields of the enclosing class."
+// VIRTUAL CLASSES
 
-error	VIRTUAL_CALLING_OUTER_OUTER
-		"Virtual or override class \"{0}\" cannot call methods or access fields defined in the enclosing class of its outer class."
+caution	ONLY_PUBLIC_CCLASS
+		"Current Caesar version allows only a public cclass. Class modifier automatically set to public."
 
+error	ONLY_DEF_CTOR_ALLOWED 
+		"A virtual class may have only a default constructor."
 				
 error	NAME_CLASH
 		"Name clash for member \"{0}\" detected."
 
 error	CLASS_GENERATOR
 		"Class Generator failed on \"{0}\": {1}."
+
+
+// MISC
 
 error	FATAL_ERROR
 		"Fatal error! Everything is going to explode. Panic! Women and children first!"		

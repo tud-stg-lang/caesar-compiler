@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.caesarj.compiler.typesys.graph.CaesarTypeGraph;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
 
@@ -18,6 +19,8 @@ import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
  * @author Ivica Aracic
  */
 public class JavaTypeGraph {
+    
+    private static Logger log = Logger.getLogger(JavaTypeGraph.class);
     
     private JavaTypeNode root;
     private HashMap caesar2javaMap = new HashMap();
@@ -92,7 +95,10 @@ public class JavaTypeGraph {
     }
 
     public void debug() {
-        root.debug(0);
+        StringBuffer sb = new StringBuffer();
+        root.debug(0, sb);
+        
+        log.debug("===== Java Type Graph =====\n"+sb.toString()+"\n\n");
     }
 
     public void registerJavaType(CaesarTypeNode type, JavaTypeNode node) {

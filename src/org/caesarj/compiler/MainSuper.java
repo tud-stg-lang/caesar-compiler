@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: MainSuper.java,v 1.13 2004-09-12 14:29:04 aracic Exp $
+ * $Id: MainSuper.java,v 1.14 2004-10-15 15:33:55 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -25,10 +25,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.ClassInfo;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
-import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
@@ -48,6 +48,8 @@ import org.caesarj.util.Utils;
  * This class implements the entry point of the Java compiler
  */
 public abstract class MainSuper extends CompilerBase {
+    
+    private static Logger log = Logger.getLogger(MainSuper.class);
 
     // ----------------------------------------------------------------------
     // ENTRY POINT
@@ -147,12 +149,8 @@ public abstract class MainSuper extends CompilerBase {
                 byteCodeMap.addSourceClass(classes[count], codeBuf);                
                 // IVICA:END
                 
-                if (verboseMode() && !classes[count].isNested()) {
-                    inform(
-                        CaesarMessages.CLASSFILE_GENERATED,
-                        classes[count].getQualifiedName().replace('/', '.'),
-                        new Long(System.currentTimeMillis() - lastTime));
-                }
+                log.debug("class file generated: "+classes[count].getQualifiedName());
+                
                 classes[count] = null;
             }
         }
@@ -250,8 +248,6 @@ public abstract class MainSuper extends CompilerBase {
      * @param	cunit		the compilation unit
      */
     protected void checkBody(JCompilationUnit cunit) {
-        long lastTime = System.currentTimeMillis();
-
         try {
             cunit.checkBody(this, classes);
         }
@@ -259,12 +255,7 @@ public abstract class MainSuper extends CompilerBase {
             reportTrouble(e);
         }
 
-        if (verboseMode()) {
-            inform(
-                CaesarMessages.BODY_CHECKED,
-                cunit.getFileName(),
-                new Long(System.currentTimeMillis() - lastTime));
-        }
+        log.debug("body checked: "+cunit.getFileName());
     }
     /**
      * check the conditions
@@ -279,13 +270,6 @@ public abstract class MainSuper extends CompilerBase {
         }
         catch (PositionedError e) {
             reportTrouble(e);
-        }
-
-        if (verboseMode()) {
-            inform(
-                CaesarMessages.CONDITION_CHECKED,
-                cunit.getFileName(),
-                new Long(System.currentTimeMillis() - lastTime));
         }
     }
 
