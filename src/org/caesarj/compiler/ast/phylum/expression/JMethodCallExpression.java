@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.32 2005-03-06 14:48:18 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.33 2005-03-10 17:53:05 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -458,7 +458,12 @@ public class JMethodCallExpression extends JExpression
 		        }
 		        else {
 		            // here we have a dependent type not depending on a method argument
-	                thisAsFamily = prefix.getThisAsFamily().clonePath();
+	                thisAsFamily = prefix.getThisAsFamily();
+	                
+	                if(thisAsFamily == null)
+	                    throw new PositionedError(getTokenReference(), CaesarMessages.PREFIX_FAMILY_PATH_NOT_AVAILABLE, ident);
+	                
+	                thisAsFamily = thisAsFamily.clonePath();
 		            thisAsFamily = new MethodAccess(thisAsFamily, method.getIdent(), null);		            
 		            thisAsFamily = thisAsFamily.append( returnTypePath );
 		            thisAsFamily = new Dummy(thisAsFamily);

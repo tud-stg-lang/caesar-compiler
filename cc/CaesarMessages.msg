@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.30 2005-03-10 12:32:54 gasiunas Exp $
+ * $Id: CaesarMessages.msg,v 1.31 2005-03-10 17:53:28 aracic Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -123,6 +123,9 @@ error	ILLEGAL_PATH_ELEMENT
 
 error	ILLEGAL_PATH
 		"Illegal family path. The reason could be that a dependent type path is not final."
+
+error	PREFIX_FAMILY_PATH_NOT_AVAILABLE
+		"Can not evaluate the prefix expression of '{0}' to a family path."
 
 error	DECLARATION_DEPENDENCY_ORDER
 		"The declaration of the first variable access in the path has to be before the declaration of the dependent type."
