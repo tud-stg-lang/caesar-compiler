@@ -32,6 +32,7 @@ public class CaesarTypeNode {
    
     private CaesarTypeNode outer = null;
     private List parents = new LinkedList(); // of CaesarType
+    private List implictParentsSubSet = new LinkedList();
     
     //private CjInterfaceDeclaration declaration = null;
        
@@ -50,10 +51,19 @@ public class CaesarTypeNode {
         this.qualifiedImplName = qualifiedName.convertToImplName();
     }  
     
+    public void addImplicitSubType(CaesarTypeNode subType) {
+    	addSubType(subType, true);
+    }
+    
     public void addSubType(CaesarTypeNode subType) {
+    	addSubType(subType, false);
+    }
+    
+    private void addSubType(CaesarTypeNode subType, boolean implicit) {
         if(!subTypes.containsKey(subType.getQualifiedName().toString())) {
             subTypes.put(subType.getQualifiedName().toString(), subType);
             subType.parents.add(this);
+            if(implicit) subType.implictParentsSubSet.add(this);
         }
     }
     
@@ -234,7 +244,7 @@ public class CaesarTypeNode {
                 }
             
                 // type exists already in the graph -> just create implicit relation
-                virtualType.addSubType(furtherbindingType);
+                virtualType.addImplicitSubType(furtherbindingType);
             }
             
             // now establish inherited inheritance relations among created inners
@@ -253,7 +263,7 @@ public class CaesarTypeNode {
                             lookupInner(virtualTypeSuper.getQualifiedName().getIdent());
                         
                         // connect
-                        virtualTypeSuperFurtherbinding.addSubType(furtherbindingType);
+                        virtualTypeSuperFurtherbinding.addImplicitSubType(furtherbindingType);
                     }
                 }
             }
@@ -436,4 +446,8 @@ public class CaesarTypeNode {
             return res;
         }
     }
+
+	public List getImplictParentsSubSet() {
+		return implictParentsSubSet;
+	}
 }
