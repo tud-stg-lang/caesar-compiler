@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarObject.java,v 1.5 2005-01-24 16:52:59 aracic Exp $
+ * $Id: CaesarObject.java,v 1.6 2005-02-16 13:24:55 aracic Exp $
  */
 
 package org.caesarj.runtime;
@@ -44,8 +44,12 @@ public class CaesarObject implements CaesarObjectIfc {
         return $outer;
     }
     
+    public Object family() {
+        return $outer;
+    }
+    
     public boolean familyEquals(CaesarObject other) {
-        return this.$outer == other.$outer;
+        return this.$outer == other.outer();
     }
     
 	public void $deploySelf(AspectDeployerIfc depl) {
@@ -56,5 +60,5 @@ public class CaesarObject implements CaesarObjectIfc {
 		// do nothing
     }
 	
-	// ... more to come ...
+	// ... more to come ...	
 }

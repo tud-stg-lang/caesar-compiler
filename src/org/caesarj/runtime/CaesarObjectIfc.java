@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarObjectIfc.java,v 1.2 2005-01-24 16:52:59 aracic Exp $
+ * $Id: CaesarObjectIfc.java,v 1.3 2005-02-16 13:25:01 aracic Exp $
  */
 
 package org.caesarj.runtime;
@@ -34,5 +34,6 @@ import org.caesarj.runtime.aspects.AspectIfc;
  */
 public interface CaesarObjectIfc extends AspectIfc {
     Object outer();
+    Object family();
     boolean familyEquals(CaesarObject other);
 }
