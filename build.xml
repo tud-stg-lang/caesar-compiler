@@ -4,7 +4,7 @@
  NOTE: <Java-SDK dir>/lib/tools.jar must be in the classpath of this script in order
  to find the java compiler. -->
 
-<project name="Caesar" default="complete" basedir=".">
+<project name="Caesar" default="dist" basedir=".">
  <description>
   Buildfile for the CaesarJ project. 
   Generates scanner+parser and compiles the source.
@@ -45,7 +45,7 @@
  
  
  <!-- Compile-only target -->
- <target name="compile" depends="parser" description="compile the source files">
+ <target name="compile" depends="msggen, parser" description="compile the source files">
   <javac srcdir="src"
   		 classpath="${packageBase};
   				${libs}/aspectjtools.jar;
@@ -83,9 +83,9 @@
    <arg value="${inputFiles}/Caesar.flex"/>  
   </java>  
  	
-  <move file="CaesarTokenTypes.java" todir="src/org/caesarj/compiler"/>
-  <move file="CaesarFlexRules.txt" todir="src/org/caesarj/compiler"/>
-  <move file="CaesarTokenTypes.txt" todir="src/org/caesarj/compiler"/>
+  <move file="CaesarTokenTypes.java" todir="${source}/compiler"/>
+  <move file="CaesarFlexRules.txt" todir="${source}/compiler"/>
+  <move file="CaesarTokenTypes.txt" todir="${source}/compiler"/>
   
   <!-- 3. JFLEX: Creates CaesarScanner.java&FlexRules.txt from Caesar.flex -->
   <echo message="3rd step: JFLEX"/>
@@ -114,15 +114,12 @@
  		 
    	<arg value="${inputFiles}/Caesar.g"/>
   </java>
- 	
-  <delete file="src/org/caesarj/compiler/CaesarFlexRules.txt"/>
-  <delete file="src/org/caesarj/compiler/CaesarTokenTypes.txt"/>
-  <delete file="src/org/caesarj/compiler/CaesarScanner.java~"/>
 
- </target>
- 
- <!-- The complete building target -->
- <target name="complete" depends="msggen, scanner, parser, compile" description="do complete build">
- </target>
- 
+  <!-- delete temporary files -->
+  <delete file="${inputFiles}/Caesar.flex"/>
+  <delete file="${source}/compiler/CaesarFlexRules.txt"/>
+  <delete file="${source}/compiler/CaesarTokenTypes.txt"/>
+  <delete file="${source}/compiler/CaesarScanner.java~"/>
+ </target> 
+	
 </project>
