@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JAssignmentExpression.java,v 1.7 2005-01-18 13:14:16 klose Exp $
+ * $Id: JAssignmentExpression.java,v 1.8 2005-01-20 16:25:11 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -132,13 +132,14 @@ public class JAssignmentExpression extends JBinaryExpression {
 	    Path rPath = Path.createFrom(context.getBlockContext(), right);
 	    Path lPath = Path.createFrom(context.getBlockContext(), left);
 	    System.out.println("assignment at line: "+getTokenReference().getLine());
-	    System.out.println("\trPath = "+rPath);
-	    System.out.println("\tlPath = "+lPath);
 	    
+	    System.out.println("\trFam >"+rPath);	    	    
 	    Path rPathNorm = rPath.normalize();
-	    System.out.println("\trPathNorm = "+rPathNorm);
+	    System.out.println("\trFamNorm = "+rPathNorm);
+	    System.out.println();
+	    System.out.println("\tlFam >"+lPath);
 	    Path lPathNorm = lPath.normalize();    
-	    System.out.println("\tlPathNorm = "+lPathNorm);
+	    System.out.println("\tlFamNorm = "+lPathNorm);
 	
 	    
 	    check(context,
