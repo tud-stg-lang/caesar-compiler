@@ -16,7 +16,12 @@ public class VCTestCase extends TestCase
 		super("test");
 	}
 
-	public static final String expectedResult =	"";
+	public static final String expectedResult =
+		"A.A.A, A.C.A, A.B.A, B.D.A, B.B.A, B.C.A; " +	// C.A
+		"A.B.B, B.B.B, B.C.B; " +						// C.B
+		"A.C.C; " +										// C.C
+		"B.D.D, B.B.D, B.C.D; " +						// C.D
+		"B.E.E, B.C.E";									// C.E
 
 
 	public void test()
@@ -34,7 +39,7 @@ public class VCTestCase extends TestCase
 		String result = resA + "; " + resB + "; " + resC + "; " + resD + "; " + resE;
 
 		System.out.println(result);
-		//assertEquals(expectedResult, result);
+		assertEquals(expectedResult, result);
 
         System.out.println("-------> VCTest 29: end");
 	}

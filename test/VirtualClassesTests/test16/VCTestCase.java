@@ -19,13 +19,14 @@ public class VCTestCase extends TestCase
 	public static final String expectedResultBB = "A.A.a, A.A.a, A.A.a, A.A.a; " +
 	                                              "A.A.b, B.A.b, A.B.b, A.B.b; " +
 	                                              "A.A.c, A.A.c, A.B.c, A.B.c; " +
-	                                              "A.A.d, B.A.d, B.A.d; " +
+	                                              "A.A.d, B.A.d, B.A.d, B.A.d; " +
 	                                              "A.B.e, A.B.e; " +
 	                                              "A.B.f, B.B.f; " +
 	                                              "A.A.g, B.A.g, A.B.g, B.B.g";
-	public static final String expectedResultBA = "A.A.a; " +
+
+	public static final String expectedResultBA = "A.A.a, A.A.a; " +
 	                                              "A.A.b, B.A.b; " +
-	                                              "A.A.c; " +
+	                                              "A.A.c, A.A.c; " +
 	                                              "A.A.d, B.A.d; " +
 	                                              "B.A.e; " +
 	                                              "B.A.f; " +
@@ -48,7 +49,7 @@ public class VCTestCase extends TestCase
 		String result = resA + "; " + resB + "; " + resC + "; " + resD + "; " + resE + "; " + resF + "; " + resG;
 
 		System.out.println(result);
-		//assertEquals(result, expectedResultBB);
+		assertEquals(result, expectedResultBB);
 
 		OuterB.InnerA ba = (OuterB.InnerA)ob.$newInnerA();
 
@@ -62,7 +63,7 @@ public class VCTestCase extends TestCase
 		result = resA + "; " + resB + "; " + resC + "; " + resD + "; " + resE + "; " + resF + "; " + resG;
 
 		System.out.println(result);
-		//assertEquals(result, expectedResultBA);
+		assertEquals(result, expectedResultBA);
 
 		System.out.println("-------> VCTest 16: end");
 	}
@@ -228,7 +229,6 @@ public cclass OuterB extends OuterA
 			return super.queryC() + ", " + _c;
 		}
 
-		// _d is ambiguous
 		public String queryD()
 		{
 			return super.queryD() + ", " + _d;

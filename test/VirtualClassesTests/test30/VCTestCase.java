@@ -16,7 +16,45 @@ public class VCTestCase extends TestCase
 		super("test");
 	}
 
-	public static final String expectedResult =	"A.A.A, A.C.A; B.B.B, B.C.B; A.C.C; A.A.D; B.B.E; A.C.F; A.C.G";
+	public static final String expectedResult =
+		// InnerB < A: InnerA( < B: InnerM ), B: InnerN ( < B: InnerA )
+		"A.A.A, A.B.A, B.N.A; " +
+		"C.B.B; " +
+		"B.M.M, B.A.M; " +
+		"B.N.N, B.B.N; " +
+
+		// InnerC < A: InnerA( < B: InnerM ), B: InnerN ( < B: InnerA ), C: InnerB
+		"A.A.A, A.C.A, A.B.A, B.N.A; " +
+		"C.B.B, C.C.B; " +
+		"B.M.M, B.A.M; " +
+		"B.N.N, B.B.N, B.C.N; " +
+
+		// InnerD < A: InnerA( < B: InnerM ), C: InnerB, InnerO
+
+		"A.A.A, A.C.A, A.B.A, B.N.A; " +
+		"C.B.B, C.D.B; " +
+		"B.M.M, B.A.M; " +
+		"C.O.O, C.D.O; " +
+
+		// InnerF < A: InnerE( < C: InnerO ), B: InnerM
+
+		"A.E.E, A.F.E; " +
+		"B.M.M, B.F.M; " +
+		"C.O.O, C.E.O; " +
+
+		// InnerG < A: InnerE( < C: InnerO ), B: InnerM, C: InnerP( < C: InnerO )
+
+		"A.E.E, A.G.E; " +
+		"B.M.M, B.G.M; " +
+		"C.O.O, C.E.O, C.P.O, C.G.O; " +
+		"C.P.P, C.G.P; " +
+
+		// InnerH < A: InnerE( < C: InnerO ), C: InnerP( < C: InnerO ), InnerA( < B: InnerM )
+
+		"A.E.E, A.H.E; " +
+		"C.O.O, C.E.O, C.P.O, C.H.O; " +
+		"C.P.P, C.H.P; " +
+		"A.A.A, C.H.A";
 
 
 	public void test()
@@ -70,7 +108,7 @@ public class VCTestCase extends TestCase
 				+ "; " + resHE + "; " + resHO + "; " + resHP + "; " + resHA;
 
 		System.out.println(result);
-		//assertEquals(expectedResult, result);
+		assertEquals(expectedResult, result);
 
         System.out.println("-------> VCTest 30: end");
 	}

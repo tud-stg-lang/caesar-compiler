@@ -17,7 +17,7 @@ public class VCTestCase extends TestCase
 	}
 
 	public static final String expectedResultCD = "A.A.A, B.A.A, A.B.A, B.B.A, C.B.A, A.C.A, C.C.A, B.D.A";
-	public static final String expectedResultCF = "A.A.A, B.A.A, C.A.E, C.A.F";
+	public static final String expectedResultCF = "A.A.A, B.A.A, C.E.A, C.F.A";
 
 	public void test() {
 
@@ -29,14 +29,14 @@ public class VCTestCase extends TestCase
 		String result = cd.queryA();
 
 		System.out.println(result);
-//		assertEquals(result, expectedResultCD);
+		assertEquals(result, expectedResultCD);
 
 		OuterC.InnerF cf = (OuterC.InnerF)oc.$newInnerF();
 
 		result = cf.queryA();
 
 		System.out.println(result);
-//		assertEquals(result, expectedResultCF);
+		assertEquals(result, expectedResultCF);
 
         System.out.println("-------> VCTest 15: end");
 	}
