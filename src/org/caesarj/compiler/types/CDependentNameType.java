@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentNameType.java,v 1.16 2005-02-16 16:32:12 aracic Exp $
+ * $Id: CDependentNameType.java,v 1.17 2005-02-25 13:45:06 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -34,8 +34,8 @@ import org.caesarj.compiler.ast.phylum.expression.JLocalVariableExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JOwnerExpression;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
+import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
-import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CClassBodyContext;
@@ -145,6 +145,7 @@ public class CDependentNameType extends CClassNameType
                 || expr instanceof JLocalVariableExpression 
                 || expr instanceof JOwnerExpression
                 || expr instanceof CjAccessorCallExpression
+                || expr instanceof JTypeNameExpression
             ) {                    
                 TypeFactory factory = context.getTypeFactory();              
                 CClass clazz;
@@ -156,24 +157,17 @@ public class CDependentNameType extends CClassNameType
                     context.getTypeFactory(),
                     expr.getType(context.getTypeFactory()).getCClass().getQualifiedName()+"$"+pathSegs[pathSegs.length-1]
                 );
+                
+                if(clazz == null) {
+                    throw new UnpositionedError(KjcMessages.TYPE_UNKNOWN, pathSegs[pathSegs.length-1]);
+                }
 
                 // create and return new CDependentType
                 CType t = clazz.getAbstractType().checkType(context);
+                                
+                CDependentType dt = new CDependentType((CContext)context, expr, t);                               
                 
-                if(!t.getCClass().isMixinInterface()) {
-                    throw new UnpositionedError(CaesarMessages.PLAINTYPE_WITH_PATH);
-                }
-                
-                CDependentType dt = new CDependentType((CContext)context, expr, t);
-                
-                // it is forbidden for type paths to contain java elements
-                /* CRITICAL: check removed
-                if(dt.getPath().containsJavaElements()) {
-                    throw new UnpositionedError(CaesarMessages.INNER_PLAIN_JAVA_OBJECTS_IN_PATH);
-                }
-                */
-                
-                return dt;
+                return dt.checkType(context);
             }
 
         } 
