@@ -10,7 +10,6 @@ import java.util.Set;
 
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.mixer.NameGenerator;
 
 
 /**
@@ -242,8 +241,11 @@ public class JavaTypeNode {
                     parent.getQualifiedName().toString()+
                     mixin.getQualifiedName().toString()
                 );
+                        
             
-            qualifiedName.append("gen_");
+            qualifiedName.append("Mixin_");
+            qualifiedName.append(getMixin().getQualifiedName().convertToMixinClassName());
+            qualifiedName.append('_');
             qualifiedName.append(genHashCode);
             
             this.qualifiedName = new JavaQualifiedName(qualifiedName.toString());

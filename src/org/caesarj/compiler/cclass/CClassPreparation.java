@@ -272,6 +272,9 @@ public class CClassPreparation implements CaesarConstants {
                 false, // synthetic?
                 null // CTODO: declaration unit is null?
             );
+            
+            if(owner != null)
+            	sourceClass.setHasOuterThis(true);
 
             
             // generate super type

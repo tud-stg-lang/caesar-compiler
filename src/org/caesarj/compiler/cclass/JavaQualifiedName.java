@@ -86,4 +86,8 @@ public class JavaQualifiedName {
     public boolean equals(Object other) {
         return qualifiedName.equals(((JavaQualifiedName)other).qualifiedName);
     }
+
+	public String convertToMixinClassName() {
+		return outerPrefix.replaceAll("\\$", "_")+ident;
+	}
 }
