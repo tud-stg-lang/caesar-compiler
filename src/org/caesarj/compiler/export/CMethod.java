@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CMethod.java,v 1.7 2004-07-23 13:15:29 aracic Exp $
+ * $Id: CMethod.java,v 1.8 2004-10-10 19:20:08 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -136,6 +136,10 @@ public abstract class CMethod extends CMember {
     public final CType getReturnType() {
         return returnType;
     }
+    
+    public CReferenceType[] getExceptions() {
+        return exceptions;
+    }
 
     /**
      * @return the type of this field
@@ -158,6 +162,11 @@ public abstract class CMethod extends CMember {
         return typeVariables.length > 0;
     }
 
+    
+    public void setReturnType(CType returnType) {
+        this.returnType = returnType;
+    }
+    
     /**
      * change the parameters of the method. Only allowed for postconditions.
      * 
@@ -313,28 +322,8 @@ public abstract class CMethod extends CMember {
             return true;
         }
     }
-
-    // IVICA
-    /**
-     * checks the signature without checking the owner
-     */
-    public boolean isEqualSignature(CMethod other) {
-        if (getIdent() != other.getIdent()) {
-            return false;
-        }
-        else if (parameters.length != other.parameters.length) {
-            return false;
-        }
-        else {
-            for (int i = 0; i < parameters.length; i++) {
-                if (!parameters[i].equals(other.parameters[i])) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-
+    
+    
     /**
      * Is this method applicable to the specified invocation (JLS 15.12.2.1) ?
      * 
