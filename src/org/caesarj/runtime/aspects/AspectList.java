@@ -20,13 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectList.java,v 1.4 2005-03-22 08:42:20 aracic Exp $
+ * $Id: AspectList.java,v 1.5 2005-03-31 10:43:20 gasiunas Exp $
  */
 
 package org.caesarj.runtime.aspects;
 
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * @author Vaidas Gasiunas
@@ -35,7 +33,7 @@ import java.util.List;
  */
 public class AspectList implements AspectContainerIfc 
 {
-	List aspList = new LinkedList();
+	DynArray aspList = new DynArray();
 	int  _type;
 	
 	public AspectList(int type) {
@@ -47,9 +45,8 @@ public class AspectList implements AspectContainerIfc
 	 * 
 	 * @return iterator of aspect objects
 	 */
-	public List $getInstances() {
-		List res = new LinkedList(aspList);
-		return res;
+	public Object[] $getInstances() {
+		return aspList.toArray();
 	}
 	
 	/**
@@ -62,11 +59,11 @@ public class AspectList implements AspectContainerIfc
 	}	
 	
 	/**
-	 * Get implementation list
+	 * Get implementation DynArray
 	 * 
-	 * @return	implementation list
+	 * @return	implementation DynArray
 	 */
-	public List getList() {
+	public DynArray getList() {
 		return aspList;
 	}
 	

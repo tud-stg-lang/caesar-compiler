@@ -20,13 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectThreadMapper.java,v 1.4 2005-03-22 08:42:20 aracic Exp $
+ * $Id: AspectThreadMapper.java,v 1.5 2005-03-31 10:43:20 gasiunas Exp $
  */
 
 package org.caesarj.runtime.aspects;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.WeakHashMap;
 
 /**
@@ -43,15 +41,13 @@ public class AspectThreadMapper implements AspectContainerIfc {
 	 * 
 	 * @return 			Iterator of aspect objects
 	 */ 
-	public List $getInstances() {
-		
+	public Object[] $getInstances() {
 		Thread thread = Thread.currentThread();
-		List lst = (List)$threadObjects.get(thread);
+		DynArray lst = (DynArray)$threadObjects.get(thread);
 		if (lst == null)
-			return new LinkedList();
+			return null;
 		else {
-			LinkedList res = new LinkedList(lst);
-			return res;
+			return lst.toArray();			
 		}
 	}
 	
@@ -82,12 +78,12 @@ public class AspectThreadMapper implements AspectContainerIfc {
 	 */
 	public void deployObject(Object obj, Thread thread) {
 		
-		/* include the object to the list of deployed objects of the thread */
-		List lst = (List)$threadObjects.get(thread);
+		/* include the object to the DynArray of deployed objects of the thread */
+		DynArray lst = (DynArray)$threadObjects.get(thread);
 		
 		if (lst == null)
 		{
-			lst = new LinkedList();
+			lst = new DynArray();
 			$threadObjects.put(thread, lst);
 		}
 		
@@ -102,8 +98,8 @@ public class AspectThreadMapper implements AspectContainerIfc {
 	 */
 	public void undeployObject(Object obj, Thread thread) {
 		
-		/* remove the object from the list of deployed objects of the thread */
-		List lst = (List)$threadObjects.get(thread);
+		/* remove the object from the DynArray of deployed objects of the thread */
+		DynArray lst = (DynArray)$threadObjects.get(thread);
 		
 		if (lst != null) {
 			lst.remove(obj);
@@ -122,10 +118,10 @@ public class AspectThreadMapper implements AspectContainerIfc {
 	 */
 	public void copyObjects(Thread srcThread, Thread destThread) {
 		
-		List lst = (List)$threadObjects.get(srcThread);
+		DynArray lst = (DynArray)$threadObjects.get(srcThread);
 		
 		if (lst != null) {
-			List lstNew = new LinkedList(lst);
+			DynArray lstNew = new DynArray(lst);
 			$threadObjects.put(destThread, lstNew);
 		}
 	}

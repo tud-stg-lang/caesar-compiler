@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploySupport.java,v 1.5 2005-01-24 16:52:59 aracic Exp $
+ * $Id: DeploySupport.java,v 1.6 2005-03-31 10:43:20 gasiunas Exp $
  */
 
 package org.caesarj.runtime;
@@ -35,6 +35,9 @@ import org.caesarj.runtime.aspects.AspectOnThreadDeployer;
  * @author Ivica Aracic
  */
 public class DeploySupport {
+	
+	private static AspectOnThreadDeployer threadDeployer = new AspectOnThreadDeployer();
+	private static AspectLocalDeployer localDeployer = new AspectLocalDeployer();
     
     public static AspectIfc checkIfDeployable(Object obj) {
         if(obj instanceof AspectIfc)
@@ -50,7 +53,7 @@ public class DeploySupport {
      */
     public static void deployBlock(AspectIfc a) {
         if(a != null) {
-            a.$deploySelf(new AspectOnThreadDeployer());
+        	threadDeployer.$deployOn(a.$getAspectRegistry(), a);
         }
     }
 
@@ -61,7 +64,7 @@ public class DeploySupport {
      */
     public static void undeployBlock(AspectIfc a) {
         if(a != null) {
-            a.$undeploySelf(new AspectOnThreadDeployer());
+        	threadDeployer.$undeployFrom(a.$getAspectRegistry(), a);
         }
     }
     
@@ -72,7 +75,7 @@ public class DeploySupport {
      */
     public static void deployLocal(AspectIfc a) {
     	if(a != null) {
-            a.$deploySelf(new AspectLocalDeployer());
+    		localDeployer.$deployOn(a.$getAspectRegistry(), a);
         }
     }
     
@@ -83,7 +86,7 @@ public class DeploySupport {
      */
     public static void undeployLocal(AspectIfc a) {
     	if(a != null) {
-            a.$undeploySelf(new AspectLocalDeployer());
+    		localDeployer.$undeployFrom(a.$getAspectRegistry(), a);            
         }
     }
 }

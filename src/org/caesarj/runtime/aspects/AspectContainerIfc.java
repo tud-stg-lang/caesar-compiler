@@ -20,12 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectContainerIfc.java,v 1.4 2005-03-22 08:42:20 aracic Exp $
+ * $Id: AspectContainerIfc.java,v 1.5 2005-03-31 10:43:20 gasiunas Exp $
  */
 
 package org.caesarj.runtime.aspects;
 
-import java.util.List;
 
 /**
  * @author Vaidas Gasiunas
@@ -49,7 +48,7 @@ public interface AspectContainerIfc {
 	 * 
 	 * @return iterator of aspect objects
 	 */ 
-	List $getInstances();
+	Object[] $getInstances();
 	
 	/**
 	 * Get container type

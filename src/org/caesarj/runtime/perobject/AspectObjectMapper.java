@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectObjectMapper.java,v 1.3 2005-03-22 08:42:20 aracic Exp $
+ * $Id: AspectObjectMapper.java,v 1.4 2005-03-31 10:43:20 gasiunas Exp $
  */
 
 package org.caesarj.runtime.perobject;
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.WeakHashMap;
 
 import org.caesarj.runtime.aspects.AspectContainerIfc;
+import org.caesarj.runtime.aspects.DynArray;
 
 /**
  * @author Vaidas Gasiunas
@@ -55,14 +56,13 @@ public class AspectObjectMapper implements AspectContainerIfc {
 	 * 
 	 * @return 			Iterator of aspect objects
 	 */ 
-	public List $getInstances() {		
+	public Object[] $getInstances() {		
 		Object key = _keyDetect.getCurrentKey();
-		List lst = (List)_objectAspects.get(key);
+		DynArray lst = (DynArray)_objectAspects.get(key);
 		if (lst == null)
-			return new LinkedList();
+			return null;
 		else {
-			List res = new LinkedList(lst);
-			return res;
+			return lst.toArray();
 		}
 	}
 	

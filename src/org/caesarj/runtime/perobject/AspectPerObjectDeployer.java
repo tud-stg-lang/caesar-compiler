@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectPerObjectDeployer.java,v 1.3 2005-01-24 16:53:01 aracic Exp $
+ * $Id: AspectPerObjectDeployer.java,v 1.4 2005-03-31 10:43:20 gasiunas Exp $
  */
 
 package org.caesarj.runtime.perobject;
@@ -35,11 +35,21 @@ import org.caesarj.runtime.aspects.BasicAspectDeployer;
  *
  * Abstract implementation of object based deployment
  */
-abstract public class AspectPerObjectDeployer extends BasicAspectDeployer {
+public class AspectPerObjectDeployer extends BasicAspectDeployer {
 	
 	protected AspectKeyIfc _keyDetect = null;
 	
 	protected Object _deployKey = null;
+	
+	/**
+	 * Initialize the AspectDeployer with specific key detection algorithm
+	 * 
+	 * @param keyDetect		Key detection algorithm
+	 */
+	public AspectPerObjectDeployer(AspectKeyIfc keyDetect)
+	{
+		_keyDetect = keyDetect;
+	}	
 	
 	/**
 	 * Sets current key for deployment
@@ -52,16 +62,6 @@ abstract public class AspectPerObjectDeployer extends BasicAspectDeployer {
 	}
 	
 	/**
-	 * Initialize the AspectDeployer with specific key detection algorithm
-	 * 
-	 * @param keyDetect		Key detection algorithm
-	 */
-	public void init(AspectKeyIfc keyDetect)
-	{
-		_keyDetect = keyDetect;
-	}
-	
-	/**
 	 * Deploy aspect on object
 	 * 
 	 * @param aspObj	aspect object
@@ -70,7 +70,7 @@ abstract public class AspectPerObjectDeployer extends BasicAspectDeployer {
 	public synchronized void deployOnObject(AspectIfc aspObj, Object key)
 	{
 		setDeployKey(key);
-		aspObj.$deploySelf(this);
+		$deployOn(aspObj.$getAspectRegistry(), aspObj);		
 	}
 	
 	/**
@@ -82,7 +82,7 @@ abstract public class AspectPerObjectDeployer extends BasicAspectDeployer {
 	public synchronized void undeployFromObject(AspectIfc aspObj, Object key)
 	{
 		setDeployKey(key);
-		aspObj.$undeploySelf(this);
+		$undeployFrom(aspObj.$getAspectRegistry(), aspObj);		
 	}
 	
 	/**

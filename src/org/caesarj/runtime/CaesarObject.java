@@ -20,12 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarObject.java,v 1.6 2005-02-16 13:24:55 aracic Exp $
+ * $Id: CaesarObject.java,v 1.7 2005-03-31 10:43:20 gasiunas Exp $
  */
 
 package org.caesarj.runtime;
 
-import org.caesarj.runtime.aspects.AspectDeployerIfc;
+import org.caesarj.runtime.aspects.AspectRegistryIfc;
 
 /**
  * ...
@@ -52,13 +52,9 @@ public class CaesarObject implements CaesarObjectIfc {
         return this.$outer == other.outer();
     }
     
-	public void $deploySelf(AspectDeployerIfc depl) {
-		// do nothing
+	public AspectRegistryIfc $getAspectRegistry() {
+		return null;
 	}
-	
-	public void $undeploySelf(AspectDeployerIfc depl) {
-		// do nothing
-    }
 	
 	// ... more to come ...	
 }

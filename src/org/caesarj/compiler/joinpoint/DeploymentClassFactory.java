@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.43 2005-03-30 14:22:58 gasiunas Exp $
+ * $Id: DeploymentClassFactory.java,v 1.44 2005-03-31 10:43:20 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -66,6 +66,7 @@ import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.types.CArrayType;
 import org.caesarj.compiler.types.CBooleanType;
 import org.caesarj.compiler.types.CByteType;
 import org.caesarj.compiler.types.CCharType;
@@ -222,9 +223,8 @@ public class DeploymentClassFactory implements CaesarConstants {
         
 		//add support methods
 		List newMethods = new ArrayList();
-        newMethods.add(createDeploySelfMethod());
-		newMethods.add(createUndeploySelfMethod());
-		
+        newMethods.add(createGetAspectRegistryMethod());
+				
 		aspectClass.addMethods(
 			(JMethodDeclaration[]) newMethods.toArray(
 				new JMethodDeclaration[0]));		
@@ -370,40 +370,22 @@ public class DeploymentClassFactory implements CaesarConstants {
 	}
 	
 	/**
-	 * Creates the $deploySelf(..) method for aspect class.
+	 * Creates the $getAspectRegistry(..) method for aspect class.
 	 */
-	private JMethodDeclaration createDeploySelfMethod() {
+	private JMethodDeclaration createGetAspectRegistryMethod() {
 		
 	    AstGenerator gen = environment.getAstGenerator();
 	    
 	    String[] body = new String[] {
-	    	"public void $deploySelf(" + SRC_ASPECT_DEPLOYER_IFC + " depl)",
+	    	"public " + SRC_ASPECT_REGISTRY_IFC + " $getAspectRegistry()",
 			"{",
- 	      		"depl.$deployOn(" + srcSingletonAspectName + ".ajc$perSingletonInstance, this);",				
+ 	      		"return " + srcSingletonAspectName + ".ajc$perSingletonInstance;",				
 			"}"	
 	    };
 	    
 	    gen.writeMethod(body);
-	    return gen.endMethod("deploySelf");
-	}
-	
-	/**
-	 * Creates the $undeploySelf(..) method for aspect class.
-	 */
-	private JMethodDeclaration createUndeploySelfMethod() {
-		
-		AstGenerator gen = environment.getAstGenerator();
-	    
-	    String[] body = new String[] {
-	    	"public void $undeploySelf(" + SRC_ASPECT_DEPLOYER_IFC + " depl)",
-			"{",
- 	      		"depl.$undeployFrom(" + srcSingletonAspectName + ".ajc$perSingletonInstance, this);",				
-			"}"	
-	    };
-	    
-	    gen.writeMethod(body);
-	    return gen.endMethod("undeploySelf");
-	}
+	    return gen.endMethod("getAspectRegistry");
+	}	
 
 	/**
 	 * Creates the singleton aspect,the class which is needed by the weaver.
@@ -604,12 +586,12 @@ public class DeploymentClassFactory implements CaesarConstants {
 	    	"{",
 				"if ($aspectContainer != null)",
 				"{",
-					"java.util.Iterator it = $aspectContainer.$getInstances().iterator();",
-					"if (it != null)",
+					"Object[] inst = $aspectContainer.$getInstances();",
+				    "if (inst != null)",
 					"{",
-						"while (it.hasNext())",
+						"for (int i1 = 0; i1 < inst.length; i1++)",
 						"{",
-							srcAspectInterfaceName + " aspObj = (" + srcAspectInterfaceName + ")it.next();",
+							srcAspectInterfaceName + " aspObj = (" + srcAspectInterfaceName + ")inst[i1];",
 							strAdviceMethodCall,
 						"}",
 					"}",
@@ -666,7 +648,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			}
 			strClosureConstruction += adviceParams[i1].getIdent();			
 		}
-		strClosureConstruction += ", $it);";
+		strClosureConstruction += ", $inst, 0);";
 	    
 	    /* Format advice body */
 	    String[] block = new String[] {
@@ -674,8 +656,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 	    		SRC_AROUND_CLOSURE_CLASS + " $closure = aroundClosure;",
 				"if ($aspectContainer != null)",
 				"{",
-					"java.util.Iterator $it = $aspectContainer.$getInstances().iterator();",
-					"if ($it != null)",
+					"Object[] $inst = $aspectContainer.$getInstances();",
+					"if ($inst != null)",
 					"{",
 						"$closure = " + strClosureConstruction, 
 					"}",
@@ -792,17 +774,29 @@ public class DeploymentClassFactory implements CaesarConstants {
 		}
 
 		/* create iterator field to iterate over aspect objects */
-		CType iterator = new CClassNameType("java/util/Iterator");
+		CType iterator = new CArrayType(new CClassNameType("java/lang/Object"), 1);
 		JVariableDefinition var1 =
 			new JVariableDefinition(
 				where,
 				ACC_PRIVATE,
 				iterator,
-				"$iter",
+				"$inst",
 				new JNullLiteral(where));
 		JFieldDeclaration field1 = new JFieldDeclaration(where, var1, true, null, null);
 		field1.setGenerated(); 
 		fields.add(field1);
+		
+		/* create iterator field to iterate over aspect objects */
+		JVariableDefinition var1a =
+			new JVariableDefinition(
+				where,
+				ACC_PRIVATE,
+				typeFactory.getPrimitiveType(TypeFactory.PRM_INT),
+				"$ind",
+				null);
+		JFieldDeclaration field1a = new JFieldDeclaration(where, var1a, true, null, null);
+		field1a.setGenerated(); 
+		fields.add(field1a);
 		
 		/* create next call closure field */
 		CType closure = new CClassNameType(advice.getIdent() + MULTI_INST_CLOSURE_EXTENSION);
@@ -863,7 +857,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JFormalParameter[] adviceParameters = advice.getParameters();
 
 		JFormalParameter[] params =
-			new JFormalParameter[adviceParameters.length + 1];
+			new JFormalParameter[adviceParameters.length + 2];
 
 		/* Add all advice method parameters to the constructor */
 		for (int i = 0; i < adviceParameters.length; i++) {
@@ -877,13 +871,21 @@ public class DeploymentClassFactory implements CaesarConstants {
 		}
 
 		/* Add additional iterator parameter to the constructor */
-		CType iterator = new CClassNameType("java/util/Iterator");
+		CType iterator = new CArrayType(new CClassNameType("java/lang/Object"), 1);
 		params[adviceParameters.length] =
 			new JFormalParameter(
 				where,
 				JFormalParameter.DES_PARAMETER,
 				iterator,
-				"$iter",
+				"$inst",
+				false);
+		
+		params[adviceParameters.length + 1] =
+			new JFormalParameter(
+				where,
+				JFormalParameter.DES_PARAMETER,
+				typeFactory.getPrimitiveType(TypeFactory.PRM_INT),
+				"$ind",
 				false);
 
 		/* Generate constructor statements, which initialize class fields with the parameter values */ 
@@ -912,16 +914,16 @@ public class DeploymentClassFactory implements CaesarConstants {
 			}
 			strNextClosureConstruction += adviceParameters[i1].getIdent();			
 		}
-		strNextClosureConstruction += ", $iter);";
+		strNextClosureConstruction += ", $inst, $ind+1);";
 		
 		/* Generate additional initalization code */
 		AstGenerator gen = environment.getAstGenerator();
 		
 		String[] block = new String[] {
 	    	"{",
-	    		"if ($iter.hasNext())",
+	    		"if ($ind < $inst.length)",
 			    "{",
-					"$aspObj = (" + srcAspectInterfaceName + ")$iter.next();",
+					"$aspObj = (" + srcAspectInterfaceName + ")$inst[$ind];",
 				    strNextClosureConstruction,
 				"}",
 				"else",

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectMarshalling.java,v 1.3 2005-03-22 08:42:20 aracic Exp $
+ * $Id: AspectMarshalling.java,v 1.4 2005-03-31 10:43:20 gasiunas Exp $
  */
 
 package org.caesarj.runtime.rmi;
@@ -30,8 +30,8 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -72,20 +72,20 @@ public class AspectMarshalling implements Serializable
 			
 			if (threadMapper != null) 
 			{
-				Iterator it = threadMapper.$getInstances().iterator();
+				Object[] inst = threadMapper.$getInstances();
 				
 				/* marshal only if there are deployed instances */
-				if (it != null && it.hasNext()) 
+				if (inst != null && inst.length != 0) 
 				{
 					/* marshal registry name */
 					out.writeObject(currentRegistry.getClass().getName());
 					
 					/* marshal all instances deployed in the registry for the current thread */
-					List lst = new LinkedList();				
-					while (it.hasNext()) {
-						Object aspObj = it.next();
-						CaesarHost.export(aspObj);
-						lst.add(aspObj);
+					List lst = new ArrayList(inst.length);
+					for (int i1 = 0; i1 < inst.length; i1++) {
+						CaesarHost.export(inst[i1]);
+						lst.add(inst[i1]);
+						lst.set(i1, inst[i1]);
 					}
 					out.writeObject(lst);
 				}

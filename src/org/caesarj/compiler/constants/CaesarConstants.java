@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarConstants.java,v 1.13 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: CaesarConstants.java,v 1.14 2005-03-31 10:43:20 gasiunas Exp $
  */
 
 package org.caesarj.compiler.constants;
@@ -42,12 +42,6 @@ public interface CaesarConstants extends Constants {
 	public static final String VERSION_STR = "0.5.0";
 
 	//Caesar names for generated methods, fields and parameters
-
-	public static final String DEPLOY_SELF_METHOD =
-		"$deploySelf";
-	
-	public static final String UNDEPLOY_SELF_METHOD =
-		"$undeploySelf";
 
 	public static final String ADVICE_METHOD = "ADVICE METHOD";
 
@@ -90,6 +84,9 @@ public interface CaesarConstants extends Constants {
 	
 	public static final String SRC_ASPECT_DEPLOYER_IFC =
 		"org.caesarj.runtime.aspects.AspectDeployerIfc";
+	
+	public static final String SRC_ASPECT_REGISTRY_IFC =
+		"org.caesarj.runtime.aspects.AspectRegistryIfc";
 
 	public static final String QUALIFIED_ITERATOR_CLASS = "java/util/Iterator";
 

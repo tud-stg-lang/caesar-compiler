@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarHost.java,v 1.2 2005-01-24 16:52:59 aracic Exp $
+ * $Id: CaesarHost.java,v 1.3 2005-03-31 10:43:20 gasiunas Exp $
  */
 
 package org.caesarj.runtime.rmi;
@@ -129,7 +129,7 @@ public class CaesarHost {
 		if (aspObj != null && aspObj instanceof AspectIfc && aspObj instanceof Remote) {
 			AspectIfc aspIfc = (AspectIfc)aspObj;
 			export(aspIfc);
-			aspIfc.$deploySelf(getRemoteDepl());
+			getRemoteDepl().$deployOn(aspIfc.$getAspectRegistry(), aspIfc);
 		}
 	}
 	
@@ -142,7 +142,7 @@ public class CaesarHost {
 		/* undeploy only remote non-null aspect */
 		if (aspObj != null && aspObj instanceof AspectIfc && aspObj instanceof Remote) {
 			AspectIfc aspIfc = (AspectIfc)aspObj;
-			aspIfc.$undeploySelf(getRemoteDepl());
+			getRemoteDepl().$undeployFrom(aspIfc.$getAspectRegistry(), aspIfc);
 		}
 	}
 	

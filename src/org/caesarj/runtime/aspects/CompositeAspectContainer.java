@@ -20,15 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CompositeAspectContainer.java,v 1.4 2005-03-22 08:42:20 aracic Exp $
+ * $Id: CompositeAspectContainer.java,v 1.5 2005-03-31 10:43:20 gasiunas Exp $
  */
 
 package org.caesarj.runtime.aspects;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * @author User
@@ -38,19 +34,32 @@ import java.util.List;
  */
 public class CompositeAspectContainer implements AspectContainerIfc {
 	
-	List containers = new LinkedList();
+	DynArray containers = new DynArray();
 	
 	/**
-	 * Get list of deployed aspect objects for which the advice has to be called
+	 * Get DynArray of deployed aspect objects for which the advice has to be called
 	 * 
 	 * @return iterator of aspect objects
 	 */
-	public List $getInstances() {
-		LinkedList res = new LinkedList();
-		for (Iterator it = containers.iterator(); it.hasNext();) {
-			Collection l = ((AspectContainerIfc)it.next()).$getInstances();
-			for (Iterator it2 = l.iterator(); it2.hasNext();) {
-				res.add(it2.next());
+	public Object[] $getInstances() {
+		int numCont = containers.size();
+		Object instances[][] = new Object[numCont][];
+		int totSize = 0;
+		for (int i1 = 0; i1 < numCont; i1++) {
+			instances[i1] = ((AspectContainerIfc)containers.get(i1)).$getInstances();
+			if (instances[i1] != null) {
+				totSize += instances[i1].length;
+			}
+		}
+		if (totSize == 0) {
+			return null;
+		}
+		Object[] res = new Object[totSize];
+		int pos = 0;
+		for (int i1 = 0; i1 < numCont; i1++) {
+			if (instances[i1] != null) {
+				System.arraycopy(instances[i1], 0, res, pos, instances[i1].length);
+				pos += instances[i1].length;
 			}
 		}
 		return res;
@@ -73,24 +82,22 @@ public class CompositeAspectContainer implements AspectContainerIfc {
 	 */
 	public AspectContainerIfc findContainer(int type) {
 		
-		Iterator it = containers.iterator();
-		
-		while (it.hasNext()) {			
-			AspectContainerIfc cont =  (AspectContainerIfc)it.next();
+		for (int i1 = 0; i1 < containers.size(); i1++) {
+			AspectContainerIfc cont = (AspectContainerIfc)containers.get(i1);
 			if (cont.$getContainerType() == type) {
 				return cont;
-			}
+			}			
 		}
 			
 		return null;
 	}
 	
 	/**
-	 * Get implementation list
+	 * Get implementation DynArray
 	 * 
 	 * @return
 	 */
-	public List getList() {
+	public DynArray getList() {
 		return containers;
 	}
 	
