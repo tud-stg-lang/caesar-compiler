@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcEnvironment.java,v 1.6 2004-07-15 15:16:12 aracic Exp $
+ * $Id: KjcEnvironment.java,v 1.7 2004-09-12 14:29:04 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -32,9 +32,12 @@ import org.caesarj.util.InconsistencyException;
 public class KjcEnvironment {
 
 	public KjcEnvironment(
+        CompilerBase compilerBase,
 		ClassReader classReader,
 		TypeFactory typeFactory,
-		KjcOptions options) {
+		KjcOptions options
+	) {
+	    this.astGenerator = new AstGenerator(compilerBase, this, options);
 		this.classReader = classReader;
 		this.typeFactory = typeFactory;
 		this.options = options;
@@ -53,6 +56,10 @@ public class KjcEnvironment {
 	public TypeFactory getTypeFactory() {
 		return typeFactory;
 	}
+	
+	public AstGenerator getAstGenerator() {
+	    return astGenerator;
+    }
 
 	public SignatureParser getSignatureParser() {
 		return classReader.getSignatureParser();
@@ -89,6 +96,7 @@ public class KjcEnvironment {
     private final TypeFactory typeFactory;
 	private final KjcOptions options;
 	private final LanguageExtensions languageExtensions;
+	private final AstGenerator astGenerator;
 
 	public final static int SOURCE_1_1 = 101;
 	public final static int SOURCE_1_2 = 102;

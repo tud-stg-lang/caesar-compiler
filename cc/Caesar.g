@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.50 2004-09-08 21:49:52 aracic Exp $
+ * $Id: Caesar.g,v 1.51 2004-09-12 14:29:04 aracic Exp $
  */
 
 /*
@@ -853,7 +853,21 @@ jExplicitConstructorInvocation []
     { self = new JConstructorCall(sourceRef, functorIsThis, expr, args); }
 ;
 
-jMethodDefinition [ParseClassContext context, int modifiers, CType type, CTypeVariable[] typeVariables]
+
+public jsMethodDefinition []
+  returns [JMethodDeclaration self = null]
+{
+	int modifiers;
+	CType type;
+}
+:
+	modifiers = jModifiers[]
+	type = jTypeSpec[]
+	self = jMethodDefinition [ParseClassContext.getInstance(), modifiers, type, CTypeVariable.EMPTY]
+;
+
+
+private jMethodDefinition [ParseClassContext context, int modifiers, CType type, CTypeVariable[] typeVariables]
   returns [JMethodDeclaration self = null]
 {
   JFormalParameter[]	parameters;
@@ -1033,7 +1047,7 @@ jParameterDeclaration [int desc]
 //   As a completely indepdent braced block of code inside a method
 //      it starts a new scope for variable definitions
 
-jCompoundStatement[]
+public jCompoundStatement[]
   returns [JStatement[] self = null]
 {
   ArrayList		body = new ArrayList();

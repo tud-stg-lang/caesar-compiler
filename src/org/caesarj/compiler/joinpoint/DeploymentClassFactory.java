@@ -3,12 +3,14 @@ package org.caesarj.compiler.joinpoint;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.caesarj.compiler.AstGenerator;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.aspectj.CaesarNameMangler;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.declaration.*;
 import org.caesarj.compiler.ast.phylum.expression.*;
+import org.caesarj.compiler.ast.phylum.expression.literal.JBooleanLiteral;
 import org.caesarj.compiler.ast.phylum.expression.literal.JIntLiteral;
 import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.phylum.expression.literal.JStringLiteral;
@@ -239,88 +241,48 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * }
 	 */
 	private JStatement createAspectClassAdviceStatement_1(CjAdviceDeclaration advice) {
-		JExpression left =
-			new JMethodCallExpression(
-				where,
-				null,
-				GET_DEPLOYMENT_THREAD_METHOD,
-				JExpression.EMPTY);
+	    AstGenerator gen = environment.getAstGenerator();
+	    
+	    // TODO this is should be done in the init method
+	    // / should be replaced with . for packages
+	    // $ should be replaced with . for inners
+	    // Registry is not an inner class	    
+	    String _qualifiedSingletonAspectName =
+	        qualifiedSingletonAspectName.replaceAll("/",".");
+	    
+	    /*
+	    _qualifiedSingletonAspectName =
+	        _qualifiedSingletonAspectName.replaceAll("\\$",".");
+	    */
+	    
+	    gen.writeBlock("{");
+	    gen.writeBlock("if ("+GET_DEPLOYMENT_THREAD_METHOD+"() == Thread.currentThread()) {}");
+	    if(advice.isAroundAdvice()) {
+	        gen.writeBlock("else {");
+	        
+	        if (advice.getReturnType() != typeFactory.getVoidType())
+	        	gen.writeBlock("return ");
+	        
+	        gen.writeBlock(_qualifiedSingletonAspectName+"."+advice.getIdent()+PROCEED_METHOD+"(");
+	        
+	        JFormalParameter params[] = advice.getProceedParameters();
+	        
+	        for (int i = 0; i < params.length; i++) {
+	            if(i > 0) gen.writeBlock(",");
+				gen.writeBlock(params[i].getIdent());
+			}
+	        
+	        gen.writeBlock(");");
+	        gen.writeBlock("}");	        
+        }
+	    gen.writeBlock("}");
+	    
+	    JIfStatement ifStatement = (JIfStatement)gen.endBlock()[0];
+	    ifStatement.setThenClause(advice.getBody());
 
-		CReferenceType threadType = new CClassNameType("java/lang/Thread");
-		JExpression prefix = new JTypeNameExpression(where, threadType);
-		JExpression right =
-			new JMethodCallExpression(
-				where,
-				prefix,
-				"currentThread",
-				JExpression.EMPTY);
-		JExpression cond = new JEqualityExpression(where, true, left, right);
-
-		JStatement[] thenClause = { advice.getBody()};
-
-		JFormalParameter[] params = advice.getProceedParameters();
-
-		List args = new ArrayList();
-		for (int i = 0; i < params.length; i++) {
-			args.add(new JNameExpression(where, params[i].getIdent()));
-		}
-
-		CReferenceType singletonType =
-			new CClassNameType(qualifiedSingletonAspectName);
-
-		JExpression elseExpr =
-			new JMethodCallExpression(
-				where,
-				new JTypeNameExpression(where, singletonType),
-				advice.getIdent() + PROCEED_METHOD,
-				(JExpression[]) args.toArray(new JExpression[0]));
-		JStatement[] elseClause =
-			{ new JReturnStatement(where, elseExpr, null)};
-
-		return new JIfStatement(
-			where,
-			cond,
-			new JBlock(where, thenClause, null),
-			advice.isAroundAdvice()
-				? createAspectClassAdviceStatement_1_1(advice)
-				: null,
-			null);
-
+	    return ifStatement;
 	}
-
-	/**
-	 * Creates the following statement for around advices:
-	 * 
-	 * (return) proceed(..);
-	 */
-	private JStatement createAspectClassAdviceStatement_1_1(CjAdviceDeclaration advice) {
-		JFormalParameter[] params = advice.getProceedParameters();
-
-		List args = new ArrayList();
-		for (int i = 0; i < params.length; i++) {
-			args.add(new JNameExpression(where, params[i].getIdent()));
-		}
-
-		CReferenceType singletonType =
-			new CClassNameType(qualifiedSingletonAspectName);
-
-		JExpression proceedCallExpr =
-			new JMethodCallExpression(
-				where,
-				new JTypeNameExpression(where, singletonType),
-				advice.getIdent() + PROCEED_METHOD,
-				(JExpression[]) args.toArray(new JExpression[0]));
-
-		JStatement[] body = new JStatement[1];
-		if (advice.getReturnType() == typeFactory.getVoidType()) {
-			body[0] = new JExpressionStatement(where, proceedCallExpr, null);
-		} else {
-			body[0] = new JReturnStatement(where, proceedCallExpr, null);
-		};
-
-		return new JBlock(where, body, null);
-
-	}
+	
 
 	/**
 	 * Creates the deploy method for single instance aspects. 
@@ -334,123 +296,38 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 *    return null;
 	 * }
 	 */
+	
 	private JMethodDeclaration createAspectClassDeployMethod() {
-		CType ifcType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
+	    String _qualifiedSingletonAspectName =
+	        qualifiedSingletonAspectName.replaceAll("/",".");
 
-		JFormalParameter param =
-			new JFormalParameter(
-				where,
-				JFormalParameter.DES_GENERATED,
-				ifcType,
-				INSTANCE_TO_DEPLOY,
-				false);
+	    AstGenerator gen = environment.getAstGenerator();
 
-		JFormalParameter[] deployParam = { param };
-		
-		JExpression retExp = new JNullLiteral(where);
+	    gen.writeMethod("public synchronized org.caesarj.runtime.Deployable $deploy(org.caesarj.runtime.Deployable aspectToDeploy)");
+	    gen.writeMethod("{ return null; }");
 
-		JStatement[] body =
-		{
-			new JReturnStatement(where, retExp, null)
-		};
-
-		return 
-			new JMethodDeclaration(
-				where,
-				ACC_PUBLIC | ACC_SYNCHRONIZED,
-				CTypeVariable.EMPTY,
-				ifcType,
-				DEPLOY_METHOD,
-				deployParam,
-				CReferenceType.EMPTY,
-				new JBlock(where, body, null),
-				null,
-				null);
-
+	    return gen.endMethod();
 	}
+	
 
 	/**
 	 * Creates the undeploy method for a single instance aspect.
 	 */
 	private JMethodDeclaration createAspectClassUndeployMethod() {
+	    String _qualifiedSingletonAspectName =
+	        qualifiedSingletonAspectName.replaceAll("/",".");
 
-		JStatement[] statements =
-			{
-				createAspectClassUndeployStatement_1(),
-				createAspectClassUndeployStatement_2(),
-				new JReturnStatement(where, new JNullLiteral(where), null)};
+	    AstGenerator gen = environment.getAstGenerator();
 
-		JBlock body = new JBlock(where, statements, null);
+	    gen.writeMethod("public synchronized org.caesarj.runtime.Deployable $undeploy()");
+	    gen.writeMethod("{");
+	    gen.writeMethod("java.util.Set activeRegistries = ");
+	    gen.writeMethod("(java.util.Set)org.caesarj.runtime.AspectRegistry.threadLocalRegistries.get();");
+	    gen.writeMethod("activeRegistries.remove("+_qualifiedSingletonAspectName+".ajc$perSingletonInstance);");
+	    gen.writeMethod("return null;");
+	    gen.writeMethod("}");
 
-		CType ifcType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
-		return 
-			new JMethodDeclaration(
-				where,
-				ACC_PUBLIC | ACC_SYNCHRONIZED,
-				CTypeVariable.EMPTY,
-				ifcType,
-				UNDEPLOY_METHOD,
-				JFormalParameter.EMPTY,
-				CReferenceType.EMPTY,
-				body,
-				null,
-				null);
-
-	}
-
-	/**
-	 * Set activeRegistries = (Set) AspectRegistry.threadLocalRegistries.get();
-	 */
-	private JStatement createAspectClassUndeployStatement_1() {
-		CType setType = new CClassNameType("java/util/Set");
-
-		JExpression aspectRegistry =
-			new JTypeNameExpression(
-				where,
-				new CClassNameType(CAESAR_SINGLETON_ASPECT_IFC_CLASS));
-		JExpression expr =
-			new JNameExpression(
-				where,
-				aspectRegistry,
-				"threadLocalRegistries");
-
-		JExpression getCall =
-			new JMethodCallExpression(where, expr, "get", JExpression.EMPTY);
-
-		JExpression init = new JCastExpression(where, getCall, setType);
-
-		JVariableDefinition var =
-			new JVariableDefinition(
-				where,
-				0,
-				setType,
-				"activeRegistries",
-				init);
-		return new JVariableDeclarationStatement(where, var, null);
-
-	}
-
-	/**
-	 * activeRegistries.remove(AnAspect.ajc$perSingletonInstance);
-	 */
-	private JStatement createAspectClassUndeployStatement_2() {
-
-		JExpression type =
-			new JTypeNameExpression(
-				where,
-				new CClassNameType(qualifiedSingletonAspectName));
-
-		JExpression prefix = new JNameExpression(where, "activeRegistries");
-		JExpression[] args =
-			{
-				 new JFieldAccessExpression(
-					where,
-					type,
-					PER_SINGLETON_INSTANCE_FIELD)};
-		JExpression methodCall =
-			new JMethodCallExpression(where, prefix, "remove", args);
-
-		return new JExpressionStatement(where, methodCall, null);
+	    return gen.endMethod();
 	}
 	
 	/**

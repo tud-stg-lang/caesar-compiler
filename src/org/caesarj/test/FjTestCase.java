@@ -1,7 +1,6 @@
 package org.caesarj.test;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.PrintWriter;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -244,6 +243,7 @@ class CompilerMock extends Main
 					new KjcSignatureParser());
 			cachedEnvironment =
 				new KjcEnvironment(
+			        this,
 					classReader,
 					new KjcTypeFactory(classReader, options.generic),
 					options);

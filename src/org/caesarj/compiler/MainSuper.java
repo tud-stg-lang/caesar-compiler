@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: MainSuper.java,v 1.12 2004-09-06 13:31:02 aracic Exp $
+ * $Id: MainSuper.java,v 1.13 2004-09-12 14:29:04 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -102,6 +102,7 @@ public abstract class MainSuper extends CompilerBase {
                 options.extdirs,
                 new KjcSignatureParser());
         return new KjcEnvironment(
+            this,
             reader,
             new KjcTypeFactory(reader, options.generic),
             options);

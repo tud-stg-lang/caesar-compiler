@@ -1,4 +1,3 @@
-
 package org.caesarj.compiler;
 
 public interface CaesarTokenTypes {

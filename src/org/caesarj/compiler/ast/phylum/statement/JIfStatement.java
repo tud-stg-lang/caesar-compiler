@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JIfStatement.java,v 1.2 2004-09-06 13:31:34 aracic Exp $
+ * $Id: JIfStatement.java,v 1.3 2004-09-12 14:29:04 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -153,6 +153,8 @@ public class JIfStatement extends JStatement {
   }
 
   public JExpression getCondition() {return cond;}
+  public void setThenClause(JStatement thenClause) {this.thenClause = thenClause;}
+  public void setElseClause(JStatement elseClause) {this.elseClause = elseClause;}
   public JStatement getThenClause() {return thenClause;}
   public JStatement getElseClause() {return elseClause;}
   
