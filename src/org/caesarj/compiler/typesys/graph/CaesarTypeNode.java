@@ -55,14 +55,6 @@ public class CaesarTypeNode {
 		visitor.visitCaesarTypeNode(this);
 	}
 
-	public Iterator declaredInners() {
-		return new ImplicitRelationFilter(enclosingFor.iterator(), true);
-	}
-
-	public Iterator declaredParents() {
-		return new ImplicitRelationFilter(inheritsFrom.iterator(), true);
-	}
-
 	public JavaQualifiedName getQualifiedName() {
 		return qualifiedName;
 	}
@@ -75,29 +67,13 @@ public class CaesarTypeNode {
 		return mixinList;
 	}
 
-	public CaesarTypeNode[] getMixinListAsArray() {
-		return (CaesarTypeNode[])mixinList.toArray(new CaesarTypeNode[mixinList.size()]);
+	public Iterator declaredInners() {
+		return new ImplicitRelationFilter(enclosingFor.iterator(), true);
 	}
-	
-    public String[] getMixinListAsStringArray() {
-        String[] res = new String[mixinList.size()];
-        int i = 0;
-        for (Iterator it = mixinList.iterator(); it.hasNext();) {
-            CaesarTypeNode item = (CaesarTypeNode) it.next();
-            res[i++] = item.getQualifiedName().toString();
-        }
-        return res;
-    }
 
-    public String[] getSuperClassesAsStringArray() {
-        String[] res = new String[inheritsFrom.size()];
-        int i = 0;
-        for (Iterator it = inheritsFrom.iterator(); it.hasNext();) {
-            SuperSubRelation item = (SuperSubRelation) it.next();
-            res[i++] = item.getSuperNode().getQualifiedName().toString();
-        }
-        return res;
-    }
+	public Iterator declaredParents() {
+		return new ImplicitRelationFilter(inheritsFrom.iterator(), true);
+	}
 
 	public Iterator implicitInners() {
 		return new ImplicitRelationFilter(enclosingFor.iterator(), false);
@@ -125,6 +101,10 @@ public class CaesarTypeNode {
 
 	public Iterator parents() {
 		return inheritsFrom.iterator();
+	}
+	
+	public Iterator incrementFor() {
+	    return furtherbindingFor.iterator();
 	}
 	
 	public Kind getKind() {

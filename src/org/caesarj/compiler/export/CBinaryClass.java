@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBinaryClass.java,v 1.6 2004-09-08 13:46:31 aracic Exp $
+ * $Id: CBinaryClass.java,v 1.7 2004-09-08 14:59:16 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -30,6 +30,7 @@ import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.SignatureParser;
 import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.runtime.AdditionalCaesarTypeInformation;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.UnpositionedError;
 

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.23 2004-09-07 14:26:37 aracic Exp $
+ * $Id: CClass.java,v 1.24 2004-09-08 14:59:16 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -41,6 +41,7 @@ import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
+import org.caesarj.runtime.AdditionalCaesarTypeInformation;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.SimpleStringBuffer;

@@ -8,15 +8,17 @@ import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.export.AdditionalCaesarTypeInformation;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
+import org.caesarj.compiler.typesys.graph.FurtherboundFurtherbindingRelation;
+import org.caesarj.compiler.typesys.graph.OuterInnerRelation;
 import org.caesarj.compiler.typesys.graph.SuperSubRelation;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
+import org.caesarj.runtime.AdditionalCaesarTypeInformation;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
@@ -44,6 +46,54 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
 			null, null);
 	}
 	
+	protected AdditionalCaesarTypeInformation constructAdditionalTypeInformation(CaesarTypeNode n) {	    
+	    List mixinList = new LinkedList();
+	    List nestedClasses = new LinkedList();
+	    List incrementFor = new LinkedList();
+	    List superClasses = new LinkedList();
+	    List superIfcs = new LinkedList();
+	    
+	    for (Iterator it = n.getMixinList().iterator(); it.hasNext();) {
+            CaesarTypeNode item = (CaesarTypeNode) it.next();
+            mixinList.add(item.getQualifiedName().toString());
+        }
+	    
+	    for (Iterator it = n.inners(); it.hasNext();) {
+            OuterInnerRelation item = (OuterInnerRelation) it.next();
+            nestedClasses.add(item.getInnerNode().getQualifiedName().toString());
+        }
+	    
+	    for (Iterator it = n.incrementFor(); it.hasNext();) {
+	        FurtherboundFurtherbindingRelation item = (FurtherboundFurtherbindingRelation) it.next();
+            incrementFor.add(item.getFurtherboundNode().getQualifiedName().toString());
+        }
+	    
+	    for (Iterator it = n.parents(); it.hasNext();) {
+            SuperSubRelation item = (SuperSubRelation) it.next();
+            String parentName = item.getSuperNode().getQualifiedName().toString();
+            if(!incrementFor.contains(parentName))
+                superClasses.add(parentName);
+        }
+	    
+	    for (int i = 0; i < interfaces.length; i++) {
+            String ifcName = interfaces[i].getQualifiedName();
+            if(!incrementFor.contains(ifcName) && !superClasses.contains(ifcName))
+                superIfcs.add(ifcName);
+        }
+	    
+        AdditionalCaesarTypeInformation addInfo = new AdditionalCaesarTypeInformation(
+            n.getQualifiedName().toString(),
+            n.isImplicitType(),
+            (String[])mixinList.toArray(new String[mixinList.size()]),
+            (String[])nestedClasses.toArray(new String[nestedClasses.size()]),
+            (String[])incrementFor.toArray(new String[incrementFor.size()]),
+            (String[])superClasses.toArray(new String[superClasses.size()]),
+            (String[])superIfcs.toArray(new String[superIfcs.size()]),
+            getCorrespondingClassDeclaration().getCClass().getQualifiedName()
+        );
+        
+        return addInfo;
+	}
 	
     public void adjustSuperType(CContext context) throws PositionedError {
         try {
@@ -55,20 +105,9 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
             CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
             CaesarTypeNode typeNode = typeSystem.getCaesarTypeGraph().getType(qualifiedName);
 
-            
-            // store additional type infos
-            AdditionalCaesarTypeInformation addInfo = new AdditionalCaesarTypeInformation(
-                typeNode.getQualifiedName().toString(),
-                typeNode.isImplicitType(),
-                typeNode.getMixinListAsStringArray(),
-                new String[]{}, // IVICA nested classes
-                new String[]{}, // IVICA increment for
-                typeNode.getSuperClassesAsStringArray(),
-                new String[]{}, // IVICA super Ifcs
-                getCorrespondingClassDeclaration().getCClass().getQualifiedName()
-            );
-            
-            getCClass().setAdditionalTypeInformation(addInfo);
+            // IVICA this is not the best place for this 
+            getCClass().setAdditionalTypeInformation(
+                constructAdditionalTypeInformation(typeNode));
             
             
             List ifcList = new LinkedList();

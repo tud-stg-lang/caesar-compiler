@@ -42,7 +42,7 @@ public class CaesarByteCodeNavigator {
     public static void main(String[] args) throws IOException {
         CaesarByteCodeNavigator nav = new CaesarByteCodeNavigator("tests/VirtualClassesTests");
         
-        CClass clazz = nav.load("generated/test2/TestCase2$CG$UE");
+        CClass clazz = nav.load("generated/test3/TestCase3$CWG");
         
         System.out.println(clazz.getAdditionalTypeInformation());
     }

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.caesarj.compiler.export.AdditionalCaesarTypeInformation;
+import org.caesarj.runtime.AdditionalCaesarTypeInformation;
 import org.caesarj.util.InconsistencyException;
 
 /**
