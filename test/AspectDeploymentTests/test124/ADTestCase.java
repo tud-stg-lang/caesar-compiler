@@ -108,27 +108,27 @@ public cclass AspectA
 
 public cclass ModelA
 {
-	int _i1;
+    protected int _i1;
 
 
-	float _f1;
+    protected float _f1;
 
 
-	double _d1;
+    protected double _d1;
 
 
-	short _s1;
+    protected short _s1;
 
 
-	byte _b1;
+    protected byte _b1;
 
 
-	char _c1;
+    protected char _c1;
 
 
-	boolean _bool1;
+    protected boolean _bool1;
 
-	long _l1;
+    protected long _l1;
 
 	public void setVal(int i1, float f1, double d1, short s1, byte b1, char c1, boolean bool1, long l1)
 	{

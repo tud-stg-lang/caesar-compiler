@@ -108,7 +108,7 @@ public cclass DeployA
 
 public cclass IntAspect
 {
-	String _id;
+	protected String _id;
 
 	public IntAspect init(String id)
 	{

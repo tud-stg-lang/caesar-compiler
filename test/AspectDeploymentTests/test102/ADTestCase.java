@@ -62,7 +62,7 @@ public deployed cclass StaticAspectA {
 
 public cclass AspectA
 {
-	public final static deployed AspectA THIS = new AspectA();
+	protected final static deployed AspectA THIS = new AspectA();
 
 	pointcut execFoo() : execution(* ADTestCase.foo());
 
@@ -74,7 +74,7 @@ public cclass AspectA
 
 public cclass AspectB extends AspectA
 {
-	public final static deployed AspectB THIS = new AspectB();
+    protected final static deployed AspectB THIS = new AspectB();
 
 	after() : execFoo()
 	{

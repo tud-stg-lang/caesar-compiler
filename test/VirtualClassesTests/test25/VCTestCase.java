@@ -58,7 +58,7 @@ public cclass OuterA
 
 	public cclass InnerA
 	{
-		String _aa;
+		protected String _aa;
 
 		public InnerA()
 		{
@@ -73,7 +73,7 @@ public cclass OuterA
 
 	public cclass InnerB extends InnerA
 	{
-		String _ab;
+		protected String _ab;
 
 
 		public InnerB()

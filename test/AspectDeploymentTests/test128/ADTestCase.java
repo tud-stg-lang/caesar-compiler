@@ -58,7 +58,7 @@ public cclass DeployA
 
 public cclass AspectA
 {
-	String _id;
+    protected String _id;
 
 	public AspectA init(String id)
 	{
@@ -89,9 +89,9 @@ public cclass AspectA
 
 public cclass CalcA
 {
-	String _id;
+    protected String _id;
 
-	int _res = 0;
+    protected int _res = 0;
 
 	public CalcA init(String id)
 	{
@@ -126,8 +126,8 @@ public cclass CalcA
 
 class AnotherThread extends CaesarThread
 {
-	CalcA _a;
-	int _n;
+    protected CalcA _a;
+    protected int _n;
 
 	public AnotherThread(CalcA a, int n)
 

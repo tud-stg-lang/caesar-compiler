@@ -63,7 +63,7 @@ public cclass DeployA
 
 public cclass AspectA
 {
-	String _id;
+    protected String _id;
 
 	public AspectA init(String id)
 	{
@@ -106,11 +106,11 @@ public cclass AspectA
 
 public cclass ModelA
 {
-	int _i1;
+    protected int _i1;
 
-	float _f1;
+    protected float _f1;
 
-	double _d1;
+    protected double _d1;
 
 	public void setVal(int i1, float f1, double d1)
 	{

@@ -52,7 +52,7 @@ public cclass DeployA
 
 public cclass AspectA
 {
-	String _id;
+    protected String _id;
 
 	public AspectA init(String id)
 	{
@@ -84,7 +84,7 @@ public cclass AspectA
 
 public cclass CalcA
 {
-	String _id;
+    protected String _id;
 
 	public CalcA init(String id)
 	{

@@ -120,7 +120,7 @@ public cclass AnotherThread implements Runnable
 
 public cclass AspectA
 {
-	String _id;
+    protected String _id;
 
 	public AspectA init(String id)
 	{

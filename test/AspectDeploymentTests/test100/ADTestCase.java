@@ -35,7 +35,7 @@ public class ADTestCase extends TestCase
 
 public cclass OuterA
 {
-    StringBuffer result;
+    protected StringBuffer result;
 
     public OuterA init(StringBuffer result)
     {
