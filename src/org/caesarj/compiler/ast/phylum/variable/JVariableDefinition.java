@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JVariableDefinition.java,v 1.11 2005-02-09 16:52:56 aracic Exp $
+ * $Id: JVariableDefinition.java,v 1.12 2005-02-10 19:02:02 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -28,6 +28,7 @@ package org.caesarj.compiler.ast.phylum.variable;
 import org.caesarj.compiler.ast.phylum.expression.JArrayInitializer;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CClassContext;
@@ -199,8 +200,12 @@ public class JVariableDefinition extends JLocalVariable {
 		          	      KjcMessages.ASSIGNMENT_BADTYPE, 	rFam+"."+expr.getType(factory).getCClass().getIdent(),   
 		          	      lFam+"."+getType().getCClass().getIdent() );
 		            }
-		            else if(lFam!=null ^ rFam!=null) {
-		                throw new InconsistencyException("(error required here)... trying to assign an object with family to an object without family");
+		            else {
+		                check(
+		                    context,
+		                    !(lFam!=null ^ rFam!=null),
+		                    CaesarMessages.BAD_END_OF_LINE
+	                    );
 		            }
                 }
                 catch (UnpositionedError e) {

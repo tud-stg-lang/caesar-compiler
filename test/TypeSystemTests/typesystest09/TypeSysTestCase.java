@@ -7,47 +7,43 @@ package generated.typesystest09;
  */
 public class TypeSysTestCase {
 
-    final G g1 = null;
-    final G g2 = null;
-    
-    final g1.X x1 = null;
-    final g2.X x2 = null;
-    
-    x1.N n1 = null;
-    x2.N n2 = null;
-    
+	final B b = new B();
+	
+	void foo1() {
+	    			m1(b.x1);
+	    			m2(b.g1, b.x1);
+	    b.g1.X v1 = m3();
+	    b.g2.X v2 = m4(b.g2);
+	    b.g2.X v3 = m5(b.g2, b.x2);
+	    b.g1.X v4 = m6(b.g2, b.x2);
+	    			m7(b.g2, b.x2, b.n2);
+	    b.g1.X v5 = m8(b.g1, b.x1, b.n1);
+	}
 
-	public void foo() {
-	    //g2.X x2 = bar(); // should not work
-	    g1.X x = bar();
-	    x = g1.new X();
-	    x = bar();
-	    bar(x1);
-	    bar(null, null);
-	    bar(g1, x1);
-	    
-	    x = bar(g1);
-	    //x = bar(g2); // should not work
-	    
-	    //x = g1.new X();	    	   
+	void foo2() {
+	    //b.x1.N n = b.n1;
 	}
 	
-	public g1.X bar() {
-	    return null;
-	}		
-
-	public void bar(g1.X x) {	    
-	}		
-
-	public void bar(final G g, g.X x) {	    
-	}		
-
-	public g.X bar(final G g) {
-	    return null;
-	}
+	void 	m1(b.g1.X x) 		{ }
+	void 	m2(final G g, g.X x) 	{ }	
+	b.g1.X 	m3() 					{ return null; }
+	g.X 	m4(final G g) 			{ return null; }
+	g.X 	m5(final G g, g.X x) 	{ return null; }
+	b.g1.X 	m6(final G g, g.X x) 	{ return null; }
+	void 	m7(final G g, g.X x, x.N n) {}
+	g.X		m8(final G g, g.X x, x.N n) {return null;}
 }
 
-public cclass B {
+
+public class B {
+    public final G g1 = null;
+    public final G g2 = null;
+    
+    public final g1.X x1 = null;
+    public final g2.X x2 = null;
+    
+    public x1.N n1 = null;
+    public x2.N n2 = null;
 }
 
 public cclass G {
