@@ -21,6 +21,7 @@ import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.constants.KjcMessages;
+import org.caesarj.compiler.context.AdditionalGenerationContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.joinpoint.PrivilegedAccessHandler;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
@@ -509,6 +510,9 @@ public class CCjSourceClass extends CSourceClass
         String[] classPath =
             Utils.splitQualifiedName(getSourceFile(), File.separatorChar);
 
+        // IVICA -> see AdditionalGenerationContext
+        AdditionalGenerationContext.instance().setCurrentClass(this);
+        
         try
         {
             AttributedClassInfo classInfo =
