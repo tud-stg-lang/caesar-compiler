@@ -72,7 +72,6 @@
 @literal	after
 @literal	around
 @literal	before
-@literal	crosscutting
 @literal	declare
 @literal	deploy
 @literal	deployed
