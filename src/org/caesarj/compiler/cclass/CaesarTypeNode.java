@@ -212,6 +212,8 @@ public class CaesarTypeNode {
     public void addImplicitTypesAndRelations(Set visited, Set added) {
         if(visited.contains(this)) return;
         
+        visited.add(this);
+        
         for(Iterator it = parents.iterator(); it.hasNext();) {
             CaesarTypeNode parent = (CaesarTypeNode) it.next();
             parent.addImplicitTypesAndRelations(visited, added);
@@ -268,8 +270,6 @@ public class CaesarTypeNode {
                 }
             }
         }
-        
-        visited.add(this);
         
         // recurse into inners
         for (Iterator it = inners.keySet().iterator(); it.hasNext();) {
