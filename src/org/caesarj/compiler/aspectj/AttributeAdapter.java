@@ -41,7 +41,7 @@ public class AttributeAdapter extends Attribute {
 	 * 
 	 * @return int
 	 */
-	protected int getTag() {
+	 public int getTag() {
 		//XXX
 		return ajAttribute.hashCode();
 	}

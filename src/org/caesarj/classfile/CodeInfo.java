@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CodeInfo.java,v 1.3 2004-02-09 17:34:16 ostermann Exp $
+ * $Id: CodeInfo.java,v 1.4 2004-04-14 11:49:13 klose Exp $
  */
 
 package org.caesarj.classfile;
@@ -159,7 +159,7 @@ public class CodeInfo extends Attribute {
   /**
    * Returns the attribute's tag
    */
-  /*package*/ protected int getTag() {
+  /*package*/ public int getTag() {
     return ClassfileConstants2.ATT_CODE;
   }
 

@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: AttributeList.java,v 1.2 2004-02-08 16:47:45 ostermann Exp $
+ * $Id: AttributeList.java,v 1.3 2004-04-14 11:49:13 klose Exp $
  */
 
 package org.caesarj.classfile;
@@ -263,4 +263,8 @@ import org.caesarj.util.Utils;
   // --------------------------------------------------------------------
 
   private Attribute[]		attributes;
+
+	public Attribute[] asArray() {
+		return attributes;
+	}
 }

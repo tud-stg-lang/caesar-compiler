@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Attribute.java,v 1.3 2004-04-07 09:20:37 klose Exp $
+ * $Id: Attribute.java,v 1.4 2004-04-14 11:49:13 klose Exp $
  */
 
 package org.caesarj.classfile;
@@ -261,7 +261,7 @@ public abstract class Attribute {
   /**
    * Returns the attribute's tag
    */
-  /*package*/ protected abstract int getTag();
+  /*package*/ public abstract int getTag();
 
   /**
    * Returns the space in bytes used by this attribute in the classfile

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBinaryClass.java,v 1.1 2004-02-08 16:47:45 ostermann Exp $
+ * $Id: CBinaryClass.java,v 1.2 2004-04-14 11:49:13 klose Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -23,8 +23,12 @@ package org.caesarj.compiler.export;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import org.caesarj.classfile.Attribute;
 import org.caesarj.classfile.ClassInfo;
+import org.caesarj.classfile.ClassfileConstants2;
+import org.caesarj.classfile.ExtraModifiersAttribute;
 import org.caesarj.classfile.FieldInfo;
+import org.caesarj.classfile.GenericAttribute;
 import org.caesarj.classfile.InnerClassInfo;
 import org.caesarj.classfile.MethodInfo;
 import org.caesarj.compiler.ClassReader;
@@ -101,6 +105,24 @@ public class CBinaryClass extends CClass {
 
     setInnerClasses(loadInnerClasses(factory, classInfo.getInnerClasses()));
 
+    // analyse and apply caesarj attributes
+    Attribute attributes[] = classInfo.getAttributes().asArray();
+    for (int i = 0; i < attributes.length; i++) {
+		Attribute attribute = attributes[i];
+		// we only look at generic attributes
+		if (attribute.getTag()==ClassfileConstants2.ATT_GENERIC){
+			GenericAttribute ga =((GenericAttribute)attribute); 
+			String name = ga.getName();
+			// is it an extra modifiers attribute?
+			if (name.equals(ExtraModifiersAttribute.AttributeName)){
+				ExtraModifiersAttribute ema = ((ExtraModifiersAttribute)ga);
+				int extraModifiers = ema.getExtraModifiers();
+				setModifiers(getModifiers()|extraModifiers);
+			}
+		}
+	}
+
+    
     close(interfaces, fields_H, methods_V);
   }
 

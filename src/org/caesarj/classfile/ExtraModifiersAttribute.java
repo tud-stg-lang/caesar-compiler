@@ -17,7 +17,7 @@ import java.io.IOException;
 public class ExtraModifiersAttribute extends GenericAttribute {
 	
 	/** Name constants */
-	public final static String	AttributePrefix = "org.caesarj.compiler.";
+	public final static String	AttributePrefix = "org.caesarj.compiler.classfile.";
 	public final static String	AttributeName  = AttributePrefix + "ExtraModifiers";
 	
 	/** The binary mask for the modifiers to store */
