@@ -15,13 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldAccessExpression.java,v 1.8 2004-10-17 20:59:37 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.9 2004-10-27 17:22:45 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.ast.phylum.expression.literal.JLiteral;
 import org.caesarj.compiler.ast.visitor.IVisitor;
+import org.caesarj.compiler.cclass.CastUtils;
 import org.caesarj.compiler.codegen.CodeLabel;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
@@ -346,11 +347,26 @@ public class JFieldAccessExpression extends JExpression {
         return accessor;
       }
     } else {    
-      CType       fieldType = field.getType();
+     
+        if(getIdent().equals("n1")) {
+            boolean stop = true;
+        }
+        
+      // IVICA: insert cast
+        if(!context.isLeftSide()) {
+	      CType castType = 
+	          CastUtils.instance().castFrom(
+	              context, field.getType(), context.getClassContext().getCClass());
+	      
+	      if(castType != null) {
+	          return new JCastExpression(
+	              getTokenReference(),
+	              this,
+	              castType
+	          );
+	      }
+        }
       
-       if (fieldType.isClassType() && (!field.isStatic())) {
-         
-      }
       return this;
     }
   }

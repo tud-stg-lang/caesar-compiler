@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.54 2004-10-18 15:01:04 aracic Exp $
+ * $Id: Caesar.g,v 1.55 2004-10-27 17:23:00 aracic Exp $
  */
 
 /*
@@ -1536,7 +1536,7 @@ jAssignmentExpression []
   self = jConditionalExpression[]
   (
     ASSIGN right = jAssignmentExpression[]
-      { self = new CjAssignmentExpression(self.getTokenReference(), self, right); }
+      { self = new JAssignmentExpression(self.getTokenReference(), self, right); }
   |
     oper = jCompoundAssignmentOperator[] right = jAssignmentExpression[]
       { self = new JCompoundAssignmentExpression(self.getTokenReference(), oper, self, right); }

@@ -1,7 +1,6 @@
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.ast.visitor.IVisitor;
-import org.caesarj.compiler.cclass.CastUtils;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
@@ -45,6 +44,7 @@ public class CjMethodCallExpression extends JExpression implements CaesarConstan
 
         JExpression expr;
                 
+        /*
         if(prefix != null) {
 	        prefix = prefix.analyse(context);
 	                
@@ -71,6 +71,12 @@ public class CjMethodCallExpression extends JExpression implements CaesarConstan
         else {
             expr = new JMethodCallExpression(getTokenReference(), prefix, ident, args);
         }
+        */
+        
+        if(prefix != null) {
+            prefix = prefix.analyse(context);
+        }
+        expr = new JMethodCallExpression(getTokenReference(), prefix, ident, args);
 
         // analyse expression
         expr = expr.analyse(context);
@@ -82,25 +88,24 @@ public class CjMethodCallExpression extends JExpression implements CaesarConstan
             CClass returnClass = returnType.getCClass();
             if(returnClass.isMixinInterface()) {
                 
-                String newReturnClassQn = null;
+                String contextClassName = null;
                 
-                if(prefix != null) {
-                    newReturnClassQn = 
-    	                context.getEnvironment().getCaesarTypeSystem().
-    	                	findInContextOf(
-	                	        returnClass.getQualifiedName(),
-	                	        prefix.getType(factory).getCClass().convertToIfcQn()
-    		                );
+                if(prefix instanceof JSuperExpression) {
+                    contextClassName = context.getClassContext().getCClass().convertToIfcQn(); 		        
+                }
+                else if(prefix != null) {
+                    contextClassName = prefix.getType(factory).getCClass().convertToIfcQn();    		        
                 }
                 else if(context.getClassContext().getCClass().isMixin()) {
-                    newReturnClassQn = 
-    	                context.getEnvironment().getCaesarTypeSystem().
-    	                	findInContextOf(
-	                	        returnClass.getQualifiedName(),
-	                	        context.getClassContext().getCClass().convertToIfcQn()
-    		                );
-                    
+        	        contextClassName = context.getClassContext().getCClass().convertToIfcQn();                    
                 }
+                
+                String newReturnClassQn = 
+	                context.getEnvironment().getCaesarTypeSystem().
+	                	findInContextOf(
+                	        returnClass.getQualifiedName(),
+                	        contextClassName
+		                );
                 
                 if(newReturnClassQn != null) {
 		            CClass newReturnClass = 

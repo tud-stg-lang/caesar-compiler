@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JLocalVariableExpression.java,v 1.2 2004-09-06 13:31:35 aracic Exp $
+ * $Id: JLocalVariableExpression.java,v 1.3 2004-10-27 17:22:45 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -23,6 +23,7 @@ package org.caesarj.compiler.ast.phylum.expression;
 import org.caesarj.compiler.ast.phylum.expression.literal.JLiteral;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.ast.visitor.IVisitor;
+import org.caesarj.compiler.cclass.CastUtils;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
@@ -38,214 +39,255 @@ import org.caesarj.util.TokenReference;
  */
 public class JLocalVariableExpression extends JExpression {
 
-  // ----------------------------------------------------------------------
-  // CONSTRUCTORS
-  // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // CONSTRUCTORS
+    // ----------------------------------------------------------------------
 
-  /**
-   * Construct a node in the parsing tree
-   * @param where the line of this node in the source code
-   */
-  public JLocalVariableExpression(TokenReference where, JLocalVariable variable) {
-    super(where);
-    this.variable = variable;
-  }
-
-  // ----------------------------------------------------------------------
-  // ACCESSORS
-  // ----------------------------------------------------------------------
-
-  /**
-   * Returns true if this field accept assignment
-   */
-  public boolean isLValue(CExpressionContext context) {
-    return !variable.isFinal() || !mayBeInitialized(context);
-  }
-
-  /**
-   * Returns true if there must be exactly one initialization of the variable. 
-   *
-   * @return true if the variable is final.
-   */
-  public boolean isFinal() {
-    return variable.isFinal();
-  }
- 
-  /**
-   * Returns true if this field is already initialized
-   */
-  public boolean isInitialized(CExpressionContext context) {
-    return CVariableInfo.isInitialized(context.getBodyContext().getVariableInfo(variable.getIndex()));
-  }
-
-  /**
-   * Returns true if this field may be initialized (used for assignment) 
-   */
-  private boolean mayBeInitialized(CExpressionContext context) {
-    return CVariableInfo.mayBeInitialized(context.getBodyContext().getVariableInfo(variable.getIndex()));
-  }
-
-  /**
-   * Declares this variable to be initialized.
-   *
-   */
-  public void setInitialized(CExpressionContext context) {
-    context.getBodyContext().setVariableInfo(variable.getIndex(), CVariableInfo.INITIALIZED);
-  }
-
-  /**
-   * Returns the position of this variable in the sets of local vars
-   */
-  public int getPosition() {
-    return variable.getPosition();
-  }
-
-  /**
-   * Compute the type of this expression (called after parsing)
-   * @return the type of this expression
-   */
-  public CType getType(TypeFactory factory) {
-    return variable.getType();
-  }
-
-  public String getIdent() {
-    return variable.getIdent();
-  }
-
-  /**
-   * Tests whether this expression denotes a compile-time constant (JLS 15.28).
-   *
-   * @return	true iff this expression is constant
-   */
-  public boolean isConstant() {
-    return variable.isConstant();
-  }
-
-  /**
-   * Returns the literal value of this field
-   */
-  public JLiteral getLiteral() {
-    return (JLiteral)variable.getValue();
-  }
-
-  public JLocalVariable getVariable() {
-    return variable;
-  }
-
-  // ----------------------------------------------------------------------
-  // SEMANTIC ANALYSIS
-  // ----------------------------------------------------------------------
-
-  /**
-   * Analyses the expression (semantically).
-   * @param	context		the analysis context
-   * @return	an equivalent, analysed expression
-   * @exception	PositionedError	the analysis detected an error
-   */
-  public JExpression analyse(CExpressionContext context) throws PositionedError {
-    if (!context.isLeftSide() || !context.discardValue()) {
-      variable.setUsed();
-    }
-    if (context.isLeftSide()) {
-      variable.setAssigned(getTokenReference(), context.getBodyContext());
+    /**
+     * Construct a node in the parsing tree
+     * 
+     * @param where
+     *            the line of this node in the source code
+     */
+    public JLocalVariableExpression(
+        TokenReference where,
+        JLocalVariable variable) {
+        super(where);
+        this.variable = variable;
     }
 
-    check(context,
-	  CVariableInfo.isInitialized(context.getBodyContext().getVariableInfo(variable.getIndex()))
-	  || (context.isLeftSide() && context.discardValue()),
-	  KjcMessages.UNINITIALIZED_LOCAL_VARIABLE, variable.getIdent());
+    // ----------------------------------------------------------------------
+    // ACCESSORS
+    // ----------------------------------------------------------------------
 
-    if (variable.isConstant() && !context.isLeftSide()) {
-      return variable.getValue();
+    /**
+     * Returns true if this field accept assignment
+     */
+    public boolean isLValue(CExpressionContext context) {
+        return !variable.isFinal() || !mayBeInitialized(context);
     }
 
-    return this;
-  }
-
-  // ----------------------------------------------------------------------
-  // CODE GENERATION
-  // ----------------------------------------------------------------------
-  public boolean equals(Object o) {
-    return (o instanceof JLocalVariableExpression) &&
-      variable.equals(((JLocalVariableExpression)o).variable);
-  }
-
-  /**
-   * Generates JVM bytecode to evaluate this expression.
-   *
-   * @param	code		the bytecode sequence
-   * @param	discardValue	discard the result of the evaluation ?
-   */
-  public void genCode(GenerationContext context, boolean discardValue) {
-    CodeSequence code = context.getCodeSequence();
-
-    if (! discardValue) {
-      setLineNumber(code);
-      variable.genLoad(context);
+    /**
+     * Returns true if there must be exactly one initialization of the variable.
+     * 
+     * @return true if the variable is final.
+     */
+    public boolean isFinal() {
+        return variable.isFinal();
     }
-  }
 
-  /**
-   * Generates JVM bytecode to store a value into the storage location
-   * denoted by this expression.
-   *
-   * Storing is done in 3 steps :
-   * - prefix code for the storage location (may be empty),
-   * - code to determine the value to store,
-   * - suffix code for the storage location.
-   *
-   * @param	code		the code list
-   */
-  public void genStartStoreCode(GenerationContext context) {
-    // nothing to do here
-  }
-
-  /**
-   * Generates JVM bytecode to for compound assignment, pre- and 
-   * postfix expressions.
-   *
-   * @param	code		the code list
-   */
-  public void genStartAndLoadStoreCode(GenerationContext context, boolean discardValue) {
-    genCode(context, discardValue);
-  }
-
-  /**
-   * Generates JVM bytecode to store a value into the storage location
-   * denoted by this expression.
-   *
-   * Storing is done in 3 steps :
-   * - prefix code for the storage location (may be empty),
-   * - code to determine the value to store,
-   * - suffix code for the storage location.
-   *
-   * @param	code		the code list
-   * @param	discardValue	discard the result of the evaluation ?
-   */
-  public void genEndStoreCode(GenerationContext context, boolean discardValue) {
-    CodeSequence        code = context.getCodeSequence();
-    TypeFactory         factory = context.getTypeFactory();
-
-    if (!discardValue) {
-      int	opcode;
-
-      if (getType(factory).getSize() == 2) {
-	opcode = opc_dup2;
-      } else {
-	opcode = opc_dup;
-      }
-      code.plantNoArgInstruction(opcode);
+    /**
+     * Returns true if this field is already initialized
+     */
+    public boolean isInitialized(CExpressionContext context) {
+        return CVariableInfo.isInitialized(context.getBodyContext()
+            .getVariableInfo(variable.getIndex()));
     }
-    variable.genStore(context);
-  }
-  
-  public void recurse(IVisitor s) {
-      variable.accept(s);
-  }
 
-  // ----------------------------------------------------------------------
-  // DATA MEMBERS
-  // ----------------------------------------------------------------------
+    /**
+     * Returns true if this field may be initialized (used for assignment)
+     */
+    private boolean mayBeInitialized(CExpressionContext context) {
+        return CVariableInfo.mayBeInitialized(context.getBodyContext()
+            .getVariableInfo(variable.getIndex()));
+    }
 
-  JLocalVariable	variable;
+    /**
+     * Declares this variable to be initialized.
+     *  
+     */
+    public void setInitialized(CExpressionContext context) {
+        context.getBodyContext().setVariableInfo(
+            variable.getIndex(),
+            CVariableInfo.INITIALIZED);
+    }
+
+    /**
+     * Returns the position of this variable in the sets of local vars
+     */
+    public int getPosition() {
+        return variable.getPosition();
+    }
+
+    /**
+     * Compute the type of this expression (called after parsing)
+     * 
+     * @return the type of this expression
+     */
+    public CType getType(TypeFactory factory) {
+        return variable.getType();
+    }
+
+    public String getIdent() {
+        return variable.getIdent();
+    }
+
+    /**
+     * Tests whether this expression denotes a compile-time constant (JLS
+     * 15.28).
+     * 
+     * @return true iff this expression is constant
+     */
+    public boolean isConstant() {
+        return variable.isConstant();
+    }
+
+    /**
+     * Returns the literal value of this field
+     */
+    public JLiteral getLiteral() {
+        return (JLiteral) variable.getValue();
+    }
+
+    public JLocalVariable getVariable() {
+        return variable;
+    }
+
+    // ----------------------------------------------------------------------
+    // SEMANTIC ANALYSIS
+    // ----------------------------------------------------------------------
+
+    /**
+     * Analyses the expression (semantically).
+     * 
+     * @param context
+     *            the analysis context
+     * @return an equivalent, analysed expression
+     * @exception PositionedError
+     *                the analysis detected an error
+     */
+    public JExpression analyse(CExpressionContext context)
+        throws PositionedError {
+
+        // IVICA: insert cast
+        if(!context.isLeftSide()) {
+	        CType castType = 
+	            CastUtils.instance().castFrom(
+	                context, variable.getType(), context.getClassContext().getCClass());
+	        
+	        if(castType != null) {
+	            return new JCastExpression(
+	                getTokenReference(),
+	                this,
+	                castType
+	            );
+	        }
+        }
+            
+        
+        if (!context.isLeftSide() || !context.discardValue()) {
+            variable.setUsed();
+        }
+        if (context.isLeftSide()) {
+            variable.setAssigned(getTokenReference(), context.getBodyContext());
+        }
+
+        check(
+            context,
+            CVariableInfo.isInitialized(context.getBodyContext()
+                .getVariableInfo(variable.getIndex()))
+                || (context.isLeftSide() && context.discardValue()),
+            KjcMessages.UNINITIALIZED_LOCAL_VARIABLE,
+            variable.getIdent());
+
+        if (variable.isConstant() && !context.isLeftSide()) {
+            return variable.getValue();
+        }
+
+        return this;
+    }    
+
+    // ----------------------------------------------------------------------
+    // CODE GENERATION
+    // ----------------------------------------------------------------------
+    public boolean equals(Object o) {
+        return (o instanceof JLocalVariableExpression)
+            && variable.equals(((JLocalVariableExpression) o).variable);
+    }
+
+    /**
+     * Generates JVM bytecode to evaluate this expression.
+     * 
+     * @param code
+     *            the bytecode sequence
+     * @param discardValue
+     *            discard the result of the evaluation ?
+     */
+    public void genCode(GenerationContext context, boolean discardValue) {
+        CodeSequence code = context.getCodeSequence();
+
+        if (!discardValue) {
+            setLineNumber(code);
+            variable.genLoad(context);
+        }
+    }
+
+    /**
+     * Generates JVM bytecode to store a value into the storage location denoted
+     * by this expression.
+     * 
+     * Storing is done in 3 steps : - prefix code for the storage location (may
+     * be empty), - code to determine the value to store, - suffix code for the
+     * storage location.
+     * 
+     * @param code
+     *            the code list
+     */
+    public void genStartStoreCode(GenerationContext context) {
+        // nothing to do here
+    }
+
+    /**
+     * Generates JVM bytecode to for compound assignment, pre- and postfix
+     * expressions.
+     * 
+     * @param code
+     *            the code list
+     */
+    public void genStartAndLoadStoreCode(
+        GenerationContext context,
+        boolean discardValue) {
+        genCode(context, discardValue);
+    }
+
+    /**
+     * Generates JVM bytecode to store a value into the storage location denoted
+     * by this expression.
+     * 
+     * Storing is done in 3 steps : - prefix code for the storage location (may
+     * be empty), - code to determine the value to store, - suffix code for the
+     * storage location.
+     * 
+     * @param code
+     *            the code list
+     * @param discardValue
+     *            discard the result of the evaluation ?
+     */
+    public void genEndStoreCode(GenerationContext context, boolean discardValue) {
+        CodeSequence code = context.getCodeSequence();
+        TypeFactory factory = context.getTypeFactory();
+
+        if (!discardValue) {
+            int opcode;
+
+            if (getType(factory).getSize() == 2) {
+                opcode = opc_dup2;
+            }
+            else {
+                opcode = opc_dup;
+            }
+            code.plantNoArgInstruction(opcode);
+        }
+        variable.genStore(context);
+    }
+
+    public void recurse(IVisitor s) {
+        variable.accept(s);
+    }
+
+    // ----------------------------------------------------------------------
+    // DATA MEMBERS
+    // ----------------------------------------------------------------------
+
+    JLocalVariable variable;
 }

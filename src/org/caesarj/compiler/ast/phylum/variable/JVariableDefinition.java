@@ -15,16 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JVariableDefinition.java,v 1.4 2004-10-18 16:06:59 aracic Exp $
+ * $Id: JVariableDefinition.java,v 1.5 2004-10-27 17:22:46 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
 
 import org.caesarj.compiler.ast.phylum.expression.JArrayInitializer;
-import org.caesarj.compiler.ast.phylum.expression.JCastExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
-import org.caesarj.compiler.cclass.CastUtils;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CClassContext;
@@ -150,23 +148,6 @@ public class JVariableDefinition extends JLocalVariable {
 	      KjcMessages.VAR_UNKNOWN,
 	      ((JTypeNameExpression)expr).getQualifiedName());
       }
-      
-      // IVICA this breaks the original transformation process
-      // the reason is that this analyse method doesn't return the checked variable definition,
-      // so no possibility to replace it in the parent through the returned value
-      // change this adn add an extra class CjVariableDefinition
-      CType exprType = expr.getType(factory);
-      
-      CType castType = CastUtils.instance().castFrom(context, exprType, context.getClassContext().getCClass());
-      
-      if(castType != null) {
-          expr = new JCastExpression(
-              getTokenReference(),
-              expr,
-              castType
-          );
-      }
-      
 
       check(context,
 	    expr.isAssignableTo(context, type),
