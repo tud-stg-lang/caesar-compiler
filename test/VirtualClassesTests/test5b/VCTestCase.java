@@ -66,7 +66,7 @@ public cclass A extends X {
 			A.this.a();
 		}
 
-		public cclass C extends CC {
+		public cclass C {
 
 			public cclass D {
 				public void d() {}
