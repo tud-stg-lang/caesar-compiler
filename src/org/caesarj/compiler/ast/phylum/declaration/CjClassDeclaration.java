@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjClassDeclaration.java,v 1.31 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: CjClassDeclaration.java,v 1.32 2005-03-30 14:21:44 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -190,7 +190,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
         this.declares = declares;      
         
         // structural detection of crosscutting property
-        if ((advices.length > 0) || (pointcuts.length > 0))
+        if ((advices.length > 0) || (pointcuts.length > 0) || (declares != null && declares.length > 0))
             this.modifiers |= ACC_CROSSCUTTING;
         
         // add wrappee field and method
