@@ -1,4 +1,71 @@
 VC_12 - 17.09.2004
+- Caesar Attribut generation
+	we use GenericAttribute to store serialized Objects containing the information
+	Currently there are two kinds of stored structures:
+	(1) org.caesarj.runtime.AdditionalCaesarTypeInformation
+	    Since cclass interface hierarchy reassembles the Caesar Type System
+	    This attribute is stored into the mixin interface .class file
+	    The attribute strucuture is as follows.
+	    String qn; // qualified name of the 
+        boolean implicit;
+        String[] mixinList;
+	 	String[] nestedClasses;
+	    String[] incrementFor;
+		String[] superClasses;
+		String[] superInterfaces;
+		String implClassName;
+		We use this information to reassemble the Caesar Type System from Java Bytecode.
+		This is relevant for binary caesar libraries, incremental compilation and Hierarchy
+		View in the Caesar GUI. 
+	(2) extra modifiers stored in Integer
+- ByteCodeNavigator
+	using the bytecode navigator (org.caesarj.navigator), 
+	AdditionalCaesarTypeInformation can easily be extracted outside of the compiler;
+	relevant for Hierarchy View in the Caesar GUI
+- AstGenerator added
+    now method declarations and statement bodies can be created using Java snippets
+    Parser has been changed in order to allow calling jBlock and jMethodDefinition from outside.
+- Visitor restructured
+	- The old visitor was too difficult to use and inconsitent
+	- Improvements
+		- visit method takes only AST node as parameter (no passing of whole state as parameter anymore)
+		- the node itself contains the recursion code
+		- default behavior for a set of ast elements can be easily defined, by preserving the ability 
+		  to override the default behavior for a subset of nodes, e.g., we can handle all JTypeDeclarations
+		  equaly except JInterfaceDeclaration
+	- The new visitor is implemented using the reflection
+		- There exist two type of methods
+		  (1) boolean visit(ASTELEMENT self) // called before the children of the node are visited
+		  (2) void endVisit(ASTELEMENT self) // called after a node and its children have been visited
+		- returning false in the visit method stops the recursion into the children of the node
+		- accept method in the node itself is implemented using the reflection
+			- the algorithm searchs in the visitor object for a matching method signature
+			- if it can not be found, it continues searching for the signature having the superclass of
+			  the node as type of the ASTELEMENT parameter, etc.
+			- if a method is found, then it is invoked
+			- otherwise, if JPhylum is reached and not found in the visitor, the search algorithm stops
+- Since org.caesarj.util has is already contained in cjbuildtools.jar it has been removed 
+  from the source dir
+- Automatic code replacement for cclass instantiations
+	- CjQualifiedInstanceCreation
+	- CjUnqualifiedInstanceCreation
+	These AST nodes serve now as switch, which decides if a new call is transformed to a factory method call
+	or to a plain java new call.
+- Automatic binding of references to virtual classes to most specific one known in the current context
+	- CjMethodCallExpression
+		- prefix of the method call casted depending on the context of the calling class
+		- return type of the method call casted depending on the context given by the prefix
+	- CjAssigmentExpression
+		- right expression casted depending on the context of the calling class
+	- CaesarTypeNode getTypeInContextOf(CaesarTypeNode n) in CaesarTypeNode has been introduced
+		if the qualified name of n is A.B.C.D.E	and the qualified name of 'this' node is E.F.G.H
+		then the qualified name of the most specific node is A.B.C.H 
+		if A is subtype of E and A.B subtype of E.F and A.B.C subtype of E.F.G
+		otherwise E.F.G.H is returned
+- FJ legacy code has been removed 
+	- CjConstructorCall
+	- CjConstructorBlock
+	- CjMethodCallExpression has been cleaned up
 - Aspect deployment
     - The amount of generated code for deployment support is significantly reduced.
       Now only Registry class is generated. Other support classes are now used as normal
