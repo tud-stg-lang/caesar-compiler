@@ -3,7 +3,7 @@ package org.caesarj.compiler;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.srcgraph.TypeNode;
 
 /**
  * Stores Information about a compiler pass.
@@ -32,7 +32,7 @@ public class CompilerPass {
      */
     public void begin() {
         for(Iterator it=typesToCompile.iterator(); it.hasNext();) {
-            ((JTypeDeclaration)it.next()).setEnabled(true);
+            ((TypeNode)it.next()).setEnabled(true);
         }
     }
 
@@ -42,7 +42,7 @@ public class CompilerPass {
      */
     public void end() {
         for(Iterator it=typesToCompile.iterator(); it.hasNext();) {
-            ((JTypeDeclaration)it.next()).setEnabled(false);
+            ((TypeNode)it.next()).setEnabled(false);
         }
     }
 

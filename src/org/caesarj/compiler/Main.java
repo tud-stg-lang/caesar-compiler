@@ -4,15 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
-import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.cclass.CClassPreparation;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
@@ -22,6 +20,11 @@ import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
+import org.caesarj.compiler.srcgraph.*;
+import org.caesarj.compiler.srcgraph.GraphGenerator;
+import org.caesarj.compiler.srcgraph.RegularTypeNode;
+import org.caesarj.compiler.srcgraph.SourceDependencyGraph;
+import org.caesarj.compiler.srcgraph.TypeNode;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.tools.antlr.extra.InputBuffer;
 import org.caesarj.tools.antlr.runtime.ParserException;
@@ -42,6 +45,8 @@ public class Main extends MainSuper implements Constants {
 
     // The used weaver. An instance ist created when it's needed in generateAndWeaveCode
     private CaesarWeaver weaver;
+    
+    private SourceDependencyGraph dependencyGraph = new SourceDependencyGraph();
 
     /**
      * @param workingDirectory the working directory
@@ -108,18 +113,20 @@ public class Main extends MainSuper implements Constants {
                 
         joinAll(tree);                  
         if(errorFound) return false;
+        
+        // CTODO prepareVirtualClasses: transform extends and generate factory methods
+        
+        generateSourceDependencyGraph(tree);
 
         CompilerPass compilerPass = 
-            generateCompilerPassInfo(tree);
+            generateCompilerPassInfo();
             
         while(compilerPass != null) {       
             
             compilerPass.begin();
             
             {
-                // CTODO mix all composite types which super classes has been already compiled
-                
-                checkAllInterfaces(tree);       
+                checkAllInterfaces(tree);
                 if(errorFound) return false;
                         
                 checkAllInitializers(tree);     
@@ -135,6 +142,8 @@ public class Main extends MainSuper implements Constants {
             
             compilerPass = compilerPass.getNextPass(); 
         }
+        
+        tree = null;
         
         if(!noWeaveMode()) {        
             // CTODO weave code here
@@ -157,23 +166,48 @@ public class Main extends MainSuper implements Constants {
         return true;
     }
 
+
     /**
      * Here CompilerPassInfo List gets created
      */
-    protected CompilerPass generateCompilerPassInfo(JCompilationUnit[] tree) {
-        // CTODO this is only hardcoded, prepared code
-        CompilerPass pass2 = new CompilerPass();  
-		CompilerPass pass1 = new CompilerPass(pass2);
+    protected CompilerPass generateCompilerPassInfo() {        
+        HashMap passMap = new HashMap();
         
-        JTypeDeclaration inners[] = tree[0].getInners();
-        
-        for(int i=0; i<9; i++)
-            pass1.getTypesToCompile().add(inners[i]);
+        for(Iterator it=dependencyGraph.iterator(); it.hasNext(); ) {
+            TypeNode node = (TypeNode)it.next();
+            node.setEnabled(false);
+                   
+            int level = node.getLevel();
             
-        for(int i=9; i<10; i++)
-            pass2.getTypesToCompile().add(inners[i]);            
+            CompilerPass pass = (CompilerPass)passMap.get(new Integer(level));
+                     
+            if(pass == null) {
+                pass = new CompilerPass();
+                passMap.put(new Integer(level), pass);
+            }
+                                    
+            if(node instanceof RegularTypeNode) {
+                pass.getTypesToCompile().add(node);
+            }
+            else if(node instanceof CompositeTypeNode) {                
+                pass.getTypesToMix().add(node);
+            }
+        } 
         
-        return pass1;
+        CompilerPass firstPass   = (CompilerPass)passMap.get(new Integer(0));
+        CompilerPass lastPass    = firstPass;
+        CompilerPass currentPass = null;
+        for(int i=1; i<Integer.MAX_VALUE; i++) {
+            currentPass = (CompilerPass)passMap.get(new Integer(i));
+            
+            if(currentPass == null)
+                break;
+            
+            lastPass.setNextPass(currentPass);
+            lastPass = currentPass;
+        }
+        
+        return firstPass;        
 	}
 
 	/**
@@ -200,11 +234,18 @@ public class Main extends MainSuper implements Constants {
         System.out.println("checkAllBodies");
         for (int count = 0; count < tree.length; count++) {
             checkBody(tree[count]);
-            if (!options._java && !options.beautify) {
-                // CTODO 
-                //tree[count] = null;
-            }
         }
+    }
+    
+    protected void generateSourceDependencyGraph(JCompilationUnit[] tree) {
+        System.out.println("generateDependencyGraph");        
+        for (int i=0; i<tree.length; i++) {
+            GraphGenerator.instance().generateGraph(
+                dependencyGraph, tree[i]
+            );
+        }
+        
+        dependencyGraph.calculateLevels();
     }
 
     /**
@@ -276,7 +317,6 @@ public class Main extends MainSuper implements Constants {
         for (int i = 0; i < tree.length; i++) {
             JCompilationUnit cu = tree[i];
             CClassPreparation.instance().prepareCaesarClass(environment, cu);
-
         }
     }
 
@@ -314,6 +354,7 @@ public class Main extends MainSuper implements Constants {
      */
 
     protected void joinAll(JCompilationUnit[] tree) {
+        System.out.println("joinAll");
         JCompilationUnit cunit;
 
         for (int i = 0; i < tree.length; i++) {
