@@ -20,13 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectObjectMapper.java,v 1.5 2005-03-31 11:58:18 gasiunas Exp $
+ * $Id: AspectObjectMapper.java,v 1.6 2005-04-05 08:50:23 gasiunas Exp $
  */
 
 package org.caesarj.runtime.perobject;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.WeakHashMap;
 
 import org.caesarj.runtime.aspects.AspectContainerIfc;
@@ -94,11 +92,11 @@ public class AspectObjectMapper implements AspectContainerIfc {
 	public void deployObject(Object obj, Object key) {
 		
 		/* include the object to the list of deployed objects of the thread */
-		List lst = (List)_objectAspects.get(key);
+		DynArray lst = (DynArray)_objectAspects.get(key);
 		
 		if (lst == null)
 		{
-			lst = new LinkedList();
+			lst = new DynArray();
 			_objectAspects.put(key, lst);
 		}
 		
@@ -113,8 +111,8 @@ public class AspectObjectMapper implements AspectContainerIfc {
 	 */
 	public void undeployObject(Object obj, Object key) {
 		
-		/* remove the object from the list of deployed objects of the thread */
-		List lst = (List)_objectAspects.get(key);
+		/* remove the object from the DynArray of deployed objects of the thread */
+		DynArray lst = (DynArray)_objectAspects.get(key);
 		
 		if (lst != null) {
 			lst.remove(obj);
