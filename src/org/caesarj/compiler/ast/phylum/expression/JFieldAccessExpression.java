@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldAccessExpression.java,v 1.11 2004-11-15 17:22:52 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.12 2004-11-16 10:43:01 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -25,7 +25,6 @@ import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.cclass.CastUtils;
 import org.caesarj.compiler.codegen.CodeLabel;
 import org.caesarj.compiler.codegen.CodeSequence;
-import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CConstructorContext;
 import org.caesarj.compiler.context.CExpressionContext;
@@ -150,14 +149,6 @@ public class JFieldAccessExpression extends JExpression {
    * Returns true if this field accepts assignments.
    */
   public boolean isLValue(CExpressionContext context) {
-    // IVICA: mark special fields as non l-values
-    if(
-        field.getIdent().equals(CaesarConstants.WRAPPER_WRAPPEE_FIELD)
-        && !context.getMethodContext().getCMethod().getIdent().equals(CaesarConstants.WRAPPER_WRAPPEE_INIT)
-    ) {
-        return false;
-    }
-      
     if (!field.isFinal()|| field.isSynthetic()) {
       return true;
     } else if (context.getClassContext().getCClass() == field.getOwner()
