@@ -9,8 +9,6 @@ import org.caesarj.compiler.export.CClass;
  * We need this class in order to be able to set targets for super and field access 
  * to the current class or super of the current class.
  * 
- * See: CSourceClass.genClassInfo, CField.genStore, CMethod.genCode(TypeFactory, bool) 
- * 
  * @author Ivica Aracic
  */
 public class AdditionalGenerationContext {
