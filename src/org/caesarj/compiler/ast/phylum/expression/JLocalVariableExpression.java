@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JLocalVariableExpression.java,v 1.5 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JLocalVariableExpression.java,v 1.6 2005-02-09 16:56:28 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -34,10 +34,12 @@ import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CVariableInfo;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * Root class for all expressions
@@ -197,6 +199,18 @@ public class JLocalVariableExpression extends JExpression {
 
         if (variable.isConstant() && !context.isLeftSide()) {
             return variable.getValue();
+        }
+        
+        // IVICA: store family information
+        try {
+            CType type = variable.getType();
+	        if(type.isCaesarReference()) {
+	            thisAsFamily = Path.createFrom(context.getBodyContext(), this);
+	            family = thisAsFamily.normalize();
+	        }
+        }
+        catch (UnpositionedError e) {
+            throw e.addPosition(getTokenReference());
         }
 
         return this;

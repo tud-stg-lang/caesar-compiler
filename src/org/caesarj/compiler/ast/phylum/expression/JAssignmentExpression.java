@@ -20,21 +20,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JAssignmentExpression.java,v 1.12 2005-01-27 15:18:30 aracic Exp $
+ * $Id: JAssignmentExpression.java,v 1.13 2005-02-09 16:56:28 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.codegen.CodeSequence;
-import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.family.Path;
-import org.caesarj.compiler.types.CDependentType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.CWarning;
+import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -125,12 +124,13 @@ public class JAssignmentExpression extends JBinaryExpression {
     /*
      * first tender experiments with family checks ;)
      */
+    /*
     try {
 	    CType 	rType = right.getType(factory),
 	    		lType = left.getType(factory);
 	    
-	    boolean rDepType = rType instanceof CDependentType || (/*lType.isClassType() &&*/ rType.getCClass().isMixinInterface() && rType.getCClass().isNested()),	
-	    		lDepType = lType instanceof CDependentType || (/*lType.isClassType() &&*/ lType.getCClass().isMixinInterface() && lType.getCClass().isNested());
+	    boolean rDepType = rType instanceof CDependentType || (rType.getCClass().isMixinInterface() && rType.getCClass().isNested()),	
+	    		lDepType = lType instanceof CDependentType || (lType.getCClass().isMixinInterface() && lType.getCClass().isNested());
 	        
 	    check(
 	        context,
@@ -162,6 +162,27 @@ public class JAssignmentExpression extends JBinaryExpression {
     catch (UnpositionedError e) {
         throw e.addPosition(getTokenReference());
     }
+    */
+    
+    /**
+     * doing it better way
+     */
+    Path rFam = right.getFamily();
+    Path lFam = left.getFamily();
+    System.out.println("ASSIGNEMENT (line "+getTokenReference().getLine()+"):");
+    System.out.println("\t"+lFam+" <= "+rFam);
+    if(lFam != null && rFam != null) {        
+        check(context,
+  	      rFam.isAssignableTo( lFam ),
+  	      KjcMessages.ASSIGNMENT_BADTYPE, 	right.getFamily()+"."+right.getType(factory).getCClass().getIdent(),   
+  	      left.getFamily()+"."+left.getType(factory).getCClass().getIdent() );
+    }
+    else if(lFam!=null ^ rFam!=null) {
+        throw new InconsistencyException("(error required here)... trying to assign an object with family to an object without family");
+    }
+	    
+    
+    ///////////////////////////////
     
     if (right instanceof JTypeNameExpression) {
       check(context, false, KjcMessages.VAR_UNKNOWN, ((JTypeNameExpression)right).getQualifiedName());

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JFieldAccessExpression.java,v 1.20 2005-02-04 19:08:20 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.21 2005-02-09 16:56:28 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -43,6 +43,9 @@ import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceField;
+import org.caesarj.compiler.family.FieldAccess;
+import org.caesarj.compiler.family.Path;
+import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.CWarning;
@@ -436,6 +439,22 @@ public class JFieldAccessExpression extends JExpression {
     }
 
     type = field.getType();
+    
+    
+    //IVICA: calc family type
+    try {
+        // store family here 
+        Path prefixFam = prefix.getThisAsFamily();
+        if(prefixFam != null && type.isCaesarReference()) {
+            thisAsFamily = new FieldAccess(prefixFam.clonePath(), field.getIdent(), (CReferenceType)type);
+            family = thisAsFamily.normalize();
+        }
+    }
+    catch (UnpositionedError e) {
+        throw e.addPosition(getTokenReference());
+    }
+
+    
 
     if (isConstant()) {
       // FIX Type!!
@@ -906,7 +925,7 @@ public class JFieldAccessExpression extends JExpression {
   private boolean		analysed;
   private CType                 type;
   private boolean               startCode;
-
+  
   protected JExpression		prefix;		// !!! graf 991205 make private
   protected String		ident;
   protected CField		field;

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JThisExpression.java,v 1.9 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JThisExpression.java,v 1.10 2005-02-09 16:56:28 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -34,11 +34,13 @@ import org.caesarj.compiler.context.CConstructorContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * A 'this' expression
@@ -95,7 +97,7 @@ public class JThisExpression extends JExpression {
 	public boolean isLValue(CExpressionContext context) {
 		return false;
 	}
-
+	
 	// ----------------------------------------------------------------------
 	// SEMANTIC ANALYSIS
 	// ----------------------------------------------------------------------
@@ -256,6 +258,14 @@ public class JThisExpression extends JExpression {
 			!context.getMethodContext().getCMethod().isStatic(),
 			KjcMessages.BAD_THIS_STATIC);
 
+		// IVICA store family
+		try {
+		    thisAsFamily = Path.createFrom(context.getBlockContext(), this);
+		}
+		catch (UnpositionedError e) {
+            throw e.addPosition(getTokenReference());
+        }
+		
 		return this;
 	}
 

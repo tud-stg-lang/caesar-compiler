@@ -20,13 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.17 2005-02-07 18:23:54 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.18 2005-02-09 16:56:28 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
-
-import java.util.HashMap;
 
 import org.caesarj.compiler.ast.CMethodNotFoundError;
 import org.caesarj.compiler.ast.visitor.IVisitor;
@@ -42,6 +40,7 @@ import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.family.ArgumentAccess;
+import org.caesarj.compiler.family.ContextExpression;
 import org.caesarj.compiler.family.MethodAccess;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CArrayType;
@@ -277,7 +276,6 @@ public class JMethodCallExpression extends JExpression
 		
 		argTypes = method.getParameters();
 		
-		HashMap params = new HashMap();
 		Path argPaths[] = new Path[argTypes.length];
 		Path argTypePaths[] = new Path[argTypes.length];
 		
@@ -294,7 +292,7 @@ public class JMethodCallExpression extends JExpression
 			
 			//
 			// IVICA: family type-checks on method calls
-			//
+			//			
 			try {			    			   
 			    if(argTypes[i].isReference()) {
 			        
@@ -302,7 +300,7 @@ public class JMethodCallExpression extends JExpression
 			                 
 				    System.out.println("++++  "+refType.getPath());
 				    
-				    argPaths[i] = Path.createFrom(context, args[i]);			    
+				    argPaths[i] = Path.createFrom(context.getBlockContext(), args[i]);			    
 				    System.out.println(">>>>  "+argPaths[i]);
 				    
 				    argTypePaths[i] = argPaths[i].normalize();
@@ -323,7 +321,7 @@ public class JMethodCallExpression extends JExpression
 				            				            
 				            check(
 								context,
-								depTypePath.equals( argTypePaths[i] ),
+								argTypePaths[i].isAssignableTo( depTypePath ),
 								KjcMessages.ASSIGNMENT_BADTYPE,
 								argTypePaths[i].toString(),
 								depTypePath.toString());
@@ -332,7 +330,7 @@ public class JMethodCallExpression extends JExpression
 				            // this dependent type does not depend on a family defined
 				            // in the signature of the method
 				            
-				            Path p = Path.createFrom(context, prefix);
+				            Path p = prefix.getThisAsFamily();
 				            				            
 				            p = new MethodAccess(p, method.getIdent(), null);				            
 				            p = p.append( depTypePath ); 
@@ -341,7 +339,7 @@ public class JMethodCallExpression extends JExpression
 				            
 				            check(
 								context,
-								pNorm.equals( argTypePaths[i] ),
+								argTypePaths[i].isAssignableTo( pNorm ),
 								KjcMessages.ASSIGNMENT_BADTYPE,
 								argTypePaths[i].toString(),
 								pNorm.toString());
@@ -351,7 +349,7 @@ public class JMethodCallExpression extends JExpression
 			}
 			catch (UnpositionedError e) {
                 e.addPosition(getTokenReference());
-            }
+            }			
 			//////////////////////////////////////////////
 			
 			args[i] = args[i].convertType(context, argTypes[i]);
@@ -406,13 +404,46 @@ public class JMethodCallExpression extends JExpression
 		// or it is a typevariable and need a cast
 		type = method.getReturnType();
 
-		/*
-		if (!context.discardValue() && prefixType != null)
-		{
-			CType returnType = method.getReturnType();
 
+		/*
+		 * IVICA: calculate the family of this epxression
+		 * CTODO: looks to me here is lot of code duplication  
+		 * (see the argument type checks above)
+		 */
+		if( type.isCaesarReference() ) {
+		    try {
+		        // CTODO: ugly these constants
+		        if(method.isCaesarFactoryMethod()) {
+		            // factory method... make special treatement
+		            // CTODO: this is ugly, why not having own data type for factory methods
+		            family = prefix.getThisAsFamily();
+		        }
+		        else {
+			        Path returnTypePath = ((CReferenceType)type).getPath();
+			        Path returnTypePathHead = returnTypePath.getHead();
+			        if( ((ContextExpression)returnTypePathHead).getK() == 0) {
+			            // here we have a return type depending directly on a method argument
+			            
+			            ArgumentAccess fa = (ArgumentAccess)returnTypePath.getHeadPred();		           
+			            family = returnTypePath.substituteFirstAccess( argPaths[fa.getArgPos()] );
+			        }
+			        else {
+			            // here we have a dependent type not depending on a method argument
+			            Path p = prefix.getThisAsFamily();
+			            
+			            p = new MethodAccess(p, method.getIdent(), null);				            
+			            p = p.append( returnTypePath ); 
+	
+			            family = p.normalize2();
+			        }
+		        }
+		    }
+		    catch (UnpositionedError e) {
+                throw e.addPosition(getTokenReference());
+            }
 		}
-		*/
+		////////////////////////
+		
 		
 		// fixed lackner 18.03.2002 commment out because sometimes it is necessary to evaluate it twice.
 		//    analysed = true;
@@ -688,8 +719,7 @@ public class JMethodCallExpression extends JExpression
 	public String getIdent(){
 	    return ident;
 	}
-	
-	
+
 	public String toString() {
 	    return "JMethodCallExpression["+ident+"]";
 	}

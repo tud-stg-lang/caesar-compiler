@@ -20,12 +20,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjAccessorCallExpression.java,v 1.4 2005-01-27 15:18:13 aracic Exp $
+ * $Id: CjAccessorCallExpression.java,v 1.5 2005-02-09 16:56:28 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
+import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.compiler.family.FieldAccess;
+import org.caesarj.compiler.family.Path;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * handles access to public caesar fields
@@ -57,6 +63,24 @@ public class CjAccessorCallExpression extends JMethodCallExpression {
         setter = true;
     }
     
+    public JExpression analyse(CExpressionContext context) throws PositionedError {
+        JExpression res = super.analyse(context);
+        
+        try {
+	        // store family here 
+	        Path prefixFam = prefix.getThisAsFamily();
+	        if(prefixFam != null && type.isCaesarReference()) {
+	            thisAsFamily = new FieldAccess(prefixFam.clonePath(), fieldIdent, (CReferenceType)type);
+	            family = thisAsFamily.normalize();
+	        }
+        }
+        catch (UnpositionedError e) {
+            throw e.addPosition(getTokenReference());
+        }
+	        
+        return res;
+    }       
+    
     public boolean isSetter() {
         return setter;
     }
@@ -68,4 +92,6 @@ public class CjAccessorCallExpression extends JMethodCallExpression {
     public void setArgument(JExpression arg) {
         args = new JExpression[]{arg};
     }
+    
+    
 }
