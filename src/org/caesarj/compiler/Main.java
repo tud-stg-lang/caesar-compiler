@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.83 2005-01-24 16:52:58 aracic Exp $
+ * $Id: Main.java,v 1.84 2005-01-27 15:21:38 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -170,23 +170,42 @@ public class Main extends MainSuper implements Constants {
         adjustSuperTypes(tree);
         if(errorFound) return false;
         
+        // this one generates factory and wrapper recycling methods
         generateSupportMembers(environment);
         if(errorFound) return false;
         
+        // this one adds type info about fields and methods
         checkAllInterfaces(tree); 
         if(errorFound) return false;
+
+        // complete mixin interfaces here with infos we have till now
+        // this step is necessary since access to fields defined in the enclosing cclass
+        // work via accessor method which has to be declared in the interface
+        completeCClassInterfaces(tree);
+        if(errorFound) return false;        
         
+        // start second check on all fields and signatures containing dependent types
+        // note: these are all the types not resolved in the checkAllInterface pass
         checkDependentTypesInAllInterfaces(tree); 
         if(errorFound) return false;
         
-        completeMixinCloneTypeInfo(environment, tree[0]);
+        // CTODO: why two calls? see bellow
+        //completeMixinCloneTypeInfo(environment, tree[0]);
         
+        // check overridding in virtual classes
+        // we have to keep the signature of a overridding method having virtual classes as
+        // parameters equal to the first declaration introduced in one of the super-collaborations
         checkVirtualClassMethodSignatures(tree);
         if(errorFound) return false;
         
+        // repeat the process here again
+        // re-export the cclass interface (some signatures may have changed since last time)
         completeCClassInterfaces(tree);
         if(errorFound) return false;
 
+        // this step generates missing mixin chain parts
+        // (these are all the classes where the statically 
+        // known super class parameter has been changed due to the linearization process) 
         completeMixinCloneTypeInfo(environment, tree[0]);
         
         checkAllInitializers(tree);
