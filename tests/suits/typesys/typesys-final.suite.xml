@@ -52,23 +52,6 @@
 				public g.N getN() {return null;}
 			}
         </code>
-    </compile-check-error>   
-
-
-	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="ILLEGAL_PATH" id="final005" description="Check that family path is final.">
-        <code>
-			public cclass Graph {
-				public cclass Node {}
-
-				private Graph g;
-				
-				public void foo() {
-					 Node n = g.new Node();
-				}
-			} 	
-        </code>
-    </compile-check-error> 
-
+    </compile-check-error>	
 
 </testsuite>

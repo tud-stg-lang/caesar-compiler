@@ -20,10 +20,10 @@
     </compile>
     
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile id="implicit002" description="Check dependent types with implicit family paths.">
+    <compile id="implicit002a" description="Check dependent types with implicit family paths.">
         <code>
 			public cclass G {
-				public N n;
+				public N n = null;
 				public void foo() {
 					n = n.bar( n );
 				}
@@ -34,8 +34,78 @@
         </code>
     </compile>
 
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="implicit002b" description="Check dependent types with implicit family paths.">
+        <code>
+			public cclass G {
+				public N n = null;
+				public void foo() {
+					//M m = n.x().y();
+					
+					final G g = new G();
+					//g.M mm = g.n.x().y();
 
-	<!-- ...continue... -->    
+					g.N v1 = g.n;		// ctx(0).g.N = ctx(0).g.n;
+					g.M v2 = v1.x();	// ctx(0).g.M = ctx(0).v1.x();
+					g.N v3 = v2.y();	// ctx(0).g.N = ctx(0).v2.y();				
+				}
+				public cclass N {
+					public M x() { return null; }
+				}				
+				public cclass M {
+					public N y() { return null; }
+				}
+			}
+        </code>
+    </compile>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="implicit002c" description="Check dependent types with implicit family paths.">
+        <code>
+			public cclass GL {
+				public cclass G {
+					public N createN() {
+						final N n = new N();
+						n.X x = n.init().new X();
+					}
+				}
+				public cclass N {
+					public N init() {return new N();}
+					public cclass X {}
+				}
+			}
+        </code>
+    </compile>  
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="implicit003" description="Check dependent types with implicit family paths.">
+        <code>
+			public cclass GL {
+				public cclass G {
+					public N createN() {
+						return new N();
+					}
+				}
+				public cclass N {}
+			}
+        </code>
+    </compile>  
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="implicit004" description="Check dependent types with implicit family paths.">
+        <code>
+			public cclass GL {
+				public cclass G {
+					public N createN() {
+						return new N().init();
+					}
+				}
+				public cclass N {
+					public N init() {return this;}
+				}
+			}
+        </code>
+    </compile>  	
 	
 
 </testsuite>

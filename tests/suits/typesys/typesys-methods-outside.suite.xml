@@ -41,10 +41,10 @@
 				final B b = new B();
 						
 				void foo() {
-					m2(b.g1, b.x1);
+					m(b.g1, b.x1);
 				}	
 				
-				void 	m2(final G g, g.X x) 	{ }	
+				void m(final G g, g.X x) {}	
 			}			
         </code>
     </compile>
