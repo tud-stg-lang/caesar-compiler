@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AllTests.java,v 1.15 2005-01-24 16:52:59 aracic Exp $
+ * $Id: AllTests.java,v 1.16 2005-03-02 13:15:02 gasiunas Exp $
  */
 
 package org.caesarj.test;
@@ -45,6 +45,7 @@ public class AllTests {
         suite.addTestSuite( AspectDeploymentTests.class);
         suite.addTestSuite( CompilerErrorsTests.class);
         suite.addTestSuite( StructureModelTests.class);
+        suite.addTestSuite( PackageTests.class );
         //$JUnit-END$
 		return suite;
 	}
