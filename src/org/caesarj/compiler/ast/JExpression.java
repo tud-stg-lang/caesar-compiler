@@ -15,14 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JExpression.java,v 1.2 2004-02-29 21:37:23 ostermann Exp $
+ * $Id: JExpression.java,v 1.3 2004-03-10 15:10:40 aracic Exp $
  */ 
  
 package org.caesarj.compiler.ast;
 
 import org.caesarj.compiler.codegen.CodeLabel;
 import org.caesarj.compiler.codegen.CodeSequence;
-import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CTypeContext;

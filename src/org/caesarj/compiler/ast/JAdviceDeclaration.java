@@ -3,10 +3,8 @@ package org.caesarj.compiler.ast;
 import org.caesarj.compiler.aspectj.CaesarAdviceKind;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.constants.CaesarConstants;
-import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
-import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
@@ -14,7 +12,6 @@ import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
-import org.caesarj.util.UnpositionedError;
 
 /**
  * Represents an AdviceDeclaration in the Source Code.
@@ -118,40 +115,9 @@ public class JAdviceDeclaration
 		proceedParameters = newParameters;
 
 	}
-	/*
+	
 	public CSourceMethod checkInterface(CClassContext context)
 		throws PositionedError {
-
-
-		// when checking single parameters we need the list of
-		// all parameters and the method, so pass them here
-		 ((FjAdditionalContext) context).pushContextInfo(this);
-		((FjAdditionalContext) context).pushContextInfo(parameters);
-
-		// we have to work on the returntype here:
-		// if it's an overridden class cast upwards
-		FjTypeSystem fjts = new FjTypeSystem();
-		try {
-			if (returnType.isReference()) {
-				returnType = returnType.checkType(context);
-				returnType =
-					fjts.upperBound(context, (CReferenceType) returnType);
-			}
-		} catch (UnpositionedError e) {
-			if (e.getFormattedMessage().getDescription()
-				== KjcMessages.CLASS_AMBIGUOUS) {
-				CClass[] candidates =
-					(CClass[]) e.getFormattedMessage().getParams()[1];
-				try {
-					returnType = fjts.commonOverrideType(context, candidates);
-				} catch (UnpositionedError e2) {
-					// will be handled later
-				}
-			}
-		}
-		// pop parameters and method name from the stack again
-		 ((FjAdditionalContext) context).popContextInfo();
-		((FjAdditionalContext) context).popContextInfo();
 
 		CBinaryTypeContext typeContext =
 			new CBinaryTypeContext(
@@ -178,7 +144,6 @@ public class JAdviceDeclaration
 				exceptions,
 				typeVariables,
 				body,
-				new FjFamily[0],
 				pointcut,
 				kind,
 				extraArgumentFlags);
@@ -186,7 +151,7 @@ public class JAdviceDeclaration
 		setInterface(adviceMethod);
 
 		return adviceMethod;
-	}*/
+	}
 
 	/**
 	 * Returns whether this is an around advice.

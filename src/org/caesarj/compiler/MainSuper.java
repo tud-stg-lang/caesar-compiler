@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: MainSuper.java,v 1.4 2004-02-18 09:23:42 klose Exp $
+ * $Id: MainSuper.java,v 1.5 2004-03-10 15:10:40 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -200,6 +200,7 @@ public abstract class MainSuper extends CompilerBase {
     try {
       cunit.checkInterface(this);
     } catch (PositionedError e) {
+    	e.printStackTrace();
       reportTrouble(e);
     }
   }

@@ -4,18 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Vector;
 
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.FjSourceClass;
-import org.caesarj.compiler.ast.DeclarationVisitor;
 import org.caesarj.compiler.ast.JCompilationUnit;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
@@ -40,10 +36,10 @@ import org.caesarj.util.Utils;
  * 
  * @author Jürgen Hallpap
  */
-public class Main extends org.caesarj.compiler.MainSuper implements  Constants  {
+public class Main extends MainSuper implements  Constants  {
 
 	private CaesarMessageHandler messageHandler;
-	private Set errorMessages;
+	private Set errorMessages;	
 
 
 	// The used weaver. An instance ist created when it's needed in generateAndWeaveCode
@@ -103,26 +99,32 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 		}
 		
 
+		System.out.println("parseFiles");
 		JCompilationUnit[] tree = parseFiles(environment);
-
-		if (errorFound) {return false;}
-//		transformCollaborationInterfaces(environment,tree);
+		if (errorFound) {return false;}		
+		System.out.println("prepareJoinpointReflection");
 		prepareJoinpointReflection(tree);
+		System.out.println("prepareDynamicDeployment");		
 		prepareDynamicDeployment(environment, tree);
-//		createAllHelperInterfaces(environment, tree);
-		joinAll(tree);
+		System.out.println("joinAll");
+		joinAll(tree);		
 		if (errorFound) { return false; }
-		checkAllInterfaces(tree);
+		System.out.println("checkAllInterfaces");
+		checkAllInterfaces(tree);		
 		if (errorFound) { return false;	}
-		checkAllInitializers(tree);
+		System.out.println("checkAllInitializers");
+		checkAllInitializers(tree);		
 		if (errorFound) { return false;	}
+		System.out.println("checkAllBodies");
 		checkAllBodies(tree);
 		if (errorFound) { return false;	}
 		if (noWeaveMode()) {
 			//just generate the code
+			System.out.println("genCode");
 			genCode(environment.getTypeFactory());
 		} else {
 			//generate code and perform weaving
+			System.out.println("generateAndWeaveCode");
 			generateAndWeaveCode(environment.getTypeFactory());
 		}
 
@@ -132,7 +134,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 
 		CodeSequence.endSession();
 		return true;
-	}
+	}	
 
     /**
      * - create advice attribute for AspectJ weaver if necessary
@@ -200,7 +202,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 	protected void checkAllInterfaces(JCompilationUnit[] tree) {
 		for (int count = 0; count < tree.length; count++) {
 			checkInterface(tree[count]);
-			//tree[count].accept(new DebugVisitor());
 		}
 	}
 
@@ -255,9 +256,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 	 */
 
 	protected void joinAll(JCompilationUnit[] tree) {
-        // TODO !!!
-        /*
-
 		JCompilationUnit cunit;
 
 		for (int i = 0; i < tree.length; i++) {
@@ -268,25 +266,8 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 		}
 		if (errorFound)
 			return;
-
-		// let a visitor traverse the tree
-		// and resolve all overriders superclasses 
-		getResolveSuperClass(this, tree).transform(); 
-		if (errorFound)
-			return;
-
-		try {
-			Vector warnings =
-				getInheritConstructors(tree).transform();
-			for (int i = 0; i < warnings.size(); i++) {
-				inform((PositionedError) warnings.elementAt(i));
-			}
-		} catch (PositionedError e) {
-			reportTrouble(e);
-		}
-        */
-	}
-
+		
+	}	
 		
 	public void inform(PositionedError error) {
 		if (errorMessages == null)

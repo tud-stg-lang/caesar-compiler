@@ -1,25 +1,24 @@
 package org.caesarj.compiler.types;
 
-import org.caesarj.compiler.export.CClass;
 
 /**
  * Holds refernce to composite type like A & B & C
  * 
  * @author Ivica Aracic
  */
-public class CCompositeType extends CReferenceType {
+public class CCompositeType extends CClassNameType {
 
     private CReferenceType[] compositeList;
 
 	public CCompositeType(CReferenceType[] compositeList) {
-		super();
+		// TODO !!!hack!!! generate here the name of composite class		
+		super("java/lang/Object");			
         this.compositeList = compositeList;
+        
+        if(compositeList.length >= 0 )
+			this.qualifiedName = compositeList[0].getQualifiedName().intern();
 	}
 
-	public CCompositeType(CReferenceType[] compositeList, CClass clazz) {
-		super(clazz);
-        this.compositeList = compositeList;
-	}
     
     public CReferenceType[] getCompositeList() {
         return compositeList;

@@ -6,15 +6,11 @@ import java.util.List;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.aspectj.CaesarNameMangler;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
-import org.caesarj.compiler.ast.JAdviceDeclaration;
-import org.caesarj.compiler.ast.JCaesarClassDeclaration;
 import org.caesarj.compiler.ast.DeploymentSupportClassDeclaration;
-import org.caesarj.compiler.ast.JAssignmentExpression;
-import org.caesarj.compiler.ast.JFieldAccessExpression;
-import org.caesarj.compiler.ast.JFormalParameter;
-import org.caesarj.compiler.ast.JNameExpression;
+import org.caesarj.compiler.ast.JAdviceDeclaration;
 import org.caesarj.compiler.ast.JAssignmentExpression;
 import org.caesarj.compiler.ast.JBlock;
+import org.caesarj.compiler.ast.JCaesarClassDeclaration;
 import org.caesarj.compiler.ast.JCastExpression;
 import org.caesarj.compiler.ast.JCatchClause;
 import org.caesarj.compiler.ast.JClassBlock;
@@ -25,6 +21,7 @@ import org.caesarj.compiler.ast.JConstructorDeclaration;
 import org.caesarj.compiler.ast.JEqualityExpression;
 import org.caesarj.compiler.ast.JExpression;
 import org.caesarj.compiler.ast.JExpressionStatement;
+import org.caesarj.compiler.ast.JFieldAccessExpression;
 import org.caesarj.compiler.ast.JFieldDeclaration;
 import org.caesarj.compiler.ast.JFormalParameter;
 import org.caesarj.compiler.ast.JIfStatement;
@@ -35,6 +32,7 @@ import org.caesarj.compiler.ast.JMethodDeclaration;
 import org.caesarj.compiler.ast.JNameExpression;
 import org.caesarj.compiler.ast.JNullLiteral;
 import org.caesarj.compiler.ast.JPhylum;
+import org.caesarj.compiler.ast.JPointcutDeclaration;
 import org.caesarj.compiler.ast.JRelationalExpression;
 import org.caesarj.compiler.ast.JReturnStatement;
 import org.caesarj.compiler.ast.JStatement;
@@ -49,7 +47,6 @@ import org.caesarj.compiler.ast.JVariableDefinition;
 import org.caesarj.compiler.ast.JWhileStatement;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
-import org.caesarj.compiler.ast.JPointcutDeclaration;
 import org.caesarj.compiler.ast.ProceedDeclaration;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.export.CModifier;
@@ -3198,19 +3195,18 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JClassDeclaration closure =
 			new JClassDeclaration(
 				where,
-				0, 
+				0,
 				(advice.getIdent() + "$MultiInstanceAroundClosure").intern(),
 				CTypeVariable.EMPTY,
 				superClass,
-				null,
-				null,
-				null,
+				CReferenceType.EMPTY,
+				(JFieldDeclaration[]) fields.toArray(new JFieldDeclaration[0]),
+				methods,
 				new JTypeDeclaration[0],
 				new JPhylum[0],
 				new JavadocComment("Generated MultiInstanceAroundClosure",false,false),
-				new JavaStyleComment[0]
-				);
-
+				new JavaStyleComment[0]);
+				
 		return closure;
 	}
 

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.7 2004-03-03 17:08:19 aracic Exp $
+ * $Id: JClassDeclaration.java,v 1.8 2004-03-10 15:10:40 aracic Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -23,19 +23,13 @@ package org.caesarj.compiler.ast;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
-import org.caesarj.compiler.aspectj.CaesarDeclare;
-import org.caesarj.compiler.aspectj.CaesarPointcut;
-import org.caesarj.compiler.aspectj.CaesarScope;
 import org.caesarj.compiler.constants.CaesarConstants;
-import org.caesarj.compiler.constants.CaesarMessages;
-import org.caesarj.compiler.constants.CciConstants;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.constants.KjcMessages;
@@ -50,10 +44,7 @@ import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.export.CSourceMethod;
-import org.caesarj.compiler.joinpoint.DeploymentPreparation;
-import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.CWarning;
@@ -400,7 +391,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
     p.visitClassDeclaration(this,
 			    modifiers,
 			    ident,
-                            typeVariables,
+                typeVariables,
 			    superClass != null ? superClass.toString() : null,
 			    interfaces,
 			    body,
@@ -1032,7 +1023,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
   protected int getAllowedModifiers()
   {
 	  return ACC_PUBLIC | ACC_PROTECTED | ACC_PRIVATE | 
-		  	  ACC_ABSTRACT | ACC_STATIC | ACC_FINAL | ACC_STRICT 
+		  	  ACC_ABSTRACT | ACC_STATIC | ACC_FINAL | ACC_STRICT | ACC_CAESARCLASS
 			| getInternalModifiers();
 	}
 	

@@ -47,20 +47,20 @@ public class AutomaticCaesarTests extends FjTestCase {
 				// these files should not raise errors
 				String[] args =
 					new String[] {
-						"CaesarTestCase_0.java" /*,
+						"CaesarTestCase_0.java",
 						"CaesarTestCase_1.java",
 						"CaesarTestCase_2.java",
 						"CaesarTestCase_3.java",
 						"CaesarTestCase_4.java",
-						"CaesarTestCase_5.java",
-						"CaesarTestCase_6.java",
-						"CaesarTestCase_7.java",
-						"CaesarTestCase_8.java",
-						"CaesarTestCase_9.java",						
-						"CaesarTestCase_10.java",	
-						"CaesarTestCase_11.java",
-						"CaesarTestCase_12.java",																													
-						"Barrier.java" */
+						//"CaesarTestCase_5.java",
+						//"CaesarTestCase_6.java",
+						//"CaesarTestCase_7.java",
+						//"CaesarTestCase_8.java",
+						//"CaesarTestCase_9.java",						
+						//"CaesarTestCase_10.java",	
+						//"CaesarTestCase_11.java",
+						//"CaesarTestCase_12.java",																													
+						"Barrier.java"
 };
 
 				compiler = new CompilerMock(this, new PrintWriter(System.out) {
@@ -111,7 +111,7 @@ public class AutomaticCaesarTests extends FjTestCase {
 	public void testCaesarTestCase_4() throws Throwable {
 		doGeneratedTest("CaesarTestCase_4");
 	}
-
+/*
 	public void testCaesarTestCase_5() throws Throwable {
 		doGeneratedTest("CaesarTestCase_5");
 	}
@@ -142,12 +142,10 @@ public class AutomaticCaesarTests extends FjTestCase {
 	public void testCaesarTestCase_12() throws Throwable {
 		doGeneratedTest("CaesarTestCase_12");
 	}
-	
-	
-
+*/
 	class CompilerMock extends Main {
 
-		public CompilerMock(AutomaticCaesarTests test, PrintWriter p) {
+		public CompilerMock(AutomaticCaesarTests test, PrintWriter p) {			
 			super(test.getWorkingDirectory(), p);
 		}
 
