@@ -20,21 +20,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassNameType.java,v 1.21 2005-03-06 13:48:44 aracic Exp $
+ * $Id: CClassNameType.java,v 1.22 2005-03-06 14:10:45 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
 
 
-import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.util.InconsistencyException;
-import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
 /**
@@ -118,16 +115,6 @@ public class CClassNameType extends CReferenceType
 	// INTERFACE CHECKING
 	// ----------------------------------------------------------------------
 
-	private JExpression convertToExpression() {
-	    String pathSegs[] = qualifiedName.split("/");
-	    JExpression expr = null;
-	    for (int i = 0; i < pathSegs.length-1; i++) {
-            expr = new JNameExpression(TokenReference.NO_REF, expr, pathSegs[i]);
-        }
-	    
-	    return expr;
-	}
-		
 	/**
 	 * check that type is valid
 	 * necessary to resolve String into java/lang/String
