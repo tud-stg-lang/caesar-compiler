@@ -20,16 +20,12 @@ public class CaesarBcelWorld /*extends BcelWorld */{
 
 	/* returns the singleton instance */
 	public static CaesarBcelWorld getInstance() {
-		if (theInstance == null) {
-			theInstance = new CaesarBcelWorld();
-		}
-
 		return theInstance;
 	}
 	
 	/* resets the singleton instance */
-	public static void resetInstance() {
-		theInstance = null;
+	public static void createInstance(String classPath) {
+		theInstance = new CaesarBcelWorld(classPath);
 	}
 
 	/* returns the BcelWorld object */
@@ -41,10 +37,9 @@ public class CaesarBcelWorld /*extends BcelWorld */{
 	/**
 	 * Constructor for CaesarBcelWorld.
 	 */
-	private CaesarBcelWorld() {
+	private CaesarBcelWorld(String classPath) {
 		//super();
-		theWorld = new BcelWorldAdapter();
-
+		theWorld = new BcelWorldAdapter(classPath);
 	}
 
 	public ResolvedTypeX resolve(CClass cclass){
@@ -55,6 +50,11 @@ public class CaesarBcelWorld /*extends BcelWorld */{
 	 *  BcelWorldAdapter allows access to invisible fields of BcelWorld 
 	 */
 	private class BcelWorldAdapter extends BcelWorld{
+		
+		public BcelWorldAdapter(String classPath) {
+			super(classPath);
+		}
+		
 		/**
 		 * Resolves the given CClass.
 		 * 

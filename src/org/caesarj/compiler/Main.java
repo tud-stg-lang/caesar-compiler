@@ -650,8 +650,8 @@ public class Main extends MainSuper implements Constants {
 
         messageHandler = new CaesarMessageHandler(this);
         
-        // reset static instance, which can have remained after previous compilation
-        CaesarBcelWorld.resetInstance();
+        // create static instance of bcel world
+        CaesarBcelWorld.createInstance(options.classpath);
         
         CaesarBcelWorld world = CaesarBcelWorld.getInstance();
         world.setMessageHandler(messageHandler);        
