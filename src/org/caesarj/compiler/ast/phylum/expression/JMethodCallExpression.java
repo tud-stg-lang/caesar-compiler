@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodCallExpression.java,v 1.6 2004-09-06 13:31:35 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.7 2004-09-10 14:54:14 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -638,31 +638,39 @@ public class JMethodCallExpression extends JExpression
 		// IVICA: when setting target for method calls
 		// use direct super for super calls 
 		// and caller class for this calls instead of owner of the CMethod
+		// the exception are method defined in java/lang/Object
 
-		if(prefix instanceof JSuperExpression) {
-		    method.genCode(
-		        context, 
-		        true, 
-		        callerClass.getSuperClass().getQualifiedName());		    		   
-		}	
-		else {
-		    String prefixTarget = null;
-			if(prefix == null || prefix instanceof JOwnerExpression) {
-			    prefixTarget = callerClass.getQualifiedName();
-			}
+		if(!method.getOwner().isObjectClass()) {
+			if(prefix instanceof JSuperExpression) {
+			    method.genCode(
+			        context, 
+			        true, 
+			        callerClass.getSuperClass().getQualifiedName());		    		   
+			}	
 			else {
-			    prefixTarget = prefix.getType(context.getTypeFactory()).getCClass().getQualifiedName();
+			    String prefixTarget = null;
+				if(prefix == null || prefix instanceof JOwnerExpression) {
+				    prefixTarget = callerClass.getQualifiedName();
+				}
+				else {
+				    prefixTarget = prefix.getType(context.getTypeFactory()).getCClass().getQualifiedName();
+				}
+				
+		        method.genCode(
+		            context, 
+		            false, 
+		            prefixTarget);		    		   		    
 			}
-			
-	        method.genCode(
+		}
+		else {
+		    method.genCode(
 	            context, 
 	            false, 
-	            prefixTarget);		    		   		    
+	            method.getOwner().getQualifiedName());	
 		}
 		
 
-		if (discardValue)
-		{
+		if (discardValue) {
 			code.plantPopInstruction(getType(factory));
 		}
 	}
