@@ -5,8 +5,6 @@
 	<classpathentry kind="lib" path="lib/aspectjrt.jar"/>
 	<classpathentry kind="lib" path="lib/AspectJSrc.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjtools.jar"/>
-	<classpathentry kind="lib" path="lib/BCEL.jar"/>
-	<classpathentry kind="lib" path="lib/caesarruntime.jar"/>
 	<classpathentry kind="lib" path="lib/java-getopt-1.0.9.jar"/>
 	<classpathentry kind="lib" path="lib/JFlex.jar"/>
 	<classpathentry kind="lib" path="generated"/>
