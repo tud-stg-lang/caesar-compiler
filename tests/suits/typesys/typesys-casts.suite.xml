@@ -33,5 +33,41 @@
         <code></code>
     </compile-run>		  	
 	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="casts003" description="Check casts">
+		<test>		
+			final GG gg = new GG();
+			gg.foo();
+		</test>
+        <code>
+			public cclass GG {
+				public N foo() {
+					Object res = new N();
+					return (N)res;
+				}
+				public cclass N {}
+			}
+		</code>
+    </compile-run>		  	
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="casts004" description="Check casts">
+		<test>		
+			final GG gg = new GG();
+			gg.foo();
+		</test>
+        <code>
+			public cclass GG {
+				public cclass G {
+					public N foo() {
+						Object res = new N();
+						return (N)res;
+					}
+				}
+				public cclass N {}
+			}
+		</code>
+    </compile-run>		  	
+	
 
 </testsuite>
