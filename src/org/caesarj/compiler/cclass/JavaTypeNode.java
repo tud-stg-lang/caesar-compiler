@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.caesarj.mixer.MixinList;
+import org.caesarj.mixer.NameGenerator;
 
 
 /**
@@ -219,7 +219,7 @@ public class JavaTypeNode {
             
 
             String genHashCode = 
-                MixinList.generateHashCode(
+                NameGenerator.generateHashCode(
                     parent.getQualifiedName().toString()+
                     mixin.getQualifiedName().toString()
                 );

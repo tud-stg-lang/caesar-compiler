@@ -146,7 +146,7 @@ public class CaesarTypeNode {
                                                 
                 try {
                     // linearize
-                    List mergedList = Linearizator.instance().mix(superClasses);
+                    List mergedList = Linearizator.instance().mixFromLeftToRight(superClasses);
                     
                     // append
                     for(Iterator it=mergedList.iterator(); it.hasNext(); ) {
