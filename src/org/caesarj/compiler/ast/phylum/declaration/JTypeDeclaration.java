@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclaration.java,v 1.41 2005-01-28 16:09:34 klose Exp $
+ * $Id: JTypeDeclaration.java,v 1.42 2005-02-09 16:54:35 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -418,9 +418,11 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
             generatedMethods += 1;
         }
 
-        methodList = new CMethod[methods.length + generatedMethods];
+        methodList = new CMethod[methods.length + generatedMethods];        
         for (int i = 0; i < methods.length; i++) {
             methodList[i] = methods[i].checkInterface(self);
+            
+            /* CRITICAL: temporary removed, since dependent return types can not be resolved in this step
             for (int j = 0; j < i; j++) {
                 check(
                     context,
@@ -428,7 +430,8 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
                     KjcMessages.METHOD_REDEFINE,
                     methodList[i]);
             }
-        }
+            */
+        }        
 
         int count = methods.length;
 
