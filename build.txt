@@ -1,0 +1,20 @@
+Building the CaesarJ-Project with ANT
+
+Author: Karl Klose <karl.klose@gmx.de>
+
+The ANT script build.xml includes targets for
+1. Generating the scanner files&code
+2. Generating the parser files&code
+3. Compiling all changed compilation units
+
+Running the build file the first time:
+- Right-click on the build.xml file located in the caesar project root
+- Select "Run ANT..." from the context-menu
+- You are now prompted to select a target (see above) to launch and to choose 
+  a name for this "Run as..." entry.
+- Click "Run" to run the build.
+
+This configuration has been saved and is accessible through the "Run as..." 
+command either in the "Project"-Menu or the toolbar.
+You can modify or add configurations by following the same routine as for the
+first time.
