@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjWrappeeExpression.java,v 1.2 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CjWrappeeExpression.java,v 1.3 2005-03-07 12:20:11 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -28,6 +28,7 @@ package org.caesarj.compiler.ast.phylum.expression;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.InconsistencyException;
@@ -56,6 +57,14 @@ public class CjWrappeeExpression extends JExpression {
     public void genCode(GenerationContext context, boolean discardValue) {
         if(fieldAccess == null) throw new InconsistencyException();
         fieldAccess.genCode(context, discardValue);
+    }
+    
+    public Path getFamily() {
+        return fieldAccess.getFamily();
+    }
+    
+    public Path getThisAsFamily() {
+        return fieldAccess.getThisAsFamily();
     }
     
     public JExpression analyse(CExpressionContext context) throws PositionedError {
