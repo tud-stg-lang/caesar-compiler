@@ -16,9 +16,6 @@ import org.caesarj.util.TokenReference;
  * @author Ivica Aracic
  */
 public class CjQualifiedInstanceCreation extends JExpression {
-
-    private JExpression expr = null; // 
-    
     private JExpression prefix;
     private String ident;
     private JExpression[] params;
@@ -37,13 +34,11 @@ public class CjQualifiedInstanceCreation extends JExpression {
     }
 
     public CType getType(TypeFactory factory) {
-        assertExprChoosen();
-        return expr.getType(factory);
+        throw new InconsistencyException();
     }
     
-    public JExpression analyse(CExpressionContext context) throws PositionedError {
-        if(expr != null) 
-            return expr.analyse(context);
+    public JExpression analyse(CExpressionContext context) throws PositionedError {        
+        JExpression expr;
         
         TypeFactory factory = context.getTypeFactory();       
 
@@ -83,11 +78,6 @@ public class CjQualifiedInstanceCreation extends JExpression {
     }
     
     public void genCode(GenerationContext context, boolean discardValue) {
-        assertExprChoosen();
-        expr.genCode(context, discardValue);
-    }
-    
-    private void assertExprChoosen() {
-        if(expr==null) throw new InconsistencyException("analyse not executed");
+        throw new InconsistencyException();
     }
 }

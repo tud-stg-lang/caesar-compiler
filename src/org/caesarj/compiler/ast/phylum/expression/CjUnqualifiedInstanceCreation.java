@@ -18,8 +18,6 @@ import org.caesarj.util.UnpositionedError;
  * @author Ivica Aracic
  */
 public class CjUnqualifiedInstanceCreation extends JExpression {
-    private JExpression expr = null; 
-    
     private CReferenceType type;
     private JExpression[] params;
 
@@ -35,13 +33,11 @@ public class CjUnqualifiedInstanceCreation extends JExpression {
     }
 
     public CType getType(TypeFactory factory) {
-        assertExprChoosen();
-        return expr.getType(factory);
+        throw new InconsistencyException();
     }
     
     public JExpression analyse(CExpressionContext context) throws PositionedError {        
-        if(expr != null) 
-            return expr.analyse(context);
+        JExpression expr; 
         
         TypeFactory factory = context.getTypeFactory();
 
@@ -88,11 +84,6 @@ public class CjUnqualifiedInstanceCreation extends JExpression {
     }
     
     public void genCode(GenerationContext context, boolean discardValue) {
-        assertExprChoosen();
-        expr.genCode(context, discardValue);
-    }
-    
-    private void assertExprChoosen() {
-        if(expr==null) throw new InconsistencyException("analyse not executed");
+        throw new InconsistencyException();
     }
 }
