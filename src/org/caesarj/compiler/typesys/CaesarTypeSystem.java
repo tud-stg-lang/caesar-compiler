@@ -27,6 +27,8 @@ public class CaesarTypeSystem {
 	}
 	
 	public String findInContextOf(String classQn, String contextClassQn) {
+	    String res = null;
+	    
 	    CaesarTypeGraph g = getCaesarTypeGraph();
         CaesarTypeNode prefixN = caesarTypeGraph.getType(new JavaQualifiedName(classQn));
         CaesarTypeNode contextN = caesarTypeGraph.getType(new JavaQualifiedName(contextClassQn));
@@ -34,9 +36,11 @@ public class CaesarTypeSystem {
         CaesarTypeNode n = prefixN.getTypeInContextOf(contextN);
         
         if(n != null)
-            return n.getQualifiedName().toString();
+            res = n.getQualifiedName().toString();
             
-        return null;
+        System.out.println(classQn+" in context of "+contextClassQn+"\n\t-> "+res);
+        
+        return res;
     }
 	
 	public void generate() {
