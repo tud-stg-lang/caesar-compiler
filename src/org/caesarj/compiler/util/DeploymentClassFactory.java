@@ -2444,6 +2444,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		if (!CModifier.contains(aspectClass.getModifiers(), ACC_ABSTRACT)) {
 			singletonAspectMethods.add(createSingletonAjcClinitMethod());
+			singletonAspectMethods.add(createAspectOfMethod());
 		}
 
 		//create the ajc$perSingletonInstance field
@@ -2563,6 +2564,9 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		return singletonAspect;
 	}
+
+
+ 
 
 	private JClassBlock createSingletonAspectClinit() {
 

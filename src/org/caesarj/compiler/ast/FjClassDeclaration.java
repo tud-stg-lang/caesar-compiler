@@ -44,6 +44,7 @@ import org.caesarj.kjc.JFieldDeclaration;
 import org.caesarj.kjc.JFormalParameter;
 import org.caesarj.kjc.JMethodDeclaration;
 import org.caesarj.kjc.JPhylum;
+import org.caesarj.kjc.JReturnStatement;
 import org.caesarj.kjc.JStatement;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.JTypeNameExpression;
@@ -726,6 +727,7 @@ public class FjClassDeclaration
 				null));
 		addMethod(createSingletonAjcClinitMethod(context.getTypeFactory()));
 
+		addMethod(createAspectOfMethod());
 		addClassBlock(createSingletonAspectClinit());
 	}
 
@@ -739,6 +741,27 @@ public class FjClassDeclaration
 			typeFactory.getVoidType(),
 			AJC_CLINIT_METHOD,
 			JFormalParameter.EMPTY,
+			CReferenceType.EMPTY,
+			new JBlock(TokenReference.NO_REF, body, null),
+			null,
+			null);
+	}
+	private FjMethodDeclaration createAspectOfMethod() {
+
+		CType singletonType = new CClassNameType(getFjSourceClass().getQualifiedName());
+		JExpression expr =
+			new FjFieldAccessExpression(
+				TokenReference.NO_REF,
+				null,
+				PER_SINGLETON_INSTANCE_FIELD);
+		JStatement[] body = { new JReturnStatement(TokenReference.NO_REF, expr, null)};
+		return new FjMethodDeclaration(
+			TokenReference.NO_REF,
+			ACC_PUBLIC | ACC_STATIC,
+			CTypeVariable.EMPTY,
+			singletonType,
+			ASPECT_OF_METHOD,
+			FjFormalParameter.EMPTY,
 			CReferenceType.EMPTY,
 			new JBlock(TokenReference.NO_REF, body, null),
 			null,
