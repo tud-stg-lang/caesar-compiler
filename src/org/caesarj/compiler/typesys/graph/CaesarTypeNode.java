@@ -235,10 +235,6 @@ public class CaesarTypeNode {
 	    CaesarTypeNode contextOuterChain[] = 
 	        (CaesarTypeNode[])l2.toArray(new CaesarTypeNode[l2.size()]);
 	    
-	    if(thisOuterChain.length == 1 && contextOuterChain.length==2) {
-	        System.out.println("stop here");
-	    }
-	    
 	    // check subtype relations
 	    int j;
 	    CaesarTypeNode currentOuter = null;
