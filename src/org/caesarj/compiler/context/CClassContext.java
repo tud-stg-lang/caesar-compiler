@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassContext.java,v 1.5 2004-03-15 11:56:52 aracic Exp $
+ * $Id: CClassContext.java,v 1.6 2004-07-21 08:28:33 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -28,6 +28,7 @@ import org.caesarj.compiler.ast.phylum.expression.JOuterLocalVariableExpression;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceField;

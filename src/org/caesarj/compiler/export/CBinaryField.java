@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBinaryField.java,v 1.2 2004-03-15 11:56:53 aracic Exp $
+ * $Id: CBinaryField.java,v 1.3 2004-07-21 08:28:33 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -32,7 +32,6 @@ import org.caesarj.compiler.ast.phylum.expression.literal.JLongLiteral;
 import org.caesarj.compiler.ast.phylum.expression.literal.JShortLiteral;
 import org.caesarj.compiler.ast.phylum.expression.literal.JStringLiteral;
 import org.caesarj.compiler.context.CBinaryTypeContext;
-import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.SignatureParser;
 import org.caesarj.compiler.types.TypeFactory;

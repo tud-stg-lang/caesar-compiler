@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CCompilationUnitContext.java,v 1.2 2004-02-18 09:23:42 klose Exp $
+ * $Id: CCompilationUnitContext.java,v 1.3 2004-07-21 08:28:33 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -26,6 +26,7 @@ import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CCompilationUnit;
+import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.InconsistencyException;

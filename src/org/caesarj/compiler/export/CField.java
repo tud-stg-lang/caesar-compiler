@@ -15,10 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CField.java,v 1.2 2004-03-15 11:56:53 aracic Exp $
+ * $Id: CField.java,v 1.1 2004-07-21 08:28:33 aracic Exp $
  */
 
-package org.caesarj.compiler.context;
+package org.caesarj.compiler.export;
 
 import java.util.Hashtable;
 
@@ -26,11 +26,7 @@ import org.caesarj.classfile.FieldInfo;
 import org.caesarj.compiler.ast.phylum.declaration.JAccessorMethod;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.codegen.CodeSequence;
-import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.export.CMember;
-import org.caesarj.compiler.export.CMethod;
-import org.caesarj.compiler.export.CSourceClass;
-import org.caesarj.compiler.export.CSourceMethod;
+import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.20 2004-07-15 15:16:05 aracic Exp $
+ * $Id: CClass.java,v 1.21 2004-07-21 08:28:33 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -33,7 +33,6 @@ import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
-import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.types.CClassOrInterfaceType;
