@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.10 2004-04-19 15:23:21 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.11 2004-04-22 15:25:20 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -612,8 +612,8 @@ public class CjClassDeclaration
 
         // Initializes the families of the methods.
         CMethod[] methodList = new CMethod[methods.length + generatedMethods];
-        int i = 0;
-        for (; i < methods.length; i++) {
+        int i;
+        for (i=0; i < methods.length; i++) {
             // FJTODO initFamilies for CjMethodDeclaration
             /* 
             if (methods[i] instanceof CjMethodDeclaration)
@@ -624,10 +624,7 @@ public class CjClassDeclaration
             */
 
             // FJADD
-            if (methods[i] instanceof CjMethodDeclaration)
-                methodList[i] = methods[i].checkInterface(self);
-            else
-                methodList[i] = methods[i].getMethod();
+            methodList[i] = methods[i].getMethod();
         }
 
         JConstructorDeclaration defaultConstructor = getDefaultConstructor();
