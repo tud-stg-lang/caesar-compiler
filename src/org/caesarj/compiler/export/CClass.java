@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.29 2004-10-17 20:59:36 aracic Exp $
+ * $Id: CClass.java,v 1.30 2004-10-29 13:21:45 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -31,6 +31,7 @@ import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CTypeContext;
@@ -113,6 +114,16 @@ public abstract class CClass extends CMember
 
     public boolean isObjectClass() {
         return getQualifiedName().equals(JAV_OBJECT);
+    }
+    
+    public boolean isWrapper() {
+        try {
+            return 
+            	lookupField(this, this, CaesarConstants.WRAPPER_WRAPPEE_FIELD) != null;
+        }
+        catch(UnpositionedError e) {
+            return false;
+        }
     }
 
     public boolean isMixin() {
