@@ -323,7 +323,16 @@ public class DeploymentClassFactory implements CaesarConstants {
 	}
 
 	/**
-	 * Creates the deploy method for single instance aspects.
+	 * Creates the deploy method for single instance aspects. 
+	 *	
+	 * By returning null simply notifies registry, that it should take care
+	 * of deployment itself, because aspect object is unable to create
+	 * correct multiinstance container or thread mapper object.
+	 * 
+	 * public synchronized Deployable $deploy(Deployable aspectToDeploy)
+	 * {
+	 *    return null;
+	 * }
 	 */
 	private JMethodDeclaration createAspectClassDeployMethod() {
 		CType ifcType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
@@ -337,14 +346,13 @@ public class DeploymentClassFactory implements CaesarConstants {
 				false);
 
 		JFormalParameter[] deployParam = { param };
+		
+		JExpression retExp = new JNullLiteral(where);
 
 		JStatement[] body =
-			{
-				createAspectClassDeployStatement_1(),
-				createAspectClassDeployStatement_2(),
-				createAspectClassDeployStatement_3(),
-				createAspectClassDeployStatement_4(),
-				createAspectClassDeployStatement_5()};
+		{
+			new JReturnStatement(where, retExp, null)
+		};
 
 		return 
 			new JMethodDeclaration(
@@ -359,163 +367,6 @@ public class DeploymentClassFactory implements CaesarConstants {
 				null,
 				null);
 
-	}
-
-	/**
-	 * Returns the following statement:
-	 * 
-	 * AspectIfc aspectInstance;
-	 */
-	private JStatement createAspectClassDeployStatement_1() {
-		CType ifcType = new CClassNameType(qualifiedAspectInterfaceName);
-		JVariableDefinition var =
-			new JVariableDefinition(where, 0, ifcType, ASPECT_INSTANCE, null);
-
-		return new JVariableDeclarationStatement(where, var, null);
-	}
-
-	/**
-	 * Returns the following statement:
-	 * 
-	 * if (deploymentThread == instanceToDeploy.getDeploymentThread())
-	 * 		->createAspectClassDeployStatement_2_1()
-	 * else
-	 *  	->createAspectClassDeployStatement_2_2()
-	 */
-	private JStatement createAspectClassDeployStatement_2() {
-		JExpression left =
-			new JFieldAccessExpression(where, DEPLOYMENT_THREAD);
-
-		JExpression prefix =
-			new JNameExpression(where, null, INSTANCE_TO_DEPLOY);
-
-		JExpression right =
-			new CjMethodCallExpression(
-				where,
-				prefix,
-				GET_DEPLOYMENT_THREAD_METHOD,
-				JExpression.EMPTY);
-
-		JExpression cond = new JEqualityExpression(where, true, left, right);
-
-		return new JIfStatement(
-			where,
-			cond,
-			createAspectClassDeployStatement_2_1(),
-			createAspectClassDeployStatement_2_2(),
-			null);
-	}
-
-	/**
-	 * Returns the following statement:
-	 * 
-	 * {
-	 * 		->createAspectClassDeployStatement_2_1_1()
-	 * 		->createAspectClassDeployStatement_2_1_2() 
-	 * }
-	 */
-	private JStatement createAspectClassDeployStatement_2_1() {
-		JStatement[] body =
-			{
-				createAspectClassDeployStatement_2_1_1(),
-				createAspectClassDeployStatement_2_1_2()};
-
-		return new JBlock(where, body, null);
-
-	}
-
-	/**
-	 * Returns the following statement:
-	 * 
-	 * aspectInstance = new MultiInstanceAspect();
-	 */
-	private JStatement createAspectClassDeployStatement_2_1_1() {
-		JExpression left = new JNameExpression(where, null, ASPECT_INSTANCE);
-
-		CReferenceType multiInstanceType =
-			new CClassNameType(qualifiedMultiInstanceAspectClassName);
-		JExpression right =
-			new JUnqualifiedInstanceCreation(
-				where,
-				multiInstanceType,
-				JExpression.EMPTY);
-
-		JExpression expr = new CjAssignmentExpression(where, left, right);
-
-		return new JExpressionStatement(where, expr, null);
-	}
-
-	/**
-	 * Return the following statement:
-	 * 
-	 * aspectInstance.setDeploymentThread(deploymentThread);
-	 */
-	private JStatement createAspectClassDeployStatement_2_1_2() {
-		JExpression[] args =
-			{ new JNameExpression(where, null, DEPLOYMENT_THREAD)};
-
-		JExpression prefix = new JNameExpression(where, null, ASPECT_INSTANCE);
-		JExpression expr =
-			new CjMethodCallExpression(
-				where,
-				prefix,
-				SET_DEPLOYMENT_THREAD_METHOD,
-				args);
-		return new JExpressionStatement(where, expr, null);
-	}
-
-	/**
-	 * Returns the following statement:
-	 * 
-	 * aspectInstance = new MultiThreadAspect();
-	 */
-	private JStatement createAspectClassDeployStatement_2_2() {
-
-		JExpression left = new JNameExpression(where, null, ASPECT_INSTANCE);
-		CReferenceType type =
-			new CClassNameType(qualifiedMultiThreadAspectClassName);
-		JExpression right =
-			new JUnqualifiedInstanceCreation(where, type, JExpression.EMPTY);
-		JExpression expr = new CjAssignmentExpression(where, left, right);
-
-		return new JExpressionStatement(where, expr, null);
-	}
-
-	/**
-	 * Returns the following statement:
-	 * 
-	 * aspectInstance._deploy(this);
-	 */
-	private JStatement createAspectClassDeployStatement_3() {
-		JExpression[] args = { new JThisExpression(where)};
-		JExpression prefix = new JNameExpression(where, null, ASPECT_INSTANCE);
-		JExpression expr =
-			new CjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
-		return new JExpressionStatement(where, expr, null);
-	}
-
-	/**
-	 * Returns the following statement:
-	 * 
-	 * aspectInstance._deploy(instanceToDeploy);
-	 */
-	private JStatement createAspectClassDeployStatement_4() {
-		JExpression[] args =
-			{ new JNameExpression(where, null, INSTANCE_TO_DEPLOY)};
-		JExpression prefix = new JNameExpression(where, null, ASPECT_INSTANCE);
-		JExpression expr =
-			new CjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
-		return new JExpressionStatement(where, expr, null);
-	}
-
-	/**
-	 * Returns the following statement:
-	 * 
-	 * return aspectInstance;
-	 */
-	private JStatement createAspectClassDeployStatement_5() {
-		JExpression expr = new JNameExpression(where, null, ASPECT_INSTANCE);
-		return new JReturnStatement(where, expr, null);
 	}
 
 	/**
@@ -1830,6 +1681,29 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 	/**
 	 * Creates the deploy method for multi thread aspects.
+	 * 
+	 * public synchronized Deployable $deploy(Deployable aspectToDeploy)
+	 * {
+	 *    Thread thread = aspectToDeploy.$getDeploymentThread();
+	 *    Deployable $aspectInstance = (Deployable)$perThreadDeployedInstances.get(thread);
+	 *    if ($aspectInstance != null)
+	 *    {
+	 *       Deployable cont = $aspectInstance.$deploy(aspectToDeploy);
+	 *       if (cont == null)
+	 *       {
+	 *          cont = new MultiInstanceContainer();
+	 *			cont.setDeploymentThread(thread);
+	 *			cont.$deploy($aspectInstance);
+	 *			cont.$deploy(aspectToDeploy);
+	 * 		 }
+	 *		 $perThreadDeployedInstances.put(thread, cont);
+	 *    }
+	 *    else
+	 *    {
+	 *       $perThreadDeployedInstances.put(thread, aspectToDeploy);
+	 *    }
+	 *    return this;
+	 * }
 	 */
 	private CjMethodDeclaration createMultiThreadDeployMethod() {
 
@@ -1845,10 +1719,12 @@ public class DeploymentClassFactory implements CaesarConstants {
 					false)};
 
 		JStatement[] statements =
-			{
-				createMultiThreadDeployStatement_1(),
-				createMultiThreadDeployStatement_2(),
-				createMultiThreadDeployStatement_3()};
+		{
+			createMultiThreadDeployStatement_1(),
+			createMultiThreadDeployStatement_2(),
+			createMultiThreadDeployStatement_3(),
+			createMultiThreadDeployStatement_4()
+		};
 
 		JBlock body = new JBlock(where, statements, null);
 
@@ -1866,27 +1742,48 @@ public class DeploymentClassFactory implements CaesarConstants {
 				null);
 
 		return deployMethod;
-
 	}
 
 	/**
 	 * Returns the following statement:
 	 * 
-	 * CaesarAspectInterface aspectInstance =
-	 * 	(CasesarAspectInterface) perThreadDeployedInstances.get(instanceToDeploy.getDeploymentThread());
+	 *  Thread thread = aspectToDeploy.$getDeploymentThread();
 	 */
-	private JStatement createMultiThreadDeployStatement_1() {
-
-		JExpression instanceToDeployPrefix =
+	private JStatement createMultiThreadDeployStatement_1() 
+	{
+		JExpression prefix =
 			new JNameExpression(where, null, INSTANCE_TO_DEPLOY);
 
-		JExpression args[] =
-			{
-				 new CjMethodCallExpression(
+		CType type = new CClassNameType(QUALIFIED_THREAD_CLASS);
+		
+		JExpression initializer =
+			new CjMethodCallExpression(
 					where,
-					instanceToDeployPrefix,
+					prefix,
 					GET_DEPLOYMENT_THREAD_METHOD,
-					JExpression.EMPTY)};
+					JExpression.EMPTY);
+
+		JVariableDefinition var =
+			new JVariableDefinition(
+				where,
+				0,
+				type,
+				"thread",
+				initializer);
+
+		return new JVariableDeclarationStatement(where, var, null);
+	}
+
+	/**
+	 * Returns the following statement:
+	 * 
+	 * Deployable $aspectInstance = (Deployable)$perThreadDeployedInstances.get(thread);
+	 */
+	private JStatement createMultiThreadDeployStatement_2() 
+	{
+		JExpression args[] = {
+			new JNameExpression(where, null, "thread")
+		};
 
 		JExpression prefix =
 			new JFieldAccessExpression(where, PER_THREAD_DEPLOYED_INSTANCES);
@@ -1912,13 +1809,13 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 * Returns the following Statement:
 	 * 
-	 * if (aspecInstance != null)
-	 * 		->createMultiThreadDeployStatement_2_1()
+	 * if (aspectInstance != null)
+	 * 		statement1;
 	 * else 
-	 * 		->createMultiThreadDeployStatement_2_2()
+	 * 		statement2
 	 */
-	private JStatement createMultiThreadDeployStatement_2() {
-
+	private JStatement createMultiThreadDeployStatement_3() 
+	{
 		JExpression left = new JNameExpression(where, ASPECT_INSTANCE);
 
 		JExpression cond =
@@ -1931,8 +1828,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 		return new JIfStatement(
 			where,
 			cond,
-			createMultiThreadDeployStatement_2_1(),
-			createMultiThreadDeployStatement_2_2(),
+			createMultiThreadDeployStatement_3_1(),
+			createMultiThreadDeployStatement_3_2(),
 			null);
 	}
 
@@ -1940,15 +1837,19 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * Returns the following statement:
 	 * 
 	 * {
-	 * 		->createMultiThreadDeployStatement_2_1_1()
-	 * 		->createMultiThreadDeployStatement_2_1_2()
+	 * 		statement1;
+	 * 		statement2;
+	 * 	 	statement3;
 	 * }
 	 */
-	private JStatement createMultiThreadDeployStatement_2_1() {
+	private JStatement createMultiThreadDeployStatement_3_1() 
+	{
 		JStatement[] body =
-			{
-				createMultiThreadDeployStatement_2_1_1(),
-				createMultiThreadDeployStatement_2_1_2()};
+		{
+            createMultiThreadDeployStatement_3_1_1(),
+			createMultiThreadDeployStatement_3_1_2(),
+			createMultiThreadDeployStatement_3_1_3(),
+		};
 
 		return new JBlock(where, body, null);
 	}
@@ -1956,41 +1857,151 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 * Returns the follwing statement:
 	 *
-	 * 	aspectInstance = aspectInstance._deploy(instaceToDeploy);
+	 * 	Deployable cont = $aspectInstance.$deploy(aspectToDeploy);
 	 */
-	private JStatement createMultiThreadDeployStatement_2_1_1() {
+	private JStatement createMultiThreadDeployStatement_3_1_1() 
+	{
+		JExpression prefix = new JNameExpression(where, null, ASPECT_INSTANCE);
 
-		JExpression left = new JNameExpression(where, null, ASPECT_INSTANCE);
+		JExpression[] args = { 
+			new JNameExpression(where, INSTANCE_TO_DEPLOY) 
+		};
+		
+		JExpression initializer =
+			new CjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
 
-		JExpression param = new JNameExpression(where, INSTANCE_TO_DEPLOY);
+		CType type = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
+		
+		JVariableDefinition var =
+			new JVariableDefinition(
+				where,
+				0,
+				type,
+				"cont",
+				initializer);
 
-		JExpression[] args = { param };
+		return new JVariableDeclarationStatement(where, var, null);
+	}
+	
+	/**
+	 * Returns the following statement:
+	 * 
+	 * if (cont == null)
+	 * {
+	 *    statement1;
+	 *    statement2;
+	 *    statement3;
+	 *    statement4;
+	 * }
+	 */
+	private JStatement createMultiThreadDeployStatement_3_1_2()
+	{
+		JExpression left =
+			new JNameExpression(where, null, "cont");
+
 		JExpression right =
-			new CjMethodCallExpression(where, left, DEPLOY_METHOD, args);
+			new JNullLiteral(where);
 
-		JExpression assignment = new CjAssignmentExpression(where, left, right);
+		JExpression cond = new JEqualityExpression(where, true, left, right);
+		
+		JStatement[] block =
+		{
+			createMultiThreadDeployStatement_3_1_2_1(),
+			createMultiThreadDeployStatement_3_1_2_2(),
+			createMultiThreadDeployStatement_3_1_2_3(),
+			createMultiThreadDeployStatement_3_1_2_4()
+		};
 
-		return new JExpressionStatement(where, assignment, null);
+		return new JIfStatement(
+			where,
+			cond,
+			new JBlock(where, block, null),
+			null,
+			null);
+	}
+	
+	/**
+	 * Returns the following statement:
+	 * 
+	 *  cont = new MultiInstanceContainer();
+	 */
+	private JStatement createMultiThreadDeployStatement_3_1_2_1() 
+	{
+		JExpression left = new JNameExpression(where, null, "cont");
 
+		CReferenceType multiInstanceType =
+			new CClassNameType(qualifiedMultiInstanceAspectClassName);
+		JExpression right =
+			new JUnqualifiedInstanceCreation(
+				where,
+				multiInstanceType,
+				JExpression.EMPTY);
+
+		JExpression expr = new CjAssignmentExpression(where, left, right);
+
+		return new JExpressionStatement(where, expr, null);
+	}
+
+	/**
+	 * Return the following statement:
+	 * 
+	 * cont.setDeploymentThread(thread);
+	 */
+	private JStatement createMultiThreadDeployStatement_3_1_2_2() 
+	{
+		JExpression[] args =
+			{ new JNameExpression(where, null, "thread")};
+
+		JExpression prefix = new JNameExpression(where, null, "cont");
+		JExpression expr =
+			new CjMethodCallExpression(
+				where,
+				prefix,
+				SET_DEPLOYMENT_THREAD_METHOD,
+				args);
+		return new JExpressionStatement(where, expr, null);
 	}
 
 	/**
 	 * Returns the following statement:
 	 * 
-	 * 	perThreadDeployedInstances.put(instanceToDeploy.getDeploymentThread(),aspectInstance);	
+	 * cont.deploy($deployedInstances);
 	 */
-	private JStatement createMultiThreadDeployStatement_2_1_2() {
-		JExpression instanceToDeploy =
-			new JNameExpression(where, null, INSTANCE_TO_DEPLOY);
+	private JStatement createMultiThreadDeployStatement_3_1_2_3() 
+	{
+		JExpression[] args = { new JNameExpression(where, ASPECT_INSTANCE) };
+		JExpression prefix = new JNameExpression(where, null, "cont");
+		JExpression expr =
+			new CjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
+		return new JExpressionStatement(where, expr, null);
+	}
 
+	/**
+	 * Returns the following statement:
+	 * 
+	 * cont.$deploy(aspectToDeploy);
+	 */
+	private JStatement createMultiThreadDeployStatement_3_1_2_4() 
+	{
 		JExpression[] args =
-			{
-				new CjMethodCallExpression(
-					where,
-					instanceToDeploy,
-					GET_DEPLOYMENT_THREAD_METHOD,
-					JExpression.EMPTY),
-				new JNameExpression(where, ASPECT_INSTANCE)};
+			{ new JNameExpression(where, null, INSTANCE_TO_DEPLOY)};
+		JExpression prefix = new JNameExpression(where, null, "cont");
+		JExpression expr =
+			new CjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
+		return new JExpressionStatement(where, expr, null);
+	}
+	
+	/**
+	 * Returns the following statement:
+	 * 
+	 * 	$perThreadDeployedInstances.put(thread, cont);	
+	 */
+	private JStatement createMultiThreadDeployStatement_3_1_3() 
+	{
+		JExpression[] args = {
+			new JNameExpression(where, "thread"),
+			new JNameExpression(where, "cont")
+		};
 
 		JExpression prefix =
 			new JFieldAccessExpression(where, PER_THREAD_DEPLOYED_INSTANCES);
@@ -2006,7 +2017,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * 
 	 * perThreadDeployedInstances.put(instanceToDeploy.getDeploymentThread(), instanceToDeploy);
 	 */
-	private JStatement createMultiThreadDeployStatement_2_2() {
+	private JStatement createMultiThreadDeployStatement_3_2() {
 
 		JExpression prefix =
 			new JNameExpression(where, null, INSTANCE_TO_DEPLOY);
@@ -2034,7 +2045,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * 
 	 * return this;
 	 */
-	private JStatement createMultiThreadDeployStatement_3() {
+	private JStatement createMultiThreadDeployStatement_4() {
 		return new JReturnStatement(where, new JThisExpression(where), null);
 	}
 
@@ -2972,26 +2983,254 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	* Returns the following statement:
 	* 
-	* deployedInstances = (AnAspectIfc) deployedInstances._deploy(instanceToDeploy);
+	* Deployable $aspectInstance = $deployedInstances.$deploy($aspectToDeploy);
+	* if ($aspectInstance == null)
+	* {
+	*    if ($deployedInstances.$getDeploymentThread() == thread)
+	*    {
+	*       $aspectInstance = new MultiInstanceContainer();
+	*       $aspectInstance.setDeploymentThread(thread);
+	*    } 
+	*    else
+	*    {
+	*       $aspectInstance = new ThreadMapper();
+	*    }
+	*    $aspectInstance.deploy($deployedInstances);
+	*    $aspectInstance.deploy($aspectToDeploy);
+	* }
+	* $deployedInstances = (Ifc)$aspectInstance;
 	*/
-	private JStatement createSingletonDeployStatement_4_2() {
-
+	private JStatement createSingletonDeployStatement_4_2() 
+	{
+		JStatement[] block =
+		{
+			createSingletonDeployStatement_4_2_1(),
+			createSingletonDeployStatement_4_2_2(),
+			createSingletonDeployStatement_4_2_3()			
+		};
+		
+		return new JBlock(where, block, null);
+	}
+	
+	/**
+	* Returns the following statement:
+	* 
+	* Deployable $aspectInstance = $deployedInstances.$deploy($aspectToDeploy);
+	*/
+	private JStatement createSingletonDeployStatement_4_2_1()
+	{
+		CType ifcType = new CClassNameType(CAESAR_DEPLOYABLE_IFC);
+		
 		JExpression deployedInstancesField =
 			new JFieldAccessExpression(where, DEPLOYED_INSTANCES);
+		
 		JExpression[] args =
 			{ new JNameExpression(where, null, INSTANCE_TO_DEPLOY)};
-		CType ifcType = new CClassNameType(qualifiedAspectInterfaceName);
-		JExpression right =
-			new JCastExpression(
+		
+		JExpression init =
+			new CjMethodCallExpression(
 				where,
-				new CjMethodCallExpression(
-					where,
-					deployedInstancesField,
-					DEPLOY_METHOD,
-					args),
-				ifcType);
+				deployedInstancesField,
+				DEPLOY_METHOD,
+				args);
+		
+		JVariableDefinition var =
+			new JVariableDefinition(where, 0, ifcType, ASPECT_INSTANCE, init);
+
+		return new JVariableDeclarationStatement(where, var, null);		
+	}
+	
+	/**
+	* Returns the following statement:
+	* 
+	* if ($aspectInstance == null)
+	* {
+	*    statement1;
+	*    statement2;
+	*    statement3;
+	* }
+	*/
+	private JStatement createSingletonDeployStatement_4_2_2()
+	{
+		JExpression left =
+			new JNameExpression(where, null, ASPECT_INSTANCE);
+
+		JExpression right =
+			new JNullLiteral(where);
+
+		JExpression cond = new JEqualityExpression(where, true, left, right);
+		
+		JStatement[] block =
+		{
+			createSingletonDeployStatement_4_2_2_1(),
+			createSingletonDeployStatement_4_2_2_2(),
+			createSingletonDeployStatement_4_2_2_3()			
+		};
+
+		return new JIfStatement(
+			where,
+			cond,
+			new JBlock(where, block, null),
+			null,
+			null);
+	}
+	
+	/**
+	* Returns the following statement:
+	* 
+	*    if ($deployedInstances.$getDeploymentThread() == thread)
+	*    {
+	*       statement1;
+	*    } 
+	*    else
+	*    {
+	*       statement2;
+	*    }
+	*/
+	private JStatement createSingletonDeployStatement_4_2_2_1() 
+	{
+		JExpression prefix =
+			new JFieldAccessExpression(where, DEPLOYED_INSTANCES);
+
+		JExpression left =
+			new CjMethodCallExpression(
+				where,
+				prefix,
+				GET_DEPLOYMENT_THREAD_METHOD,
+				JExpression.EMPTY);
+
+		JExpression right =
+			new JNameExpression(where, null, DEPLOYMENT_THREAD);
+		
+		JExpression cond = new JEqualityExpression(where, true, left, right);
+
+		return new JIfStatement(
+			where,
+			cond,
+			createSingletonDeployStatement_4_2_2_1_1(),
+			createSingletonDeployStatement_4_2_2_1_2(),
+			null);
+	}
+
+	/**
+	 * Returns the following statement:
+	 * 
+	 * {
+	 *    statement1;
+	 *    statement2; 
+	 * }
+	 */
+	private JStatement createSingletonDeployStatement_4_2_2_1_1() 
+	{
+		JStatement[] body =
+		{
+			createSingletonDeployStatement_4_2_2_1_1_1(),
+			createSingletonDeployStatement_4_2_2_1_1_2()
+		};
+
+		return new JBlock(where, body, null);
+	}
+
+	/**
+	 * Returns the following statement:
+	 * 
+	 * $aspectInstance = new MultiInstanceAspect();
+	 */
+	private JStatement createSingletonDeployStatement_4_2_2_1_1_1() 
+	{
+		JExpression left = new JNameExpression(where, null, ASPECT_INSTANCE);
+
+		CReferenceType multiInstanceType =
+			new CClassNameType(qualifiedMultiInstanceAspectClassName);
+		JExpression right =
+			new JUnqualifiedInstanceCreation(
+				where,
+				multiInstanceType,
+				JExpression.EMPTY);
+
+		JExpression expr = new CjAssignmentExpression(where, left, right);
+
+		return new JExpressionStatement(where, expr, null);
+	}
+
+	/**
+	 * Return the following statement:
+	 * 
+	 * $aspectInstance.setDeploymentThread(deploymentThread);
+	 */
+	private JStatement createSingletonDeployStatement_4_2_2_1_1_2() 
+	{
+		JExpression[] args =
+			{ new JNameExpression(where, null, DEPLOYMENT_THREAD)};
+
+		JExpression prefix = new JNameExpression(where, null, ASPECT_INSTANCE);
 		JExpression expr =
-			new CjAssignmentExpression(where, deployedInstancesField, right);
+			new CjMethodCallExpression(
+				where,
+				prefix,
+				SET_DEPLOYMENT_THREAD_METHOD,
+				args);
+		return new JExpressionStatement(where, expr, null);
+	}
+
+	/**
+	 * Returns the following statement:
+	 * 
+	 * $aspectInstance = new MultiThreadAspect();
+	 */
+	private JStatement createSingletonDeployStatement_4_2_2_1_2() 
+	{
+		JExpression left = new JNameExpression(where, null, ASPECT_INSTANCE);
+		CReferenceType type =
+			new CClassNameType(qualifiedMultiThreadAspectClassName);
+		JExpression right =
+			new JUnqualifiedInstanceCreation(where, type, JExpression.EMPTY);
+		JExpression expr = new CjAssignmentExpression(where, left, right);
+
+		return new JExpressionStatement(where, expr, null);
+	}
+
+	/**
+	 * Returns the following statement:
+	 * 
+	 * $aspectInstance.deploy($deployedInstances);
+	 */
+	private JStatement createSingletonDeployStatement_4_2_2_2() {
+		JExpression[] args = { new JFieldAccessExpression(where, DEPLOYED_INSTANCES) };
+		JExpression prefix = new JNameExpression(where, null, ASPECT_INSTANCE);
+		JExpression expr =
+			new CjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
+		return new JExpressionStatement(where, expr, null);
+	}
+
+	/**
+	 * Returns the following statement:
+	 * 
+	 * $aspectInstance.deploy($aspectToDeploy);
+	 */
+	private JStatement createSingletonDeployStatement_4_2_2_3() {
+		JExpression[] args =
+			{ new JNameExpression(where, null, INSTANCE_TO_DEPLOY)};
+		JExpression prefix = new JNameExpression(where, null, ASPECT_INSTANCE);
+		JExpression expr =
+			new CjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
+		return new JExpressionStatement(where, expr, null);
+	}
+	
+	/**
+	 * Returns the following statement:
+	 * 
+	 * $deployedInstances = (Ifc)$aspectInstance;
+	 */
+	private JStatement createSingletonDeployStatement_4_2_3()
+	{
+		JExpression left =
+			new JFieldAccessExpression(where, DEPLOYED_INSTANCES);
+		CType ifcType = new CClassNameType(qualifiedAspectInterfaceName);
+		JExpression varExpr =
+			new JNameExpression(where, null, ASPECT_INSTANCE);
+		JExpression right = new JCastExpression(where, varExpr, ifcType);
+		JExpression expr = new CjAssignmentExpression(where, left, right);
 		return new JExpressionStatement(where, expr, null);
 	}
 
