@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.12 2003-08-28 16:00:52 werner Exp $
+ * $Id: Caesar.g,v 1.13 2004-01-12 10:39:28 klose Exp $
  */
 
 /*
@@ -35,14 +35,11 @@ header { package org.caesarj.compiler; }
   import java.util.ArrayList;
 
   import org.caesarj.compiler.ast.*;
-  import org.caesarj.compiler.aspectj.*;  
   
-  import org.aspectj.weaver.patterns.PatternParser;
-  import org.aspectj.weaver.patterns.ParserException;  
-  import org.aspectj.weaver.patterns.Pointcut;    
-  import org.aspectj.weaver.patterns.Declare;      
-  import org.aspectj.weaver.AdviceKind;
-  import org.aspectj.weaver.patterns.ITokenSource;    
+  import org.caesarj.compiler.aspectj.CaesarAdviceKind;
+  import org.caesarj.compiler.aspectj.CaesarPatternParser;
+  import org.caesarj.compiler.aspectj.CaesarPointcut;
+  import org.caesarj.compiler.aspectj.CaesarSourceContext;
 
   import org.caesarj.kjc.*;
   import org.caesarj.compiler.CWarning;
@@ -713,7 +710,7 @@ jMember [ParseClassContext context]
   KopiInvariantDeclaration   invariant = null;
   JFormalParameter[] parameters;
   JFormalParameter extraParam = null;  
-  AdviceKind kind = null;
+  CaesarAdviceKind kind = null;
   TypeFactory factory = environment.getTypeFactory();
   CReferenceType[]		throwsList = CReferenceType.EMPTY;  
   PointcutDeclaration pointcutDecl;
@@ -772,15 +769,13 @@ jMember [ParseClassContext context]
     		
 				try {
 
-					ITokenSource tokenSource = CaesarTokenSource.createTokenSource(
+					CaesarPatternParser patternParser = new CaesarPatternParser(
 															"declare "+pattern.getText(),
-															new CaesarSourceContext(sourceRef));				
-
-	    			PatternParser patternParser = new PatternParser(tokenSource);				
+															new CaesarSourceContext(sourceRef) );
 					context.addDeclare(patternParser.parseDeclare());		
 					
-				} catch(ParserException e) {
-			  		reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));			
+				} catch(CaesarPatternParser.CaesarParserException e) {
+					reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));			
 				} catch(RuntimeException e) {
 			  		reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));							
 				}  			
@@ -789,26 +784,26 @@ jMember [ParseClassContext context]
   			//before advice declaration
   			"before"
 	  		LPAREN  parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN   	
- 			adviceDecl = jAdviceDeclaration[AdviceKind.Before, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, null]
+ 			adviceDecl = jAdviceDeclaration[CaesarAdviceKind.Before, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, null]
 			{ 	
 				context.addAdviceDeclaration(adviceDecl);
 			}  	 		  		 	 
 	  	|
   			//after advice declaration
-  			"after" {kind = AdviceKind.After;}
+  			"after" {kind = CaesarAdviceKind.After;}
 	  		LPAREN  parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN
 			(
 				"returning"
 				(LPAREN 
 	  			extraParam = jParameterDeclaration[JLocalVariable.DES_GENERATED] 
   				RPAREN)?  
-  				{kind = AdviceKind.AfterReturning;}
+  				{kind = CaesarAdviceKind.AfterReturning;}
 	  		|
   				"throwing" 
   				(LPAREN 
 	  			extraParam = jParameterDeclaration[JLocalVariable.DES_GENERATED] 
   				RPAREN)? 
-  				{kind = AdviceKind.AfterThrowing;}
+  				{kind = CaesarAdviceKind.AfterThrowing;}
 			)?  	
  			adviceDecl = jAdviceDeclaration[kind, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, extraParam]   
 			{ 
@@ -821,7 +816,7 @@ jMember [ParseClassContext context]
   	  		"around"		  	
 	      	LPAREN  parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN   	
   		  	(throwsList = jThrowsClause[])?
- 	  		adviceDecl = jAdviceDeclaration[AdviceKind.Around, modifiers, parameters, type, throwsList, extraParam] 	
+ 	  		adviceDecl = jAdviceDeclaration[CaesarAdviceKind.Around, modifiers, parameters, type, throwsList, extraParam] 	
 	  		{ 
 	  			context.addAdviceDeclaration(adviceDecl);	  			
 	  		}  	 		  		    
@@ -2627,7 +2622,7 @@ kTypeVariableDeclaration []
 
 
 
-jAdviceDeclaration  [AdviceKind kind, int modifiers, JFormalParameter[] parameters, CType type, CReferenceType[] throwsList, JFormalParameter extraParam]
+jAdviceDeclaration  [CaesarAdviceKind kind, int modifiers, JFormalParameter[] parameters, CType type, CReferenceType[] throwsList, JFormalParameter extraParam]
 	returns [AdviceDeclaration self = null]
 {
   int			bounds = 0;
@@ -2646,12 +2641,10 @@ jAdviceDeclaration  [AdviceKind kind, int modifiers, JFormalParameter[] paramete
 	
 
 		try {
-			ITokenSource tokenSource = CaesarTokenSource.createTokenSource(
-															pattern.getText(),
-															new CaesarSourceContext(sourceRef));
-															
-			PatternParser patternParser = new PatternParser(tokenSource);			
-			Pointcut pointcut = patternParser.parsePointcut();
+			CaesarPatternParser patternParser = new CaesarPatternParser(
+													pattern.getText(),
+													new CaesarSourceContext(sourceRef) );
+			CaesarPointcut pointcut = patternParser.parsePointcut();
 
 			
 			//handle throwing parameter
@@ -2675,7 +2668,7 @@ jAdviceDeclaration  [AdviceKind kind, int modifiers, JFormalParameter[] paramete
                                        kind,
                                        extraParam != null);
 			
-		} catch(ParserException e) {
+		} catch(CaesarPatternParser.CaesarParserException e) {
 			reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));			
 		} catch(RuntimeException e) {
 			reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));							
@@ -2694,7 +2687,7 @@ jPointcutDefinition [int modifiers, CTypeVariable[] typeVariables]
   JavadocComment	javadoc = getJavadocComment();
   JavaStyleComment[]	comments = getStatementComment();
   TypeFactory factory = environment.getTypeFactory();  
-  Pointcut pointcut = null;
+  CaesarPointcut pointcut = null;
 }
 :
   name : IDENT
@@ -2713,7 +2706,7 @@ jPointcutDefinition [int modifiers, CTypeVariable[] typeVariables]
 ;
 
 jPointcut []
-  returns [Pointcut self = null]
+  returns [CaesarPointcut self = null]
 {
 	TokenReference	sourceRef = buildTokenReference();
 	int mod = 0;
@@ -2724,13 +2717,11 @@ jPointcut []
 		if (pattern != null) {
 		
 			try {
-				ITokenSource tokenSource = CaesarTokenSource.createTokenSource(
-																pattern.getText(),
-																new CaesarSourceContext(sourceRef));
-			
-				PatternParser patternParser = new PatternParser(tokenSource);			
+				CaesarPatternParser patternParser = new CaesarPatternParser(
+														pattern.getText(),
+														new CaesarSourceContext(sourceRef) );
 				self = patternParser.parsePointcut();
-			} catch(ParserException e) {
+			} catch(CaesarPatternParser.CaesarParserException e) {
 				reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));			
 			} catch(RuntimeException e) {
 			  	reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));							
@@ -2739,7 +2730,7 @@ jPointcut []
 			
 		} else {
 		
-			self = Pointcut.makeMatchesNothing(Pointcut.SYMBOLIC);
+			self = CaesarPointcut.makeMatchesNothing();
 			
 		}
 	}
