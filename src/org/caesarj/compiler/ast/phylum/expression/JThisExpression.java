@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JThisExpression.java,v 1.7 2004-11-02 18:01:17 aracic Exp $
+ * $Id: JThisExpression.java,v 1.8 2005-01-14 17:46:31 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -298,6 +298,10 @@ public class JThisExpression extends JExpression {
 	// DATA MEMBERS
 	// ----------------------------------------------------------------------
 
+    public CClass getSelf() {
+        return self;
+    }
+    
 	protected CClass self;
 	protected JExpression prefix;
 }
