@@ -15,18 +15,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.10 2004-09-22 07:52:10 gasiunas Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.11 2004-09-28 15:13:59 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.caesarj.compiler.AstGenerator;
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
@@ -37,7 +35,6 @@ import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CMethod;
-import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
@@ -178,81 +175,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
 
     public String getOriginalIdent() {
         return originalIdent;
-    }
-
-    
-    /**
-     * this one generates temporary unchecked export information  of the source class
-     * we need this one in order to be able to generate exports for mixin copies
-     */    
-    public void generateExport(CContext context) throws PositionedError {
-        
-    	boolean defCtorFound = false;
-    	
-        List methodList = new ArrayList(methods.length);
-        for (int i = 0; i < methods.length; i++) {
-            CMethod m = methods[i].checkInterface(self);            
-            methodList.add(m);
-        }
-                
-        // go through inners and check for wrappers
-        // generate wrappee support method exports
-        // the body of the method is not of the interesst
-        AstGenerator gen = context.getEnvironment().getAstGenerator();
-        for(int k = 0; k < inners.length; k++) {
-        	if (!(inners[k] instanceof CjVirtualClassDeclaration))
-        		continue;
-        	
-            CjVirtualClassDeclaration inner = (CjVirtualClassDeclaration)inners[k];
-            if(inner.isWrapper()) {
-                String wrappeeClass = 
-                    inner.getWrappee().getQualifiedName().replace('/','.').replace('$','.');
-                String wrapperIdent =
-                    inner.getMixinIfcDeclaration().getCClass().getIdent();
-                String wrapperClass =
-                    inner.getMixinIfcDeclaration().getCClass().getQualifiedName().replace('/','.').replace('$','.');
-                
-                gen.writeMethod(
-                    new String[]{
-                        "public "+wrapperClass+" "+wrapperIdent+"("+wrappeeClass+" w) {",
-                        "return null;}"
-                    }
-                );
-                
-                methodList.add(
-                    gen.endMethod().checkInterface(self));
-                
-                
-                gen.writeMethod(
-                    new String[]{
-                        "public "+wrapperClass+" get"+wrapperIdent+"("+wrappeeClass+" w) {",
-                        "return null;}"
-                    }
-                );
-                    
-                methodList.add(
-                    gen.endMethod().checkInterface(self));
-            }
-        }
-        
-        Hashtable hashFieldMap = new Hashtable();
-        for (int i = 0; i < fields.length; i++) {
-            CSourceField field = fields[i].checkInterface(self);
-            field.setPosition(i);
-            hashFieldMap.put(field.getIdent(), field);
-        }
-
-        sourceClass.close(
-            this.interfaces, 
-            hashFieldMap, 
-            (CMethod[])methodList.toArray(new CMethod[methodList.size()])
-        );
-        
-        // Check inners
-        for(int k = 0; k < inners.length; k++) {
-            inners[k].generateExport(context);
-        }
-    }
+    }      
     
     /**
      * this one generates recursively implicit inner types 

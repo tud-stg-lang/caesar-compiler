@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JCompilationUnit.java,v 1.7 2004-09-06 13:31:36 aracic Exp $
+ * $Id: JCompilationUnit.java,v 1.8 2004-09-28 15:13:59 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -241,17 +241,6 @@ public class JCompilationUnit extends JPhylum {
             typeDeclarations[i].adjustSuperType(context);
         }
     }
-
-    
-    // IVICA 
-	public void generateExport(CompilerBase compiler) throws PositionedError {
-        CCompilationUnitContext context =
-			new CCompilationUnitContext(compiler, environment, export);
-		
-        for (int i = 0; i < typeDeclarations.length; i++) {
-			typeDeclarations[i].generateExport(context);
-		}
-	}
 
 	/**
 	 * Second pass (quick), check interface looks good

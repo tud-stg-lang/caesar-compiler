@@ -14,6 +14,7 @@ import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
+import org.caesarj.compiler.cclass.CClassPreparation;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
@@ -21,7 +22,6 @@ import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.compiler.typesys.CClassPreparation;
 import org.caesarj.compiler.typesys.graph.CaesarTypeGraphGenerator;
 import org.caesarj.compiler.typesys.java.JavaTypeGraph;
 import org.caesarj.compiler.typesys.java.JavaTypeNode;
@@ -119,12 +119,9 @@ public class Main extends MainSuper implements Constants {
         joinAll(tree);                  
         if(errorFound) return false;
         
-        generateCaesarExports(tree);
-        if(errorFound) return false;
-        
         generateCaesarTypeSystem(environment, tree);        
 
-        generateMissingMixinChainParts(environment, tree[0]);
+        createMixinCloneTypeInfo(environment, tree[0]);
         
         createImplicitCaesarTypes(tree);
         if(errorFound) return false;
@@ -137,6 +134,8 @@ public class Main extends MainSuper implements Constants {
         
         checkAllInterfaces(tree); 
         if(errorFound) return false;
+        
+        completeMixinCloneTypeInfo(environment, tree[0]);
                 
         checkAllInitializers(tree);
         if(errorFound) return false;
@@ -214,11 +213,18 @@ public class Main extends MainSuper implements Constants {
     /**
      * - generate export information for missing mixin chain parts 
      */
-    protected void generateMissingMixinChainParts(KjcEnvironment environment, JCompilationUnit cu) {
-        CClassPreparation.instance().generateMissingMixinChainParts(
-            this,
-            environment,
-            cu
+    protected void createMixinCloneTypeInfo(KjcEnvironment environment, JCompilationUnit cu) {
+        CClassPreparation.instance().createMixinCloneTypeInfo(
+            this, environment, cu
+        );
+    }
+    
+    /**
+     * - generate export information for missing mixin chain parts 
+     */
+    protected void completeMixinCloneTypeInfo(KjcEnvironment environment, JCompilationUnit cu) {
+        CClassPreparation.instance().completeMixinCloneTypeInfo(
+            this, environment, cu
         );
     }
     
@@ -290,22 +296,6 @@ public class Main extends MainSuper implements Constants {
         environment.getCaesarTypeSystem().generate();
     }
  
-    /**
-     * generated unchecked export information of the class
-     * which is being replaced later on in checkInterface
-     */  
-    protected void generateCaesarExports(JCompilationUnit[] tree) {
-        try {
-            System.out.println("generateCaesarExports");
-            for (int count = 0; count < tree.length; count++) {
-                tree[count].generateExport(this);        
-            }
-        }
-        catch (PositionedError e) {
-            reportTrouble(e);
-        }
-    }
-
     /**
      * tasks: 
      * - check all final fields are initialized

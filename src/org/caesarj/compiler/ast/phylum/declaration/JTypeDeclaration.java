@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.20 2004-09-09 14:35:57 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.21 2004-09-28 15:13:59 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -307,14 +307,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         sourceClass.setInterfaces(interfaces);
     }
 
-    
-    /**
-     * generates unchecked export, before checkInterface is called
-     * only importatn for CjClassDeclaration 
-     */
-    public void generateExport(CContext context) throws PositionedError {        
-    }
-    
+        
     public void createImplicitCaesarTypes(CContext context) throws PositionedError {
     }
     
