@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: TypeFactory.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: TypeFactory.java,v 1.2 2004-10-17 20:59:36 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -96,18 +96,9 @@ public interface TypeFactory {
   CReferenceType createType(String name, boolean binary);
 
   /**
-   * Creates a (generic) type
-   *  
-   * @param     name is qualified or unqualified name of the type
-   * @param     arguments type arguments if this type is generic
-   * @param     binary is true if this type is load from a binary class
-   * @return    an unchecked type
-   */
-  CReferenceType createType(String name, CReferenceType[][] arguments, boolean binary);
-  /**
    * @return the environment.
    */
-  boolean isGenericEnabled();
+  
   boolean isPrimitive(String typeName);  
 
 }

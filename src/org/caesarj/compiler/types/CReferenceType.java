@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CReferenceType.java,v 1.7 2004-10-15 11:12:54 aracic Exp $
+ * $Id: CReferenceType.java,v 1.8 2004-10-17 20:59:36 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -47,7 +47,6 @@ public class CReferenceType extends CType {
 		super(TID_CLASS);
 
 		this.clazz = BAC_CLASS;
-		this.arguments = new CReferenceType[][] { EMPTY };
 	}
 
 	/**
@@ -58,7 +57,6 @@ public class CReferenceType extends CType {
 		super(TID_CLASS);
 
 		this.clazz = clazz;
-		this.arguments = new CReferenceType[][] { EMPTY };
 
 		if (!(this instanceof CArrayType)) {
 			allCReferenceType.put(clazz.getQualifiedName(), this);
@@ -108,30 +106,11 @@ public class CReferenceType extends CType {
 	 */
 	public String toString() {
 		if (clazz.isNested()) {
-			return clazz.getIdent() + printArgs();
+			return clazz.getIdent();
 		}
 		else {
-			return getQualifiedName().replace('/', '.') + printArgs();
+			return getQualifiedName().replace('/', '.');
 		}
-	}
-
-	private String printArgs() {
-		if (arguments == null) {
-			return "";
-		}
-
-		StringBuffer buffer = new StringBuffer();
-
-		buffer.append('<');
-		for (int i = 0; i < arguments[arguments.length - 1].length; i++) {
-			if (i > 0) {
-				buffer.append(", ");
-			}
-			buffer.append(arguments[arguments.length - 1][i]);
-		}
-		buffer.append('>');
-
-		return buffer.toString();
 	}
 
 	/**
@@ -236,51 +215,13 @@ public class CReferenceType extends CType {
 	 * @return	true iff the conversion is valid
 	 */
 	public boolean isAssignableTo(CTypeContext context, CType dest) {
-		return isAssignableTo(context, dest, false);
-	}
-	/**
-	 * Can this type be converted to the specified type by assignment conversion (JLS 5.2) ?
-	 * @param	dest		the destination type
-	 * @return	true iff the conversion is valid
-	 */
-	public boolean isAssignableTo(
-		CTypeContext context,
-		CType dest,
-		boolean inst) {
-		if (!(dest.isClassType() && !dest.isArrayType())) {
-			return false;
-		}
-		return isAssignableTo(context, dest, dest.getArguments(), inst);
-	}
-	public boolean isAssignableTo(
-		CTypeContext context,
-		CType dest,
-		CReferenceType[] substitution,
-		boolean inst) {
-		if (!(dest.isClassType() && !dest.isArrayType())) {
+	    if (!(dest.isClassType() && !dest.isArrayType())) {
 			return false;
 		}
 
 		return getCClass().descendsFrom(
 			dest.getCClass());
-
-		//  return true;
-	}
-
-	public boolean isAssignableTo(
-		CTypeContext context,
-		CType dest,
-		CReferenceType[] substitution) {
-		if (!(dest.isClassType() && !dest.isArrayType())) {
-			return false;
-		}
-		else {
-			//      return getCClass().descendsFrom(((CReferenceType)dest), CReferenceType.EMPTY_ARG, substitution)
-			return getCClass().descendsFrom(
-				((CReferenceType) dest).getCClass());
-		}
-		//  return true;
-	}
+	}	
 
 	/** equals */
 	public boolean equals(CType other) {
@@ -289,30 +230,11 @@ public class CReferenceType extends CType {
 		}
 		if (!other.isClassType()
 			|| other.isArrayType()
-			|| other.isTypeVariable()
-			|| ((CReferenceType) other).getCClass() != getCClass()
-			|| other.isGenericType() != isGenericType()) {
-			return false;
-		}
-		CReferenceType[] otherArgs = other.getArguments();
-
-		if (otherArgs.length != arguments[arguments.length - 1].length) {
+			|| ((CReferenceType) other).getCClass() != getCClass()) {
 			return false;
 		}
 
-		for (int i = 0; i < arguments[arguments.length - 1].length; i++) {
-			if (!otherArgs[i].equals(arguments[arguments.length - 1][i])) {
-				return false;
-			}
-		}
 		return true;
-	}
-
-	public CReferenceType[] getArguments() {
-		return CReferenceType.EMPTY;
-	}
-	public CReferenceType[][] getAllArguments() {
-		return new CReferenceType[][] { CReferenceType.EMPTY };
 	}
 
 	/**
@@ -376,50 +298,7 @@ public class CReferenceType extends CType {
 				context.getTypeFactory().createReferenceType(
 					TypeFactory.RFT_ERROR));
 	}
-
-	public CReferenceType createSubstitutedType(
-		CClass local,
-		CReferenceType prefixType,
-		CReferenceType[][] substitution) {
-		CReferenceType[][] arguments;
-		CReferenceType[][] prefixArgs =
-			prefixType == null
-				? CReferenceType.EMPTY_ARG
-				: prefixType.getAllArguments();
-
-		if (!getCClass().isNested() || prefixType == null) {
-			arguments = new CReferenceType[][] { getArguments()};
-		}
-		else {
-			arguments = new CReferenceType[prefixArgs.length + 1][];
-			System.arraycopy(prefixArgs, 0, arguments, 0, prefixArgs.length);
-			arguments[prefixArgs.length] = getArguments();
-		}
-		if (prefixType != null) {
-			substitution = prefixType.getAllArguments();
-			local = prefixType.getCClass();
-		}
-
-		if (arguments.length > 0) {
-			int index = arguments.length - 1;
-			CReferenceType[] subArgs =
-				new CReferenceType[arguments[index].length];
-
-			for (int i = 0; i < arguments[index].length; i++) {
-				CReferenceType type = arguments[index][i];
-
-				subArgs[i] = type;
-			}
-
-			arguments[index] = subArgs;
-		}
-		CClassOrInterfaceType type =
-			new CClassOrInterfaceType(getCClass());
-
-		type.setChecked(true);
-
-		return type;
-	}
+	
 	// ----------------------------------------------------------------------
 	// INITIALIZERS METHODS
 	// ----------------------------------------------------------------------
@@ -432,12 +311,10 @@ public class CReferenceType extends CType {
 	// DATA MEMBERS
 	// ----------------------------------------------------------------------
 
-	public static final CReferenceType[] EMPTY = new CReferenceType[0];
-	public static final CReferenceType[][] EMPTY_ARG = new CReferenceType[0][];
+	public static final CReferenceType[] EMPTY = new CReferenceType[0];	
 
 	private static Hashtable allCReferenceType = new Hashtable(2000);
 	private static final CClass BAC_CLASS = new CBadClass("<NOT YET DEFINED>");
 
 	private CClass clazz;
-	protected CReferenceType[][] arguments;
 }

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldAccessExpression.java,v 1.7 2004-10-15 11:12:53 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.8 2004-10-17 20:59:37 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -36,7 +36,6 @@ import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceField;
-import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.CWarning;
@@ -350,15 +349,7 @@ public class JFieldAccessExpression extends JExpression {
       CType       fieldType = field.getType();
       
        if (fieldType.isClassType() && (!field.isStatic())) {
-        CReferenceType[][]      prefixArgs = prefix.getType(factory).getAllArguments(); 
-
-        if (!fieldType.isArrayType()) {
-          if (prefixArgs.length > 0) {
-            type = ((CReferenceType)fieldType).createSubstitutedType(local, 
-                                                   (CReferenceType) prefix.getType(factory), 
-                                                   local.getAbstractType().getAllArguments());
-          }
-        }
+         
       }
       return this;
     }

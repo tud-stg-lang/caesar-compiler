@@ -1057,8 +1057,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			
 			String              name = buffer == null ? i.getText() : buffer.toString();
 			
-			allTypeParameters = (CReferenceType[][])container.toArray(new CReferenceType[container.size()][]);
-			self = environment.getTypeFactory().createType(name, allTypeParameters, false);
+			self = environment.getTypeFactory().createType(name, false);
 			
 		}
 		return self;

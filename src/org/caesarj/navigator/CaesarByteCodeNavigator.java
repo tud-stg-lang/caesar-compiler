@@ -26,7 +26,7 @@ public class CaesarByteCodeNavigator {
      */
     public CaesarByteCodeNavigator(String extDirs) {
         classReader = new KjcClassReader(null, extDirs, new KjcSignatureParser());
-        factory = new KjcTypeFactory(classReader, false);
+        factory = new KjcTypeFactory(classReader);
     }
     
     /**

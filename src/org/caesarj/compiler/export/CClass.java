@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.28 2004-10-15 15:34:49 aracic Exp $
+ * $Id: CClass.java,v 1.29 2004-10-17 20:59:36 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -948,7 +948,6 @@ public abstract class CClass extends CMember
 			getSuperClass().checkOverriding(
 				context,
 				method,
-				superClassType.getArguments(),
 				bridges);
 		}
 
@@ -959,53 +958,6 @@ public abstract class CClass extends CMember
 			interfaces[i].getCClass().checkOverridingInThis(
 				context,
 				method,
-				interfaces[i].getArguments(),
-				bridges);
-		}
-	}
-
-	protected void checkOverriding(
-		CClassContext context,
-		CMethod method,
-		CReferenceType[] substitution,
-		ArrayList bridges)
-		throws UnpositionedError
-	{
-		checkOverridingInThis(context, method, substitution, bridges);
-
-		if (superClassType != null)
-		{
-			CReferenceType[] actualTypeArgs = superClassType.getArguments();
-			CReferenceType[] newSubstitution =
-				new CReferenceType[actualTypeArgs.length];
-
-			// resolve typeVariable
-			for (int i = 0; i < actualTypeArgs.length; i++)
-			{
-				newSubstitution[i] = actualTypeArgs[i];
-			}
-			superClassType.getCClass().checkOverriding(
-				context,
-				method,
-				bridges);
-		}
-		for (int i = 0; i < interfaces.length; i++)
-		{
-			CReferenceType[] actualTypeArgs = interfaces[i].getArguments();
-			CReferenceType[] newSubstitution =
-				new CReferenceType[actualTypeArgs.length];
-
-			// resolve typeVariable
-			for (int k = 0; k < actualTypeArgs.length; k++)
-			{
-				newSubstitution[k] = actualTypeArgs[k];
-			}
-			// interface method require bridges, they are abstract and must be overridden
-			// the correct overwritting should be checked.
-			interfaces[i].getCClass().checkOverridingInThis(
-				context,
-				method,
-				newSubstitution,
 				bridges);
 		}
 	}
@@ -1013,7 +965,6 @@ public abstract class CClass extends CMember
 	protected void checkOverridingInThis(
 		CClassContext context,
 		CMethod ovMethod,
-		CReferenceType[] substitution,
 		ArrayList bridges)
 		throws UnpositionedError
 	{
@@ -1047,7 +998,7 @@ public abstract class CClass extends CMember
 			}
 			else
 			{
-				ovMethod.checkOverriding(context, method, substitution);
+				ovMethod.checkOverriding(context, method);
 
 				if (direct)
 				{
@@ -1155,7 +1106,7 @@ public abstract class CClass extends CMember
 					{
 						// FIX 020206 lackner 
 						// parameter null is substitution in the generic case!!
-						implMethod.checkOverriding(context, inherited[j], null);
+						implMethod.checkOverriding(context, inherited[j]);
 					}
 					else
 					{
@@ -1309,17 +1260,6 @@ public abstract class CClass extends CMember
 		{
 			if (superClassType != null)
 			{
-				// java.lang.object
-				CReferenceType[] actualArgs = superClassType.getArguments();
-				CReferenceType[] newSubstitution =
-					new CReferenceType[actualArgs.length];
-
-				for (int i = 0; i < newSubstitution.length; i++)
-				{
-					{
-						newSubstitution[i] = actualArgs[i];
-					}
-				}
 				getSuperClass().collectApplicableMethods(
 					context,
 					container,
@@ -1329,16 +1269,6 @@ public abstract class CClass extends CMember
 
 			for (int i = 0; i < interfaces.length; i++)
 			{
-				CReferenceType[] actualArgs = interfaces[i].getArguments();
-				CReferenceType[] newSubstitution =
-					new CReferenceType[actualArgs.length];
-
-				for (int k = 0; k < newSubstitution.length; k++)
-				{
-					{
-						newSubstitution[k] = actualArgs[k];
-					}
-				}
 				interfaces[i].getCClass().collectApplicableMethods(
 					context,
 					container,
@@ -1466,7 +1396,7 @@ public abstract class CClass extends CMember
 	/**
 	 * generates generic signature
 	 */
-	public String getGenericSignature()
+	public String getSignature()
 	{
 		SimpleStringBuffer buffer;
 		String result;
@@ -1474,10 +1404,10 @@ public abstract class CClass extends CMember
 		buffer = SimpleStringBuffer.request();
 
 
-		superClassType.appendGenericSignature(buffer);
+		superClassType.appendSignature(buffer);
 		for (int i = 0; i < interfaces.length; i++)
 		{
-			interfaces[i].appendGenericSignature(buffer);
+			interfaces[i].appendSignature(buffer);
 		}
 		result = buffer.toString();
 		SimpleStringBuffer.release(buffer);

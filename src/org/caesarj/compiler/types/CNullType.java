@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CNullType.java,v 1.2 2004-10-15 11:12:54 aracic Exp $
+ * $Id: CNullType.java,v 1.3 2004-10-17 20:59:36 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -66,7 +66,6 @@ public class CNullType extends CReferenceType {
     }
     if (!other.isClassType() 
         || other.isArrayType()
-        || other.isTypeVariable()
         || ((CReferenceType)other).getCClass() != getCClass()) {
       return false;
     } else {

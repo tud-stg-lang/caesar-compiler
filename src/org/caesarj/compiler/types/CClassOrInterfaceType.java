@@ -15,15 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassOrInterfaceType.java,v 1.3 2004-10-15 11:12:54 aracic Exp $
+ * $Id: CClassOrInterfaceType.java,v 1.4 2004-10-17 20:59:36 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
 
-import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.util.SimpleStringBuffer;
 import org.caesarj.util.UnpositionedError;
 
 /**
@@ -46,26 +44,6 @@ public class CClassOrInterfaceType extends CReferenceType {
   }
 
   // ----------------------------------------------------------------------
-  // ACCESSORS
-  // ----------------------------------------------------------------------
-
-  /**
-   * Appends the generic signature (attribute) of this type to the specified buffer.
-   */
-  public void appendGenericSignature(SimpleStringBuffer buffer) {
-    buffer.append('L');
-    buffer.append(getQualifiedName());
-    if (isGenericType()) {
-      buffer.append('<');
-      for (int i = 0; i < arguments[arguments.length-1].length; i++) {
-        arguments[arguments.length-1][i].appendGenericSignature(buffer);
-      }
-      buffer.append('>');
-    }
-    buffer.append(';');
-  }
-
-  // ----------------------------------------------------------------------
   // INTERFACE CHECKING
   // ----------------------------------------------------------------------
 
@@ -76,32 +54,6 @@ public class CClassOrInterfaceType extends CReferenceType {
    * @exception UnpositionedError	this error will be positioned soon
    */
   public CType checkType(CTypeContext context) throws UnpositionedError {
-    CClass              clazz = getCClass();
-
-   if (arguments.length == 0) {
-      arguments = new CReferenceType[][]{CReferenceType.EMPTY};
-
-      return this;
-    }
-
-    for (int k = arguments.length-1; k  >= 0 ; k--) {
-      if (clazz == null && arguments[k] != null && arguments[k].length > 0) {
-        // e.g. at.dms<T>.Main<S>
-        throw new UnpositionedError(KjcMessages.UNUSED_TYPEARG, getCClass()); 
-      } else if (clazz == null &&  (arguments[k] == null || arguments[k].length  == 0)) {
-        continue;
-      } else {
-        if (arguments[k] == null) {
-          arguments[k] = CReferenceType.EMPTY;
-        }
-        for (int i = 0; i < arguments[k].length; i++) {
-          arguments[k][i] = (CReferenceType) arguments[k][i].checkType(context);
-        }
-        // is this type a correct instantiantion of this type?
-        //clazz.checkInstantiation(context, arguments[k]);
-        clazz = clazz.getOwner();
-      }
-    }
     checked = true;
     return this;
   }
@@ -159,15 +111,6 @@ public class CClassOrInterfaceType extends CReferenceType {
       }
     }
   }
-
-  public CReferenceType[] getArguments() {
-    return arguments[arguments.length-1];
-  }
-
-  public CReferenceType[][] getAllArguments() {
-    return arguments;
-  }
-
 
   // ----------------------------------------------------------------------
   // DATA MEMBERS

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CField.java,v 1.3 2004-10-15 11:12:53 aracic Exp $
+ * $Id: CField.java,v 1.4 2004-10-17 20:59:37 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -327,7 +327,7 @@ public abstract class CField extends CMember {
             (short) getModifiers(),
             getIdent(),
             type.getSignature(),
-            type.getGenericSignature(),
+            type.getSignature(),
             getConstantValue(factory),
             isDeprecated(),
             isSynthetic());

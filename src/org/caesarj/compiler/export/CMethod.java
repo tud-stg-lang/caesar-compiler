@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CMethod.java,v 1.9 2004-10-15 11:12:53 aracic Exp $
+ * $Id: CMethod.java,v 1.10 2004-10-17 20:59:37 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -437,7 +437,7 @@ public abstract class CMethod extends CMember {
                 superMethod.getOwner());
         }
 
-        if (!context.getTypeFactory().isGenericEnabled()) {
+        //if (!context.getTypeFactory().isGenericEnabled()) {
             // JLS 8.4.6.3 :
             // If a method declaration overrides or hides the declaration of
             // another
@@ -449,7 +449,8 @@ public abstract class CMethod extends CMember {
                     KjcMessages.METHOD_RETURN_DIFFERENT,
                     this);
             }
-        }
+        //}
+        /*
         else {
             // JSR 41 3.2
             if (returnType.isClassType()) {
@@ -471,6 +472,7 @@ public abstract class CMethod extends CMember {
                 }
             }
         }
+        */
 
         // JLS 8.4.6.3 :
         // The access modifier of an overriding or hiding method must provide at
@@ -511,8 +513,7 @@ public abstract class CMethod extends CMember {
      */
     public void checkOverriding(
         CTypeContext context,
-        CMethod superMethod,
-        CReferenceType[] substitution) throws UnpositionedError {
+        CMethod superMethod) throws UnpositionedError {
         // JLS 8.4.3.3 :
         // A method can be declared final to prevent subclasses from overriding
         // or hiding it. It is a compile-time error to attempt to override or
@@ -541,7 +542,7 @@ public abstract class CMethod extends CMember {
                 superMethod.getOwner());
         }
 
-        if (!context.getTypeFactory().isGenericEnabled()) {
+        //if (!context.getTypeFactory().isGenericEnabled()) {
             // JLS 8.4.6.3 :
             // If a method declaration overrides or hides the declaration of
             // another
@@ -553,7 +554,8 @@ public abstract class CMethod extends CMember {
                     KjcMessages.METHOD_RETURN_DIFFERENT,
                     this);
             }
-        }
+        //}
+        /*
         else {
             // JSR 41 3.2
             if (returnType.isClassType()) {
@@ -575,6 +577,7 @@ public abstract class CMethod extends CMember {
                 }
             }
         }
+        */
 
         // JLS 8.4.6.3 :
         // The access modifier of an overriding or hiding method must provide at
@@ -617,8 +620,7 @@ public abstract class CMethod extends CMember {
                 for (int j = 0; j < exc.length; j++) {
                     if (exceptions[i].isAssignableTo(
                         context,
-                        exc[j],
-                        substitution)) {
+                        exc[j])) {
                         continue _loop_;
                     }
                 }

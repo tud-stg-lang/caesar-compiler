@@ -293,7 +293,7 @@ class CompilerMock extends Main
 				new KjcEnvironment(
 			        this,
 					classReader,
-					new KjcTypeFactory(classReader, options.generic),
+					new KjcTypeFactory(classReader),
 					options);
 		}
 		return cachedEnvironment;

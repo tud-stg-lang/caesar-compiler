@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CArrayType.java,v 1.4 2004-07-23 16:38:30 aracic Exp $
+ * $Id: CArrayType.java,v 1.5 2004-10-17 20:59:36 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -230,12 +230,7 @@ public class CArrayType extends CReferenceType {
   // BODY CHECKING
   // ----------------------------------------------------------------------
 
-  /**
-   * Can this type be converted to the specified type by assignment conversion (JLS 5.2) ?
-   * @param	dest		the destination type
-   * @return	true iff the conversion is valid
-   */
-  public boolean isAssignableTo(CTypeContext context, CType dest, CReferenceType[] substitution) {
+  public boolean isAssignableTo(CTypeContext context, CType dest) {
     //  JLS 5.2 Assignment Conversion
     //  If S is an array type SC[], that is, an array of components of type SC: 
     //        If T is a class type, then T must be Object, or a compile-time error occurs. 
@@ -257,41 +252,7 @@ public class CArrayType extends CReferenceType {
     } else {
       if (arrayBound == ((CArrayType)dest).arrayBound) {
         return (((baseType.isPrimitive() && baseType.equals(((CArrayType)dest).baseType))
-                 || ((!baseType.isPrimitive()) && baseType.isAssignableTo(context, ((CArrayType)dest).baseType, substitution))));
-      } else {
-	if (arrayBound < ((CArrayType)dest).arrayBound) {
-	  // int[][] i = new int[]; ???
-	  return false;
-	}
-	// May be the unusal case Object[] o = new String[][]...;
-	return (((CArrayType)dest).baseType).equals(context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT));
-      }
-    } 
-  }
-
-  public boolean isAssignableTo(CTypeContext context, CType dest, boolean inst) {
-    //  JLS 5.2 Assignment Conversion
-    //  If S is an array type SC[], that is, an array of components of type SC: 
-    //        If T is a class type, then T must be Object, or a compile-time error occurs. 
-    //        If T is an interface type, then a compile-time error occurs unless T is the type 
-    //            java.io.Serializable or the type Cloneable, the only interfaces implemented by arrays. 
-    //        If T is an array type TC[], that is, an array of components of type TC, then a compile-time
-    //            error occurs unless one of the following is true: 
-    //           TC and SC are the same primitive type. 
-    //           TC and SC are both reference types and type SC is assignable to TC, as determined by a 
-    //                    recursive application of these compile-time rules for assignability.
-    if (! dest.isArrayType()) {
-      try {
-        return dest.equals(context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT))
-          || dest.equals(context.getTypeFactory().createType(JAV_SERIALIZABLE, true).checkType(context))
-          || dest.equals(context.getTypeFactory().createType(JAV_CLONEABLE, true).checkType(context));
-      } catch (UnpositionedError e){
-        throw new InconsistencyException("Failure while loading standard types.");
-      }
-    } else {
-      if (arrayBound == ((CArrayType)dest).arrayBound) {
-        return (((baseType.isPrimitive() && baseType.equals(((CArrayType)dest).baseType))
-                 || ((!baseType.isPrimitive()) && baseType.isAssignableTo(context, ((CArrayType)dest).baseType, inst))));
+                 || ((!baseType.isPrimitive()) && baseType.isAssignableTo(context, ((CArrayType)dest).baseType))));
       } else {
 	if (arrayBound < ((CArrayType)dest).arrayBound) {
 	  // int[][] i = new int[]; ???

@@ -46,35 +46,7 @@ public class CCompositeType extends CReferenceType {
             if(checkedInterfaceTypes[i].isAssignableTo(context, dest))
                 return true;
         return false;
-	}
-
-    public boolean isAssignableTo(CTypeContext context, CType dest, boolean inst) {
-        for(int i=0; i<checkedInterfaceTypes.length; i++)
-            if(checkedInterfaceTypes[i].isAssignableTo(context, dest, inst))
-                return true;
-        return false;
-    }
-
-    public boolean isAssignableTo(
-    	CTypeContext context,
-    	CType dest,
-    	CReferenceType[] substitution) {
-        for(int i=0; i<checkedInterfaceTypes.length; i++)
-            if(checkedInterfaceTypes[i].isAssignableTo(context, dest, substitution))
-                return true;
-        return false;
-    }
-
-    public boolean isAssignableTo(
-    	CTypeContext context,
-    	CType dest,
-    	CReferenceType[] substitution,
-    	boolean inst) {
-        for(int i=0; i<checkedInterfaceTypes.length; i++)
-            if(checkedInterfaceTypes[i].isAssignableTo(context, dest, substitution, inst))
-                return true;
-        return false;
-    }
+	}     
 
     // --------------------------------------------------------------
 

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcTypeFactory.java,v 1.2 2004-02-08 20:28:00 ostermann Exp $
+ * $Id: KjcTypeFactory.java,v 1.3 2004-10-17 20:59:36 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -51,10 +51,9 @@ public class KjcTypeFactory extends org.caesarj.util.Utils implements TypeFactor
   	return primitives.contains(typeName);
   }
   
-  public KjcTypeFactory (ClassReader reader, boolean genericEnabled) {
+  public KjcTypeFactory (ClassReader reader) {
     CReferenceType.init(null);
 
-    this.genericEnabled = genericEnabled;
     context = new CBinaryTypeContext(reader, this);
     knownTypes = new Hashtable(100);
 
@@ -176,19 +175,6 @@ public class KjcTypeFactory extends org.caesarj.util.Utils implements TypeFactor
   // ----------------------------------------------------------------------
   // Create Types for classes
   // ----------------------------------------------------------------------
-  /**
-   * @return the environment.
-   */
-  public boolean isGenericEnabled() {
-    return genericEnabled;
-  }
-
-  /**
-   * creates a new Type
-   */
-//   public CReferenceType createType(CClass clazz, CReferenceType[][] arguments) {
-//     return new CReferenceType(clazz);
-//   }
 
   /**
    * Creates a type
@@ -202,24 +188,6 @@ public class KjcTypeFactory extends org.caesarj.util.Utils implements TypeFactor
 
     if (ref == null) {
       return  new CClassNameType(name, binary);
-    } else {
-      return ref;
-    }
-  }
-
-  /**
-   * Creates a (generic) type
-   *  
-   * @param     name is qualified or unqualified name of the type
-   * @param     arguments type arguments if this type is generic
-   * @param     binary is true if this type is load from a binary class
-   * @return    an unchecked type
-   */
-  public CReferenceType createType(String name, CReferenceType[][] arguments, boolean binary) {
-    CReferenceType      ref = (CReferenceType) knownTypes.get(name);
-
-    if (ref == null) {
-      return new CClassNameType(name, arguments, binary);
     } else {
       return ref;
     }
@@ -259,7 +227,6 @@ public class KjcTypeFactory extends org.caesarj.util.Utils implements TypeFactor
 
   private CReferenceType	kopiRuntimeType;
 
-  private final boolean         genericEnabled;
   private final Hashtable       knownTypes;
 
   protected final CBinaryTypeContext    context;

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBinaryType.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: CBinaryType.java,v 1.2 2004-10-17 20:59:36 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -42,7 +42,6 @@ public class CBinaryType extends CReferenceType {
     this.qualifiedName = qualifiedName;
     this.classReader = classReader;
     this.typeFactory = typeFactory;
-    this.arguments = new CReferenceType[][]{CReferenceType.EMPTY};
   }
 
   /**

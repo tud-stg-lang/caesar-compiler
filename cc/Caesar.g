@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.52 2004-10-15 11:13:08 aracic Exp $
+ * $Id: Caesar.g,v 1.53 2004-10-17 20:59:56 aracic Exp $
  */
 
 /*
@@ -2173,8 +2173,7 @@ jTypeName []
   {
     String              name = buffer == null ? i.getText() : buffer.toString();
 
-    allTypeParameters = (CReferenceType[][])container.toArray(new CReferenceType[container.size()][]);
-    self = environment.getTypeFactory().createType(name, allTypeParameters, false);
+    self = environment.getTypeFactory().createType(name, false);
   }
 ;
 

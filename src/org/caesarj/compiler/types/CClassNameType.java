@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassNameType.java,v 1.4 2004-10-15 11:12:54 aracic Exp $
+ * $Id: CClassNameType.java,v 1.5 2004-10-17 20:59:36 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -43,7 +43,7 @@ public class CClassNameType extends CReferenceType
 	 */
 	public CClassNameType(String qualifiedName)
 	{
-		this(qualifiedName, EMPTY_ARG, false);
+		this(qualifiedName, false);
 	}
 
 	/**
@@ -52,19 +52,7 @@ public class CClassNameType extends CReferenceType
 	 */
 	public CClassNameType(String qualifiedName, boolean binary)
 	{
-		this(qualifiedName, EMPTY_ARG, binary);
-	}
-
-	/**
-	 * Construct a class type
-	 * @param	qualifiedName	the class qualified name of the class
-	 */
-	public CClassNameType(
-		String qualifiedName,
-		CReferenceType[][] arguments,
-		boolean binary)
-	{
-		super();
+	    super();
 
 		if (qualifiedName.indexOf('.') >= 0)
 		{
@@ -73,7 +61,6 @@ public class CClassNameType extends CReferenceType
 		}
 
 		this.qualifiedName = qualifiedName.intern();
-		this.arguments = arguments;
 		this.binary = binary;
 	}
 
@@ -87,33 +74,9 @@ public class CClassNameType extends CReferenceType
 	public String toString()
 	{
 		return qualifiedName != null
-			? qualifiedName.replace('/', '.') + printArgs()
+			? qualifiedName.replace('/', '.')
 			: super.toString();
-	}
-	private String printArgs()
-	{
-		if (arguments == null
-			|| arguments.length == 0
-			|| arguments[arguments.length - 1] == null
-			|| arguments[arguments.length - 1].length == 0)
-		{
-			return "";
-		}
-		StringBuffer buffer = new StringBuffer();
-
-		buffer.append('<');
-		for (int i = 0; i < arguments[arguments.length - 1].length; i++)
-		{
-			if (i > 0)
-			{
-				buffer.append(", ");
-			}
-			buffer.append(arguments[arguments.length - 1][i]);
-		}
-		buffer.append('>');
-
-		return buffer.toString();
-	}
+	}	
 
 	/**
 	 *
@@ -180,22 +143,9 @@ public class CClassNameType extends CReferenceType
 
 				try
 				{
-					CReferenceType[][] args;
-
-					if (arguments.length < 2)
-					{
-						args = CReferenceType.EMPTY_ARG;
-					}
-					else
-					{
-						args = new CReferenceType[arguments.length - 1][];
-						System.arraycopy(arguments, 0, args, 0, args.length);
-					}
-
 					outer =
 						new CClassNameType(
 							qualifiedName.substring(0, index),
-							args,
 							binary);
 					outer = (CReferenceType) outer.checkType(context);
 				}

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CType.java,v 1.3 2004-03-29 12:05:29 aracic Exp $
+ * $Id: CType.java,v 1.4 2004-10-17 20:59:36 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -78,30 +78,9 @@ public abstract class CType extends Utils implements Constants {
   }
 
   /**
-   * Returns the generic signature (attribute JSR 41) of this type.
-   */
-  public String getGenericSignature() {
-    SimpleStringBuffer	buffer;
-    String		result;
-
-    buffer = SimpleStringBuffer.request();
-    appendGenericSignature(buffer);
-    result = buffer.toString();
-    SimpleStringBuffer.release(buffer);
-    return result;
-  }
-
-  /**
    * Appends the VM signature of this type to the specified buffer.
    */
   public abstract void appendSignature(SimpleStringBuffer buffer);
-
-  /**
-   * Appends the generic signature (attribute) of this type to the specified buffer.
-   */
-  public void appendGenericSignature(SimpleStringBuffer buffer) {
-    appendSignature(buffer);
-  }
 
   /**
    * Returns the stack size used by a value of this type.
@@ -156,30 +135,9 @@ public abstract class CType extends Utils implements Constants {
     return false;
   }
 
-  /**
-   * Check if a type is a type variable
-   * @return is it a Typevariable ?
-   */
-  public boolean isTypeVariable() {
-    return false;
-  }
-
-  /**
-   * Check if a type is a generic class type
-   * @return	is it a generic type?
-   */
-  public boolean isGenericType() {
-    return false;
-  }
 
   public CType getErasure(CTypeContext context) throws UnpositionedError {
    return this;
-  }
-  public CReferenceType[] getArguments(){
-    throw new InconsistencyException("no Arguments in this type!");
-  }
-  public CReferenceType[][] getAllArguments(){
-    throw new InconsistencyException("no Arguments in this type!");
   }
 
   /**
@@ -227,14 +185,6 @@ public abstract class CType extends Utils implements Constants {
    * @return	true iff the conversion is valid
    */
   public abstract boolean isAssignableTo(CTypeContext context, CType dest);
-
-  public boolean isAssignableTo(CTypeContext context, CType dest, CReferenceType[] substitution){
-    return isAssignableTo(context, dest);
-  }
-
-  public boolean isAssignableTo(CTypeContext context, CType dest, boolean inst) {
-    return isAssignableTo(context, dest);
-  }
 
 
   /**

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcSignatureParser.java,v 1.2 2004-10-15 11:12:54 aracic Exp $
+ * $Id: KjcSignatureParser.java,v 1.3 2004-10-17 20:59:36 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -114,10 +114,9 @@ public class KjcSignatureParser implements SignatureParser {
     if (sig[current-1] != '<') {
       type = parseSignature(factory, signature, from, current);
     } else {
-      String            ident = String.valueOf(sig, from+1, current - from-2);
-      CReferenceType[]      types = parseTypeArgumentSignature(factory, signature, sig);
+      String            ident = String.valueOf(sig, from+1, current - from-2);      
 
-      type = factory.createType(ident, new CReferenceType[][]{ types}, true);
+      type = factory.createType(ident, true);
     }
     return type;
   }

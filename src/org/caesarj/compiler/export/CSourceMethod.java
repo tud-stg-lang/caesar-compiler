@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CSourceMethod.java,v 1.3 2004-10-15 11:12:53 aracic Exp $
+ * $Id: CSourceMethod.java,v 1.4 2004-10-17 20:59:37 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -272,16 +272,16 @@ public class CSourceMethod extends CMethod {
     // parameter declaration
     buffer.append('(');
     for (int i = 0; i < parameters.length; i++) {
-      parameters[i].appendGenericSignature(buffer);
+      parameters[i].appendSignature(buffer);
     }
     buffer.append(')');
     // return type
-    returntype.appendGenericSignature(buffer);
+    returntype.appendSignature(buffer);
     // throws clause
     if ((exceptions != null) && (exceptions.length > 0)) {
       buffer.append('^');
       for (int i = 0; i < exceptions.length; i++) {
-        exceptions[i].appendGenericSignature(buffer);
+        exceptions[i].appendSignature(buffer);
       }
     }
     result = buffer.toString();

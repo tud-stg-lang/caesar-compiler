@@ -534,7 +534,7 @@ public class CCjSourceClass extends CSourceClass
                     genMethods(optimizer, factory),
                     genInnerClasses(),
                     classPath[1],
-                    getSuperClass() == null ? null : getGenericSignature(),
+                    getSuperClass() == null ? null : getSignature(),
                     isDeprecated(),
                     isSynthetic(),
                     genExtraAttributes());
