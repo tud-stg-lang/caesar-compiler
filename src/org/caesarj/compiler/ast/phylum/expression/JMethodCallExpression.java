@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodCallExpression.java,v 1.9 2004-10-15 15:34:26 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.10 2004-10-18 15:00:12 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -281,11 +281,14 @@ public class JMethodCallExpression extends JExpression
 		// or it is a typevariable and need a cast
 		type = method.getReturnType();
 
+		/*
 		if (!context.discardValue() && prefixType != null)
 		{
 			CType returnType = method.getReturnType();
 
 		}
+		*/
+		
 		// fixed lackner 18.03.2002 commment out because sometimes it is necessary to evaluate it twice.
 		//    analysed = true;
 		return this;
@@ -487,10 +490,11 @@ public class JMethodCallExpression extends JExpression
 		
 		CClass callerClass = AdditionalGenerationContext.instance().getCurrentClass();
 		
-		// IVICA: when setting target for method calls
-		// use direct super for super calls 
-		// and caller class for this calls instead of owner of the CMethod
-		// the exception are method defined in java/lang/Object
+		// IVICA: when setting target for method calls owned by 
+		// a class != Object do following:
+		// - use direct super as target for super calls 
+		// - use caller class as target for virtual calls
+		// (this is the way javac would do it to)
 
 		if(!method.getOwner().isObjectClass()) {
 			if(prefix instanceof JSuperExpression) {
@@ -501,11 +505,21 @@ public class JMethodCallExpression extends JExpression
 			}	
 			else {
 			    String prefixTarget = null;
-				if(prefix == null || prefix instanceof JOwnerExpression) {
+			    
+			    // callerClass.descendsFrom(method.getOwner()
+				if(prefix instanceof JOwnerExpression) {
 				    prefixTarget = callerClass.getQualifiedName();
 				}
-				else {
+				else if(prefix == null && callerClass.descendsFrom(method.getOwner())) {
+				    // this check is necessary, since we could have an inner class with prefix = null
+				    // accessing methods defined in the enclosing class
+				    prefixTarget = callerClass.getQualifiedName();
+				}
+				else if(prefix != null) {
 				    prefixTarget = prefix.getType(context.getTypeFactory()).getCClass().getQualifiedName();
+				}
+				else {
+				    prefixTarget = method.getOwner().getQualifiedName();
 				}
 				
 		        method.genCode(
@@ -517,7 +531,7 @@ public class JMethodCallExpression extends JExpression
 		else {
 		    method.genCode(
 	            context, 
-	            false, 
+	            prefix instanceof JSuperExpression, 
 	            method.getOwner().getQualifiedName());	
 		}
 		
