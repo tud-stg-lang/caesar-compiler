@@ -11,10 +11,18 @@ public class TypeSysTestCase {
 	
 	public class X {	    
 	    public void test() {
-	        g.N nn;
-	        nn = n;
+	        g.N nn; // <- CP: $this0
+	        nn = n; // <- CP: -- " --
 	    }
-    }
+
+	    
+	    public class Y {	    
+		    public void test() {
+		        g.N nnn; // <- CP: accessor method 
+		        nnn = n; // <- CP: -- " --
+		    }
+	    }
+    }	
 			
 	public void test() {}	
 }
