@@ -280,6 +280,21 @@ public class CClassPreparation implements CaesarConstants {
         );
         
         decl.addMethod(gen.endMethod());
+        
+        
+        
+        gen.writeMethod(            
+            "public "+wrapperClassName+" "+wrapperClassIdent+"("+wrappeeClassName+" w);"
+        );
+        
+        decl.getMixinIfcDeclaration().addMethod(gen.endMethod());
+        
+        
+        gen.writeMethod(
+            "public "+wrapperClassName+" get"+wrapperClassIdent+"("+wrappeeClassName+" w);"            
+        );
+        
+        decl.getMixinIfcDeclaration().addMethod(gen.endMethod());
 	}
 	
     /**
