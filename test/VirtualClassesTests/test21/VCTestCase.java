@@ -129,7 +129,7 @@ public cclass OuterB extends OuterA
 
 	public OuterA.InnerB defaultObject()
 	{
-		OuterB.InnerB b = (OuterB.InnerB)super.defaultObject();
+		OuterB.InnerB b = super.defaultObject();
 		b.setDefaultChild2();
 		return b;
 	}
@@ -183,7 +183,7 @@ public cclass OuterC extends OuterA
 
 	public OuterA.InnerB defaultObject()
 	{
-		OuterC.InnerB b = (OuterC.InnerB)super.defaultObject();
+		OuterC.InnerB b = super.defaultObject();
 		b.setDefaultChild3();
 		return b;
 	}

@@ -45,9 +45,8 @@ public class VCTestCase extends TestCase {
 public cclass TestCase3 {
 
 	public cclass G {
-		public void doSomethingWithEdge(TestCase3.G.E _e) {
-			TestCase3.G.E e = (TestCase3.G.E)_e;
-			// ...
+		public void doSomethingWithEdge(TestCase3.G.E e) {
+			
 		}
 
 		public cclass E {
@@ -89,8 +88,7 @@ public cclass TestCase3 {
 
 	//=========================================================
 	public cclass CG extends G {
-		public void doSomethingWithEdge(TestCase3.G.E _e) {
-			TestCase3.CG.E e = (TestCase3.CG.E)_e;
+		public void doSomethingWithEdge(TestCase3.G.E e) {			
 			e.setColor("#a1babe");
 		}
 
@@ -101,7 +99,7 @@ public cclass TestCase3 {
 		    public void setColor(String col) {this.col = col;}
 
 	        public void someSpecialAlg() {
-	            TestCase3.G.N n = this.n1;
+	            TestCase3.CG.N n = n1;
 	        }
 
 	        public String toString() {
@@ -126,8 +124,11 @@ public cclass TestCase3 {
 	        public void nowWeHaveItAll() {
 	            float w = this.w;
 	            String col = this.col;
-	            TestCase3.G.N n1 = this.n1;
-	            TestCase3.G.N n2 = this.n2;
+	            
+	            // note that the type of n1,n2 has been bound to the most specific node,
+	            // namely CWG.N
+	            TestCase3.CWG.N n1 = this.n1;
+	            TestCase3.CWG.N n2 = this.n2;
 	        }
 	    }
 	}

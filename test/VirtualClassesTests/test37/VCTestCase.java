@@ -46,6 +46,7 @@ public cclass OuterB extends OuterA {
 	
 	public cclass InnerB {
 		public void bb() {
+		    OuterB.InnerA aa = a;
 			a.ba();
 		}
 	}

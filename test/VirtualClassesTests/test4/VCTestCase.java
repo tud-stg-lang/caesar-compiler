@@ -19,20 +19,19 @@ public class VCTestCase extends TestCase {
 	public void test() {
         System.out.println("-------> VCTest 4: start");
 
-		EvalNegAST ast = new EvalNegAST();
-		EvalNegAST.Literal l1 = ast.new Literal();
-		EvalNegAST.Literal l2 = ast.new Literal();
-		EvalNegAST.AddExpression add = ast.new AddExpression();
-		EvalNegAST.NegExpression neg = ast.new NegExpression();
+		EvalPrettyPrintNegAST ast = new EvalPrettyPrintNegAST();
+		EvalPrettyPrintNegAST.Literal l1 = ast.new Literal();
+		EvalPrettyPrintNegAST.Literal l2 = ast.new Literal();
+		EvalPrettyPrintNegAST.AddExpression add = ast.new AddExpression();
+		EvalPrettyPrintNegAST.NegExpression neg = ast.new NegExpression();
 
 		l1.init(5);
 		l2.init(4);
 		add.init(l1, l2);
 		neg.init(add);
 
-		neg.doSomething();
 
-		System.out.println("-(5+4) = "+neg.eval());
+		System.out.println(neg.print()+" = "+neg.eval());
 
         System.out.println("-------> VCTest 4: end");
 	}
@@ -41,18 +40,8 @@ public class VCTestCase extends TestCase {
 //=========================================================
 public cclass AST  {
 
-	private int x = 10;
-
-	public int getX() {return x;}
-
-
 	public cclass Expression {
-
 		public Expression() {
-		}
-
-		public void doSomething() {
-			System.out.println("*** "+$outer.getX());
 		}
 	}
 
@@ -85,15 +74,32 @@ public cclass EvalAST extends AST {
 
 	public cclass AddExpression {
 		public int eval() {
-			return
-				((EvalAST.Expression)l).eval() +
-				((EvalAST.Expression)r).eval();
+			return l.eval() + r.eval();
 		}
 	}
 
 	public cclass Literal {
 		public int eval() {
 			return val;
+		}
+	}
+}
+
+//=========================================================
+public cclass PrettyPrintAST extends AST {
+	public cclass Expression {
+		public String print() {return "";}
+	}
+
+	public cclass AddExpression {
+		public String print() {
+			return "(" + l.print() + "+" + r.print() + ")";
+		}
+	}
+
+	public cclass Literal {
+		public String print() {
+			return ""+val;
 		}
 	}
 }
@@ -109,10 +115,13 @@ public cclass NegAST extends AST {
 }
 
 //=========================================================
-public cclass EvalNegAST extends EvalAST & NegAST {
+public cclass EvalPrettyPrintNegAST extends EvalAST & PrettyPrintAST & NegAST {
 	public cclass NegExpression {
 		public int eval() {
-			return -((EvalNegAST.Expression)expr).eval();
+			return -expr.eval();
+		}
+		public String print() {
+			return "-(" + expr.print() + ")";
 		}
 	}
 }
