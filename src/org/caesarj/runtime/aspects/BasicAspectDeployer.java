@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: BasicAspectDeployer.java,v 1.2 2005-01-24 16:52:59 aracic Exp $
+ * $Id: BasicAspectDeployer.java,v 1.3 2005-03-31 11:58:18 gasiunas Exp $
  */
 
 package org.caesarj.runtime.aspects;
@@ -111,27 +111,32 @@ abstract public class BasicAspectDeployer implements AspectDeployerIfc {
 		if (curCont == null) {
 			myCont = createContainer();
 			reg.$setAspectContainer(myCont);
-		}
-		else if (curCont.$getContainerType() == getContId()) {
-			myCont = curCont;
-		}
-		else if (curCont.$getContainerType() == AspectContainerIfc.COMPOSITE_CONTAINER) {
-			CompositeAspectContainer composite = (CompositeAspectContainer)curCont;
-			myCont = composite.findContainer(getContId());
-			if (myCont == null) {
-				myCont = createContainer();
-				composite.getList().add(myCont);				
-			}
+			deployOnContainer(myCont, aspectObj, reg);
+			reg.$setSingleAspect(myCont.getSingleInstance());
 		}
 		else {
-			CompositeAspectContainer composite = new CompositeAspectContainer();
-			myCont = createContainer();
-			composite.getList().add(curCont);
-			composite.getList().add(myCont);
-			reg.$setAspectContainer(composite);			
+			if (curCont.$getContainerType() == getContId()) {
+				myCont = curCont;
+				reg.$setSingleAspect(null);
+			}
+			else if (curCont.$getContainerType() == AspectContainerIfc.COMPOSITE_CONTAINER) {
+				CompositeAspectContainer composite = (CompositeAspectContainer)curCont;
+				myCont = composite.findContainer(getContId());
+				if (myCont == null) {
+					myCont = createContainer();
+					composite.getList().add(myCont);				
+				}
+			}
+			else {
+				CompositeAspectContainer composite = new CompositeAspectContainer();
+				myCont = createContainer();
+				composite.getList().add(curCont);
+				composite.getList().add(myCont);
+				reg.$setAspectContainer(composite);
+				reg.$setSingleAspect(null);
+			}
+			deployOnContainer(myCont, aspectObj, reg);
 		}
-		
-		deployOnContainer(myCont, aspectObj, reg);
 	}
 	
 	/**
@@ -153,6 +158,10 @@ abstract public class BasicAspectDeployer implements AspectDeployerIfc {
 			undeployFromContainer(myCont, aspectObj, reg);
 			if (myCont.isEmpty()) {
 				reg.$setAspectContainer(null);
+				reg.$setSingleAspect(null);
+			}
+			else {
+				reg.$setSingleAspect(myCont.getSingleInstance());
 			}
 		}
 		else if (curCont.$getContainerType() == AspectContainerIfc.COMPOSITE_CONTAINER) {
@@ -167,6 +176,7 @@ abstract public class BasicAspectDeployer implements AspectDeployerIfc {
 					
 					if (composite.getList().size() < 2)	{
 						reg.$setAspectContainer((AspectContainerIfc)composite.getList().get(0));
+						reg.$setSingleAspect(reg.$getAspectContainer().getSingleInstance());
 					}
 				}
 			}

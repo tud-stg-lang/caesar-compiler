@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectThreadMapper.java,v 1.5 2005-03-31 10:43:20 gasiunas Exp $
+ * $Id: AspectThreadMapper.java,v 1.6 2005-03-31 11:58:18 gasiunas Exp $
  */
 
 package org.caesarj.runtime.aspects;
@@ -133,5 +133,15 @@ public class AspectThreadMapper implements AspectContainerIfc {
 	 */
 	public void undeployAllFromThread(Thread thread) {
 		$threadObjects.remove(thread);
+	}
+	
+	/**
+	 * If there is fixed single instance, return it. 
+	 * Return null otherwise
+	 * 
+	 * @return  Single deployed instance
+	 */
+	public Object getSingleInstance() {
+		return null;
 	}
 }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectObjectMapper.java,v 1.4 2005-03-31 10:43:20 gasiunas Exp $
+ * $Id: AspectObjectMapper.java,v 1.5 2005-03-31 11:58:18 gasiunas Exp $
  */
 
 package org.caesarj.runtime.perobject;
@@ -123,5 +123,15 @@ public class AspectObjectMapper implements AspectContainerIfc {
 				_objectAspects.remove(key);
 			}
 		}
+	}
+	
+	/**
+	 * If there is fixed single instance, return it. 
+	 * Return null otherwise
+	 * 
+	 * @return  Single deployed instance
+	 */
+	public Object getSingleInstance() {
+		return null;
 	}
 }

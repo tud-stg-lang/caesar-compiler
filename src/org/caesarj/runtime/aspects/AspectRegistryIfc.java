@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectRegistryIfc.java,v 1.2 2005-01-24 16:52:59 aracic Exp $
+ * $Id: AspectRegistryIfc.java,v 1.3 2005-03-31 11:58:18 gasiunas Exp $
  */
 
 package org.caesarj.runtime.aspects;
@@ -37,6 +37,8 @@ public interface AspectRegistryIfc {
 	public AspectContainerIfc $getAspectContainer();
 	
 	public void $setAspectContainer(AspectContainerIfc cont);
+	
+	public void $setSingleAspect(Object aspObj);
 	
 	public static ThreadLocal threadLocalRegistries = new ThreadLocal() {
 

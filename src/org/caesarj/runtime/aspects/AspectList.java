@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectList.java,v 1.5 2005-03-31 10:43:20 gasiunas Exp $
+ * $Id: AspectList.java,v 1.6 2005-03-31 11:58:18 gasiunas Exp $
  */
 
 package org.caesarj.runtime.aspects;
@@ -74,5 +74,18 @@ public class AspectList implements AspectContainerIfc
 	 */
 	public boolean isEmpty() {
 		return aspList.isEmpty();
+	}
+	
+	/**
+	 * If there is fixed single instance, return it. 
+	 * Return null otherwise
+	 * 
+	 * @return  Single deployed instance
+	 */
+	public Object getSingleInstance() {
+		if (aspList.size() == 1) {
+			return aspList.get(0);
+		}
+		return null;
 	}
 }

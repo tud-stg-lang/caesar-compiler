@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.44 2005-03-31 10:43:20 gasiunas Exp $
+ * $Id: DeploymentClassFactory.java,v 1.45 2005-03-31 11:58:18 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -418,14 +418,14 @@ public class DeploymentClassFactory implements CaesarConstants {
 		/* create the deploy and undeploy method */
 		singletonAspectMethods.add(createSingletonGetAspectContainerMethod());
 		singletonAspectMethods.add(createSingletonSetAspectContainerMethod());
+		singletonAspectMethods.add(createSingletonSetSingleAspectMethod());
 		
 		/* create the $aspectContainer field */
-		CType containerType = new CClassNameType(ASPECT_CONTAINER_IFC);
 		JVariableDefinition deployedInstancesVar =
 			new JVariableDefinition(
 				where,
 				ACC_PRIVATE,
-				containerType,
+				new CClassNameType(ASPECT_CONTAINER_IFC),
 				ASPECT_CONTAINER_FIELD,
 				null);
 
@@ -437,6 +437,24 @@ public class DeploymentClassFactory implements CaesarConstants {
 									null);
 		field.setGenerated(); 
 		fields.add( field );
+		
+		/* create the $singleAspect field */
+		JVariableDefinition singleAspectVar =
+			new JVariableDefinition(
+				where,
+				ACC_PRIVATE,
+				new CClassNameType(qualifiedAspectInterfaceName),
+				"$singleAspect",
+				null);
+
+		JFieldDeclaration field2 = new JFieldDeclaration(
+									where,
+									singleAspectVar,
+									true,
+									null,
+									null);
+		field.setGenerated(); 
+		fields.add( field2 );
 
 		singletonAspectMethods.add(createSingletonAjcClinitMethod());
 		singletonAspectMethods.add(createAspectOfMethod());
@@ -524,6 +542,24 @@ public class DeploymentClassFactory implements CaesarConstants {
 	}
 	
 	/**
+	 * Creates the $setSingleAspect() method for registry class.
+	 */
+	private JMethodDeclaration createSingletonSetSingleAspectMethod() {
+		
+		AstGenerator gen = environment.getAstGenerator();
+	    
+	    String[] body = new String[] {
+	    	"public void $setSingleAspect(Object aspObj)",
+			"{",
+ 	      		"$singleAspect = (" + srcAspectInterfaceName +")aspObj;",
+			"}"	
+	    };
+	    
+	    gen.writeMethod(body);
+	    return gen.endMethod("getAspectContainer");
+	}
+	
+	/**
 	 * Creates the $setAspectContainer(..) method for registry class.
 	 */
 	private JMethodDeclaration createSingletonSetAspectContainerMethod() {
@@ -570,7 +606,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		AstGenerator gen = environment.getAstGenerator();
 		
 		/* Format line for advice method call on variable 'aspObj' */
-		String strAdviceMethodCall = "aspObj." + advice.getAdviceMethodIdent() + "(";
+		String strAdviceMethodCall = advice.getAdviceMethodIdent() + "(";
 		
 		JFormalParameter[] params = advice.getParameters();
 		for (int i1 = 0; i1 < params.length; i1++) {
@@ -586,13 +622,20 @@ public class DeploymentClassFactory implements CaesarConstants {
 	    	"{",
 				"if ($aspectContainer != null)",
 				"{",
-					"Object[] inst = $aspectContainer.$getInstances();",
-				    "if (inst != null)",
+					"if ($singleAspect != null)",
 					"{",
-						"for (int i1 = 0; i1 < inst.length; i1++)",
+						"$singleAspect." + strAdviceMethodCall,						
+					"}",
+					"else",
+					"{",
+						"Object[] inst = $aspectContainer.$getInstances();",
+					    "if (inst != null)",
 						"{",
-							srcAspectInterfaceName + " aspObj = (" + srcAspectInterfaceName + ")inst[i1];",
-							strAdviceMethodCall,
+							"for (int i1 = 0; i1 < inst.length; i1++)",
+							"{",
+								srcAspectInterfaceName + " aspObj = (" + srcAspectInterfaceName + ")inst[i1];",
+								"aspObj." + strAdviceMethodCall,
+							"}",
 						"}",
 					"}",
 				"}",
