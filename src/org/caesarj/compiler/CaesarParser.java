@@ -461,7 +461,6 @@ private static final int MAX_LOOKAHEAD = 2;
 			self = new JClassDeclaration(sourceRef,
 							   modifiers,
 							   ident.getText(),
-			//typeVariables,
 							   superClass,	   
 							   interfaces,
 							   context.getFields(),
@@ -484,7 +483,6 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		Token  ident = null;
 		
-		//CTypeVariable[]       typeVariables = CTypeVariable.EMPTY;
 		CReferenceType[]		interfaces =  CReferenceType.EMPTY;
 		ParseClassContext	context = ParseClassContext.getInstance();
 		TokenReference	sourceRef = buildTokenReference();
@@ -501,7 +499,6 @@ private static final int MAX_LOOKAHEAD = 2;
 			self = new JInterfaceDeclaration(sourceRef,
 			modifiers,
 			ident.getText(),
-			//typeVariables,
 			interfaces,
 			context.getFields(),
 			context.getMethods(),
@@ -522,8 +519,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		
 		Token  ident = null;
 		
-		//CTypeVariable[]    typeVariables = CTypeVariable.EMPTY;
-		CReferenceType     superClass = null;
+		CReferenceType[]   superClasses = CReferenceType.EMPTY;
 		CReferenceType[]   interfaces = CReferenceType.EMPTY;
 		CReferenceType     wrappee = null;
 		ParseClassContext  context = ParseClassContext.getInstance();
@@ -539,7 +535,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		switch ( LA(1)) {
 		case LITERAL_extends:
 		{
-			superClass=jCSuperClassClause();
+			superClasses=jCSuperClassClause();
 			break;
 		}
 		case LITERAL_implements:
@@ -599,8 +595,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			self = new CjVirtualClassDeclaration(sourceRef,
 							   modifiers,
 							   ident.getText(),
-			//typeVariables,
-							   superClass,
+							   superClasses,
 							   wrappee,			   
 							   interfaces,
 							   context.getFields(),
@@ -1270,10 +1265,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		match(RCURLY);
 	}
 	
-	private final CReferenceType  jCSuperClassClause(
+	private final CReferenceType[]  jCSuperClassClause(
 		
 	) throws RecognitionException, TokenStreamException {
-		CReferenceType self = null;
+		CReferenceType[] self = null;
 		
 		
 		CReferenceType name;
@@ -1285,7 +1280,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		name=jTypeName();
 		}
 		if ( inputState.guessing==0 ) {
-			container.add(name);
+			container.add(new CVirtualClassNameType(name.getQualifiedName()));
 		}
 		{
 		_loop45:
@@ -1294,7 +1289,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				match(BAND);
 				name=jTypeName();
 				if ( inputState.guessing==0 ) {
-					container.add(name);
+					container.add(new CVirtualClassNameType(name.getQualifiedName()));
 				}
 			}
 			else {
@@ -1305,15 +1300,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		}
 		if ( inputState.guessing==0 ) {
 			
-				if(container.size() > 1) {
-				  	self = 
-				  		new CCompositeNameType(
-					  		(CClassNameType[])container.toArray(new CClassNameType[container.size()])
-					  	);
-				}
-				else {
-					self = (CReferenceType)container.get(0);
-				}
+				self = (CClassNameType[])container.toArray(new CClassNameType[container.size()]);
 			
 		}
 		return self;
@@ -1428,7 +1415,6 @@ private static final int MAX_LOOKAHEAD = 2;
 		int                   modifiers = 0;
 		CType                 type;
 		JMethodDeclaration    method;
-		//CTypeVariable[]       typeVariables;
 		JTypeDeclaration      decl;
 		JVariableDefinition[] vars;
 		JStatement[]          body = null;
@@ -1534,7 +1520,6 @@ private static final int MAX_LOOKAHEAD = 2;
 		int                   modifiers = 0;
 		CType                 type;
 		JMethodDeclaration    method;
-		//CTypeVariable[]       typeVariables;
 		JTypeDeclaration      decl;
 		JVariableDefinition[] vars;
 		JStatement[]          body = null;
@@ -2053,7 +2038,6 @@ private static final int MAX_LOOKAHEAD = 2;
 		if ( inputState.guessing==0 ) {
 			
 				     self = new JMethodDeclaration(sourceRef,
-				                //modifiers, typeVariables, type,
 				                modifiers, type,
 				                name.getText(), parameters, throwsList,
 				                body == null 
@@ -2240,7 +2224,6 @@ private static final int MAX_LOOKAHEAD = 2;
 					
 						self = new CjAdviceDeclaration(sourceRef,
 			modifiers,
-			//MEF(r): CTypeVariable.EMPTY,
 			type,
 			parameters,
 			throwsList,
@@ -5083,7 +5066,6 @@ private static final int MAX_LOOKAHEAD = 2;
 					decl = new CjClassDeclaration(sourceRef,
 								     org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 								     ident.getText(),
-				//MEF(r): CTypeVariable.EMPTY,
 								     null,
 								     null,				     
 								     CReferenceType.EMPTY,
@@ -5349,7 +5331,6 @@ private static final int MAX_LOOKAHEAD = 2;
 							    decl = new CjClassDeclaration(sourceRef,
 											 org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 											 "", //((CReferenceType)type).getQualifiedName(),
-						//MEF(r): CTypeVariable.EMPTY,
 											 null,
 											 null,
 											 CReferenceType.EMPTY,
