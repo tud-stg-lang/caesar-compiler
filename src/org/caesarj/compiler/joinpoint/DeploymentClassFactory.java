@@ -176,7 +176,8 @@ public class DeploymentClassFactory implements CaesarConstants {
         
 		//add support methods
 		List newMethods = new ArrayList();
-		boolean cleanMethodsRequired = (aspectClass instanceof FjCleanClassDeclaration);
+		// FJTODO !!!
+		boolean cleanMethodsRequired = false;
 
 		newMethods.add(createAspectClassDeployMethod(cleanMethodsRequired));
 		newMethods.add(createAspectClassUndeployMethod(cleanMethodsRequired));

@@ -2,29 +2,11 @@ package org.caesarj.test;
 
 import java.io.PrintWriter;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Vector;
 
-import org.caesarj.compiler.CaesarParser;
-import org.caesarj.compiler.CompilerBase;
-import org.caesarj.compiler.KjcClassReader;
-import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.KjcOptions;
-import org.caesarj.compiler.Main;
-import org.caesarj.compiler.ast.phylum.JClassImport;
+import org.caesarj.compiler.*;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
-import org.caesarj.compiler.ast.phylum.JPackageImport;
-import org.caesarj.compiler.ast.phylum.JPackageName;
-import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.declaration.FjCleanClassDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JClassDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
-import org.caesarj.compiler.ast.visitor.DeclarationVisitor;
-import org.caesarj.compiler.delegation.ClassTransformationFjVisitor;
 import org.caesarj.compiler.export.CSourceClass;
-import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.KjcSignatureParser;
 import org.caesarj.compiler.types.KjcTypeFactory;
 import org.caesarj.compiler.types.SignatureParser;
@@ -39,7 +21,6 @@ public class AutomaticCaesarTests extends FjTestCase {
 	};
 
 	protected Vector allUnits;
-	protected ClassModulatingFjVisitorMock modulator;
 	protected ClassReaderMock classReader;
 	protected CompilerBase compiler;
 	protected static boolean doSetUp = true;
@@ -81,10 +62,7 @@ public class AutomaticCaesarTests extends FjTestCase {
 					public void println() {
 					}
 					public void write(String s) {
-						if (modulator != null)
-							modulator.addMessage(s);
-						else
-							System.err.println(s);
+						System.err.println(s);
 					}
 				});
 
@@ -107,38 +85,7 @@ public class AutomaticCaesarTests extends FjTestCase {
 		super.tearDown();
 	}
 
-	public void testCompilation() {
-		System.out.println("AutomaticCaesartests testCompilation starts");
-		Iterator ifcIt = modulator.cleanClassInterfacesCreated.iterator();
-		Iterator classIt = modulator.cleanClassesVisited.iterator();
-
-		//////////////////////////////////////////
-		// assert all required messages are there:
-		//////////////////////////////////////////
-
-		Vector clonedMessages = (Vector) modulator.getMessages().clone();
-		try {
-
-			assertEquals(
-				"we exactly expect n messages",
-				errormessages.length,
-				modulator.getMessages().size());
-			for (int i = 0; i < errormessages.length; i++) {
-				modulator.findAndRemoveMessage(
-					errormessages[i][0],
-					errormessages[i][1]);
-			}
-
-		} catch (Throwable t) {
-			for (int i = 0; i < clonedMessages.size(); i++) {
-				System.out.println(clonedMessages.elementAt(i));
-			}
-			throw new RuntimeException(t);
-		}
-
-		for (int i = 0; i < modulator.getMessages().size(); i++) {
-			System.out.println(modulator.getMessages().elementAt(i));
-		}
+	public void testCompilation() {		
 	}
 
 	public void testCaesarTestCase_0() throws Throwable {
@@ -194,113 +141,7 @@ public class AutomaticCaesarTests extends FjTestCase {
 	
 	
 
-	class ClassModulatingFjVisitorMock extends ClassTransformationFjVisitor {
 
-		public ClassModulatingFjVisitorMock(KjcEnvironment environment) {
-			super(environment);
-			messages = new Vector();
-		}
-
-		protected Vector messages;
-		public void addMessage(String e) {
-			messages.add(e);
-		}
-		public Vector getMessages() {
-			return messages;
-		}
-		public String findAndRemoveMessage(String pattern) {
-			return findAndRemoveMessage(pattern, null);
-		}
-		public String findAndRemoveMessage(
-			String pattern,
-			String secondPattern) {
-			if (messages == null)
-				return null;
-			for (int i = 0; i < messages.size(); i++) {
-				String message = (String) messages.elementAt(i);
-				if (secondPattern == null
-					&& message.indexOf(pattern) >= 0
-					|| message.indexOf(pattern) >= 0
-					&& message.indexOf(secondPattern) >= 0) {
-					messages.remove(i);
-					i--;
-					return message;
-				}
-			}
-			return null;
-		}
-
-		int visitedCompilationsUnits = 0;
-		public void visitCompilationUnit(
-			JCompilationUnit self,
-			JPackageName packageName,
-			JPackageImport[] importedPackages,
-			JClassImport[] importedClasses,
-			JTypeDeclaration[] typeDeclarations) {
-			super.visitCompilationUnit(
-				self,
-				packageName,
-				importedPackages,
-				importedClasses,
-				typeDeclarations);
-			visitedCompilationsUnits++;
-		}
-
-		int visitedClassDeclarations = 0;
-		public void visitClassDeclaration(
-			JClassDeclaration self,
-			int modifiers,
-			String ident,
-			CTypeVariable[] typeVariables,
-			String superClass,
-			CReferenceType[] interfaces,
-			JPhylum[] body,
-			JMethodDeclaration[] methods,
-			JTypeDeclaration[] decls) {
-			super.visitClassDeclaration(
-				self,
-				modifiers,
-				ident,
-				typeVariables,
-				superClass,
-				interfaces,
-				body,
-				methods,
-				decls);
-			visitedClassDeclarations++;
-		}
-
-		Vector cleanClassIfcImplsCreated = new Vector();
-		Vector cleanClassInterfacesCreated = new Vector();
-		Vector cleanClassesVisited = new Vector();
-		public void visitFjCleanClassDeclaration(
-			FjCleanClassDeclaration self,
-			int modifiers,
-			String ident,
-			CTypeVariable[] typeVariables,
-			String superClass,
-			CReferenceType[] interfaces,
-			JPhylum[] body,
-			JMethodDeclaration[] methods,
-			JTypeDeclaration[] decls) {
-
-			super.visitFjCleanClassDeclaration(
-				self,
-				modifiers,
-				ident,
-				typeVariables,
-				superClass,
-				interfaces,
-				body,
-				methods,
-				decls);
-
-			cleanClassesVisited.add(self);
-			cleanClassInterfacesCreated.add(self.getCleanInterface());
-			cleanClassIfcImplsCreated.add(
-				self.getCleanInterfaceImplementation());
-		}
-	}
 
 	class CompilerMock extends Main {
 
@@ -317,11 +158,7 @@ public class AutomaticCaesarTests extends FjTestCase {
 			allUnits.add(compilationUnit);
 			return compilationUnit;
 		}
-		protected DeclarationVisitor getClassTransformation(KjcEnvironment environment) {
-			if (modulator == null)
-				modulator = new ClassModulatingFjVisitorMock(environment);
-			return modulator;
-		}
+
 		protected KjcEnvironment createEnvironment(KjcOptions options) {
 			if (cachedEnvironment == null) {
 				classReader =
@@ -336,12 +173,6 @@ public class AutomaticCaesarTests extends FjTestCase {
 						options);
 			}
 			return cachedEnvironment;
-		}
-
-		protected void inform(String message) {
-			ClassModulatingFjVisitorMock modulator =
-				(ClassModulatingFjVisitorMock) getClassTransformation(cachedEnvironment);
-			modulator.addMessage(message);
 		}
 
 	};

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.26 2004-03-15 13:04:46 aracic Exp $
+ * $Id: Caesar.g,v 1.27 2004-03-15 14:12:07 aracic Exp $
  */
 
 /*
@@ -427,111 +427,7 @@ jClassDefinition [int modifiers]
       JMethodDeclaration[]      methods;
 
       methods = context.getMethods();
-      if (superClass instanceof CciWeaveletReferenceType)
-      	self = new CciWeaveletClassDeclaration(sourceRef,
-				   modifiers,
-				   ident.getText(),
-				   typeVariables,
-				   (CciWeaveletReferenceType)superClass,
-				   wrappee,
-				   interfaces,
-				   context.getFields(),
-				   methods,
-				   context.getInnerClasses(),
-				   context.getBody(),
-				   javadoc,
-				   comments);
-	  else if (providing != null || binding != null)
-	  {
-	  	if (CModifier.contains(modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL))
-            self = new FjVirtualClassDeclaration(sourceRef,
-				   modifiers,
-				   ident.getText(),
-				   typeVariables,
-				   superClass,
-				   binding,
-				   providing,
-				   wrappee,				   
-				   interfaces,
-				   context.getFields(),
-				   methods,
-				   context.getInnerClasses(),
-				   context.getBody(),
-				   javadoc,
-				   comments);
-	  	 else
-            self = new FjCleanClassDeclaration(sourceRef,
-				   modifiers | org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN,
-				   ident.getText(),
-				   typeVariables,
-				   superClass,
-				   binding,
-				   providing,
-				   wrappee,
-				   interfaces,
-				   context.getFields(),
-				   methods,
-				   context.getInnerClasses(),
-				   context.getBody(),
-				   javadoc,
-				   comments,
-				   context.getPointcuts(),
-				   context.getAdvices(),
-				   context.getDeclares()				   
-				   );
-	 }
-      else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_OVERRIDE ) ) {
-          self = new FjOverrideClassDeclaration(sourceRef,
-				   modifiers,
-				   ident.getText(),
-				   typeVariables,
-				   superClass,
-				   binding,
-				   providing,
-				   wrappee,
-				   interfaces,
-				   context.getFields(),
-				   methods,
-				   context.getInnerClasses(),
-				   context.getBody(),
-				   javadoc,
-				   comments);
-      } else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL ) ) {
-          self = new FjVirtualClassDeclaration(sourceRef,
-				   modifiers,
-				   ident.getText(),
-				   typeVariables,
-				   superClass,
-				   binding,
-				   providing,
-				   wrappee,			   
-				   interfaces,
-				   context.getFields(),
-				   methods,
-				   context.getInnerClasses(),
-				   context.getBody(),
-				   javadoc,
-				   comments);
-      } else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN ) ) {
-          self = new FjCleanClassDeclaration(sourceRef,
-				   modifiers,
-				   ident.getText(),
-				   typeVariables,
-				   superClass,
-				   binding,
-				   providing,
-				   wrappee,			   
-				   interfaces,
-				   context.getFields(),
-				   methods,
-				   context.getInnerClasses(),
-				   context.getBody(),
-				   javadoc,
-				   comments,
-				   context.getPointcuts(),
-				   context.getAdvices(),
-				   context.getDeclares());
-      } else {
+      
           self = new JClassDeclaration(sourceRef,
 				   modifiers,
 				   ident.getText(),
@@ -550,7 +446,7 @@ jClassDefinition [int modifiers]
 				   context.getPointcuts(),
 				   context.getAdvices(),
 				   context.getDeclares());
-			}
+			
         context.release();
     }
 ;
@@ -616,7 +512,7 @@ jInterfaceDefinition [int modifiers]
   jClassBlock[context]
     {
 
-        self = new CciInterfaceDeclaration(sourceRef,
+        self = new JInterfaceDeclaration(sourceRef,
                                            modifiers,
                                            ident.getText(),
                                            typeVariables,
@@ -1880,7 +1776,7 @@ jUnaryExpressionNotPlusMinus []
     LPAREN dest = jBuiltInTypeSpec[]
     ( 
       RPAREN expr = jUnaryExpression[]
-      { self = new JCastExpression(sourceRef, expr, dest, true, true); }
+      { self = new JCastExpression(sourceRef, expr, dest); }
     |
       // the second posibility is e.g. " Class clazz = (int.class);"
       DOT "class" RPAREN
@@ -1899,7 +1795,7 @@ jUnaryExpressionNotPlusMinus []
     (LPAREN jClassTypeSpec[] RPAREN jUnaryExpressionNotPlusMinus[])=>
     LPAREN dest = jClassTypeSpec[] RPAREN
     expr = jUnaryExpressionNotPlusMinus[]
-      { self = new JCastExpression(sourceRef, expr, dest, true, true); }
+      { self = new JCastExpression(sourceRef, expr, dest); }
   |
    self = jPostfixExpression[]
   )
@@ -1925,7 +1821,7 @@ jPostfixExpression[]
         { self = new FjNameExpression(sourceRef, self, ident.getText()); }
     |
       "this"
-        { self = new FjThisExpression(sourceRef, self); }
+        { self = new JThisExpression(sourceRef, self); }
     | // 31.08.01
       "super"
         { self = new FjSuperExpression(sourceRef, self); }
@@ -1997,7 +1893,7 @@ jPrimaryExpression []
     { self = new JBooleanLiteral(sourceRef, false); }
 |
   "this"
-    { self = new FjThisExpression(sourceRef); }
+    { self = new JThisExpression(sourceRef); }
 | 
   "wrappee"
     { self = new CciWrappeeExpression(sourceRef); }

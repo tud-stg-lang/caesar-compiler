@@ -15,17 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.1 2004-03-15 11:56:48 aracic Exp $
+ * $Id: JClassDeclaration.java,v 1.2 2004-03-15 14:12:07 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.KjcEnvironment;
@@ -36,48 +32,22 @@ import org.caesarj.compiler.aspectj.CaesarScope;
 import org.caesarj.compiler.ast.CBlockError;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
-import org.caesarj.compiler.ast.phylum.expression.*;
-import org.caesarj.compiler.ast.phylum.statement.JBlock;
-import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
-import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
-import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
-import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.expression.FjNameExpression;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
+import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
+import org.caesarj.compiler.ast.phylum.statement.*;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.visitor.KjcPrettyPrinter;
 import org.caesarj.compiler.ast.visitor.KjcVisitor;
-import org.caesarj.compiler.constants.CaesarConstants;
-import org.caesarj.compiler.constants.CaesarMessages;
-import org.caesarj.compiler.constants.CciConstants;
-import org.caesarj.compiler.constants.Constants;
-import org.caesarj.compiler.constants.FjConstants;
-import org.caesarj.compiler.constants.KjcMessages;
-import org.caesarj.compiler.context.CBodyContext;
-import org.caesarj.compiler.context.CClassContext;
-import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.context.CField;
-import org.caesarj.compiler.context.CTypeContext;
-import org.caesarj.compiler.context.CVariableInfo;
-import org.caesarj.compiler.context.FjClassContext;
-import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.export.CMethod;
-import org.caesarj.compiler.export.CModifier;
-import org.caesarj.compiler.export.CSourceField;
-import org.caesarj.compiler.export.CSourceMethod;
-import org.caesarj.compiler.export.CaesarAdvice;
-import org.caesarj.compiler.export.FjSourceClass;
+import org.caesarj.compiler.constants.*;
+import org.caesarj.compiler.context.*;
+import org.caesarj.compiler.export.*;
 import org.caesarj.compiler.family.FjTypeSystem;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
-import org.caesarj.compiler.types.CClassNameType;
-import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.CTypeVariable;
-import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.util.CWarning;
-import org.caesarj.util.PositionedError;
-import org.caesarj.util.TokenReference;
-import org.caesarj.util.UnpositionedError;
-import org.caesarj.util.Utils;
+import org.caesarj.compiler.types.*;
+import org.caesarj.util.*;
 
 /**
  * This class represents a caesarj class in the syntax tree. 
@@ -796,115 +766,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 	  return ci;	
   }
 	
-  /**
-   * Transforms the inner classes in overriden types. The current class
-   * must be a providing class (getProviding() != null).
-   * @return JTypeDeclaration[] the new nested classes.
-   */
-  public JTypeDeclaration[] transformInnerProvidingClasses()
-  {
-	  for (int i = 0; i < inners.length; i++)
-	  {
-		  if (inners[i] instanceof JClassDeclaration)
-		  {
-			  inners[i] = 
-				  ((JClassDeclaration)inners[i]) 
-				    .createOverrideClassDeclaration(this);
-		  }
-	  }
-	  return inners;
-  }
 	
-  /**
-   * Transforms the inner classes which bind some CI in virtual types. 
-   * The current class must be a binding class (getBinding() != null).
-   * @return JTypeDeclaration[] the new nested classes.
-   */
-  public JTypeDeclaration[] transformInnerBindingClasses(
-	  JClassDeclaration owner)
-  {
-	  for (int i = 0; i < inners.length; i++)
-	  {
-		  if (inners[i] instanceof JClassDeclaration)
-		  {
-			  JClassDeclaration innerClass = (JClassDeclaration)inners[i];
-			  if (innerClass.getBinding() != null)
-			  {
-				  innerClass.setOwnerDeclaration(owner);
-				  inners[i] = innerClass.createVirtualClassDeclaration(
-					  owner);
-			  }
-			  else
-				  innerClass.transformInnerBindingClasses(this);
-		  }
-	  }
-	  return inners;
-  }		
-  /**
-   * Creates an override type. This is done when the compiler finds a 
-   * providing class, so it has to change its inners for an overriding classe.
-   * @param owner
-   * @return FjOverrideClassDeclaration
-   */
-  public FjOverrideClassDeclaration createOverrideClassDeclaration(
-	  JClassDeclaration owner)
-  {
-	  providing = new CClassNameType(owner.getProviding().getQualifiedName() 
-		  + "$" + ident);
-	  return 
-		  new FjOverrideClassDeclaration(
-			  getTokenReference(),
-			  modifiers | CCI_PROVIDING,
-			  ident,
-			  typeVariables,
-			  null,
-			  null,
-			  providing,
-			  wrappee,
-			  interfaces,
-			  fields,
-			  methods,
-			  transformInnerProvidingClasses(),
-			  this.body,
-			  null,
-			  null);
-  }
-
-
-  /**
-   * Creates an virtual type. This is done when the compiler finds a 
-   * binding class, so it has to change its inners for virtual classes.
-   * @param owner
-   * @return FjOverrideClassDeclaration
-   */
-  public FjVirtualClassDeclaration createVirtualClassDeclaration(
-	  JClassDeclaration owner)
-  {
-	  String superClassName = getBindingTypeName();
-
-	  FjVirtualClassDeclaration result =
-		  new FjVirtualClassDeclaration(
-			  getTokenReference(),
-			  (modifiers | CCI_BINDING) & ~FJC_CLEAN,
-			  ident,
-			  typeVariables,
-			  new CClassNameType(superClassName),
-			  new CClassNameType(superClassName),
-			  null,
-			  wrappee,
-			  interfaces,
-			  fields,
-			  methods,
-			  transformInnerBindingClasses(this),
-			  this.body,
-			  null,
-			  null);
-
-	  result.addProvidingAcessor();
-		
-	  return result;
-  }	
-
   /**
    * Adds the providing reference accessor. The class must be a binding class.
    * The method will actually return a dispatcher of self in this context.
@@ -1239,8 +1101,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 						ifcName);
 			}
 			if (e.getFormattedMessage().getDescription()
-				== KjcMessages.TYPE_UNKNOWN
-				&& !(this instanceof FjCleanClassDeclaration))
+				== KjcMessages.TYPE_UNKNOWN)
 			{
 
 				JTypeDeclaration ownerDecl = getOwnerDeclaration();

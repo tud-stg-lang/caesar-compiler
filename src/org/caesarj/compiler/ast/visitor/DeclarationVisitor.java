@@ -32,16 +32,10 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 	 */
 	protected class Owner {
 		
-		public Owner( FjCleanClassDeclaration init ){
-			set(init);
-		}
 		public Owner( JClassDeclaration init ){
 			set(init);
 		}
 		public Owner( JCompilationUnit init ){
-			set(init);
-		}
-		public Owner( CciInterfaceDeclaration init ){
 			set(init);
 		}
 		public Owner(){
@@ -78,28 +72,14 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 			reference = null;
 		}
 
-		public void set( FjCleanClassDeclaration ccd ){
-			reference = ccd;
-			type = CLEANCLASSDECL;
-		}
-
 		public void set( JClassDeclaration cd ){
 			reference = cd;
-			if (cd instanceof FjCleanClassDeclaration)
-			{
-				type = CLEANCLASSDECL;
-			}
-			else type = CLASSDECL;
+			type = CLASSDECL;
 		}
 
 		public void set( JCompilationUnit cu ){
 			reference = cu;
 			type = COMPILATIONUNIT;
-		}
-
-		public void set( CciInterfaceDeclaration id ){
-			reference = id;
-			type = INTERFACEDECL;
 		}
 
 		public JClassDeclaration getClassDeclaration(){
@@ -111,17 +91,7 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 			if (!isCompilationUnit()) return null;
 			return (JCompilationUnit)reference;
 		}
-		
-		public CciInterfaceDeclaration getInterfaceDeclaration(){
-			if (!isCciInterfaceDeclaration()) return null;
-			return (CciInterfaceDeclaration)reference;
-		}
-
-		public FjCleanClassDeclaration getCleanClassDeclaration(){
-			if (!isCleanClassDeclaration()) return null;
-			return (FjCleanClassDeclaration)reference;
-		}
-		
+				
 		public void append( JTypeDeclaration decl ) {
 			if (isClassDeclaration())
 				((JClassDeclaration)reference).append(decl);
@@ -184,98 +154,6 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 		owner.setNull();
 
 	}
-
-	public void visitCciWeaveletClassDeclaration(
-		CciWeaveletClassDeclaration self,
-		int modifiers,
-		String ident,
-		CTypeVariable[] typeVariables,
-		String superClass,
-		CReferenceType[] interfaces,
-		JPhylum[] body,
-		JMethodDeclaration[] methods,
-		JTypeDeclaration[] decls) {
-		visitFjCleanClassDeclaration(
-			self,
-			modifiers,
-			ident,
-			typeVariables,
-			superClass,
-			interfaces,
-			body,
-			methods,
-			decls
-		);
-	}
-	
-	public void visitFjCleanClassDeclaration(
-		FjCleanClassDeclaration self,
-		int modifiers,
-		String ident,
-		CTypeVariable[] typeVariables,
-		String superClass,
-		CReferenceType[] interfaces,
-		JPhylum[] body,
-		JMethodDeclaration[] methods,
-		JTypeDeclaration[] decls) {
-		visitClassDeclaration(
-			self,
-			modifiers,
-			ident,
-			typeVariables,
-			superClass,
-			interfaces,
-			body,
-			methods,
-			decls
-		);
-	}
-
-	public void visitFjVirtualClassDeclaration(
-		FjVirtualClassDeclaration self,
-		int modifiers,
-		String ident,
-		CTypeVariable[] typeVariables,
-		String superClass,
-		CReferenceType[] interfaces,
-		JPhylum[] body,
-		JMethodDeclaration[] methods,
-		JTypeDeclaration[] decls) {
-		visitFjCleanClassDeclaration(
-			self,
-			modifiers,
-			ident,
-			typeVariables,
-			superClass,
-			interfaces,
-			body,
-			methods,
-			decls
-		);
-	}
-	
-	public void visitFjOverrideClassDeclaration(
-		FjOverrideClassDeclaration self,
-		int modifiers,
-		String ident,
-		CTypeVariable[] typeVariables,
-		String superClass,
-		CReferenceType[] interfaces,
-		JPhylum[] body,
-		JMethodDeclaration[] methods,
-		JTypeDeclaration[] decls) {
-		visitFjVirtualClassDeclaration(
-			self,
-			modifiers,
-			ident,
-			typeVariables,
-			superClass,
-			interfaces,
-			body,
-			methods,
-			decls
-		);
-	}
 	
 	/**
 	 * @see org.caesarj.kjc.KjcVisitor#visitClassBody(JTypeDeclaration[], JMethodDeclaration[], JPhylum[])
@@ -309,15 +187,6 @@ public abstract class DeclarationVisitor implements KjcVisitor {
 		JMethodDeclaration[] methods)
 	{
 	}
-
-	public void visitCciInterfaceDeclaration(CciInterfaceDeclaration self,
-	  int modifiers,
-	  String ident,
-	  CReferenceType[] interfaces,
-	  JPhylum[] body,
-	  JMethodDeclaration[] methods){
-	  	visitInterfaceDeclaration(self, modifiers, ident, interfaces, body, methods);
-	  }
 
 
 	public void visitFieldDeclaration(

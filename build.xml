@@ -98,7 +98,7 @@
  </target>
  
  <!-- Target for generating the parser -->
- <target name="parser" description="Generating parser using ANTLR">
+ <target name="parser" depends="scanner" description="Generating parser using ANTLR">
   <!--  Translate Caesar.g into CaesarParsar.
   		(The task is forced to set the working directory to the directory where
   		the ouput files should be placed because

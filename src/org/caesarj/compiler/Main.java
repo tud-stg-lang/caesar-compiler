@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Vector;
 
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
@@ -19,15 +18,10 @@ import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.CciConstants;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
-import org.caesarj.compiler.delegation.ClassTransformationFjVisitor;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.FjSourceClass;
-import org.caesarj.compiler.family.CollaborationInterfaceTransformation;
 import org.caesarj.compiler.family.CollectClassesFjVisitor;
 import org.caesarj.compiler.family.FamiliesInitializerFjVisitor;
-import org.caesarj.compiler.family.InheritConstructorsFjVisitor;
-import org.caesarj.compiler.family.MethodTransformationFjVisitor;
-import org.caesarj.compiler.family.ResolveSuperClassFjVisitor;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
@@ -112,10 +106,9 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 		JCompilationUnit[] tree = parseFiles(environment);
 
 		if (errorFound) {return false;}
-		transformCollaborationInterfaces(environment,tree);
+		//transformCollaborationInterfaces(environment,tree);
 		prepareJoinpointReflection(tree);
 		prepareDynamicDeployment(environment, tree);
-		createAllHelperInterfaces(environment, tree);
 		joinAll(tree);
 		if (errorFound) { return false; }
 		checkAllInterfaces(tree);
@@ -222,26 +215,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 		}
 	}
 
-
-	protected void createAllHelperInterfaces(
-		KjcEnvironment environment,
-		JCompilationUnit[] tree) {
-		for (int i = 0; i < tree.length; i++) {
-			tree[i].accept(getClassTransformation(environment));
-			//tree[i].accept(new DebugVisitor());
-		}
-	}
-
-	protected void transformCollaborationInterfaces(
-		KjcEnvironment environment,
-		JCompilationUnit[] tree) {
-
-		for (int i = 0; i < tree.length; i++) {
-			tree[i].accept(getCollaborationInteraceTransformation(environment));			
-		}
-	}
-
-
 	protected void prepareDynamicDeployment(
 		KjcEnvironment environment,
 		JCompilationUnit[] tree) {
@@ -271,7 +244,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 
 	
 	protected void checkInterface(JCompilationUnit cunit) {
-		cunit.accept(getMethodTransformation(cunit.getEnvironment()));
 		super.checkInterface(cunit);
 	}
 
@@ -300,22 +272,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 		}
 		if (errorFound)
 			return;
-
-		// let a visitor traverse the tree
-		// and resolve all overriders superclasses 
-		getResolveSuperClass(this, tree).transform(); 
-		if (errorFound)
-			return;
-
-		try {
-			Vector warnings =
-				getInheritConstructors(tree).transform();
-			for (int i = 0; i < warnings.size(); i++) {
-				inform((PositionedError) warnings.elementAt(i));
-			}
-		} catch (PositionedError e) {
-			reportTrouble(e);
-		}
 	}
 
 	
@@ -329,28 +285,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 		cunit.accept(getFamiliesInitializer(cunit.getEnvironment()));
 	}
 
-
-	/**
-	 * 
-	 * @param environment
-	 * @return the visitor instance that transforms FamilyJ to Java.
-	 */
-	protected DeclarationVisitor getClassTransformation(KjcEnvironment environment) 
-	{
-		return new ClassTransformationFjVisitor(environment);
-	}
-	
-	/**
-	 * Returns the visitor instance for transforms the CIs.
-	 * @param environment
-	 * @return
-	 */
-	protected DeclarationVisitor getCollaborationInteraceTransformation(
-		KjcEnvironment environment) 
-	{
-		return new CollaborationInterfaceTransformation(environment, this);
-	}
-	
 	
 	/**
 	 *
@@ -360,23 +294,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 	protected DeclarationVisitor getFamiliesInitializer(KjcEnvironment environment)
 	{
 		return new FamiliesInitializerFjVisitor(this, environment);
-	}
-
-	protected CollectClassesFjVisitor getInheritConstructors(JCompilationUnit[] compilationUnits) {
-		if (inherritConstructors == null)
-			inherritConstructors =
-				new InheritConstructorsFjVisitor(compilationUnits);
-		return inherritConstructors;
-	}
-
-	protected DeclarationVisitor getMethodTransformation(KjcEnvironment environment) {
-		return new MethodTransformationFjVisitor(environment);
-	}
-
-	protected ResolveSuperClassFjVisitor getResolveSuperClass(
-		CompilerBase compiler,
-		JCompilationUnit compilationUnits[]) {
-		return new ResolveSuperClassFjVisitor(compiler, compilationUnits);
 	}
 
 	public void inform(PositionedError error) {

@@ -3,13 +3,15 @@ package org.caesarj.compiler.ast.phylum.declaration;
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
-import org.caesarj.compiler.ast.phylum.expression.*;
+import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.expression.FjMethodCallExpression;
+import org.caesarj.compiler.ast.phylum.expression.FjNameExpression;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
-import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
-import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.types.CClassNameType;
@@ -123,18 +125,9 @@ public class DeploymentSupportClassDeclaration extends JClassDeclaration {
 			) {
 					
 			String superClassName = null;
-			// test klaus
-			if (crosscuttingClass instanceof FjCleanClassDeclaration) {
+		  superClassName =
+			crosscuttingClass.getSuperClass().getIdent() + postfix;
 				
-//				String sc = 
-//				  crosscuttingClass.getSuperClass().getIdent();
-//				superClassName = sc.substring(0,sc.length()  - FjConstants.PROXY_POSTFIX.length());
-				superClassName = FjConstants.toIfcName(
-					crosscuttingClass.getSuperClass().getIdent()) + postfix;
-			} else {
-			  superClassName =
-				crosscuttingClass.getSuperClass().getIdent() + postfix;
-			}				
 
 			try {
 				

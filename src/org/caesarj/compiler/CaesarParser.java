@@ -1,32 +1,31 @@
 // $ANTLR 1.5A: "cc/Caesar.g" -> "CaesarParser.java"$
  package org.caesarj.compiler; 
-import java.util.ArrayList;
-
-import org.caesarj.compiler.aspectj.CaesarAdviceKind;
-import org.caesarj.compiler.aspectj.CaesarPatternParser;
-import org.caesarj.compiler.aspectj.CaesarPointcut;
-import org.caesarj.compiler.aspectj.CaesarSourceContext;
-import org.caesarj.compiler.ast.JavaStyleComment;
-import org.caesarj.compiler.ast.JavadocComment;
-import org.caesarj.compiler.ast.phylum.JClassImport;
-import org.caesarj.compiler.ast.phylum.JCompilationUnit;
-import org.caesarj.compiler.ast.phylum.JPackageImport;
-import org.caesarj.compiler.ast.phylum.JPackageName;
-import org.caesarj.compiler.ast.phylum.declaration.*;
-import org.caesarj.compiler.ast.phylum.expression.*;
-import org.caesarj.compiler.ast.phylum.expression.literal.*;
-import org.caesarj.compiler.ast.phylum.statement.*;
-import org.caesarj.compiler.ast.phylum.variable.*;
-import org.caesarj.compiler.constants.Constants;
-import org.caesarj.compiler.constants.KjcMessages;
-import org.caesarj.compiler.context.CParseCompilationUnitContext;
-import org.caesarj.compiler.export.CModifier;
-import org.caesarj.compiler.types.*;
-import org.caesarj.tools.antlr.extra.InputBuffer;
 import org.caesarj.tools.antlr.runtime.*;
-import org.caesarj.util.CWarning;
-import org.caesarj.util.PositionedError;
-import org.caesarj.util.TokenReference;
+
+  import java.util.ArrayList;
+
+  import org.caesarj.compiler.ast.*;
+  import org.caesarj.compiler.ast.phylum.*;
+  import org.caesarj.compiler.ast.phylum.expression.*;
+  import org.caesarj.compiler.ast.phylum.expression.literal.*;
+  import org.caesarj.compiler.ast.phylum.declaration.*;
+  import org.caesarj.compiler.ast.phylum.statement.*;
+  import org.caesarj.compiler.ast.phylum.variable.*;
+  import org.caesarj.compiler.constants.*;
+  import org.caesarj.compiler.aspectj.CaesarAdviceKind;
+  import org.caesarj.compiler.aspectj.CaesarPatternParser;
+  import org.caesarj.compiler.aspectj.CaesarPointcut;
+  import org.caesarj.compiler.aspectj.CaesarSourceContext;
+
+  import org.caesarj.util.CWarning;
+  import org.caesarj.tools.antlr.extra.*;
+  import org.caesarj.compiler.ast.JavaStyleComment;
+  import org.caesarj.compiler.ast.JavadocComment;
+  import org.caesarj.tools.antlr.extra.InputBuffer;
+  import org.caesarj.compiler.context.*;
+  import org.caesarj.compiler.types.*;
+  import org.caesarj.compiler.export.*;
+  import org.caesarj.util.*;
 
 public class CaesarParser extends org.caesarj.tools.antlr.extra.Parser
        implements CaesarTokenTypes
@@ -525,111 +524,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			JMethodDeclaration[]      methods;
 			
 			methods = context.getMethods();
-			if (superClass instanceof CciWeaveletReferenceType)
-				self = new CciWeaveletClassDeclaration(sourceRef,
-							   modifiers,
-							   ident.getText(),
-							   typeVariables,
-							   (CciWeaveletReferenceType)superClass,
-							   wrappee,
-							   interfaces,
-							   context.getFields(),
-							   methods,
-							   context.getInnerClasses(),
-							   context.getBody(),
-							   javadoc,
-							   comments);
-				  else if (providing != null || binding != null)
-				  {
-				  	if (CModifier.contains(modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL))
-			self = new FjVirtualClassDeclaration(sourceRef,
-							   modifiers,
-							   ident.getText(),
-							   typeVariables,
-							   superClass,
-							   binding,
-							   providing,
-							   wrappee,				   
-							   interfaces,
-							   context.getFields(),
-							   methods,
-							   context.getInnerClasses(),
-							   context.getBody(),
-							   javadoc,
-							   comments);
-				  	 else
-			self = new FjCleanClassDeclaration(sourceRef,
-							   modifiers | org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN,
-							   ident.getText(),
-							   typeVariables,
-							   superClass,
-							   binding,
-							   providing,
-							   wrappee,
-							   interfaces,
-							   context.getFields(),
-							   methods,
-							   context.getInnerClasses(),
-							   context.getBody(),
-							   javadoc,
-							   comments,
-							   context.getPointcuts(),
-							   context.getAdvices(),
-							   context.getDeclares()				   
-							   );
-				 }
-			else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_OVERRIDE ) ) {
-			self = new FjOverrideClassDeclaration(sourceRef,
-							   modifiers,
-							   ident.getText(),
-							   typeVariables,
-							   superClass,
-							   binding,
-							   providing,
-							   wrappee,
-							   interfaces,
-							   context.getFields(),
-							   methods,
-							   context.getInnerClasses(),
-							   context.getBody(),
-							   javadoc,
-							   comments);
-			} else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL ) ) {
-			self = new FjVirtualClassDeclaration(sourceRef,
-							   modifiers,
-							   ident.getText(),
-							   typeVariables,
-							   superClass,
-							   binding,
-							   providing,
-							   wrappee,			   
-							   interfaces,
-							   context.getFields(),
-							   methods,
-							   context.getInnerClasses(),
-							   context.getBody(),
-							   javadoc,
-							   comments);
-			} else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN ) ) {
-			self = new FjCleanClassDeclaration(sourceRef,
-							   modifiers,
-							   ident.getText(),
-							   typeVariables,
-							   superClass,
-							   binding,
-							   providing,
-							   wrappee,			   
-							   interfaces,
-							   context.getFields(),
-							   methods,
-							   context.getInnerClasses(),
-							   context.getBody(),
-							   javadoc,
-							   comments,
-							   context.getPointcuts(),
-							   context.getAdvices(),
-							   context.getDeclares());
-			} else {
+			
 			self = new JClassDeclaration(sourceRef,
 							   modifiers,
 							   ident.getText(),
@@ -648,7 +543,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   context.getPointcuts(),
 							   context.getAdvices(),
 							   context.getDeclares());
-						}
+						
 			context.release();
 			
 		}
@@ -694,7 +589,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		if ( inputState.guessing==0 ) {
 			
 			
-			self = new CciInterfaceDeclaration(sourceRef,
+			self = new JInterfaceDeclaration(sourceRef,
 			modifiers,
 			ident.getText(),
 			typeVariables,
