@@ -20,15 +20,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CompositeAspectContainer.java,v 1.3 2005-01-24 16:52:59 aracic Exp $
+ * $Id: CompositeAspectContainer.java,v 1.4 2005-03-22 08:42:20 aracic Exp $
  */
 
 package org.caesarj.runtime.aspects;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
  * @author User
@@ -41,90 +41,19 @@ public class CompositeAspectContainer implements AspectContainerIfc {
 	List containers = new LinkedList();
 	
 	/**
-	 * @author Vaidas Gasiunas
-	 *
-	 * Composite iterator, for retrieving all deployed instances
-	 */
-	public class CompositeIter implements Iterator
-	{
-		private Iterator outerIter = null;
-		private Iterator innerIter = null;
-		
-		public CompositeIter() {
-			
-			outerIter = containers.iterator();
-			
-			/* find first non-empty inner iterator */
-			while (outerIter.hasNext())	{
-				innerIter = ((AspectContainerIfc)outerIter.next()).$getInstances();
-				if (innerIter != null && innerIter.hasNext()) {
-					break;
-				}
-			}
-		}		
-		
-		/**
-	     * Returns <tt>true</tt> if the iteration has more elements. 
-	     *
-	     * @return <tt>true</tt> if the iterator has more elements.
-	     */
-	    public boolean hasNext() {
-	    	
-	    	if (innerIter.hasNext()) {
-	    		return true;
-	    	}	    			    	
-	    	else {
-	    		/* shift outer iterator */
-	    		while (outerIter.hasNext())	{
-					innerIter = ((AspectContainerIfc)outerIter.next()).$getInstances();
-					if (innerIter != null && innerIter.hasNext()) {
-						return true;
-					}
-				}
-	    		return false;
-	    	}	    		
-	    }
-
-	    /**
-	     * Returns the next element in the iteration.
-	     *
-	     * @return the next element in the iteration.
-	     * @exception NoSuchElementException iteration has no more elements.
-	     */
-	    public Object next() {
-	    	
-	    	if (innerIter.hasNext()) {
-	    		return innerIter.next();
-	    	}
-	    	
-	    	/* shift outer iterator */
-	    	while (outerIter.hasNext())	{
-				innerIter = ((AspectContainerIfc)outerIter.next()).$getInstances();
-				if (innerIter != null && innerIter.hasNext()) {
-					return innerIter.next();
-				}
-			}
-	    	
-    		throw new NoSuchElementException();	    	
-	    }
-
-	    /**
-	     *	Removing is not supported
-	     *
-	     *  @exception UnsupportedOperationException 
-	     */
-	    public void remove() {
-	    	throw new UnsupportedOperationException();
-	    }	    
-	}
-	
-	/**
 	 * Get list of deployed aspect objects for which the advice has to be called
 	 * 
 	 * @return iterator of aspect objects
 	 */
-	public Iterator $getInstances() {
-		return new CompositeIter();
+	public List $getInstances() {
+		LinkedList res = new LinkedList();
+		for (Iterator it = containers.iterator(); it.hasNext();) {
+			Collection l = ((AspectContainerIfc)it.next()).$getInstances();
+			for (Iterator it2 = l.iterator(); it2.hasNext();) {
+				res.add(it2.next());
+			}
+		}
+		return res;
 	}
 	
 	/**

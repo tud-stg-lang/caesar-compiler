@@ -20,12 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectObjectMapper.java,v 1.2 2005-01-24 16:53:01 aracic Exp $
+ * $Id: AspectObjectMapper.java,v 1.3 2005-03-22 08:42:20 aracic Exp $
  */
 
 package org.caesarj.runtime.perobject;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.WeakHashMap;
@@ -56,13 +55,15 @@ public class AspectObjectMapper implements AspectContainerIfc {
 	 * 
 	 * @return 			Iterator of aspect objects
 	 */ 
-	public Iterator $getInstances() {		
+	public List $getInstances() {		
 		Object key = _keyDetect.getCurrentKey();
 		List lst = (List)_objectAspects.get(key);
 		if (lst == null)
-			return null;
-		else
-			return lst.iterator();
+			return new LinkedList();
+		else {
+			List res = new LinkedList(lst);
+			return res;
+		}
 	}
 	
 	/**

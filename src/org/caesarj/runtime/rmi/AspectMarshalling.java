@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectMarshalling.java,v 1.2 2005-01-24 16:52:59 aracic Exp $
+ * $Id: AspectMarshalling.java,v 1.3 2005-03-22 08:42:20 aracic Exp $
  */
 
 package org.caesarj.runtime.rmi;
@@ -72,7 +72,7 @@ public class AspectMarshalling implements Serializable
 			
 			if (threadMapper != null) 
 			{
-				Iterator it = threadMapper.$getInstances();
+				Iterator it = threadMapper.$getInstances().iterator();
 				
 				/* marshal only if there are deployed instances */
 				if (it != null && it.hasNext()) 

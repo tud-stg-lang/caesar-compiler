@@ -20,12 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectList.java,v 1.3 2005-01-24 16:52:59 aracic Exp $
+ * $Id: AspectList.java,v 1.4 2005-03-22 08:42:20 aracic Exp $
  */
 
 package org.caesarj.runtime.aspects;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,8 +47,9 @@ public class AspectList implements AspectContainerIfc
 	 * 
 	 * @return iterator of aspect objects
 	 */
-	public Iterator $getInstances() {
-		return aspList.iterator();
+	public List $getInstances() {
+		List res = new LinkedList(aspList);
+		return res;
 	}
 	
 	/**

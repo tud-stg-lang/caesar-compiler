@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.37 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: DeploymentClassFactory.java,v 1.38 2005-03-22 08:42:20 aracic Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -503,7 +503,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	    	"{",
 				"if ($aspectContainer != null)",
 				"{",
-					"java.util.Iterator it = $aspectContainer.$getInstances();",
+					"java.util.Iterator it = $aspectContainer.$getInstances().iterator();",
 					"if (it != null)",
 					"{",
 						"while (it.hasNext())",
@@ -573,7 +573,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	    		SRC_AROUND_CLOSURE_CLASS + " $closure = aroundClosure;",
 				"if ($aspectContainer != null)",
 				"{",
-					"java.util.Iterator $it = $aspectContainer.$getInstances();",
+					"java.util.Iterator $it = $aspectContainer.$getInstances().iterator();",
 					"if ($it != null)",
 					"{",
 						"$closure = " + strClosureConstruction, 
