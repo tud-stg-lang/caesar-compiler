@@ -10,6 +10,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.aspectj.asm.StructureModelManager;
+import org.caesarj.compiler.asm.AsmBuilder;
+import org.caesarj.compiler.asm.StructureModelDump;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
@@ -149,6 +152,19 @@ public class Main extends MainSuper implements Constants {
         genMixinCopies(environment);
         if(errorFound) return false;
 
+        
+        AsmBuilder builder = new AsmBuilder(CaesarBcelWorld.getInstance().getWorld().getModel());
+        for (int i = 0; i < tree.length; i++) {
+            tree[i].accept(builder);
+        }
+        
+        {
+        StructureModelDump dump = new StructureModelDump(System.out);
+        System.out.println("== model before weaving ==============");
+        dump.print("", CaesarBcelWorld.getInstance().getWorld().getModel().getRoot());
+        System.out.println("======================================");
+    	}
+        
         tree = null;
         
         if(!noWeaveMode())
@@ -156,8 +172,17 @@ public class Main extends MainSuper implements Constants {
         
         if(verboseMode())
             inform(CaesarMessages.COMPILATION_ENDED);
-
+               
         CodeSequence.endSession();
+        
+        {
+        StructureModelDump dump = new StructureModelDump(System.out);
+        System.out.println("== model after weaving ===============");
+        dump.print("", CaesarBcelWorld.getInstance().getWorld().getModel().getRoot());
+        System.out.println("======================================");
+        }
+
+        
         return true;
     }
 
@@ -644,7 +669,10 @@ public class Main extends MainSuper implements Constants {
         CaesarBcelWorld.createInstance(options.classpath);
         
         CaesarBcelWorld world = CaesarBcelWorld.getInstance();
-        world.setMessageHandler(messageHandler);        
+        world.setMessageHandler(messageHandler);
+        
+        CaesarBcelWorld.getInstance().getWorld().setModel(
+            StructureModelManager.INSTANCE.getStructureModel());
     }
 
     /**
