@@ -180,18 +180,6 @@ public class CjAdviceDeclaration
         this.parameters = parameters;
     }
 
-    public JFormalParameter[] getParameters() {
-        return parameters;
-    }
-
-    public CType getReturnType() {
-        return returnType;
-    }
-
-    public CReferenceType[] getExceptions() {
-        return exceptions;
-    }
-
     public CaesarPointcut getPointcut() {
         return pointcut;
     }

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodDeclaration.java,v 1.3 2004-03-22 12:59:12 aracic Exp $
+ * $Id: JMethodDeclaration.java,v 1.4 2004-04-05 15:16:39 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -549,6 +549,22 @@ public class JMethodDeclaration extends JMemberDeclaration {
             | ACC_NATIVE
             | ACC_SYNCHRONIZED
             | ACC_STRICT;
+    }
+    
+    public JFormalParameter[] getParameters() {
+        return parameters;
+    }
+
+    public CType getReturnType() {
+        return returnType;
+    }
+
+    public CReferenceType[] getExceptions() {
+        return exceptions;
+    }
+
+    public int getModifiers() {
+        return modifiers;
     }
 
     // ----------------------------------------------------------------------
