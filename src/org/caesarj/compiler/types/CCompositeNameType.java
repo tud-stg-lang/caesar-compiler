@@ -23,7 +23,8 @@ public class CCompositeNameType extends CClassNameType {
     }
     
     
-	public CType checkType(CTypeContext context) throws UnpositionedError {        
+	public CType checkType(CTypeContext context) throws UnpositionedError {
+        
         CClass         classes[]               = new CClass[refType.length];
         CReferenceType checkedInterfaceTypes[] = new CReferenceType[refType.length];
         CReferenceType checkedImplTypes[]      = new CReferenceType[refType.length];
@@ -42,15 +43,7 @@ public class CCompositeNameType extends CClassNameType {
             classes[i] = checkedImplTypes[i].getCClass();
         }
         
-        try {
-            MixinList mixinList = ExportMixer.instance().mix(classes);
-            
-            return new CCompositeType(mixinList, checkedInterfaceTypes, checkedImplTypes);            
-        }
-        catch (Exception e) {
-            // CTODO create correct error message
-			throw new UnpositionedError(CaesarMessages.CANNOT_CREATE, new Object[]{"composite supertype"}, e);
-		}
+        return new CCompositeType(checkedInterfaceTypes, checkedImplTypes);            
     }
 
 

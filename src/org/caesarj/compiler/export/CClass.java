@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.10 2004-04-27 13:27:54 aracic Exp $
+ * $Id: CClass.java,v 1.11 2004-06-02 15:04:10 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -1600,13 +1600,19 @@ public abstract class CClass extends CMember
 	/**
 	 * Adds a inner class.
 	 */
-	public void addInnerClass(CReferenceType innerClass)
-	{
-		CReferenceType[] tmp = new CReferenceType[innerClasses.length + 1];
-		System.arraycopy(innerClasses, 0, tmp, 0, innerClasses.length);
-		tmp[innerClasses.length] = innerClass;
-		innerClasses = tmp;
-	}
+    public void addInnerClass(CReferenceType[] newInners)
+    {
+        CReferenceType[] tmp = new CReferenceType[innerClasses.length + newInners.length];
+        System.arraycopy(innerClasses, 0, tmp, 0, innerClasses.length);
+        System.arraycopy(newInners, 0, tmp, innerClasses.length, newInners.length);
+        innerClasses = tmp;
+    }
+
+    public void addInnerClass(CReferenceType innerClass)
+    {
+        addInnerClass(new CReferenceType[]{innerClass});
+    }
+    
 	/**
 	 * Returns the invariant method for this class or null if no invariant exists
 	 *

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.10 2004-06-01 10:54:29 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.11 2004-06-02 15:04:22 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -129,6 +129,20 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         uniqueSourceClass = classReader.addSourceClass(sourceClass);
     }
 
+    public void addInners(JTypeDeclaration newDecls[]) {
+        JTypeDeclaration newInners[] = new JTypeDeclaration[inners.length + newDecls.length];
+        System.arraycopy(inners, 0, newInners, 0, inners.length);
+        System.arraycopy(newDecls, 0, newInners, inners.length, newDecls.length);
+        inners = newInners;
+        
+        CReferenceType[] newInnerRefs = new CReferenceType[newDecls.length];
+        for(int i=0; i<newInnerRefs.length; i++) {
+            newInnerRefs[i] = newDecls[i].getCClass().getAbstractType();
+        }
+        
+        getCClass().addInnerClass(newInnerRefs);
+    }
+    
     /**
      * Adds a method to the class. This method was pulled up. 
      * @param newMethod
@@ -285,11 +299,14 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     }
 
     
-    // IVICA checkConstructorInterfaceOnly -> see CjClassDeclaration.checkConstructorInterfaceOnly for more Info
     /**
-     * default impl. is empty for now
+     * generates unchecked export, before checkInterface is called
+     * only importatn for CjClassDeclaration 
      */
-    public void checkConstructorInterfaceOnly(CContext context) throws PositionedError {        
+    public void generateExport(CContext context) throws PositionedError {        
+    }
+    
+    public void initCaesarType(CContext context) throws PositionedError {
     }
 
 
@@ -618,5 +635,5 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     protected boolean uniqueSourceClass = true;
     //andreas end
     protected CClassContext self;
-    protected CTypeVariable[] typeVariables;
+    protected CTypeVariable[] typeVariables;    
 }

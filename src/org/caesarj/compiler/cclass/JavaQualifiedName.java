@@ -39,10 +39,10 @@ public class JavaQualifiedName {
         
         prefix = packagePrefix+outerPrefix;
     }
-    
-    // CTODO
+        
     public JavaQualifiedName convertToImplName() {        
-        return new JavaQualifiedName(qualifiedName);
+        String newQualifiedName = qualifiedName.replaceAll("\\$", "_Impl\\$");
+        return new JavaQualifiedName(newQualifiedName+"_Impl");
     }
     
     // CTODO

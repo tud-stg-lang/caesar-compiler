@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JCompilationUnit.java,v 1.2 2004-04-16 14:29:42 aracic Exp $
+ * $Id: JCompilationUnit.java,v 1.3 2004-06-02 15:03:46 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -210,14 +210,24 @@ public class JCompilationUnit extends JPhylum {
 			typeDeclarations[i].join(context);
 		}
 	}
-
-	// IVICA checkConstructorInterfaceOnly
-	public void checkConstructorInterfaceOnly(CompilerBase compiler) throws PositionedError {
+	
+    // IVICA
+    public void initCaesarTypes(CompilerBase compiler) throws PositionedError {
+        CCompilationUnitContext context =
+            new CCompilationUnitContext(compiler, environment, export);
+        
+        for (int i = 0; i < typeDeclarations.length; i++) {
+            typeDeclarations[i].initCaesarType(context);
+        }
+    }
+    
+    // IVICA 
+	public void generateExport(CompilerBase compiler) throws PositionedError {
         CCompilationUnitContext context =
 			new CCompilationUnitContext(compiler, environment, export);
 		
         for (int i = 0; i < typeDeclarations.length; i++) {
-			typeDeclarations[i].checkConstructorInterfaceOnly(context);
+			typeDeclarations[i].generateExport(context);
 		}
 	}
 

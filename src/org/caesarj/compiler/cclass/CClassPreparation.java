@@ -86,6 +86,7 @@ public class CClassPreparation implements CaesarConstants {
             (JTypeDeclaration[]) newTypeDeclarations.toArray(
                 new JTypeDeclaration[0]));             
 	}
+    
 
     /**
      * Offers common access interface for cu and class inners
@@ -138,5 +139,14 @@ public class CClassPreparation implements CaesarConstants {
             
             cu.setInners(newInners);
         }
+    }
+
+
+    public void generateImplicitType(
+        KjcEnvironment environment, 
+        JCompilationUnit cu, 
+        CaesarTypeNode typeNode
+    ) {
+        
     }
 }

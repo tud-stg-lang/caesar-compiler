@@ -232,4 +232,8 @@ public class JavaTypeNode {
     public JavaQualifiedName getQualifiedName() {
         return qualifiedName;
     }
+
+    public JavaTypeNode getParent() {
+        return parent;
+    }
 }

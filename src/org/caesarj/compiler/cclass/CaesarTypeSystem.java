@@ -9,7 +9,7 @@ package org.caesarj.compiler.cclass;
 public class CaesarTypeSystem {
     private CaesarTypeGraph explicitGraph = new CaesarTypeGraph();
     private CaesarTypeGraph completeGraph = new CaesarTypeGraph();
-    private JavaTypeGraph compilationGraph = new JavaTypeGraph(); 
+    private JavaTypeGraph javaGraph = new JavaTypeGraph(); 
     
     public CaesarTypeGraph getCompleteGraph() {
         return completeGraph;
@@ -17,6 +17,10 @@ public class CaesarTypeSystem {
 
     public CaesarTypeGraph getExplicitGraph() {
         return explicitGraph;
+    }
+    
+    public JavaTypeGraph getJavaGraph() {
+        return javaGraph;
     }
     
     public void generate() {
@@ -27,7 +31,7 @@ public class CaesarTypeSystem {
         completeGraph.generateMixinLists(explicitGraph);        
         completeGraph.debug();
         System.out.println("----------------------------------");
-        compilationGraph.generateFrom(completeGraph);
-        compilationGraph.debug();
+        javaGraph.generateFrom(completeGraph);
+        javaGraph.debug();
     }
 }

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.13 2004-06-01 10:54:29 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.14 2004-06-02 15:04:22 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -24,6 +24,7 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 import org.caesarj.compiler.aspectj.CaesarDeclare;
+import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.aspectj.CaesarScope;
 import org.caesarj.compiler.ast.JavaStyleComment;
@@ -32,7 +33,12 @@ import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
 import org.caesarj.compiler.ast.visitor.KjcPrettyPrinter;
 import org.caesarj.compiler.ast.visitor.KjcVisitor;
+import org.caesarj.compiler.cclass.CaesarTypeNode;
+import org.caesarj.compiler.cclass.CaesarTypeSystem;
+import org.caesarj.compiler.cclass.JavaQualifiedName;
+import org.caesarj.compiler.cclass.JavaTypeNode;
 import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
@@ -40,9 +46,10 @@ import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.*;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
-import org.caesarj.compiler.types.CCompositeType;
 import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -316,26 +323,7 @@ public class CjClassDeclaration
             contructors,
             JConstructorDeclaration.class);
     }
-
-    /**
-     * Sets the owner declaration. This method was pulled up.
-     * @param ownerDecl
-     */
-    /*
-    public void setOwnerDeclaration(CjClassDeclaration ownerDecl) {
-        this.ownerDecl = ownerDecl;
-    }
-    */
-
-    /**
-     * Returns the owner declaration. This method was pulled up.
-     * @return FjClassDeclaration
-     */
-    /*
-    public CjClassDeclaration getOwnerDeclaration() {
-        return ownerDecl;
-    }
-    */
+    
     
     /**
      * Returns the ident of the class
@@ -344,22 +332,6 @@ public class CjClassDeclaration
     public String getIdent() {
         return ident;
     }
-
-    /**
-     * Appends an inner class.
-     * This method was pulled up from FjClassDeclaration.
-     * @param type
-     */
-    /*  public void append(JTypeDeclaration type)
-      {
-    	  JTypeDeclaration[] newInners = new JTypeDeclaration[inners.length + 1];
-    		
-    	  System.arraycopy(inners, 0, newInners, 0, inners.length);
-    
-    	  newInners[inners.length] = type;
-    	  setInners(newInners);
-      }
-    */
 
     /**
      * Adds a field in the class.
@@ -483,13 +455,13 @@ public class CjClassDeclaration
         return originalIdent;
     }
 
-
-    // IVICA checkConstructorInterfaceOnly
+    
     /**
-     * this one generates only constructor information in 
-     * sourceClass
+     * IVICA
+     * this one generates temporary unchecked export information  of the source class
+     * we need this one in order to be able to generate exports for mixin copies
      */    
-    public void checkConstructorInterfaceOnly(CContext context) throws PositionedError {
+    public void generateExport(CContext context) throws PositionedError {
         // CTODO default constructor missing
         List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {
@@ -499,14 +471,146 @@ public class CjClassDeclaration
             }
         }
 
-        sourceClass.close(this.interfaces, new Hashtable(), (CMethod[])methodList.toArray(new CMethod[0]));
+        Hashtable hashFieldMap = new Hashtable();
+                for (int i = fields.length - 1; i >= 0; i--) {
+            CSourceField field = fields[i].checkInterface(self);
+            field.setPosition(i);
+            hashFieldMap.put(field.getIdent(), field);
+        }
+        
+        sourceClass.close(
+            this.interfaces, 
+            hashFieldMap, 
+            (CMethod[])methodList.toArray(new CMethod[methodList.size()])
+        );
         
         // Check inners
         for(int k = 0; k < inners.length; k++) {
-            inners[k].checkConstructorInterfaceOnly(context);           
+            inners[k].generateExport(context);
         }
     }
+    
+    /**
+     * IVICA
+     */
+    public void initCaesarType(CContext context) throws PositionedError {
+        try {   
+            
+            JavaQualifiedName qualifiedName =
+                new JavaQualifiedName(
+                    getCorrespondingInterfaceDeclaration().getCClass().getQualifiedName()
+                );
+            
+            CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
 
+            CaesarTypeNode typeNode = typeSystem.getCompleteGraph().getType(qualifiedName);
+            JavaTypeNode javaTypeNode = typeSystem.getJavaGraph().getJavaTypeNode(typeNode);
+            
+            
+            /*
+             * adjust supertype 
+             */
+            
+            JavaTypeNode superType = javaTypeNode.getParent();
+            
+            CReferenceType superTypeRef = 
+                context.getTypeFactory().createType(superType.getQualifiedName().toString(), true);
+            
+            superTypeRef = (CReferenceType)superTypeRef.checkType(context);
+            
+            getCClass().setSuperClass(superTypeRef);
+            setSuperClass(superTypeRef);
+            
+                       
+            
+            /*
+             * add implicit subtypes
+             */ 
+            List newImpls = new LinkedList();
+            List newIfcs  = new LinkedList();           
+            
+            for(Iterator it = typeNode.getInners().values().iterator(); it.hasNext(); ) {
+                CaesarTypeNode subNode = (CaesarTypeNode)it.next();
+
+                if(subNode.isImplicit()) {
+                    // generate here
+                    CjInterfaceDeclaration ifcDecl = 
+                        new CjInterfaceDeclaration(
+                            getTokenReference(),
+                            ACC_PUBLIC | ACC_CCLASS_INTERFACE,
+                            subNode.getQualifiedName().getIdent(),
+                            new CTypeVariable[0],
+                            new CReferenceType[0],
+                            new JFieldDeclaration[0],
+                            new JMethodDeclaration[0],
+                            new JTypeDeclaration[0],
+                            new JPhylum[0],
+                            null,
+                            null
+                        ); 
+                    
+                    ifcDecl.generateInterface(
+                        context.getClassReader(), 
+                        getCorrespondingInterfaceDeclaration().getCClass(), 
+                        subNode.getQualifiedName().getPrefix()
+                    );
+                    
+                    CjClassDeclaration implDecl =
+                        new CjClassDeclaration(
+                            getTokenReference(),
+                            ACC_PUBLIC,
+                            subNode.getQualifiedName().getIdent()+"_Impl",
+                            new CTypeVariable[0],
+                            context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT),
+                            null, // wrappee
+                            new CReferenceType[]{ifcDecl.getCClass().getAbstractType()}, // CTODO ifcs
+                            new JFieldDeclaration[0],
+                            new JMethodDeclaration[0],
+                            new JTypeDeclaration[0],
+                            new JPhylum[0],
+                            null,
+                            null
+                        );
+                    
+                    implDecl.generateInterface(
+                        context.getClassReader(),   
+                        this.getCClass(), 
+                        subNode.getQualifiedImplName().getPrefix()
+                    );
+                    
+                    implDecl.join(context);
+                    
+                    implDecl.setCorrespondingInterfaceDeclaration(ifcDecl);
+                    ifcDecl.setCorrespondingClassDeclaration(implDecl);
+                    
+                    newImpls.add(implDecl);
+                    newIfcs.add(ifcDecl);
+                    
+                    // and recurse into
+                    implDecl.initCaesarType(context);
+                }
+            }
+            
+            // recurse in original inners
+            for(int i=0; i<inners.length; i++) {
+                inners[i].initCaesarType(context);
+            }
+            
+            // add inners
+            addInners(
+                (JTypeDeclaration[])newImpls.toArray(new JTypeDeclaration[newImpls.size()])
+            );
+            
+            getCorrespondingInterfaceDeclaration().addInners(
+                (JTypeDeclaration[])newIfcs.toArray(new JTypeDeclaration[newIfcs.size()])
+            );
+        }
+        catch (Throwable e) {
+            // MSG
+            e.printStackTrace();
+            throw new PositionedError(getTokenReference(), CaesarMessages.CANNOT_CREATE);
+        }
+    }   
 
     /**
      * Resolves the binding and providing references. Of course it calls the
@@ -514,14 +618,6 @@ public class CjClassDeclaration
      */
     public void checkInterface(CContext context) throws PositionedError {
                 
-        // IVICA supertype could be composite, check it here
-        try {
-            setSuperClass((CReferenceType)getSuperClass().checkType(self));
-        }
-        catch (UnpositionedError e) {
-            throw e.addPosition(getTokenReference());
-        }
-        
         //statically deployed classes are considered as aspects
         if (isStaticallyDeployed()) {
             DeploymentPreparation.prepareForStaticDeployment(

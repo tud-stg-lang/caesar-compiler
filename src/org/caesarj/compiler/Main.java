@@ -14,6 +14,7 @@ import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.cclass.CClassPreparation;
+import org.caesarj.compiler.cclass.CaesarTypeNode;
 import org.caesarj.compiler.cclass.CaesarTypeSystem;
 import org.caesarj.compiler.cclass.CaesarTypeGraphGenerator;
 import org.caesarj.compiler.cclass.CaesarTypeGraph;
@@ -45,8 +46,6 @@ public class Main extends MainSuper implements Constants {
 
     // The used weaver. An instance ist created when it's needed in generateAndWeaveCode
     private CaesarWeaver weaver;
-
-    private CaesarTypeSystem caesarTypeSystem = new CaesarTypeSystem();
 
     /**
      * @param workingDirectory the working directory
@@ -116,21 +115,20 @@ public class Main extends MainSuper implements Constants {
         joinAll(tree);                  
         if(errorFound) return false;
         
-        generateAllInterfaces(tree);
-        
-        generateSourceDependencyGraph(tree);
-        caesarTypeSystem.generate();
-        
-        // CTODO createImplicitTypes....
-        
-        // CTODO join generated types
-        
-        // CTODO adjust super types
-
-        checkAllInterfaces(tree);
+        generateCaesarExports(tree);
         if(errorFound) return false;
         
-        // CTODO generate & register exports for all missing mixin chain parts
+        generateCaesarTypeSystem(environment, tree);        
+
+        // CTODO generate exports for missing mixin chain parts
+        
+        initCaesarTypes(tree);
+        if(errorFound) return false;               
+        
+        // CTODO adjust super types
+                
+        checkAllInterfaces(tree); // CTODO handle c'tor inheritance for virtual types here
+        if(errorFound) return false;       
         
         checkAllInitializers(tree);     
         if(errorFound) return false;
@@ -140,7 +138,7 @@ public class Main extends MainSuper implements Constants {
 
         genCode(environment.getTypeFactory());
         
-        // CTODO gen bytecode for mixin copies
+        // CTODO gen bytecode for mixin copies -> class generator
 
         tree = null;
         
@@ -154,8 +152,24 @@ public class Main extends MainSuper implements Constants {
         return true;
     }
 
+    /**
+     * - create implicit types
+     * - join created types
+     * - adjust super types
+     * - ...
+     */
+	private void initCaesarTypes(JCompilationUnit[] tree) {
+        try {
+            for (int i=0; i<tree.length; i++) {
+                tree[i].initCaesarTypes(this);
+            }
+        }
+        catch (PositionedError e) {
+            reportTrouble(e);
+        }
+    }
 
-	/**
+    /**
      * - create advice attribute for AspectJ weaver if necessary
      * - add outer this if necessary
      * - check constructors
@@ -185,20 +199,25 @@ public class Main extends MainSuper implements Constants {
     /**
      * generates dependency graph on source types
      */
-    protected void generateSourceDependencyGraph(JCompilationUnit[] tree) {
+    protected void generateCaesarTypeSystem(KjcEnvironment environment, JCompilationUnit[] tree) {
         System.out.println("generateDependencyGraph");        
         for (int i=0; i<tree.length; i++) {
-            CaesarTypeGraphGenerator.instance().generateGraph(caesarTypeSystem.getExplicitGraph(), tree[i]);
-            CaesarTypeGraphGenerator.instance().generateGraph(caesarTypeSystem.getCompleteGraph(), tree[i]);
+            CaesarTypeGraphGenerator.instance().generateGraph(environment.getCaesarTypeSystem().getExplicitGraph(), tree[i]);
+            CaesarTypeGraphGenerator.instance().generateGraph(environment.getCaesarTypeSystem().getCompleteGraph(), tree[i]);
         }
+        
+        environment.getCaesarTypeSystem().generate();
     }
-
-    // IVICA 
-    protected void generateAllInterfaces(JCompilationUnit[] tree) {
+ 
+    /**
+     * generated unchecked export information of the class
+     * which is being replaced later on in checkInterface
+     */  
+    protected void generateCaesarExports(JCompilationUnit[] tree) {
         try {
             System.out.println("checkAllConstructorInterfaces");
             for (int count = 0; count < tree.length; count++) {
-                tree[count].checkConstructorInterfaceOnly(this);        
+                tree[count].generateExport(this);        
             }
         }
         catch (PositionedError e) {

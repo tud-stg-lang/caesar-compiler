@@ -4,6 +4,9 @@ import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.cclass.CaesarTypeNode;
+import org.caesarj.compiler.cclass.CaesarTypeSystem;
+import org.caesarj.compiler.cclass.JavaQualifiedName;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CContext;
@@ -92,7 +95,6 @@ public class CjInterfaceDeclaration
 			setModifiers(modifiers | ACC_STATIC | ACC_PUBLIC);
 		}
 	}
-
 
     public void generateInterface(
         ClassReader classReader,

@@ -27,6 +27,8 @@ public class CaesarTypeNode {
     private CaesarTypeGraph typeGraph;
     
     private JavaQualifiedName qualifiedName;
+    private JavaQualifiedName qualifiedImplName;
+    
     private HashMap inners = new HashMap();
     private HashMap subTypes = new HashMap();
    
@@ -53,6 +55,7 @@ public class CaesarTypeNode {
         this.typeGraph = typeGraph;
         this.qualifiedName = qualifiedName;
         this.implicit = implicit;
+        this.qualifiedImplName = qualifiedName.convertToImplName();
     }  
     
     public void addSubType(CaesarTypeNode subType) {
@@ -353,5 +356,9 @@ public class CaesarTypeNode {
     
     public int hashCode() {
         return getQualifiedName().hashCode();
+    }
+
+    public JavaQualifiedName getQualifiedImplName() {
+        return qualifiedImplName;
     }
 }

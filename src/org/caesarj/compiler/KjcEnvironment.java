@@ -15,11 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcEnvironment.java,v 1.3 2004-06-01 10:54:29 aracic Exp $
+ * $Id: KjcEnvironment.java,v 1.4 2004-06-02 15:03:13 aracic Exp $
  */
 
 package org.caesarj.compiler;
 
+import org.caesarj.compiler.cclass.CaesarTypeGraph;
+import org.caesarj.compiler.cclass.CaesarTypeSystem;
 import org.caesarj.compiler.types.SignatureParser;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.InconsistencyException;
@@ -38,11 +40,16 @@ public class KjcEnvironment {
 		this.typeFactory = typeFactory;
 		this.options = options;
 		this.languageExtensions = new LanguageExtensions();
+        this.caesarTypeSystem = new CaesarTypeSystem();
 	}
 
 	public ClassReader getClassReader() {
 		return classReader;
 	}
+    
+    public CaesarTypeSystem getCaesarTypeSystem() {
+        return caesarTypeSystem;
+    }
 
 	public TypeFactory getTypeFactory() {
 		return typeFactory;
@@ -79,7 +86,8 @@ public class KjcEnvironment {
 	}
     
 	private final ClassReader classReader;
-	private final TypeFactory typeFactory;
+    private final CaesarTypeSystem caesarTypeSystem;
+    private final TypeFactory typeFactory;
 	private final KjcOptions options;
 	private final LanguageExtensions languageExtensions;
 
