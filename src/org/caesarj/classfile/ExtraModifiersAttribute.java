@@ -27,7 +27,7 @@ public class ExtraModifiersAttribute extends CaesarAttribute {
 	 * @param modifiers	The class' modifier
 	 */
 	public ExtraModifiersAttribute(int modifiers) {
-		super(AttributeName, modifiersToByteArray(modifiers));
+		super(AttributeName, CaesarAttribute.integerToByteArray(modifiers));
 		extraModifiers = modifiers & EXTRA_MOD_MASK;
 	}
 	
@@ -38,26 +38,9 @@ public class ExtraModifiersAttribute extends CaesarAttribute {
 	 */
 	public ExtraModifiersAttribute(DataInput in, ConstantPool cp) throws IOException {
 		super( new AsciiConstant(AttributeName), in, cp );
-		extraModifiers = byteArrayToModifiers( getData() );
+		extraModifiers = CaesarAttribute.byteArrayToInteger( getData() );
 	}
 
-	/**
-	 * Converts an integer to a byte array representation to be stored
-	 */
-	static byte[] modifiersToByteArray( int modifiers ){
-		int extraModifiers = modifiers & EXTRA_MOD_MASK;
-		byte[] data = String.valueOf(extraModifiers).getBytes();
-		return data;
-	}
-	
-	/**
-	 * Converts a byte array back to an integer
-	 */
-	static int byteArrayToModifiers( byte[] data ){
-		String s = new String(data);
-		return Integer.parseInt(s);
-	}
-	
 	/**
 	 * Get the attributes value as integer
 	 * @return The stored extra modifiers

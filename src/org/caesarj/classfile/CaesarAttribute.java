@@ -7,6 +7,8 @@ package org.caesarj.classfile;
 import java.io.DataInput;
 import java.io.IOException;
 
+import org.eclipse.jdt.internal.core.builder.AdditionalTypeCollection;
+
 /**
  * This class is the base class for all attributes that
  * caesar elements need to preserve in classfiles. It serves as a factory 
@@ -34,6 +36,8 @@ public class CaesarAttribute extends GenericAttribute {
 		//	Create class corresponding to this attributename
 		if (name.getValue().equals(ExtraModifiersAttribute.AttributeName))
 			return new ExtraModifiersAttribute(in,cp);
+		if (name.getValue().equals(AdditionalTypeInformationAttribute.AttributeName))
+			return new AdditionalTypeInformationAttribute(in,cp);
 		// ???: Better throw exception? Control flow should never reach here,
 		// because we don't know such attributes. They are currently simply ignored
 		// since names may change in future.
@@ -42,4 +46,21 @@ public class CaesarAttribute extends GenericAttribute {
 	
 	
 	public final static String	AttributePrefix = "org.caesarj.compiler.classfile.";
+
+
+	/**
+	 * Converts an integer to a byte array representation to be stored
+	 */
+	static byte[] integerToByteArray(int value) {
+		byte[] data = String.valueOf(value).getBytes();
+		return data;
+	}
+
+	/**
+	 * Converts a byte array back to an integer
+	 */
+	static int byteArrayToInteger(byte[] data) {
+		String s = new String(data);
+		return Integer.parseInt(s);
+	}
 }
