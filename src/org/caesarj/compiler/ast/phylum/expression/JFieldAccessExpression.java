@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldAccessExpression.java,v 1.2 2004-03-17 11:41:12 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.3 2004-03-17 12:44:23 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -254,8 +254,8 @@ public class JFieldAccessExpression extends JExpression {
     findPrefix(local, new CExpressionContext(context, context.getEnvironment(), false, false));
     checkAccess(local, context);
     
-	if (field instanceof PrivilegedField) {
-		PrivilegedField privField = (PrivilegedField) field;
+	if (field instanceof CCjPrivilegedField) {
+		CCjPrivilegedField privField = (CCjPrivilegedField) field;
 
 		JExpression[] args = { prefix };
 		CjMethodCallExpression methodCallExpr =

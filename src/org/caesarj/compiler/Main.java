@@ -18,7 +18,7 @@ import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.export.CSourceClass;
-import org.caesarj.compiler.export.FjSourceClass;
+import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.family.FamiliesInitializerFjVisitor;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
@@ -397,7 +397,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 				long lastTime = System.currentTimeMillis();
 
 				classBuffer =
-					((FjSourceClass) classes[count]).genCodeToBuffer(
+					((CCjSourceClass) classes[count]).genCodeToBuffer(
 						optimizer,
 						options.destination,
 						factory);

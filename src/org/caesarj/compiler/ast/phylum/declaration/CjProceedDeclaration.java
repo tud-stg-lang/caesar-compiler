@@ -6,7 +6,7 @@ import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.export.CSourceMethod;
-import org.caesarj.compiler.export.Proceed;
+import org.caesarj.compiler.export.CCjProceed;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
@@ -93,7 +93,7 @@ public class CjProceedDeclaration extends CjMethodDeclaration {
 			*/
 
 			setInterface(
-				new Proceed(
+				new CCjProceed(
 					context.getCClass(),
 					ident,
 					returnType,

@@ -13,7 +13,7 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Jürgen Hallpap
  */
-public class PrivilegedMethod extends CSourceMethod {
+public class CCjPrivilegedMethod extends CSourceMethod {
 
 	private CaesarMember resolvedMember;
 
@@ -33,7 +33,7 @@ public class PrivilegedMethod extends CSourceMethod {
 	 * @param body
 	 * @param families
 	 */
-	public PrivilegedMethod(CMethod baseMethod) {
+	public CCjPrivilegedMethod(CMethod baseMethod) {
 		super(
 			baseMethod.getOwner(),
 			baseMethod.getModifiers(),

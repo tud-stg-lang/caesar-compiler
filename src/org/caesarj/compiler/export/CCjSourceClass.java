@@ -12,11 +12,9 @@ import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
-import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.context.CTypeContext;
-import org.caesarj.compiler.family.FjTypeSystem;
 import org.caesarj.compiler.joinpoint.PrivilegedAccessHandler;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
 import org.caesarj.compiler.types.CReferenceType;
@@ -29,7 +27,7 @@ import org.caesarj.util.UnpositionedError;
 import org.caesarj.util.Utils;
 
 // FJKEEP
-public class FjSourceClass extends CSourceClass
+public class CCjSourceClass extends CSourceClass
 {
 
 	protected CaesarPointcut perClause;
@@ -40,9 +38,7 @@ public class FjSourceClass extends CSourceClass
 
 	protected List resolvedPointcuts = new ArrayList();
 	
-	protected FjTypeSystem typeSystem = new FjTypeSystem();
-
-	public FjSourceClass(
+	public CCjSourceClass(
 		CClass owner,
 		TokenReference where,
 		int modifiers,
@@ -66,7 +62,7 @@ public class FjSourceClass extends CSourceClass
 			null);
 	}
 
-	public FjSourceClass(
+	public CCjSourceClass(
 		CClass owner,
 		TokenReference where,
 		int modifiers,
@@ -280,7 +276,7 @@ public class FjSourceClass extends CSourceClass
 		{
 
 			ret.addAll(
-				((FjSourceClass) getSuperClass()).getResolvedPointcuts());
+				((CCjSourceClass) getSuperClass()).getResolvedPointcuts());
 		}
 
 		return ret;
@@ -375,8 +371,8 @@ public class FjSourceClass extends CSourceClass
 	{
 
 		boolean privilegedAccess =
-			caller instanceof FjSourceClass
-				&& ((FjSourceClass) caller).isPrivileged();
+			caller instanceof CCjSourceClass
+				&& ((CCjSourceClass) caller).isPrivileged();
 
 		CField field = getField(ident);
 		if (field != null)
@@ -392,7 +388,7 @@ public class FjSourceClass extends CSourceClass
 			{
 
 				CField unaccessibleField =
-					((FjSourceClass) caller)
+					((CCjSourceClass) caller)
 						.getPrivilegedAccessHandler()
 						.getPrivilegedAccessField(
 						field);
@@ -442,7 +438,7 @@ public class FjSourceClass extends CSourceClass
 			{
 
 				//consider privileged access
-				FjSourceClass sourceClass = (FjSourceClass) caller;
+				CCjSourceClass sourceClass = (CCjSourceClass) caller;
 				if (sourceClass.isPrivileged())
 				{
 					return sourceClass
@@ -612,38 +608,6 @@ public class FjSourceClass extends CSourceClass
 	public void addResolvedPointcut(CaesarMember rpd)
 	{
 		resolvedPointcuts.add(rpd);
-	}
-	
-	public CReferenceType getOwnerType()
-	{
-		CClass owner = getOwner();
-		if (owner != null
-			&& CModifier.contains(owner.getModifiers(), 
-				FJC_CLEAN | FJC_VIRTUAL | FJC_OVERRIDE)
-			&& FjConstants.isBaseName(ident))
-		{
-			return
-				new FjTypeSystem().cleanInterface(owner).getAbstractType();
-		}
-		return super.getOwnerType();
-	}
-	/**
-	 * 
-	 */
-	public boolean isDefinedInside(CClass outer)
-	{
-		if (this == outer || typeSystem.cleanInterface(this) == outer)
-		{
-			return true;
-		}
-		else if (getOwner() == null)
-		{
-			return false;
-		}
-		else
-		{
-			return getOwner().isDefinedInside(outer);
-		}		
 	}
 
 }

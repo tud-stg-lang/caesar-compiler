@@ -14,7 +14,7 @@ import org.caesarj.compiler.types.CVoidType;
  * 
  * @author Jürgen Hallpap
  */
-public class PrivilegedField extends CSourceField {
+public class CCjPrivilegedField extends CSourceField {
 
 	/** the encapsulated non-visible baseField.*/
 	private CField baseField;
@@ -36,9 +36,9 @@ public class PrivilegedField extends CSourceField {
 	 * @param baseField
 	 * @param aspect
 	 */
-	public PrivilegedField(
+	public CCjPrivilegedField(
 		CField baseField,
-		FjSourceClass aspect) {
+		CCjSourceClass aspect) {
 		super(
 			baseField.getOwner(),
 			baseField.getModifiers(),

@@ -10,7 +10,7 @@ import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.export.CSourceMethod;
-import org.caesarj.compiler.export.CaesarAdvice;
+import org.caesarj.compiler.export.CCjAdvice;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
@@ -179,8 +179,8 @@ public class CjAdviceDeclaration
 			parameterNames[i] = parameters[i].getIdent();
 		}
 
-		CaesarAdvice adviceMethod =
-			new CaesarAdvice(
+		CCjAdvice adviceMethod =
+			new CCjAdvice(
 				context.getCClass(),
 				ACC_PUBLIC,
 				ident,
@@ -325,8 +325,8 @@ public class CjAdviceDeclaration
 			getTokenReference());
 	}
 
-	public CaesarAdvice getCaesarAdvice() {
-		return (CaesarAdvice) getMethod();
+	public CCjAdvice getCaesarAdvice() {
+		return (CCjAdvice) getMethod();
 	}
 
 }

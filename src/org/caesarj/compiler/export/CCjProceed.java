@@ -12,7 +12,7 @@ import org.caesarj.util.InconsistencyException;
  * 
  * @author Jürgen Hallpap
  */
-public class Proceed extends CSourceMethod implements CaesarConstants {
+public class CCjProceed extends CSourceMethod implements CaesarConstants {
 
 	private String adviceName;
 
@@ -30,7 +30,7 @@ public class Proceed extends CSourceMethod implements CaesarConstants {
 	 * @param body
 	 * @param families
 	 */
-	public Proceed(
+	public CCjProceed(
 		CClass owner,
 		String ident,
 		CType returnType,

@@ -47,164 +47,13 @@ public class CjMethodDeclaration extends JMethodDeclaration {
 	public String getIdent() {
 		return ident;
 	}
-
-	/* FJRM
-	public CSourceMethod checkInterface___(CClassContext context)
-		throws PositionedError {
 		
-		// when checking single parameters we need the list of
-		// all parameters and the method, so pass them here
-		((FjAdditionalContext) context).pushContextInfo(this);
-		((FjAdditionalContext) context).pushContextInfo(parameters);
-
-		// we have to work on the returntype here:
-		// if it's an overridden class cast upwards
-		FjTypeSystem fjts = new FjTypeSystem();
-		
-		
-		try {		
-			if (returnType.isReference()) {
-				returnType = returnType.checkType(context);
-				
-				returnType =
-					fjts.upperBound(context, (CReferenceType) returnType);
-				
-			}		
-		} catch (UnpositionedError e) {
-			
-			if (e.getFormattedMessage().getDescription()
-				== KjcMessages.CLASS_AMBIGUOUS) {
-				CClass[] candidates =
-					(CClass[]) e.getFormattedMessage().getParams()[1];
-				try {
-					returnType = fjts.commonOverrideType(context, candidates);
-				} catch (UnpositionedError e2) {
-					// will be handled later
-				}
-			}
-			
-		}
-		
-		// pop parameters and method name from the stack again
-		((FjAdditionalContext) context).popContextInfo();
-		((FjAdditionalContext) context).popContextInfo();
-		
-		
-		CType[] parameterTypes = new CType[parameters.length];
-		for (int i = 0; i < parameterTypes.length; i++) 
-			parameterTypes[i] = parameters[i].getType();
-
-		
-		setInterface(new CSourceMethod(context.getCClass(),
-						 modifiers,
-						 ident,
-						 returnType,
-						 parameterTypes,
-						 exceptions,
-						 typeVariables,
-						 isDeprecated(),
-						 false, // not synthetic
-						 body));		
-
-		return (CSourceMethod)getMethod(); 
-	}
-	*/
-
-	/*protected void setInterface(CMember export) {
-		CSourceMethod oldExport = (CSourceMethod) export;
-		FjFamily[] families = new FjFamily[ oldExport.getParameters().length ];
-		for( int i = 0; i < families.length; i++ ) {
-			families[ i ] = ((FjFormalParameter) parameters[ i ]).getFamily();
-		}
-		FjSourceMethod newExport = new FjSourceMethod(
-			oldExport.getOwner(),
-			oldExport.getModifiers(),
-			oldExport.getIdent(),
-			oldExport.getReturnType(),
-			oldExport.getParameters(),
-			oldExport.getThrowables(),
-			oldExport.getTypeVariables(),
-			oldExport.isDeprecated(),
-			oldExport.isSynthetic(),
-			body,
-			families );
-		FjSourceMethod newExport = createSourceMethod(oldExport, families);
-		super.setInterface( newExport );
-	}
-
-	protected FjSourceMethod createSourceMethod(
-		CSourceMethod oldExport,
-		FjFamily[] families)
-	{
-		return new FjSourceMethod(
-					oldExport.getOwner(),
-					oldExport.getModifiers(),
-					oldExport.getIdent(),
-					oldExport.getReturnType(),
-					oldExport.getParameters(),
-					oldExport.getThrowables(),
-					oldExport.getTypeVariables(),
-					oldExport.isDeprecated(),
-					oldExport.isSynthetic(),
-					body,
-					families);
-	}
-	*/
-	
 	public CMethod initFamilies(CClassContext context)
 		throws PositionedError
-	{
-		/* FJRM
-		((FjAdditionalContext) context).pushContextInfo(this);
-		((FjAdditionalContext) context).pushContextInfo(parameters);		
-		// after checking the parameters we rename overridden ones
-		// and introduce downcasted variables with the old name		
-		for (int i = 0; i < parameters.length; i++) 
-		{
-			FjFormalParameter parameter = (FjFormalParameter) parameters[ i ];
-			try 
-			{
-				parameter.addFamily(context);
-				parameter.upcastOverriddenType(context);
-			} 
-			catch (UnpositionedError e) 
-			{
-				context.reportTrouble(e.addPosition(parameter.getTokenReference()));
-			}
-		}
-		*/
-			
-		CSourceMethod method = checkInterface1(context);
-			
-		/* FJRM
-		// pop parameters and method name from the stack again
-		((FjAdditionalContext) context).popContextInfo();
-		((FjAdditionalContext) context).popContextInfo();
-		*/
-		return method;
+	{			
+		return checkInterface1(context);
 	}
 		
-	/* FJRM
-	public void prependStatement(JStatement statement) {
-
-		if ((modifiers & ACC_ABSTRACT) != 0)
-			// abstract methods contain no statements
-			return;
-
-		JStatement[] statements = body.getBody();
-		JStatement[] extendedStatements = new JStatement[statements.length + 1];
-		extendedStatements[0] = statement;
-		System.arraycopy(statements, 0, extendedStatements, 1, 
-			statements.length);
-		body = new JBlock(body.getTokenReference(), extendedStatements, null);
-	}
-	
-
-	public FjMethodDeclaration[] getSelfContextMethods(CType selfType) {
-		return new FjMethodDeclaration[] { this };
-	}
-	*/
-	
 
 	/**
 	 * Second pass (quick), check interface looks good
@@ -283,42 +132,12 @@ public class CjMethodDeclaration extends JMethodDeclaration {
 		check(
 			context,
 			(modifiers & ACC_ABSTRACT) == 0 || (modifiers & ACC_STRICT) == 0,
-			KjcMessages.METHOD_ABSTRACT_STRICT);
-		
-		/* FJRM
-		//These checks must be done only for base methods...
-		if (FjConstants.isBaseMethodName(ident) 
-			&& ! FjConstants.isFactoryMethodName(ident)
-			&& ! CciConstants.isAdaptMethodName(ident))
-		{
-			if (inCollaborationInterface)
-				check(
-					context,
-					(modifiers & (CCI_EXPECTED | CCI_PROVIDED)) != 0,
-					CaesarMessages.CI_METHOD_FLAGS,
-					ident);
-			else
-				check(
-					context,
-					(modifiers & (CCI_EXPECTED | CCI_PROVIDED)) == 0,
-					CaesarMessages.COLLABORATION_METHOD_OUT_CI,
-					ident);
-					
-			int mask = CCI_EXPECTED | CCI_PROVIDED;
-			check(
-				context,
-				(modifiers & mask) != mask,
-				CaesarMessages.PROVIDED_AND_EXPECTED_METHOD,
-				ident);
-		}
-		*/
+			KjcMessages.METHOD_ABSTRACT_STRICT);	
 			
 		if (inInterface && isExported) {
 			check(
 				context,
-				CModifier.isSubsetOf(modifiers, ACC_PUBLIC | ACC_ABSTRACT
-				//Walter
-				| CCI_EXPECTED | CCI_PROVIDED),
+				CModifier.isSubsetOf(modifiers, ACC_PUBLIC | ACC_ABSTRACT),
 				KjcMessages.METHOD_FLAGS_IN_INTERFACE,
 				this.ident);
 		}

@@ -16,7 +16,7 @@ import org.aspectj.weaver.patterns.PerClause;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
-import org.caesarj.compiler.export.FjSourceClass;
+import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.types.CReferenceType;
 
 /**
@@ -182,8 +182,8 @@ public class CaesarSourceType extends ConcreteName implements Constants {
 		}
 
 		List pointcuts = new ArrayList();
-		if (cclass instanceof FjSourceClass) {
-			FjSourceClass caesarClass = (FjSourceClass) cclass;
+		if (cclass instanceof CCjSourceClass) {
+			CCjSourceClass caesarClass = (CCjSourceClass) cclass;
 			pointcuts.addAll(caesarClass.getResolvedPointcuts());
 		}
 		declaredPointcuts =
@@ -212,8 +212,8 @@ public class CaesarSourceType extends ConcreteName implements Constants {
 		}
 
 		declares = new ArrayList();
-		if (cclass instanceof FjSourceClass) {
-			FjSourceClass caesarClass = (FjSourceClass) cclass;
+		if (cclass instanceof CCjSourceClass) {
+			CCjSourceClass caesarClass = (CCjSourceClass) cclass;
 			Declare[] decs = CaesarDeclare.wrappees(caesarClass.getDeclares());
 			for (int i = 0; i < decs.length; i++) {
 				declares.add(decs[i]);

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.6 2004-03-17 11:41:13 aracic Exp $
+ * $Id: JClassDeclaration.java,v 1.7 2004-03-17 12:44:22 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -913,7 +913,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 		String prefix)
 	{
 		sourceClass =
-			new FjSourceClass(
+			new CCjSourceClass(
 				owner,
 				getTokenReference(),
 				modifiers,
@@ -1192,9 +1192,9 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 		}
 	}
 
-	public FjSourceClass getFjSourceClass()
+	public CCjSourceClass getFjSourceClass()
 	{
-		return (FjSourceClass) sourceClass;
+		return (CCjSourceClass) sourceClass;
 	}
 
 	/**
@@ -1366,7 +1366,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 			advices[j].checkInterface(self);
 			//during the following compiler passes
 			//the advices should be treated like methods
-			getFjSourceClass().addMethod((CaesarAdvice) advices[j].getMethod());
+			getFjSourceClass().addMethod((CCjAdvice) advices[j].getMethod());
 		}
 
 		//consider declares

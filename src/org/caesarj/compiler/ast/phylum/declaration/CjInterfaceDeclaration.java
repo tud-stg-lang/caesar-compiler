@@ -207,7 +207,7 @@ public class CjInterfaceDeclaration
 		ClassReader classReader,
 		CClass owner,
 		String prefix) {
-	    sourceClass = new FjSourceClass(owner, getTokenReference(), modifiers, ident, prefix + ident, typeVariables, isDeprecated(), false, this); 
+	    sourceClass = new CCjSourceClass(owner, getTokenReference(), modifiers, ident, prefix + ident, typeVariables, isDeprecated(), false, this); 
 	
 	    setInterface(sourceClass);
 	

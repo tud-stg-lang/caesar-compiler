@@ -8,9 +8,9 @@ import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.context.CField;
 import org.caesarj.compiler.export.CMethod;
-import org.caesarj.compiler.export.FjSourceClass;
-import org.caesarj.compiler.export.PrivilegedField;
-import org.caesarj.compiler.export.PrivilegedMethod;
+import org.caesarj.compiler.export.CCjSourceClass;
+import org.caesarj.compiler.export.CCjPrivilegedField;
+import org.caesarj.compiler.export.CCjPrivilegedMethod;
 
 /**
  * Handles the privileged access to invisible (private, protected, package-access) fields and methods.
@@ -26,7 +26,7 @@ public class PrivilegedAccessHandler {
 	private Map privilegedMethods = new HashMap();
 
 	/** The associated privileged aspect.*/
-	private FjSourceClass aspect;
+	private CCjSourceClass aspect;
 
 	/**
 	 * Constructor for CaesarPrivilegeHandler.
@@ -41,13 +41,13 @@ public class PrivilegedAccessHandler {
 	 * @param field
 	 * @return PrivilegedField
 	 */
-	public PrivilegedField getPrivilegedAccessField(CField field) {
-		PrivilegedField priviligedField =
-			(PrivilegedField) privilegedFields.get(field);
+	public CCjPrivilegedField getPrivilegedAccessField(CField field) {
+		CCjPrivilegedField priviligedField =
+			(CCjPrivilegedField) privilegedFields.get(field);
 
 		if (priviligedField == null) {
 			priviligedField =
-				new PrivilegedField(
+				new CCjPrivilegedField(
 					field,
 					aspect);
 			privilegedFields.put(field, priviligedField);
@@ -64,10 +64,10 @@ public class PrivilegedAccessHandler {
 	 */
 	public CMethod getPrivilegedAccessMethod(CMethod method) {
 		CMethod privilegedMethod =
-			(PrivilegedMethod) privilegedMethods.get(method);
+			(CCjPrivilegedMethod) privilegedMethods.get(method);
 
 		if (privilegedMethod == null) {
-			privilegedMethod = new PrivilegedMethod(method);
+			privilegedMethod = new CCjPrivilegedMethod(method);
 			privilegedMethods.put(method, privilegedMethod);
 		}
 		String aspectSig = CaesarBcelWorld.getInstance().resolve(aspect).getSignature(),
@@ -104,7 +104,7 @@ public class PrivilegedAccessHandler {
 		Iterator iterator = privilegedFields.values().iterator();
 		int i = 0;
 		for (; iterator.hasNext(); i++) {
-			PrivilegedField privField = (PrivilegedField) iterator.next();
+			CCjPrivilegedField privField = (CCjPrivilegedField) iterator.next();
 
 			accessedMembers[i] = privField.getResolvedMember();
 
@@ -112,7 +112,7 @@ public class PrivilegedAccessHandler {
 
 		iterator = privilegedMethods.values().iterator();
 		for (; iterator.hasNext(); i++) {
-			PrivilegedMethod privMethod = (PrivilegedMethod) iterator.next();
+			CCjPrivilegedMethod privMethod = (CCjPrivilegedMethod) iterator.next();
 
 			accessedMembers[i] = privMethod.getResolvedMember();
 
@@ -126,7 +126,7 @@ public class PrivilegedAccessHandler {
 	 * 
 	 * @param aspect
 	 */
-	public void setAspect(FjSourceClass aspect) {
+	public void setAspect(CCjSourceClass aspect) {
 		this.aspect = aspect;
 	}
 
