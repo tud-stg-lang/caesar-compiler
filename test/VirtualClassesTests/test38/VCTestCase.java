@@ -34,7 +34,7 @@ public cclass Y {
 public cclass X {
 	public cclass W wraps Client {
 		public void print() {		
-			System.out.println($wrappee);
+			System.out.println(wrappee);
 		}
 	}		
 	

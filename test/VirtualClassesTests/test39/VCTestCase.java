@@ -103,7 +103,7 @@ public cclass ModelB extends ModelA
 
 		public String getId()
 		{
-			return super.getId() + ":" + _id + "(" + $wrappee.getId() + ")";
+			return super.getId() + ":" + _id + "(" + wrappee.getId() + ")";
 		}
 	}
 
@@ -111,7 +111,7 @@ public cclass ModelB extends ModelA
 	{
 		public RoleA getA()
 		{
-			return ModelB.this.BindAA($wrappee.getA());
+			return ModelB.this.BindAA(wrappee.getA());
 		}
 	}
 }
