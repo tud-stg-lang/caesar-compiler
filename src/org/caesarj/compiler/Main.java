@@ -97,28 +97,28 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
         }
 
         JCompilationUnit[] tree = parseFiles(environment);
-
-        if (errorFound) {
-            return false;
-        }
+        if (errorFound) return false;
+        
         prepareJoinpointReflection(tree);
+        
         prepareDynamicDeployment(environment, tree);
+        
+        System.out.println("joinAll");
         joinAll(tree);
-        if (errorFound) {
-            return false;
-        }
+        if (errorFound) return false;
+        
+        System.out.println("checkAllInterfaces");
         checkAllInterfaces(tree);
-        if (errorFound) {
-            return false;
-        }
+        if (errorFound) return false;
+        
+        System.out.println("checkAllInitializers");
         checkAllInitializers(tree);
-        if (errorFound) {
-            return false;
-        }
+        if (errorFound) return false;
+        
+        System.out.println("checkAllBodies");
         checkAllBodies(tree);
-        if (errorFound) {
-            return false;
-        }
+        if (errorFound) return false;
+        
         if (noWeaveMode()) {
             genCode(environment.getTypeFactory());
         }
