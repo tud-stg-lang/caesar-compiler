@@ -34,11 +34,11 @@
  	
  	<jar basedir="bin" jarfile="${dist}/caesar-compiler.jar">
 		<include name="**/*"/>		
-		<exclude name="org/caesarj/runtime/*"/>
+		<exclude name="org/caesarj/runtime/**/*"/>
  	</jar>
 
  	<jar basedir="bin" jarfile="${dist}/caesar-runtime.jar">
-		<include name="org/caesarj/runtime/*"/>
+		<include name="org/caesarj/runtime/**/*"/>
  	</jar>
  </target>
  
