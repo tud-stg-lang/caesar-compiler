@@ -111,7 +111,7 @@ public cclass ModelB extends ModelA
 	{
 		public RoleA getA()
 		{
-			return $outer.BindAA($wrappee.getA());
+			return ModelB.this.BindAA($wrappee.getA());
 		}
 	}
 }

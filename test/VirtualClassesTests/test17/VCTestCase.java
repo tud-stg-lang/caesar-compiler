@@ -59,7 +59,7 @@ public cclass OuterA
 
 			public void setDefaultChild()
 			{
-				setChild($outer.new DeepestC());
+				setChild(InnerA.this.new DeepestC());
 			}
 
 			public String queryA()
@@ -105,7 +105,7 @@ public cclass OuterA
 
 			public void setDefaultChild2()
 			{
-				setChild2($outer.new DeepestD());
+				setChild2(InnerB.this.new DeepestD());
 			}
 
 			public String queryA()
@@ -162,7 +162,7 @@ public cclass OuterB extends OuterA
 
 			public void setDefaultChild3()
 			{
-				setChild3($outer.new DeepestE());
+				setChild3(InnerA.this.new DeepestE());
 			}
 
 			public String queryA()

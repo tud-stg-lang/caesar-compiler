@@ -50,7 +50,7 @@ public cclass OuterA
 	{
 		public String accessOuterA()
 		{
-			return $outer.queryA();
+			return OuterA.this.queryA();
 		}
 	}
 }
@@ -71,7 +71,7 @@ public cclass OuterB extends OuterA
 	{
 		public String accessOuterB()
 		{
-			return accessOuterA() + ", " + $outer.queryA() + ", " + $outer.queryB();
+			return accessOuterA() + ", " + queryA() + ", " + queryB();
 		}
 	}
 }

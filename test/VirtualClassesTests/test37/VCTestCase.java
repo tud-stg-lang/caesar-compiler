@@ -150,7 +150,7 @@ public cclass Y extends X {
 	
 	public cclass B {
 		public void exec() {
-			A ya = $outer.new A();
+			A ya = Y.this.new A();
 			a = ya.new A();
 			a.x();
 		}

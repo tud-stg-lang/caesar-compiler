@@ -72,7 +72,7 @@ public cclass OuterA
 
 		before() : fooCall()
 		{
-		  $outer.getResult().append("|before-foo");
+		  getResult().append("|before-foo");
 		}
 	}
 
@@ -80,7 +80,7 @@ public cclass OuterA
 	{
 		before() : fooCall()
 		{
-			$outer.getResult().append("|subbefore-foo");
+		    getResult().append("|subbefore-foo");
 		}
 	}
 }
