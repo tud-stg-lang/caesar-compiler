@@ -18,7 +18,7 @@ public class VCTestCase_0 extends TestCase {
 	public StringBuffer result = new StringBuffer();
 
 	public void test() {
-        TestCase0 testCase = new TestCase0();
+        TestCase0 testCase = new TestCase0_Impl(null); 	// !!! remove the parameter !!!
         TestCase0.A a = testCase.$newA();
         TestCase0.B b = testCase.$newB();
 		TestCase0.A.X x1 = a.$newX();
@@ -29,13 +29,13 @@ public class VCTestCase_0 extends TestCase {
 
 public cclass TestCase0 {
 	public cclass A {
-		public cclass X {	
+		public cclass X {
 			public String toString() {
 				return "A.X";
 			}
 		}
 	}
-	
+
 	public cclass B extends A {
 		public cclass X {
 			public String toString() {
