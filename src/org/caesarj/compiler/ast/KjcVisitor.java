@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcVisitor.java,v 1.3 2004-02-23 09:49:42 klose Exp $
+ * $Id: KjcVisitor.java,v 1.4 2004-02-23 11:46:39 klose Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -128,6 +128,13 @@ public interface KjcVisitor {
 				 CReferenceType[] interfaces,
 				 JPhylum[] body,
 				 JMethodDeclaration[] methods);
+
+  void visitCciInterfaceDeclaration(CciInterfaceDeclaration self,
+  				int modifiers,
+  				String ident,
+  				CReferenceType[] interfaces,
+  				JPhylum[] body,
+  				JMethodDeclaration[] methods);
 
   // ----------------------------------------------------------------------
   // METHODS AND FIELDS

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcPrettyPrinter.java,v 1.3 2004-02-23 09:49:42 klose Exp $
+ * $Id: KjcPrettyPrinter.java,v 1.4 2004-02-23 11:46:39 klose Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -1838,6 +1838,14 @@ public void visitCciWeaveletClassDeclaration(CciWeaveletClassDeclaration self, i
  * @see org.caesarj.compiler.ast.KjcVisitor#visitFjCleanClassDeclaration(org.caesarj.compiler.ast.FjCleanClassDeclaration, int, java.lang.String, org.caesarj.compiler.types.CTypeVariable[], java.lang.String, org.caesarj.compiler.types.CReferenceType[], org.caesarj.compiler.ast.JPhylum[], org.caesarj.compiler.ast.JMethodDeclaration[], org.caesarj.compiler.ast.JTypeDeclaration[])
  */
 public void visitFjCleanClassDeclaration(FjCleanClassDeclaration self, int modifiers, String ident, CTypeVariable[] typeVariables, String superClass, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods, JTypeDeclaration[] decls) {
+	// TODO Auto-generated method stub
+	
+}
+
+/* (non-Javadoc)
+ * @see org.caesarj.compiler.ast.KjcVisitor#visitCciInterfaceDeclaration(org.caesarj.compiler.ast.JInterfaceDeclaration, int, java.lang.String, org.caesarj.compiler.types.CReferenceType[], org.caesarj.compiler.ast.JPhylum[], org.caesarj.compiler.ast.JMethodDeclaration[])
+ */
+public void visitCciInterfaceDeclaration(CciInterfaceDeclaration self, int modifiers, String ident, CReferenceType[] interfaces, JPhylum[] body, JMethodDeclaration[] methods) {
 	// TODO Auto-generated method stub
 	
 }

@@ -96,9 +96,8 @@ public class PrivilegedAccessHandler {
 	 * Gets the accessed fields and methods as ResolvedMembers.
 	 * Needed for Attribute creation.
 	 * 
-	 * @return ResolvedMember[]
+	 * @return CaesarMember[]
 	 */
-///	public ResolvedMember[] getAccessedMembers() {
 	public CaesarMember[]	getAccessedMembers(){
 		CaesarMember[] accessedMembers =
 			new CaesarMember[privilegedFields.size()

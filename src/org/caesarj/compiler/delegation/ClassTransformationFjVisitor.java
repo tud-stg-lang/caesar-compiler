@@ -90,8 +90,8 @@ public class ClassTransformationFjVisitor extends FjVisitor
 		// classes need to know their
 		// owners in order to be able to access
 		// fields when inheriting
-		Object myOwner = owner.get();
-		self.setOwnerDeclaration(myOwner);
+		if (owner.isClassDeclaration())
+			self.setOwnerDeclaration( owner.getClassDeclaration() );
 
 		super.visitClassDeclaration(
 			self,
@@ -127,10 +127,12 @@ public class ClassTransformationFjVisitor extends FjVisitor
 		
 		// Put self's clean interface into the
 		// containing class or compilationunit
+		JClassDeclaration owningClass = 
+			owner.isClassDeclaration() ? owner.getClassDeclaration() : null;
 		FjCleanClassInterfaceDeclaration ifcDecl =
-			self.createCleanInterface(owner.get());
+			self.createCleanInterface(owningClass);
 		FjCleanClassIfcImplDeclaration implDecl =
-			self.createCleanInterfaceImplementation(owner.get());
+			self.createCleanInterfaceImplementation(owningClass);
 
 		owner.append(ifcDecl);
 		owner.append(implDecl);
@@ -181,10 +183,13 @@ public class ClassTransformationFjVisitor extends FjVisitor
 
 		// virtual classes need to now in order
 		// to perform the proper tranformations
-		self.setOwnerDeclaration(owner.get());
-		//Insert adapt method if the owner is clean
-		if (owner.get() instanceof FjCleanClassDeclaration)
-			self.addAdaptMethod();
+		if (owner.isClassDeclaration())
+		{	
+			self.setOwnerDeclaration(owner.getClassDeclaration());
+			//Insert adapt method if the owner is clean
+			if (owner.isCleanClassDeclaration())
+				self.addAdaptMethod();
+		}
 
 		super.visitFjVirtualClassDeclaration(
 			self,

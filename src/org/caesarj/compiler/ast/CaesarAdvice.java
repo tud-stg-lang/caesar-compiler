@@ -112,7 +112,6 @@ public class CaesarAdvice extends FjSourceMethod {
 		TokenReference tokenReference) {
 
 		List formalBindings = new ArrayList();
-		///FormalBinding formalBindings[] = new FormalBinding[formalParameters.length];
 		
 		//bind parameters
 		for (int i = 0; i < parameters.length; i++) {

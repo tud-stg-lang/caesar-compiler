@@ -127,9 +127,8 @@ public class CollaborationInterfaceTransformation
 		// classes need to know their
 		// owners in order to be able to access
 		// fields when inheriting
-		Object myOwner = owner.get();
-		if (myOwner instanceof JClassDeclaration)
-			self.setOwnerDeclaration(myOwner);
+		if (owner.isClassDeclaration())
+			self.setOwnerDeclaration(owner.getClassDeclaration());
 
 		super.visitClassDeclaration(
 			self,
@@ -224,7 +223,7 @@ public class CollaborationInterfaceTransformation
 		JTypeDeclaration[] decls)
 	{
 
-		if (! (owner.get() instanceof JClassDeclaration))
+		if (! (owner.isClassDeclaration()))
 		{
 			superClass = self.getBindingTypeName();
 			self.setSuperClass(new CClassNameType(superClass));
@@ -305,54 +304,67 @@ public class CollaborationInterfaceTransformation
 		JPhylum[] body,
 		JMethodDeclaration[] methods)
 	{
-		if (CModifier.contains(modifiers, ClassfileConstants2.CCI_COLLABORATION)
-			&& lastCollaborationInterface == null)
-		{
-			CciInterfaceDeclaration cciSelf = (CciInterfaceDeclaration) self;
-			if (! (owner.get() instanceof JCompilationUnit))
-			{
-				compiler.reportTrouble(
-					new PositionedError(
-						self.getTokenReference(), 
-						CaesarMessages.OWNER_IS_NOT_CI,
-						ident));
-			}
-			else
-			{
-				try
-				{
-					FjCleanClassDeclaration classRepresentation 
-						= cciSelf.createCleanClassRepresentation();
-						
-					((JCompilationUnit) owner.get()).replace(
-						self, classRepresentation);
-				}
-				catch(PositionedError e)
-				{
-					compiler.reportTrouble(e);
-				}
-			}
-			//My inners cannot pass by here...
-			lastCollaborationInterface = cciSelf;
-		}
-		else if (self instanceof CciInterfaceDeclaration)
-		{
-			CciInterfaceDeclaration cciSelf = (CciInterfaceDeclaration)self;
-			Object oldOwner = owner.get();
-			owner.set(self);
-			JTypeDeclaration[] inners = cciSelf.getInners();
-			for (int i = 0; i < inners.length; i++)
-			{
-				if (inners[i] instanceof JClassDeclaration)
-					((JClassDeclaration) inners[i]).setOwnerDeclaration(self);
-				inners[i].accept(this);
-			}
-			owner.set(oldOwner);
-		}
 		//Ok, I am the last, so set it null..
 		if (self == lastCollaborationInterface)
 			lastCollaborationInterface = null;		
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.caesarj.compiler.ast.FjVisitor#visitCciInterfaceDeclaration(org.caesarj.compiler.ast.CciInterfaceDeclaration, int, java.lang.String, org.caesarj.compiler.types.CReferenceType[], org.caesarj.compiler.ast.JPhylum[], org.caesarj.compiler.ast.JMethodDeclaration[])
+	 */
+	public void visitCciInterfaceDeclaration(
+		CciInterfaceDeclaration self,
+		int modifiers,
+		String ident,
+		CReferenceType[] interfaces,
+		JPhylum[] body,
+		JMethodDeclaration[] methods) {
+			if (CModifier.contains(modifiers, ClassfileConstants2.CCI_COLLABORATION)
+				&& lastCollaborationInterface == null)
+			{
+				if (! (owner.isCompilationUnit()))
+				{
+					compiler.reportTrouble(
+						new PositionedError(
+							self.getTokenReference(), 
+							CaesarMessages.OWNER_IS_NOT_CI,
+							ident));
+				}
+				else
+				{
+					try
+					{
+						FjCleanClassDeclaration classRepresentation 
+							= self.createCleanClassRepresentation();
+						
+						owner.getCompilationUnit().replace(
+							self, classRepresentation);
+					}
+					catch(PositionedError e)
+					{
+						compiler.reportTrouble(e);
+					}
+				}
+				//My inners cannot pass by here...
+				lastCollaborationInterface = self;
+			}
+			else 
+			{
+				Owner oldOwner = owner;
+				owner = new Owner(self);
+				JTypeDeclaration[] inners = self.getInners();
+				for (int i = 0; i < inners.length; i++)
+				{
+					inners[i].accept(this);
+				}
+				owner = oldOwner;
+			}
+		
+			// call method for supertype
+			visitInterfaceDeclaration(self, modifiers, ident, interfaces, body, methods);
+		}
+	}
 
-}
+
+
 

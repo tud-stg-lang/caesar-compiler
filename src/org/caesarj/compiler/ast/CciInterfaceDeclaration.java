@@ -241,4 +241,16 @@ public class CciInterfaceDeclaration
 			new JMethodDeclaration[returnMethods.size()]);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.caesarj.compiler.ast.JInterfaceDeclaration#accept(org.caesarj.compiler.ast.KjcVisitor)
+	 */
+	public void accept(KjcVisitor p) {
+		p.visitCciInterfaceDeclaration(this,
+					 getCClass().getModifiers(),
+					 sourceClass.getIdent(),
+					 interfaces,
+					 body,
+					 methods);
+ 	}
+
 }

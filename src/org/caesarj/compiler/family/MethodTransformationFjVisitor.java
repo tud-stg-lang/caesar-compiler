@@ -84,10 +84,9 @@ public class MethodTransformationFjVisitor extends FjVisitor {
 		// add the factory methods to the containing class
 		// we need the unmodified constructors signatures:
 		// self.addSuperTypeParameterToConstructors() called later!
-		Object objOwner = owner.get();
-		if( objOwner instanceof JClassDeclaration )
+		if (owner.isClassDeclaration())
 		{
-			JClassDeclaration owner = (JClassDeclaration) objOwner;
+			JClassDeclaration owner = this.owner.getClassDeclaration();
 			superClass = self.getSuperClass().getQualifiedName();
 			
 			//It will generated the structure of the wrapper only if 

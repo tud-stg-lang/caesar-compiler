@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.3 2004-02-20 14:24:28 klose Exp $
+ * $Id: JClassDeclaration.java,v 1.4 2004-02-23 11:46:39 klose Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -632,10 +632,9 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
    * Sets the owner declaration. This method was pulled up.
    * @param ownerDecl
    */
-  public void setOwnerDeclaration(Object ownerDecl)
+  public void setOwnerDeclaration(JClassDeclaration ownerDecl)
   {
-	  if (ownerDecl instanceof JClassDeclaration)
-		  this.ownerDecl = (JClassDeclaration) ownerDecl;
+	this.ownerDecl = ownerDecl; 
   }
 	
   /**

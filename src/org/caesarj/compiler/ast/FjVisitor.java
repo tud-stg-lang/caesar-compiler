@@ -17,41 +17,116 @@ public abstract class FjVisitor implements KjcVisitor {
 
 	protected Owner owner;
 
+	/**
+	 * This class holds a reference to current owner in the hierachy. To
+	 * avoid <code>instanceof</code> checks, objects of this 
+	 * class explicitly store the type of the owner. (Karl Klose)
+	 */
 	protected class Owner {
-		Object reference;
-		public void set( Object o ) {
-			if (o == null
-				|| o instanceof JClassDeclaration
-				|| o instanceof JCompilationUnit
-				|| o instanceof CciInterfaceDeclaration)
-				reference = o;
-			else
-				throw new IllegalArgumentException( "illegal owner: " + o.getClass().getName() );
+		
+		public Owner( FjCleanClassDeclaration init ){
+			set(init);
+		}
+		public Owner( JClassDeclaration init ){
+			set(init);
+		}
+		public Owner( JCompilationUnit init ){
+			set(init);
+		}
+		public Owner( CciInterfaceDeclaration init ){
+			set(init);
+		}
+		public Owner(){
+			setNull();
 		}
 		
-		/**
-		 * 
-		 * @return a reference to the owner.
-		 */
-		public Object get() {
-			return reference;
+		private Object reference;
+		private int    type = NULL;
+		
+		private static final int NULL = 0;
+		private static final int CLASSDECL = 1;
+		private static final int COMPILATIONUNIT= 2;
+		private static final int INTERFACEDECL = 3;
+		private static final int CLEANCLASSDECL = 4;
+		
+		public boolean isClassDeclaration(){
+			return (type == CLASSDECL) || (type == CLEANCLASSDECL);
+		}
+		
+		public boolean isCompilationUnit(){
+			return type == COMPILATIONUNIT;
+		}
+		
+		public boolean isCciInterfaceDeclaration(){
+			return type == INTERFACEDECL;
 		}
 
+		public boolean isCleanClassDeclaration(){
+			return type == CLEANCLASSDECL;
+		}
+
+		public void setNull(){
+			type = NULL;
+			reference = null;
+		}
+
+		public void set( FjCleanClassDeclaration ccd ){
+			reference = ccd;
+			type = CLEANCLASSDECL;
+		}
+
+		public void set( JClassDeclaration cd ){
+			reference = cd;
+			if (cd instanceof FjCleanClassDeclaration)
+			{
+				type = CLEANCLASSDECL;
+			}
+			else type = CLASSDECL;
+		}
+
+		public void set( JCompilationUnit cu ){
+			reference = cu;
+			type = COMPILATIONUNIT;
+		}
+
+		public void set( CciInterfaceDeclaration id ){
+			reference = id;
+			type = INTERFACEDECL;
+		}
+
+		public JClassDeclaration getClassDeclaration(){
+			if (!isClassDeclaration()) return null;
+			return (JClassDeclaration)reference;
+		}
+		
+		public JCompilationUnit getCompilationUnit(){
+			if (!isCompilationUnit()) return null;
+			return (JCompilationUnit)reference;
+		}
+		
+		public CciInterfaceDeclaration getInterfaceDeclaration(){
+			if (!isCciInterfaceDeclaration()) return null;
+			return (CciInterfaceDeclaration)reference;
+		}
+
+		public FjCleanClassDeclaration getCleanClassDeclaration(){
+			if (!isCleanClassDeclaration()) return null;
+			return (FjCleanClassDeclaration)reference;
+		}
+		
 		public void append( JTypeDeclaration decl ) {
-
-			if( reference instanceof JClassDeclaration )
-				((JClassDeclaration) reference).append( decl );
-			else if( reference instanceof JCompilationUnit )
-				((JCompilationUnit) reference).append( decl );
+			if (isClassDeclaration())
+				((JClassDeclaration)reference).append(decl);
+			else if (isCompilationUnit())
+				((JCompilationUnit)reference).append(decl);
 		}
-		public String getQualifiedName() {
 
-			if( reference instanceof JClassDeclaration )
-				return ((JClassDeclaration) reference).getCClass().getQualifiedName() + "$";
-			else if( reference instanceof JCompilationUnit )
+		public String getQualifiedName() {
+			if (isClassDeclaration()) 
+				return ((JClassDeclaration)reference).getCClass().getQualifiedName()+"$";
+			else if (isCompilationUnit())
 				return new String();
-			else
-				return null;
+			return null;
 		}
 	}
 	
@@ -76,12 +151,12 @@ public abstract class FjVisitor implements KjcVisitor {
 		JPhylum[] body,
 		JMethodDeclaration[] methods,
 		JTypeDeclaration[] decls) {
-			Object oldOwner = this.owner.get();
-			owner.set( self );
+			Owner oldOwner = owner;
+			owner = new Owner(self);
 			for( int i = 0; i < decls.length; i++ ) {
 				decls[i].accept( this );
 			}
-			owner.set( oldOwner );
+			owner = oldOwner;
 	}
 	
 	/**
@@ -94,11 +169,11 @@ public abstract class FjVisitor implements KjcVisitor {
 		JClassImport[] importedClasses,
 		JTypeDeclaration[] typeDeclarations) {
 		
-		owner.set( self );
+		owner.set(self);
 		for( int i = 0; i < typeDeclarations.length; i++ ) {
 			typeDeclarations[i].accept( this );
 		}
-		owner.set(null);
+		owner.setNull();
 
 	}
 
@@ -226,6 +301,16 @@ public abstract class FjVisitor implements KjcVisitor {
 		JMethodDeclaration[] methods)
 	{
 	}
+
+	public void visitCciInterfaceDeclaration(CciInterfaceDeclaration self,
+	  int modifiers,
+	  String ident,
+	  CReferenceType[] interfaces,
+	  JPhylum[] body,
+	  JMethodDeclaration[] methods){
+	  	visitInterfaceDeclaration(self, modifiers, ident, interfaces, body, methods);
+	  }
+
 
 	public void visitFieldDeclaration(
 		JFieldDeclaration self,

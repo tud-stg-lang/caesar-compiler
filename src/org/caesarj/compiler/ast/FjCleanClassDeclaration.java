@@ -241,15 +241,11 @@ public class FjCleanClassDeclaration
 	{
 		return cleanInterface;
 	}
-	public FjCleanClassInterfaceDeclaration createCleanInterface(Object owner)
+	
+	public FjCleanClassInterfaceDeclaration createCleanInterface(JClassDeclaration owner)
 	{
 
 		//createAccessorsForPrivateMethods();
-
-		JClassDeclaration ownerDecl =
-			(owner instanceof JClassDeclaration)
-				? (JClassDeclaration) owner
-				: null;
 
 		if (cleanInterface == null)
 		{
@@ -279,14 +275,8 @@ public class FjCleanClassDeclaration
 	{
 		return cleanInterfaceImplementation;
 	}
-	public FjCleanClassIfcImplDeclaration createCleanInterfaceImplementation(Object owner)
+	public FjCleanClassIfcImplDeclaration createCleanInterfaceImplementation(JClassDeclaration owner)
 	{
-
-		JClassDeclaration ownerDecl =
-			(owner instanceof JClassDeclaration)
-				? (JClassDeclaration) owner
-				: null;
-
 		if (cleanInterfaceImplementation == null)
 		{
 			cleanInterfaceImplementation =
