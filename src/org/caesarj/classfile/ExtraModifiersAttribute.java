@@ -14,10 +14,9 @@ import java.io.IOException;
  * 
  * @author Karl Klose
  */
-public class ExtraModifiersAttribute extends GenericAttribute {
+public class ExtraModifiersAttribute extends CaesarAttribute {
 	
 	/** Name constants */
-	public final static String	AttributePrefix = "org.caesarj.compiler.classfile.";
 	public final static String	AttributeName  = AttributePrefix + "ExtraModifiers";
 	
 	/** The binary mask for the modifiers to store */
