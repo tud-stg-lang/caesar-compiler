@@ -15,20 +15,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.flex.in,v 1.3 2004-02-05 20:07:49 ostermann Exp $
+ * $Id: Caesar.flex.in,v 1.4 2004-02-12 10:04:12 ostermann Exp $
  */
 
 package org.caesarj.compiler;
 
-import org.caesarj.kjc.*;
-import org.caesarj.compiler.CWarning;
-import org.caesarj.compiler.Compiler;
-import org.caesarj.compiler.CompilerMessages;
-import org.caesarj.compiler.JavaStyleComment;
-import org.caesarj.compiler.JavadocComment;
 
-import org.caesarj.compiler.tools.antlr.extra.CToken;
-import org.caesarj.compiler.tools.antlr.extra.InputBuffer;
+import org.caesarj.util.CWarning;
+import org.caesarj.util.*;
+import org.caesarj.compiler.ast.JavaStyleComment;
+import org.caesarj.compiler.ast.JavadocComment;
+import org.caesarj.compiler.constants.*;
+import org.caesarj.tools.antlr.extra.*;
+
 
 
 
@@ -36,17 +35,17 @@ import org.caesarj.compiler.tools.antlr.extra.InputBuffer;
 
 %public
 %class CaesarScanner
-%extends org.caesarj.compiler.tools.antlr.extra.Scanner
+%extends org.caesarj.tools.antlr.extra.Scanner
 %implements CaesarTokenTypes
 
 %function nextTokenImpl
-%type org.caesarj.compiler.tools.antlr.runtime.Token
+%type org.caesarj.tools.antlr.runtime.Token
 
 %unicode
 %pack
 
 %{
-  public CaesarScanner(Compiler compiler, InputBuffer buffer) {
+  public CaesarScanner(CompilerBase compiler, InputBuffer buffer) {
     super(compiler, buffer);
     this.buffer = buffer;
   }
@@ -194,8 +193,8 @@ E =	[eE] [+\-]? {D}+
 				}
 
   /* error cases */
-  \\.   			{ reportTrouble(CompilerMessages.BAD_ESCAPE_SEQUENCE, new Object[]{ yytext() }); }
-  {T}				{ reportTrouble(CompilerMessages.BAD_END_OF_LINE, new Object[]{ "string literal" }); }
+  \\.   			{ reportTrouble(Messages.BAD_ESCAPE_SEQUENCE, new Object[]{ yytext() }); }
+  {T}				{ reportTrouble(Messages.BAD_END_OF_LINE, new Object[]{ "string literal" }); }
 }
 
 <CHARLITERAL> {
@@ -220,8 +219,8 @@ E =	[eE] [+\-]? {D}+
 				}
 
   /* error cases */
-  \\.   			{ reportTrouble(CompilerMessages.BAD_ESCAPE_SEQUENCE, new Object[]{ yytext() }); }
-  {T}				{ reportTrouble(CompilerMessages.BAD_END_OF_LINE, new Object[]{ "character literal" }); }
+  \\.   			{ reportTrouble(Messages.BAD_ESCAPE_SEQUENCE, new Object[]{ yytext() }); }
+  {T}				{ reportTrouble(Messages.BAD_END_OF_LINE, new Object[]{ "character literal" }); }
 }
 
 <TRADITIONALCOMMENT> {
@@ -250,7 +249,7 @@ E =	[eE] [+\-]? {D}+
 				  string.append(yytext());
 				}
   <<EOF>>			{
-				  reportTrouble(CompilerMessages.EOF_IN_TRADITIONAL_COMMENT, null);
+				  reportTrouble(Messages.EOF_IN_TRADITIONAL_COMMENT, null);
 				  return TOKEN_EOF;
 				}
 }
@@ -265,10 +264,10 @@ E =	[eE] [+\-]? {D}+
 				}
   <<EOF>>			{
 				  reportTrouble(new CWarning(getTokenReference(),
-							     CompilerMessages.EOF_IN_ENDOFLINE_COMMENT));
+							     Messages.EOF_IN_ENDOFLINE_COMMENT));
 				  return TOKEN_EOF;
 				}
 }
 
 /* error fallback */
-.|\n				{ reportTrouble(CompilerMessages.ILLEGAL_CHAR, new Object[]{ yytext() }); }
+.|\n				{ reportTrouble(Messages.ILLEGAL_CHAR, new Object[]{ yytext() }); }

@@ -37,7 +37,7 @@
   <echo message="TOKDEF"/>
   <java fork="true"
   		dir="${source}/compiler"
-   		classname="org.caesarj.compiler.tools.lexgen.Main"
+   		classname="org.caesarj.tools.lexgen.Main"
         classpath="bin;${libs}/java-getopt-1.0.9.jar">
    <arg value="-ditf"/>
    <arg value="${inputFiles}/caesar.t"/>
@@ -47,7 +47,7 @@
   <echo message="LEXINC"/>
   <java fork="true"
   		dir="${source}/compiler"
-  		classname="org.caesarj.compiler.tools.include.Main"
+  		classname="org.caesarj.tools.include.Main"
         classpath="bin;${libs}/java-getopt-1.0.9.jar">
    <arg value="${inputFiles}/Caesar.flex.in"/>
    <arg value="-o"/>
@@ -76,7 +76,7 @@
   <java 
   		fork="true"
   		dir="${source}/compiler"
-  		classname="org.caesarj.compiler.tools.antlr.compiler.Main"
+  		classname="org.caesarj.tools.antlr.compiler.Main"
  		classpath="bin;${libs}/java-getopt-1.0.9.jar">
    	<arg value="${inputFiles}/Caesar.g"/>
   </java>

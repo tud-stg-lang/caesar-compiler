@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.16 2004-02-06 16:44:04 ostermann Exp $
+ * $Id: Caesar.g,v 1.17 2004-02-12 10:04:12 ostermann Exp $
  */
 
 /*
@@ -35,20 +35,21 @@ header { package org.caesarj.compiler; }
   import java.util.ArrayList;
 
   import org.caesarj.compiler.ast.*;
-  
+  import org.caesarj.compiler.constants.*;
   import org.caesarj.compiler.aspectj.CaesarAdviceKind;
   import org.caesarj.compiler.aspectj.CaesarPatternParser;
   import org.caesarj.compiler.aspectj.CaesarPointcut;
   import org.caesarj.compiler.aspectj.CaesarSourceContext;
 
-  import org.caesarj.kjc.*;
-  import org.caesarj.compiler.CWarning;
-  import org.caesarj.compiler.Compiler;
-  import org.caesarj.compiler.JavaStyleComment;
-  import org.caesarj.compiler.JavadocComment;
-  import org.caesarj.compiler.PositionedError;
-  import org.caesarj.compiler.TokenReference;
-  import org.caesarj.compiler.tools.antlr.extra.InputBuffer;
+  import org.caesarj.util.CWarning;
+  import org.caesarj.tools.antlr.extra.*;
+  import org.caesarj.compiler.ast.JavaStyleComment;
+  import org.caesarj.compiler.ast.JavadocComment;
+  import org.caesarj.tools.antlr.extra.InputBuffer;
+  import org.caesarj.compiler.context.*;
+  import org.caesarj.compiler.types.*;
+  import org.caesarj.compiler.export.*;
+  import org.caesarj.util.*;
 }
 
 // ----------------------------------------------------------------------
@@ -63,12 +64,12 @@ options {
   codeGenMakeSwitchThreshold = 2;  // Some optimizations
   codeGenBitsetTestThreshold = 3;
   defaultErrorHandler = false;     // Don't generate parser error handlers
-  superClass = "org.caesarj.compiler.tools.antlr.extra.Parser";
+  superClass = "org.caesarj.tools.antlr.extra.Parser";
   access = "private";			// Set default rule access
 }
 
 {
-  public CaesarParser(Compiler compiler, InputBuffer buffer, KjcEnvironment environment) {
+  public CaesarParser(CompilerBase compiler, InputBuffer buffer, KjcEnvironment environment) {
     super(compiler, new CaesarScanner(compiler, buffer), MAX_LOOKAHEAD);
     this.environment = environment;
   }
@@ -91,7 +92,7 @@ public jCompilationUnit []
   ( jTypeDefinition[context] )*
   EOF
     {
-      self = new FjCompilationUnit(sourceRef,
+      self = new JCompilationUnit(sourceRef,
                                   environment,
 				  pack,
 				  context.getPackageImports(),
@@ -225,15 +226,15 @@ jModifiers []
     {
       //!!! 010428 move to JXxxDeclaration
       if (CModifier.getSubsetSize(self,
-				  org.caesarj.kjc.Constants.ACC_PUBLIC
-				  | org.caesarj.kjc.Constants.ACC_PROTECTED
-				  | org.caesarj.kjc.Constants.ACC_PRIVATE) > 1) {
+				  org.caesarj.classfile.ClassfileConstants2.ACC_PUBLIC
+				  | org.caesarj.classfile.ClassfileConstants2.ACC_PROTECTED
+				  | org.caesarj.classfile.ClassfileConstants2.ACC_PRIVATE) > 1) {
 	reportTrouble(new PositionedError(buildTokenReference(),
 					  KjcMessages.INCOMPATIBLE_MODIFIERS,
 					  CModifier.toString(CModifier.getSubsetOf(self,
-										   org.caesarj.kjc.Constants.ACC_PUBLIC
-										   | org.caesarj.kjc.Constants.ACC_PROTECTED
-										   | org.caesarj.kjc.Constants.ACC_PRIVATE))));
+										   org.caesarj.classfile.ClassfileConstants2.ACC_PUBLIC
+										   | org.caesarj.classfile.ClassfileConstants2.ACC_PROTECTED
+										   | org.caesarj.classfile.ClassfileConstants2.ACC_PRIVATE))));
       }
     }
 ;
@@ -343,47 +344,47 @@ jIdentifier []
 jModifier []
   returns [int self = 0]
 :
-  "public" { self = org.caesarj.kjc.Constants.ACC_PUBLIC; }
+  "public" { self = org.caesarj.classfile.ClassfileConstants2.ACC_PUBLIC; }
 |
-  "protected" { self = org.caesarj.kjc.Constants.ACC_PROTECTED; }
+  "protected" { self = org.caesarj.classfile.ClassfileConstants2.ACC_PROTECTED; }
 |
-  "private" { self = org.caesarj.kjc.Constants.ACC_PRIVATE; }
+  "private" { self = org.caesarj.classfile.ClassfileConstants2.ACC_PRIVATE; }
 |
-  "static" { self = org.caesarj.kjc.Constants.ACC_STATIC; }
+  "static" { self = org.caesarj.classfile.ClassfileConstants2.ACC_STATIC; }
 |
-  "abstract" { self = org.caesarj.kjc.Constants.ACC_ABSTRACT; }
+  "abstract" { self = org.caesarj.classfile.ClassfileConstants2.ACC_ABSTRACT; }
 |
-  "final" { self = org.caesarj.kjc.Constants.ACC_FINAL; }
+  "final" { self = org.caesarj.classfile.ClassfileConstants2.ACC_FINAL; }
 |
-  "native" { self = org.caesarj.kjc.Constants.ACC_NATIVE; }
+  "native" { self = org.caesarj.classfile.ClassfileConstants2.ACC_NATIVE; }
 |
-  "strictfp" { self = org.caesarj.kjc.Constants.ACC_STRICT; }
+  "strictfp" { self = org.caesarj.classfile.ClassfileConstants2.ACC_STRICT; }
 |
-  "synchronized" { self = org.caesarj.kjc.Constants.ACC_SYNCHRONIZED; }
+  "synchronized" { self = org.caesarj.classfile.ClassfileConstants2.ACC_SYNCHRONIZED; }
 |
-  "transient" { self = org.caesarj.kjc.Constants.ACC_TRANSIENT; }
+  "transient" { self = org.caesarj.classfile.ClassfileConstants2.ACC_TRANSIENT; }
 |
-  "volatile" { self = org.caesarj.kjc.Constants.ACC_VOLATILE; }
+  "volatile" { self = org.caesarj.classfile.ClassfileConstants2.ACC_VOLATILE; }
 // andreas start
 |
-  "virtual" { self = org.caesarj.kjc.Constants.FJC_VIRTUAL; }
+  "virtual" { self = org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL; }
 |
-  "override" { self = org.caesarj.kjc.Constants.FJC_OVERRIDE; }
+  "override" { self = org.caesarj.classfile.ClassfileConstants2.FJC_OVERRIDE; }
 |
-  "clean" { self = org.caesarj.kjc.Constants.FJC_CLEAN; }
+  "clean" { self = org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN; }
 // andreas end
 |
-	"privileged" { self = org.caesarj.kjc.Constants.ACC_PRIVILEGED; }
+	"privileged" { self = org.caesarj.classfile.ClassfileConstants2.ACC_PRIVILEGED; }
 |
-	"deployed" { self = org.caesarj.kjc.Constants.ACC_DEPLOYED; }
+	"deployed" { self = org.caesarj.classfile.ClassfileConstants2.ACC_DEPLOYED; }
 
 // Walter start
 |
-  "collaboration" { self = org.caesarj.kjc.Constants.CCI_COLLABORATION; }
+  "collaboration" { self = org.caesarj.classfile.ClassfileConstants2.CCI_COLLABORATION; }
 |
-  "provided" { self = org.caesarj.kjc.Constants.CCI_PROVIDED; }
+  "provided" { self = org.caesarj.classfile.ClassfileConstants2.CCI_PROVIDED; }
 |
-  "expected" { self = org.caesarj.kjc.Constants.CCI_EXPECTED; }
+  "expected" { self = org.caesarj.classfile.ClassfileConstants2.CCI_EXPECTED; }
 // Walter end
 ;
 
@@ -436,7 +437,7 @@ jClassDefinition [int modifiers]
 				   comments);
 	  else if (providing != null || binding != null)
 	  {
-	  	if (CModifier.contains(modifiers, org.caesarj.kjc.Constants.FJC_VIRTUAL))
+	  	if (CModifier.contains(modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL))
             self = new FjVirtualClassDeclaration(sourceRef,
 				   modifiers,
 				   ident.getText(),
@@ -454,7 +455,7 @@ jClassDefinition [int modifiers]
 				   comments);
 	  	 else
             self = new FjCleanClassDeclaration(sourceRef,
-				   modifiers | org.caesarj.kjc.Constants.FJC_CLEAN,
+				   modifiers | org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN,
 				   ident.getText(),
 				   typeVariables,
 				   superClass,
@@ -473,7 +474,7 @@ jClassDefinition [int modifiers]
 				   context.getDeclares()				   
 				   );
 	 }
-      else if( CModifier.contains( modifiers, org.caesarj.kjc.Constants.FJC_OVERRIDE ) ) {
+      else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_OVERRIDE ) ) {
           self = new FjOverrideClassDeclaration(sourceRef,
 				   modifiers,
 				   ident.getText(),
@@ -489,7 +490,7 @@ jClassDefinition [int modifiers]
 				   context.getBody(),
 				   javadoc,
 				   comments);
-      } else if( CModifier.contains( modifiers, org.caesarj.kjc.Constants.FJC_VIRTUAL ) ) {
+      } else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL ) ) {
           self = new FjVirtualClassDeclaration(sourceRef,
 				   modifiers,
 				   ident.getText(),
@@ -505,7 +506,7 @@ jClassDefinition [int modifiers]
 				   context.getBody(),
 				   javadoc,
 				   comments);
-      } else if( CModifier.contains( modifiers, org.caesarj.kjc.Constants.FJC_CLEAN ) ) {
+      } else if( CModifier.contains( modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN ) ) {
           self = new FjCleanClassDeclaration(sourceRef,
 				   modifiers,
 				   ident.getText(),
@@ -2054,7 +2055,7 @@ jUnqualifiedNewExpression []
               methods = context.getMethods();
 
 	    decl = new FjClassDeclaration(sourceRef,
-					 org.caesarj.kjc.Constants.ACC_FINAL, // JLS 15.9.5
+					 org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 					 "", //((CReferenceType)type).getQualifiedName(),
                      CTypeVariable.EMPTY,
 					 null,
@@ -2101,7 +2102,7 @@ jQualifiedNewExpression [JExpression prefix]
           methods = context.getMethods();
 
 	decl = new FjClassDeclaration(sourceRef,
-				     org.caesarj.kjc.Constants.ACC_FINAL, // JLS 15.9.5
+				     org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 				     ident.getText(),
                      CTypeVariable.EMPTY,
 				     null,

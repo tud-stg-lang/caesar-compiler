@@ -24,7 +24,7 @@
 
 --- isFinal list
   /** the input buffer */
-  private org.caesarj.compiler.tools.antlr.extra.InputBuffer buffer;
+  private org.caesarj.tools.antlr.extra.InputBuffer buffer;
 
   /** the input device : unused but referenced by generated constructors */
   private java.io.Reader yy_reader;
@@ -138,10 +138,10 @@
   /**
    * Exports the buffer state.
    */
-  public org.caesarj.compiler.tools.antlr.extra.InputBufferState getBufferState() {
-    org.caesarj.compiler.tools.antlr.extra.InputBufferState	state;
+  public org.caesarj.tools.antlr.extra.InputBufferState getBufferState() {
+    org.caesarj.tools.antlr.extra.InputBufferState	state;
 
-    state = new org.caesarj.compiler.tools.antlr.extra.InputBufferState(yy_buffer,
+    state = new org.caesarj.tools.antlr.extra.InputBufferState(yy_buffer,
 								   yy_startRead,
 								   yy_endRead,
 								   yy_currentPos,
@@ -157,7 +157,7 @@
    * Imports the buffer state, if exists, otherwise initialise buffer.
    */
   private void initBufferState() {
-    org.caesarj.compiler.tools.antlr.extra.InputBufferState	state;
+    org.caesarj.tools.antlr.extra.InputBufferState	state;
 
     state = buffer.getBufferState(this);
     if (state == null) {
