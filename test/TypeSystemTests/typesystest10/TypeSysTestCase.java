@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 import org.caesarj.runtime.*;
 
 /**
- * dependent types in method signatures
+ * dependent type casts
  * 
  * @author Ivica Aracic
  */
@@ -35,6 +35,7 @@ public class TypeSysTestCase extends TestCase {
 	final B b = new B();
 			
 	public void test() {
+	    System.out.println("TypeSysTestCase: start");
 	    final b.g1.X x = b.x1;
 	    
 	    x.N n;
@@ -44,9 +45,8 @@ public class TypeSysTestCase extends TestCase {
 	    l.add(n);
 	    n = (x.N)l.get(0);
 	    
-	}	
-	
-	
+	    System.out.println("TypeSysTestCase: end");
+	}
 }
 
 public cclass B {
