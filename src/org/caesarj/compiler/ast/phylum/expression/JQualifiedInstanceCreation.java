@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JQualifiedInstanceCreation.java,v 1.1 2004-03-15 11:56:52 aracic Exp $
+ * $Id: JQualifiedInstanceCreation.java,v 1.2 2004-04-29 16:16:42 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -112,6 +112,13 @@ public class JQualifiedInstanceCreation extends JExpression {
 
     try {
       newClass = prefixType.getCClass().lookupClass(context.getClassContext().getCClass(), ident);
+      
+      // IVICA same as in Unqualified Instance Creation
+      if(newClass.isCaesarClassInterface()) {
+           CType newType = factory.createType(newClass.getImplQualifiedName(), false);
+           newType = newType.checkType(context);
+           newClass = newType.getCClass();
+      }
     } catch (UnpositionedError e){
       throw e.addPosition(getTokenReference());
     }

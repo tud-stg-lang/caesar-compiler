@@ -15,6 +15,7 @@ import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
@@ -329,9 +330,7 @@ public class CClassFactory implements CaesarConstants {
 	}
     
     /**
-     * for an H, H', H.X, H'.X, H' extends H -> 
-     * case1: cclass H'.X -> cclass H'.X extends H.X
-     * case2: cclass H'.X extends Y -> cclass H'.X extends Y & H.X  
+     * Adds implicite extends caluse to the type declaration
      */
     public void checkImplicitVirtualClassSuperType() throws UnpositionedError {
         CClass clazz      = caesarClass.getCClass();
@@ -344,20 +343,39 @@ public class CClassFactory implements CaesarConstants {
         
         if(ownerSuperClass == null) return;
                         
-        CClass overriddenClass = ownerSuperClass.lookupClass(ownerSuperClass, clazz.getIdent());
+        CClass overriddenClass = ownerSuperClass.lookupClass(ownerSuperClass, clazz.getIdent());        
         
-        if(overriddenClass != null) {
+        // Is this furtherbouding class?
+        if(overriddenClass != null) {           
+            CClass overriddenClassSuper = overriddenClass.getSuperClass();
+            
+            CClass overriddenThisClassSuper = 
+                owner.lookupClass(owner, overriddenClassSuper.getIdent());
+
             CReferenceType newSuperType = null;
-            if(superClass.isObjectClass()) {
-                // case1 (see above)
+            if(superClass.isObjectClass() && overriddenThisClassSuper==null) {
                 newSuperType = overriddenClass.getAbstractType();
             }
-            else {
-                // case2 (see above)
+            else if(superClass.isObjectClass() && overriddenThisClassSuper!=null) {
                 newSuperType = CCompositeType.createCompositeType(
-                    clazz.getSuperType(),
-                    overriddenClass.getAbstractType()
+                    new CReferenceType[]{
+                        overriddenThisClassSuper.getAbstractType(),
+                        overriddenClass.getAbstractType(),
+                    }
                 );
+            }
+            else if(!superClass.isObjectClass() && overriddenThisClassSuper!=null) {
+                newSuperType = CCompositeType.createCompositeType(
+                    new CReferenceType[]{
+                        clazz.getSuperType(),
+                        overriddenThisClassSuper.getAbstractType(),
+                        overriddenClass.getAbstractType(),
+                    }
+                );                
+            }
+            else {
+                // CTODO correct error message
+                throw new UnpositionedError(CaesarMessages.CANNOT_CREATE);
             }
             
             caesarClass.setSuperClass(newSuperType);

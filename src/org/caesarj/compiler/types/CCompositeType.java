@@ -93,13 +93,21 @@ public class CCompositeType extends CReferenceType {
 
     // --------------------------------------------------------------
 
-    public static CCompositeType createCompositeType(CReferenceType type1, CReferenceType type2) 
+    public static CCompositeType createCompositeType(CReferenceType[] types) 
     throws UnpositionedError {
         try {
-            CReferenceType interfaces[] = new CReferenceType[]{type1.getCClass().getInterfaces()[0], type2.getCClass().getInterfaces()[0]};
-            CReferenceType impls[] = new CReferenceType[]{type1, type2};
+            CReferenceType interfaces[] = new CReferenceType[types.length];
+            CReferenceType impls[] = new CReferenceType[types.length];
+            CClass classes[] = new CClass[types.length];
+            
+            for(int i=0; i<types.length; i++) {
+                // CTODO getInterfaces()[0] is not nice at all
+                interfaces[i] = types[i].getCClass().getInterfaces()[0];
+                impls[i] = types[i];
+                classes[i] = types[i].getCClass();            
+            }
     
-            MixinList mixinList = ExportMixer.instance().mix(new CClass[]{type1.getCClass(), type2.getCClass()});
+            MixinList mixinList = ExportMixer.instance().mix(classes);
     
             return 
                 new CCompositeType(
