@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JUnqualifiedInstanceCreation.java,v 1.2 2004-04-06 21:48:18 aracic Exp $
+ * $Id: JUnqualifiedInstanceCreation.java,v 1.3 2004-04-21 14:19:56 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -110,10 +110,11 @@ public class JUnqualifiedInstanceCreation extends JExpression {
             type = (CReferenceType)type.checkType(context);
             
             // IVICA
-            if(type.getCClass().isInterface()) {
+            if(type.getCClass().isCaesarClassInterface()) {
                 // it's an interface
                 // try to get corresponding cclass impl                
-                type = factory.createType(type.getQualifiedName()+"_Impl", false);
+                //type = factory.createType(type.getQualifiedName()+"_Impl", false);
+                type = factory.createType(type.getImplQualifiedName(), false);
                 type = (CReferenceType)type.checkType(context);
             }
         }

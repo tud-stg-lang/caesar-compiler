@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JThisExpression.java,v 1.2 2004-04-21 13:31:36 aracic Exp $
+ * $Id: JThisExpression.java,v 1.3 2004-04-21 14:19:56 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -34,6 +34,7 @@ import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * A 'this' expression
@@ -110,12 +111,33 @@ public class JThisExpression extends JExpression {
 				new CExpressionContext(context, context.getEnvironment());
 
 			exprContext.setIsTypeName(true);
-			prefix = prefix.analyse(exprContext);
+            
+            // IVICA: X.this -> X_Impl.this
+            JExpression analysedPrefix = prefix.analyse(exprContext);                        
+            CClass selfClass = analysedPrefix.getType(factory).getCClass();
+            
+            if(selfClass.isCaesarClassInterface()) {
+                try {                
+                    CReferenceType type = factory.createType(selfClass.getImplQualifiedName(), false);
+                    type = (CReferenceType)type.checkType(context);
+                    prefix = new JTypeNameExpression(prefix.getTokenReference(), type);
+                }
+                catch(UnpositionedError e) {
+                    throw e.addPosition(getTokenReference());					
+				}
+                
+                analysedPrefix = prefix.analyse(exprContext);                        
+                selfClass = prefix.getType(factory).getCClass();
+            }
+            // ---------------------------
+            
+            prefix = analysedPrefix;
 			check(
 				context,
 				prefix.getType(factory).isClassType(),
 				KjcMessages.THIS_BADACCESS);
-			self = prefix.getType(factory).getCClass();
+			            
+            self = selfClass;
 		}
 		else if (self == null) {
 			self = context.getClassContext().getCClass();
