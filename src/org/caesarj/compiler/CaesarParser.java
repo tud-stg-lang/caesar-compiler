@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.caesarj.compiler.aspectj.CaesarAdviceKind;
 import org.caesarj.compiler.aspectj.CaesarPatternParser;
+import org.caesarj.compiler.aspectj.CaesarPatternParser.CaesarParserException;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.aspectj.CaesarSourceContext;
 
@@ -147,12 +148,12 @@ import org.caesarj.kjc.KopiReturnValueExpression;
 import org.caesarj.kjc.TypeFactory;
 
 public class CaesarParser extends org.caesarj.compiler.tools.antlr.extra.Parser
-       implements CaesarTokenTypes
+	   implements CaesarTokenTypes
  {
 
   public CaesarParser(Compiler compiler, InputBuffer buffer, KjcEnvironment environment) {
-    super(compiler, new CaesarScanner(compiler, buffer), MAX_LOOKAHEAD);
-    this.environment = environment;
+	super(compiler, new CaesarScanner(compiler, buffer), MAX_LOOKAHEAD);
+	this.environment = environment;
   }
 
   private final KjcEnvironment  environment;
@@ -500,14 +501,14 @@ private static final int MAX_LOOKAHEAD = 2;
 					
 						if ((mod & self) != 0) {
 						  reportTrouble(new PositionedError(buildTokenReference(),
-										    KjcMessages.DUPLICATE_MODIFIER,
-										    CModifier.getName(mod)));
+											KjcMessages.DUPLICATE_MODIFIER,
+											CModifier.getName(mod)));
 						}
 					
 						if (!CModifier.checkOrder(self, mod)) {
 						  reportTrouble(new CWarning(buildTokenReference(),
-									     KjcMessages.MODIFIER_ORDER,
-									     CModifier.getName(mod)));
+										 KjcMessages.MODIFIER_ORDER,
+										 CModifier.getName(mod)));
 						}
 						self |= mod;
 					
@@ -678,7 +679,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   comments);
 				  else if (providing != null || binding != null)
 				  {
-				  	if (CModifier.contains(modifiers, org.caesarj.kjc.Constants.FJC_VIRTUAL))
+					if (CModifier.contains(modifiers, org.caesarj.kjc.Constants.FJC_VIRTUAL))
 			self = new FjVirtualClassDeclaration(sourceRef,
 							   modifiers,
 							   ident.getText(),
@@ -694,7 +695,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   context.getBody(),
 							   javadoc,
 							   comments);
-				  	 else
+					 else
 			self = new FjCleanClassDeclaration(sourceRef,
 							   modifiers | org.caesarj.kjc.Constants.FJC_CLEAN,
 							   ident.getText(),
@@ -880,8 +881,8 @@ private static final int MAX_LOOKAHEAD = 2;
 		if ( inputState.guessing==0 ) {
 			
 			self = new JVariableDeclarationStatement(sourceRef,
-								      decl,
-								      getStatementComment());
+									  decl,
+									  getStatementComment());
 			
 		}
 		return self;
@@ -1736,7 +1737,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		if ( inputState.guessing==0 ) {
 			
 				if (collaborationInterface != null && implementation != null && binding != null)
-				  	self = new CciWeaveletReferenceType(collaborationInterface,
+					self = new CciWeaveletReferenceType(collaborationInterface,
 								implementation,
 								binding);
 				else
@@ -1920,6 +1921,9 @@ private static final int MAX_LOOKAHEAD = 2;
 																	new CaesarSourceContext(sourceRef) );
 							context.addDeclare(patternParser.parseDeclare());			
 						}
+						catch(CaesarParserException e) {
+							reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));			
+						}
 						catch(RuntimeException e) {
 							reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));
 						}							
@@ -2058,7 +2062,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							adviceDecl=jAdviceDeclaration(CaesarAdviceKind.Around, modifiers, parameters, type, throwsList, extraParam);
 							if ( inputState.guessing==0 ) {
 								
-									  			context.addAdviceDeclaration(adviceDecl);	  			
+												context.addAdviceDeclaration(adviceDecl);	  			
 									  		
 							}
 						}
@@ -2073,12 +2077,12 @@ private static final int MAX_LOOKAHEAD = 2;
 							match(SEMI);
 							if ( inputState.guessing==0 ) {
 								
-									  			for (int i = 0; i < vars.length; i++) {
-										    		context.addFieldDeclaration(new FjFieldDeclaration(sourceRef,
+												for (int i = 0; i < vars.length; i++) {
+													context.addFieldDeclaration(new FjFieldDeclaration(sourceRef,
 																										vars[i],
 																										getJavadocComment(),
 																										getStatementComment()));
-										  		}
+												}
 											
 							}
 						}
@@ -2939,7 +2943,12 @@ private static final int MAX_LOOKAHEAD = 2;
 			kind,
 			extraParam != null);
 						
-					}catch(RuntimeException e) {
+					}
+					
+					catch(CaesarParserException e) {
+						reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));			
+					}
+					catch(RuntimeException e) {
 						reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));							
 					}  			
 			
@@ -4476,9 +4485,9 @@ private static final int MAX_LOOKAHEAD = 2;
 			
 			if (catchClauses.size() > 0) {
 				self = new JTryCatchStatement(sourceRef,
-							      tryClause,
-							      (JCatchClause[])catchClauses.toArray(new JCatchClause[catchClauses.size()]),
-							      finallyClause == null ? getStatementComment() : null);
+								  tryClause,
+								  (JCatchClause[])catchClauses.toArray(new JCatchClause[catchClauses.size()]),
+								  finallyClause == null ? getStatementComment() : null);
 			}
 			if (finallyClause != null) {
 				// If both catch and finally clauses are present,
@@ -4624,8 +4633,8 @@ private static final int MAX_LOOKAHEAD = 2;
 		if ( inputState.guessing==0 ) {
 			
 			self = new JSwitchGroup(sourceRef,
-						      (JSwitchLabel[])labels.toArray(new JSwitchLabel[labels.size()]),
-						      (JStatement[])stmts.toArray(new JStatement[stmts.size()]));
+							  (JSwitchLabel[])labels.toArray(new JSwitchLabel[labels.size()]),
+							  (JStatement[])stmts.toArray(new JStatement[stmts.size()]));
 			
 		}
 		return self;
@@ -4890,8 +4899,8 @@ private static final int MAX_LOOKAHEAD = 2;
 		if ( inputState.guessing==0 ) {
 			
 			self = new JCatchClause(sourceRef,
-						      param,
-						      new JBlock(sourceRef, body, null));
+							  param,
+							  new JBlock(sourceRef, body, null));
 			
 		}
 		return self;
@@ -6082,20 +6091,20 @@ private static final int MAX_LOOKAHEAD = 2;
 				}
 				
 					decl = new FjClassDeclaration(sourceRef,
-								     org.caesarj.kjc.Constants.ACC_FINAL, // JLS 15.9.5
-								     ident.getText(),
+									 org.caesarj.kjc.Constants.ACC_FINAL, // JLS 15.9.5
+									 ident.getText(),
 				CTypeVariable.EMPTY,
-								     null,
-								     null,
-								     null,
-								     null,				     
-								     CReferenceType.EMPTY,
-								     context.getFields(),
-								     methods,
-								     context.getInnerClasses(),
-								     context.getBody(),
-								     getJavadocComment(),
-								     getStatementComment());
+									 null,
+									 null,
+									 null,
+									 null,				     
+									 CReferenceType.EMPTY,
+									 context.getFields(),
+									 methods,
+									 context.getInnerClasses(),
+									 context.getBody(),
+									 getJavadocComment(),
+									 getStatementComment());
 					context.release();
 				
 			}
@@ -6362,7 +6371,7 @@ private static final int MAX_LOOKAHEAD = 2;
 						methods = context.getMethods();
 						}
 						
-							    decl = new FjClassDeclaration(sourceRef,
+								decl = new FjClassDeclaration(sourceRef,
 											 org.caesarj.kjc.Constants.ACC_FINAL, // JLS 15.9.5
 											 "", //((CReferenceType)type).getQualifiedName(),
 						CTypeVariable.EMPTY,
@@ -6377,7 +6386,7 @@ private static final int MAX_LOOKAHEAD = 2;
 											 context.getBody(),
 											 getJavadocComment(),
 											 getStatementComment());
-							    context.release();
+								context.release();
 							
 					}
 					if ( inputState.guessing==0 ) {
@@ -6804,8 +6813,12 @@ private static final int MAX_LOOKAHEAD = 2;
 																	pattern.getText(),
 																	new CaesarSourceContext(sourceRef) );
 							self = patternParser.parsePointcut();
-						} catch(RuntimeException e) {
-						  	reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));							
+						} 
+						catch(CaesarParserException e) {
+							reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));			
+						}
+						catch(RuntimeException e) {
+							reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));							
 						}  			
 						
 						

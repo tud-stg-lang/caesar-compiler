@@ -122,7 +122,7 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
 				 crosscuttingClass.getSuperClass().getCClass().getModifiers(),
 				 ACC_CROSSCUTTING)
 				)
-		    ) {
+			) {
 					
 			String superClassName = null;
 			// test klaus
@@ -156,12 +156,12 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
 										wouldBeSuperClass.getCClass().getModifiers(),
 										ACC_ABSTRACT)
 					))
-			    		{
+						{
 					callSuperClassToo(methods[0],"$deploy",superClassName);
 					callSuperClassToo(methods[1],"$undeploy",superClassName);
 			    		
 			    		
-			    }else{
+				}else{
 					superClass = wouldBeSuperClass;
 					
 				}
@@ -175,9 +175,9 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
 										ACC_ABSTRACT))
 				pointcuts=crosscuttingClass.getPointcuts();
 			
-	    }
+		}
 		    
-    super.checkInterface(context);
+	super.checkInterface(context);
 }
 
 	private boolean isRegistry(){

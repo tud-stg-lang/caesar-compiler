@@ -354,8 +354,8 @@ public class FjSourceClass extends CSourceClass
 		{
 			attributeList.add(
 				AttributeAdapter.createPrivilegedAttribute(
-						privilegedAccessHandler.getAccessedMembers()
-					) );
+						privilegedAccessHandler.getAccessedMembers() )
+					);
 		}
 
 		Iterator iterator = resolvedPointcuts.iterator();

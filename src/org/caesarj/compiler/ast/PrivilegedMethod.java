@@ -16,7 +16,7 @@ import org.caesarj.compiler.aspectj.CaesarMember;
  */
 public class PrivilegedMethod extends FjSourceMethod {
 
-	private CaesarMember	resolvedMember;
+	private CaesarMember resolvedMember;
 
 	private CMethod baseMethod;
 
@@ -54,14 +54,14 @@ public class PrivilegedMethod extends FjSourceMethod {
 		this.baseMethod = baseMethod;
 	}
 
-	public CaesarMember		getResolvedMember() {
+	public CaesarMember getResolvedMember() {
 		if (resolvedMember == null) {
-			String	declaringType =
-			CaesarBcelWorld.getInstance().resolve(getOwner()).getSignature();
+			String	declaringSig = 
+				CaesarBcelWorld.getInstance().resolve(getOwner()).getSignature();
 			resolvedMember =
-				CaesarMember.Member(
+				CaesarMember.ResolvedMember(
 					CaesarMember.METHOD,
-					declaringType,
+					declaringSig,
 					getModifiers(),
 					baseMethod.getIdent(),
 					getSignature());

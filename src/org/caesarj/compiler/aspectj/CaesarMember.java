@@ -9,11 +9,11 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.TypeX;
 
-/**
- * @author Karl Klose
- * Wraps the ASpectJ-memberclasses. Provides factory method to create
- * subclass instances of Member.
- */
+/** 
+* Wraps the AspectJ-memberclasses. Provides factory method to create
+* subclass instances of Member.
+* @author Karl Klose
+*/
 public class CaesarMember {
 // Attributes
 	private Member	member;
@@ -23,7 +23,7 @@ public class CaesarMember {
 		return member;
 	}
 // Construction
-	CaesarMember(Member member)
+	public CaesarMember(Member member)
 	{
 		this.member = member;
 	}
@@ -91,7 +91,7 @@ public class CaesarMember {
 		String[] parameterSignatures,
 		CaesarPointcut pointcut)
 		{
-			// it is neccessary to 
+			// convert the signatures to types
 			TypeX parameterTypes[] = TypeX.forSignatures(parameterSignatures),
 					declaringType = TypeX.forName(declaringName);
 			return new CaesarMember( 
@@ -120,7 +120,7 @@ public class CaesarMember {
 		CaesarMember field) 
 	{
 		return new CaesarMember(
-					AjcMemberMaker.privilegedAccessMethodForFieldGet(
+					AjcMemberMaker.privilegedAccessMethodForFieldSet(
 						TypeX.forSignature(signature), field.wrappee()));		
 	}
 

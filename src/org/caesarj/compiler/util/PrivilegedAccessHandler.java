@@ -72,19 +72,19 @@ public class PrivilegedAccessHandler {
 			privilegedMethod = new PrivilegedMethod(method);
 			privilegedMethods.put(method, privilegedMethod);
 		}
-
-		String  aspectSig = CaesarBcelWorld.getInstance().resolve(aspect).getSignature(),
-				declaringSig = 	CaesarBcelWorld.getInstance().resolve(method.getOwner()).getSignature();
-		
-		CaesarMember	member = CaesarMember.Member(
-									CaesarMember.METHOD,
-									declaringSig,
-									method.getModifiers(),
-									method.getIdent(),
-									method.getSignature()),
-						resolvedMethod = 
-							CaesarMember.privilegedAccessMethodForMethod(
-											aspectSig, member);
+		String aspectSig = CaesarBcelWorld.getInstance().resolve(aspect).getSignature(),
+				declaringSig = 
+					CaesarBcelWorld.getInstance().resolve(method.getOwner()).getSignature();
+		CaesarMember member = 
+			CaesarMember.ResolvedMember(
+				CaesarMember.METHOD,
+				declaringSig,
+				method.getModifiers(),
+				method.getIdent(),
+				method.getSignature());
+				
+		CaesarMember	resolvedMethod = 
+			CaesarMember.privilegedAccessMethodForMethod(aspectSig,member);
 
 		privilegedMethod.setIdent(resolvedMethod.getName());
 		privilegedMethod.setModifiers(resolvedMethod.getModifiers());
@@ -93,13 +93,13 @@ public class PrivilegedAccessHandler {
 	}
 
 	/**
-	 * Gets the accessed fields and methods as CaesarMembers.
+	 * Gets the accessed fields and methods as ResolvedMembers.
 	 * Needed for Attribute creation.
 	 * 
-	 * @return CaesarMember[]
+	 * @return ResolvedMember[]
 	 */
-	public CaesarMember[] getAccessedMembers() {
-
+///	public ResolvedMember[] getAccessedMembers() {
+	public CaesarMember[]	getAccessedMembers(){
 		CaesarMember[] accessedMembers =
 			new CaesarMember[privilegedFields.size()
 				+ privilegedMethods.size()];

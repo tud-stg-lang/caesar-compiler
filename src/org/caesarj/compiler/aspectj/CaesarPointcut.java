@@ -30,7 +30,7 @@ public class CaesarPointcut {
 	}
 	
 	public CaesarPointcut resolve(CaesarScope scope) {
-			pointcut = pointcut.resolve(scope);
+			pointcut = pointcut.resolve(scope);		
 			return this;
 		}	
 /*

@@ -26,4 +26,15 @@ public class CaesarDeclare {
 	{ 
 		return declare; 
 	}
+	/**
+	 * Returns an array containing the wrapped objects 
+	 * @param declares	An array of CaesarDeclares
+	 * @return	An array of the wrappees 
+	 */
+	public static Declare[] wrappees(CaesarDeclare[] declares) {
+		Declare[] ret = new Declare[declares.length];
+		for(int i=0;i<declares.length;i++)
+			ret[i] = declares[i].wrappee();
+		return ret;
+	}
 }

@@ -133,7 +133,7 @@ public class PointcutDeclaration extends FjMethodDeclaration {
 
 				formalBindings.add(
 					new CaesarFormalBinding(
-						parameters[i].getType().getSignature(),//type,
+						type,
 						formalParameters[i].getIdent(),
 						i,
 						tokenReference.getLine(),

@@ -27,10 +27,10 @@ public class PrivilegedField extends FjSourceField {
 	private CMethod writer;
 
 	/** the resolved-member for attribute creation*/
-	private CaesarMember	resolvedMember;
-	
+	private CaesarMember resolvedMember;
+
 	/** the declaring type*/
-	private String declaringType;
+	private String declaringSig;
 
 	/**
 	 * Constructor for PrivilegedField.
@@ -52,19 +52,19 @@ public class PrivilegedField extends FjSourceField {
 
 		this.baseField = baseField;
 
-		this.declaringType = CaesarBcelWorld.getInstance().resolve(owner).getSignature();
+		this.declaringSig = CaesarBcelWorld.getInstance().resolve(owner).getSignature();
 
- 		String aspectType = CaesarBcelWorld.getInstance().resolve(aspect).getSignature();
+		String aspectType = CaesarBcelWorld.getInstance().resolve(aspect).getSignature();
 
 		CaesarMember field =
 			CaesarMember.Member(
 				CaesarMember.FIELD,
-				declaringType,
+				declaringSig,
 				getModifiers(),
 				getIdent(),
 				getType().getSignature());
-
-		CaesarMember	readerMember =
+			
+		CaesarMember readerMember =
 			CaesarMember.privilegedAccessMethodForFieldGet(aspectType,field);
 
 		CType[] readerParameterTypes = { getOwnerType()};
@@ -84,10 +84,13 @@ public class PrivilegedField extends FjSourceField {
 				null,
 				parameterFamilies);
 
-
-		CaesarMember	writerMember = 
-			CaesarMember.privilegedAccessMethodForFieldSet(aspectType, field);
-
+		
+		CaesarMember writerMember = 
+			CaesarMember.privilegedAccessMethodForFieldSet(aspectType,field);
+/*			new CaesarMember(
+			AjcMemberMaker.privilegedAccessMethodForFieldSet(
+				TypeX.forSignature(aspectType), field.wrappee()));
+*/
 		CType[] writerParameterTypes = { getOwnerType(), getType()};
 		writer =
 			new FjSourceMethod(
@@ -123,16 +126,15 @@ public class PrivilegedField extends FjSourceField {
 	 * 
 	 * @return ResolvedMember
 	 */
-//	public ResolvedMember getResolvedMember() {
 	public CaesarMember getResolvedMember() {
 		if (resolvedMember == null) {
-			resolvedMember =
-				CaesarMember.ResolvedMember(
+			resolvedMember = CaesarMember.ResolvedMember(
 					CaesarMember.FIELD,
-					declaringType,
+					declaringSig,
 					getModifiers(),
 					getIdent(),
-					getType().getSignature());
+					getType().getSignature()
+				);
 		}
 
 		return resolvedMember;

@@ -140,11 +140,12 @@ public class CaesarScope implements IScope, CaesarConstants {
 	 * @see org.aspectj.weaver.patterns.IScope#lookupFormal(String)
 	 */
 	public FormalBinding lookupFormal(String name) {
-		CaesarFormalBinding[] bindings = context.getBindings();
+		FormalBinding[] bindings = 
+			CaesarFormalBinding.wrappees(context.getBindings());
 
 		for (int i = 0, len = bindings.length; i < len; i++) {
 			if (bindings[i].getName().equals(name))
-				return bindings[i].wrappee();
+				return bindings[i];
 		}
 		return null;
 	}

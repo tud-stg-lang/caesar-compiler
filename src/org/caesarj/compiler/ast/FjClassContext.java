@@ -66,7 +66,7 @@ public class FjClassContext
 	}
 
 	public void setBindings(CaesarFormalBinding[] formals) {
-		this.bindings = formals;
+		bindings =  formals ;
 	}
 
 	public CCompilationUnitContext getParentCompilationUnitContext() {

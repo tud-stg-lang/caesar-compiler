@@ -13,11 +13,10 @@ public class CaesarAdviceKind {
 // Attributes	
 	private AdviceKind	kind;
 // Construction
-	private CaesarAdviceKind(String name, int key, int precedence, boolean isAfter, boolean isCflow)
+	private CaesarAdviceKind( AdviceKind kind )
 	{
-		kind = new AdviceKind(name,key,precedence,isAfter,isCflow);
+		this.kind = kind;
 	}
-	
 	/*
 	 * Returns the encapsulated object of type AdviceKind
 	 */	  
@@ -26,9 +25,10 @@ public class CaesarAdviceKind {
 		return kind;
 	}
 // Constant Advicekinds
-	public static final CaesarAdviceKind Before         = new CaesarAdviceKind("before", 1, 0, false, false);
-	public static final CaesarAdviceKind After          = new CaesarAdviceKind("after", 2, 0, true, false);
-	public static final CaesarAdviceKind AfterThrowing  = new CaesarAdviceKind("afterThrowing", 3, 0, true, false);
-	public static final CaesarAdviceKind AfterReturning = new CaesarAdviceKind("afterReturning", 4, 0, true, false);
-	public static final CaesarAdviceKind Around         = new CaesarAdviceKind("around", 5, 0, false, false);
+   public static final CaesarAdviceKind Before 		   = new CaesarAdviceKind(AdviceKind.Before);
+   public static final CaesarAdviceKind After          = new CaesarAdviceKind(AdviceKind.After);
+   public static final CaesarAdviceKind AfterThrowing  = new CaesarAdviceKind(AdviceKind.AfterThrowing);
+   public static final CaesarAdviceKind AfterReturning = new CaesarAdviceKind(AdviceKind.AfterReturning);
+   public static final CaesarAdviceKind Around         = new CaesarAdviceKind(AdviceKind.Around);
+
 }

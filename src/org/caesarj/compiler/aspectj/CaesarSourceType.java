@@ -11,6 +11,7 @@ import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.ResolvedTypeX.ConcreteName;
 import org.aspectj.weaver.ResolvedTypeX.Name;
+import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 import org.caesarj.compiler.ast.FjSourceClass;
 import org.caesarj.kjc.CClass;
@@ -213,7 +214,7 @@ public class CaesarSourceType extends ConcreteName implements Constants {
 		declares = new ArrayList();
 		if (cclass instanceof FjSourceClass) {
 			FjSourceClass caesarClass = (FjSourceClass) cclass;
-			CaesarDeclare[] decs = caesarClass.getDeclares();
+			Declare[] decs = CaesarDeclare.wrappees(caesarClass.getDeclares());
 			for (int i = 0; i < decs.length; i++) {
 				declares.add(decs[i]);
 			}
