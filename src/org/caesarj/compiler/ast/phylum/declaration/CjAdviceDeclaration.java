@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjAdviceDeclaration.java,v 1.8 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CjAdviceDeclaration.java,v 1.9 2005-03-29 09:46:37 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -69,7 +69,7 @@ public class CjAdviceDeclaration
 
     /** The parameters for the proceed-method which will be created later on for around-advices.*/
     private JFormalParameter[] proceedParameters;
-
+    
     public CjAdviceDeclaration(
         TokenReference where,
         int modifiers,
@@ -99,10 +99,29 @@ public class CjAdviceDeclaration
         if (kind == CaesarAdviceKind.Around) {
             addAroundClosureParameter();
         }
-
+        
         if (hasExtraParameter) {
             extraArgumentFlags |= CaesarConstants.ExtraArgument;
         }
+    }
+    
+    /**
+     * Copy constructor
+     */
+    public CjAdviceDeclaration(CjAdviceDeclaration decl) {
+    	super(decl.getTokenReference(), 
+    		decl.modifiers, 
+			decl.returnType, 
+			decl.getIdent(),
+			decl.parameters,
+			decl.exceptions, 
+			decl.body, 
+			decl.javadoc, 
+			decl.comments);
+    	this.pointcut = decl.pointcut;
+        this.kind = decl.kind;
+        this.extraArgumentFlags = decl.extraArgumentFlags;
+        this.proceedParameters = decl.proceedParameters;
     }
 
     /**
