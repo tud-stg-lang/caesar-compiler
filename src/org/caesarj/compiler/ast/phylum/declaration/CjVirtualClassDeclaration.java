@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.18 2004-10-28 16:09:42 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.19 2004-10-29 13:23:53 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -322,10 +322,10 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
 					getTokenReference(),
 					ACC_FINAL | ACC_PRIVATE,
 					outerType, // type
-					"$outer",
+					OUTER_FIELD,
 					null
 				),
-				true,
+				false,
 				null, null
     		);
             
@@ -352,8 +352,8 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         	// we've found def ctor and only the def ctor
         	methods[ctorIndex] = new CjVirtualClassCtorDeclaration(
 				methods[ctorIndex].getTokenReference(),
-				ACC_PUBLIC,
-				getIdent(),
+				methods[ctorIndex].getModifiers(),
+				methods[ctorIndex].getIdent(),
 				outerType,
 				new JBlock(
 					methods[ctorIndex].getTokenReference(), 
@@ -378,9 +378,8 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     	
         
     	super.checkInterface(context);
-		
-		// CTODO: check inheritance of full throwable list on method redefinition
     	
+		// CTODO: check inheritance of full throwable list on method redefinition
     }
     
     
