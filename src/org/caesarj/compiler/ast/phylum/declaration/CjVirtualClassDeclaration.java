@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.8 2004-09-06 13:31:34 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.9 2004-09-17 18:45:19 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.caesarj.compiler.AstGenerator;
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
@@ -194,6 +195,43 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
             methodList.add(m);
         }
                 
+        // go through inners and check for wrappers
+        // generate wrappee support method exports
+        // the body of the method is not of the interesst
+        AstGenerator gen = context.getEnvironment().getAstGenerator();
+        for(int k = 0; k < inners.length; k++) {
+            CjVirtualClassDeclaration inner = (CjVirtualClassDeclaration)inners[k];
+            if(inner.isWrapper()) {
+                String wrappeeClass = 
+                    inner.getWrappee().getQualifiedName().replace('/','.').replace('$','.');
+                String wrapperIdent =
+                    inner.getMixinIfcDeclaration().getCClass().getIdent();
+                String wrapperClass =
+                    inner.getMixinIfcDeclaration().getCClass().getQualifiedName().replace('/','.').replace('$','.');
+                
+                gen.writeMethod(
+                    new String[]{
+                        "public "+wrapperClass+" "+wrapperIdent+"("+wrappeeClass+" w) {",
+                        "return null;}"
+                    }
+                );
+                
+                methodList.add(
+                    gen.endMethod().checkInterface(self));
+                
+                
+                gen.writeMethod(
+                    new String[]{
+                        "public "+wrapperClass+" get"+wrapperIdent+"("+wrappeeClass+" w) {",
+                        "return null;}"
+                    }
+                );
+                    
+                methodList.add(
+                    gen.endMethod().checkInterface(self));
+            }
+        }
+        
         Hashtable hashFieldMap = new Hashtable();
         for (int i = 0; i < fields.length; i++) {
             CSourceField field = fields[i].checkInterface(self);
