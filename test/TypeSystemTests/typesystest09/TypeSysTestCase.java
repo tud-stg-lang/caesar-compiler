@@ -7,20 +7,30 @@ package generated.typesystest09;
  */
 public class TypeSysTestCase {
 
-	public final G g = new G();	
-	
+    final G g1 = new G();
+    final G g2 = new G();
+    
+    final g1.X x1 = g1.new X();
+    final g1.X x2 = g2.new X();
+    
+    x1.N n1 = x1.new N();
+    x2.N n2 = x2.new N();
+    
+    
+    
 	public void foo() {	    
-//	    g.N n = g.new N();
-//	    bar(g, n);
+	    bar(g2, x1, n1);	    
 	}
 	
-	public void bar(final G g2, g2.N n) {
-	    g2.N nn;
-	    nn = n;
+	public void bar(final G graph, graph.X x, x.N n) {
+	    // ...
 	}
 
 }
 
 public cclass G {
-    public cclass N {}
+    public cclass X {
+        public cclass N {
+        }
+    }    
 }

@@ -21,7 +21,7 @@ public cclass A {
         gl.Node n1;
         
         
-        A a = new A(){
+        A a = new A() {
             gl.Node n2;
             
             public void foo(){
