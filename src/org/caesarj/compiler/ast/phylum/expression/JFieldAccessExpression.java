@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JFieldAccessExpression.java,v 1.26 2005-03-03 12:16:53 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.27 2005-03-03 14:47:52 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -300,7 +300,12 @@ public class JFieldAccessExpression extends JExpression {
 	        if( local.isMixin() ) {	            
 	            if(local.getDepth() == field.getOwner().getDepth()) {
 	              	//IVICA: use "this" as target for the field calls within a cclass
-	                prefix = new JOwnerExpression(getTokenReference(), local);	                
+	                if(!field.isStatic()) {
+	                    prefix = new JOwnerExpression(getTokenReference(), local);
+	                }
+	                else {
+	                    prefix = new JTypeNameExpression(getTokenReference(), field.getOwnerType());
+	                }
 	            }
 	            else {
 	                // return accessor method for this field access
@@ -333,15 +338,15 @@ public class JFieldAccessExpression extends JExpression {
 		                context,
 		                !local.isStatic() || local.descendsFrom(field.getOwner()),
 		                KjcMessages.FIELD_STATICERR,
-		                ident);
+		                ident
+	                );		            
 		            
-		            // CTODO, this could make etrouble again
-//		            if (field.getOwner().isMixin()) {
-//	                	prefix = new JOwnerExpression(getTokenReference(), context.getClassContext().getCClass());
-//	                }
-//	                else {
+		            if (field.getOwner().isMixin()) {
+	                	prefix = new JOwnerExpression(getTokenReference(), context.getClassContext().getCClass());
+	                }
+	                else {
 	                	prefix = new JOwnerExpression(getTokenReference(), field.getOwner());
-//	                }
+	                }
 		        }
 		        else {
 		            prefix = new JTypeNameExpression(getTokenReference(), field.getOwnerType());
