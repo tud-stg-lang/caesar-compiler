@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassNameType.java,v 1.16 2005-01-14 13:33:48 aracic Exp $
+ * $Id: CClassNameType.java,v 1.17 2005-01-17 18:12:13 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -25,6 +25,7 @@ import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.util.InconsistencyException;
@@ -121,14 +122,23 @@ public class CClassNameType extends CReferenceType
 	    
 	    return expr;
 	}
-	
+		
 	/**
 	 * check that type is valid
 	 * necessary to resolve String into java/lang/String
 	 * @param	context		the context (may be be null)
 	 * @exception UnpositionedError	this error will be positioned soon
 	 */
-	public CType checkType(CTypeContext context) throws UnpositionedError 
+	
+	public CType checkType(CTypeContext context) throws UnpositionedError {
+	    CType res = _checkType(context);
+	    if(res instanceof CReferenceType && context instanceof CContext) {
+	        ((CReferenceType)res).setDefCtx((CContext)context);
+	    }
+	    return res;
+	}
+	
+	private CType _checkType(CTypeContext context) throws UnpositionedError 
 	{
 		if (binary && qualifiedName.indexOf('/') >= 0)
 		{
