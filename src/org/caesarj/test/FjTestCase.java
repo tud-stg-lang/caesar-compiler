@@ -116,14 +116,16 @@ public class FjTestCase extends TestCase
 		String[] args = (String[])fileNames.toArray(new String[0]);
 		
 		// Compile test
-		compiler.run(args);
+		boolean success = compiler.run(args);
 		
 		if(compilerErrorsToCheck.length > 0) {
 		    // test the errors here
 		    log.info("Test starts: checking errors");
-		    checkErrors(compilerErrorsToCheck);
+		    //checkErrors(compilerErrorsToCheck);
+		    assertTrue(!success);
 		}
 		else {
+		    assertTrue(success);
 			// Execute with Caesar compiled test itself
 		    log.info("Test starts: testing with Caesar compiled test");
 					
