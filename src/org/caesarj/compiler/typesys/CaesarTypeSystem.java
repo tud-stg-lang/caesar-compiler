@@ -57,4 +57,18 @@ public class CaesarTypeSystem {
 		javaTypeGraph.generateFrom(caesarTypeGraph);
 		javaTypeGraph.debug();
     }
+
+    public boolean isIncrementOf(String qnFurtherbinding, String qnFurtherbound) {
+        CaesarTypeNode furtherbinding = 
+            getCaesarTypeGraph().getType(new JavaQualifiedName(qnFurtherbinding));
+        
+        CaesarTypeNode furtherbound =
+            getCaesarTypeGraph().getType(new JavaQualifiedName(qnFurtherbound));
+        
+        if(furtherbinding!=null && furtherbound!=null) {
+            return furtherbinding.isIncrementFor(furtherbound);
+        }            
+        
+        return false;
+    }
 }

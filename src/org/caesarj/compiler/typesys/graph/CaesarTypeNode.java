@@ -338,4 +338,22 @@ public class CaesarTypeNode {
 
         return res.toString();
     }
+
+    public boolean isIncrementFor(CaesarTypeNode furtherbound) {
+        if(this.equals(furtherbound))
+            return true;
+        
+        boolean res = false;
+        
+        for (Iterator it = incrementFor(); it.hasNext();) {
+            FurtherboundFurtherbindingRelation rel = (FurtherboundFurtherbindingRelation)it.next();
+            res = res || rel.getFurtherboundNode().isIncrementFor(furtherbound);
+        }
+        
+        return res;
+    }
+
+    public boolean isTopLevelClass() {
+        return enclosedBy.size() == 0;
+    }
 }
