@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JLocalVariableExpression.java,v 1.7 2005-02-15 18:33:30 aracic Exp $
+ * $Id: JLocalVariableExpression.java,v 1.8 2005-02-16 16:33:37 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -205,7 +205,7 @@ public class JLocalVariableExpression extends JExpression {
         try {
             CType type = variable.getType();
 	        if(type.isCaesarReference()) {
-	            thisAsFamily = Path.createFrom(context.getBodyContext(), this);
+	            thisAsFamily = Path.createFrom(context.getBlockContext(), this);
 	            family = thisAsFamily.normalize();
 	        }
         }
