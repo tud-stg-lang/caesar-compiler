@@ -11,9 +11,10 @@
  </description>
  
  <!-- Define global properties -->
+ <property name="bin" location="bin"/>
  <property name="source" location="src/org/caesarj"/>
- <property name="packageBase" location="${basedir}/src"></property>
- <property name="inputFiles" location="${basedir}/cc"></property>
+ <property name="packageBase" location="src"></property>
+ <property name="inputFiles" location="cc"></property>
  <property name="libs" location="lib"/>
  <property name="dist" location="dist"/>
 
@@ -44,7 +45,7 @@
  
  
  <!-- Compile-only target -->
- <target name="compile" description="compile the source files">
+ <target name="compile" depends="parser" description="compile the source files">
   <javac srcdir="src"
   		 classpath="${packageBase};
   				${libs}/aspectjtools.jar;
@@ -65,36 +66,38 @@
 		the output files should be placed because lexgen drops the output just
 		into the workling directory of the VM). -->  
   <echo message="1st step: TOKDEF"/>
-  <java fork="true"	dir="${source}/compiler"
-  		failonerror="true"
-   		classname="org.caesarj.tools.lexgen.Main"
-        classpath="${libs}/cjbuildtools.jar;${libs}/java-getopt-1.0.9.jar">
+  <java fork="true" failonerror="true"
+  		classname="org.caesarj.tools.lexgen.Main"
+        classpath="${bin};${libs}/cjbuildtools.jar;${libs}/java-getopt-1.0.9.jar">
    <arg value="-ditf"/>
    <arg value="${inputFiles}/caesar.t"/>
   </java>
 
   <!-- 2. LEXINC: Creates the .flex file -->
   <echo message="2nd step: LEXINC"/>
-  <java fork="true"	dir="${source}/compiler"
-  		failonerror="true"
+  <java fork="true" failonerror="true"
   		classname="org.caesarj.tools.include.Main"
         classpath="${libs}/cjbuildtools.jar;${libs}/java-getopt-1.0.9.jar">
    <arg value="${inputFiles}/Caesar.flex.in"/>
    <arg value="-o"/>
    <arg value="${inputFiles}/Caesar.flex"/>  
   </java>  
+ 	
+  <move file="CaesarTokenTypes.java" todir="src/org/caesarj/compiler"/>
+  <move file="CaesarFlexRules.txt" todir="src/org/caesarj/compiler"/>
+  <move file="CaesarTokenTypes.txt" todir="src/org/caesarj/compiler"/>
   
   <!-- 3. JFLEX: Creates CaesarScanner.java&FlexRules.txt from Caesar.flex -->
   <echo message="3rd step: JFLEX"/>
-  <java classpath="lib/JFlex.jar" 
- 		classname="JFlex.Main" 
-  		failonerror="false">
+  <java fork="true" failonerror="true"
+  		classpath="lib/JFlex.jar" 
+ 		classname="JFlex.Main">
   	<arg value="${inputFiles}/caesar.flex"/>
  	<arg value="-skel"/>
  	<arg value="${inputFiles}/skeleton.shared"/>
    	<arg value="-d"/>
   	<arg value="${source}/compiler"/>
-  </java>
+  </java>	
  </target>
  
  <!-- Target for generating the parser -->
@@ -111,6 +114,11 @@
  		 
    	<arg value="${inputFiles}/Caesar.g"/>
   </java>
+ 	
+  <delete file="src/org/caesarj/compiler/CaesarFlexRules.txt"/>
+  <delete file="src/org/caesarj/compiler/CaesarTokenTypes.txt"/>
+  <delete file="src/org/caesarj/compiler/CaesarScanner.java~"/>
+
  </target>
  
  <!-- The complete building target -->
