@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: MixerException.java,v 1.3 2005-01-24 16:53:02 aracic Exp $
+ * $Id: MixerException.java,v 1.4 2005-03-10 12:38:06 gasiunas Exp $
  */
 
 package org.caesarj.mixer;
@@ -32,20 +32,7 @@ package org.caesarj.mixer;
  */
 public class MixerException extends Exception {
     
-	public MixerException() {
-		super();
-	}
-
 	public MixerException(String message) {
 		super(message);
-	}
-
-	public MixerException(Throwable cause) {
-		super(cause);
-	}
-
-	public MixerException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
+	}	
 }
