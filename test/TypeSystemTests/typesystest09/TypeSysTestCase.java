@@ -19,10 +19,21 @@ public class TypeSysTestCase {
     
     
 	public void foo() {	    
-	    bar(g2, x1, n1);	    
+	    bar(g1, x1, n1);
+	    bar(x2); // this should fail
 	}
 	
 	public void bar(final G graph, graph.X x, x.N n) {
+	    // ...
+	}
+
+	/* Signature problem with Java.. 
+	 * g2.X and g1.X are both mapped to G.X 
+	 */
+	//public void bar(g2.X x) {}
+	
+	
+	public void bar(g1.X x) {
 	    // ...
 	}
 
