@@ -20,23 +20,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JLocalVariableExpression.java,v 1.9 2005-03-03 12:17:53 aracic Exp $
+ * $Id: JLocalVariableExpression.java,v 1.10 2005-03-06 13:46:23 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.ast.phylum.expression.literal.JLiteral;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
+import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.cclass.CastUtils;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
+import org.caesarj.compiler.context.CBlockContext;
+import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.context.CVariableInfo;
 import org.caesarj.compiler.context.GenerationContext;
-import org.caesarj.compiler.family.Path;
+import org.caesarj.compiler.family.ArgumentAccess;
+import org.caesarj.compiler.family.ContextExpression;
+import org.caesarj.compiler.family.FieldAccess;
+import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -169,8 +178,47 @@ public class JLocalVariableExpression extends JExpression {
         // IVICA: store family information
         try {
             CType type = variable.getType();            
-	        if(type.isReference()) {	
-	            thisAsFamily = Path.createFrom(context.getBlockContext(), this);
+	        if(type.isReference()) {
+                
+                int k = 0;
+                                
+                CContext ctx = context.getBlockContext();
+                
+                if (variable instanceof JFormalParameter) {
+                    // find next MethodContext
+                    while (! (ctx instanceof CMethodContext)) {
+                        ctx = ctx.getParentContext();
+                        k++;
+                    }
+                } 
+                else if (variable instanceof JVariableDefinition) {
+                    // find next block-context that declares this variable
+                    boolean found = false;
+                    do {
+                        if (! (ctx instanceof CBlockContext)){                            
+                            throw new InconsistencyException("Cannot find "+variable.getIdent());
+                        }
+                        CBlockContext block = (CBlockContext)ctx;
+                        if (block.containsVariable(variable.getIdent())){
+                            found = true;
+                        } 
+                        else {
+                            // we only want block context
+                            ctx = ctx.getParentContext().getBlockContext();
+                            k++;
+                        }
+                    } while (!found);                    
+                }
+                
+                ContextExpression ctxExpr = new ContextExpression(null, k, null);
+                
+                if(variable instanceof JFormalParameter) {
+                    thisAsFamily = new ArgumentAccess(this.isFinal(), ctxExpr, (CReferenceType)variable.getType(), variable.getIndex());
+                }
+                else {
+                    thisAsFamily = new FieldAccess(this.isFinal(), ctxExpr, variable.getIdent(), (CReferenceType)variable.getType());
+                }
+                
 	            if(type.isCaesarReference())
 	                family = thisAsFamily.normalize();
 	        }
@@ -178,6 +226,8 @@ public class JLocalVariableExpression extends JExpression {
         catch (UnpositionedError e) {
             throw e.addPosition(getTokenReference());
         }
+        
+        
         
         // IVICA: insert cast
         if(!context.isLeftSide()) {
