@@ -1,8 +1,8 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.kjc.CClass;
-import org.caesarj.kjc.CSourceField;
-import org.caesarj.kjc.CType;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CSourceField;
+import org.caesarj.compiler.types.CType;
 
 public class FjSourceField extends CSourceField {
 

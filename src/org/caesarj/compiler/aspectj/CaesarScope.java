@@ -16,12 +16,11 @@ import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.IScope;
 import org.aspectj.weaver.patterns.PatternNode;
 import org.caesarj.compiler.CaesarConstants;
-import org.caesarj.compiler.UnpositionedError;
 import org.caesarj.compiler.ast.FjClassContext;
-import org.caesarj.kjc.CClass;
-import org.caesarj.kjc.CModifier;
-import org.caesarj.kjc.JClassImport;
-import org.caesarj.kjc.JPackageImport;
+import org.caesarj.compiler.ast.JClassImport;
+import org.caesarj.compiler.ast.JPackageImport;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * Provides access to the ClassContext.

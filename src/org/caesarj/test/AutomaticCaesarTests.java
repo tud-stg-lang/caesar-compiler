@@ -5,31 +5,30 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.caesarj.compiler.tools.antlr.runtime.ParserException;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CSourceClass;
-import org.caesarj.kjc.CTypeVariable;
-import org.caesarj.kjc.JClassImport;
-import org.caesarj.kjc.JCompilationUnit;
-import org.caesarj.kjc.JMethodDeclaration;
-import org.caesarj.kjc.JPackageImport;
-import org.caesarj.kjc.JPackageName;
-import org.caesarj.kjc.JPhylum;
-import org.caesarj.kjc.JTypeDeclaration;
-import org.caesarj.kjc.KjcClassReader;
-import org.caesarj.kjc.KjcEnvironment;
-import org.caesarj.kjc.KjcOptions;
-import org.caesarj.kjc.KjcSignatureParser;
-import org.caesarj.kjc.KjcTypeFactory;
-import org.caesarj.kjc.SignatureParser;
-
 import org.caesarj.compiler.CaesarParser;
-import org.caesarj.compiler.Compiler;
+import org.caesarj.compiler.KjcClassReader;
+import org.caesarj.compiler.KjcEnvironment;
+import org.caesarj.compiler.KjcOptions;
 import org.caesarj.compiler.Main;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
-import org.caesarj.compiler.util.ClassTransformationFjVisitor;
-import org.caesarj.compiler.util.FjVisitor;
+import org.caesarj.compiler.ast.FjVisitor;
+import org.caesarj.compiler.ast.JClassImport;
+import org.caesarj.compiler.ast.JCompilationUnit;
+import org.caesarj.compiler.ast.JMethodDeclaration;
+import org.caesarj.compiler.ast.JPackageImport;
+import org.caesarj.compiler.ast.JPackageName;
+import org.caesarj.compiler.ast.JPhylum;
+import org.caesarj.compiler.ast.JTypeDeclaration;
+import org.caesarj.compiler.delegation.ClassTransformationFjVisitor;
+import org.caesarj.compiler.export.CSourceClass;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.compiler.types.KjcSignatureParser;
+import org.caesarj.compiler.types.KjcTypeFactory;
+import org.caesarj.compiler.types.SignatureParser;
+import org.caesarj.tools.antlr.extra.CompilerBase;
+import org.caesarj.tools.antlr.runtime.ParserException;
 
 public class AutomaticCaesarTests extends FjTestCase {
 
@@ -42,7 +41,7 @@ public class AutomaticCaesarTests extends FjTestCase {
 	protected Vector allUnits;
 	protected ClassModulatingFjVisitorMock modulator;
 	protected ClassReaderMock classReader;
-	protected Compiler compiler;
+	protected CompilerBase compiler;
 	protected static boolean doSetUp = true;
 
 	public AutomaticCaesarTests(String name) {

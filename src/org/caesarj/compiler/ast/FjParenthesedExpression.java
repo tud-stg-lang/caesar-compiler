@@ -1,11 +1,9 @@
 package org.caesarj.compiler.ast;
 
 
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.kjc.CExpressionContext;
-import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.JParenthesedExpression;
+import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
 
 public class FjParenthesedExpression extends JParenthesedExpression {
 

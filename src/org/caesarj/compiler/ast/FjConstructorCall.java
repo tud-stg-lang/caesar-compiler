@@ -1,8 +1,6 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.kjc.JConstructorCall;
-import org.caesarj.kjc.JExpression;
+import org.caesarj.util.TokenReference;
 
 public class FjConstructorCall extends JConstructorCall {
 

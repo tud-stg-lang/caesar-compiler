@@ -1,13 +1,11 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.kjc.CBlockContext;
-import org.caesarj.kjc.CExpressionContext;
-import org.caesarj.kjc.CType;
-import org.caesarj.kjc.JAssignmentExpression;
-import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.KjcMessages;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
+import org.caesarj.compiler.KjcMessages;
+import org.caesarj.compiler.context.CBlockContext;
+import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
 
 public class FjAssignmentExpression extends JAssignmentExpression {
 

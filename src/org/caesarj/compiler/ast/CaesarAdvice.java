@@ -2,24 +2,23 @@ package org.caesarj.compiler.ast;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.caesarj.classfile.Attribute;
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.MethodInfo;
-import org.caesarj.kjc.BytecodeOptimizer;
-import org.caesarj.kjc.CClass;
-import org.caesarj.kjc.CContext;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CType;
-import org.caesarj.kjc.CTypeVariable;
-import org.caesarj.kjc.JBlock;
-import org.caesarj.kjc.JFormalParameter;
-import org.caesarj.kjc.TypeFactory;
-import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.aspectj.AttributeAdapter;
 import org.caesarj.compiler.aspectj.CaesarAdviceKind;
 import org.caesarj.compiler.aspectj.CaesarFormalBinding;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.aspectj.CaesarScope;
+import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.optimize.BytecodeOptimizer;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.util.TokenReference;
 
 /**
  * Represents an advice in the AST.

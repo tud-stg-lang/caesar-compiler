@@ -7,37 +7,15 @@ import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.compiler.UnpositionedError;
-import org.caesarj.kjc.CClassContext;
-import org.caesarj.kjc.CClassNameType;
-import org.caesarj.kjc.CMember;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CSourceMethod;
-import org.caesarj.kjc.JArrayInitializer;
-import org.caesarj.kjc.JAssignmentExpression;
-import org.caesarj.kjc.JBlock;
-import org.caesarj.kjc.JConstructorBlock;
-import org.caesarj.kjc.JConstructorDeclaration;
-import org.caesarj.kjc.JEqualityExpression;
-import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.JExpressionStatement;
-import org.caesarj.kjc.JFieldAccessExpression;
-import org.caesarj.kjc.JFormalParameter;
-import org.caesarj.kjc.JIfStatement;
-import org.caesarj.kjc.JLocalVariable;
-import org.caesarj.kjc.JMethodCallExpression;
-import org.caesarj.kjc.JNewArrayExpression;
-import org.caesarj.kjc.JNullLiteral;
-import org.caesarj.kjc.JReturnStatement;
-import org.caesarj.kjc.JStatement;
-import org.caesarj.kjc.JThisExpression;
-import org.caesarj.kjc.JTypeNameExpression;
-import org.caesarj.kjc.JUnqualifiedInstanceCreation;
-import org.caesarj.kjc.JVariableDeclarationStatement;
-import org.caesarj.kjc.JVariableDefinition;
-import org.caesarj.kjc.TypeFactory;
+import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.export.CMember;
+import org.caesarj.compiler.export.CSourceMethod;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 public class FjConstructorDeclaration extends JConstructorDeclaration {
 
@@ -540,7 +518,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 				getTokenReference(),
 				Constants.ACC_PUBLIC,
 				typeVariables,
-				new CClassNameType(org.caesarj.kjc.Constants.JAV_OBJECT),
+				new CClassNameType(org.caesarj.compiler.Constants.JAV_OBJECT),
 				FjConstants.factoryMethodName(FjConstants.toIfcName(ident)),
 				newParameters,
 				exceptions,

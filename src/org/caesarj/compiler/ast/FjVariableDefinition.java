@@ -1,16 +1,14 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.compiler.UnpositionedError;
-import org.caesarj.kjc.CBodyContext;
-import org.caesarj.kjc.CClass;
-import org.caesarj.kjc.CClassContext;
-import org.caesarj.kjc.CExpressionContext;
-import org.caesarj.kjc.CField;
-import org.caesarj.kjc.CType;
-import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.JVariableDefinition;
+import org.caesarj.compiler.context.CBodyContext;
+import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.compiler.context.CField;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 public class FjVariableDefinition extends JVariableDefinition {
 

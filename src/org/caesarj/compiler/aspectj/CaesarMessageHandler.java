@@ -7,10 +7,10 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.IMessage.Kind;
 import org.caesarj.compiler.CaesarConstants;
 import org.caesarj.compiler.CaesarMessages;
-import org.caesarj.compiler.Compiler;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
+import org.caesarj.tools.antlr.extra.CompilerBase;
 import org.caesarj.util.Message;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
 
 /**
  * Handles the AspectJ messages.
@@ -20,12 +20,12 @@ import org.caesarj.util.Message;
 public class CaesarMessageHandler implements IMessageHandler, CaesarConstants {
 
 	/** The compiler handles the message output.*/
-	private Compiler compiler;
+	private CompilerBase compiler;
 
 	/**
 	 * Constructor for CaesarMessageHandler.
 	 */
-	public CaesarMessageHandler(Compiler compiler) {
+	public CaesarMessageHandler(CompilerBase compiler) {
 		super();
 
 		this.compiler = compiler;

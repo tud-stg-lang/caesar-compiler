@@ -1,6 +1,5 @@
 package org.caesarj.compiler;
 
-import org.caesarj.kjc.Constants;
 
 /**
  * Several constants used in Caesar.

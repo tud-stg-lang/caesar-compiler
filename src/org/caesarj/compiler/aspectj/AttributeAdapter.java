@@ -8,15 +8,10 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.patterns.PerClause;
-
 import org.caesarj.classfile.AsciiConstant;
 import org.caesarj.classfile.Attribute;
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.ConstantPool;
-import org.caesarj.compiler.aspectj.CaesarAdviceKind;
-import org.caesarj.compiler.aspectj.CaesarDeclare;
-import org.caesarj.compiler.aspectj.CaesarMember;
-import org.caesarj.compiler.aspectj.CaesarPointcut;
 
 /**
  * Adapts the AjAttributes to the KOPI world.

@@ -1,8 +1,7 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.kjc.CType;
-import org.caesarj.kjc.JExpression;
-import org.caesarj.compiler.TokenReference;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.util.TokenReference;
 
 public class FjFamilyVariableDefinition extends FjVariableDefinition {
 

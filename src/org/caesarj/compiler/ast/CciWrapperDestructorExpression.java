@@ -2,11 +2,10 @@ package org.caesarj.compiler.ast;
 
 import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.CciConstants;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.kjc.CExpressionContext;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.JExpression;
+import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
 
 /**
  * Represents a wrapper destructor expression in the source code. For all 

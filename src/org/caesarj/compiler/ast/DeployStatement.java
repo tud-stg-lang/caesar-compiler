@@ -1,31 +1,16 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.kjc.CBodyContext;
-import org.caesarj.kjc.CClassNameType;
-import org.caesarj.kjc.CExpressionContext;
-import org.caesarj.kjc.CSimpleBodyContext;
-import org.caesarj.kjc.CodeSequence;
-import org.caesarj.kjc.GenerationContext;
-import org.caesarj.kjc.JBlock;
-import org.caesarj.kjc.JCompoundStatement;
-import org.caesarj.kjc.JEmptyStatement;
-import org.caesarj.kjc.JEqualityExpression;
-import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.JExpressionStatement;
-import org.caesarj.kjc.JIfStatement;
-import org.caesarj.kjc.JMethodCallExpression;
-import org.caesarj.kjc.JNullLiteral;
-import org.caesarj.kjc.JStatement;
-import org.caesarj.kjc.JTryFinallyStatement;
-import org.caesarj.kjc.JTypeNameExpression;
-import org.caesarj.kjc.JVariableDeclarationStatement;
-import org.caesarj.kjc.TypeFactory;
-import org.caesarj.util.Message;
 import org.caesarj.compiler.CaesarConstants;
-import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.JavaStyleComment;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
+import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.context.CBodyContext;
+import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.compiler.context.CSimpleBodyContext;
+import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
 
 /**
  * The deploy statement is used for dynamic deployment of aspects.

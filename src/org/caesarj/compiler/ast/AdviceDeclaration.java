@@ -1,25 +1,22 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.aspectj.CaesarAdviceKind;
-import org.caesarj.compiler.aspectj.CaesarPointcut;
-
 import org.caesarj.compiler.CaesarConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.compiler.UnpositionedError;
-import org.caesarj.kjc.CBinaryTypeContext;
-import org.caesarj.kjc.CClass;
-import org.caesarj.kjc.CClassContext;
-import org.caesarj.kjc.CClassNameType;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CSourceMethod;
-import org.caesarj.kjc.CType;
-import org.caesarj.kjc.CTypeVariable;
-import org.caesarj.kjc.JBlock;
-import org.caesarj.kjc.JFormalParameter;
-import org.caesarj.kjc.KjcMessages;
+import org.caesarj.compiler.KjcMessages;
+import org.caesarj.compiler.aspectj.CaesarAdviceKind;
+import org.caesarj.compiler.aspectj.CaesarPointcut;
+import org.caesarj.compiler.context.CBinaryTypeContext;
+import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CSourceMethod;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * Represents an AdviceDeclaration in the Source Code.

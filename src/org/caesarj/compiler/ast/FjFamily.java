@@ -4,18 +4,12 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.caesarj.compiler.FjConstants;
-import org.caesarj.compiler.UnpositionedError;
-import org.caesarj.kjc.CBlockContext;
-import org.caesarj.kjc.CClassContext;
-import org.caesarj.kjc.CField;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CTypeContext;
-import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.JFormalParameter;
-import org.caesarj.kjc.JLocalVariable;
-import org.caesarj.kjc.JMethodCallExpression;
-import org.caesarj.kjc.JNameExpression;
-import org.caesarj.kjc.JThisExpression;
+import org.caesarj.compiler.context.CBlockContext;
+import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.CField;
+import org.caesarj.compiler.context.CTypeContext;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.util.UnpositionedError;
 
 public abstract class FjFamily {
 	

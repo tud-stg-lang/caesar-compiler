@@ -5,28 +5,17 @@ import java.util.Vector;
 
 import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.CciConstants;
-import org.caesarj.compiler.Compiler;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.compiler.UnpositionedError;
-import org.caesarj.kjc.CClass;
-import org.caesarj.kjc.CClassNameType;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CTypeVariable;
-import org.caesarj.kjc.JBlock;
-import org.caesarj.kjc.JEqualityExpression;
-import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.JFieldDeclaration;
-import org.caesarj.kjc.JIfStatement;
-import org.caesarj.kjc.JMethodCallExpression;
-import org.caesarj.kjc.JMethodDeclaration;
-import org.caesarj.kjc.JPhylum;
-import org.caesarj.kjc.JReturnStatement;
-import org.caesarj.kjc.JStatement;
-import org.caesarj.kjc.JTypeDeclaration;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.tools.antlr.extra.CompilerBase;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 public class FjOverrideClassDeclaration
 	extends FjVirtualClassDeclaration
@@ -107,7 +96,7 @@ public class FjOverrideClassDeclaration
 
 	public static void setOverridingSuperClass(
 		FjOverrideable instance,
-		Compiler compiler)
+		CompilerBase compiler)
 	{
 		CClass owner = instance.getCClass().getOwner().getCClass();
 		CClass ownerSuper = owner;

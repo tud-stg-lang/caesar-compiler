@@ -1,15 +1,12 @@
 package org.caesarj.compiler.ast;
 
 import org.caesarj.compiler.FjConstants;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.kjc.CExpressionContext;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CodeSequence;
-import org.caesarj.kjc.GenerationContext;
-import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.JNameExpression;
-import org.caesarj.kjc.JUnqualifiedInstanceCreation;
+import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
 
 /**
  * This class represents the creation of virtual types inside the 

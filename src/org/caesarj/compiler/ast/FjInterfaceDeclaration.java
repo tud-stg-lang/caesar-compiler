@@ -2,27 +2,22 @@ package org.caesarj.compiler.ast;
 
 import java.util.Hashtable;
 
+import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.kjc.CBodyContext;
-import org.caesarj.kjc.CClass;
-import org.caesarj.kjc.CClassContext;
-import org.caesarj.kjc.CContext;
-import org.caesarj.kjc.CMethod;
-import org.caesarj.kjc.CModifier;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CSourceClass;
-import org.caesarj.kjc.CSourceField;
-import org.caesarj.kjc.CTypeVariable;
-import org.caesarj.kjc.ClassReader;
-import org.caesarj.kjc.JFieldDeclaration;
-import org.caesarj.kjc.JInterfaceDeclaration;
-import org.caesarj.kjc.JMethodDeclaration;
-import org.caesarj.kjc.JPhylum;
-import org.caesarj.kjc.JTypeDeclaration;
-import org.caesarj.kjc.KjcMessages;
+import org.caesarj.compiler.KjcMessages;
+import org.caesarj.compiler.context.CBodyContext;
+import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.export.CModifier;
+import org.caesarj.compiler.export.CSourceClass;
+import org.caesarj.compiler.export.CSourceField;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
 
 public class FjInterfaceDeclaration 
 	extends JInterfaceDeclaration 

@@ -14,27 +14,20 @@ import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.FjCompilationUnit;
 import org.caesarj.compiler.ast.FjSourceClass;
-import org.caesarj.compiler.tools.antlr.extra.InputBuffer;
-import org.caesarj.compiler.tools.antlr.runtime.ParserException;
-import org.caesarj.compiler.util.ClassTransformationFjVisitor;
-import org.caesarj.compiler.util.CollaborationInterfaceTransformation;
-import org.caesarj.compiler.util.CollectClassesFjVisitor;
-//use for debug visitors
-//import org.caesarj.compiler.util.DebugVisitor;
-import org.caesarj.compiler.util.FamiliesInitializerFjVisitor;
-import org.caesarj.compiler.util.FjVisitor;
-import org.caesarj.compiler.util.InheritConstructorsFjVisitor;
-import org.caesarj.compiler.util.JoinPointReflectionVisitor;
-import org.caesarj.compiler.util.MethodTransformationFjVisitor;
-import org.caesarj.compiler.util.ResolveSuperClassFjVisitor;
-import org.caesarj.kjc.BytecodeOptimizer;
-import org.caesarj.kjc.CSourceClass;
-import org.caesarj.kjc.CodeSequence;
-import org.caesarj.kjc.Constants;
-import org.caesarj.kjc.JCompilationUnit;
-import org.caesarj.kjc.KjcEnvironment;
-import org.caesarj.kjc.KjcMessages;
-import org.caesarj.kjc.TypeFactory;
+import org.caesarj.compiler.ast.FjVisitor;
+import org.caesarj.compiler.ast.JCompilationUnit;
+import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.delegation.*;
+import org.caesarj.compiler.export.CSourceClass;
+import org.caesarj.compiler.family.*;
+import org.caesarj.compiler.joinpoint.*;
+import org.caesarj.compiler.optimize.BytecodeOptimizer;
+import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.compiler.util.*;
+import org.caesarj.tools.antlr.extra.*;
+import org.caesarj.tools.antlr.extra.InputBuffer;
+import org.caesarj.tools.antlr.runtime.ParserException;
+import org.caesarj.util.*;
 import org.caesarj.util.Utils;
 
 /**
@@ -43,7 +36,7 @@ import org.caesarj.util.Utils;
  * 
  * @author Jürgen Hallpap
  */
-public class Main extends org.caesarj.kjc.Main implements Constants {
+public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 
 	private CaesarMessageHandler messageHandler;
 	protected Vector compilationUnits;
@@ -52,7 +45,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 	protected boolean joined;
 
 	// The used weaver. An instance ist created when it's needed in generateAndWeaveCode
-	CaesarWeaver weaver; 
+	private CaesarWeaver weaver; 
 	
 	/**
 	 * @param workingDirectory the working directory
@@ -97,7 +90,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 		options.destination = checkDestination(options.destination);		
 		if (verboseMode()) {
 			inform(
-				CompilerMessages.COMPILATION_STARTED,
+				CaesarMessages.COMPILATION_STARTED,
 				new Integer(infiles.size()));
 		}
 
@@ -134,7 +127,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 		}
 
 		if (verboseMode()) {
-			inform(CompilerMessages.COMPILATION_ENDED);
+			inform(CaesarMessages.COMPILATION_ENDED);
 		}
 
 		CodeSequence.endSession();
@@ -307,7 +300,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 	}
 
 	protected ResolveSuperClassFjVisitor getResolveSuperClass(
-		Compiler compiler,
+		CompilerBase compiler,
 		Vector compilationUnits) {
 		return new ResolveSuperClassFjVisitor(compiler, compilationUnits);
 	}
@@ -343,13 +336,13 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 		} catch (UnsupportedEncodingException e) {
 			reportTrouble(
 				new UnpositionedError(
-					CompilerMessages.UNSUPPORTED_ENCODING,
+					Messages.UNSUPPORTED_ENCODING,
 					options.encoding));
 			return null;
 		} catch (IOException e) {
 			reportTrouble(
 				new UnpositionedError(
-					CompilerMessages.IO_EXCEPTION,
+					Messages.IO_EXCEPTION,
 					file.getPath(),
 					e.getMessage()));
 			return null;
@@ -378,7 +371,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 
 		if (verboseMode()) {
 			inform(
-				CompilerMessages.FILE_PARSED,
+			CaesarMessages.FILE_PARSED,
 				file.getPath(),
 				new Long(System.currentTimeMillis() - lastTime));
 		}
@@ -388,7 +381,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 		} catch (IOException e) {
 			reportTrouble(
 				new UnpositionedError(
-					CompilerMessages.IO_EXCEPTION,
+					Messages.IO_EXCEPTION,
 					file.getPath(),
 					e.getMessage()));
 		}
@@ -430,7 +423,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 				
 				if (verboseMode() && !classes[count].isNested()) {
 					inform(
-						CompilerMessages.CLASSFILE_GENERATED,
+					CaesarMessages.CLASSFILE_GENERATED,
 						classes[count].getQualifiedName().replace('/', '.'),
 						new Long(System.currentTimeMillis() - lastTime));
 				}
@@ -446,11 +439,11 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 			e.printStackTrace();
 			reportTrouble(
 				new UnpositionedError(
-					CompilerMessages.FORMATTED_ERROR,
+					Messages.FORMATTED_ERROR,
 					e.getMessage()));
 		} catch (IOException e) {
 			reportTrouble(new UnpositionedError(
-				CompilerMessages.IO_EXCEPTION,
+				Messages.IO_EXCEPTION,
 				"classfile",
 			//!!!FIXME !!!
 			e.getMessage()));

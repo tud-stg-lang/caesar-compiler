@@ -1,7 +1,7 @@
 package org.caesarj.compiler;
 
-import org.caesarj.kjc.CClassNameType;
-import org.caesarj.kjc.CReferenceType;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CReferenceType;
 
 /**
  * @author Walter Augusto Werner

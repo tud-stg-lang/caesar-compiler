@@ -11,9 +11,9 @@ import org.aspectj.bridge.AbortException;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.caesarj.compiler.CaesarMessages;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
 import org.caesarj.util.Message;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
 
 /**
  * @author Karl Klose

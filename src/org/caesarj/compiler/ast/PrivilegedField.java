@@ -1,13 +1,13 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.kjc.CField;
-import org.caesarj.kjc.CMethod;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CType;
-import org.caesarj.kjc.CTypeVariable;
-import org.caesarj.kjc.CVoidType;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMember;
+import org.caesarj.compiler.context.CField;
+import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.compiler.types.CVoidType;
 
 /**
  * A privileged field encapsulates a non-visible field and 

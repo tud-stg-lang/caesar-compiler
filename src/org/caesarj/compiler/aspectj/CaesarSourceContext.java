@@ -4,8 +4,7 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.ISourceContext;
-
-import org.caesarj.compiler.TokenReference;
+import org.caesarj.util.TokenReference;
 
 /**
  * @author hallpap

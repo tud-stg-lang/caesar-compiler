@@ -1,16 +1,15 @@
 package org.caesarj.compiler.ast;
 
 import org.caesarj.compiler.CaesarMessages;
-import org.caesarj.compiler.UnpositionedError;
-import org.caesarj.kjc.CClass;
-import org.caesarj.kjc.CMethod;
-import org.caesarj.kjc.CModifier;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CSourceMethod;
-import org.caesarj.kjc.CType;
-import org.caesarj.kjc.CTypeContext;
-import org.caesarj.kjc.CTypeVariable;
-import org.caesarj.kjc.JBlock;
+import org.caesarj.compiler.context.CTypeContext;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.export.CModifier;
+import org.caesarj.compiler.export.CSourceMethod;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.util.UnpositionedError;
 
 public class FjSourceMethod extends CSourceMethod {
 

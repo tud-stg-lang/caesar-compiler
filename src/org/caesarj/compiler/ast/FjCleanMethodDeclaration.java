@@ -4,24 +4,13 @@ import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.kjc.CModifier;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CStdType;
-import org.caesarj.kjc.CType;
-import org.caesarj.kjc.CTypeVariable;
-import org.caesarj.kjc.CVoidType;
-import org.caesarj.kjc.JBlock;
-import org.caesarj.kjc.JBooleanLiteral;
-import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.JExpressionStatement;
-import org.caesarj.kjc.JFormalParameter;
-import org.caesarj.kjc.JIntLiteral;
-import org.caesarj.kjc.JMethodCallExpression;
-import org.caesarj.kjc.JNullLiteral;
-import org.caesarj.kjc.JReturnStatement;
-import org.caesarj.kjc.JStatement;
-import org.caesarj.kjc.JTypeDeclaration;
+import org.caesarj.compiler.export.CModifier;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CStdType;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.compiler.types.CVoidType;
+import org.caesarj.util.TokenReference;
 
 public class FjCleanMethodDeclaration 
 	extends FjPrivateMethodDeclaration 

@@ -15,12 +15,18 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Main.java,v 1.1 2003-07-05 18:29:37 werner Exp $
+ * $Id: Main.java,v 1.2 2004-02-08 16:47:45 ostermann Exp $
  */
 
 package org.caesarj.classfile;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+
+import org.caesarj.util.Messages;
 
 
 /**
@@ -45,7 +51,7 @@ public class Main {
 
     if (infiles.length == 0) {
       options.usage();
-      System.err.println(ClassfileMessages.NO_INPUT_FILE);
+      System.err.println(Messages.NO_INPUT_FILE);
       System.exit(1);
     } else {
       boolean	errorsFound = false;

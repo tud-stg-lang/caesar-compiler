@@ -1,11 +1,9 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.kjc.CExpressionContext;
-import org.caesarj.kjc.CType;
-import org.caesarj.kjc.CTypeContext;
-import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.JUnaryPromote;
+import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.compiler.context.CTypeContext;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.util.PositionedError;
 
 public class FjUnaryPromote extends JUnaryPromote {
 

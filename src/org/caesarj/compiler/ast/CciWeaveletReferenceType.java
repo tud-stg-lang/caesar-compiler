@@ -1,11 +1,11 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.UnpositionedError;
-import org.caesarj.kjc.CClass;
-import org.caesarj.kjc.CClassNameType;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CType;
-import org.caesarj.kjc.CTypeContext;
+import org.caesarj.compiler.context.CTypeContext;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * It represents a reference for a collaboration interface when it is woven

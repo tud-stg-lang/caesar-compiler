@@ -4,9 +4,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.caesarj.kjc.CClass;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.JLocalVariable;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.types.CReferenceType;
 
 public class FjFamilyContext {
 

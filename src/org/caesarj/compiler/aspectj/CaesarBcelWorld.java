@@ -2,8 +2,7 @@ package org.caesarj.compiler.aspectj;
 
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.bcel.BcelWorld;
-
-import org.caesarj.kjc.CClass;
+import org.caesarj.compiler.export.CClass;
 
 /**
  * CaesarBcelWorld.

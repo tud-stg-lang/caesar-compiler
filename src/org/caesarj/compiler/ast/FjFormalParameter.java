@@ -2,21 +2,15 @@ package org.caesarj.compiler.ast;
 
 import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.compiler.UnpositionedError;
-import org.caesarj.kjc.CClass;
-import org.caesarj.kjc.CModifier;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CType;
-import org.caesarj.kjc.CTypeContext;
-import org.caesarj.kjc.JAssignmentExpression;
-import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.JExpressionStatement;
-import org.caesarj.kjc.JFormalParameter;
-import org.caesarj.kjc.JTypeDeclaration;
-import org.caesarj.kjc.JVariableDeclarationStatement;
-import org.caesarj.kjc.KjcMessages;
-import org.caesarj.kjc.TypeFactory;
+import org.caesarj.compiler.KjcMessages;
+import org.caesarj.compiler.context.CTypeContext;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CModifier;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 public class FjFormalParameter extends JFormalParameter {
 

@@ -5,16 +5,12 @@ import java.util.ArrayList;
 import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.kjc.CClassNameType;
-import org.caesarj.kjc.CModifier;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CTypeVariable;
-import org.caesarj.kjc.JFieldDeclaration;
-import org.caesarj.kjc.JMethodDeclaration;
-import org.caesarj.kjc.JPhylum;
-import org.caesarj.kjc.JTypeDeclaration;
+import org.caesarj.compiler.export.CModifier;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
 
 /**
  * AST element for interface declaration.

@@ -1,10 +1,9 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.compiler.UnpositionedError;
-import org.caesarj.kjc.CClass;
-import org.caesarj.kjc.CTypeVariable;
-import org.caesarj.kjc.JTypeDeclaration;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * It represents the source class of the weavelet classes. It contains 

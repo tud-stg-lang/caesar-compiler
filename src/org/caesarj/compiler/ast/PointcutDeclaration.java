@@ -3,23 +3,20 @@ package org.caesarj.compiler.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.caesarj.kjc.CBinaryTypeContext;
-import org.caesarj.kjc.CClass;
-import org.caesarj.kjc.CClassContext;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CSourceMethod;
-import org.caesarj.kjc.CType;
-import org.caesarj.kjc.CTypeVariable;
-import org.caesarj.kjc.JBlock;
-import org.caesarj.kjc.JFormalParameter;
-import org.caesarj.kjc.JStatement;
 import org.caesarj.compiler.JavadocComment;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.aspectj.CaesarFormalBinding;
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.aspectj.CaesarScope;
+import org.caesarj.compiler.context.CBinaryTypeContext;
+import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CSourceMethod;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
 
 /**
  * A Pointcut declaration.

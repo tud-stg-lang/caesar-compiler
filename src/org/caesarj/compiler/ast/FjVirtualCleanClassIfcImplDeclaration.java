@@ -1,9 +1,9 @@
 package org.caesarj.compiler.ast;
 
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.kjc.CContext;
-import org.caesarj.kjc.CReferenceType;
+import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
 
 public class FjVirtualCleanClassIfcImplDeclaration
 	extends FjCleanClassIfcImplDeclaration

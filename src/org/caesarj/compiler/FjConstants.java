@@ -4,12 +4,14 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.caesarj.kjc.CClassNameType;
-import org.caesarj.kjc.CMethod;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CType;
-import org.caesarj.kjc.CTypeContext;
-import org.caesarj.kjc.JFormalParameter;
+import org.caesarj.compiler.ast.JFormalParameter;
+import org.caesarj.compiler.context.CTypeContext;
+import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.compiler.util.*;
+import org.caesarj.util.*;
 import org.caesarj.util.InconsistencyException;
 
 public class FjConstants {

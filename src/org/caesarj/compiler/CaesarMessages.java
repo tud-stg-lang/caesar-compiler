@@ -3,7 +3,17 @@ package org.caesarj.compiler;
 
 import org.caesarj.util.MessageDescription;
 
-public interface CaesarMessages extends org.caesarj.compiler.CompilerMessages {
+public interface CaesarMessages extends org.caesarj.util.Messages {
+	MessageDescription	COMPILATION_STARTED = new MessageDescription("[ start compilation in verbose mode ]", null, 4);
+	MessageDescription	FILE_PARSED = new MessageDescription("[ parsed {0} in {1} ms ]", null, 4);
+	MessageDescription	INTERFACES_CHECKED = new MessageDescription("[ checked interfaces in {0} ms ]", null, 4);
+	MessageDescription	BODY_CHECKED = new MessageDescription("[ checked body of {0} in {1} ms ]", null, 4);
+	MessageDescription	CONDITION_CHECKED = new MessageDescription("[ checked condition of {0} in {1} ms ]", null, 4);
+	MessageDescription	CLASSFILE_GENERATED = new MessageDescription("[ optimized and generated {0} in {1} ms ]", null, 4);
+	MessageDescription	JAVA_CODE_GENERATED = new MessageDescription("[ generated {0} ]", null, 4);
+	MessageDescription	CLASS_LOADED = new MessageDescription("[ loaded {0} ]", null, 4);
+	MessageDescription	COMPILATION_ENDED = new MessageDescription("[ compilation ended ]", null, 4);
+	
   MessageDescription	FJ_IMPL_WITHOUT_FJ_PARSER = new MessageDescription("FamilyJ implementations e.g. FjVisitors are only compatible to a FjParser", "WRONG PARSER", 0);
   MessageDescription	CLEAN_CLASS_NO_INNER = new MessageDescription("clean classes may not be inners", "FJLS 1.1", 0);
   MessageDescription	MODIFIERS_INNER_CLASSES_ONLY = new MessageDescription("\"{0}\" can only be applied to inner classes", "FJLS 1.2", 0);

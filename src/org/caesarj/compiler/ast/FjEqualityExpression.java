@@ -1,14 +1,10 @@
 package org.caesarj.compiler.ast;
 
 import org.caesarj.compiler.FjConstants;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.kjc.CClassNameType;
-import org.caesarj.kjc.CExpressionContext;
-import org.caesarj.kjc.JEqualityExpression;
-import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.JMethodCallExpression;
-import org.caesarj.kjc.JTypeNameExpression;
+import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
 
 public class FjEqualityExpression extends JEqualityExpression {
 

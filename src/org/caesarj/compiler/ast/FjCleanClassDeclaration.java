@@ -4,35 +4,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Vector;
 
-
 import org.caesarj.classfile.Constants;
 import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.compiler.UnpositionedError;
 import org.caesarj.compiler.aspectj.CaesarDeclare;
-import org.caesarj.kjc.CClass;
-import org.caesarj.kjc.CClassNameType;
-import org.caesarj.kjc.CContext;
-import org.caesarj.kjc.CMethod;
-import org.caesarj.kjc.CModifier;
-import org.caesarj.kjc.CReferenceType;
-import org.caesarj.kjc.CTypeVariable;
-import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.JFieldDeclaration;
-import org.caesarj.kjc.JFormalParameter;
-import org.caesarj.kjc.JMethodDeclaration;
-import org.caesarj.kjc.JNullLiteral;
-import org.caesarj.kjc.JPhylum;
-import org.caesarj.kjc.JStatement;
-import org.caesarj.kjc.JTypeDeclaration;
-import org.caesarj.kjc.JUnqualifiedInstanceCreation;
-import org.caesarj.kjc.TypeFactory;
+import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.export.CModifier;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.MessageDescription;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 import org.caesarj.util.Utils;
 
 public class FjCleanClassDeclaration 

@@ -1,17 +1,13 @@
 package org.caesarj.compiler.ast;
 
 import org.caesarj.compiler.FjConstants;
-import org.caesarj.compiler.PositionedError;
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.compiler.UnpositionedError;
-import org.caesarj.kjc.CBlockContext;
-import org.caesarj.kjc.CClassNameType;
-import org.caesarj.kjc.CExpressionContext;
-import org.caesarj.kjc.CType;
-import org.caesarj.kjc.JCastExpression;
-import org.caesarj.kjc.JExpression;
-import org.caesarj.kjc.JMethodCallExpression;
-import org.caesarj.kjc.JTypeNameExpression;
+import org.caesarj.compiler.context.CBlockContext;
+import org.caesarj.compiler.context.CExpressionContext;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.util.PositionedError;
+import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 public class FjCastExpression extends JCastExpression {
 

@@ -15,14 +15,14 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: PreconditionAttribute.java,v 1.1 2003-07-05 18:29:37 werner Exp $
+ * $Id: PreconditionAttribute.java,v 1.2 2004-02-08 16:47:45 ostermann Exp $
  */
 
 package org.caesarj.classfile;
 
 import java.io.DataInput;
-import java.io.IOException;
 import java.io.DataOutput;
+import java.io.IOException;
 
 public class PreconditionAttribute extends Attribute {
 

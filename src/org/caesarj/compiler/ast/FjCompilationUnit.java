@@ -3,14 +3,9 @@ package org.caesarj.compiler.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.caesarj.compiler.TokenReference;
-import org.caesarj.compiler.util.DeploymentClassFactory;
-import org.caesarj.kjc.JClassImport;
-import org.caesarj.kjc.JCompilationUnit;
-import org.caesarj.kjc.JPackageImport;
-import org.caesarj.kjc.JPackageName;
-import org.caesarj.kjc.JTypeDeclaration;
-import org.caesarj.kjc.KjcEnvironment;
+import org.caesarj.compiler.KjcEnvironment;
+import org.caesarj.compiler.joinpoint.DeploymentClassFactory;
+import org.caesarj.util.TokenReference;
 
 /**
  * @author andreas
