@@ -348,6 +348,7 @@ public class JClassDeclaration extends JTypeDeclaration {
         self = null;
     }
 
+/*
     // CTODO this here is not nice at all.
     // This method is used in generateInterfaces in TypeDeclaration
     // It would be sufficient to use CSourceClass.
@@ -367,6 +368,7 @@ public class JClassDeclaration extends JTypeDeclaration {
             this,
             null);
     }
+*/    
 
     /**
      * Check that initializers are correct
@@ -660,6 +662,10 @@ public class JClassDeclaration extends JTypeDeclaration {
 
     public JMethodDeclaration[] getMethods() {
         return methods;
+    }
+    
+    public JTypeDeclaration[] getInners() {
+        return inners;
     }
 
     public void setSuperClass(CReferenceType superClass) {
