@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectDeploymentTests.java,v 1.19 2005-03-30 14:25:12 gasiunas Exp $
+ * $Id: AspectDeploymentTests.java,v 1.20 2005-03-30 16:45:58 gasiunas Exp $
  */
 
 package org.caesarj.test;
@@ -200,5 +200,10 @@ public class AspectDeploymentTests extends FjTestCase
 	/*  Tests declares in abstract classes */
 	public void testCaesarTestCase_34() throws Throwable {
 		compileAndRun("test134", "ADTestCase");
+	}
+	
+	/*  Test aspect() method */
+	public void testCaesarTestCase_35() throws Throwable {
+		compileAndRun("test135", "ADTestCase");
 	}
 }
