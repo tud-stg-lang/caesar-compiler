@@ -53,7 +53,6 @@ public class FieldAccess extends Path {
 	            typeDecl = new TypeDecl(memDefPath, dependType.getIdent());
 	        }
 	        else {
-	            // IVICA: you can do it better ;)
 	            CClass contextClass = f.getOwner();
 	            CClass clazz = fType.getCClass();
 	            

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.20 2004-11-02 17:59:20 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.21 2004-11-25 11:28:31 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -166,7 +166,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
                     subNode.getQualifiedImplName().getIdent(),
                     CReferenceType.EMPTY,
                     null, // wrappee
-                    new CReferenceType[]{ifcDecl.getCClass().getAbstractType()}, // CTODO ifcs
+                    new CReferenceType[]{ifcDecl.getCClass().getAbstractType()},
                     new JFieldDeclaration[0],
 					new JMethodDeclaration[0],
                     new JTypeDeclaration[0],
