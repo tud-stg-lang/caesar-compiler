@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JArrayInitializer.java,v 1.1 2004-03-15 11:56:51 aracic Exp $
+ * $Id: JArrayInitializer.java,v 1.2 2004-03-29 12:06:09 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -71,7 +71,7 @@ public class JArrayInitializer extends JExpression {
    * @param	type		the type of this array
    */
   public void setType(CArrayType type) {
-    verify(type.checked());
+    verify(type.isChecked());
     this.type = type;
   }
 
