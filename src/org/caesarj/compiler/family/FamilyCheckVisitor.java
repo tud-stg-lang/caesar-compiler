@@ -11,7 +11,6 @@ import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.ast.visitor.VisitorSupport;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.types.CDependentType;
 import org.caesarj.util.InconsistencyException;
 
 /**
@@ -60,9 +59,8 @@ public class FamilyCheckVisitor implements IVisitor, CaesarConstants  {
         
         // both are dependent types or both are not dependent types
         if(
-                left.getType(null).isDependentType()!=right.getType(null).isDependentType()
-//            (left.getType(null) instanceof CDependentType)
-//            ^ (right.getType(null) instanceof CDependentType)
+            // CRITICAL typefactory may not be null
+            left.getType(null).isDependentType()!=right.getType(null).isDependentType()
         ) {
             System.err.println("~~~ can not mix dependent and non-dependent types, line "+self.getTokenReference().getLine());
             throw new InconsistencyException();
@@ -76,7 +74,7 @@ public class FamilyCheckVisitor implements IVisitor, CaesarConstants  {
             
             Path leftExpr = 
                 Path.createFrom(contextClass, (JFieldAccessExpression)left);
-            
+
             Path rightExpr = 
                 Path.createFrom(contextClass, (JFieldAccessExpression)right);
             
