@@ -17,7 +17,7 @@ public class AllTests {
 		//$JUnit-BEGIN$
         suite.addTestSuite( VirtualClassesTests.class );
         //suite.addTestSuite( CompileAndRunResultsWeaverTest.class );
-        //suite.addTestSuite( AutomaticCaesarTests.class);
+        suite.addTestSuite( AspectDeploymentTests.class);
 		//$JUnit-END$
 		return suite;
 	}
