@@ -75,6 +75,7 @@ public class VisitorSupport implements IVisitor {
             throw new InconsistencyException("visit method has to return boolean");
         }
         catch (Exception ex) {
+            ex.printStackTrace();
             throw new InconsistencyException(ex.getMessage());
         }
         
