@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CReferenceType.java,v 1.2 2004-02-18 09:23:42 klose Exp $
+ * $Id: CReferenceType.java,v 1.3 2004-03-29 12:05:29 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -79,17 +79,8 @@ public abstract class CReferenceType extends CType {
       return new CClassNameType(qualifiedName, false);
     }
   }
-  /**
-   * This method has been overridden to allow 
-   * knowing if it has been checked or not.
-   * @author Walter Augusto Werner
-   */
-  public boolean checked()
-  {
-  	return clazz != BAC_CLASS;
-  }
 
-  protected boolean isChecked() {
+  public boolean isChecked() {
     return clazz != BAC_CLASS;
   }
 

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CErasedReferenceType.java,v 1.1 2004-02-08 16:47:48 ostermann Exp $
+ * $Id: CErasedReferenceType.java,v 1.2 2004-03-29 12:05:29 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -41,7 +41,7 @@ public class CErasedReferenceType extends CReferenceType {
     super(clazz);
   }
 
-  protected boolean isChecked() {
+  public boolean isChecked() {
     return true;
   }
 
