@@ -21,24 +21,30 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.verifier.GraphicalVerifier;
 import org.caesarj.classfile.NameAndTypeConstant;
+import org.caesarj.compiler.cclass.CaesarTypeSystem;
 import org.caesarj.compiler.cclass.JavaQualifiedName;
+import org.caesarj.compiler.cclass.JavaTypeNode;
 import org.caesarj.mixer.ClassGenerator;
 import org.caesarj.mixer.MixerException;
 
 
 /**
- * Modify a <code>JavaClass</code> to have a different class and superclass name.
+ * Modify a <code>JavaClass</code> to have a different class, superclass and outerclass.
  * Performs the following changes:
  * 1. Change className
  * 2. Change superclassName
  * 3. Change type of local this-variable
- * 4. Modify inner class references
- 
+ * 4. Change super-constructor calls
+ * 5. Change cosntructor signatures
+ *
+ * It is asserted that the modified class is not used as an argument, returntype or field type 
+ * by itself. 
+ *  
  * @author Karl Klose
  */
-public class ClassModifyingVisitor extends EmptyVisitor {
+public class ClassModifyingVisitor extends EmptyVisitor  {
 
-	protected String[]	outerClasses;// = new String[]{"example/Aprime"};
+	protected String[]	outerClasses;
 	
 	protected static String	outputDirectory = "bin/";
 	
@@ -51,29 +57,57 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 						newClassName, 
 						newSuperclassName,
 						newOuterClassName,
-						oldOuterClassName;
-
+						oldOuterClassName,
+						oldSuperclassName,
+						outerOfOldSuper, 
+						outerOfNewSuper;
+	
 	public static	void modify( 
 			String className, 
 			String newClassName, 
 			String newSuperclassName, 
 			String outerClassName,
-			String [] outers ) throws MixerException{
-		
-		ClassModifyingVisitor	visitor = new ClassModifyingVisitor( 
-												className, 
-												newClassName, 
-												newSuperclassName, 
-												outerClassName, 
-												outers );
-		
+			CaesarTypeSystem typeSystem) throws MixerException{
+
+		// Load the class
 		JavaClass	clazz = Repository.lookupClass(className);
 		
 		if (clazz == null) {
 			throw new MixerException("Class not found "+ className);
 		}
 		
-		visitor.run(clazz);
+		String oldSuperclassName = clazz.getSuperclassName().replace('.','/');
+		
+		// use the typesystem to calculate some missing information
+		JavaTypeNode	oldSuperClass = typeSystem.getJavaGraph().getNode(new JavaQualifiedName(oldSuperclassName));
+		String outerOfOldSuper = null;
+		if (oldSuperClass != null && oldSuperClass.getOuter() != null)
+			outerOfOldSuper = oldSuperClass.getOuter().getQualifiedName().toString();
+		
+		JavaTypeNode	newSuperClass = typeSystem.getJavaGraph().getNode(new JavaQualifiedName(newSuperclassName));
+		String outerOfNewSuper = null;
+		if (newSuperClass != null && newSuperClass.getOuter() != null)
+			outerOfNewSuper = newSuperClass.getOuter().getQualifiedName().toString();
+		
+		// collect all outer classes for this mixin
+    	Vector	outerClasses = new Vector();
+    	
+    	JavaTypeNode mixinType = typeSystem.getJavaGraph().getNode(new JavaQualifiedName(newClassName)),
+					outerType = mixinType.getOuter();
+    	while ( outerType != null){
+       	  outerClasses.add( outerType.getQualifiedName().getIdent() );  		
+		  outerType = outerType.getOuter();
+    	}
+    	String[] outers = (String[])outerClasses.toArray( new String[0]);
+    	// run the algorithm
+		new ClassModifyingVisitor( 
+				className, 
+				newClassName, 
+				newSuperclassName, 
+				outerClassName, 
+				outerOfOldSuper,
+				outerOfNewSuper,
+				outers ).run(clazz);
 	}
 	
 	
@@ -89,11 +123,15 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 			String newClassName, 
 			String newSuperclassName,
 			String outerClassName,
+			String outerOfOldSuper,
+			String outerOfNewSuper,
 			String []outers ) {
 		this.oldClassName = oldClassName;
 		this.newClassName = newClassName;
 		this.newSuperclassName = newSuperclassName;
 		this.newOuterClassName = outerClassName;
+		this.outerOfOldSuper = outerOfOldSuper;
+		this.outerOfNewSuper = outerOfNewSuper;
 		outerClasses = outers;
 	
 	}
@@ -101,17 +139,17 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 	
 	protected void run(JavaClass clazz) throws MixerException {
 		oldOuterClassName =  Tools.getOuterClass(clazz,oldClassName);
+		oldSuperclassName = clazz.getSuperclassName();
+		
 		// create a copy as work base
 		JavaClass newClass = clazz.copy();
-	
-		
-
+/*
 		Attribute	[] attributes = newClass.getAttributes();
 		for (int i = 0; i < attributes.length; i++) {
 			Attribute attribute = attributes[i];
 			if (attribute.getTag() != Constants.ATTR_INNER_CLASSES) continue;
 		}
-		
+*/		
 		// find indices of class and super class name
 		int classNameIndex = newClass.getClassNameIndex(),
 		superclassNameIndex = newClass.getSuperclassNameIndex();
@@ -146,11 +184,13 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 		atts = (Attribute[]) v.toArray(new Attribute[0]);
 		newClass.setAttributes(atts);
 		
+
 		newClass = removeFactoryMethods(newClass);
-		
+
 		// take a look at all methodrefs
 		modifyMethodRefs(newClass);
-/*		KK
+
+/*		KK Add inner class references here. Do we need this?
 		// Add reference to the outer-class-file 
 		if (!oldOuterClassName.equals(newOuterClassName)){
 			JavaClass outer = Repository.lookupClass(newOuterClassName);
@@ -177,6 +217,12 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 	
 	}
 
+	/**
+	 * Remove all methods from <code>clazz</code> whose names start
+	 * with '$new'.
+	 * @param clazz	The class to modify	
+	 * @return	The class with removed methods
+	 */
 	JavaClass removeFactoryMethods( JavaClass clazz ){
 		ClassGen gen = new ClassGen(clazz);
 		
@@ -191,6 +237,10 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 		return gen.getJavaClass();
 	}
 	
+	/**
+	 * Checks method references to super-constructors and outerclass methods
+	 * and modifies them to refer to the correct new outer classes. 
+	 */
 	void modifyMethodRefs( JavaClass clazz ){
 		ConstantPool cp = clazz.getConstantPool();
 		for (int i=1; i<cp.getLength(); i++){
@@ -199,7 +249,40 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 				ConstantMethodref mr = (ConstantMethodref) c;
 				String targetClassName = mr.getClass(cp);
 
-				if (Tools.isPrefix(targetClassName, oldClassName)){
+				int nameAndTypeIndex = mr.getNameAndTypeIndex();
+				
+				ConstantNameAndType	nat = ((ConstantNameAndType) cp.getConstant(nameAndTypeIndex));
+			
+				// Check for superconstructor calls with otuer class parameter
+				if (Tools.sameClass(targetClassName, newSuperclassName)){
+					if (nat.getName(cp).equals("<init>")){		
+						Type[] args = Type.getArgumentTypes(nat.getSignature(cp));
+						if (args.length == 1){
+							String argumentType = args[0].toString();
+/*							System.out.println(
+									"Call to method  :\t"+targetClassName+"."+nat.getSignature(cp)+
+									"\n Argument type  :\t"+ args[0].toString()+
+									"\n outerOfOldSuper:\t"+outerOfOldSuper+
+									"\n outerOfNewSuper:\t"+outerOfNewSuper+
+									"\n newClassName   :\t"+newClassName+
+									"\n oldClassName   :\t"+oldClassName+
+									"\n newOuterName   :\t"+newOuterClassName+
+									"\n oldouterName   :\t"+oldOuterClassName+
+									"\n newSuperName   :\t"+newSuperclassName+
+									"\n oldSuperName   :\t"+oldSuperclassName
+									);*/
+							// if parameter is of old super-outer-class type, set new signature
+							if (Tools.sameClass(argumentType, outerOfOldSuper)){
+								cp.setConstant( 
+										nat.getSignatureIndex(),
+										new ConstantUtf8("(L"+outerOfNewSuper+";)V")
+									);
+							}
+						}
+					}
+				}
+				// check whether its a call to our old outer class
+				if (Tools.isPrefix(targetClassName, oldOuterClassName)){
 					String newTargetClass = Tools.getNewOuterName(
 												oldClassName,
 												targetClassName,
@@ -275,7 +358,7 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 		else if (obj.getName().equals("<init>")){
 			Type[]	argTypes = Type.getArgumentTypes(obj.getSignature());
 			if (argTypes.length != 1) return;
-			
+			// modify the signature if neccessary
 			if (Tools.sameClass(argTypes[0].toString(),oldOuterClassName)){
 				// construct the new signature & use it to overwrite the old one
 				String newSignature = "(L"+newOuterClassName+";)V";
@@ -284,6 +367,9 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 				
 				obj.getConstantPool().setConstant(index, new ConstantUtf8(newSignature));
 			}
+			// check code for super-cosntructor call and adjust its signature
+			Code code = obj.getCode();
+			
 		}
 	}
 

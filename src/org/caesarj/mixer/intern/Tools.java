@@ -89,6 +89,7 @@ public class Tools {
 	}
 	
 	public static String	dottedClassName( String name ){
+		if (name==null) return null;
 		return name.replace('/','.').replace('$','.');
 	}
 
@@ -136,10 +137,8 @@ public class Tools {
 	 * @return
 	 */
 	public static boolean sameClass(String class1, String class2) {
-		String 	c1 = class1.replace('/','.').replace('$','.'),
-				c2 = class2.replace('/','.').replace('$','.');
-		
-		return c1.equals(c2);
+		if (class1==null || class2==null)	return false;
+		return dottedClassName(class1).equals(dottedClassName(class2));
 	}
 
 	/**
