@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CReferenceType.java,v 1.10 2005-01-17 18:10:34 aracic Exp $
+ * $Id: CReferenceType.java,v 1.11 2005-01-21 16:58:57 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -57,6 +57,11 @@ public class CReferenceType extends CType {
         CClassContext classContext = (CClassContext) in;
         CClass 	ctx = classContext.getCClass(),
         		parent = myType.getOwner();
+        
+        if(ctx.isMixin())
+            ctx = ctx.getMixinInterface();
+        if(parent.isMixin())
+            parent = parent.getMixinInterface();
         
         while( ctx != parent ){
             if (ctx == null){
