@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.16 2004-06-29 13:31:49 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.17 2004-07-02 10:36:22 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -617,11 +617,15 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     }
     
     public void addInterface(CReferenceType newInterface) {
+        addInterface(new CReferenceType[]{newInterface});
+    }
+    
+    public void addInterface(CReferenceType newIfcs[]) {
         CReferenceType[] newInterfaces =
-            new CReferenceType[interfaces.length + 1];
+            new CReferenceType[interfaces.length + newIfcs.length];
 
         System.arraycopy(interfaces, 0, newInterfaces, 0, interfaces.length);
-        newInterfaces[interfaces.length] = newInterface;
+        System.arraycopy(newIfcs, 0, newInterfaces, interfaces.length, newIfcs.length);
 
         interfaces = newInterfaces;
     }
