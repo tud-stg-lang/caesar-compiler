@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Path.java,v 1.23 2005-03-03 12:18:56 aracic Exp $
+ * $Id: Path.java,v 1.24 2005-03-04 18:15:49 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -49,6 +49,7 @@ import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.export.CClass;
@@ -259,8 +260,9 @@ public abstract class Path {
             } else if (tmp instanceof JMethodCallExpression){
                 JMethodCallExpression me = (JMethodCallExpression) tmp;
                 if (me.getIdent().startsWith(Constants.JAV_ACCESSOR) ){
-                    CType type = me.getType(null);
-                    CClass clazz = type.getCClass();
+                    CType type = me.getType(context.getTypeFactory());
+                    // CRITICAL: return type or arg type??
+                    CClass clazz = type.getCClass();                    
                     // ... find first class context ... 
                     while (!(context instanceof CClassContext)){
                         context = context.getParentContext();
@@ -304,18 +306,18 @@ public abstract class Path {
             else if(tmp instanceof JTypeNameExpression) {
                 // CTODO: Disabled for now
                 JTypeNameExpression tne = (JTypeNameExpression)tmp;
-//                CReferenceType type = (CReferenceType)tmp.getType(context.getTypeFactory());
-//                
-//                path.add(0, new FieldAccess(true, null, type.getCClass().getQualifiedName(), type));
-//                // navigate out to the CU context
-//                CContext ctx = context;
-//                while(!(ctx instanceof CCompilationUnitContext)) {
-//                    ctx = ctx.getParentContext();
-//                    k++;
-//                }
-//                
-//                done = true;
-                throw new UnpositionedError(CaesarMessages.ILLEGAL_PATH_ELEMENT, tne.getType(context.getTypeFactory()).getSignature());
+                CReferenceType type = (CReferenceType)tmp.getType(context.getTypeFactory());
+                
+                path.add(0, new FieldAccess(true, null, type.getCClass().getQualifiedName(), type));
+                // navigate out to the CU context
+                CContext ctx = context;
+                while(!(ctx instanceof CCompilationUnitContext)) {
+                    ctx = ctx.getParentContext();
+                    k++;
+                }
+                
+                done = true;
+                //throw new UnpositionedError(CaesarMessages.ILLEGAL_PATH_ELEMENT, tne.getType(context.getTypeFactory()).getSignature());
             }
             else {
                 throw new UnpositionedError(CaesarMessages.ILLEGAL_PATH_ELEMENT, tmp.getIdent());

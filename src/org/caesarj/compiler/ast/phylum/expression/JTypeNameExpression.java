@@ -20,15 +20,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeNameExpression.java,v 1.5 2005-03-01 10:55:26 aracic Exp $
+ * $Id: JTypeNameExpression.java,v 1.6 2005-03-04 18:16:25 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.context.CBinaryTypeContext;
+import org.caesarj.compiler.context.CCompilationUnitContext;
+import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.family.ContextExpression;
+import org.caesarj.compiler.family.FieldAccess;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
@@ -109,8 +113,14 @@ public class JTypeNameExpression extends JExpression {
       // calc family
       // CRITICAL: commented out, this has caused errors with statements like System.out.println()
       // the reason is, that binary fields do not know in which context they have been resolved
-      //family = type.getPath();
-      //thisAsFamily = new FieldAccess(family, type.getQualifiedName(), type);
+      int k = 0;
+      CContext ctx = context.getBlockContext();
+      while(!(ctx instanceof CCompilationUnitContext)) {
+          ctx = ctx.getParentContext();
+          k++;
+      }
+      family = new ContextExpression(null, k, null);
+      thisAsFamily = new FieldAccess(true, family, type.getQualifiedName(), type);
       
     } catch (UnpositionedError e) {
       throw e.addPosition(getTokenReference());
