@@ -190,6 +190,9 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 		ConstantPool cp = clazz.getConstantPool();
 		for (int i=1; i<cp.getLength(); i++){
 			Constant c = cp.getConstant(i);
+			
+			if(c == null) continue;
+			
 			if (c.getTag() == Constants.CONSTANT_Methodref){
 				ConstantMethodref mr = (ConstantMethodref) c;
 				String targetClassName = mr.getClass(cp);
