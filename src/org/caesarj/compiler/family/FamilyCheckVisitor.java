@@ -85,8 +85,8 @@ public class FamilyCheckVisitor implements IVisitor, CaesarConstants  {
             
             System.out.println("~~~ leftSO: "+leftSO+"     rightSO: "+rightSO);
             
-            if(!leftSO.equals(rightSO)) {
-                System.err.println("incompatible families at line "+self.getTokenReference().getLine());
+            if(!leftSO.hasSameFamiliy(rightSO)) {
+                System.out.println("!!!incompatible families at line "+self.getTokenReference().getLine());
                 System.exit(1);
             }
         }

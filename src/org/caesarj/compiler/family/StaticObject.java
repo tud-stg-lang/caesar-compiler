@@ -29,9 +29,9 @@ public class StaticObject {
         return path+"."+type.getCClass().getIdent();
     }
     
-    public boolean equals(StaticObject other) {
+    public boolean hasSameFamiliy(StaticObject other) {
         return 
-        	type == other.type
-        	&& path.equals(other.path);
+        	/*type.descendsFrom(other.type) && */
+        	path.equals(other.path);
     }
 }
