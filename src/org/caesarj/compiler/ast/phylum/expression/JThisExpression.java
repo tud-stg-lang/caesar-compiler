@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JThisExpression.java,v 1.5 2004-09-06 13:31:35 aracic Exp $
+ * $Id: JThisExpression.java,v 1.6 2004-10-25 15:05:16 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -300,7 +300,8 @@ public class JThisExpression extends JExpression {
 	}
 
     public void recurse(IVisitor s) {
-        prefix.accept(s);  
+        if(prefix != null)
+            prefix.accept(s);  
     }
 	
 	// ----------------------------------------------------------------------
