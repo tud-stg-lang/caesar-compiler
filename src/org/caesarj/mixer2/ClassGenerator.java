@@ -90,34 +90,25 @@ public class ClassGenerator {
        createModifiedClass(
            mixinQN.toString(), 
            newClassQN.toString(), 
-           newSuperQN.toString() 
+           newSuperQN == null? "" : newSuperQN.toString(), 
+           newOuterQN == null? "" : newOuterQN.toString() 
        );		
     }
 
 
     
      
- 	private String loadName(int i, ConstantPool pool) {
- 		ConstantUtf8	c = (ConstantUtf8)pool.getConstant(i);
- 		return c.getBytes();
- 	}
-
-	private String loadClassName( int index, ConstantPool cp ){
-		ConstantClass 	cclass = (ConstantClass)cp.getConstant(index);
-    	
-    	return cclass.getBytes(cp);
-    }
-    
+   
     /**
      * This method creates a new class <code>newClass</code> which extends <code>newSuperClass</code> by
      * copying and modifiyng the classfile of <code>originalClass</code>
      */
-	protected void createModifiedClass( String originalClass, String newClass, String newSuperclass ) throws MixerException {
-		ClassModifyingVisitor.modify(originalClass,newClass,newSuperclass,null);
+	protected void createModifiedClass( String originalClass, String newClass, String newSuperclass, String newOuterClass ) throws MixerException {
+		ClassModifyingVisitor.modify(originalClass,newClass,newSuperclass,newOuterClass);
 	}
 	
     
-
+/*
     boolean signatureReferences( String signature, String type){
     	return ClassModifyingVisitor.typeFromSignature(signature).equals(type);
     }
@@ -125,5 +116,5 @@ public class ClassGenerator {
     String replaceTypeInSignature( String signature, String type ){
     	return ClassModifyingVisitor.replaceType(signature,type);
     }
-    
+  */  
 }
