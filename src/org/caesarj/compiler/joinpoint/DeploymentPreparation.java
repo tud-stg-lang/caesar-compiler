@@ -7,20 +7,43 @@
 package org.caesarj.compiler.joinpoint;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.aspectj.CaesarNameMangler;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
-import org.caesarj.compiler.ast.phylum.declaration.*;
-import org.caesarj.compiler.ast.phylum.expression.*;
-import org.caesarj.compiler.ast.phylum.statement.*;
+import org.caesarj.compiler.ast.phylum.declaration.CjAdviceDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjMethodDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjProceedDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.expression.JAssignmentExpression;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
+import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
+import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
+import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
+import org.caesarj.compiler.ast.phylum.expression.JUnqualifiedInstanceCreation;
+import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
+import org.caesarj.compiler.ast.phylum.statement.JBlock;
+import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
+import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
+import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
+import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
-import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.types.*;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CType;
+import org.caesarj.compiler.types.CTypeVariable;
+import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
 
 /**
@@ -75,13 +98,10 @@ public class DeploymentPreparation implements CaesarConstants {
 	}
 	private void prepareForDynamicDeployment(KjcEnvironment environment)
 	{
-		List newInners = new ArrayList();
-
+	    List newInners = new LinkedList();
+	    
 		for (int i = 0; i < cd.getInners().length; i++)
 		{
-
-			newInners.add(cd.getInners()[i]);
-
 			if (cd.getInners()[i] instanceof CjClassDeclaration)
 			{
 
@@ -119,13 +139,23 @@ public class DeploymentPreparation implements CaesarConstants {
 
 		}
 
-		cd.setInners(
-			(JTypeDeclaration[]) newInners.toArray(new JTypeDeclaration[0]));
-
-		//Important! Regenerate the interface of the enclosing class.
-		// TODO: this has destroyed everything: bad thing! analyse this code?
-		String prefix = cd.getCClass().getPackage().replace('.', '/') + "/";
-		cd.generateInterface(environment.getClassReader(), cd.getOwner(), prefix);
+		String prefix = cd.getCClass().getQualifiedName() + '$';
+		
+		// IVICA: refresh the class without recreating the CjSourceClass
+		if(newInners.size() > 0)
+		{
+			for (Iterator it = newInners.iterator(); it.hasNext();) 
+			{
+	            JTypeDeclaration decl = (JTypeDeclaration)it.next();
+	
+	            decl.generateInterface(
+			        environment.getClassReader(), cd.getCClass(), prefix);
+	        } 
+			
+			// add new declarations as inners to cd
+			// note that addInners will update the export object in cd
+			cd.addInners((JTypeDeclaration[])newInners.toArray(new JTypeDeclaration[0]));
+		}
 	}
 
 	public static void prepareForStaticDeployment(CContext context, CjClassDeclaration cd) {
