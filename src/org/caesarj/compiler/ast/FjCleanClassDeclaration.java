@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Vector;
 
+import org.aspectj.weaver.patterns.Declare;
 import org.caesarj.classfile.Constants;
 import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.CciConstants;
@@ -71,6 +72,47 @@ public class FjCleanClassDeclaration
 			javadoc,
 			comment);
 	}
+	public FjCleanClassDeclaration(
+		TokenReference where,
+		int modifiers,
+		String ident,
+		CTypeVariable[] typeVariables,
+		CReferenceType superClass,
+		CReferenceType binding,
+		CReferenceType providing,
+		CReferenceType wrappee,
+		CReferenceType[] interfaces,
+		JFieldDeclaration[] fields,
+		JMethodDeclaration[] methods,
+		JTypeDeclaration[] inners,
+		JPhylum[] initializers,
+		JavadocComment javadoc,
+		JavaStyleComment[] comment,
+		PointcutDeclaration[] pointcuts,
+		AdviceDeclaration[] advices,
+		Declare[] declares) {
+			super(
+				where,
+				modifiers,
+				ident,
+				typeVariables,
+				superClass,
+				binding,
+				providing,
+				wrappee,
+				interfaces,
+				fields,
+				methods,
+				inners,
+				initializers,
+				javadoc,
+				comment, 
+				pointcuts, 
+				advices, 
+				declares);
+			
+		}
+
 
 	public void checkInterface(CContext context) throws PositionedError
 	{

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.10 2003-08-27 22:38:42 werner Exp $
+ * $Id: Caesar.g,v 1.11 2003-08-28 11:44:44 ostermann Exp $
  */
 
 /*
@@ -536,7 +536,10 @@ jClassDefinition [int modifiers]
 				   context.getInnerClasses(),
 				   context.getBody(),
 				   javadoc,
-				   comments);
+				   comments,
+				   context.getPointcuts(),
+				   context.getAdvices(),
+				   context.getDeclares());
       } else {
           self = new FjClassDeclaration(sourceRef,
 				   modifiers,
