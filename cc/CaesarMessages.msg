@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.20 2004-10-29 12:49:09 aracic Exp $
+ * $Id: CaesarMessages.msg,v 1.21 2004-10-29 13:17:47 aracic Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -99,11 +99,8 @@ error	CCLASS_CTOR_PUBLIC
 error	OVERRIDE_WRAPPER
 		"Can not override an existing wrappee."
 
-error	CCLASS_PUBLIC_PACKAGE_FIELD
-		"public or package visible fields are not allowed within a cclass."
-		
-error	CCLASS_PACKAGE_METHOD
-		"package visible methods are not allowed within a cclass."
+error	CCLASS_PACKAGE_VISIBILITY
+		"no package visibility for cclass members."
 
 
 // MISC
