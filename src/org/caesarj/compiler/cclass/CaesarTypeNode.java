@@ -16,55 +16,62 @@ import org.caesarj.util.InconsistencyException;
  * 
  * @author Ivica Aracic
  */
-public class CaesarType {
+public class CaesarTypeNode {
+    
+    private TypeGraph typeGraph;
     
     private JavaQualifiedName qualifiedName;
     private HashMap inners = new HashMap();
     private HashMap subTypes = new HashMap();
    
-    private boolean mixinListCreated = false;
-    private LinkedList mixinList = new LinkedList();      
-   
-    private CaesarType outer = null;
-    private Set /*of CaesarType*/ parents = new HashSet();
-    private JTypeDeclaration declaration = null; // TODO
+    private boolean furtherBindingChecked = false;
+    private boolean furtherbinding = false;
     
+    private boolean mixinListCreated = false;
+    private LinkedList mixinList = new LinkedList(); // of CaesarTypeNode    
+   
+    private CaesarTypeNode outer = null;
+    private Set parents = new HashSet(); // of CaesarType
+    
+    private JTypeDeclaration declaration = null; // TODO    
        
     private boolean binary = false;
     
     
-    public CaesarType(String qualifiedName) {
-        this(new JavaQualifiedName(qualifiedName));
+    public CaesarTypeNode(TypeGraph typeGraph, String qualifiedName) {
+        this(typeGraph, new JavaQualifiedName(qualifiedName));
     }  
     
-    public CaesarType(JavaQualifiedName qualifiedName) {
+    public CaesarTypeNode(TypeGraph typeGraph, JavaQualifiedName qualifiedName) {
+        this.typeGraph = typeGraph;
         this.qualifiedName = qualifiedName;
     }  
     
-    public void addSubType(CaesarType subType) {
+    public void addSubType(CaesarTypeNode subType) {
         subTypes.put(subType.getQualifiedName().toString(), subType);
         subType.parents.add(this);
     }
     
-    public void removeSubType(CaesarType subType) {
+    public void removeSubType(CaesarTypeNode subType) {
         if(subTypes.containsKey(subType.getQualifiedName().toString())) {
             subTypes.remove(subType.getQualifiedName().toString());
             subType.parents.remove(this);
         }
     }
     
-    public void addInner(CaesarType inner) {
+    public void addInner(CaesarTypeNode inner) {
         inners.put(inner.getQualifiedName().toString(), inner);
         inner.outer = this;
     }
     
-    public void removeInner(CaesarType inner) {
+    public void removeInner(CaesarTypeNode inner) {
         if(inners.containsKey(inner.getQualifiedName().toString())) {
             inners.remove(inner.getQualifiedName().toString());
             inner.outer = null;
         }
     }   
     
+    // CTODO &; this(k), k>1 not implemented yet
     public void createMixinList(TypeGraph explicitGraph) {
         if(mixinListCreated) return;
         
@@ -75,7 +82,7 @@ public class CaesarType {
             createMixinList(explicitGraph, mixinList, outerMixinList, 0, qualifiedName.getIdent());
         }
         else {
-            CaesarType mixin = explicitGraph.getType(this.getQualifiedName().toString());
+            CaesarTypeNode mixin = explicitGraph.getType(this.getQualifiedName().toString());
             while(mixin != null) {                
                 mixinList.addLast(mixin);                
                 
@@ -83,7 +90,7 @@ public class CaesarType {
                     throw new InconsistencyException("& is not implemented yet");
                 
                 if(mixin.getParents().size() == 1)                                    
-                    mixin = (CaesarType)mixin.getParents().iterator().next();
+                    mixin = (CaesarTypeNode)mixin.getParents().iterator().next();
                 else
                     mixin = null;
             }
@@ -91,8 +98,7 @@ public class CaesarType {
         
         mixinListCreated = true;
     }
-    
-    // TODO & not implemented yet
+        
     private void createMixinList(
         TypeGraph explicitGraph,
         LinkedList mixinListToAppend,
@@ -100,16 +106,20 @@ public class CaesarType {
         int m,         
         String ident        
     ) {
-        CaesarType currentMixin = (CaesarType)outerMixinList.get(m);
-        CaesarType t = currentMixin.lookupInner(ident);
+        CaesarTypeNode currentMixin = (CaesarTypeNode)outerMixinList.get(m);
+        CaesarTypeNode t = currentMixin.lookupInner(ident);
         
-        if(t != null) {
+        if(t != null) {              
             if(t.isFurtherbinding()) {
                 mixinListToAppend.addLast(t);
                 createMixinList(explicitGraph, mixinListToAppend, outerMixinList, m+1, ident);
             }
             else if(t.getParents().size() >= 1) {
-                CaesarType superType = (CaesarType)t.getParents().iterator().next();
+                
+                if(t.getParents().size() > 1)
+                    throw new InconsistencyException("& is not implemented yet");
+                
+                CaesarTypeNode superType = (CaesarTypeNode)t.getParents().iterator().next();
                 mixinListToAppend.addLast(t);
                 createMixinList(
                     explicitGraph, 
@@ -134,28 +144,29 @@ public class CaesarType {
         if(visited.contains(this)) return;
         
         for(Iterator it = parents.iterator(); it.hasNext();) {
-            CaesarType parent = (CaesarType) it.next();
+            CaesarTypeNode parent = (CaesarTypeNode) it.next();
             parent.addImplicitTypesAndRelations(visited, added);
         }
 
                     
         // add implicit relations
         for(Iterator it = parents.iterator(); it.hasNext(); ) {
-            CaesarType superClass = (CaesarType)it.next();
+            CaesarTypeNode superClass = (CaesarTypeNode)it.next();
             
             // add implicit inner types and inheritance relation between virtual and further-binding
             for(Iterator it2 = superClass.getInners().keySet().iterator(); it2.hasNext(); ) {
-                CaesarType virtualType = 
-                    (CaesarType)superClass.getInners().get(it2.next());
+                CaesarTypeNode virtualType = 
+                    (CaesarTypeNode)superClass.getInners().get(it2.next());
                 
                 virtualType.addImplicitTypesAndRelations(visited, added);
                 
-                CaesarType furtherbindingType = 
+                CaesarTypeNode furtherbindingType = 
                     lookupInner(virtualType.getQualifiedName().getIdent());
                 
                 if(furtherbindingType == null) {
                     // type doesn't exist -> create
-                    furtherbindingType = new CaesarType(
+                    furtherbindingType = new CaesarTypeNode(
+                        typeGraph,
                         qualifiedName.toString()+JavaQualifiedName.innerSep+(virtualType.getQualifiedName().getIdent())
                     );                        
                     this.addInner(furtherbindingType);
@@ -168,17 +179,17 @@ public class CaesarType {
             
             // now establish inherited inheritance relations among created inners
             for(Iterator it2 = superClass.getInners().keySet().iterator(); it2.hasNext(); ) {
-                CaesarType virtualType = 
-                    (CaesarType)superClass.getInners().get(it2.next());
+                CaesarTypeNode virtualType = 
+                    (CaesarTypeNode)superClass.getInners().get(it2.next());
                 
                 for (Iterator it3 = virtualType.getParents().iterator(); it3.hasNext();) {
-                    CaesarType virtualTypeSuper = (CaesarType) it3.next();
+                    CaesarTypeNode virtualTypeSuper = (CaesarTypeNode) it3.next();
                     // we need only inheritance relations inside the enclosing class
                     if(virtualTypeSuper.getOuter() == virtualType.getOuter()) {
-                        CaesarType furtherbindingType = 
+                        CaesarTypeNode furtherbindingType = 
                             lookupInner(virtualType.getQualifiedName().getIdent());
                         
-                        CaesarType virtualTypeSuperFurtherbinding = 
+                        CaesarTypeNode virtualTypeSuperFurtherbinding = 
                             lookupInner(virtualTypeSuper.getQualifiedName().getIdent());
                         
                         // connect
@@ -192,18 +203,18 @@ public class CaesarType {
         
         // recurse into inners
         for (Iterator it = inners.keySet().iterator(); it.hasNext();) {
-            CaesarType item = (CaesarType)inners.get(it.next());
+            CaesarTypeNode item = (CaesarTypeNode)inners.get(it.next());
             item.addImplicitTypesAndRelations(visited, added);
         }
         
         // recurse into subTypes
         for (Iterator it = subTypes.keySet().iterator(); it.hasNext();) {
-            CaesarType item = (CaesarType)subTypes.get(it.next());
+            CaesarTypeNode item = (CaesarTypeNode)subTypes.get(it.next());
             item.addImplicitTypesAndRelations(visited, added);
         }
                 
     }
-       
+          
     public LinkedList getMixinList() {
         if(!mixinListCreated) throw new InconsistencyException("mixin list has to be created first");
         return mixinList;
@@ -213,16 +224,16 @@ public class CaesarType {
         return inners;
     }
 
-    public CaesarType lookupInner(String ident) {
+    public CaesarTypeNode lookupInner(String ident) {
         String className = qualifiedName.toString() + JavaQualifiedName.innerSep + ident;
-        return (CaesarType)inners.get(className);
+        return (CaesarTypeNode)inners.get(className);
     }
     
     public Set getParents() {
         return parents;
     }
 
-    public CaesarType getOuter() {
+    public CaesarTypeNode getOuter() {
         return outer;
     }
     
@@ -238,26 +249,27 @@ public class CaesarType {
         this.declaration = declaration;
     }
     
-    // TODO: this here is not gonna work 
+    
+    /**
+     * NOTE: this will only work in a complete type graph
+     */
     public boolean isFurtherbinding() {
-        if(outer != null) {
-            for(Iterator it=outer.getParents().iterator(); it.hasNext(); ) {
-                CaesarType outerSuper = (CaesarType)it.next();
-                if(outerSuper.lookupInner(qualifiedName.getIdent()) != null) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        if(!furtherBindingChecked) throw new InconsistencyException("furtherbinding not checked yet");
+        return furtherbinding;
     }
     
+    public void setFurtherbinding(boolean furtherbinding) {
+        this.furtherBindingChecked = true;
+        this.furtherbinding = furtherbinding;
+    }
+        
     public String toString() {
         StringBuffer res = new StringBuffer();
         res.append(qualifiedName);
         if(parents.size() > 0) {
             res.append(" extends ");
             for(Iterator it = parents.iterator(); it.hasNext();) {
-                res.append(((CaesarType)it.next()).getQualifiedName());
+                res.append(((CaesarTypeNode)it.next()).getQualifiedName());
                 if(it.hasNext())
                     res.append(", ");
             }            
@@ -273,7 +285,7 @@ public class CaesarType {
         
         res.append("\t[");
         for (Iterator it = mixinList.iterator(); it.hasNext();) {
-            CaesarType item = (CaesarType) it.next();
+            CaesarTypeNode item = (CaesarTypeNode) it.next();
             res.append(item.getQualifiedName().getOuterPrefix()+item.getQualifiedName().getIdent());
             if(it.hasNext())
                 res.append(", ");
@@ -289,5 +301,14 @@ public class CaesarType {
 
     public void setBinary(boolean binary) {
         this.binary = binary;
+    }
+
+    public TypeGraph getTypeGraph() {
+        return typeGraph;
+    }
+
+    public boolean isImplicit() {
+        return 
+            !((CaesarTypeNode)mixinList.getFirst()).getQualifiedName().equals(qualifiedName);
     }
 }

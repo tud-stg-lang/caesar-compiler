@@ -14,7 +14,8 @@ import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.cclass.CClassPreparation;
-import org.caesarj.compiler.cclass.GraphGenerator;
+import org.caesarj.compiler.cclass.CaesarTypeSystem;
+import org.caesarj.compiler.cclass.TypeGraphGenerator;
 import org.caesarj.compiler.cclass.TypeGraph;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
@@ -43,9 +44,8 @@ public class Main extends MainSuper implements Constants {
 
     // The used weaver. An instance ist created when it's needed in generateAndWeaveCode
     private CaesarWeaver weaver;
-    
-    private TypeGraph explicitTypeGraph = new TypeGraph();
-    private TypeGraph completeTypeGraph = new TypeGraph();
+
+    private CaesarTypeSystem caesarTypeSystem = new CaesarTypeSystem();
 
     /**
      * @param workingDirectory the working directory
@@ -117,14 +117,10 @@ public class Main extends MainSuper implements Constants {
         
         //prepareVirtualClasses(environment, tree);
         
-        //checkAllConstructorInterfaces(tree);
+        //checkAllConstructorInterfaces(tree); // CTODO: <- see checkBody for new calls below
         
         generateSourceDependencyGraph(tree);
-        explicitTypeGraph.debug();
-        System.out.println("----------------------------------");
-        completeTypeGraph.addImplicitTypesAndRelations();
-        completeTypeGraph.generateMixinLists(explicitTypeGraph);
-        completeTypeGraph.debug();
+        caesarTypeSystem.generate();
 
         CompilerPass compilerPass = generateCompilerPassInfo();
             
@@ -138,7 +134,7 @@ public class Main extends MainSuper implements Constants {
                 checkAllInitializers(tree);     
                 if(errorFound) return false;
                         
-                checkAllBodies(tree);           
+                checkAllBodies(tree); // CTODO: remove new checks here            
                 if(errorFound) return false;
 
                 genCode(environment.getTypeFactory());
@@ -148,6 +144,8 @@ public class Main extends MainSuper implements Constants {
             compilerPass = compilerPass.getNextPass();            
             environment.incCompilerPass(); 
         }
+        
+        // CTODO: checkBody for new calls
 
         tree = null;
         
@@ -219,8 +217,8 @@ public class Main extends MainSuper implements Constants {
     protected void generateSourceDependencyGraph(JCompilationUnit[] tree) {
         System.out.println("generateDependencyGraph");        
         for (int i=0; i<tree.length; i++) {
-            GraphGenerator.instance().generateGraph(explicitTypeGraph, tree[i]);
-            GraphGenerator.instance().generateGraph(completeTypeGraph, tree[i]);
+            TypeGraphGenerator.instance().generateGraph(caesarTypeSystem.getExplicitGraph(), tree[i]);
+            TypeGraphGenerator.instance().generateGraph(caesarTypeSystem.getCompleteGraph(), tree[i]);
         }
     }
 

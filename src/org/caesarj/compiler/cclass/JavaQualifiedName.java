@@ -67,4 +67,13 @@ public class JavaQualifiedName {
     public String getIdent() {
         return ident;
     }
+    
+    
+    public int hashCode() {
+        return qualifiedName.hashCode();
+    }
+    
+    public boolean equals(Object other) {
+        return qualifiedName.equals(((JavaQualifiedName)other).qualifiedName);
+    }
 }

@@ -22,28 +22,13 @@ public class VCTestCase_2 extends TestCase {
 	}       
 }
 
-public cclass X {
-
-	public cclass A {
-		public cclass U {
-		}
-	}
-	
-	public cclass B extends A {
-		public cclass U {
-		}
-		
-		public cclass V extends U {
-		}		
-	}	
+public cclass G {
+	public cclass E {}	
+	public cclass UE extends E {}		
+	public cclass N {}
 }
 
-public cclass Y extends X {
-
-	public cclass A {
-		public cclass U {
-		}
-	}
-	
-	
+public cclass CG extends G {
+	public cclass E {}			
+	public cclass UE {}
 }

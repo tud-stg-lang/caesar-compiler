@@ -25,15 +25,15 @@ import org.caesarj.util.InconsistencyException;
  * 
  * @author Ivica Aracic
  */
-public class GraphGenerator implements CaesarConstants {
+public class TypeGraphGenerator implements CaesarConstants {
 
-    private static GraphGenerator singleton = new GraphGenerator();
+    private static TypeGraphGenerator singleton = new TypeGraphGenerator();
     
-    public static GraphGenerator instance() {
+    public static TypeGraphGenerator instance() {
         return singleton; 
     }
     
-    private GraphGenerator() {
+    private TypeGraphGenerator() {
     }
 
     
@@ -56,11 +56,11 @@ public class GraphGenerator implements CaesarConstants {
         CType[] superTypes = decl.getInterfaces();
         CClass ownerClass  = thisClass.getOwner();
         
-        CaesarType thisNode  = g.getType(thisClass.getQualifiedName());
+        CaesarTypeNode thisNode  = g.getType(thisClass.getQualifiedName());
                 
         if(superTypes.length > 0) {
             for(int i=0; i<superTypes.length; i++) {
-                CaesarType superNode = g.getType( superTypes[i].getCClass().getQualifiedName() );
+                CaesarTypeNode superNode = g.getType( superTypes[i].getCClass().getQualifiedName() );
                 superNode.addSubType(thisNode);
             }
         }
@@ -69,7 +69,7 @@ public class GraphGenerator implements CaesarConstants {
         }
 
         if(ownerClass != null) {
-            CaesarType ownerNode = g.getType(ownerClass.getQualifiedName());
+            CaesarTypeNode ownerNode = g.getType(ownerClass.getQualifiedName());
             ownerNode.addInner(thisNode);
         }
         else {
