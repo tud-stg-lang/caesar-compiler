@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Linearizator.java,v 1.7 2005-03-10 12:37:53 gasiunas Exp $
+ * $Id: Linearizator.java,v 1.8 2005-04-06 11:59:56 gasiunas Exp $
  */
 
 package org.caesarj.mixer;
@@ -92,7 +92,9 @@ public class Linearizator {
                 i2--;
             }
             else {
-                throw new MixerException("Conflicting mixin ordering");
+            	// if order conflicts, ignore the conflicting mixin from the second list
+            	i2--; 
+            	//throw new MixerException("Conflicting mixin ordering");
             }
         }
         
