@@ -1,3 +1,21 @@
+VC_M17 - 04.04.2005
+- Changed pointcut and advice inheritance 
+	- Inheritance of pointcuts and advice is achieved by copying them in the registries
+	- Abstract pointcuts are supported
+	- Concrete pointcuts can also be overridden
+	- The precedence of advices of the same class (including the inherited)
+		is explicitly controlled according the rules of AspectJ
+- AspectJ weaver is upgraded from 1.1 to 1.2
+- Class loading is forced for classes containing static deployment declarations
+- New support methods
+	- aspect() method is provided for deployed classes to access 
+		the statically deployed instance
+	- simpleDeploy(), simpleUndeploy(), threadDeploy(), threadUndeploy()
+	    methods for standard deployment strategies.
+- Minor aspect deployment optimizations
+	- Using plain arrays instead of Iterator and List
+	- Optimization for single simply deployed instance
+
 VC_M16 - 10.03.2005
 - Merge of the features from version VC_M15C to the HEAD
 - Unittests
