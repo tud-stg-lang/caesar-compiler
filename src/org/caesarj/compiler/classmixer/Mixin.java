@@ -7,7 +7,7 @@ package org.caesarj.compiler.classmixer;
  * <p> Implementations can be class based mixins, method
  * based mixins or default mixins
  * 
- * @version $Revision: 1.3 $ $Date: 2004-03-05 20:36:23 $
+ * @version $Revision: 1.4 $ $Date: 2004-03-09 16:38:39 $
  * @author Diana Kapsa
  * 
  */
@@ -15,9 +15,7 @@ public abstract class Mixin {
 
 	/*corresponing to initial class or method*/
 	protected String MixinName;
-	//protected Code MixinCode;
 	
-				
 	/**
 	 * analysing inner structure of mixin and building lists of inner mixins
 	 */
@@ -34,13 +32,6 @@ public abstract class Mixin {
 
 	/**
 	 * @return
-	
-	public Code getMixinCode() {
-		return MixinCode;
-	}*/
-
-	/**
-	 * @return
 	 */
 	public String getMixinName() {
 		return MixinName;
@@ -49,5 +40,4 @@ public abstract class Mixin {
 	public void printMixinName(){
 		System.out.println(MixinName);
 	}
-
 }

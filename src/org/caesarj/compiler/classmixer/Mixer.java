@@ -1,9 +1,13 @@
 package org.caesarj.compiler.classmixer;
 
 /**
- * Main class for initiating merging process of mixin hierarchies
+ * Generic implementation of merging process of given mixin hierarchies
+ * with no dependency on Mixin type
  * 
- * @version $Revision: 1.3 $ $Date: 2004-03-05 20:36:23 $
+ * Implements the linearizaion algorithm as introduced by E.Ernst 
+ * in 'Higher-Order Hierarchies'
+ * 
+ * @version $Revision: 1.4 $ $Date: 2004-03-09 16:38:39 $
  * @author Diana Kapsa
  * 
  */
@@ -16,37 +20,15 @@ import org.apache.bcel.classfile.*;
 
 public class Mixer {
 
-  //input classes 
-  private JavaClass[] firstClassList,secondClassList;
-  private byte[][] firstByteList,secondByteList;
-  private MixinVector firstMixinVector, secondMixinVector;
-  
-  //new built target class 
-  private String virtualClassName;
-  private String shortClassName;
-  private JavaClass newClass;
-  
-  //complete class list for new inheritance hierarchy
-  private JavaClass[] newClassList;
-  private MixinVector newMixinVector;
-  //Starting index of helper classes within new class list
-  private int helperClassIndex;
-	
-  private static Hashtable MixinTable;
-  	
-	public Mixer(String class1, String class2){
-	//TODO constructor based on Class names
-	//self-constructing the inheritnce hierarchy	
-	}
-	
-	public Mixer(String x, byte[][] a,byte[][] b) {
-		firstByteList = a;
-		secondByteList = b;
-		virtualClassName = x;
-		MixinTable = new Hashtable();
-		//initClassLists();
-		initMixinLists();
-		buildNewClassName();
+	//input classes 
+	private MixinVector firstMixinVector, secondMixinVector;
+	  
+	//complete class list for new inheritance hierarchy
+	private MixinVector newMixinVector;
+	  
+	public Mixer(MixinVector fstVector, MixinVector sndVector) {
+			firstMixinVector = fstVector;
+			secondMixinVector= sndVector;
 	}
 	
 	/**
@@ -119,7 +101,7 @@ public class Mixer {
 		//System.out.println("Mixer::linearization: Current vector length is "+newMixinVector.vLength());
 	}//linearize()
 
-	public void merge(){
+	public void mergeMixinVectors(){
 		int l1, l2;
 		newMixinVector = new MixinVector();
 		if (firstMixinVector==null) {
@@ -136,147 +118,25 @@ public class Mixer {
 		System.out.println("Mixer: merge: starting linearization process...");
 		linearize(0,0,l1,l2);
 	}//merge
-
-	
-	/*
-	 * procedure for initializing other JavaClass lists
-	 * Is this required?!?
-	 */
-	private void initClassLists(){
-		InputStream file;
-		ClassParser cParser;
-		JavaClass	tClass;
-		firstClassList = new JavaClass[firstByteList.length];
-		for (int i = 0; i < firstByteList.length; i++) {
-			file = new ByteArrayInputStream(firstByteList[i]);
-			try {
-				cParser = new ClassParser(file,"test");
-				firstClassList[i] = cParser.parse();
-			} catch (Exception e) {
-				System.out.println("Mixer >> Exception has occured" + e.toString());
-			}
-		}
-		
-		secondClassList = new JavaClass[secondByteList.length];
-		for (int i = 0; i < secondByteList.length; i++) {
-					file = new ByteArrayInputStream(secondByteList[i]);
-					try {
-						cParser = new ClassParser(file,"test");
-						secondClassList[i] = cParser.parse();
-					} catch (Exception e) {
-						System.out.println("Mixer >> Exception has occured" + e.toString());
-					}
-		}
-	}//initClassLists
-	
 	/**
-	 * procedure for initializing both mixin lists
-	 *
+	 * @return
 	 */
-	private void initMixinLists(){
-		firstMixinVector = new MixinVector();
-		secondMixinVector = new MixinVector();
-		System.out.println("");
-		System.out.println("First Mixin List:");
-		for (int i=0;i < firstByteList.length; i++ ){
-			firstMixinVector.addMixin(new ClassMixin(firstByteList[i]));
-			firstMixinVector.getLast().printMixinName();
-		}
-		System.out.println("");
-		System.out.println("Second Mixin List:");
-		for (int i=0;i < secondByteList.length; i++ ){
-			secondMixinVector.addMixin(new ClassMixin(secondByteList[i]));
-			secondMixinVector.getLast().printMixinName();
-		}
-		
-	}//initMixinLists
-	
-	private void buildNewClassName(){
-		virtualClassName = firstMixinVector.getLast().getMixinName()+ "_"+ secondMixinVector.getLast().getMixinName();
-		shortClassName= String.valueOf(virtualClassName.hashCode());
-		//TODO replace procedure for building real class name with MD5
-		shortClassName = shortClassName.replace('0','a');
-		shortClassName = shortClassName.replace('1','b');
-		shortClassName = shortClassName.replace('2','c');
-		shortClassName = shortClassName.replace('3','d');
-		shortClassName = shortClassName.replace('4','e');
-		shortClassName = shortClassName.replace('5','f');
-		shortClassName = shortClassName.replace('6','g');
-		shortClassName = shortClassName.replace('7','h');
-		shortClassName = shortClassName.replace('8','i');
-		shortClassName = shortClassName.replace('9','j');
-		//System.out.println("Mixer:: buildNewClassName "+ shortClassName+" "+virtualClassName);
+	public MixinVector getFirstMixinVector() {
+		return firstMixinVector;
 	}
-	
 
-/**
- * @return
- */
-public JavaClass[] getNewClassList() {
-	return newClassList;
-}
+	/**
+	 * @return
+	 */
+	public MixinVector getNewMixinVector() {
+		return newMixinVector;
+	}
 
-/**
- * @return
- */
-public byte[][] getSecondByteList() {
-	return secondByteList;
-}
-
-/**
- * @return
- */
-public JavaClass[] getSecondClassList() {
-	return secondClassList;
-}
-
-/**
- * @return
- */
-public MixinVector getSecondMixinVector() {
-	return secondMixinVector;
-}
-
-/**
- * @return
- */
-public String getVirtualClassName() {
-	return virtualClassName;
-}
-
-/**
- * @return
- */
-public byte[][] getFirstByteList() {
-	return firstByteList;
-}
-
-/**
- * @return
- */
-public JavaClass[] getFirstClassList() {
-	return firstClassList;
-}
-
-/**
- * @return
- */
-public MixinVector getFirstMixinVector() {
-	return firstMixinVector;
-}
-
-/**
- * @return
- */
-public int getHelperClassIndex() {
-	return helperClassIndex;
-}
-
-/**
- * @return
- */
-public JavaClass getNewClass() {
-	return newClass;
-}
+	/**
+	 * @return
+	 */
+	public MixinVector getSecondMixinVector() {
+		return secondMixinVector;
+	}
 
 }

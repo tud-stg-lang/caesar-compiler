@@ -2,13 +2,13 @@ package org.caesarj.compiler.classmixer;
 /**
  * Representation of a class based mixin
  * 
- * @version $Revision: 1.3 $ $Date: 2004-03-05 20:36:23 $
+ * @version $Revision: 1.4 $ $Date: 2004-03-09 16:38:39 $
  * @author Diana Kapsa
  * 
  * */
 
 import java.io.*;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
@@ -19,7 +19,10 @@ public class ClassMixin extends Mixin{
 	protected JavaClass MixinClass;
 	protected byte[] mixinByteCode;
 	protected MixinVector ClassMixinList;
+	//protected Mixer blockMixer;
 	
+	//new Class attributes
+	static String newClassPackage;
 	
 	public ClassMixin(byte[] iCode) {
 		mixinByteCode =iCode;
@@ -58,14 +61,20 @@ public class ClassMixin extends Mixin{
 		};
 		m = (ClassMixin) m2;
 		sndClass = m.getMixinClass(); 
-		fstClass = this.MixinClass;
+		fstClass = MixinClass;
 		
 		/*
 		 * instantiating new class with basic properties
 		 */
 		newClassName = fstClass.getClassName()+"_"+sndClass.getClassName();
 		superClassName = fstClass.getClassName();
-		newClassFileName = "test";
+		String fstSourceName = fstClass.getSourceFileName();
+		String sndSourceName = sndClass.getSourceFileName();
+		fstSourceName = fstSourceName.replaceAll(".java","");
+		//sndSourceName = sndSourceName.replaceAll(".java","");
+		newClassFileName = fstSourceName+"_"+sndSourceName;
+		//newClassFileName = "test";
+		
 		if (fstClass.getAccessFlags()!=sndClass.getAccessFlags()){
 			System.out.println("ClassMixin::compose Incompatible access flags for used classes");
 			acc_flag = 1;
@@ -74,28 +83,42 @@ public class ClassMixin extends Mixin{
 		} else acc_flag = fstClass.getAccessFlags();
 		String[] fstInterfaces = fstClass.getInterfaceNames() ;
 		String[] sndInterfaces = sndClass.getInterfaceNames();
-		Vector interfaceVector = new Vector();
+		LinkedList interfaceList = new LinkedList();
 		for (int i=0; i < fstInterfaces.length;i++){
-			if (interfaceVector.contains(fstInterfaces[i])) interfaceVector.add(fstInterfaces[i]);
+			if (interfaceList.contains(fstInterfaces[i])) interfaceList.add(fstInterfaces[i]);
 		}
 		for (int i=0; i < sndInterfaces.length;i++){
-			if (interfaceVector.contains(sndInterfaces[i])) interfaceVector.add(sndInterfaces[i]);
+			if (interfaceList.contains(sndInterfaces[i])) interfaceList.add(sndInterfaces[i]);
 		}
-		implInterfaces = new String[interfaceVector.size()];
-		for (int i=0; i < implInterfaces.length;i++){ 
-			String nClass = (String) interfaceVector.elementAt(i);
+		implInterfaces = new String[interfaceList.size()];
+		for (int i=0; i < interfaceList.size();i++){ 
+			String nClass = (String) interfaceList.get(i);
 			implInterfaces[i]=nClass;
 		}
 		newGen = new ClassGen(newClassName,superClassName,newClassFileName,acc_flag,implInterfaces);
 		
-		/*
-		 * instantiating rest of the class: constant_pool, fields, attributes...
-		 */
-		 
-		/*
-		 * linearizing mixin lists for methods and inner classes
-		 */
-		System.out.println("ClassMixin::compose: new Class/Mixin was generated");
+		/*linearization algorithm for methods and inner classes*/
+		Mixer BlockMixer = new Mixer(ClassMixinList,m.getClassMixinList());
+		//System.out.println("ClassMixin:: compose: line 1");
+		BlockMixer.mergeMixinVectors();
+		MixinVector BlockMixinVector = BlockMixer.getNewMixinVector();
+		//BlockMixinVector.printMixinVector();
+		
+		/*add new methods and inner classes to new class*/
+		for (int i=0; i<BlockMixinVector.vLength();i++){
+			BlockMixinVector.getMixin(i).printMixin();
+			//TODO Warum so viele Default mixins?!
+			
+			if (BlockMixinVector.getMixin(i).getClass()==this.getClass()){
+				//inner class should be added to inner class list
+				//TODO add inner class implementation
+			} else if (BlockMixinVector.getMixin(i).getClass().toString()=="org.caesarj.compiler.classmixer.MethodMixin"){
+				MethodMixin newMethod = (MethodMixin) BlockMixinVector.getMixin(i);
+				newGen.addMethod(newMethod.getMixinMethod());
+				//add Method to method list
+			} else System.out.println("ClassMixin:: compose: Default Mixin found");
+		}
+		
 		newClass = newGen.getJavaClass();
 		newMixin = new ClassMixin(newClass);
 		return newMixin;
