@@ -43,7 +43,7 @@ public cclass OuterB
 
 public cclass OuterA
 {
-	int _val;
+    protected int _val;
 
 	public OuterA init(int val)
 	{

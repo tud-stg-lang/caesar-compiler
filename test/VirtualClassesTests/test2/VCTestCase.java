@@ -37,7 +37,7 @@ public cclass TestCase2 {
 
 	public cclass G {
 		public cclass E {
-			String n1, n2;
+		    protected String n1, n2;
 
 	        public void init(String n1, String n2) {
 	            this.n1 = n1;
@@ -59,7 +59,7 @@ public cclass TestCase2 {
 	//=========================================================
 	public cclass CG extends G {
 		public cclass E {
-		    Color col;
+		    protected Color col;
 
 		    public Color getColor() {return col;}
 		    public void setColor(Color col) {this.col = col;}

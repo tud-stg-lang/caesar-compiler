@@ -50,7 +50,7 @@ public cclass OuterA
 
 		public cclass DeepestB extends DeepestA
 		{
-			DeepestA _child = null;
+		    protected DeepestA _child = null;
 
 			public void setChild(DeepestA child)
 			{
@@ -96,7 +96,7 @@ public cclass OuterA
 
 		public cclass DeepestB
 		{
-			OuterA.InnerA.DeepestA _child2 = null;
+			protected OuterA.InnerA.DeepestA _child2 = null;
 
 			public void setChild2(DeepestA child)
 			{
@@ -153,7 +153,7 @@ public cclass OuterB extends OuterA
 
 		public cclass DeepestB
 		{
-			DeepestA _child3 = null;
+		    protected DeepestA _child3 = null;
 
 			public void setChild3(DeepestA child)
 			{

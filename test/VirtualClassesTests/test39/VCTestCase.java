@@ -92,9 +92,9 @@ public cclass ModelB extends ModelA
     
 	public cclass BindAA extends RoleA wraps ClassA
 	{
-		static int sequence = 0;
+	    protected static int sequence = 0;
 
-		int _id;
+	    protected int _id;
 
 		public BindAA()
 		{

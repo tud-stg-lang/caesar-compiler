@@ -53,7 +53,7 @@ public cclass OuterA
 {
 	public cclass InnerA
 	{
-		String _a = "A.a";
+	    protected String _a = "A.a";
 
 		public String queryA()
 		{
@@ -66,7 +66,7 @@ public cclass OuterB extends OuterA
 {
 	public cclass InnerA
 	{
-		String _a = "B.a";
+	    protected String _a = "B.a";
 
 		public String queryA()
 		{
@@ -79,7 +79,7 @@ public cclass OuterC extends OuterA
 {
 	public cclass InnerA
 	{
-		String _a = "C.a";
+	    protected String _a = "C.a";
 
 		public String queryA()
 		{
@@ -92,7 +92,7 @@ public cclass OuterD extends OuterB
 {
 	public cclass InnerA
 	{
-		String _a = "D.a";
+	    protected String _a = "D.a";
 
 		public String queryA()
 		{
@@ -110,7 +110,7 @@ public cclass OuterF extends OuterA & OuterC
 {
 	public cclass InnerA
 	{
-		String _a = "F.a";
+	    protected String _a = "F.a";
 
 		public String queryA()
 		{
@@ -128,7 +128,7 @@ public cclass OuterH extends OuterE & OuterF
 {
 	public cclass InnerA
 	{
-		String _a = "H.a";
+	    protected String _a = "H.a";
 
 		public String queryA()
 		{

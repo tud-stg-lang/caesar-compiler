@@ -44,7 +44,7 @@ public class VCTestCase extends TestCase
 
 public cclass OuterA
 {
-	String _a;
+    protected String _a;
 
 	public OuterA()
 	{
@@ -90,7 +90,7 @@ public cclass OuterA
 
 	public cclass InnerC extends InnerA
 	{
-		String _ac;
+	    protected String _ac;
 
 		public InnerC()
 		{
@@ -105,7 +105,7 @@ public cclass OuterA
 
 	public cclass InnerD extends InnerB & InnerC
 	{
-		String _ad;
+	    protected String _ad;
 
 		public InnerD()
 		{
@@ -121,7 +121,7 @@ public cclass OuterA
 
 public cclass OuterB extends OuterA
 {
-	String _b;
+    protected String _b;
 
 	public OuterB()
 	{
@@ -135,7 +135,7 @@ public cclass OuterB extends OuterA
 
 	public cclass InnerA
 	{
-		String _ba;
+	    protected String _ba;
 
 		public InnerA()
 		{
@@ -150,7 +150,7 @@ public cclass OuterB extends OuterA
 
 	public cclass InnerB
 	{
-		String _bb;
+	    protected String _bb;
 
 		public InnerB()
 		{

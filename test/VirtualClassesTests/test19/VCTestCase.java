@@ -48,15 +48,15 @@ public class VCTestCase extends TestCase
 
 public cclass OuterA
 {
-	String _a = "A.a";
+    protected String _a = "A.a";
 
-	String _b = "A.b";
+    protected String _b = "A.b";
 
-	String _c = "A.c";
+    protected String _c = "A.c";
 
-	String _d = "A.d";
+    protected String _d = "A.d";
 
-	String _g = "A.g";
+    protected String _g = "A.g";
 
 	public String queryA()
 	{
@@ -86,15 +86,15 @@ public cclass OuterA
 
 public cclass OuterB extends OuterA
 {
-	String _b = "B.b";
+    protected String _b = "B.b";
 
-	String _d = "B.d";
+    protected String _d = "B.d";
 
-	String _e = "B.e";
+    protected String _e = "B.e";
 
-	String _f = "B.f";
+    protected String _f = "B.f";
 
-	String _g = "B.g";
+    protected String _g = "B.g";
 
 	public String queryA()
 	{
@@ -134,15 +134,15 @@ public cclass OuterB extends OuterA
 
 public cclass OuterC extends OuterA
 {
-	String _c = "C.c";
+    protected String _c = "C.c";
 
-	String _d = "C.d";
+    protected String _d = "C.d";
 
-	String _e = "C.e";
+    protected String _e = "C.e";
 
-	String _f = "C.f";
+    protected String _f = "C.f";
 
-	String _g = "C.g";
+    protected String _g = "C.g";
 
 	public String queryA()
 	{
@@ -182,9 +182,9 @@ public cclass OuterC extends OuterA
 
 public cclass OuterD extends OuterB & OuterC
 {
-	String _f = "D.f";
+    protected String _f = "D.f";
 
-	String _g = "D.g";
+    protected String _g = "D.g";
 
 	public String queryA()
 	{

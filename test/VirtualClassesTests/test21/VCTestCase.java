@@ -46,7 +46,7 @@ public cclass OuterA
 
 	public cclass InnerB extends InnerA
 	{
-		InnerA _child = null;
+	    protected InnerA _child = null;
 
 		public void setChild(OuterA.InnerA child)
 		{
@@ -93,7 +93,7 @@ public cclass OuterB extends OuterA
 
 	public cclass InnerB
 	{
-		OuterB.InnerA _child2 = null;
+	    protected OuterB.InnerA _child2 = null;
 
 		public void setChild2(OuterB.InnerA child)
 		{
@@ -147,7 +147,7 @@ public cclass OuterC extends OuterA
 
 	public cclass InnerB
 	{
-		OuterC.InnerA _child3 = null;
+	    protected OuterC.InnerA _child3 = null;
 
 		public void setChild3(OuterC.InnerA child)
 		{

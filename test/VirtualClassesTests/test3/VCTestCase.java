@@ -50,7 +50,7 @@ public cclass TestCase3 {
 		}
 
 		public cclass E {
-	        N n1, n2;
+		    protected N n1, n2;
 
 	        public void setEdges(N n1, N n2) {
 	            this.n1 = n1;
@@ -77,7 +77,7 @@ public cclass TestCase3 {
 		}
 
 		public cclass N {
-			private String name;
+		    protected String name;
 
 			public void setName(String name) {this.name = name;}
 			public String getName() {return name;}
@@ -96,7 +96,7 @@ public cclass TestCase3 {
 		}
 
 		public cclass E {
-		    String col;
+		    protected String col;
 
 		    public String getColor() {return col;}
 		    public void setColor(String col) {this.col = col;}
@@ -114,7 +114,7 @@ public cclass TestCase3 {
 	//=========================================================
 	public cclass WG extends G {
 	    public cclass E {
-	        float w;
+	        private float w;
 
 	        public float getW() {return w;}
 	        public void setW(float w) {this.w = w;}
