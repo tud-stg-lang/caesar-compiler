@@ -86,12 +86,12 @@ public abstract class Path {
                 tmp = fa.getPrefix();
             
             }
-            else if (tmp instanceof JOwnerExpression) {
+            else if (tmp instanceof JThisExpression) {
                 while (! (context instanceof CClassContext)){
                     context = context.getParentContext();
                     k++;
                 }
-                CClass owner = ((JOwnerExpression)tmp).getSelf();
+                CClass owner = ((JThisExpression)tmp).getSelf();
                 CClass current = context.getClassContext().getCClass();
                 while(current != owner) {
                     if(current == null) throw new InconsistencyException();
@@ -100,9 +100,9 @@ public abstract class Path {
                 }
                 done = true;
             }
-            else if (tmp instanceof JThisExpression ){
-                done = true;
-            } 
+//            else if (tmp instanceof JThisExpression ){
+//                done = true;
+//            } 
             else if (tmp instanceof JLocalVariableExpression) {
                 JLocalVariableExpression local = (JLocalVariableExpression) tmp;
                 JLocalVariable var = local.getVariable();
