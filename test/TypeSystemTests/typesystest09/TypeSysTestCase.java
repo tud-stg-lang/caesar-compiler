@@ -8,7 +8,7 @@ package generated.typesystest09;
 public class TypeSysTestCase {
 
 	final B b = new B();
-	
+			
 	void foo1() {
 	    			m1(b.x1);
 	    			m2(b.g1, b.x1);
@@ -21,7 +21,8 @@ public class TypeSysTestCase {
 	}
 
 	void foo2() {
-	    //b.x1.N n = b.n1;
+	    b.x1.N n;
+	    n = b.n1;
 	}
 	
 	void 	m1(b.g1.X x) 		{ }
@@ -35,7 +36,7 @@ public class TypeSysTestCase {
 }
 
 
-public class B {
+public cclass B {
     public final G g1 = null;
     public final G g2 = null;
     
