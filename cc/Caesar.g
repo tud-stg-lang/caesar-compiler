@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.13 2004-01-12 10:39:28 klose Exp $
+ * $Id: Caesar.g,v 1.14 2004-01-12 11:07:26 klose Exp $
  */
 
 /*
@@ -168,7 +168,7 @@ jTypeDefinition [CParseCompilationUnitContext context]
   |
     decl = jInterfaceDefinition[mods]
     {
-       if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
+		if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
          context.addTypeDeclaration(environment.getClassReader(), ((JInterfaceDeclaration)decl).getAssertionClass());
        }
     }
@@ -1534,7 +1534,7 @@ jReturnStatement []
 :
   "return" ( expr = jExpression[] )? SEMI
     {
-      if (environment.getAssertExtension() == environment.AS_ALL) {
+      if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
         self = new KopiReturnStatement(sourceRef, expr, getStatementComment());
       } else {
         self = new FjReturnStatement(sourceRef, expr, getStatementComment());
