@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JAssignmentExpression.java,v 1.4 2005-01-14 17:46:42 aracic Exp $
+ * $Id: JAssignmentExpression.java,v 1.5 2005-01-17 18:09:24 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -122,8 +122,17 @@ public class JAssignmentExpression extends JBinaryExpression {
     System.out.println("\trPath = "+rPath);
     System.out.println("\tlPath = "+lPath);
     
-    // 1. 
-    Path path = rPath.getType().getPath(context);
+    Path rPathNorm = rPath.normalize();
+    System.out.println("\trPathNorm = "+rPathNorm);
+    Path lPathNorm = lPath.normalize();    
+    System.out.println("\tlPathNorm = "+lPathNorm);
+
+    
+    check(context,
+      rPathNorm.equals(lPathNorm),
+  	  KjcMessages.ASSIGNMENT_BADTYPE, right.getType(factory), left.getType(factory));
+  	
+    
     
     
     if (right instanceof JTypeNameExpression) {
