@@ -178,7 +178,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		FjInterfaceDeclaration aspectInterface =
 			new FjInterfaceDeclaration(
 				aspectClass.getTokenReference(),
-				0,
+				ACC_PUBLIC,
 				aspectInterfaceName,
 				CTypeVariable.EMPTY,
 				superInterfaces,
