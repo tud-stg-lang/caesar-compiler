@@ -21,7 +21,8 @@
  <target name="msggen" description="Generate CaesarMessages.java">
   <java fork="true" dir="${source}/compiler"
   		classname="org.caesarj.tools.msggen.Main"
-  		classpath="bin;${libs}/java-getopt-1.0.9.jar;${libs}/cjantlr.jar">
+  		classpath="bin;${libs}/java-getopt-1.0.9.jar;
+  				   ${libs}/cjbuildtools.jar">
    <arg value="${inputFiles}/CaesarMessages.msg"/>
   </java>
  </target>
@@ -52,7 +53,7 @@
   				${libs}/aspectjrt.jar;
   				${libs}/caesarruntime.jar;
   				${libs}/junit.jar;
-  				${libs}/cjantlr.jar"
+  				${libs}/cjbuildtools.jar"
   		 destdir="bin" listfiles="true" failonerror="true"/>
  </target>
  
@@ -67,7 +68,7 @@
   <java fork="true"	dir="${source}/compiler"
   		failonerror="true"
    		classname="org.caesarj.tools.lexgen.Main"
-        classpath="${libs}/cjantlr.jar;bin;${libs}/java-getopt-1.0.9.jar">
+        classpath="${libs}/cjbuildtools.jar;bin;${libs}/java-getopt-1.0.9.jar">
    <arg value="-ditf"/>
    <arg value="${inputFiles}/caesar.t"/>
   </java>
@@ -77,7 +78,7 @@
   <java fork="true"	dir="${source}/compiler"
   		failonerror="true"
   		classname="org.caesarj.tools.include.Main"
-        classpath="bin;${libs}/java-getopt-1.0.9.jar">
+        classpath="${libs}/cjbuildtools.jar;bin;${libs}/java-getopt-1.0.9.jar">
    <arg value="${inputFiles}/Caesar.flex.in"/>
    <arg value="-o"/>
    <arg value="${inputFiles}/Caesar.flex"/>  
@@ -106,7 +107,7 @@
   		fork="true" dir="${source}/compiler"
   		failonerror="true"
   		classname="org.caesarj.tools.antlr.compiler.Main"
- 		classpath="${libs}/cjantlr.jar;${libs}/java-getopt-1.0.9.jar">
+ 		classpath="${libs}/cjbuildtools.jar;bin;${libs}/java-getopt-1.0.9.jar">
  		 
    	<arg value="${inputFiles}/Caesar.g"/>
   </java>
