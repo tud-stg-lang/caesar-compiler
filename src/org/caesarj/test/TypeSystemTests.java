@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: TypeSystemTests.java,v 1.4 2005-01-24 16:52:59 aracic Exp $
+ * $Id: TypeSystemTests.java,v 1.5 2005-01-25 16:15:32 klose Exp $
  */
 
 package org.caesarj.test;
@@ -34,52 +34,56 @@ public class TypeSystemTests extends FjTestCase {
 	/*
 	 * Test Dependent Types defined within plain Java classes
 	 */
-	public void testCaesarTestCase_01() throws Throwable {
-	    compileDontRun("typesystest01");
-    }
+//	public void testCaesarTestCase_01() throws Throwable {
+//	    compileDontRun("typesystest01");
+//    }
+//
+//	public void testCaesarTestCase_02() throws Throwable {
+//	    compileDontRun("typesystest02");
+//    }
+//
+//	public void testCaesarTestCase_03() throws Throwable {
+//	    compileDontRun("typesystest03");
+//    }
+//
+//	public void testCaesarTestCase_04() throws Throwable {
+//	    compileDontRun("typesystest04");
+//    }
+//
+//	public void testCaesarTestCase_05() throws Throwable {	    
+//	    compileDontRun("typesystest05");
+//    }
+//
+//	public void testCaesarTestCase_06() throws Throwable {
+//	    compileDontRun("typesystest06");
+//    }
+//
+//	public void testCaesarTestCase_07() throws Throwable {
+//	    compileDontRun("typesystest07");
+//    }
+//
+//	public void testCaesarTestCase_08() throws Throwable {
+//	    compileDontRun("typesystest08");
+//    }
+//
+//	public void testCaesarTestCase_09() throws Throwable {
+//	    compileDontRun("typesystest09");
+//    }
 
-	public void testCaesarTestCase_02() throws Throwable {
-	    compileDontRun("typesystest02");
-    }
-
-	public void testCaesarTestCase_03() throws Throwable {
-	    compileDontRun("typesystest03");
-    }
-
-	public void testCaesarTestCase_04() throws Throwable {
-	    compileDontRun("typesystest04");
-    }
-
-	public void testCaesarTestCase_05() throws Throwable {	    
-	    compileDontRun("typesystest05");
-    }
-
-	public void testCaesarTestCase_06() throws Throwable {
-	    compileDontRun("typesystest06");
-    }
-
-	public void testCaesarTestCase_07() throws Throwable {
-	    compileDontRun("typesystest07");
-    }
-
-	public void testCaesarTestCase_08() throws Throwable {
-	    compileDontRun("typesystest08");
-    }
-
-	public void testCaesarTestCase_09() throws Throwable {
-	    compileDontRun("typesystest09");
-    }
-
+	public void testCaesarTestCase_30() throws Throwable{
+	    compileDontRun("typesystest30");
+	}
+	
 	/*
 	 * Test Dependent Types defined within cclass
 	 */
-	public void testCaesarTestCase_50() throws Throwable {
-	    compileDontRun("typesystest50");
-    }
-
-	public void testCaesarTestCase_51() throws Throwable {
-	    compileDontRun("typesystest51");
-    }
+//	public void testCaesarTestCase_50() throws Throwable {
+//	    compileDontRun("typesystest50");
+//    }
+//
+//	public void testCaesarTestCase_51() throws Throwable {
+//	    compileDontRun("typesystest51");
+//    }
 
 
 	/*
