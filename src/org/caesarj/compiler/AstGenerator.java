@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AstGenerator.java,v 1.6 2005-02-21 15:15:57 aracic Exp $
+ * $Id: AstGenerator.java,v 1.7 2005-03-29 09:45:08 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -64,8 +64,8 @@ public class AstGenerator {
         methodBuffer.append(line);
     }   
     
-    public JMethodDeclaration endMethod() {
-        JMethodDeclaration res = createMethodDeclaration(methodBuffer.toString());
+    public JMethodDeclaration endMethod(String name) {
+        JMethodDeclaration res = createMethodDeclaration(name, methodBuffer.toString());
         methodBuffer = new StringBuffer();
         return res;
     }
@@ -80,16 +80,16 @@ public class AstGenerator {
         bodyBuffer.append(line);
     }   
     
-    public JStatement[] endBlock() {
-        JStatement[] res = createBlock(bodyBuffer.toString());
+    public JStatement[] endBlock(String name) {
+        JStatement[] res = createBlock(name, bodyBuffer.toString());
         bodyBuffer = new StringBuffer();
         return res;
     }
     
-    public JMethodDeclaration createMethodDeclaration(String method) {
+    public JMethodDeclaration createMethodDeclaration(String name, String method) {
         JMethodDeclaration res = null;
         try {            
-	        File f = File.createTempFile("caesar","tmpmethod");
+	        File f = File.createTempFile("caesar", name);
 	        FileOutputStream fout = new FileOutputStream(f);
 	        fout.write(method.getBytes());
 	        fout.close();
@@ -125,10 +125,10 @@ public class AstGenerator {
         return res;
     }
     
-    public JStatement[] createBlock(String code) {
+    public JStatement[] createBlock(String name, String code) {
         JStatement[] stmts = null;
         try {            
-	        File f = File.createTempFile("caesar","tmpblock");
+	        File f = File.createTempFile("caesar", name);
 	        FileOutputStream fout = new FileOutputStream(f);
 	        fout.write(code.getBytes());
 	        fout.close();
