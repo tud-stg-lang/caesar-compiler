@@ -55,7 +55,7 @@ public class FjTestCase extends TestCase
 	/*
 	 * Compiles and runs given test file in a separate package
 	 */
-	protected void doGeneratedTest(String pckgName, String testCaseName) throws Throwable 
+	protected void compileAndRun(String pckgName, String testCaseName) throws Throwable 
 	{
 		// Clean up output folder
 		removeClassFiles(pckgName);
@@ -94,11 +94,35 @@ public class FjTestCase extends TestCase
 	/*
 	 * Compiles and runs given test file in the root directory
 	 */
-	protected void doGeneratedTest(String testCaseName) throws Throwable 
+	protected void compileAndRun(String testCaseName) throws Throwable 
 	{
 		// Clean up output folder
 		removeClassFiles(null);
 		
+		// Compile test
+		compileFile(testCaseName);
+		
+		// Execute test
+		doGeneratedTest(testCaseName);				
+	}
+	
+	/*
+	 * Runs given compiled test file in the root directory
+	 */
+	protected void doGeneratedTest(String testCaseName) throws Throwable 
+	{
+		// Execute test
+		System.out.println("Test "+testCaseName+" starts");
+				
+		Object generatedTest = Class.forName( "generated." + testCaseName ).newInstance();
+		((TestCase)generatedTest).runBare();				
+	}
+	
+	/*
+	 * Compiles given test file in the root directory
+	 */
+	protected void compileFile(String testCaseName) throws Throwable 
+	{
 		// Create compiler
 		compiler = new CompilerMock(this, 
 			new PrintWriter(System.out) 
@@ -113,13 +137,7 @@ public class FjTestCase extends TestCase
 		
 		// Compile test
 		String[] args = {testCaseName + ".java"};
-		compiler.run(args);
-		
-		// Execute test
-		System.out.println("Test "+testCaseName+" starts");
-				
-		Object generatedTest = Class.forName( "generated." + testCaseName ).newInstance();
-		((TestCase)generatedTest).runBare();				
+		compiler.run(args);			
 	}
 	
 	/*
