@@ -19,6 +19,7 @@ public class VCTestCase_4 extends TestCase {
 	public void test() {
         System.out.println("-------> VCTestCase_4: start");
         
+        /*
         DrawApp drawApp = new DrawApp();
 	    
 	    DrawApp.Rectangle rect = drawApp.$newRectangle();
@@ -35,6 +36,19 @@ public class VCTestCase_4 extends TestCase {
 			DrawApp.Component item = (DrawApp.Component)it.next();
 			System.out.println("** "+item);
 		}
+		*/
+		
+		PrettyPrintEvalAST evalAst = new PrettyPrintEvalAST();
+		PrettyPrintEvalAST.Literal l1 = (PrettyPrintEvalAST.Literal)evalAst.$newLiteral();
+		PrettyPrintEvalAST.Literal l2 = (PrettyPrintEvalAST.Literal)evalAst.$newLiteral();
+		PrettyPrintEvalAST.Expression exp = (PrettyPrintEvalAST.Expression)evalAst.$newExpression();
+		
+		l1.init(5);
+		l2.init(4);
+		exp.init(l1, l2);
+		
+		exp.print();
+		System.out.println(" = "+exp.eval());
 	    
 	    
         System.out.println("-------> VCTestCase_4: end");
@@ -42,8 +56,8 @@ public class VCTestCase_4 extends TestCase {
 }
 
 //=========================================================
+/*
 public cclass CompositePattern {
-
 
 	public cclass Component {
 	}
@@ -64,10 +78,71 @@ public cclass CompositePattern {
 		}
 	}
 }
+*/
 
 //=========================================================
+public cclass AST  {			
+	public cclass Expression {		
+		protected Expression r;
+		protected Expression l;
+		
+		public void init(AST.Expression l, AST.Expression r) {
+			this.r = r;
+			this.l = l;
+		}
+	}
+	
+	public cclass Literal extends Expression {
+		protected int val;
+		
+		public void init(int val) {
+			this.val = val;
+		}	
+	}	
+}
+
+//=========================================================
+public cclass EvalAST extends AST {
+	public cclass Expression {
+		public int eval() {
+			return
+				((EvalAST.Expression)l).eval() +
+				((EvalAST.Expression)r).eval();
+		}
+	}
+
+	public cclass Literal {
+		public int eval() {
+			return val;
+		}
+	}
+}
+
+//=========================================================
+public cclass PrettyPrintAST extends AST {
+	public cclass Expression {
+		public void print() {
+			((PrettyPrintAST.Expression)l).print();
+			System.out.print(" + ( ");	
+			((PrettyPrintAST.Expression)r).print();
+			System.out.print(" ) ");
+		}
+	}
+
+	public cclass Literal {
+		public void print() {
+			System.out.print(val);
+		}
+	}	
+}
+
+//=========================================================
+public cclass PrettyPrintEvalAST extends PrettyPrintAST & EvalAST {	
+}
+
+//=========================================================
+/*
 public cclass DrawApp extends CompositePattern {
-	/** every component has x,y position */
 	public cclass Component {		
 		private int x,y;
 		
@@ -103,5 +178,5 @@ public cclass DrawApp extends CompositePattern {
 		}
 	}	
 }
-
+*/
 //=========================================================
