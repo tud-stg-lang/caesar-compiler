@@ -55,4 +55,9 @@ public interface CaesarMessages extends org.caesarj.compiler.CompilerMessages {
   MessageDescription	REFERENCE_IS_NOT_PROVIDING = new MessageDescription("\"{0}\" is not a providing class.", null, 0);
   MessageDescription	BINDING_OTHER_CI = new MessageDescription("\"{0}\" does not bind the collaboration interface \"{1}\".", null, 0);
   MessageDescription	PROVIDING_OTHER_CI = new MessageDescription("\"{0}\" does not provide the collaboration interface \"{1}\".", null, 0);
+  MessageDescription	PROVIDING_DEFINES_CONSTRUCTOR = new MessageDescription("Providing class \"{0}\" cannot define constructors with parameters.", null, 0);
+  MessageDescription	BINDING_PROVIDING_DIRECT_CREATION = new MessageDescription("Providing or binding class \"{0}\" cannot be directly created.", null, 0);
+  MessageDescription	VIRTUAL_CALLING_PRIVATE_OUTER = new MessageDescription("Virtual or override class \"{0}\" cannot access private methods of the enclosing class.", null, 0);
+  MessageDescription	VIRTUAL_ACCESSING_OUTER_FIELD = new MessageDescription("Virtual or override class \"{0}\" cannot access fields of the enclosing class.", null, 0);
+  MessageDescription	VIRTUAL_CALLING_OUTER_OUTER = new MessageDescription("Virtual or override class \"{0}\" cannot call methods or access fields defined in the enclosing class of its outer class.", null, 0);
 }

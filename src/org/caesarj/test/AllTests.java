@@ -11,6 +11,7 @@ public class AllTests {
 		TestSuite suite = new TestSuite("all familyj tests");
 		//$JUnit-BEGIN$
 		suite.addTestSuite( CompileAndRunResultsTest.class );
+		suite.addTestSuite( CompileAndRunResultsCITest.class );
 		//$JUnit-END$
 		return suite;
 	}

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.3 2003-07-30 09:24:03 werner Exp $
+ * $Id: CaesarMessages.msg,v 1.4 2003-08-11 22:44:05 werner Exp $
  */
 
 package org.caesarj.compiler
@@ -202,5 +202,19 @@ error   BINDING_OTHER_CI
 
 error   PROVIDING_OTHER_CI
 		"\"{0}\" does not provide the collaboration interface \"{1}\"."
+		
+error   PROVIDING_DEFINES_CONSTRUCTOR
+		"Providing class \"{0}\" cannot define constructors with parameters."
 
+error   BINDING_PROVIDING_DIRECT_CREATION
+		"Providing or binding class \"{0}\" cannot be directly created."
+
+error   VIRTUAL_CALLING_PRIVATE_OUTER
+		"Virtual or override class \"{0}\" cannot access private methods of the enclosing class."
+
+error   VIRTUAL_ACCESSING_OUTER_FIELD
+		"Virtual or override class \"{0}\" cannot access fields of the enclosing class."
+
+error   VIRTUAL_CALLING_OUTER_OUTER
+		"Virtual or override class \"{0}\" cannot call methods or access fields defined in the enclosing class of its outer class."
 		

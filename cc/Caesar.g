@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.5 2003-07-30 09:24:03 werner Exp $
+ * $Id: Caesar.g,v 1.6 2003-08-11 22:44:05 werner Exp $
  */
 
 /*
@@ -469,7 +469,7 @@ jClassDefinition [int modifiers]
 				   comments);
 	  	 else
             self = new FjCleanClassDeclaration(sourceRef,
-				   modifiers,
+				   modifiers | org.caesarj.kjc.Constants.FJC_CLEAN,
 				   ident.getText(),
 				   typeVariables,
 				   superClass,
@@ -604,7 +604,7 @@ jInterfaceDefinition [int modifiers]
      	org.caesarj.kjc.Constants.CCI_COLLABORATION)) 
      {
           self = new FjCleanClassDeclaration(sourceRef,
-				   modifiers,
+				   modifiers | org.caesarj.kjc.Constants.FJC_CLEAN,
 				   ident.getText(),
 				   typeVariables,
 				   null,

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassContext.java,v 1.1 2003-07-05 18:29:41 werner Exp $
+ * $Id: CClassContext.java,v 1.2 2003-08-11 22:44:15 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -345,6 +345,7 @@ public class CClassContext extends CContext {
     }
     return null;
   }
+
 
   /**
    * Searches the class, interface and Method to locate declarations of TV's that are

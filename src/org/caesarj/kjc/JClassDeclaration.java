@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.2 2003-07-30 09:24:55 werner Exp $
+ * $Id: JClassDeclaration.java,v 1.3 2003-08-11 22:44:15 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -760,7 +760,7 @@ public class JClassDeclaration extends JTypeDeclaration {
     p.visitInnerClassDeclaration(this,
 				 modifiers,
 				 ident,
-                                 superClass != null ? superClass.toString() : null,
+                 superClass != null ? superClass.toString() : null,
 				 interfaces,
 				 inners,
 				 body,

@@ -521,7 +521,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   comments);
 				  	 else
 			self = new FjCleanClassDeclaration(sourceRef,
-							   modifiers,
+							   modifiers | org.caesarj.kjc.Constants.FJC_CLEAN,
 							   ident.getText(),
 							   typeVariables,
 							   superClass,
@@ -647,7 +647,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				org.caesarj.kjc.Constants.CCI_COLLABORATION)) 
 			{
 			self = new FjCleanClassDeclaration(sourceRef,
-							   modifiers,
+							   modifiers | org.caesarj.kjc.Constants.FJC_CLEAN,
 							   ident.getText(),
 							   typeVariables,
 							   null,

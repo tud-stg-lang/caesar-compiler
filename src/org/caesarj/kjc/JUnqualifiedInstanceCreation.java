@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JUnqualifiedInstanceCreation.java,v 1.2 2003-07-17 11:31:30 werner Exp $
+ * $Id: JUnqualifiedInstanceCreation.java,v 1.3 2003-08-11 22:44:15 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -245,9 +245,11 @@ public class JUnqualifiedInstanceCreation extends JExpression {
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------
-
-  private JExpression[]		params;
-  private JExpression		outerPrefix;
+//Walter start
+//  private JExpression[]		params;
+  protected JExpression[]		params;
+  protected JExpression		outerPrefix;
+//Walter end
   protected CClass		local;
   protected CMethod		constructor;
   protected CReferenceType      type;

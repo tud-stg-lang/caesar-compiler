@@ -647,21 +647,7 @@ public class FjClassDeclaration
 		fields = newFields;
 	}
 
-	public void addMethods(JMethodDeclaration[] methodsToAdd)
-	{
-		JMethodDeclaration[] newMethods =
-			new JMethodDeclaration[methods.length + methodsToAdd.length];
 
-		System.arraycopy(methods, 0, newMethods, 0, methods.length);
-		System.arraycopy(
-			methodsToAdd,
-			0,
-			newMethods,
-			methods.length,
-			methodsToAdd.length);
-
-		methods = newMethods;
-	}
 
 	public void addClassBlock(JClassBlock initializerDeclaration)
 	{
@@ -681,6 +667,16 @@ public class FjClassDeclaration
 
 		interfaces = newInterfaces;
 	}
+	
+	/**
+	 * Does the class have a clean interface?
+	 * @return
+	 */
+	public boolean isClean()
+	{
+		return (modifiers & (FJC_CLEAN | FJC_VIRTUAL | FJC_OVERRIDE)) != 0;
+	}
+
 
 	public boolean isPrivileged()
 	{
@@ -815,7 +811,7 @@ public class FjClassDeclaration
 				TokenReference.NO_REF,
 				PER_SINGLETON_INSTANCE_FIELD);
 		JExpression right =
-			new FjUnqualifiedInstanceCreation(
+			new CciInternalUnqualifiedInstanceCreation(
 				TokenReference.NO_REF,
 				new CClassNameType(getIdent()),
 				JExpression.EMPTY);

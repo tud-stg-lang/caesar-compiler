@@ -607,7 +607,9 @@ public class FjTypeSystem
 	
 	/**
 	 * Returns the class in the hierarchy which contains the modifier passed,
-	 * or null if the class is not found. (This method is very similar
+	 * or null if the class is not found. The other param is used when it is
+	 * needed to find the class only if it does not have this modifier. 
+	 * (This method is very similar
 	 * to the method getSuperCollaborationInterfaceClass defined in 
 	 * FjCleanClassDeclaration, but it returns the clazz itself instead of 
 	 * return its parent. It was not reused, since this method is here just
@@ -617,8 +619,11 @@ public class FjTypeSystem
 	 * @return CClass
 	 */
 	public static CClass getClassInHierarchy(
-		CClass clazz, int modifier)
+		CClass clazz, int modifier, int nModifier)
 	{
+		if (CModifier.contains(clazz.getModifiers(), nModifier))
+			return null;
+			
 		if (CModifier.contains(clazz.getModifiers(), modifier))
 			return clazz;
 
@@ -630,11 +635,25 @@ public class FjTypeSystem
 			superClass = clazz.getSuperClass();
 
 		if (superClass != null)
-			return getClassInHierarchy(superClass, modifier);
+			return getClassInHierarchy(superClass, modifier, nModifier);
 		
 		// No, it does not have a ci
 		return null;		
-	}	
+	}
+	/**
+	 * Just an adapter for getClassInHierarchy(CClass clazz, 
+	 * int modifier, int nModifier), passing 0 as last param.
+	 * @param clazz
+	 * @param modifier
+	 * @param nModifier
+	 * @return
+	 */
+	public static CClass getClassInHierarchy(
+		CClass clazz, int modifier)
+	{
+		return getClassInHierarchy(clazz, modifier, 0);
+	}
+	
 
 	public CReferenceType upperBound(CTypeContext context, CReferenceType type)
 		throws UnpositionedError

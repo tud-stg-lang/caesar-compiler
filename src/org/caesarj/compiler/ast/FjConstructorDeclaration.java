@@ -21,7 +21,6 @@ import org.caesarj.kjc.JConstructorDeclaration;
 import org.caesarj.kjc.JExpression;
 import org.caesarj.kjc.JExpressionStatement;
 import org.caesarj.kjc.JFormalParameter;
-import org.caesarj.kjc.JLocalVariableExpression;
 import org.caesarj.kjc.JReturnStatement;
 import org.caesarj.kjc.JStatement;
 import org.caesarj.kjc.JThisExpression;
@@ -135,7 +134,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 						parameters[i].getIdent());
 			}
 			arguments[0] =
-				new FjUnqualifiedInstanceCreation(
+				new CciInternalUnqualifiedInstanceCreation(
 					getTokenReference(),
 					superType,
 					superArguments);
@@ -226,7 +225,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 					FjConstants.PARENT_NAME);
 					
 			arguments[0] =
-				new FjUnqualifiedInstanceCreation(
+				new CciInternalUnqualifiedInstanceCreation(
 					getTokenReference(),
 					superType,
 					newSuperArguments);
@@ -250,21 +249,22 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 	 * Creates the constructor for the weavelet classes. This constructor
 	 * will just call the super constructor with the right parameters:
 	 * 
-	 * super(new <BindingType>(new <ProvidingType>(), ..);
+	 * super(new <BindingType>(new <ProvidingType>(new <CIType>), ..);
 	 * 
 	 * @param superType
 	 * @return
 	 */
 	public FjConstructorDeclaration getStandardWeaveletClassConstructor(
-		CReferenceType providingType, CReferenceType bindingType) 
+		CciWeaveletReferenceType collaborationInterface) 
 	{
+		//Gets the arguments
 		FjConstructorCall superCall =
 			((FjConstructorBlock) getBody()).getConstructorCall();
-		JExpression[] superArguments = JExpression.EMPTY;
+		JExpression[] constructorCallArguments = JExpression.EMPTY;
 		if (superCall != null) 
-			superArguments = superCall.getArguments();
+			constructorCallArguments = superCall.getArguments();
 
-
+		//Clones the parameters.
 		FjFormalParameter[] newParameters =
 			new FjFormalParameter[parameters.length];
 		for (int i = 0; i < parameters.length; i++) 
@@ -273,34 +273,47 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 
 
 		JExpression[] arguments = null;
+		//If it calls this(..) do nothing
 		if (superCall != null && superCall.isThis()) 
 		{
-			arguments = new JExpression[superArguments.length];
-			for (int i = 0; i < superArguments.length; i++) 
-				arguments[i] = superArguments[i];
-
+			arguments = new JExpression[constructorCallArguments.length];
+			System.arraycopy(constructorCallArguments, 0, arguments, 0, 
+				constructorCallArguments.length);
 		}
+		//If it calls super (implicitly or explicitly) insert the new expression
 		else 
 		{
 			JExpression[] newSuperArguments = new JExpression[
-				superArguments.length + 1];
-			System.arraycopy(superArguments, 0, newSuperArguments, 1, 
-				superArguments.length);
-				
+				constructorCallArguments.length + 1];
+			System.arraycopy(constructorCallArguments, 0, newSuperArguments, 1, 
+				constructorCallArguments.length);
+			
+			//Creates the expression: new <ProvidingType>(new <CiType>)
 			newSuperArguments[0] =
-				new FjUnqualifiedInstanceCreation(
+				new CciInternalUnqualifiedInstanceCreation(
 					getTokenReference(),
-					providingType,
-					JExpression.EMPTY);
-
+					new CClassNameType(
+						collaborationInterface.getProvidingQualifiedName()),
+					new JExpression[]
+					{
+						new CciInternalUnqualifiedInstanceCreation(
+							getTokenReference(),
+							new CClassNameType(
+								collaborationInterface.getQualifiedName()),
+							JExpression.EMPTY)
+					});
+					
+			//Creates the expression: new <BindingType>(newSuperArguments)
 			arguments = new JExpression[]
 			{
-				new FjUnqualifiedInstanceCreation(
+				new CciInternalUnqualifiedInstanceCreation(
 					getTokenReference(),
-					bindingType,
+					new CClassNameType(
+						collaborationInterface.getBindingQualifiedName()),
 					newSuperArguments)
 			};
 		}
+		//Return the new constructor
 		return new FjConstructorDeclaration(
 			getTokenReference(),
 			modifiers,
@@ -378,7 +391,8 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 	
 	public FjCleanMethodDeclaration getFactoryMethod(
 		FjVirtualClassDeclaration factoredClass,
-		String superTypeName) 
+		String superTypeName,
+		boolean cleanOwner) 
 	{
 		// if the factored class extends a fields inner type
 		// the field has to be prepended to the super-factory-call
@@ -430,7 +444,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			// add "supercall" as first parameter
 			if (superFactoryPrefix == null)
 				constructorArgs[0] =
-					new FjUnqualifiedInstanceCreation(
+					new CciInternalUnqualifiedInstanceCreation(
 						getTokenReference(),
 						new CClassNameType(
 							FjConstants.toIfcName(superTypeName)),
@@ -452,11 +466,27 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 		}
 		for (int i = 0; i < newParameters.length; i++, argIndex++) 
 		{
-			constructorArgs[argIndex] =
-				new JLocalVariableExpression(
-					getTokenReference(),
-					newParameters[i]);
+			constructorArgs[argIndex] = 
+				new FjNameExpression(
+					getTokenReference(), 
+					null, 
+					newParameters[i].getIdent());
 		}
+		
+		//If the owner of the factory method is 
+		//clean then the parameter $this is self. 
+		//That is why it creates CciInsideFactoryInstanceCreation 
+		//here when the owner is clean.
+		JUnqualifiedInstanceCreation creationExpression = 
+			cleanOwner 
+				? new CciInsideFactoryInstanceCreation(
+					getTokenReference(),
+					new CClassNameType(FjConstants.toImplName(ident)),
+					constructorArgs)
+				: new JUnqualifiedInstanceCreation(
+					getTokenReference(),
+					new CClassNameType(FjConstants.toImplName(ident)),
+					constructorArgs);
 		
 		JBlock factoryBody = new JBlock(
 			getTokenReference(),
@@ -469,11 +499,8 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 						0,
 						FjConstants.CHILD_TYPE,
 						"child",
-						new JUnqualifiedInstanceCreation(
-							getTokenReference(),
-							new CClassNameType(FjConstants.toImplName(ident)),
-							constructorArgs)),
-						null ),
+						creationExpression),
+					null),
 				new JExpressionStatement(
 					getTokenReference(),
 					new FjMethodCallExpression(

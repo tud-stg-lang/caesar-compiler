@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CSourceClass.java,v 1.1 2003-07-05 18:29:38 werner Exp $
+ * $Id: CSourceClass.java,v 1.2 2003-08-11 22:44:15 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -125,7 +125,9 @@ public class CSourceClass extends CClass {
       pos = 0;
 
       if (hasOuterThis) {
-	result[pos++] = getOwnerType();
+		result[pos++] = getOwnerType();
+		//result[pos++] = getOuterParamType();
+		//Walter end
       }
 
       for (int i = 0; i < params.length; pos++, i++) {
@@ -201,7 +203,18 @@ public class CSourceClass extends CClass {
       ((CSourceClass)getOwner()).addOuterFromDerived();
     }
   }
-
+  /**
+   * Returns the type of the enclosing class to add as parameter 
+   * in the constructor.
+   * This method was created because it needs a different behaviour for 
+   * clean classes.
+   * @return
+   * @author Walter Augusto Werner
+   */
+  public CType getOuterParamType()
+  {
+	  return getOwnerType();		
+  }
 
   /** 
    * Creates a field which stores the value of an outer local final variable

@@ -28,6 +28,12 @@ import org.caesarj.kjc.TypeFactory;
 public class FjMethodCallExpression extends JMethodCallExpression {
 
 	protected JExpression[] unanalysedArgs;
+	
+	/**
+	 * The analyse method is called more than once. This flag is used for 
+	 * know if the type of the method call has been already bound. 
+	 */
+	private boolean typeBound;	
 
 	public FjMethodCallExpression(
 		TokenReference where,
@@ -67,11 +73,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		this.prefix = prefix;
 	}
 
-	/**
-	 * The analyse method is called more than once. This flag is used for 
-	 * know if the type of the method call has been already bound. 
-	 */
-	private boolean typeBound;
+
 
 	public JExpression analyse(CExpressionContext context)
 		throws PositionedError 
@@ -87,7 +89,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 			assertPrefixIsSet(context);
 			checkFamilies(context);
 			resetPrefix();
-			expression = super.analyse(context);
+			expression = analyseExpression(context);
 		}
 		
 		//Walter: Cast the type for the most specific one.
@@ -105,6 +107,66 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 
 		return expression;
 	}
+	
+	/**
+	 * Analyses the expression! :)
+	 * If it does not find the field this$0 is because it is a virtual 
+	 * class accessing outer private methods or accessing methods defined 
+	 * in outer outer ... class, so it generates another error message in 
+	 * this cases.
+	 * @param context
+	 */
+	protected JExpression analyseExpression(CExpressionContext context) 
+		throws PositionedError
+	{
+		try
+		{
+			return super.analyse(context);
+		}
+		catch(PositionedError e)
+		{
+			//If it does not find the field this$0 is because 
+			//it is a virtual class accessing outer private methods
+			//or accessing methods defined in outer outer ... class.
+			if (e.getFormattedMessage().getDescription() 
+				== KjcMessages.FIELD_UNKNOWN)
+			{
+				String fieldName = (String) e.getFormattedMessage()
+					.getParams()[0];
+				if (JAV_OUTER_THIS.equals(fieldName))
+				{
+					if (method != null 
+						&& CModifier.contains(method.getModifiers(), 
+							ACC_PRIVATE))
+						throw new PositionedError(
+							getTokenReference(), 
+							CaesarMessages.VIRTUAL_CALLING_PRIVATE_OUTER,
+							context.getClassContext().getCClass()
+								.getQualifiedName());
+					else 
+						throw new PositionedError(
+							getTokenReference(), 
+							CaesarMessages.VIRTUAL_CALLING_OUTER_OUTER,
+							context.getClassContext().getCClass()
+								.getQualifiedName());
+				}
+						
+			}
+			throw e;
+		}			
+	}
+
+	protected boolean isOuterOwner(CClass owner)
+	{
+		if (method == null)
+			return false; 
+		else if (owner.descendsFrom(method.getOwner()))
+			return true;
+		else if (owner.getOwner() == null)
+			return false;
+		return isOuterOwner(owner.getOwner());
+			
+	}
 
 	protected void assertPrefixIsSet(CExpressionContext context)
 		throws PositionedError 
@@ -114,11 +176,12 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		if (prefix == null)
 		{
 			if (isThisMethodCall(context))
-			prefix = new FjThisExpression(getTokenReference());
+				prefix = new FjThisExpression(getTokenReference());
 			else
-			prefix = new OuterThisDummyPrefix(getTokenReference());
+				prefix = new OuterThisDummyPrefix(getTokenReference());
 		}
 	}
+	
 
 	/**
 	 * Returns the return type of the method that it calls if the type is 
@@ -372,7 +435,11 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 
 	protected boolean isThisMethodCall(CExpressionContext context)
 		throws PositionedError {
-		if (prefix != null && prefix instanceof JThisExpression)
+		
+		CClass local = context.getClassContext().getCClass();
+		
+		if (prefix != null && prefix instanceof JThisExpression 
+			&& ((JThisExpression)prefix).getPrefix() == null)
 			return true;
 		else if (prefix != null)
 			return false;
@@ -407,7 +474,37 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 	protected void setMethod(CExpressionContext context)
 		throws PositionedError {
 		CClass local = context.getClassContext().getCClass();
-		findMethod(context, local, getArgumentTypes(context, args));
+		CType[] argTypes = getArgumentTypes(context, args);
+		findMethod(context, local, argTypes);
+		
+		//If the method is not private and called in a clean 
+		//class it must go to the clean interface
+		//It is for allow calling outer this methods.
+		CClass methodOwner = method.getOwner();
+		if (method.isPublic() 
+			&& local != methodOwner 
+			&& FjConstants.isBaseName(methodOwner.getIdent())
+			&& CModifier.contains(methodOwner.getModifiers(), 
+				(FJC_CLEAN | FJC_VIRTUAL | FJC_OVERRIDE)))
+		{
+			CClass cleanLocal = new FjTypeSystem().cleanInterface(methodOwner);
+			try 
+			{
+				method = cleanLocal.lookupMethod(
+					context.getClassContext(), 
+					local, 
+					null, 
+					ident, 
+					argTypes, 
+					null);
+			}
+			catch(UnpositionedError e)
+			{
+				throw e.addPosition(getTokenReference());
+			}
+		}
+		
+			
 	}
 
 	private CType[] argTypes;

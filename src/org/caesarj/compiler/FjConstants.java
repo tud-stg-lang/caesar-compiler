@@ -120,7 +120,8 @@ public class FjConstants {
 		return className.endsWith( PROXY_POSTFIX );
 	}
 	public static boolean isFactoryMethodName( String methodName ) {
-		return methodName.startsWith( SEPERATOR + FACTORY_PREFIX );
+		return methodName.matches("[" + SEPERATOR + "]+" + FACTORY_PREFIX 
+			+ "[\\w]*");
 	}
 	public static String cleanInterfaceName( String className ) {
 		return typeName( className );

@@ -1,5 +1,6 @@
 package org.caesarj.compiler.ast;
 
+import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
@@ -15,6 +16,7 @@ import org.caesarj.kjc.JExpression;
 import org.caesarj.kjc.JFieldAccessExpression;
 import org.caesarj.kjc.JLocalVariableExpression;
 import org.caesarj.kjc.JTypeNameExpression;
+import org.caesarj.kjc.KjcMessages;
 
 public class FjFieldAccessExpression extends JFieldAccessExpression {
 
@@ -67,7 +69,32 @@ public class FjFieldAccessExpression extends JFieldAccessExpression {
 				new FjThisExpression( getTokenReference(), false ),
 				ident).analyse( context );
 		} else {
-			return super.analyse( context );
+			try
+			{
+				return super.analyse( context );
+			}
+			catch(PositionedError e)
+			{
+				//If it does not find the field this$0 is because 
+				//it is a virtual class accessing outer private methods
+				//or accessing methods defined in outer outer ... class.
+				if (e.getFormattedMessage().getDescription() 
+					== KjcMessages.FIELD_UNKNOWN)
+				{
+					String fieldName = (String) e.getFormattedMessage()
+						.getParams()[0];
+					if (JAV_OUTER_THIS.equals(fieldName))
+					{
+						throw new PositionedError(
+							getTokenReference(), 
+							CaesarMessages.VIRTUAL_ACCESSING_OUTER_FIELD,
+							context.getClassContext().getCClass()
+								.getQualifiedName());
+					}
+				
+				}
+				throw e;
+			}		
 		}
 	}
 

@@ -9,6 +9,7 @@ import org.aspectj.weaver.patterns.PerSingleton;
 import org.caesarj.compiler.CaesarConstants;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.ast.AdviceDeclaration;
+import org.caesarj.compiler.ast.CciInternalUnqualifiedInstanceCreation;
 import org.caesarj.compiler.ast.DeploymentSupportClassDeclaration;
 import org.caesarj.compiler.ast.FjAssignmentExpression;
 import org.caesarj.compiler.ast.FjCastExpression;
@@ -21,7 +22,6 @@ import org.caesarj.compiler.ast.FjMethodCallExpression;
 import org.caesarj.compiler.ast.FjMethodDeclaration;
 import org.caesarj.compiler.ast.FjNameExpression;
 import org.caesarj.compiler.ast.FjThisExpression;
-import org.caesarj.compiler.ast.FjUnqualifiedInstanceCreation;
 import org.caesarj.compiler.ast.FjVariableDefinition;
 import org.caesarj.compiler.ast.PointcutDeclaration;
 import org.caesarj.compiler.ast.ProceedDeclaration;
@@ -467,7 +467,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CReferenceType multiInstanceType =
 			new CClassNameType(qualifiedMultiInstanceAspectClassName);
 		JExpression right =
-			new FjUnqualifiedInstanceCreation(
+			new CciInternalUnqualifiedInstanceCreation(
 				where,
 				multiInstanceType,
 				JExpression.EMPTY);
@@ -507,7 +507,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CReferenceType type =
 			new CClassNameType(qualifiedMultiThreadAspectClassName);
 		JExpression right =
-			new FjUnqualifiedInstanceCreation(where, type, JExpression.EMPTY);
+			new CciInternalUnqualifiedInstanceCreation(
+				where, type, JExpression.EMPTY);
 		JExpression expr = new FjAssignmentExpression(where, left, right);
 
 		return new JExpressionStatement(where, expr, null);
@@ -674,7 +675,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CClassNameType stackType = new CClassNameType("java/util/Stack");
 
 		JExpression stackInit =
-			new FjUnqualifiedInstanceCreation(
+			new CciInternalUnqualifiedInstanceCreation(
 				where,
 				stackType,
 				JExpression.EMPTY);
@@ -1123,7 +1124,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
 
 		JExpression initializer =
-			new FjUnqualifiedInstanceCreation(
+			new CciInternalUnqualifiedInstanceCreation(
 				where,
 				multiThreadType,
 				JExpression.EMPTY);
@@ -1287,7 +1288,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new CClassNameType("java/util/WeakHashMap");
 
 		JExpression initializer =
-			new FjUnqualifiedInstanceCreation(
+			new CciInternalUnqualifiedInstanceCreation(
 				where,
 				hashMapType,
 				JExpression.EMPTY);
@@ -2380,7 +2381,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression left =
 			new FjNameExpression(where, PER_SINGLETON_INSTANCE_FIELD);
 		JExpression right =
-			new FjUnqualifiedInstanceCreation(
+			new CciInternalUnqualifiedInstanceCreation(
 				where,
 				new CClassNameType(singletonAspectName),
 				JExpression.EMPTY);

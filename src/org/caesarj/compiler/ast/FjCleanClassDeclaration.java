@@ -449,6 +449,23 @@ public class FjCleanClassDeclaration
 		//String superTypeName = getSuperClass().getQualifiedName();
 		CReferenceType superType = getSuperConstructorType();
 		JExpression superArg = getSuperConstructorArgumentExpression();
+		CClass owner = getOwner();
+
+		//If it has a super ci, it must 
+		//define one more constructor (Only for the most outer classes)
+		CReferenceType superCi = null;
+		if (owner == null &&
+			binding == null && providing == null && 
+			! isWeavelet(getCClass()))
+		{
+			superCi = 
+				getSuperCollaborationInterface(
+					getCClass(), CCI_BINDING);
+			if (superCi == null)
+				superCi = 
+					getSuperCollaborationInterface(
+						getCClass(), CCI_PROVIDING);
+		}
 
 		// introduce additional parent-parameterized constructor
 		FjConstructorDeclaration[] constructors = getConstructors();
@@ -458,7 +475,7 @@ public class FjCleanClassDeclaration
 			if (superType != null)
 			{
 				// only if the class has a supertype
-				if (getOwner() == null)
+				if (owner == null)
 				{
 					// only for standalone clean classes *)
 					oldConstructors.add(
@@ -466,20 +483,6 @@ public class FjCleanClassDeclaration
 							constructors[i], 
 							superType));
 					
-					//If it has a super ci, it must 
-					//define one more constructor	
-					CReferenceType superCi = null;
-					if (binding == null && providing == null && 
-						! isWeavelet(getCClass()))
-					{
-						superCi = 
-							getSuperCollaborationInterface(
-								getCClass(), CCI_BINDING);
-						if (superCi == null)
-							superCi = 
-								getSuperCollaborationInterface(
-									getCClass(), CCI_PROVIDING);
-					}
 					if (superCi != null)
 					{
 						oldConstructors.add(
@@ -671,6 +674,8 @@ public class FjCleanClassDeclaration
 		}
 		else if (providing != null)
 		{
+			checkProvidingConstructors(context);
+			
 			cleanInterface.checkCollaborationInterface(context, 
 				providing.getQualifiedName());
 			
@@ -698,12 +703,30 @@ public class FjCleanClassDeclaration
 				getCClass(), CCI_PROVIDING)) 
 			!= null)
 		{
+			checkProvidingConstructors(context);
 			checkCIMethods(context, superCi, false, CCI_EXPECTED, 
 				CaesarMessages.EXPECTED_METHOD_IN_PROVIDING, null);
 		}
 		super.checkTypeBody(context);
 	}
 
+	/**
+	 * Checks if the the class defines a constructor with parameters.
+	 * It must be checked only for providing classes.
+	 * @param context
+	 * @throws PositionedError
+	 */
+	protected void checkProvidingConstructors(CContext context)
+		throws PositionedError
+	{
+		FjConstructorDeclaration[] constructors = getConstructors();
+		for (int i = 0; i < constructors.length; i++)
+		{
+			check(context, 
+				(constructors[i].getParameters().length <= 1), 
+				CaesarMessages.PROVIDING_DEFINES_CONSTRUCTOR, ident);
+		}
+	}
 
 	/**
 	 * This method checks if the class implements or binds all nested 

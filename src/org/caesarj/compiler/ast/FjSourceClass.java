@@ -3,6 +3,7 @@ package org.caesarj.compiler.ast;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.ConstantPoolOverflowException;
 import org.caesarj.classfile.InstructionOverflowException;
 import org.caesarj.classfile.LocalVariableOverflowException;
+import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
@@ -30,10 +32,13 @@ import org.caesarj.kjc.CSourceClass;
 import org.caesarj.kjc.CType;
 import org.caesarj.kjc.CTypeContext;
 import org.caesarj.kjc.CTypeVariable;
+import org.caesarj.kjc.JLocalVariable;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.KjcMessages;
 import org.caesarj.kjc.TypeFactory;
 import org.caesarj.util.Utils;
+
+import sun.misc.Cleaner;
 
 public class FjSourceClass extends CSourceClass
 {
@@ -45,6 +50,8 @@ public class FjSourceClass extends CSourceClass
 	protected PrivilegedAccessHandler privilegedAccessHandler;
 
 	protected List resolvedPointcuts = new ArrayList();
+	
+	protected FjTypeSystem typeSystem = new FjTypeSystem();
 
 	public FjSourceClass(
 		CClass owner,
@@ -110,7 +117,7 @@ public class FjSourceClass extends CSourceClass
 		CReferenceType[] innerClasses = getInnerClasses();
 
 		// andreas start copy from CClass.lookupClass( ... )
-		
+
 		CClass[] candidates =
 			new CClass[(interfaces == null) ? 1 : interfaces.length + 1];
 		int length = 0;
@@ -134,7 +141,7 @@ public class FjSourceClass extends CSourceClass
 				// Walter: check if the interface does not descend from this
 				// Walter: it is for check circularity in the hierarchy, 
 				// Walter: and prevent stack overflows
-				if (! interfaces[i].getCClass().descendsFrom(this))
+				if (!interfaces[i].getCClass().descendsFrom(this))
 				{
 					CClass superFound =
 						interfaces[i].getCClass().lookupClass(caller, name);
@@ -150,7 +157,7 @@ public class FjSourceClass extends CSourceClass
 			// Walter: check if the superClass does not descend from this
 			// Walter: it is for check circularity in the hierarchy, 
 			// Walter: and prevent stack overflows
-			if (! superClassType.getCClass().descendsFrom(this))
+			if (!superClassType.getCClass().descendsFrom(this))
 			{
 				CClass superFound =
 					superClassType.getCClass().lookupClass(caller, name);
@@ -183,18 +190,17 @@ public class FjSourceClass extends CSourceClass
 				   and an interface. A compile-time error occurs on any attempt to 
 				   refer to any ambiguously inherited class or interface by its simple 
 				   name. */
-				throw new UnpositionedError(
-					KjcMessages.CLASS_AMBIGUOUS,
-					// andreas start: throw candidates up, too
-					//name);
-					name, candidates );
-					// andreas end
+				throw new UnpositionedError(KjcMessages.CLASS_AMBIGUOUS,
+				// andreas start: throw candidates up, too
+				//name);
+				name, candidates);
+			// andreas end
 
 		}
 
 		// andreas end
 	}
-	
+
 	/**
 	* Generates the Bytecode to a byte array.
 	* 
@@ -618,6 +624,38 @@ public class FjSourceClass extends CSourceClass
 	public void addResolvedPointcut(ResolvedPointcutDefinition rpd)
 	{
 		resolvedPointcuts.add(rpd);
+	}
+	
+	public CReferenceType getOwnerType()
+	{
+		CClass owner = getOwner();
+		if (owner != null
+			&& CModifier.contains(owner.getModifiers(), 
+				FJC_CLEAN | FJC_VIRTUAL | FJC_OVERRIDE)
+			&& FjConstants.isBaseName(ident))
+		{
+			return
+				new FjTypeSystem().cleanInterface(owner).getAbstractType();
+		}
+		return super.getOwnerType();
+	}
+	/**
+	 * 
+	 */
+	public boolean isDefinedInside(CClass outer)
+	{
+		if (this == outer || typeSystem.cleanInterface(this) == outer)
+		{
+			return true;
+		}
+		else if (getOwner() == null)
+		{
+			return false;
+		}
+		else
+		{
+			return getOwner().isDefinedInside(outer);
+		}		
 	}
 
 }

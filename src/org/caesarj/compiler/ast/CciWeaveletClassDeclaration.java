@@ -263,7 +263,8 @@ public class CciWeaveletClassDeclaration
 	 * Generates a new argument expression for generate the constructors.
 	 * The expression will be:
 	 * 
-	 * new <BindingType>(new <ProvidingType>(), ..)
+	 * new <BindingType>(new <ProvidingType>(new <CIType>), ..)
+	 * or new <BindingType>(new <ProvidingType>(_parent), ..)
 	 */
 	protected void setSuperConstructorArgument(
 		FjConstructorDeclaration constructor,
@@ -271,33 +272,35 @@ public class CciWeaveletClassDeclaration
 	{
 		FjConstructorCall constructorCall = 
 			((FjConstructorBlock) constructor.getBody()).getConstructorCall();
-		JExpression[] args;
-		if (constructorCall != null)
+		
+		if (constructorCall == null || ! constructorCall.isThis())
 		{
-			JExpression[] oldArgs = constructorCall.getArguments();
-			args = new JExpression[oldArgs.length + 1];
+			JExpression[] oldArgs;
+			if (constructorCall == null)
+				oldArgs = JExpression.EMPTY;
+			else
+				oldArgs = constructorCall.getArguments();
+			JExpression[] args = new JExpression[oldArgs.length + 1];
 			System.arraycopy(oldArgs, 0, args, 1, oldArgs.length);
+	
+			args[0] = 
+				new JUnqualifiedInstanceCreation(
+					FjConstants.STD_TOKEN_REFERENCE,
+					new CClassNameType(
+						FjConstants.toImplName(
+							superCollaborationInterface
+								.getProvidingQualifiedName())),
+					new JExpression[]{superArg});
+					
+			superArg =
+				new JUnqualifiedInstanceCreation(
+					FjConstants.STD_TOKEN_REFERENCE,
+					new CClassNameType(
+						FjConstants.toImplName(
+							superCollaborationInterface
+								.getBindingQualifiedName())),
+					args);
 		}
-		else
-			args = new JExpression[1];
-
-		args[0] = 
-			new JUnqualifiedInstanceCreation(
-				FjConstants.STD_TOKEN_REFERENCE,
-				new CClassNameType(
-					FjConstants.toImplName(
-						superCollaborationInterface
-							.getProvidingQualifiedName())),
-				new JExpression[]{superArg});
-				
-		superArg =
-			new JUnqualifiedInstanceCreation(
-				FjConstants.STD_TOKEN_REFERENCE,
-				new CClassNameType(
-					FjConstants.toImplName(
-						superCollaborationInterface
-							.getBindingQualifiedName())),
-				args);
 
 
 		super.setSuperConstructorArgument(constructor, superArg);
@@ -315,10 +318,7 @@ public class CciWeaveletClassDeclaration
 		CReferenceType superType)
 	{
 		return constructor.getStandardWeaveletClassConstructor(
-			new CClassNameType(
-				superCollaborationInterface.getProvidingQualifiedName()),
-			new CClassNameType(
-				superCollaborationInterface.getBindingQualifiedName()));
+			superCollaborationInterface);
 	}
 	
 	/**

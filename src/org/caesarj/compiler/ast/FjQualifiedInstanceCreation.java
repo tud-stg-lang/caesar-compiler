@@ -1,9 +1,11 @@
 package org.caesarj.compiler.ast;
 
+import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
+import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CExpressionContext;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.JExpression;
@@ -58,7 +60,20 @@ public class FjQualifiedInstanceCreation
 		// is virtual and be instantiated by a factory
 		// method iff a matching method exists.
 		if( fjts.hasMethod( getPrefixType( context ).getCClass(), factoryMethodName ) ) {
-			
+			CReferenceType ownType = getOwnType( context );
+			//It cannot create a collaboration or a providing out of the 
+			//factory method, but binding it can.
+			check(
+				context,
+				FjConstants.isFactoryMethodName(
+					context.getMethodContext().getCMethod().getIdent())
+					|| FjTypeSystem.getClassInHierarchy(
+						ownType.getCClass(),
+						(CCI_COLLABORATION | CCI_PROVIDING),
+						CCI_BINDING) == null,
+				CaesarMessages.BINDING_PROVIDING_DIRECT_CREATION,
+				ownType.getQualifiedName());
+
 			return new FjCastExpression (
 				getTokenReference(),
 				new FjMethodCallExpression(
@@ -66,8 +81,10 @@ public class FjQualifiedInstanceCreation
 					cachedPrefix,
 					factoryMethodName,
 					cachedParams ),
-				getOwnType( context ),
+				ownType,
 				false ).analyse( context );
+			
+
 		}
 		return super.analyse(context);
 	}	

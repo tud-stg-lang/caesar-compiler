@@ -1,9 +1,11 @@
 package org.caesarj.compiler.util;
 
+import org.caesarj.classfile.Constants;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
 import org.caesarj.compiler.ast.FjConstructorDeclaration;
 import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
+import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.JMethodDeclaration;
@@ -63,13 +65,18 @@ public class MethodTransformationFjVisitor extends FjVisitor {
 		// add the factory methods to the containing class
 		// we need the unmodified constructors signatures:
 		// self.addSuperTypeParameterToConstructors() called later!
-		if( owner.get() instanceof FjClassDeclaration ) {
+		Object objOwner = owner.get();
+		if( objOwner instanceof FjClassDeclaration ) {
+			FjClassDeclaration owner = (FjClassDeclaration) objOwner;
 			superClass = self.getSuperClass().getQualifiedName();
 
 			FjConstructorDeclaration[] constructors = self.getConstructors();
 			for( int i = 0; i < constructors.length; i++ ) {
-				((FjClassDeclaration) owner.get()).
-					append( constructors[ i ].getFactoryMethod( self, superClass ) );
+				owner.append(
+					constructors[ i ].getFactoryMethod(
+						self, 
+						superClass,
+						owner.isClean()));
 			}
 		}
 		

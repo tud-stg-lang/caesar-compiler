@@ -1,5 +1,8 @@
 package org.caesarj.compiler.ast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 
 import org.caesarj.compiler.CciConstants;
@@ -17,18 +20,28 @@ import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CSourceClass;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.Constants;
+import org.caesarj.kjc.JBinaryExpression;
 import org.caesarj.kjc.JBlock;
+import org.caesarj.kjc.JCastExpression;
 import org.caesarj.kjc.JClassDeclaration;
+import org.caesarj.kjc.JEqualityExpression;
 import org.caesarj.kjc.JExpression;
+import org.caesarj.kjc.JExpressionStatement;
+import org.caesarj.kjc.JFieldAccessExpression;
 import org.caesarj.kjc.JFieldDeclaration;
 import org.caesarj.kjc.JFormalParameter;
+import org.caesarj.kjc.JIfStatement;
+import org.caesarj.kjc.JLocalVariable;
 import org.caesarj.kjc.JMethodCallExpression;
 import org.caesarj.kjc.JMethodDeclaration;
+import org.caesarj.kjc.JNullLiteral;
 import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JReturnStatement;
 import org.caesarj.kjc.JStatement;
 import org.caesarj.kjc.JThisExpression;
 import org.caesarj.kjc.JTypeDeclaration;
+import org.caesarj.kjc.JVariableDeclarationStatement;
+import org.caesarj.kjc.JVariableDefinition;
 import org.caesarj.kjc.KjcMessages;
 import org.caesarj.util.Utils;
 
@@ -136,36 +149,6 @@ public class CciClassDeclaration
 		return providing;
 	}
 	
-	
-	/**
-	 * @return An int with all modifiers allowed for classes.
-	 */	
-	protected int getAllowedModifiers()
-	{
-		return ACC_PUBLIC | ACC_PROTECTED | ACC_PRIVATE | 
-			ACC_ABSTRACT | ACC_STATIC | ACC_FINAL | ACC_STRICT;
-	}
-
-	/**
-	 * Construct the source class.
-	 * @param owner
-	 * @param prefix
-	 * @return CSourceClass
-	 */
-	protected CSourceClass constructSourceClass(CClass owner, String prefix)
-	{
-		return new FjSourceClass(
-			owner, 
-			getTokenReference(), 
-			modifiers, 
-			ident, 
-			prefix + ident, 
-			typeVariables, 
-			isDeprecated(), 
-			false, 
-			this);
-	}
-	
 	/**
 	 * @return CReferenceType the super class of the class.
 	 */
@@ -173,92 +156,6 @@ public class CciClassDeclaration
 	{
 		return superClass;
 	}	
-	
-	/**
-	 * Appends an inner class.
-	 * This method was pulled up from FjClassDeclaration.
-	 * @param type
-	 */
-	public void append(JTypeDeclaration type)
-	{
-		JTypeDeclaration[] newInners = new JTypeDeclaration[inners.length + 1];
-		
-		System.arraycopy(inners, 0, newInners, 0, inners.length);
-
-		newInners[inners.length] = type;
-		setInners(newInners);
-	}
-
-	/**
-	 * Sets the inner classes.
-	 * This method was pulled up from FjClassDeclaration.
-	 * @param type
-	 */
-	protected void setInners(JTypeDeclaration[] inners)
-	{
-		this.inners = inners;
-	}
-	/**
-	 * Adds a method to the class. This method was pulled up. 
-	 * @param newMethod
-	 */
-	public void addMethod(JMethodDeclaration newMethod)
-	{
-		JMethodDeclaration[] newMethods =
-			new JMethodDeclaration[methods.length + 1];
-	
-		System.arraycopy(methods, 0, newMethods, 0, methods.length);
-	
-		newMethods[methods.length] = newMethod;
-	
-		methods = newMethods;
-	}
-		
-	/**
-	 * Resolves the binding and providing references. Of course it calls the
-	 * super implementation of the method also.
-	 */
-	public void checkInterface(CContext context) throws PositionedError
-	{
-		super.checkInterface(context);
-		if (binding != null)
-		{
-			try
-			{
-				binding = (CReferenceType) binding.checkType(context);
-			}
-			catch (UnpositionedError e)
-			{
-				if (e.getFormattedMessage().getDescription()
-					!= KjcMessages.CLASS_AMBIGUOUS)
-					throw e.addPosition(getTokenReference());
-					
-				CClass[] candidates = (CClass[]) 
-					e.getFormattedMessage().getParams()[1];
-				
-				binding = candidates[0].getAbstractType();
-			}
-		}
-		if (providing != null)
-		{
-			try
-			{
-				providing = (CReferenceType) providing.checkType(context);
-			}
-			catch (UnpositionedError e)
-			{
-				if (e.getFormattedMessage().getDescription()
-					!= KjcMessages.CLASS_AMBIGUOUS)
-					throw e.addPosition(getTokenReference());
-					
-				CClass[] candidates = (CClass[]) 
-					e.getFormattedMessage().getParams()[1];
-				
-				providing = candidates[0].getAbstractType();
-			}
-		}
-	}
-	
 
 	/**
 	 * Returns the InnerClasses. This method was pulled up. 
@@ -285,6 +182,218 @@ public class CciClassDeclaration
 			contructors,
 			FjConstructorDeclaration.class);
 	}
+
+	/**
+	 * Returns the qualified type name of the binding.
+	 * @return String
+	 */
+	public String getBindingTypeName()
+	{
+		return ownerDecl != null 
+				? ownerDecl.getBindingTypeName() + "$" + binding.toString()
+				: binding.toString();
+	}
+
+	/**
+	 * Sets the owner declaration. This method was pulled up.
+	 * @param ownerDecl
+	 */
+	public void setOwnerDeclaration(Object ownerDecl)
+	{
+		if (ownerDecl instanceof FjClassDeclaration)
+			this.ownerDecl = (FjClassDeclaration) ownerDecl;
+	}
+	
+	/**
+	 * Returns the owner declaration. This method was pulled up.
+	 * @return FjClassDeclaration
+	 */
+	public FjClassDeclaration getOwnerDeclaration()
+	{
+		return ownerDecl;
+	}
+	/**
+	 * Returns the ident of the class
+	 * @return String
+	 */
+	public String getIdent()
+	{
+		return ident;
+	}
+	
+	
+	/**
+	 * @return An int with all modifiers allowed for classes.
+	 */	
+	protected int getAllowedModifiers()
+	{
+		return ACC_PUBLIC | ACC_PROTECTED | ACC_PRIVATE | 
+			ACC_ABSTRACT | ACC_STATIC | ACC_FINAL | ACC_STRICT;
+	}
+
+	/**
+	 * Sets the inner classes.
+	 * This method was pulled up from FjClassDeclaration.
+	 * @param type
+	 */
+	protected void setInners(JTypeDeclaration[] inners)
+	{
+		this.inners = inners;
+	}
+	
+	/**
+	 * Construct the source class.
+	 * @param owner
+	 * @param prefix
+	 * @return CSourceClass
+	 */
+	protected CSourceClass constructSourceClass(CClass owner, String prefix)
+	{
+		return new FjSourceClass(
+			owner, 
+			getTokenReference(), 
+			modifiers, 
+			ident, 
+			prefix + ident, 
+			typeVariables, 
+			isDeprecated(), 
+			false, 
+			this);
+	}
+	
+	
+	/**
+	 * Appends an inner class.
+	 * This method was pulled up from FjClassDeclaration.
+	 * @param type
+	 */
+	public void append(JTypeDeclaration type)
+	{
+		JTypeDeclaration[] newInners = new JTypeDeclaration[inners.length + 1];
+		
+		System.arraycopy(inners, 0, newInners, 0, inners.length);
+
+		newInners[inners.length] = type;
+		setInners(newInners);
+	}
+
+
+	/**
+	 * Adds a method to the class. This method was pulled up. 
+	 * @param newMethod
+	 */
+	public void addMethod(JMethodDeclaration newMethod)
+	{
+		JMethodDeclaration[] newMethods =
+			new JMethodDeclaration[methods.length + 1];
+	
+		System.arraycopy(methods, 0, newMethods, 0, methods.length);
+	
+		newMethods[methods.length] = newMethod;
+	
+		methods = newMethods;
+	}
+
+	/**
+	 * Adds a field in the class.
+	 * @param newField field to be inserted
+	 */
+	public void addField(JFieldDeclaration newField)
+	{
+		JFieldDeclaration[] newFields =
+			new JFieldDeclaration[fields.length + 1];
+	
+		System.arraycopy(fields, 0, newFields, 0, fields.length);
+	
+		newFields[fields.length] = newField;
+	
+		fields = newFields;
+	}
+
+	/**
+	 * Adds fields in the class.
+	 * @param newFields fields to be inserted
+	 */
+	public void addFields(ArrayList newFields)
+	{
+		List tempList = Arrays.asList(fields);
+		ArrayList oldFields = new ArrayList(tempList.size() + newFields.size());
+		
+		oldFields.addAll(newFields);
+		fields = 
+			(JFieldDeclaration[]) 
+				oldFields.toArray(new JFieldDeclaration[oldFields.size()]);
+	}
+	public void addMethods(ArrayList methodsToAdd)
+	{
+		addMethods(
+			(JMethodDeclaration[])
+				methodsToAdd.toArray(
+					new JMethodDeclaration[methodsToAdd.size()]));
+
+	}
+
+	public void addMethods(JMethodDeclaration[] methodsToAdd)
+	{
+		JMethodDeclaration[] newMethods =
+			new JMethodDeclaration[methods.length + methodsToAdd.length];
+
+		System.arraycopy(methods, 0, newMethods, 0, methods.length);
+		System.arraycopy(
+			methodsToAdd,
+			0,
+			newMethods,
+			methods.length,
+			methodsToAdd.length);
+
+		methods = newMethods;
+	}
+
+		
+	/**
+	 * Resolves the binding and providing references. Of course it calls the
+	 * super implementation of the method also.
+	 */
+	public void checkInterface(CContext context) 
+		throws PositionedError
+	{
+		super.checkInterface(context);
+		if (binding != null)
+			binding = resolveCollabortationInterface(context, binding);
+
+		if (providing != null)
+			providing = resolveCollabortationInterface(context, providing);
+	}
+	/**
+	 * Resolves the collaboration interface passed as parameter.
+	 * Returns the ci checked.
+	 * @param context
+	 * @param ci
+	 * @return CReferenceType 
+	 * @throws PositionedError
+	 */
+	protected CReferenceType resolveCollabortationInterface(
+		CContext context, CReferenceType ci)
+		throws PositionedError		
+	{
+		try
+		{
+			ci = (CReferenceType) ci.checkType(context);
+		}
+		catch (UnpositionedError e)
+		{
+			if (e.getFormattedMessage().getDescription()
+				!= KjcMessages.CLASS_AMBIGUOUS)
+				throw e.addPosition(getTokenReference());
+					
+			CClass[] candidates = (CClass[]) 
+				e.getFormattedMessage().getParams()[1];
+				
+			ci = candidates[0].getAbstractType();
+		}
+		return ci;	
+	}
+	
 	/**
 	 * Transforms the inner classes in overriden types. The current class
 	 * must be a providing class (getProviding() != null).
@@ -383,6 +492,7 @@ public class CciClassDeclaration
 				FjConstants.CHILD_TYPE));	
 	}
 	
+
 	/**
 	 * Creates an accessor method.
 	 * @param accessedName The name to be accessed
@@ -415,7 +525,215 @@ public class CciClassDeclaration
 			body,
 			null,
 			null);
-	}	
+	}
+	public void addWrapperRecyclingStructure()
+	{
+		ArrayList wrappingMappings = new ArrayList(inners.length);
+		ArrayList wrappingMethods = new ArrayList(inners.length);
+		for (int i = 0; i < inners.length; i++)
+		{
+			if (inners[i] instanceof CciClassDeclaration
+				&& CModifier.contains(inners[i].getModifiers(), CCI_BINDING))
+			{
+				CciClassDeclaration innerDecl = (CciClassDeclaration) inners[i];
+				wrappingMappings.add(
+					createWrapperMapping(innerDecl));
+				wrappingMethods.add(
+					createWrapperRecyclingMethod(innerDecl));
+			}
+		}
+		
+		if (wrappingMappings.size() > 0)
+			addFields(wrappingMappings);
+		if (wrappingMethods.size() > 0)
+			addMethods(wrappingMethods);
+		
+	}
+
+	/**
+	 * Creates a field declaration which will contain all 
+	 * instances of the wrappers of the type passed.
+	 * 
+	 * @param binding inner type that will be contained in the map.
+	 */
+	protected JFieldDeclaration createWrapperMapping(
+		CciClassDeclaration binding)
+	{
+		TokenReference ref = getTokenReference();
+		String mapName = 
+			CciConstants.toWrappingMapName(binding.getIdent());
+		return
+			new FjFieldDeclaration(
+				ref, 
+				new FjVariableDefinition(
+					ref, 
+					ACC_PRIVATE,
+					CciConstants.WRAPPING_MAP_TYPE,
+					mapName,
+					new CciInternalUnqualifiedInstanceCreation(
+						ref, 
+						CciConstants.WRAPPING_MAP_TYPE, 
+						JExpression.EMPTY)),
+				false,
+				CciConstants.WRAPPING_MAP_JAVADOC,
+				new JavaStyleComment[0]);
+	}
+
+	/**
+	 * 
+	 */
+	protected JMethodDeclaration createWrapperRecyclingMethod(
+		CciClassDeclaration binding)
+	{
+		TokenReference ref = getTokenReference();
+		String methodName = 
+			CciConstants.toWrappingMethodCreationName(binding.getIdent());
+
+		JStatement[] statements = new JStatement[]
+		{
+			//LocalType wrapper = (LocalType) map.get(_getObjectId(wrappee))
+			new JVariableDeclarationStatement(
+				ref,
+				new JVariableDefinition(
+					ref, 
+					0, 
+					new CClassNameType(binding.getIdent()), 
+					CciConstants.WRAPPING_LOCAL_VAR,
+					new JCastExpression(
+						ref, 
+						new FjMethodCallExpression(
+							ref, 
+							new JFieldAccessExpression(
+								ref, 
+								new JThisExpression(ref), 
+								CciConstants.toWrappingMapName(binding.getIdent())),
+							CciConstants.WRAPPING_MAP_ACCESS,
+							new JExpression[]
+							{
+		
+								new JMethodCallExpression(
+									ref, 
+									new JThisExpression(ref), 
+									CciConstants.WRAPPEE_ID_METHOD_NAME, 
+									new JExpression[]
+									{
+										new FjNameExpression(
+											ref, 
+											null, 
+											CciConstants.WRAPPEE_PARAMETER_NAME)
+									})
+							}),
+					new CClassNameType(binding.getIdent()))),
+				null),
+
+			//if (wrapper == null)
+			//{
+			//	wrapper = new Binding(wrappee)
+			//	map.put(getObjectId(wrappee), wrapper)
+			//}
+			new JIfStatement(
+				ref, 
+				new JEqualityExpression(
+					ref, 
+					true, 
+					new FjNameExpression(
+						ref,
+						CciConstants.WRAPPING_LOCAL_VAR), 
+						new JNullLiteral(ref)),
+				new JBlock(
+					ref, 
+					new JStatement[]
+					{
+						//wrapper = new Binding(wrappee)
+						new JExpressionStatement(
+							ref,
+							new FjAssignmentExpression(
+								ref, 
+								new FjNameExpression(
+									ref, 
+									CciConstants.WRAPPING_LOCAL_VAR), 
+								new FjUnqualifiedInstanceCreation(
+									ref, 
+									new CClassNameType(binding.getIdent()), 
+									new JExpression[]
+									{
+										new FjNameExpression(
+											ref, 
+											CciConstants.WRAPPEE_PARAMETER_NAME)
+									})),
+							null),
+						//map.put(getObjectId(wrappee), wrapper)
+						new JExpressionStatement(
+							ref,
+							new FjMethodCallExpression(
+								ref,
+								new JFieldAccessExpression(
+									ref, 
+									new JThisExpression(ref), 
+									CciConstants.toWrappingMapName(
+										binding.getIdent())),
+								CciConstants.WRAPPING_MAP_PUT,
+								new JExpression[]
+								{
+									new JMethodCallExpression(
+										ref, 
+										new JThisExpression(ref), 
+										CciConstants.WRAPPEE_ID_METHOD_NAME, 
+										new JExpression[]
+										{
+											new FjNameExpression(
+												ref, 
+												null, 
+												CciConstants
+													.WRAPPEE_PARAMETER_NAME)
+										}),
+									new FjNameExpression(
+										ref, 
+										CciConstants.WRAPPING_LOCAL_VAR)						
+								}),
+							null),
+					},
+					null),
+				null,
+				null),//endIf
+			
+			//return wrapper
+			new JReturnStatement(
+				ref,
+				new FjNameExpression(ref, CciConstants.WRAPPING_LOCAL_VAR),
+				null)
+		};
+		
+		JBlock methodBody = new JBlock(
+			ref,
+			statements,
+			null);
+			
+		FjFormalParameter[] parameters = new FjFormalParameter[]
+		{
+			new FjFormalParameter(
+				ref, 
+				JLocalVariable.DES_PARAMETER, 
+				new CClassNameType(JAV_OBJECT), 
+				CciConstants.WRAPPEE_PARAMETER_NAME, 
+				false)
+		};
+		
+		return 
+			new FjMethodDeclaration(
+				ref, 
+				ACC_PUBLIC, 
+				typeVariables, 
+				new CClassNameType(binding.getIdent()),
+				methodName,
+				parameters,
+				CReferenceType.EMPTY,
+				methodBody,
+				CciConstants.WRAPPING_CREATION_JAVADOC,
+				new JavaStyleComment[0]);
+	}
+
+	
 	/* DEBUG
 	 * (non-Javadoc)
 	 * @see at.dms.kjc.JTypeDeclaration#print()
@@ -456,33 +774,4 @@ public class CciClassDeclaration
 		System.out.println();
 	}
 	
-	/**
-	 * Returns the qualified type name of the binding.
-	 * @return String
-	 */
-	public String getBindingTypeName()
-	{
-		return ownerDecl != null 
-				? ownerDecl.getBindingTypeName() + "$" + binding.toString()
-				: binding.toString();
-	}
-
-	/**
-	 * Sets the owner declaration. This method was pulled up.
-	 * @param ownerDecl
-	 */
-	public void setOwnerDeclaration(Object ownerDecl)
-	{
-		if (ownerDecl instanceof FjClassDeclaration)
-			this.ownerDecl = (FjClassDeclaration) ownerDecl;
-	}
-	
-	/**
-	 * Returns the owner declaration. This method was pulled up.
-	 * @return FjClassDeclaration
-	 */
-	public FjClassDeclaration getOwnerDeclaration()
-	{
-		return ownerDecl;
-	}	
 }

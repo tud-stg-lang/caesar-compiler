@@ -15,7 +15,10 @@ import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CContext;
 import org.caesarj.kjc.CMethod;
+import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
+import org.caesarj.kjc.CSourceClass;
+import org.caesarj.kjc.CSourceField;
 import org.caesarj.kjc.CType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.Constants;
@@ -26,7 +29,7 @@ import org.caesarj.kjc.JMethodDeclaration;
 import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JStatement;
 import org.caesarj.kjc.JTypeDeclaration;
-import org.caesarj.kjc.JUnqualifiedInstanceCreation;
+import org.caesarj.kjc.JVariableDefinition;
 
 public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 	implements FjResolveable {
@@ -64,7 +67,7 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 			initializers,
 			javadoc,
 			comment);
-		// Walter: the "binding" was inserted as parameter.			
+		// Walter: the "binding" and "providing" were inserted as parameter.			
 	}
 
 	protected FjCleanClassInterfaceDeclaration newInterfaceDeclaration(
@@ -201,106 +204,53 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 			new CMethod[constructors.size()]);
 	}
 	
-	private CMethod getConstructor(CClass clazz, CType[] parameters)
-	{
-		CMethod[] classMethods = clazz.getMethods();
-		for (int i = 0; i < classMethods.length; i++)
-		{
-			if (classMethods[i].isConstructor())
-			{
-				CType[] methodParams = classMethods[i].getParameters();
-				
-				if (methodParams.length == parameters.length)
-				{
-					boolean found = true;
-					for (int j = 0; j < parameters.length; j++)
-					{
-						if (! methodParams[j].equals(parameters[i], null))
-						{
-							found = false;
-							break;
-						}
-					}
-					if (found)
-						return classMethods[i];
-				}
-			}
-		}
-		return null;
-	}
-	private JExpression createFactoryArgument(CReferenceType classType)
-	{
-		CReferenceType superClass = classType.getCClass().getSuperType();
-		
-		if (FjConstants.CHILD_IMPL_TYPE_NAME.equals(
-			superClass.getQualifiedName()))
-			return
-				new JUnqualifiedInstanceCreation(
-					getTokenReference(), 
-					new CClassNameType(FjConstants.toImplName(
-						classType.getQualifiedName())),
-					JExpression.EMPTY);
-
-		return new JUnqualifiedInstanceCreation(
-					getTokenReference(),
-					new CClassNameType(FjConstants.toImplName(
-						classType.getQualifiedName())),
-					new JExpression[]{createFactoryArgument(superClass)});
-	}
-	
-	
-//	public JExpression createFactoryArgument(JExpression[] superArguments)
+//	private CMethod getConstructor(CClass clazz, CType[] parameters)
 //	{
-//		if (hasSuperClass())
+//		CMethod[] classMethods = clazz.getMethods();
+//		for (int i = 0; i < classMethods.length; i++)
 //		{
-//			JExpression prefix = null;
-//			FjTypeSystem typeSystem = new FjTypeSystem();
-//			JExpression superFactoryPrefix = null;
-//			CReferenceType superType = getSuperClass();
-//			if (superClassField != null)
+//			if (classMethods[i].isConstructor())
 //			{
-//				prefix =
-//					new FjFieldAccessExpression(
-//						getTokenReference(),
-//						superClassField
-//							.getVariable()
-//							.getIdent());
+//				CType[] methodParams = classMethods[i].getParameters();
+//				
+//				if (methodParams.length == parameters.length)
+//				{
+//					boolean found = true;
+//					for (int j = 0; j < parameters.length; j++)
+//					{
+//						if (! methodParams[j].equals(parameters[i], null))
+//						{
+//							found = false;
+//							break;
+//						}
+//					}
+//					if (found)
+//						return classMethods[i];
+//				}
 //			}
-//			else if (typeSystem.declaresInner(
-//				ownerDecl.getSuperClass().getCClass(), ident) != null
-//				|| typeSystem.declaresInner(
-//					ownerDecl.getSuperClass().getCClass(),
-//					FjConstants.toProxyName(ident)) != null)
-//			{
-//				prefix = new FjSuperExpression(getTokenReference());
-//			}
-//							
-//			if (prefix != null)
-//			{
-//				return 
-//					new FjQualifiedInstanceCreation(
-//						getTokenReference(),
-//						prefix,
-//						FjConstants.isolateIdent(
-//							FjConstants.toIfcName(
-//								getSuperClass().getQualifiedName())),
-//						superArguments);
-//
-//			}
-//
-//			return 
-//				new FjUnqualifiedInstanceCreation(
-//					getTokenReference(),
-//					new CClassNameType(
-//						FjConstants.toIfcName(
-//							superType.getQualifiedName())),
-//					superArguments);
-//						
 //		}
 //		return null;
 //	}
-
-
+//	private JExpression createFactoryArgument(CReferenceType classType)
+//	{
+//		CReferenceType superClass = classType.getCClass().getSuperType();
+//		
+//		if (FjConstants.CHILD_IMPL_TYPE_NAME.equals(
+//			superClass.getQualifiedName()))
+//			return
+//				new JUnqualifiedInstanceCreation(
+//					getTokenReference(), 
+//					new CClassNameType(FjConstants.toImplName(
+//						classType.getQualifiedName())),
+//					JExpression.EMPTY);
+//
+//		return new JUnqualifiedInstanceCreation(
+//					getTokenReference(),
+//					new CClassNameType(FjConstants.toImplName(
+//						classType.getQualifiedName())),
+//					new JExpression[]{createFactoryArgument(superClass)});
+//	}
+	
 	public Vector inherritConstructorsFromBaseClass( Hashtable markedVirtualClasses )
 		throws PositionedError {
 		
@@ -342,6 +292,38 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 					constructors.add( new CheckedConstructor( methods[ i ] ) );
 			}
 			return constructors;
+		}
+	}
+
+	/**
+	 */
+	public void addOuterThis()
+	{
+		if (outerThis == null)
+		{
+			sourceClass.setHasOuterThis(true);
+
+			CReferenceType outerType = sourceClass.getOwnerType();
+			outerThis =
+				new JFieldDeclaration(
+					getTokenReference(),
+					new JVariableDefinition(
+						getTokenReference(),
+						ACC_PUBLIC | ACC_FINAL,
+						outerType,
+						JAV_OUTER_THIS,
+						null),
+					null,
+					null);
+			((CSourceClass) getCClass()).addField(
+				new CSourceField(
+					getCClass(),
+					ACC_PUBLIC | ACC_FINAL,
+					JAV_OUTER_THIS,
+					outerType,
+					false,
+					true));
+			// synthetic
 		}
 	}
 	

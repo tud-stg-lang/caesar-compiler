@@ -54,6 +54,10 @@ public class ChildImpl implements Child {
 		return _family;
 	}
 
+	public Object _getObjectId(Object object) {
+		return object;
+	}
+
 	// an object's methods:
 
 	public Object clone() throws CloneNotSupportedException {

@@ -190,6 +190,7 @@ public class CollaborationInterfaceTransformation
 			superClass = self.getBindingTypeName();
 			self.transformInnerBindingClasses(superClass);
 			self.addProvidingAcessor();
+			//self.addWrapperRecyclingStructure();
 			// My super class is the binding class.
 			self.setSuperClass(new CClassNameType(
 				superClass));
