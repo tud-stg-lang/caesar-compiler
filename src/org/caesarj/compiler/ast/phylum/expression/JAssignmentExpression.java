@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JAssignmentExpression.java,v 1.2 2004-09-06 13:31:35 aracic Exp $
+ * $Id: JAssignmentExpression.java,v 1.3 2004-11-23 18:28:10 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -80,6 +80,14 @@ public class JAssignmentExpression extends JBinaryExpression {
     return true;
   }
 
+  public JExpression getLeft() {
+      return left;
+  }
+  
+  public JExpression getRight() {
+      return right;
+  }
+  
   // ----------------------------------------------------------------------
   // SEMANTIC ANALYSIS
   // ----------------------------------------------------------------------
