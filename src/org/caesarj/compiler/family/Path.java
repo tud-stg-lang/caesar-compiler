@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Path.java,v 1.21 2005-02-21 15:17:13 aracic Exp $
+ * $Id: Path.java,v 1.22 2005-02-25 13:45:15 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -38,6 +38,7 @@ import org.caesarj.compiler.ast.phylum.expression.JLocalVariableExpression;
 import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
 import org.caesarj.compiler.ast.phylum.expression.JQualifiedInstanceCreation;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
+import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JUnaryPromote;
 import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
@@ -48,6 +49,7 @@ import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.export.CClass;
@@ -284,6 +286,20 @@ public abstract class Path {
             else if(tmp instanceof JUnaryPromote) {
                 // CTODO: ignore for now
                 tmp = ((JUnaryPromote)tmp).getExpression();
+            }
+            else if(tmp instanceof JTypeNameExpression) {
+                JTypeNameExpression tne = (JTypeNameExpression)tmp;
+                CReferenceType type = (CReferenceType)tmp.getType(context.getTypeFactory());
+                
+                path.add(0, new FieldAccess(null, type.getCClass().getQualifiedName(), type));
+                // navigate out to the CU context
+                CContext ctx = context;
+                while(!(ctx instanceof CCompilationUnitContext)) {
+                    ctx = ctx.getParentContext();
+                    k++;
+                }
+                
+                done = true;
             }
             else {
                 throw new UnpositionedError(CaesarMessages.ILLEGAL_PATH_ELEMENT, tmp.getIdent());
