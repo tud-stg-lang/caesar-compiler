@@ -1,0 +1,19 @@
+<testsuite name="Test semantical analysis in pointcuts" package="suits.aspects.resolve">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ASPECTJ_ERROR"  id="aspresolve001" description="Incompatible type in context collection">
+        <code>
+        	public class ClsA {
+        		public void m() {
+        		}			    
+			}
+			public cclass AspectA {
+				pointcut methM(ClsA s) : execution(* ClsA.m());
+				after(ClsA s) : methM(s) {
+					System.out.println("Msg");
+				}
+			}
+        </code>
+    </compile-check-error>
+
+</testsuite>
