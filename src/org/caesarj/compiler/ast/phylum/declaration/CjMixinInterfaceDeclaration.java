@@ -58,8 +58,11 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
             
             // store additional type infos
             AdditionalCaesarTypeInformation addInfo = new AdditionalCaesarTypeInformation(
+                typeNode.getQualifiedName().toString(),
                 typeNode.isImplicitType(),
                 typeNode.getMixinListAsStringArray(),
+                new String[]{}, // IVICA nested classes
+                new String[]{}, // IVICA increment for
                 typeNode.getSuperClassesAsStringArray(),
                 new String[]{}, // IVICA super Ifcs
                 getCorrespondingClassDeclaration().getCClass().getQualifiedName()

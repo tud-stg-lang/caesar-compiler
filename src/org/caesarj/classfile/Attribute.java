@@ -15,7 +15,7 @@
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Attribute.java,v 1.5 2004-06-29 12:50:51 klose Exp $
+ * $Id: Attribute.java,v 1.6 2004-09-08 13:46:31 aracic Exp $
  */
 package org.caesarj.classfile;
 import java.io.DataInput;
@@ -100,12 +100,6 @@ public abstract class Attribute {
 			default :
 				break;
 		}
-		if (tag.equals(ExtraModifiersAttribute.AttributeName)) {
-			return new ExtraModifiersAttribute(in, cp);
-		}
-		if (tag.equals(AdditionalTypeInformationAttribute.AttributeName)) {
-			return new AdditionalTypeInformationAttribute(in, cp);
-		}
 		return new GenericAttribute(name, in, cp);
 	}
 	/**
@@ -168,9 +162,7 @@ public abstract class Attribute {
 			default :
 				break;
 		}
-		if (tag.equals(ExtraModifiersAttribute.AttributeName)) {
-			return new ExtraModifiersAttribute(in, cp);
-		}
+
 		return new GenericAttribute(name, in, cp);
 	}
 	/**

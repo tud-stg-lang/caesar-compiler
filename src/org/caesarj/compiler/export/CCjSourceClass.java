@@ -8,11 +8,10 @@ import java.util.List;
 
 import org.caesarj.classfile.Attribute;
 import org.caesarj.classfile.AttributedClassInfo;
+import org.caesarj.classfile.CaesarExtraAttributes;
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.ClassInfo;
 import org.caesarj.classfile.ConstantPoolOverflowException;
-import org.caesarj.classfile.ExtraModifiersAttribute;
-import org.caesarj.classfile.AdditionalTypeInformationAttribute;
 import org.caesarj.classfile.InstructionOverflowException;
 import org.caesarj.classfile.LocalVariableOverflowException;
 import org.caesarj.compiler.aspectj.AttributeAdapter;
@@ -29,6 +28,7 @@ import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -449,16 +449,27 @@ public class CCjSourceClass extends CSourceClass
     {
         List attributeList = new ArrayList();
 
-		// Write extra modifiers to attribute
-		int extraModifiers = getModifiers() & ExtraModifiersAttribute.EXTRA_MOD_MASK;
-		if ( extraModifiers != 0 ){
-			attributeList.add(new ExtraModifiersAttribute(extraModifiers));
-		}
+        try {
+			// Write extra modifiers to attribute
+			int extraModifiers = getModifiers() & CaesarExtraAttributes.EXTRA_MOD_MASK;
+			if ( extraModifiers != 0 ){
+				attributeList.add(
+				    CaesarExtraAttributes.writeExtraModifiers(extraModifiers)
+			    );
+			}
+	        
+	        // store implicit and generated flag
+	        attributeList.add( 
+	            CaesarExtraAttributes.writeAdditionalTypeInfo(
+	            	getAdditionalTypeInformation()
+	        	)
+	        );
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new InconsistencyException("can not write extra caesar attributes, reason: "+e.getMessage());
+        }
         
-        // store implicit and generated flag
-        attributeList.add( 
-            new AdditionalTypeInformationAttribute(getAdditionalTypeInformation())
-        );
         
         if (perClause != null)
         {

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBinaryClass.java,v 1.5 2004-09-07 14:26:37 aracic Exp $
+ * $Id: CBinaryClass.java,v 1.6 2004-09-08 13:46:31 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -30,6 +30,7 @@ import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.SignatureParser;
 import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.UnpositionedError;
 
 /**
@@ -104,19 +105,24 @@ public class CBinaryClass extends CClass {
 		Attribute attribute = attributes[i];
 		// we only look at generic attributes
 		if (attribute.getTag()==ClassfileConstants2.ATT_GENERIC){
-			GenericAttribute ga =((GenericAttribute)attribute); 
-			String name = ga.getName();
-			// is it an extra modifiers attribute?
-			if (name.equals(ExtraModifiersAttribute.AttributeName)){
-				ExtraModifiersAttribute ema = ((ExtraModifiersAttribute)ga);
-				int extraModifiers = ema.getExtraModifiers();
-				setModifiers(getModifiers()|extraModifiers);
-			}
-			// restore implicit and generated flag
-			else if (name.equals(AdditionalTypeInformationAttribute.AttributeName)){
-				AdditionalTypeInformationAttribute ati = ((AdditionalTypeInformationAttribute)ga);
-				setAdditionalTypeInformation(ati.getTypeInformation());
-			}
+		    try {
+				GenericAttribute ga =((GenericAttribute)attribute); 
+				String name = ga.getName();
+				// is it an extra modifiers attribute?
+				if (name.equals(CaesarExtraAttributes.ATTRIB_EXTRA_MODIFIERS)){
+				    int extraModifiers = CaesarExtraAttributes.readExtraModifiers(ga);
+					setModifiers(getModifiers()|extraModifiers);
+				}
+				// restore implicit and generated flag
+				else if (name.equals(CaesarExtraAttributes.ATTRIB_EXTRA_TYPEINFO)){
+				    AdditionalCaesarTypeInformation typeInfo = CaesarExtraAttributes.readAdditionalTypeInfo(ga);
+					setAdditionalTypeInformation(typeInfo);
+				}
+		    }
+		    catch (Exception e) {
+                e.printStackTrace();
+                throw new InconsistencyException("error reading caesar extra attributes, reason: "+e.getMessage());
+            }
 		}
 	}
 
