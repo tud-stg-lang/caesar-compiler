@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.6 2003-08-11 22:44:05 werner Exp $
+ * $Id: Caesar.g,v 1.7 2003-08-14 00:31:37 werner Exp $
  */
 
 /*
@@ -407,7 +407,8 @@ jClassDefinition [int modifiers]
   CReferenceType			superClass = null;
   CReferenceType[]			interfaces = CReferenceType.EMPTY;
   CReferenceType			binding = null;
-  CReferenceType			providing = null;  
+  CReferenceType			providing = null;
+  CReferenceType			wrappee = null;  
   ParseClassContext	context = ParseClassContext.getInstance();
   TokenReference	sourceRef = buildTokenReference();
   JavadocComment	javadoc = getJavadocComment();
@@ -416,10 +417,16 @@ jClassDefinition [int modifiers]
 :
   "class" ident:IDENT
   (typeVariables = kTypeVariableDeclarationList[])?
-  (superClass = jSuperClassClause[] 
-  | binding = jBindsClause[]
-  | providing = jProvidesClause[])
+  //This is like this for prevent non-determinism
+  ( "extends" superClass =  jSuperTypeName[]
+  | "binds" binding = jTypeName[]
+  | "provides" providing = jTypeName[] )?
   
+//  (superClass = jSuperClassClause[] 
+//  | binding = jBindsClause[]
+//  | providing = jProvidesClause[])?
+
+  wrappee = jWrapsClause[]
   interfaces = jImplementsClause[] 
   
   jClassBlock[context]
@@ -443,6 +450,7 @@ jClassDefinition [int modifiers]
 				   ident.getText(),
 				   typeVariables,
 				   (CciWeaveletReferenceType)superClass,
+				   wrappee,
 				   interfaces,
 				   context.getFields(),
 				   methods,
@@ -459,7 +467,8 @@ jClassDefinition [int modifiers]
 				   typeVariables,
 				   superClass,
 				   binding,
-				   providing,				   
+				   providing,
+				   wrappee,				   
 				   interfaces,
 				   context.getFields(),
 				   methods,
@@ -475,6 +484,7 @@ jClassDefinition [int modifiers]
 				   superClass,
 				   binding,
 				   providing,
+				   wrappee,
 				   interfaces,
 				   context.getFields(),
 				   methods,
@@ -491,6 +501,7 @@ jClassDefinition [int modifiers]
 				   superClass,
 				   binding,
 				   providing,
+				   wrappee,
 				   interfaces,
 				   context.getFields(),
 				   methods,
@@ -505,7 +516,8 @@ jClassDefinition [int modifiers]
 				   typeVariables,
 				   superClass,
 				   binding,
-				   providing,				   
+				   providing,
+				   wrappee,			   
 				   interfaces,
 				   context.getFields(),
 				   methods,
@@ -520,7 +532,8 @@ jClassDefinition [int modifiers]
 				   typeVariables,
 				   superClass,
 				   binding,
-				   providing,				   
+				   providing,
+				   wrappee,			   
 				   interfaces,
 				   context.getFields(),
 				   methods,
@@ -535,7 +548,8 @@ jClassDefinition [int modifiers]
                    typeVariables,
 				   superClass,
 				   binding,
-				   providing,				   
+				   providing,
+				   wrappee,			   
 				   interfaces,
 				   context.getFields(),
 				   methods,
@@ -554,9 +568,22 @@ jClassDefinition [int modifiers]
 jSuperClassClause []
   returns [CReferenceType self = null]
 :
-  ( "extends" self =  jSuperTypeName[] )?
+  ( "extends" self =  jSuperTypeName[]
+  | "binds" self = jTypeName[]
+  | "provides" self = jTypeName[] )?
 ;
 
+jBindsClause[]
+  returns [CReferenceType self = null]
+:
+  ( "binds" self = jTypeName[] )?
+;
+
+jProvidesClause[]
+  returns [CReferenceType self = null]
+:
+  ( "provides" self = jTypeName[] )?
+;
 
 jSuperTypeName []
   returns [CReferenceType self = null]
@@ -609,7 +636,8 @@ jInterfaceDefinition [int modifiers]
 				   typeVariables,
 				   null,
 				   null,
-				   null,				   
+				   null,
+				   null,
 				   interfaces,
 				   JFieldDeclaration.EMPTY,
 				   context.getMethods(),
@@ -673,16 +701,10 @@ jInterfaceExtends []
   ( "extends" self = jNameList[] )?
 ;
 
-jBindsClause[]
+jWrapsClause[]
   returns [CReferenceType self = null]
 :
-  ( "binds" self = jTypeName[] )?
-;
-
-jProvidesClause[]
-  returns [CReferenceType self = null]
-:
-  ( "provides" self = jTypeName[] )?
+  ( "wraps" self = jTypeName[] )?
 ;
 
 // A class can implement several interfaces...
@@ -2181,8 +2203,10 @@ jPostfixExpression[]
     |
       "class"
         { self = new JClassExpression(sourceRef, self, 0); }
-    |
+    |    
       self = jQualifiedNewExpression[self]
+    |
+      self = jWrapperRecyclingExpression[self]      
     )
   |
     // allow ClassName[].class
@@ -2245,6 +2269,9 @@ jPrimaryExpression []
 |
   "this"
     { self = new FjThisExpression(sourceRef); }
+| 
+  "wrappee"
+    { self = new CciWrappeeExpression(sourceRef); }
 |
   "null"
     { self = new JNullLiteral(sourceRef); }
@@ -2319,6 +2346,7 @@ jUnqualifiedNewExpression []
 					 null,
 					 null,
 					 null,
+					 null,
 					 CReferenceType.EMPTY,
 					 context.getFields(),
 					 methods,
@@ -2374,6 +2402,7 @@ jQualifiedNewExpression [JExpression prefix]
                      CTypeVariable.EMPTY,
 				     null,
 				     null,
+				     null,
 				     null,				     
 				     CReferenceType.EMPTY,
 				     context.getFields(),
@@ -2388,6 +2417,20 @@ jQualifiedNewExpression [JExpression prefix]
   |
     { self = new FjQualifiedInstanceCreation(sourceRef, prefix, ident.getText(), args); }
   )
+;
+
+jWrapperRecyclingExpression [JExpression prefix]
+  returns [JExpression self = null]
+{
+  CType				type;
+  JExpression[]			args;
+  ParseClassContext		context = null;
+  TokenReference		sourceRef = buildTokenReference();
+}
+:
+  "wrapper" ident : IDENT
+  LPAREN args = jArgList[] RPAREN
+  { self = new CciWrapperRecyclingExpression(sourceRef, prefix, ident.getText(), args); }
 ;
 
 jArgList []
