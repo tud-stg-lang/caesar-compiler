@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.5 2004-04-08 15:56:23 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.6 2004-04-09 15:55:54 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -43,6 +43,7 @@ import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 import org.caesarj.util.Utils;
 
 /**
@@ -300,14 +301,6 @@ public class CjClassDeclaration
     }
 
     /**
-     * Returns the InnerClasses. This method was pulled up. 
-     * @return JTypeDeclaration[]
-     */
-    public JTypeDeclaration[] getInners() {
-        return inners;
-    }
-
-    /**
      * Returns all constructors. This method was pulled up. 
      * @return FjConstructorDeclaration[]
      */
@@ -515,6 +508,14 @@ public class CjClassDeclaration
         
         // IVICA don't check interface if not enabled;
         if(!isEnabled()) return;
+        
+        // IVICA supertype could be composite, check it here
+        try {
+            setSuperClass((CReferenceType)getSuperClass().checkType(self));
+        }
+        catch (UnpositionedError e) {
+            throw e.addPosition(getTokenReference());
+        }
         
         //statically deployed classes are considered as aspects
         if (isStaticallyDeployed()) {
