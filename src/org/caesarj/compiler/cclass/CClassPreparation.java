@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassPreparation.java,v 1.33 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: CClassPreparation.java,v 1.34 2005-03-29 09:45:35 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -271,7 +271,7 @@ public class CClassPreparation implements CaesarConstants {
             }
         );
         
-        decl.addMethod( gen.endMethod() );        
+        decl.addMethod( gen.endMethod(wrapperClassName+"-"+wrapperClassIdent) );        
         
         
         gen.writeMethod(
@@ -288,7 +288,7 @@ public class CClassPreparation implements CaesarConstants {
             }
         );
         
-        decl.addMethod(gen.endMethod());
+        decl.addMethod(gen.endMethod("get"+wrapperClassName+"-"+wrapperClassIdent));
         
         
         /*
