@@ -24,6 +24,7 @@ import org.caesarj.compiler.types.KjcTypeFactory;
 import org.caesarj.compiler.types.SignatureParser;
 import org.caesarj.tools.antlr.runtime.ParserException;
 import org.caesarj.util.PositionedError;
+import org.caesarj.util.UnpositionedError;
 
 public class FjTestCase extends TestCase 
 {
@@ -31,7 +32,8 @@ public class FjTestCase extends TestCase
     
 	protected CompilerBase compiler;
 	
-	protected List messageList = new LinkedList();
+	protected List positionedErrorList = new LinkedList();
+	protected List unpositionedErrorList = new LinkedList();
 	
 	public FjTestCase(String name) {
 		super(name);
@@ -74,7 +76,8 @@ public class FjTestCase extends TestCase
 	protected void compileAndRun(String pckgName, String testCaseName, String compilerErrorsToCheck[]) throws Throwable 
 	{
 	    // Clean up message list
-	    messageList.clear();
+	    positionedErrorList.clear();
+	    unpositionedErrorList.clear();
 
 		// Clean up output folder
 		removeClassFiles(pckgName);
@@ -135,13 +138,20 @@ public class FjTestCase extends TestCase
 	protected void checkErrors(String[] errors) {
 	    boolean passed = true;
 	    
-	    for (Iterator it = messageList.iterator(); it.hasNext() && passed;) {
+	    /*
+	    for (Iterator it = positionedErrorList.iterator(); it.hasNext() && passed;) {
             PositionedError error = (PositionedError) it.next();
             
             boolean stop = true;
         }
+        */
+	    passed = positionedErrorList.size() > 0 && unpositionedErrorList.size() == 0;
 	    
-	    assertEquals(passed, true);
+	    if(!passed) {
+	        boolean stop = true;
+	    }
+	    
+	    assertTrue(passed);
 	}
 	
 	/*
@@ -150,7 +160,7 @@ public class FjTestCase extends TestCase
 	protected void compileAndRun(String testCaseName) throws Throwable 
 	{
 	    // Clean up message list
-	    messageList.clear();
+	    positionedErrorList.clear();
 	    
 		// Clean up output folder
 		removeClassFiles(null);
@@ -245,7 +255,11 @@ public class FjTestCase extends TestCase
 	}
 
     public void addMessage(PositionedError trouble) {
-        messageList.add(trouble);
+        positionedErrorList.add(trouble);
+    }
+
+    public void addMessage(UnpositionedError trouble) {        
+        unpositionedErrorList.add(trouble);
     }
 }
 
@@ -276,6 +290,11 @@ class CompilerMock extends Main
 		return compilationUnit;
 	}
 
+	public void reportTrouble(UnpositionedError trouble) {
+	    testCase.addMessage(trouble);
+        super.reportTrouble(trouble);
+    }
+	
     public void reportTrouble(PositionedError trouble) {
         testCase.addMessage(trouble);
         super.reportTrouble(trouble);
