@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: BasicAspectDeployer.java,v 1.3 2005-03-31 11:58:18 gasiunas Exp $
+ * $Id: BasicAspectDeployer.java,v 1.4 2005-03-31 12:30:13 gasiunas Exp $
  */
 
 package org.caesarj.runtime.aspects;
@@ -103,6 +103,10 @@ abstract public class BasicAspectDeployer implements AspectDeployerIfc {
 	 * @param aspectObj		Aspect object
 	 */
 	public void $deployOn(AspectRegistryIfc reg, Object aspectObj) {
+		
+		if (reg == null) { /* tolerate non crosscutting objects */
+			return;
+		}
 
 		AspectContainerIfc curCont = reg.$getAspectContainer();
 		AspectContainerIfc myCont = null;
@@ -146,6 +150,10 @@ abstract public class BasicAspectDeployer implements AspectDeployerIfc {
 	 * @param aspectObj		Aspect object
 	 */
 	public void $undeployFrom(AspectRegistryIfc reg, Object aspectObj) {
+		
+		if (reg == null) { /* tolerate non crosscutting objects */
+			return;
+		}
 
 		AspectContainerIfc curCont = reg.$getAspectContainer();
 		AspectContainerIfc myCont = null;
