@@ -2,7 +2,7 @@ package generated;
 
 import junit.framework.TestCase;
 
-public class CaesarTestCase_0 extends TestCase {
+public cclass CaesarTestCase_0 extends TestCase {
 
 	public CaesarTestCase_0() {
 		super("test");
@@ -11,8 +11,7 @@ public class CaesarTestCase_0 extends TestCase {
 	public StringBuffer result = new StringBuffer();
 
 	public String expectedResult =
-	    //		":before foo:foo:subbefore foo:before foo:foo";
-		":before foo:foo:before foo:foo";
+	    ":before foo:foo:subbefore foo:before foo:foo";		
 
 	public void test() {
 		deploy(new InnerAspect()) {
@@ -40,7 +39,7 @@ public class CaesarTestCase_0 extends TestCase {
 	}
 	class InnerAspect_Sub extends InnerAspect {
 before() : fooCall() {
-		    //			result.append(":subbefore foo");	
+		    result.append(":subbefore foo");	
 		}
 	}
 }

@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 /**
  * abstract crosscutting classes, implementing abstract pointcuts
  */
-public class CaesarTestCase_3 extends TestCase {
+public cclass CaesarTestCase_3 extends TestCase {
 
 	public CaesarTestCase_3() {
 		super("test");
@@ -28,7 +28,7 @@ public class CaesarTestCase_3 extends TestCase {
 	}
 }
 
-abstract class AbstractAspect_3 {
+abstract cclass AbstractAspect_3 {
 	abstract pointcut callFoo();
 	
 	before() : callFoo() {
@@ -36,6 +36,6 @@ abstract class AbstractAspect_3 {
 	}
 }
 
-class ConcreteAspect_3 extends AbstractAspect_3 {
+cclass ConcreteAspect_3 extends AbstractAspect_3 {
 	pointcut callFoo() : call(* CaesarTestCase_3.foo());
 }
