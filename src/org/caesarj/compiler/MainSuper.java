@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: MainSuper.java,v 1.9 2004-04-15 15:10:45 aracic Exp $
+ * $Id: MainSuper.java,v 1.10 2004-04-16 14:27:12 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -442,6 +442,6 @@ public abstract class MainSuper extends CompilerBase {
     // all generated classes
     protected Vector classes = new Vector(100);
     
-    // IVICA
+    // IVICA byteCodeMap
     protected HashMap byteCodeMap = new HashMap(100);
 }
