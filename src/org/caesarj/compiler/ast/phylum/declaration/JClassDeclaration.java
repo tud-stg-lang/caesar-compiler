@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.3 2004-03-15 16:47:14 aracic Exp $
+ * $Id: JClassDeclaration.java,v 1.4 2004-03-15 17:52:05 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -33,9 +33,9 @@ import org.caesarj.compiler.ast.CBlockError;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.expression.FjNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
+import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
 import org.caesarj.compiler.ast.phylum.statement.*;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
@@ -784,7 +784,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 				  FjConstants.GET_DISPATCHER_METHOD_NAME,
 				  new JExpression[]
 				  {
-					  new FjNameExpression(
+					  new JNameExpression(
 							  ref,
 							  FjConstants.SELF_NAME)
 				  }),

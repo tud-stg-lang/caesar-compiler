@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.30 2004-03-15 17:43:12 aracic Exp $
+ * $Id: Caesar.g,v 1.31 2004-03-15 17:52:05 aracic Exp $
  */
 
 /*
@@ -1785,7 +1785,7 @@ jPostfixExpression[]
     DOT
     (
       ident : IDENT
-        { self = new FjNameExpression(sourceRef, self, ident.getText()); }
+        { self = new JNameExpression(sourceRef, self, ident.getText()); }
     |
       "this"
         { self = new JThisExpression(sourceRef, self); }
@@ -1844,7 +1844,7 @@ jPrimaryExpression []
 }
 :
   ident : IDENT
-    { self = new FjNameExpression(sourceRef, ident.getText()); }
+    { self = new JNameExpression(sourceRef, ident.getText()); }
 |
   self = jUnqualifiedNewExpression[]
 |

@@ -2,8 +2,8 @@ package org.caesarj.compiler.ast.phylum.statement;
 
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.phylum.expression.FjMethodCallExpression;
-import org.caesarj.compiler.ast.phylum.expression.FjNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
@@ -190,7 +190,7 @@ public class DeployStatement extends JStatement implements CaesarConstants {
                 where,
                 prefix,
                 "deployBlock",
-                new JExpression[] {new FjNameExpression(getTokenReference(), deployVariableName)});
+                new JExpression[] {new JNameExpression(getTokenReference(), deployVariableName)});
         
 		return new JExpressionStatement(where, deployStatementCall, null);
 	}
@@ -217,7 +217,7 @@ public class DeployStatement extends JStatement implements CaesarConstants {
                 where,
                 prefix,
                 "undeployBlock",
-                new JExpression[] {new FjNameExpression(getTokenReference(), deployVariableName)});
+                new JExpression[] {new JNameExpression(getTokenReference(), deployVariableName)});
                 
         return new JExpressionStatement(where, deployStatementCall, null);
 

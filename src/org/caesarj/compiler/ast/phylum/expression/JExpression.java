@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JExpression.java,v 1.1 2004-03-15 11:56:51 aracic Exp $
+ * $Id: JExpression.java,v 1.2 2004-03-15 17:52:04 aracic Exp $
  */ 
  
 package org.caesarj.compiler.ast.phylum.expression;
@@ -263,22 +263,9 @@ public abstract class JExpression extends JPhylum {
     if (getType(factory).equals(dest)) {
       return this;
     } else {
-	// andreas start    
-    //return new JUnaryPromote(context, this, dest).analyse(context);    
-      return new org.caesarj.compiler.ast.phylum.expression.FjUnaryPromote(context, this, dest).analyse(context);
-    // andreas end
+    	return new JUnaryPromote(context, this, dest).analyse(context);    
     }
   }
-
-// FJTODO
-  // andreas start
-  public org.caesarj.compiler.family.FjFamily getFamily( CExpressionContext context ) throws PositionedError {
-	return null;
-  }
-  public org.caesarj.compiler.family.FjFamily toFamily( CBlockContext context ) throws PositionedError {
-	return null;
-  }
-  // andreas end
 
 
   /**

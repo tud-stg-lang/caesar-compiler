@@ -5,7 +5,6 @@ import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.family.FjFamily;
 import org.caesarj.compiler.family.FjTypeSystem;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
@@ -160,16 +159,6 @@ public class FjUnqualifiedInstanceCreation extends JUnqualifiedInstanceCreation
 			clazz.getQualifiedName());		
 	}
 
-	public FjFamily getFamily(CExpressionContext context)
-		throws PositionedError
-	{
-		JExpression analysed = analyse(context);
-		if (analysed instanceof JCastExpression)
-			// -> translated to factory method
-			return analysed.getFamily(context);
-
-		return super.getFamily(context);
-	}
 
 	protected JExpression[] cachedParams;
 }

@@ -5,9 +5,9 @@ import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.expression.FjMethodCallExpression;
-import org.caesarj.compiler.ast.phylum.expression.FjNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
+import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
@@ -198,13 +198,13 @@ public class DeploymentSupportClassDeclaration extends JClassDeclaration {
 		JStatement[] newStatements = new JStatement[deployStatements.length + 1];
 		System.arraycopy(deployStatements, 0, newStatements, 0, deployStatements.length);
 
-		JExpression dprefix = new FjNameExpression(TokenReference.NO_REF, superClassName);
+		JExpression dprefix = new JNameExpression(TokenReference.NO_REF, superClassName);
 		JExpression fac= new JFieldAccessExpression(TokenReference.NO_REF,dprefix, "ajc$perSingletonInstance");
 		JFormalParameter[] dparameters = method.getArgs();
 		JExpression[] args = new JExpression[dparameters.length];
 		String argString="";
 		for(int i=0;i<args.length;i++){
-			 args[i]=new FjNameExpression(TokenReference.NO_REF,dparameters[i].getIdent());
+			 args[i]=new JNameExpression(TokenReference.NO_REF,dparameters[i].getIdent());
 			argString+=args[i]+", ";
 		}		
 		JExpression methodCall =

@@ -2482,7 +2482,7 @@ private static final int MAX_LOOKAHEAD = 2;
 			ident = LT(1);
 			match(IDENT);
 			if ( inputState.guessing==0 ) {
-				self = new FjNameExpression(sourceRef, ident.getText());
+				self = new JNameExpression(sourceRef, ident.getText());
 			}
 			break;
 		}
@@ -4904,7 +4904,7 @@ private static final int MAX_LOOKAHEAD = 2;
 					ident = LT(1);
 					match(IDENT);
 					if ( inputState.guessing==0 ) {
-						self = new FjNameExpression(sourceRef, self, ident.getText());
+						self = new JNameExpression(sourceRef, self, ident.getText());
 					}
 					break;
 				}

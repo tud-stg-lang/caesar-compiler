@@ -77,6 +77,7 @@ public class FjTypeSystem
 		throws PositionedError
 	{
 
+/* FJRM
 		if (expected == null)
 			return;
 
@@ -84,6 +85,7 @@ public class FjTypeSystem
 			context,
 			expected.toFamily(context.getBlockContext()),
 			actual);
+*/
 	}
 
 	public void checkFamilies(
@@ -96,7 +98,9 @@ public class FjTypeSystem
 		if (expected == null)
 			return;
 
+/* FJRM
 		checkFamilies(context, expected.getFamily(context), actual);
+*/
 	}
 
 	public void checkFamilies(
@@ -110,6 +114,7 @@ public class FjTypeSystem
 		if (actual instanceof JNullLiteral)
 			return;
 
+/* FJRM
 		try
 		{
 			FjFamily actualFamily = actual.getFamily(context);
@@ -123,6 +128,7 @@ public class FjTypeSystem
 		{
 			throw e.addPosition(actual.getTokenReference());
 		}
+*/
 	}
 
 	public FjFamily resolveFamily(

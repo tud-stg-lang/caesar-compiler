@@ -123,7 +123,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			for (int i = 0; i < parameters.length; i++) 
 			{
 				arguments[i + 1] =
-					new FjNameExpression(
+					new JNameExpression(
 						getTokenReference(),
 						parameters[i].getIdent());
 			}
@@ -195,7 +195,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			System.arraycopy(superArguments, 0, arguments, 
 				1, superArguments.length);
 				
-			arguments[0] = new FjNameExpression(
+			arguments[0] = new JNameExpression(
 				getTokenReference(), 
 				null, 
 				FjConstants.PARENT_NAME);
@@ -206,7 +206,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			for (int i = 0, j = 1; i < parameters.length; i++, j++) 
 			{
 				arguments[j] =
-					new FjNameExpression(
+					new JNameExpression(
 						getTokenReference(),
 						parameters[i].getIdent());
 			}
@@ -217,7 +217,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 				superArguments.length);
 				
 			newSuperArguments[0] =
-				new FjNameExpression(
+				new JNameExpression(
 					getTokenReference(), 
 					null, 
 					FjConstants.PARENT_NAME);
@@ -498,7 +498,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 	{
 		TokenReference ref = getTokenReference();
 		if (parameter.getType().isReference())
-			return new FjNameExpression(ref, parameter.getIdent());
+			return new JNameExpression(ref, parameter.getIdent());
 		else
 			return new JMethodCallExpression(
 				ref, 
@@ -508,7 +508,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 				CciConstants.KEY_TRANSFORMER_METHOD_NAME,
 				new JExpression[]
 				{
-					new FjNameExpression(ref, parameter.getIdent())
+					new JNameExpression(ref, parameter.getIdent())
 				});
 		
 	}
@@ -588,7 +588,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 						ref,
 						new JThisExpression(ref),
 						CciConstants.WRAPPEE_FIELD_NAME),
-					new FjNameExpression(
+					new JNameExpression(
 							ref,
 							CciConstants.WRAPPEE_PARAMETER_NAME)),
 				null);
@@ -648,7 +648,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			newParameters[i] = (JFormalParameter)
 				 ((JFormalParameter) parameters[i]).clone();
 			constructorArgs[i] = 
-				new FjNameExpression(ref, newParameters[i].getIdent());
+				new JNameExpression(ref, newParameters[i].getIdent());
 		}
 
 
@@ -682,7 +682,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 						CciConstants.WRAPPER_MAP_ACCESS,
 						new JExpression[]
 						{
-							new FjNameExpression(
+							new JNameExpression(
 								ref, 
 								CciConstants.WRAPPER_LOCAL_KEY)
 						})),
@@ -698,7 +698,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 				new JEqualityExpression(
 					ref, 
 					true, 
-					new FjNameExpression(
+					new JNameExpression(
 						ref,
 						CciConstants.WRAPPER_LOCAL_VAR), 
 						new JNullLiteral(ref)),
@@ -711,7 +711,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 							ref,
 							new FjAssignmentExpression(
 								ref, 
-								new FjNameExpression(
+								new JNameExpression(
 									ref, 
 									CciConstants.WRAPPER_LOCAL_VAR), 
 								new CciInternalUnqualifiedInstanceCreation(
@@ -732,11 +732,11 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 								CciConstants.WRAPPER_MAP_PUT,
 								new JExpression[]
 								{
-									new FjNameExpression(
+									new JNameExpression(
 										ref, 
 										CciConstants
 											.WRAPPER_LOCAL_KEY),
-									new FjNameExpression(
+									new JNameExpression(
 										ref, 
 										CciConstants.WRAPPER_LOCAL_VAR)						
 								}),
@@ -749,7 +749,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 			//return wrapper
 			new JReturnStatement(
 				ref,
-				new FjNameExpression(ref, CciConstants.WRAPPER_LOCAL_VAR),
+				new JNameExpression(ref, CciConstants.WRAPPER_LOCAL_VAR),
 				null)
 		};
 	
@@ -829,7 +829,7 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 					CciConstants.WRAPPER_MAP_REMOVE,
 					new JExpression[]
 					{
-						new FjNameExpression(
+						new JNameExpression(
 							ref, 
 							CciConstants.WRAPPER_LOCAL_KEY)
 					}),

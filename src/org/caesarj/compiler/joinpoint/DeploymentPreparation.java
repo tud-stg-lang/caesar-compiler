@@ -244,7 +244,7 @@ public class DeploymentPreparation implements CaesarConstants {
 	protected JStatement createSingletonClinitMethodStatement_1()
 	{
 		JExpression left =
-			new FjNameExpression(
+			new JNameExpression(
 				TokenReference.NO_REF,
 				PER_SINGLETON_INSTANCE_FIELD);
 		JExpression right =

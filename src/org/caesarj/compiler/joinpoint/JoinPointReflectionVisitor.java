@@ -197,7 +197,7 @@ public class JoinPointReflectionVisitor
 		JFieldDeclaration fieldDeclaration) {
 
 		JExpression fieldExpr =
-			new FjNameExpression(
+			new JNameExpression(
 				where,
 				null,
 				fieldDeclaration.getVariable().getIdent());

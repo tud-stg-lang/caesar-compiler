@@ -1,10 +1,8 @@
 package org.caesarj.compiler.ast.phylum.expression;
 
-import org.caesarj.compiler.ast.FjFamilyContext;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.context.CExpressionContext;
-import org.caesarj.compiler.family.FjFamily;
 import org.caesarj.compiler.family.FjTypeSystem;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.util.PositionedError;
@@ -96,12 +94,5 @@ public class FjQualifiedInstanceCreation
 	private String cachedIdent;
 	private JExpression[] cachedParams;
 
-	public FjFamily getFamily(CExpressionContext context)
-		throws PositionedError {
-		FjFamilyContext fc = FjFamilyContext.getInstance();
-		FjFamily prefixFamily = getPrefix().toFamily( context.getBlockContext() );
-		return fc.addTypesFamilies( (prefixFamily!=null)? prefixFamily.first() : null,
-			getOwnType( context ) );
-	}
 
 }
