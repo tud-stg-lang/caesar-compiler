@@ -16,8 +16,8 @@ public class NameGenerator {
 		return forMixin(list, 0, list.size() );
 	}
 
-	   //  CTODO generating hex string from byte array? do we realy need to do this manually?
-    private static String generateHashCode(String packageNames) {               
+    // CTODO generating hex string from byte array? do we realy need to do this manually?
+    public static String generateHashCode(String packageNames) {               
         if(packageNames.length() == 0)
              throw new RuntimeException("packageNames String must not be empty!");
             
