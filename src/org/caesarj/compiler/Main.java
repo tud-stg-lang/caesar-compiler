@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
@@ -15,6 +12,8 @@ import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.cclass.CClassPreparation;
 import org.caesarj.compiler.cclass.CaesarTypeGraphGenerator;
+import org.caesarj.compiler.cclass.JavaTypeGraph;
+import org.caesarj.compiler.cclass.JavaTypeNode;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
@@ -23,6 +22,8 @@ import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.mixer2.ClassGenerator;
+import org.caesarj.mixer2.MixerException;
 import org.caesarj.tools.antlr.extra.InputBuffer;
 import org.caesarj.tools.antlr.runtime.ParserException;
 import org.caesarj.util.Messages;
@@ -135,8 +136,9 @@ public class Main extends MainSuper implements Constants {
         if(errorFound) return false;
 
         genCode(environment.getTypeFactory());
-        
-        // CTODO gen bytecode for mixin copies -> class generator
+         
+        //genMixinCopies(environment);
+        if(errorFound) return false;
 
         tree = null;
         
@@ -151,6 +153,28 @@ public class Main extends MainSuper implements Constants {
     }
 
     
+    private void genMixinCopies(KjcEnvironment environment) {
+        JavaTypeGraph javaTypeGraph = environment.getCaesarTypeSystem().getJavaGraph();
+        Collection typesToGenerate = javaTypeGraph.getTypesToGenerate();
+        for (Iterator it = typesToGenerate.iterator(); it.hasNext();) {
+            JavaTypeNode item = (JavaTypeNode) it.next();
+
+            try {
+                ClassGenerator.instance().generateClass(
+                    item.getMixin().getQualifiedImplName(),
+                    item.getQualifiedName(),
+                    item.getParent().getQualifiedName(),
+                    item.getOuter() != null ? 
+                        item.getOuter().getQualifiedName() : null 
+                );
+            }
+            catch (MixerException e) {
+                System.out.println("ERROR in mixer:");
+                //reportTrouble(new UnpositionedError(CaesarMessages......));
+            }
+        }
+    }
+
     /**
      * - generate export information for missing mixin chain parts 
      */
