@@ -204,6 +204,11 @@ public class VirtualClassesTests extends FjTestCase {
         compileAndRun("test36", "VCTestCase");
     }
 	
+	/* Test instantiation cross package boundaries */
+	public void testCaesarTestCase_36b() throws Throwable {
+        compileAndRun("test36b", "VCTestCase");
+    }
+	
 	/* Test automatic casts */
 	public void testCaesarTestCase_37() throws Throwable {
         compileAndRun("test37", "VCTestCase");
