@@ -72,9 +72,8 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 		}				
 	}
 	
-	public CjClassDeclaration findRegistryClass(CjVirtualClassDeclaration caesarClass) {
-		String qualifiedName = caesarClass.getMixinIfcDeclaration().getCClass().getQualifiedName();
-        CaesarTypeNode node = typeSys.getCaesarTypeGraph().getType(new JavaQualifiedName(qualifiedName));
+	public CjClassDeclaration findRegistryClass(String qualifiedName) {
+		CaesarTypeNode node = typeSys.getCaesarTypeGraph().getType(new JavaQualifiedName(qualifiedName));
         
         for (Iterator it = node.getMixinList().iterator(); it.hasNext();) {
             CaesarTypeNode item = (CaesarTypeNode) it.next();
@@ -94,7 +93,7 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 	 * }
 	 * 
 	 */
-	public static JClassBlock createStaticFieldDeployBlock(
+	public JClassBlock createStaticFieldDeployBlock(
 		TokenReference where,
 		CjClassDeclaration classDeclaration,
 		JFieldDeclaration fieldDeclaration) {
@@ -198,7 +197,6 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 										null);
 		field.setGenerated();
 		
-		/* add the field to the registry class, because it is automatically loaded */
 		cd.addField(field);
 				
 		cd.addClassBlock(createStaticClassDeployBlock(
@@ -206,7 +204,7 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 			cd,
 			field));
 		
-		CjClassDeclaration regClass = findRegistryClass(cd);
+		CjClassDeclaration regClass = findRegistryClass(cd.getMixinIfcDeclaration().getCClass().getQualifiedName());
 		if (regClass == null) {
 			compiler.reportTrouble(
 	            new PositionedError(
@@ -214,6 +212,7 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 					CaesarMessages.DEPLOYED_CLASS_NOT_CROSSCUTTING 
                 )
             );
+			return;
 		}
 		
 		insertClassTouchBlock(regClass, cd);
