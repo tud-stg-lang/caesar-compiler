@@ -1,6 +1,8 @@
 package org.caesarj.compiler.cclass;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
@@ -11,9 +13,15 @@ import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
+import org.caesarj.compiler.ast.phylum.statement.JBlock;
+import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
+import org.caesarj.compiler.ast.phylum.statement.JStatement;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.TokenReference;
@@ -154,10 +162,44 @@ public class CClassFactory implements CaesarConstants {
 
 	}
     
-	public void modifyCaesarClass() {    	
+	public void modifyCaesarClass(TypeFactory factory) {    	
 		caesarClass.setInterfaces(CReferenceType.EMPTY);
 		caesarClass.setSuperClass(null);				
 		caesarClass.getCClass().setInterfaces(CReferenceType.EMPTY);
 		caesarClass.getCClass().setSuperClass(null);
+		
+		List accessors = new LinkedList();
+		JFieldDeclaration fields[] = caesarClass.getFields();
+		for (int i = 0; i < fields.length; i++) {
+		    JFieldDeclaration f = fields[i];
+            if( CModifier.contains(CModifier.ACC_PUBLIC, f.getVariable().getModifiers())) {
+                accessors.add(
+                	new JMethodDeclaration(
+                	    f.getTokenReference(),
+                	    CModifier.ACC_PUBLIC,
+                	    f.getType(factory),
+                	    "get_"+f.getVariable().getIdent(),
+                	    JFormalParameter.EMPTY,
+                	    CReferenceType.EMPTY,
+                	    new JBlock(
+                	        f.getTokenReference(), 
+                	        new JStatement[]{
+                	            new JReturnStatement(
+                	                f.getTokenReference(), 
+                	                new JNameExpression(
+                	                    f.getTokenReference(), 
+                	                    f.getVariable().getIdent()),
+                	                null
+            	                )                	            
+            	            }, 
+                	        null
+            	        ),
+                	    null, null
+                	)
+                );                
+            }
+        }
+		
+		caesarClass.addMethods(accessors);
 	}
 }
