@@ -33,7 +33,7 @@ public class ADTestCase extends TestCase
     }
 }
 
-cclass OuterA
+public cclass OuterA
 {
     StringBuffer result;
 
@@ -74,7 +74,7 @@ cclass OuterA
 		result.append(":foo");
 	}
 
-	cclass InnerAspect
+	public cclass InnerAspect
 	{
 		pointcut fooCall() : call(* OuterA.foo());
 
@@ -84,7 +84,7 @@ cclass OuterA
 		}
 	}
 
-	cclass InnerAspect_Sub extends InnerAspect
+	public cclass InnerAspect_Sub extends InnerAspect
 	{
 		before() : fooCall()
 		{
@@ -93,7 +93,7 @@ cclass OuterA
 
 	}
 
-	cclass InnerAspect_Sub_Sub extends InnerAspect_Sub
+	public cclass InnerAspect_Sub_Sub extends InnerAspect_Sub
 	{
 		after() : fooCall()
 		{

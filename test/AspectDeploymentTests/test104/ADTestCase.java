@@ -35,7 +35,7 @@ public class ADTestCase extends TestCase
 	}
 }
 
-cclass DeployA
+public cclass DeployA
 {
     public void test()
     {
@@ -57,7 +57,7 @@ cclass DeployA
     }
 }
 
-deployed cclass Ordering
+public deployed cclass Ordering
 {
     // TODO
 	declare precedence : AspectC_Impl, AspectA_Impl, AspectD_Impl, AspectB_Impl;
@@ -65,7 +65,7 @@ deployed cclass Ordering
 }
 
 
-cclass AspectA
+public cclass AspectA
 {
 	pointcut callFoo() : call(* DeployA.foo());
 
@@ -75,7 +75,7 @@ cclass AspectA
 	}
 }
 
-cclass AspectB
+public cclass AspectB
 {
 	pointcut callFoo() : call(* DeployA.foo());
 
@@ -85,7 +85,7 @@ cclass AspectB
 	}
 }
 
-cclass AspectC
+public cclass AspectC
 {
 	pointcut callFoo() : call(* DeployA.foo());
 
@@ -95,7 +95,7 @@ cclass AspectC
 	}
 }
 
-deployed cclass AspectD
+public deployed cclass AspectD
 {
 	pointcut callFoo() : call(* DeployA.foo());
 

@@ -41,7 +41,7 @@ public class ADTestCase extends TestCase
 	}
 }
 
-deployed cclass AspectA
+public deployed cclass AspectA
 {
 	pointcut execFoo() : execution(* ADTestCase.foo());
 

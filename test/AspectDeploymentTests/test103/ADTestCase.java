@@ -40,7 +40,7 @@ public class ADTestCase extends TestCase
 	}
 }
 
-abstract cclass AbstractAspect
+public abstract cclass AbstractAspect
 {
 	abstract pointcut callFoo();
 
@@ -50,7 +50,7 @@ abstract cclass AbstractAspect
 	}
 }
 
-cclass ConcreteAspect extends AbstractAspect
+public cclass ConcreteAspect extends AbstractAspect
 {
 	pointcut callFoo() : call(* ADTestCase.foo());
 }

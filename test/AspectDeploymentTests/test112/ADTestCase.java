@@ -62,7 +62,7 @@ public cclass DeployA
     }
 }
 
-cclass AspectA
+public cclass AspectA
 {
 	public AspectA init(int i)
 	{

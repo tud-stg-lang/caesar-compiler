@@ -93,7 +93,7 @@ public cclass DeployA
     }
 }
 
-cclass AspectA
+public cclass AspectA
 {
 	pointcut cutAA() : call(* OuterA.InnerA+.doA(..));
 

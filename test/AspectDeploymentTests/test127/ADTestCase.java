@@ -34,7 +34,7 @@ public class ADTestCase extends TestCase
 	}
 }
 
-cclass DeployA
+public cclass DeployA
 {
     public void test()
     {
@@ -50,7 +50,7 @@ cclass DeployA
     }
 }
 
-cclass AspectA
+public cclass AspectA
 {
 	String _id;
 
@@ -82,7 +82,7 @@ cclass AspectA
 }
 
 
-cclass CalcA
+public cclass CalcA
 {
 	String _id;
 

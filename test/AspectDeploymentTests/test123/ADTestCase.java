@@ -73,7 +73,7 @@ public class ADTestCase extends TestCase
 	}
 }
 
-cclass DeployA
+public cclass DeployA
 {
     public void test()
     {
@@ -106,7 +106,7 @@ cclass DeployA
     }
 }
 
-cclass IntAspect
+public cclass IntAspect
 {
 	String _id;
 
@@ -156,7 +156,7 @@ cclass IntAspect
 	}
 }
 
-cclass ModelA
+public cclass ModelA
 {
 	private int _val;
 

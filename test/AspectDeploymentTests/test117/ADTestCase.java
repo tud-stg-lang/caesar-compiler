@@ -52,7 +52,7 @@ public cclass DeployA
     }
 }
 
-cclass AspectA
+public cclass AspectA
 {
 	pointcut cutPlus() : call(* OuterA+.doA(..)) && target(a) && if(a.getId() > 0);
 
@@ -69,7 +69,7 @@ cclass AspectA
 	}
 }
 
-cclass OuterA
+public cclass OuterA
 {
 	private int _id;
 

@@ -87,7 +87,7 @@ public cclass DeployA
     }
 }
 
-cclass AspectA
+public cclass AspectA
 {
 	pointcut cutA() : call(* OuterA+.*(..));
 

@@ -34,7 +34,7 @@ public class ADTestCase extends TestCase
 	}
 }
 
-cclass DeployA
+public cclass DeployA
 {
     public void test()
     {
@@ -53,7 +53,7 @@ cclass DeployA
     }
 }
 
-cclass AspectA
+public cclass AspectA
 {
 	int around() : execution(int ModelA.*(..))
 	{
@@ -106,7 +106,7 @@ cclass AspectA
 	}
 }
 
-cclass ModelA
+public cclass ModelA
 {
 	int _i1;
 

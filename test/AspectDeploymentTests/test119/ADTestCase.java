@@ -76,7 +76,7 @@ public cclass DeployA
     }
 }
 
-cclass AspectA
+public cclass AspectA
 {
 	private String _id;
 

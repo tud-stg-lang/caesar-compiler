@@ -46,7 +46,7 @@ public cclass OuterA
     }
 }
 
-abstract cclass AspectA
+public abstract cclass AspectA
 {
 	abstract pointcut execFoo(String s);
 
@@ -56,7 +56,7 @@ abstract cclass AspectA
 	}
 }
 
-deployed cclass AspectB extends AspectA
+public deployed cclass AspectB extends AspectA
 {
 	pointcut execFoo(String s) : execution(* OuterA.foo(String)) && args(s);
 }

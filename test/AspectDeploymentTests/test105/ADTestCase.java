@@ -35,7 +35,7 @@ public class ADTestCase extends TestCase
 	}
 }
 
-cclass DeployA
+public cclass DeployA
 {
     public void test()
     {
@@ -71,7 +71,7 @@ cclass DeployA
     }
 }
 
-cclass AspectA
+public cclass AspectA
 {
 	pointcut callFoo() : call(* DeployA.foo());
 

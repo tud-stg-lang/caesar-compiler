@@ -66,7 +66,7 @@ public cclass DeployA
     }
 }
 
-cclass AspectA
+public cclass AspectA
 {
 	pointcut callFoo() : call(* DeployA.foo());
 

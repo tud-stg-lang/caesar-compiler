@@ -49,7 +49,7 @@ public class ADTestCase extends TestCase
 	}
 }
 
-deployed cclass StaticAspectA {
+public deployed cclass StaticAspectA {
 
 	pointcut callFoo() : cflow(call(* ADTestCase.test())) && call(* ADTestCase.foo());
 
@@ -60,7 +60,7 @@ deployed cclass StaticAspectA {
 
 }
 
-cclass AspectA
+public cclass AspectA
 {
 	public final static deployed AspectA THIS = new AspectA();
 
@@ -72,7 +72,7 @@ cclass AspectA
 	}
 }
 
-cclass AspectB extends AspectA
+public cclass AspectB extends AspectA
 {
 	public final static deployed AspectB THIS = new AspectB();
 

@@ -50,22 +50,22 @@ public cclass DeployA
     }
 }
 
-cclass AspectA
+public cclass AspectA
 {
 	pointcut cutAA() : call(* OuterA+.doA(..));
 }
 
-cclass AspectB extends AspectA
+public cclass AspectB extends AspectA
 {
 	pointcut cutBA() : call(* OuterA+.doA(..));
 }
 
-cclass AspectC extends AspectA
+public cclass AspectC extends AspectA
 {
 	pointcut cutCA() : call(* OuterA+.doA(..));
 }
 
-cclass AspectD extends AspectB & AspectC
+public cclass AspectD extends AspectB & AspectC
 {
 	pointcut cutDA() : call(* OuterA+.doA(..));
 

@@ -73,7 +73,7 @@ class AnotherThread extends CaesarThread
 	}
 }
 
-cclass Aspect
+public cclass Aspect
 {
 	pointcut callFoo() : call(* ADTestCase.foo());
 

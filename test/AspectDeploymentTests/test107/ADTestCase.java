@@ -44,7 +44,7 @@ public class ADTestCase extends TestCase
     }
 }
 
-cclass DeployA
+public cclass DeployA
 {
     public void test()
     {
@@ -62,7 +62,7 @@ cclass DeployA
     }
 }
 
-cclass AnotherThread implements Runnable
+public cclass AnotherThread implements Runnable
 {
 	public void run()
 	{
@@ -78,7 +78,7 @@ cclass AnotherThread implements Runnable
 	}
 }
 
-cclass AspectA
+public cclass AspectA
 {
 	pointcut callFoo() : call(* ADTestCase.foo());
 

@@ -50,7 +50,7 @@ public cclass DeployA
     }
 }
 
-cclass AspectA
+public cclass AspectA
 {
 	pointcut cutAA() : call(* OuterA+.doA(..));
 
@@ -60,7 +60,7 @@ cclass AspectA
 	}
 }
 
-cclass OuterA
+public cclass OuterA
 {
 	public void doA()
 	{
@@ -74,7 +74,7 @@ cclass OuterA
 	}
 }
 
-cclass OuterB extends OuterA
+public cclass OuterB extends OuterA
 {
 	public void doB()
 	{
@@ -85,7 +85,7 @@ cclass OuterB extends OuterA
 }
 
 
-cclass OuterC extends OuterA
+public cclass OuterC extends OuterA
 {
 	public void doB()
 	{
@@ -96,7 +96,7 @@ cclass OuterC extends OuterA
 }
 
 
-cclass OuterD extends OuterB & OuterC
+public cclass OuterD extends OuterB & OuterC
 {
 	public void doB()
 	{
