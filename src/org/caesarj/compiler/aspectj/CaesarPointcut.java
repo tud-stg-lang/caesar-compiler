@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarPointcut.java,v 1.4 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CaesarPointcut.java,v 1.5 2005-03-29 09:44:18 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -33,7 +33,8 @@ import org.aspectj.weaver.patterns.Pointcut;
  */
 public class CaesarPointcut {
 // Attributes	
-	private Pointcut	pointcut;
+	private Pointcut pointcut;
+	private boolean resolved = false;
 // Construction
 	public CaesarPointcut( Pointcut pointcut ) 
 	{	
@@ -51,9 +52,12 @@ public class CaesarPointcut {
 	}
 	
 	public CaesarPointcut resolve(CaesarScope scope) {
-			pointcut = pointcut.resolve(scope);		
-			return this;
+		if (!resolved) { /* Pointcut definitions can be shared */
+			pointcut = pointcut.resolve(scope);
+			resolved = true;			
 		}	
+		return this;
+	}
 /*
  * PerClause factory methods
  * 	Since perClauses are pointcuts, they are created and wrapped here. As a result,
