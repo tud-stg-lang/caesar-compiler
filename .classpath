@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="test/StructureModelTests"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="test/CompilerErrorsTests"/>
+	<classpathentry kind="lib" path="test/TypeSystemTests"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
