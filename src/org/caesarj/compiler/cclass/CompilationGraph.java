@@ -60,6 +60,6 @@ public class CompilationGraph {
     }
     
     public void calculateCompilationLevels() {
-        
+        root.calculateCompilationLevel(0, false);
     }
 }

@@ -7,7 +7,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.naming.ldap.HasControls;
+
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.mixer.Linearizator;
+import org.caesarj.mixer.MixerException;
 import org.caesarj.mixer.MixinList;
 import org.caesarj.util.InconsistencyException;
 
@@ -28,10 +32,10 @@ public class CaesarTypeNode {
     private boolean furtherbinding = false;
     
     private boolean mixinListCreated = false;
-    private LinkedList mixinList = new LinkedList(); // of CaesarTypeNode    
+    private List mixinList = new LinkedList(); // of CaesarTypeNode    
    
     private CaesarTypeNode outer = null;
-    private Set parents = new HashSet(); // of CaesarType
+    private List parents = new LinkedList(); // of CaesarType
     
     private JTypeDeclaration declaration = null; // TODO    
        
@@ -48,8 +52,10 @@ public class CaesarTypeNode {
     }  
     
     public void addSubType(CaesarTypeNode subType) {
-        subTypes.put(subType.getQualifiedName().toString(), subType);
-        subType.parents.add(this);
+        if(!subTypes.containsKey(subType.getQualifiedName().toString())) {
+            subTypes.put(subType.getQualifiedName().toString(), subType);
+            subType.parents.add(this);
+        }
     }
     
     public void removeSubType(CaesarTypeNode subType) {
@@ -71,70 +77,87 @@ public class CaesarTypeNode {
         }
     }   
     
-    // CTODO &; this(k), k>1 not implemented yet
     public void createMixinList(TypeGraph explicitGraph) {
         if(mixinListCreated) return;
         
+        List outerMixinList = null;
+        
         if(outer != null) {
             outer.createMixinList(explicitGraph);
-            LinkedList outerMixinList = outer.getMixinList(); 
-    
-            createMixinList(explicitGraph, mixinList, outerMixinList, 0, qualifiedName.getIdent());
+            outerMixinList = outer.getMixinList();
         }
-        else {
-            CaesarTypeNode mixin = explicitGraph.getType(this.getQualifiedName().toString());
-            while(mixin != null) {                
-                mixinList.addLast(mixin);                
-                
-                if(mixin.getParents().size() > 1)
-                    throw new InconsistencyException("& is not implemented yet");
-                
-                if(mixin.getParents().size() == 1)                                    
-                    mixin = (CaesarTypeNode)mixin.getParents().iterator().next();
-                else
-                    mixin = null;
-            }
-        }
+        
+        createMixinList(explicitGraph, mixinList, outerMixinList, 0, qualifiedName);
         
         mixinListCreated = true;
     }
         
     private void createMixinList(
         TypeGraph explicitGraph,
-        LinkedList mixinListToAppend,
-        LinkedList outerMixinList, 
+        List mixinListToAppend,
+        List outerMixinList, 
         int m,         
-        String ident        
+        JavaQualifiedName qualifiedName        
     ) {
-        CaesarTypeNode currentMixin = (CaesarTypeNode)outerMixinList.get(m);
-        CaesarTypeNode t = currentMixin.lookupInner(ident);
+        CaesarTypeNode currentMixin;
+        CaesarTypeNode t;
+
+        if(outerMixinList != null) {
+            currentMixin = (CaesarTypeNode)outerMixinList.get(m);
+            t = currentMixin.lookupInner(qualifiedName.getIdent());
+        }
+        else {
+            t = explicitGraph.getType(qualifiedName.toString());
+        }
         
-        if(t != null) {              
-            if(t.isFurtherbinding()) {
-                mixinListToAppend.addLast(t);
-                createMixinList(explicitGraph, mixinListToAppend, outerMixinList, m+1, ident);
+        if(t != null) {
+            
+            mixinListToAppend.add(t);
+            
+            if(t.isFurtherbinding()) {                
+                createMixinList(explicitGraph, mixinListToAppend, outerMixinList, m+1, qualifiedName);
             }
-            else if(t.getParents().size() >= 1) {
+            else if(t.getParents().size() == 1) {
+                CaesarTypeNode superType = (CaesarTypeNode)t.getParents().get(0);
                 
-                if(t.getParents().size() > 1)
-                    throw new InconsistencyException("& is not implemented yet");
-                
-                CaesarTypeNode superType = (CaesarTypeNode)t.getParents().iterator().next();
-                mixinListToAppend.addLast(t);
                 createMixinList(
                     explicitGraph, 
                     mixinListToAppend, 
                     outerMixinList, 
                     0, 
-                    superType.getQualifiedName().getIdent()
+                    superType.getQualifiedName()
                 );
             }
-            else {
-                mixinListToAppend.addLast(t);
+            else if(t.getParents().size() > 1) {                
+                List[] superClasses = new List[t.getParents().size()];
+                
+                int i = 0;
+                for (Iterator it = t.getParents().iterator(); it.hasNext();) {
+                    CaesarTypeNode superType = (CaesarTypeNode) it.next();
+                    
+                    superType.createMixinList(explicitGraph);
+                    
+                    superClasses[i++] = superType.getMixinList();
+                }
+                                                
+                try {
+                    // linearize
+                    List mergedList = Linearizator.instance().mix(superClasses);
+                    
+                    // append
+                    for(Iterator it=mergedList.iterator(); it.hasNext(); ) {
+                        mixinListToAppend.add(it.next());
+                    }
+                }
+                catch (MixerException e) {
+                    e.printStackTrace();
+                }
+                
+                
             }
         }
-        else if(m < outerMixinList.size()-1) {
-            createMixinList(explicitGraph, mixinListToAppend, outerMixinList, m+1, ident);
+        else if (m < outerMixinList.size()-1) {
+            createMixinList(explicitGraph, mixinListToAppend, outerMixinList, m+1, qualifiedName);
         }
     }
     
@@ -215,7 +238,7 @@ public class CaesarTypeNode {
                 
     }
           
-    public LinkedList getMixinList() {
+    public List getMixinList() {
         if(!mixinListCreated) throw new InconsistencyException("mixin list has to be created first");
         return mixinList;
     }
@@ -229,7 +252,7 @@ public class CaesarTypeNode {
         return (CaesarTypeNode)inners.get(className);
     }
     
-    public Set getParents() {
+    public List getParents() {
         return parents;
     }
 
@@ -309,6 +332,16 @@ public class CaesarTypeNode {
 
     public boolean isImplicit() {
         return 
-            !((CaesarTypeNode)mixinList.getFirst()).getQualifiedName().equals(qualifiedName);
+            !((CaesarTypeNode)mixinList.get(0)).getQualifiedName().equals(qualifiedName);
+    }
+    
+    
+    public boolean equals(Object other) {
+        return getQualifiedName().equals(((CaesarTypeNode)other).getQualifiedName());
+    }
+    
+    
+    public int hashCode() {
+        return getQualifiedName().hashCode();
     }
 }

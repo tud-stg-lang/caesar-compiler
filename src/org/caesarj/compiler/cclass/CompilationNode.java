@@ -59,9 +59,13 @@ public class CompilationNode {
             item.debug(level+1);
         }
     }
-    
+        
     public String toString() {
         StringBuffer res = new StringBuffer();
+        res.append("[L");
+        res.append(level);
+        res.append("]");
+
         res.append('[');
         res.append(isToBeGenerated() ? 'G' : '-');
         res.append("]");
@@ -88,5 +92,19 @@ public class CompilationNode {
     
     public boolean isToBeGenerated() {
         return parent!=null && (type==null || type.isImplicit());               
+    }
+
+    public void calculateCompilationLevel(int parentLevel, boolean parentInGeneratedLayer) {
+        this.level = parentLevel;
+        boolean thisInGeneratedLayer = isToBeGenerated(); 
+        
+        if(!parentInGeneratedLayer && thisInGeneratedLayer) {
+            this.level++;
+        }
+        
+        for (Iterator it = subNodes.values().iterator(); it.hasNext();) {
+            CompilationNode item = (CompilationNode) it.next();
+            item.calculateCompilationLevel(this.level, thisInGeneratedLayer);
+        }
     }
 }

@@ -28,6 +28,7 @@ public class CaesarTypeSystem {
         completeGraph.debug();
         System.out.println("----------------------------------");
         compilationGraph.generateFrom(completeGraph);
+        compilationGraph.calculateCompilationLevels();
         compilationGraph.debug();
     }
 }

@@ -40,6 +40,16 @@ public class JavaQualifiedName {
         prefix = packagePrefix+outerPrefix;
     }
     
+    // CTODO
+    public JavaQualifiedName convertToImplName() {        
+        return new JavaQualifiedName(qualifiedName);
+    }
+    
+    // CTODO
+    public JavaQualifiedName convertToIfcName() {        
+        return new JavaQualifiedName(qualifiedName);
+    }
+    
     public char getInnerSep() {
         return innerSep;
     }
