@@ -22,7 +22,7 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 99: Subject oriented programming: start");
 
-		WoodmanEagleSubject wes = new WoodmanEagleSubject();		
+		final WoodmanEagleSubject wes = new WoodmanEagleSubject();		
 		wes.Maple maple = wes.new Maple();
 		System.out.println("setting maple food value to 100");
 		maple.setFoodValue(100);

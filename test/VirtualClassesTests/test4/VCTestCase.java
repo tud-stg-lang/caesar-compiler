@@ -19,7 +19,7 @@ public class VCTestCase extends TestCase {
 	public void test() {
         System.out.println("-------> VCTest 4: start");
 
-		EvalPrettyPrintNegAST ast = new EvalPrettyPrintNegAST();
+		final EvalPrettyPrintNegAST ast = new EvalPrettyPrintNegAST();
 		ast.Literal l1 = ast.new Literal();
 		ast.Literal l2 = ast.new Literal();
 		ast.AddExpression add = ast.new AddExpression();

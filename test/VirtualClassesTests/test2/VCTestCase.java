@@ -20,8 +20,8 @@ public class VCTestCase extends TestCase {
 	public void test() {
         System.out.println("-> VCTest 2: start");
 
-        TestCase2 testCase = new TestCase2();
-        testCase.G g = testCase.new CG();
+        final TestCase2 testCase = new TestCase2();
+        final testCase.G g = testCase.new CG();
         g.E e = g.new UE();
         e.init("n1", "n2");
 

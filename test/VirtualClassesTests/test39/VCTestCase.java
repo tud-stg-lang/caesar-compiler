@@ -19,9 +19,9 @@ public class VCTestCase extends TestCase {
 	public void test() {
 		System.out.println("-------> VCTest 39: Wrapper test: start");
 
-		ClassB b = new ClassB();
+		final ClassB b = new ClassB();
 
-		ModelD d = new ModelD();
+		final ModelD d = new ModelD();
 
 		d.RoleB db = d.RoleB(b);
 

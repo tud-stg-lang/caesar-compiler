@@ -19,8 +19,8 @@ public class VCTestCase extends TestCase {
 	public void test() {
         System.out.println("-------> VCTest 3: start");
 
-        TestCase3 testCase = new TestCase3();
-        testCase.G g = testCase.new CWG();
+        final TestCase3 testCase = new TestCase3();
+        final testCase.G g = testCase.new CWG();
         g.N n1 = g.new N();
         g.N n2 = g.new N();
         g.E e = g.new UE();
