@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.19 2005-02-11 18:45:22 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.20 2005-02-12 18:12:23 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -399,7 +399,7 @@ public class JMethodCallExpression extends JExpression
 	
 	protected void doFamilyCheck(CExpressionContext context, int i, CType[] argTypes) throws PositionedError {
 	    try {			    			   	        
-		    if(argTypes[i].isReference()) {
+		    if(argTypes[i].isCaesarReference()) {
 		        
 		        CReferenceType refType = (CReferenceType)argTypes[i];
 		        
