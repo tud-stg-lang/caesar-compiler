@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.31 2004-11-02 17:58:01 aracic Exp $
+ * $Id: CClass.java,v 1.32 2004-11-23 18:29:15 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -84,6 +84,9 @@ public abstract class CClass extends CMember
 
 		this.packageName =
 			cursor > 0 ? qualifiedName.substring(0, cursor).intern() : "";
+			
+		if(owner != null)
+		    depth = owner.getDepth() + 1;
 	}
 
 	/**
@@ -1513,7 +1516,10 @@ public abstract class CClass extends CMember
         return res;
     }
 
-
+    public int getDepth() {
+        return depth;
+    }
+    
 	// ----------------------------------------------------------------------
 	// DATA MEMBERS
 	// ----------------------------------------------------------------------
@@ -1538,6 +1544,8 @@ public abstract class CClass extends CMember
 	private int syntheticIndex = 0;
 
 	private boolean implicit = false;
+	
+	private int depth = 0;
 	
 	private AdditionalCaesarTypeInformation additionalTypeInfo = null;
 	
