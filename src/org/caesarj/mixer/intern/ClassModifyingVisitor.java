@@ -146,6 +146,8 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 		atts = (Attribute[]) v.toArray(new Attribute[0]);
 		newClass.setAttributes(atts);
 		
+		newClass = removeFactoryMethods(newClass);
+		
 		// take a look at all methodrefs
 		modifyMethodRefs(newClass);
 /*		KK
@@ -175,6 +177,20 @@ public class ClassModifyingVisitor extends EmptyVisitor {
 	
 	}
 
+	JavaClass removeFactoryMethods( JavaClass clazz ){
+		ClassGen gen = new ClassGen(clazz);
+		
+		Method[] methods = gen.getMethods();
+		for (int i = 0; i < methods.length; i++) {
+			Method method = methods[i];
+			if (method.getName().startsWith("$new")){
+				gen.removeMethod(method);
+			}
+		}
+		
+		return gen.getJavaClass();
+	}
+	
 	void modifyMethodRefs( JavaClass clazz ){
 		ConstantPool cp = clazz.getConstantPool();
 		for (int i=1; i<cp.getLength(); i++){
