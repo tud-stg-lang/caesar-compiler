@@ -20,18 +20,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclaration.java,v 1.38 2005-01-26 16:08:11 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.39 2005-01-27 15:17:43 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.KjcMessages;
@@ -487,6 +490,24 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
                     
                     methods[i].setReturnType(t);
                     methods[i].getMethod().setReturnType(t);
+                }
+                
+                JFormalParameter formalParams[] = methods[i].getArgs();
+                List formalParamTypes = new LinkedList();
+                for (int j = 0; j < formalParams.length; j++) {                    
+                    if(formalParams[j].getType() instanceof CClassNameType) {
+                        t = formalParams[j].getType();
+                        CClassNameType nt = (CClassNameType)t;
+                        t = new CDependentNameType(nt.getQualifiedName()).checkType(self);
+                        
+                        formalParams[j].setType(t);            
+                        formalParamTypes.add(t);
+                    }
+                    else {
+                        formalParamTypes.add(formalParams[j].getType());
+                    }
+                    methods[i].getMethod().setParameters(
+                        (CType[])formalParamTypes.toArray(new CType[formalParamTypes.size()]));
                 }
             }
             catch (UnpositionedError e) {
