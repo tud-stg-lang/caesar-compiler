@@ -13,7 +13,7 @@ import org.caesarj.compiler.family.Path;
  * 
  * @author Ivica Aracic
  */
-public class CDependentType extends CReferenceType {
+public class CDependentType extends CReferenceType {   
     
     private CType plainType;    /** static type of the */
     
@@ -24,7 +24,8 @@ public class CDependentType extends CReferenceType {
               
     
 ///    public CDependentType(CClassContext pos, int k, JFieldAccessExpression family, CType staticType) {
-    public CDependentType(int k, JExpression family, CType staticType) {
+    public CDependentType(CContext ctx, int k, JExpression family, CType staticType) {
+        setDefCtx(ctx);
         this.k = k;
         this.family = family;
         this.plainType = staticType;
@@ -35,8 +36,8 @@ public class CDependentType extends CReferenceType {
      *
      */
 
-    public Path getPath(CContext context) {
-        return Path.createFrom(context, family);
+    public Path getPath() {
+        return Path.createFrom(defCtx, family);
     }
 
     public CClass getCClass() {
