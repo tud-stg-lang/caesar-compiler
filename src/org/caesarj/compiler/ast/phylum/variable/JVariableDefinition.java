@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JVariableDefinition.java,v 1.17 2005-02-25 13:45:25 aracic Exp $
+ * $Id: JVariableDefinition.java,v 1.18 2005-02-25 16:50:25 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -187,7 +187,7 @@ public class JVariableDefinition extends JLocalVariable {
                             .getType(factory));
             
             // IVICA: check family
-            if(getType().isCaesarReference() /*&& getType().getCClass().isNested()*/) {
+            if(getType().isDependentType() /*&& getType().getCClass().isNested()*/) {
                 try {
 		            Path rFam = expr.getFamily();
 		            Path lFam = ((CReferenceType)getType()).getPath();

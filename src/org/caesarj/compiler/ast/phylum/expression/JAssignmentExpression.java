@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JAssignmentExpression.java,v 1.18 2005-02-25 13:46:18 aracic Exp $
+ * $Id: JAssignmentExpression.java,v 1.19 2005-02-25 16:50:45 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -124,7 +124,7 @@ public class JAssignmentExpression extends JBinaryExpression {
     /**
      * family check
      */
-    if(right.getType(context.getTypeFactory()).isCaesarReference()) {
+    if(right.getType(context.getTypeFactory()).isDependentType()) {
 	    Path rFam = right.getFamily();
 	    Path lFam = left.getFamily();
 	    System.out.println("ASSIGNEMENT (line "+getTokenReference().getLine()+"):");

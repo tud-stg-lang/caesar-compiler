@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JReturnStatement.java,v 1.8 2005-02-25 13:45:41 aracic Exp $
+ * $Id: JReturnStatement.java,v 1.9 2005-02-25 16:50:32 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -120,7 +120,7 @@ public class JReturnStatement extends JStatement {
           
 	      if(
 	          // CRITICAL: better check if the method is synthetic
-	          returnType.isCaesarReference() 
+	          returnType.isDependentType() 
 	          && !method.isCaesarFactoryMethod()
 	          && !method.isCaesarAccessorMethod()
 	          && !method.isCaesarWrapperSupportMethod()
