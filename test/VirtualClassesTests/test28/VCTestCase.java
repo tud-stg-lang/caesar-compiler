@@ -4,7 +4,7 @@ import junit.framework.*;
 import java.util.*;
 
 /**
- * Test super calls of merged classes.
+ * Test merging class with multiple parents.
  *
  * @author Vaidas Gasiunas
  */
@@ -16,20 +16,25 @@ public class VCTestCase extends TestCase
 		super("test");
 	}
 
-	public static final String expectedResult =	"A.A.A, C.C.A; B.B.B, C.C.B";
+	public static final String expectedResult =	"A.A.A, A.C.A; B.B.B, B.C.B; A.C.C; A.A.D; B.B.E; A.C.F; A.C.G";
 
 
 	public void test()
 	{
 
-		System.out.println("-------> VCTest 28: Test Super Calls of Merged Classes: start");
+		System.out.println("-------> VCTest 28: Test Merging Class With Multiple Parents: start");
 
-		OuterC.InnerC ca = (OuterC.InnerC)new OuterC_Impl(null).$newInnerC();
+		OuterC.InnerC cc = (OuterC.InnerC)new OuterC_Impl(null).$newInnerC();
 
-		String resA = ca.queryA();
-		String resB = ca.queryB();
+		String resA = cc.queryA();
+		String resB = cc.queryB();
+		String resC = cc.queryC();
+		String resD = cc.queryD();
+		String resE = cc.queryE();
+		String resF = cc.queryF();
+		String resG = cc.queryG();
 
-		String result = resA + "; " + resB;
+		String result = resA + "; " + resB + "; " + resC + "; " + resD + "; " + resE + "; " + resF + "; " + resG;
 
 		System.out.println(result);
 		assertEquals(expectedResult, result);
@@ -58,10 +63,35 @@ public cclass OuterA extends AllTypes
 		{
 			return "A.A.A";
 		}
+
+		public String queryD()
+		{
+			return "A.A.D";
+		}
+
+		public String queryF()
+		{
+			return "A.A.F";
+		}
 	}
 
 	public cclass InnerC extends InnerA
-	{ }
+	{
+		public String queryA()
+		{
+			return super.queryA() + ", A.C.A";
+		}
+
+		public String queryC()
+		{
+			return "A.C.C";
+		}
+
+		public String queryG()
+		{
+			return "A.C.G";
+		}
+	}
 }
 
 public cclass OuterB extends AllTypes
@@ -72,25 +102,38 @@ public cclass OuterB extends AllTypes
 		{
 			return "B.B.B";
 		}
+
+		public String queryE()
+		{
+			return "B.B.E";
+		}
+
+		public String queryG()
+		{
+			return "B.B.G";
+		}
 	}
 
 	public cclass InnerC extends InnerB
-	{ }
+	{
+		public String queryB()
+		{
+			return super.queryB() + ", B.C.B";
+		}
+
+		public String queryC()
+		{
+			return "B.C.C";
+		}
+
+		public String queryF()
+		{
+			return "B.C.F";
+		}
+	}
 }
 
 public cclass OuterC extends OuterA & OuterB
 {
-	public cclass InnerC
-	{
-		public String queryA()
-		{
-			return super.queryA() + ", C.C.A";
-		}
-
-		public String queryB()
-		{
-			return super.queryB() + ", C.C.B";
-		}
-	}
 }
 
