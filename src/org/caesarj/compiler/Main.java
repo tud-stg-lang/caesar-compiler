@@ -12,6 +12,7 @@ import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
+import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.cclass.CClassPreparation;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
@@ -95,8 +96,9 @@ public class Main extends MainSuper implements Constants {
             return false;
         }
 
-        JCompilationUnit[] tree = 
-            parseFiles(environment);    if(errorFound) return false;
+        
+        JCompilationUnit[] tree = parseFiles(environment);    
+        if(errorFound) return false;
         
         prepareCaesarClasses(environment, tree);
         
@@ -104,36 +106,48 @@ public class Main extends MainSuper implements Constants {
         
         prepareDynamicDeployment(environment, tree);
                 
-        joinAll(tree);                  if(errorFound) return false;
-                
-        
-        // calculate dependency graph once
+        joinAll(tree);                  
+        if(errorFound) return false;
+
+        CompilerPass compilerPass = 
+            generateCompilerPassInfo(tree);
             
-        // while(classesToBeCompiled.size()>0) {
+        while(compilerPass != null) {       
+            
+            compilerPass.begin();
+            
+            {
+                // CTODO mix all composite types which super classes has been already compiled
                 
-        // mix all composite types which super classes has been already compiled         
-        
-        
-        checkAllInterfaces(tree);       if(errorFound) return false;
+                checkAllInterfaces(tree);       
+                if(errorFound) return false;
+                        
+                checkAllInitializers(tree);     
+                if(errorFound) return false;
+                        
+                checkAllBodies(tree);           
+                if(errorFound) return false;
                 
-        checkAllInitializers(tree);     if(errorFound) return false;
+                genCode(environment.getTypeFactory());
+            }
+            
+            compilerPass.end();
+            
+            compilerPass = compilerPass.getNextPass(); 
+        }
+        
+        if(!noWeaveMode()) {        
+            // CTODO weave code here
+        }
                 
-        checkAllBodies(tree);           if(errorFound) return false;
-        
-        
-        // generateCode
-        
-        // }
-        
-        
-        // if(!noWeaveMode()) weaveCode....
-        
+        /*
         if (noWeaveMode()) {
             genCode(environment.getTypeFactory());
         }
         else {
             generateAndWeaveCode(environment.getTypeFactory());
         }
+        */
 
         if (verboseMode()) {
             inform(CaesarMessages.COMPILATION_ENDED);
@@ -144,6 +158,25 @@ public class Main extends MainSuper implements Constants {
     }
 
     /**
+     * Here CompilerPassInfo List gets created
+     */
+    protected CompilerPass generateCompilerPassInfo(JCompilationUnit[] tree) {
+        // CTODO this is only hardcoded, prepared code
+        CompilerPass pass2 = new CompilerPass();  
+		CompilerPass pass1 = new CompilerPass(pass2);
+        
+        JTypeDeclaration inners[] = tree[0].getInners();
+        
+        for(int i=0; i<9; i++)
+            pass1.getTypesToCompile().add(inners[i]);
+            
+        for(int i=9; i<10; i++)
+            pass2.getTypesToCompile().add(inners[i]);            
+        
+        return pass1;
+	}
+
+	/**
      * - create advice attribute for AspectJ weaver if necessary
      * - add outer this if necessary
      * - check constructors
@@ -168,7 +201,8 @@ public class Main extends MainSuper implements Constants {
         for (int count = 0; count < tree.length; count++) {
             checkBody(tree[count]);
             if (!options._java && !options.beautify) {
-                tree[count] = null;
+                // CTODO 
+                //tree[count] = null;
             }
         }
     }
