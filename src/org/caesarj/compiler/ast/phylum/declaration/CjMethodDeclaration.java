@@ -66,10 +66,6 @@ public class CjMethodDeclaration extends JMethodDeclaration {
 	public CSourceMethod checkInterface1(CClassContext context)
 		throws PositionedError {
 		boolean inInterface = context.getCClass().isInterface();
-		boolean inCollaborationInterface = 
-			CModifier.contains(
-				context.getCClass().getModifiers(), 
-				CCI_COLLABORATION);
 		boolean isExported = true;
 		//!(this instanceof JInitializerDeclaration);
 		String ident = this.ident;
@@ -197,9 +193,7 @@ public class CjMethodDeclaration extends JMethodDeclaration {
 			| ACC_STATIC
 			| ACC_NATIVE
 			| ACC_SYNCHRONIZED
-			| ACC_STRICT
-			| CCI_EXPECTED
-			| CCI_PROVIDED;
+			| ACC_STRICT;
 	}
 
 }

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.9 2004-03-17 14:25:46 aracic Exp $
+ * $Id: JClassDeclaration.java,v 1.10 2004-03-17 14:45:53 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -41,7 +41,6 @@ import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.visitor.KjcPrettyPrinter;
 import org.caesarj.compiler.ast.visitor.KjcVisitor;
 import org.caesarj.compiler.constants.CaesarConstants;
-import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.*;
@@ -780,17 +779,6 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 			KjcMessages.NOT_CLASS_MODIFIERS,
 			CModifier.toString(CModifier.notElementsOf(modifiers, 
 				getAllowedModifiers())));
-		// FJLS 1 : modifiers virtual and override pertain only to member classes
-		check(
-			context,
-			!(CModifier.contains(modifiers, FJC_VIRTUAL)
-				|| CModifier.contains(modifiers, FJC_OVERRIDE))
-				|| isNested() & CModifier.contains(modifiers, FJC_VIRTUAL)
-				|| isNested() & CModifier.contains(modifiers, FJC_OVERRIDE),
-			CaesarMessages.MODIFIERS_INNER_CLASSES_ONLY,
-			CModifier.toString(
-				CModifier.getSubsetOf(modifiers, FJC_VIRTUAL | FJC_OVERRIDE)));
-		// andreas end
 
 		// JLS 8.1.1 : The access modifier public pertains only to top level
 		// classes and to member classes.
@@ -1048,15 +1036,6 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 	public CCjSourceClass getFjSourceClass()
 	{
 		return (CCjSourceClass) sourceClass;
-	}
-
-	/**
-	 * Does the class have a clean interface?
-	 * @return
-	 */
-	public boolean isClean()
-	{
-		return (modifiers & (FJC_CLEAN | FJC_VIRTUAL | FJC_OVERRIDE)) != 0;
 	}
 
 
@@ -1373,21 +1352,13 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
   {
 	  return ACC_PUBLIC | ACC_PROTECTED | ACC_PRIVATE | 
 		  	  ACC_ABSTRACT | ACC_STATIC | ACC_FINAL | ACC_STRICT 
-			| FJC_VIRTUAL
-			| FJC_OVERRIDE
-			| FJC_CLEAN
 			| ACC_CROSSCUTTING  // Klaus
 			| getInternalModifiers();
 	}
 	
 	protected int getInternalModifiers()
 	{
-		return  CCI_COLLABORATION
-				| CCI_BINDING
-				| CCI_PROVIDING
-				| CCI_WEAVELET
-				//Jurgen's
-				| ACC_PRIVILEGED 
+		return  ACC_PRIVILEGED 
 				| ACC_CROSSCUTTING 
 				| ACC_DEPLOYED;
 	}

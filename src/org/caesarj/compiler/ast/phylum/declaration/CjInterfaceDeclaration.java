@@ -128,10 +128,6 @@ public class CjInterfaceDeclaration
 			| ACC_STATIC
 			| ACC_STRICT
 			| ACC_INTERFACE
-			| CCI_COLLABORATION
-			| CCI_BINDING
-			| CCI_PROVIDING
-			| CCI_WEAVELET
 			//Jurgen's
 			| ACC_PRIVILEGED 
 			| ACC_CROSSCUTTING 

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodDeclaration.java,v 1.1 2004-03-15 11:56:48 aracic Exp $
+ * $Id: JMethodDeclaration.java,v 1.2 2004-03-17 14:45:53 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -136,22 +136,20 @@ public class JMethodDeclaration extends JMemberDeclaration
 		// 8.4.3 Method Modifiers
 		check(
 			context,
-			CModifier
-				.isSubsetOf(
-					modifiers,
-					ACC_PUBLIC
-						| ACC_PROTECTED
-						| ACC_PRIVATE
-						| ACC_ABSTRACT
-						| ACC_FINAL
-						| ACC_STATIC
-						| ACC_NATIVE
-						| ACC_SYNCHRONIZED
-						| ACC_STRICT
-		//Walter start
-		| CCI_EXPECTED | CCI_PROVIDED
-		//Walter end
-		), KjcMessages.METHOD_FLAGS);
+			CModifier.isSubsetOf(
+				modifiers,
+				ACC_PUBLIC
+				| ACC_PROTECTED
+				| ACC_PRIVATE
+				| ACC_ABSTRACT
+				| ACC_FINAL
+				| ACC_STATIC
+				| ACC_NATIVE
+				| ACC_SYNCHRONIZED
+				| ACC_STRICT
+			),
+			KjcMessages.METHOD_FLAGS
+		);
 		// 8.4.3.4 Navtive Methods
 		// A compile-time error occurs if a native method is declared abstract.
 		check(
@@ -205,9 +203,6 @@ public class JMethodDeclaration extends JMemberDeclaration
 			check(
 				context,
 				CModifier.isSubsetOf(modifiers, ACC_PUBLIC | ACC_ABSTRACT
-			//Walter start
-			| CCI_EXPECTED | CCI_PROVIDED
-			//Walter end
 			), KjcMessages.METHOD_FLAGS_IN_INTERFACE, this.ident);
 		}
 		try

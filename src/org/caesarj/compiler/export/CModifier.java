@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CModifier.java,v 1.4 2004-03-14 11:03:26 aracic Exp $
+ * $Id: CModifier.java,v 1.5 2004-03-17 14:45:53 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -159,30 +159,10 @@ public class CModifier implements Constants {
 				return 12;
 			case ACC_STRICT :
 				return 13;
-				// andreas start
-			case FJC_VIRTUAL :
-				return 14;
-			case FJC_OVERRIDE :
-				return 15;
-			case FJC_CLEAN :
-				return 16;
-				// andreas end
 			case ACC_CROSSCUTTING:
 				return 17;
 			case ACC_DEPLOYED:
 				return 18;
-			case CCI_COLLABORATION :
-				return 19;
-			case CCI_PROVIDED :
-				return 20;
-			case CCI_EXPECTED :
-				return 21;
-			case CCI_BINDING :
-				return 22;
-			case CCI_PROVIDING :
-				return 23;
-			case CCI_WEAVELET :
-				return 24;			
 			//Walter end    
 				
 			default :
@@ -219,34 +199,12 @@ public class CModifier implements Constants {
 				return "abstract";
 			case ACC_STRICT :
 				return "strictfp";
-				// andreas start
-			case FJC_VIRTUAL :
-				return "virtual";
-			case FJC_OVERRIDE :
-				return "override";
-			case FJC_CLEAN :
-				return "clean";
-				// andreas end
 			case ACC_PRIVILEGED :
 				return "privileged";
 			case ACC_CROSSCUTTING :
 				return "crosscutting";
 			case ACC_DEPLOYED :
 				return "deploy";
-			//Walter start
-			case CCI_COLLABORATION :
-				return "collaboration";
-			case CCI_PROVIDED :
-				return "provided";
-			case CCI_EXPECTED :
-				return "expected";
-			case CCI_BINDING :
-				return "binding";
-			case CCI_PROVIDING :
-				return "providing";	
-			case CCI_WEAVELET :
-				return "weavelet";			
-			//Walter end
 			default :
 				throw new InconsistencyException();
 		}
@@ -300,21 +258,8 @@ public class CModifier implements Constants {
 			ACC_INTERFACE,
 			ACC_ABSTRACT,
 			ACC_STRICT,
-			//andreas start
-			FJC_VIRTUAL,
-		    FJC_OVERRIDE,
-			FJC_CLEAN,
-			//andreas end
 			ACC_PRIVILEGED,
 			ACC_CROSSCUTTING, 
 			ACC_DEPLOYED,
-			//Walter start
-			CCI_COLLABORATION, 
-			CCI_PROVIDED, 
-			CCI_EXPECTED,
-			CCI_BINDING,
-			CCI_PROVIDING,
-			CCI_WEAVELET
-			//Walter end
 	};
 }

@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: ClassfileConstants2.java,v 1.4 2004-03-14 11:03:26 aracic Exp $
+ * $Id: ClassfileConstants2.java,v 1.5 2004-03-17 14:45:53 aracic Exp $
  */
 
 package org.caesarj.classfile;
@@ -77,22 +77,10 @@ public interface ClassfileConstants2 {
   int		ACC_INTERFACE = 0x00000200;
   int		ACC_ABSTRACT = 0x00000400;
   int		ACC_STRICT = 0x00000800;
-  // andreas start
-  int		FJC_VIRTUAL = 0x00001000;
-  int		FJC_OVERRIDE = 0x00002000;
-  int		FJC_CLEAN = 0x00004000;
-  // andreas end
+
   int		ACC_PRIVILEGED = 0x00008000;
   int		ACC_CROSSCUTTING = 0x00010000;
   int		ACC_DEPLOYED = 0x00020000;
-  //Walter start
-  int		CCI_COLLABORATION = 0x00040000;
-  int		CCI_PROVIDED = 0x00080000;
-  int		CCI_EXPECTED = 0x00100000;
-  int 		CCI_BINDING  = 0x00200000;
-  int		CCI_PROVIDING = 0x00400000;
-  int		CCI_WEAVELET = 0x00800000;  
-  //Walter end
 
   int		ACC_SUPER = 0x0020;
 

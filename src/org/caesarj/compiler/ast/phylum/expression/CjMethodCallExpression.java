@@ -12,7 +12,6 @@ import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
-import org.caesarj.util.UnpositionedError;
 
 // FJKEEP  
 public class CjMethodCallExpression extends JMethodCallExpression {
@@ -191,19 +190,7 @@ public class CjMethodCallExpression extends JMethodCallExpression {
 							.getQualifiedName());
 			}
 						
-		}
-		else if (e instanceof CMethodNotFoundError)
-		{
-			CClass local = context.getClassContext().getCClass();
-			if (CModifier.contains(local.getModifiers(), FJC_VIRTUAL)
-				&& CModifier.contains(
-					local.getOwner().getModifiers(), FJC_CLEAN | FJC_VIRTUAL))
-				return new PositionedError(
-					getTokenReference(), 
-					CaesarMessages.METHOD_NOT_FOUND_INSIDE_VIRTUAL,
-					e.getFormattedMessage().getParams()[0]);
-
-		}
+		}		
 				
 		return e;
 		
@@ -249,13 +236,15 @@ public class CjMethodCallExpression extends JMethodCallExpression {
 		}
 	
 	}
+	
+	/* FJRM
 	protected void setMethod(CExpressionContext context)
 		throws PositionedError {
 		CClass local = context.getClassContext().getCClass();
 		CType[] argTypes = getArgumentTypes(context, args, 
 			context.getTypeFactory());
 		findMethod(context, local, argTypes);
-		
+				
 		//If the method is not private and it is called in a clean 
 		//class it must go to the clean interface
 		//It is for allow calling outer this methods.
@@ -279,10 +268,10 @@ public class CjMethodCallExpression extends JMethodCallExpression {
 			{
 				throw e.addPosition(getTokenReference());
 			}
-		}
-		
-			
+		}	
 	}
+	*/
+	
 
 	private CType[] argTypes;
 	protected CType[] getArgumentTypes(
@@ -316,8 +305,10 @@ public class CjMethodCallExpression extends JMethodCallExpression {
 
 	protected CMethod getMethod(CExpressionContext context)
 		throws PositionedError {
+		/* FJRM
 		if (method == null)
 			setMethod(context);
+		*/
 		return method;
 	}
 
