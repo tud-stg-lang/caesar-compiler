@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.26 2004-10-15 11:12:52 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.27 2004-10-15 15:38:37 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -348,28 +348,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
 
     }
 
-    /* DEBUG
-     * (non-Javadoc)
-     * @see at.dms.kjc.JTypeDeclaration#print()
-     */
-    public void print() {
-        System.out.print(CModifier.toString(modifiers));
-        System.out.print("class ");
-        super.print();
-        if (getSuperClass() != null)
-            System.out.print(" extends " + getSuperClass());
-        if (interfaces.length > 0) {
-            System.out.print(" implements ");
-            for (int i = 0; i < interfaces.length; i++) {
-                if (i > 0)
-                    System.out.print(", ");
 
-                System.out.print(interfaces[i]);
-            }
-        }
-
-        System.out.println();
-    }
     /*
      * Integration of FjClassDeclaration (Karl Klose)
      */

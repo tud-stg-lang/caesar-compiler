@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.23 2004-10-15 11:12:52 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.24 2004-10-15 15:37:30 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -599,12 +599,6 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         return getCClass().getOwner();
     }
 
-    /**
-    	* DEBUG - WALTER
-    	*/
-    public void print() {
-        System.out.print(ident);
-    }
     
     public void addInterface(CReferenceType newInterface) {
         addInterface(new CReferenceType[]{newInterface});
