@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JMethodDeclaration.java,v 1.2 2003-07-11 11:58:34 werner Exp $
+ * $Id: JMethodDeclaration.java,v 1.3 2003-10-29 12:29:07 kloppenburg Exp $
  */
 
 package org.caesarj.kjc;
@@ -549,6 +549,18 @@ public class JMethodDeclaration extends JMemberDeclaration
 		System.out.print(")");
 	}
 
+/**
+ * Sven:
+ * body access for manipulation
+ */
+	public JBlock getBlockBody(){return body;}
+	public void setBlockBody(JBlock b){body=b;}
+	public JFormalParameter[] getArgs(){
+		return parameters;
+	}
+	public String getIdent(){return ident;
+	}
+	
 	// ----------------------------------------------------------------------
 	// DATA MEMBERS
 	// ----------------------------------------------------------------------

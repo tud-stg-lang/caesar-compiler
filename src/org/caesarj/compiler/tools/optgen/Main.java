@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Main.java,v 1.1 2003-07-05 18:29:41 werner Exp $
+ * $Id: Main.java,v 1.2 2003-10-29 12:29:25 kloppenburg Exp $
  */
 
 package org.caesarj.compiler.tools.optgen;
@@ -24,7 +24,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.Hashtable;
 
 /**
  * This class is the entry point for the Message generator.

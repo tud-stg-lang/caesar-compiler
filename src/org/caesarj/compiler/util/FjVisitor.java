@@ -109,6 +109,11 @@ public abstract class FjVisitor implements KjcVisitor {
 			else
 				throw new IllegalArgumentException( "illegal owner: " + o.getClass().getName() );
 		}
+		
+		/**
+		 * 
+		 * @return a reference to the owner.
+		 */
 		public Object get() {
 			return reference;
 		}

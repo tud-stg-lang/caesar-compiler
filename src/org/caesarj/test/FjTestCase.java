@@ -18,6 +18,10 @@ public class FjTestCase extends TestCase {
 		super.tearDown();
 	}
 
+/**
+ * @returns a String: "./test/$CLASS", meaning the subdirectory of "./test" with the name 
+ * of the executing test-file.
+ */
 	protected String getWorkingDirectory() {
 		return "." + File.separator + "test" + File.separator 
 			+ getClass().getName().substring(
@@ -29,6 +33,7 @@ public class FjTestCase extends TestCase {
 	}
 	
 	protected void doGeneratedTest( String testCaseName ) throws Throwable {
+		System.out.println("Test "+testCaseName+" starts");
 		Object generatedTest = Class.forName( "generated." + testCaseName ).newInstance();
 		((TestCase) generatedTest).runBare();
 	}

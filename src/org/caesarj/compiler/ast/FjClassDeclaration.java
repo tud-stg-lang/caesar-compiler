@@ -67,7 +67,7 @@ public class FjClassDeclaration
 	private PerClause perClause;
 
 	/** The declared pointcuts */
-	private PointcutDeclaration[] pointcuts;
+	protected PointcutDeclaration[] pointcuts;
 
 	public FjClassDeclaration(
 		TokenReference where,
@@ -430,6 +430,8 @@ public class FjClassDeclaration
 					CaesarMessages
 						.POINTCUTS_OR_ADVICES_IN_NON_CROSSCUTTING_CLASS));
 		}
+		
+		
 
 		//if descendants of crosscutting class must be declared crosscutting too
 		if (getCClass().getSuperClass() != null

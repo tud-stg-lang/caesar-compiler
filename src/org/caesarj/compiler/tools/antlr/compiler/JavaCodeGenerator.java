@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JavaCodeGenerator.java,v 1.1 2003-07-05 18:29:42 werner Exp $
+ * $Id: JavaCodeGenerator.java,v 1.2 2003-10-29 12:29:17 kloppenburg Exp $
  */
 
 package org.caesarj.compiler.tools.antlr.compiler;
@@ -1817,7 +1817,7 @@ public class JavaCodeGenerator {
    * Generate a header that is common to all Java files
    */
   private void genHeader() {
-    println("// $ANTLR "+tool.version+": "+
+    println("// $ANTLR "+Main.version+": "+
 	    "\""+Utils.fileMinusPath(tool.grammarFile)+"\""+
 	    " -> "+
 	    "\""+grammar.getClassName()+".java\"$");
@@ -2688,7 +2688,7 @@ public class JavaCodeGenerator {
    * @return A string representing the mangled literal, or null if not possible.
    */
   private String mangleLiteral(String s) {
-    String mangled = tool.literalsPrefix;
+    String mangled = Main.literalsPrefix;
     for (int i = 1; i < s.length()-1; i++) {
       if (!Character.isLetter(s.charAt(i)) &&
 	  s.charAt(i) != '_') {
@@ -2696,7 +2696,7 @@ public class JavaCodeGenerator {
       }
       mangled += s.charAt(i);
     }
-    if (tool.upperCaseMangledLiterals ) {
+    if (Main.upperCaseMangledLiterals ) {
       mangled = mangled.toUpperCase();
     }
     return mangled;

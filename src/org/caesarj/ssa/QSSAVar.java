@@ -15,15 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: QSSAVar.java,v 1.1 2003-07-05 18:29:36 werner Exp $
+ * $Id: QSSAVar.java,v 1.2 2003-10-29 12:29:11 kloppenburg Exp $
  */
 
 package org.caesarj.ssa;
 
 import org.caesarj.util.InconsistencyException;
-
-import org.caesarj.classfile.LocalVarInstruction;
-import org.caesarj.classfile.Constants;
 
 
 /**

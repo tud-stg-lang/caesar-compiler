@@ -17,22 +17,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarScanner.java,v 1.12 2003-08-28 14:09:09 werner Exp $
+ * $Id: CaesarScanner.java,v 1.13 2003-10-29 12:29:12 kloppenburg Exp $
  */
 
 package org.caesarj.compiler;
 
-import org.caesarj.kjc.*;
-import org.caesarj.compiler.CWarning;
-import org.caesarj.compiler.Compiler;
-import org.caesarj.compiler.CompilerMessages;
-import org.caesarj.compiler.JavaStyleComment;
-import org.caesarj.compiler.JavadocComment;
-import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.tools.antlr.extra.CToken;
 import org.caesarj.compiler.tools.antlr.extra.InputBuffer;
-import org.caesarj.compiler.tools.antlr.extra.Scanner;
-import org.caesarj.compiler.tools.antlr.runtime.Token;
+import org.caesarj.kjc.KjcEnvironment;
+import org.caesarj.kjc.KjcMessages;
 
 
 /**

@@ -100,6 +100,7 @@ public class PointcutDeclaration extends FjMethodDeclaration {
 
 		FjSourceClass crosscuttingClass = (FjSourceClass) context.getCClass();
 
+		
 		ResolvedPointcutDefinition rpd =
 			resolve(
 				context,
@@ -158,5 +159,8 @@ public class PointcutDeclaration extends FjMethodDeclaration {
 				pointcut);
 
 		return rpd;
+	}
+	public String toString(){
+		return pointcut.toString();
 	}
 }

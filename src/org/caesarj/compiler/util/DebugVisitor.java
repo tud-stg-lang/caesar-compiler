@@ -1,7 +1,6 @@
 package org.caesarj.compiler.util;
 
 import org.caesarj.compiler.ast.FjInterfaceDeclaration;
-import org.caesarj.compiler.ast.FjSourceField;
 import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CType;

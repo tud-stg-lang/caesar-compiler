@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Compiler.java,v 1.1 2003-07-05 18:29:43 werner Exp $
+ * $Id: Compiler.java,v 1.2 2003-10-29 12:29:12 kloppenburg Exp $
  */
 
 package org.caesarj.compiler;
@@ -25,7 +25,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.caesarj.util.Message;

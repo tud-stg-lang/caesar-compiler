@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CSourceClass.java,v 1.2 2003-08-11 22:44:15 werner Exp $
+ * $Id: CSourceClass.java,v 1.3 2003-10-29 12:29:07 kloppenburg Exp $
  */
 
 package org.caesarj.kjc;
@@ -27,19 +27,16 @@ import java.util.Hashtable;
 
 import org.caesarj.classfile.ClassConstant;
 import org.caesarj.classfile.ClassFileFormatException;
-import org.caesarj.classfile.InstructionOverflowException;
-import org.caesarj.classfile.ConstantPoolOverflowException;
-import org.caesarj.classfile.LocalVariableOverflowException;
 import org.caesarj.classfile.ClassInfo;
-import org.caesarj.classfile.CodeInfo;
+import org.caesarj.classfile.ConstantPoolOverflowException;
 import org.caesarj.classfile.FieldInfo;
-import org.caesarj.classfile.FieldRefInstruction;
 import org.caesarj.classfile.InnerClassInfo;
+import org.caesarj.classfile.InstructionOverflowException;
+import org.caesarj.classfile.LocalVariableOverflowException;
 import org.caesarj.classfile.MethodInfo;
-import org.caesarj.util.Utils;
-import org.caesarj.compiler.Compiler;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
+import org.caesarj.util.Utils;
 
 /**
  * This class represents the exported members of a class (inner classes, methods and fields)

@@ -36,7 +36,7 @@ public interface CaesarConstants extends Constants {
 
 	public static final String DEPLOYED_INSTANCES = "$deployedInstances";
 
-	public static final String ASPECT_INTANCE = "$aspectInstance";
+	public static final String ASPECT_INSTANCE = "$aspectInstance";
 
 	public static final String ASPECT_TO_DEPLOY = "$aspectToDeploy";
 
@@ -54,7 +54,7 @@ public interface CaesarConstants extends Constants {
 
 	public static final String ASPECT_OF_METHOD = "aspectOf";
 
-	public static final String HAS_ASPECT_MEHTOD = "hasAspect";
+	public static final String HAS_ASPECT_METHOD = "hasAspect";
 
 	public static final String AROUND_CLOSURE_PARAMETER = "aroundClosure";
 

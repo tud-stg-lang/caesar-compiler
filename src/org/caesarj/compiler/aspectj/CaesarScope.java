@@ -1,7 +1,6 @@
 package org.caesarj.compiler.aspectj;
 
 import java.io.File;
-import java.util.HashMap;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
@@ -21,7 +20,6 @@ import org.caesarj.compiler.UnpositionedError;
 import org.caesarj.compiler.ast.FjClassContext;
 import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CModifier;
-import org.caesarj.kjc.CType;
 import org.caesarj.kjc.JClassImport;
 import org.caesarj.kjc.JPackageImport;
 

@@ -1,17 +1,24 @@
 package org.caesarj.test;
 
-
-import org.caesarj.test.CompileAndRunResultsTest;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+/**
+ * provides all Caesar tests.
+ * 
+ * @author Andreas Wittmann, Sven Kloppenburg
+ *
+ * @see CompileAndRunResultsTest
+ * @see CompileAndRunResultsCITest
+ */
 public class AllTests {
 	public static Test suite() {
-		TestSuite suite = new TestSuite("all familyj tests");
+		TestSuite suite = new TestSuite("all Caesar tests");
 		//$JUnit-BEGIN$
 		suite.addTestSuite( CompileAndRunResultsTest.class );
 		suite.addTestSuite( CompileAndRunResultsCITest.class );
+		suite.addTestSuite( CompileAndRunResultsWeaverTest.class );
+		suite.addTestSuite( AutomaticCaesarTests.class);
 		//$JUnit-END$
 		return suite;
 	}

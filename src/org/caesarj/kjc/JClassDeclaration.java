@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.4 2003-08-26 10:15:18 werner Exp $
+ * $Id: JClassDeclaration.java,v 1.5 2003-10-29 12:29:07 kloppenburg Exp $
  */
 
 package org.caesarj.kjc;
@@ -28,9 +28,6 @@ import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
-import org.caesarj.compiler.ast.FjClassContext;
-
-import org.caesarj.util.Utils;
 
 /**
  * This class represents a java class in the syntax tree
@@ -780,6 +777,8 @@ public class JClassDeclaration extends JTypeDeclaration {
   //private CReferenceType		superClass;
   protected CReferenceType		superClass;
   // andreas end
+  
+  protected CReferenceType		wouldBeSuperClass;
   
   //  private CClassContext		self;
   KopiInvariantDeclaration      defaultInvariant;

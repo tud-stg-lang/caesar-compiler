@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: DefinitionFile.java,v 1.1 2003-07-05 18:29:44 werner Exp $
+ * $Id: DefinitionFile.java,v 1.2 2003-10-29 12:29:24 kloppenburg Exp $
  */
 
 package org.caesarj.compiler.tools.lexgen;
@@ -29,11 +29,10 @@ import java.io.PrintWriter;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.caesarj.compiler.tools.antlr.runtime.ParserException;
-import org.caesarj.util.Utils;
-import org.caesarj.compiler.CompilerMessages;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
+import org.caesarj.compiler.tools.antlr.runtime.ParserException;
+import org.caesarj.util.Utils;
 
 class DefinitionFile {
 

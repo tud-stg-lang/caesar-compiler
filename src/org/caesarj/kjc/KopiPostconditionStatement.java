@@ -15,17 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KopiPostconditionStatement.java,v 1.1 2003-07-05 18:29:38 werner Exp $
+ * $Id: KopiPostconditionStatement.java,v 1.2 2003-10-29 12:29:07 kloppenburg Exp $
  */
 
 package org.caesarj.kjc;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 
-import org.caesarj.util.Utils;
-import org.caesarj.compiler.JavaStyleComment;
-import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;

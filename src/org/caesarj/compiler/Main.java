@@ -25,7 +25,8 @@ import org.caesarj.compiler.tools.antlr.runtime.ParserException;
 import org.caesarj.compiler.util.ClassTransformationFjVisitor;
 import org.caesarj.compiler.util.CollaborationInterfaceTransformation;
 import org.caesarj.compiler.util.CollectClassesFjVisitor;
-import org.caesarj.compiler.util.DebugVisitor;
+//use for debug visitors
+//import org.caesarj.compiler.util.DebugVisitor;
 import org.caesarj.compiler.util.FamiliesInitializerFjVisitor;
 import org.caesarj.compiler.util.FjVisitor;
 import org.caesarj.compiler.util.InheritConstructorsFjVisitor;
@@ -42,13 +43,12 @@ import org.caesarj.kjc.KjcMessages;
 import org.caesarj.kjc.TypeFactory;
 import org.caesarj.util.Message;
 import org.caesarj.util.Utils;
-import org.omg.CORBA.Environment;
 
 /**
  * The entry point of the Caesar compiler.
  * 
  * 
- * @author J?rgen Hallpap
+ * @author Jürgen Hallpap
  */
 public class Main extends org.caesarj.kjc.Main implements Constants {
 
@@ -58,6 +58,11 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 	private CollectClassesFjVisitor inherritConstructors;
 	protected boolean joined;
 
+	/**
+	 * @param workingDirectory the working directory
+	 * @param diagnosticOutput where to put stderr
+	 * 
+	 */
 	public Main(String workingDirectory, PrintWriter diagnosticOutput) {
 		super(workingDirectory, new Outputter(diagnosticOutput));
 		//		super(workingDirectory, diagnosticOutput  );
@@ -292,6 +297,12 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 		cunit.accept(getFamiliesInitializer(cunit.getEnvironment()));
 	}
 
+
+	/**
+	 * 
+	 * @param environment
+	 * @return the visitor instance that transforms FamilyJ to Java.
+	 */
 	protected FjVisitor getClassTransformation(KjcEnvironment environment) 
 	{
 		return new ClassTransformationFjVisitor(environment);
@@ -310,9 +321,9 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 	
 	
 	/**
-	 * Returns the visitor instance for initializes the families.
+	 *
 	 * @param environment
-	 * @return
+	 * @return the visitor instance for initializes the families.
 	 */
 	protected FjVisitor getFamiliesInitializer(KjcEnvironment environment)
 	{
@@ -573,6 +584,10 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 		world.setMessageHandler(messageHandler);
 	}
 
+/**
+ * used to redirect System.out for tests.
+ *
+ */
 	protected static class Outputter extends PrintWriter {
 		protected PrintWriter otherPrinter;
 		public Outputter(PrintWriter otherPrinter) {
@@ -586,6 +601,12 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 			} else
 				super.println();
 		}
+		
+		/**
+		 * if otherPrinter is set, write s to otherPrinter, else to System.out
+		 * 
+		 * @param s the String to be written
+		 */
 		public void write(String s) {
 			s = CciConstants.removeCaesarInternalNames(s);
 			if (otherPrinter != null) {

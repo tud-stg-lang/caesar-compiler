@@ -15,17 +15,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcTypeFactory.java,v 1.2 2003-08-28 16:11:38 ostermann Exp $
+ * $Id: KjcTypeFactory.java,v 1.3 2003-10-29 12:29:07 kloppenburg Exp $
  */
 
 package org.caesarj.kjc;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
-import org.caesarj.util.InconsistencyException;
-import org.caesarj.compiler.UnpositionedError;
 
+import org.caesarj.compiler.UnpositionedError;
+import org.caesarj.util.InconsistencyException;
+		
 /**
  * Factory for standard Java Types
  */

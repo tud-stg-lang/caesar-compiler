@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Main.java,v 1.1 2003-07-05 18:29:42 werner Exp $
+ * $Id: Main.java,v 1.2 2003-10-29 12:29:17 kloppenburg Exp $
  */
 
 package org.caesarj.compiler.tools.antlr.compiler;
@@ -31,7 +31,6 @@ import org.caesarj.compiler.tools.antlr.runtime.FileLineFormatter;
 import org.caesarj.compiler.tools.antlr.runtime.RecognitionException;
 import org.caesarj.compiler.tools.antlr.runtime.TokenBuffer;
 import org.caesarj.compiler.tools.antlr.runtime.TokenStreamException;
-import org.caesarj.compiler.tools.antlr.runtime.Vector;
 import org.caesarj.util.Message;
 import org.caesarj.util.MessageDescription;
 

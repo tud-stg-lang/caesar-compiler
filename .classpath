@@ -11,5 +11,10 @@
     <classpathentry kind="lib" path="lib/JFlex.jar"/>
     <classpathentry kind="lib" path="lib/junit.jar"/>
     <classpathentry kind="lib" path="generated"/>
+    <classpathentry kind="lib" path="test/AutomaticCaesarTests"/>
+    <classpathentry kind="lib" path="test/CompileAndRunResultsCITest"/>
+    <classpathentry kind="lib" path="test/CompileAndRunResultsTest"/>
+    <classpathentry kind="lib" path="test/CompileAndRunResultsWeaverTest"/>
+    <classpathentry kind="lib" path="test/UppercaseServer"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: TokenBuffer.java,v 1.1 2003-07-05 18:29:43 werner Exp $
+ * $Id: TokenBuffer.java,v 1.2 2003-10-29 12:29:21 kloppenburg Exp $
  */
 
 package org.caesarj.compiler.tools.antlr.runtime;
@@ -35,7 +35,6 @@ package org.caesarj.compiler.tools.antlr.runtime;
  * @see org.caesarj.compiler.tools.antlr.runtime.TokenQueue
  */
 
-import java.io.IOException;
 
 public class TokenBuffer {
 

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: InputBuffer.java,v 1.1 2003-07-05 18:29:42 werner Exp $
+ * $Id: InputBuffer.java,v 1.2 2003-10-29 12:29:24 kloppenburg Exp $
  */
 
 package org.caesarj.compiler.tools.antlr.extra;
@@ -26,7 +26,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PushbackReader;
-import java.io.Reader;
 
 import org.caesarj.util.UnicodeReader;
 

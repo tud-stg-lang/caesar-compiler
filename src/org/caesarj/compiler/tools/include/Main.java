@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Main.java,v 1.1 2003-07-05 18:29:45 werner Exp $
+ * $Id: Main.java,v 1.2 2003-10-29 12:29:25 kloppenburg Exp $
  */
 
 package org.caesarj.compiler.tools.include;
@@ -28,8 +28,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-
-import org.caesarj.compiler.CompilerMessages;
 
 /**
  * This class is the entry point for the KOPI assembler.

@@ -15,14 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Optimizer.java,v 1.1 2003-07-05 18:29:36 werner Exp $
+ * $Id: Optimizer.java,v 1.2 2003-10-29 12:29:11 kloppenburg Exp $
  */
 
 package org.caesarj.ssa;
 
-import java.io.*;
-
-import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.ClassInfo;
 import org.caesarj.classfile.CodeInfo;
 import org.caesarj.classfile.MethodInfo;

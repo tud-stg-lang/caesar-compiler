@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: DefineGrammarSymbols.java,v 1.1 2003-07-05 18:29:42 werner Exp $
+ * $Id: DefineGrammarSymbols.java,v 1.2 2003-10-29 12:29:17 kloppenburg Exp $
  */
 
 package org.caesarj.compiler.tools.antlr.compiler;
@@ -543,15 +543,15 @@ public class DefineGrammarSymbols implements ANTLRGrammarParseBehavior {
   public void setFileOption(Token key, Token value, String filename) {
     if (key.getText().equals("mangleLiteralPrefix")) {
       if (value.getType() == ANTLRParser.STRING_LITERAL) {
-	tool.literalsPrefix = Utils.stripFrontBack(value.getText(), "\"","\"");
+	Main.literalsPrefix = Utils.stripFrontBack(value.getText(), "\"","\"");
       } else {
 	tool.error("mangleLiteralPrefix option must be string", filename, value.getLine());
       }
     } else if (key.getText().equals("upperCaseMangledLiterals")) {
       if (value.getText().equals("true")) {
-	tool.upperCaseMangledLiterals = true;
+	Main.upperCaseMangledLiterals = true;
       } else if (value.getText().equals("false")) {
-	tool.upperCaseMangledLiterals = false;
+	Main.upperCaseMangledLiterals = false;
       } else {
 	grammar.tool.error("Value for upperCaseMangledLiterals must be true or false", filename, key.getLine());
       }

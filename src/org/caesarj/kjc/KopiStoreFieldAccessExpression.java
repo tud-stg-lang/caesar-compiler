@@ -15,15 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KopiStoreFieldAccessExpression.java,v 1.1 2003-07-05 18:29:40 werner Exp $
+ * $Id: KopiStoreFieldAccessExpression.java,v 1.2 2003-10-29 12:29:08 kloppenburg Exp $
  */
 
 package org.caesarj.kjc;
 
-import org.caesarj.compiler.CWarning;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
-import org.caesarj.compiler.UnpositionedError;
 
 /**
  * A Store Field Access Expression.

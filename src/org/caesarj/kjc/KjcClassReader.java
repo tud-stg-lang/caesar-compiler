@@ -15,19 +15,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcClassReader.java,v 1.1 2003-07-05 18:29:41 werner Exp $
+ * $Id: KjcClassReader.java,v 1.2 2003-10-29 12:29:07 kloppenburg Exp $
  */
 
 package org.caesarj.kjc;
 
-import java.util.Hashtable;
 import java.util.HashSet;
-import java.util.Enumeration;
+import java.util.Hashtable;
+
 import org.caesarj.classfile.ClassInfo;
 import org.caesarj.classfile.ClassPath;
-import org.caesarj.util.InconsistencyException;
-import org.caesarj.compiler.Compiler;
 import org.caesarj.compiler.UnpositionedError;
+import org.caesarj.util.InconsistencyException;
 
 /**
  * This class implements the conceptual directory structure for .class files

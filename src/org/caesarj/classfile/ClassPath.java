@@ -15,20 +15,26 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: ClassPath.java,v 1.1 2003-07-05 18:29:37 werner Exp $
+ * $Id: ClassPath.java,v 1.2 2003-10-29 12:29:24 kloppenburg Exp $
  */
 
 package org.caesarj.classfile;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipException;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 import org.caesarj.util.Utils;
 

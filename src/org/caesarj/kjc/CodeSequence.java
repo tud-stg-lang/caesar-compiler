@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CodeSequence.java,v 1.1 2003-07-05 18:29:41 werner Exp $
+ * $Id: CodeSequence.java,v 1.2 2003-10-29 12:29:07 kloppenburg Exp $
  */
 
 /**
@@ -31,7 +31,6 @@ import java.util.ArrayList;
 
 import org.caesarj.classfile.*;
 import org.caesarj.util.InconsistencyException;
-import org.caesarj.util.Utils;
 
 public final class CodeSequence extends org.caesarj.util.Utils implements Constants {
 

@@ -159,6 +159,11 @@ public class CciConstants
 		return methodName;
 	}
 
+/**
+ * used to remove CaesarInternalNames. Now does nothing.
+ * @param message
+ * @return the unchanged message 
+ */
 	public static String removeCaesarInternalNames(String message) {
 		//message = FjConstants.removeFamilyJ(message);
 		//message = message.replaceAll(WRAPPER_CREATOR_PREFIX, "" );

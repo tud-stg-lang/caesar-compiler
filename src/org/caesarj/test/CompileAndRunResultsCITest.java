@@ -70,6 +70,7 @@ public class CompileAndRunResultsCITest extends FjTestCase
 
     protected void setUp() throws Exception
     {
+    	System.out.println("CompileAndRunResultsCITest setup");
         super.setUp();
 
         if (doSetUp)
@@ -136,6 +137,7 @@ public class CompileAndRunResultsCITest extends FjTestCase
 
     public void testCompilation()
     {
+    	System.out.println("CompileAndRunResultsCITest begins");
         Iterator ifcIt = modulator.cleanClassInterfacesCreated.iterator();
         Iterator classIt = modulator.cleanClassesVisited.iterator();
 
@@ -172,6 +174,7 @@ public class CompileAndRunResultsCITest extends FjTestCase
         {
             System.out.println(modulator.getMessages().elementAt(i));
         }
+		System.out.println("CompileAndRunResultsCITest ends");
     }
 
 /*    public void testObserverProtocol() throws Throwable

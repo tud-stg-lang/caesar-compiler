@@ -2,13 +2,15 @@
 
 package org.caesarj.compiler.tools.antlr.compiler;
 
-import org.caesarj.compiler.tools.antlr.runtime.*;
-
-import java.util.Enumeration;
-import java.io.DataInputStream;
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import org.caesarj.compiler.tools.antlr.runtime.BitSet;
+import org.caesarj.compiler.tools.antlr.runtime.CommonToken;
+import org.caesarj.compiler.tools.antlr.runtime.NoViableAltException;
+import org.caesarj.compiler.tools.antlr.runtime.ParserSharedInputState;
+import org.caesarj.compiler.tools.antlr.runtime.RecognitionException;
+import org.caesarj.compiler.tools.antlr.runtime.Token;
+import org.caesarj.compiler.tools.antlr.runtime.TokenBuffer;
+import org.caesarj.compiler.tools.antlr.runtime.TokenStream;
+import org.caesarj.compiler.tools.antlr.runtime.TokenStreamException;
 
 public class ANTLRParser extends org.caesarj.compiler.tools.antlr.runtime.LLkParser
        implements ANTLRTokenTypes

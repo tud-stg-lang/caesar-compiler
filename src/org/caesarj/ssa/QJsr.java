@@ -15,14 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: QJsr.java,v 1.1 2003-07-05 18:29:37 werner Exp $
+ * $Id: QJsr.java,v 1.2 2003-10-29 12:29:11 kloppenburg Exp $
  */
 
 package org.caesarj.ssa;
 
-import org.caesarj.classfile.SwitchInstruction;
-import org.caesarj.classfile.JumpInstruction;
 import org.caesarj.classfile.Constants;
+import org.caesarj.classfile.JumpInstruction;
 
 /**
  * A class to represent an jsr instruction

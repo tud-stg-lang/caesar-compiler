@@ -3453,7 +3453,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		match(SEMI);
 		if ( inputState.guessing==0 ) {
 			
-			if (environment.getAssertExtension() == environment.AS_ALL) {
+			if (environment.getAssertExtension() == KjcEnvironment.AS_ALL) {
 			self = new KopiReturnStatement(sourceRef, expr, getStatementComment());
 			} else {
 			self = new JReturnStatement(sourceRef, expr, getStatementComment());

@@ -8,6 +8,10 @@ public class BugReport1 extends TestCase {
 		super( "test" );
 	}
 	
+	/**
+	 * tests, if inter-family casts fail as expected.
+	 * @throws Throwable
+	 */
 	public void test() throws Throwable {
 
 		final TestingSuperclassExtended e = new TestingSuperclassExtended();
@@ -30,6 +34,10 @@ public class BugReport1 extends TestCase {
 	}
 }
 
+/**
+ * helper for test(), supplying a family enclosure for Inner().
+ * 
+ */
 class X {
 	virtual class Inner {
 		public void foo() {
@@ -50,11 +58,13 @@ class Y extends X {
 		public void foo() {
 			System.out.println("Y.Inner.foo");
 			super.foo();
-		}/*
+		}
+		/*
 		public void bar(Inner i2) {
 			System.out.println("X.Inner.bar");
 			i2.baz();
 		}*/
+
 		public void baz() {
 		}
 	}
@@ -328,6 +338,7 @@ class TestingComposedFamily {
    }
 }
 
+
 class Test1 {
 	public Test1() {
 		System.out.println("Anfang");
@@ -342,6 +353,9 @@ clean class ToString {
 	public String toString() { return "ToString " + super.toString(); }
 }
 
+/**
+ * tests a clean class inheriting from a clean class.
+ */
 clean class ToStringSub extends ToString {
 	public String toString() { return "ToStringSub " + super.toString(); }
 }

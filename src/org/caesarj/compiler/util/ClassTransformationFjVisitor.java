@@ -1,6 +1,5 @@
 package org.caesarj.compiler.util;
 
-import org.caesarj.classfile.Constants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.ast.FjClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
@@ -9,7 +8,6 @@ import org.caesarj.compiler.ast.FjCleanClassInterfaceDeclaration;
 import org.caesarj.compiler.ast.FjCompilationUnit;
 import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
 import org.caesarj.kjc.CClassNameType;
-import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.JClassImport;
@@ -27,12 +25,19 @@ public class ClassTransformationFjVisitor extends FjVisitor
 
 	protected KjcEnvironment environment;
 	
-
+	/**
+	 * sets the environmment.
+	 * 
+	 * @param environment
+	 */
 	public ClassTransformationFjVisitor(KjcEnvironment environment)
 	{
 		this.environment = environment;
 	}
 
+	/**
+	 * sets the classReader and packagePrefix on the inner classes.
+	 */
 	public void visitCompilationUnit(
 		JCompilationUnit self,
 		JPackageName packageName,
@@ -66,6 +71,9 @@ public class ClassTransformationFjVisitor extends FjVisitor
 		}
 	}
 
+	/**
+	 * sets the owner on visited classes.
+	 */
 	public void visitFjClassDeclaration(
 		FjClassDeclaration self,
 		int modifiers,
@@ -97,6 +105,10 @@ public class ClassTransformationFjVisitor extends FjVisitor
 			decls);
 	}
 
+	/**
+	 * puts the clean interface in the containing class, implements 
+	 * it and remains the implementing class accordingly.
+	 */
 	public void visitFjCleanClassDeclaration(
 		FjCleanClassDeclaration self,
 		int modifiers,
@@ -152,6 +164,9 @@ public class ClassTransformationFjVisitor extends FjVisitor
 		
 	}
 
+	/**
+	 * sets the owner of visited classes.
+	 */
 	public void visitFjVirtualClassDeclaration(
 		FjVirtualClassDeclaration self,
 		int modifiers,
