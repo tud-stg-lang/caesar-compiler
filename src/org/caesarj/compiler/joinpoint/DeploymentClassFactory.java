@@ -690,11 +690,18 @@ public class DeploymentClassFactory implements CaesarConstants {
 			{ new CClassNameType(qualifiedAspectInterfaceName)};
 
 		JPhylum[] initializers = { fields[0] };
+		
+		int modifiers = 0;
+		// class must be static if it is not outer class
+		if (aspectClass.getOwner() != null) 
+		{
+			modifiers = ACC_STATIC;
+		}
 
 		CjClassDeclaration multiInstanceAspectClass =
 			new CjDeploymentSupportClassDeclaration(
 				where,
-				ACC_STATIC,
+				modifiers,
 				multiInstanceAspectClassName,
 				CTypeVariable.EMPTY,
 				null,
@@ -1507,10 +1514,17 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JPhylum[] initializers = { perThreadMap };
 
+		int modifiers = 0;
+		// class must be static if it is not outer class
+		if (aspectClass.getOwner() != null) 
+		{
+			modifiers = ACC_STATIC;
+		}
+		
 		CjClassDeclaration multiThreadClassDeclaration =
 			new CjDeploymentSupportClassDeclaration(
 				where,
-				ACC_STATIC,
+				modifiers,
 				multiThreadAspectClassName,
 				CTypeVariable.EMPTY,
 				null,
@@ -2355,7 +2369,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			//the nested singletons need to be static
 			modifiers |= ACC_STATIC;
 		}
-		modifiers = CModifier.notElementsOf(modifiers, ACC_DEPLOYED);
+		modifiers = CModifier.notElementsOf(modifiers, ACC_DEPLOYED | ACC_MIXIN);
 
 		JPhylum[] initializers;
 		if (!CModifier.contains(aspectClass.getModifiers(), ACC_ABSTRACT)) {
@@ -2383,7 +2397,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				singletonAspect=
 				new CjDeploymentSupportClassDeclaration(
 					aspectClass.getTokenReference(),
-					(modifiers | ACC_STATIC) & (~ACC_MIXIN),
+					modifiers,
 					singletonAspectName,
 					CTypeVariable.EMPTY,
 					null,
@@ -2415,7 +2429,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				 singletonAspect =
 				new CjDeploymentSupportClassDeclaration(
 					aspectClass.getTokenReference(),
-					(modifiers | ACC_STATIC) & (~ACC_MIXIN),
+					modifiers,
 					singletonAspectName,
 					CTypeVariable.EMPTY,
 					null,
