@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassPreparation.java,v 1.30 2005-01-24 16:53:02 aracic Exp $
+ * $Id: CClassPreparation.java,v 1.31 2005-02-09 16:52:41 aracic Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -60,6 +60,7 @@ import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.export.CSourceMethod;
+import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CVoidType;
@@ -182,17 +183,21 @@ public class CClassPreparation implements CaesarConstants {
         );
         */
         
+        /*
         CClass returnType = classReader.loadClass(
             typeFactory, 
             inner.getMixin().getQualifiedName().toString()    
         );
+        */
 
         
         JMethodDeclaration facMethodDecl = new JMethodDeclaration(
                 decl.getTokenReference(),
                 ACC_PUBLIC,
-                returnType.getAbstractType(),
-                "$new"+inner.getType().getQualifiedName().getIdent(),
+                //returnType.getAbstractType(),
+                // let the CClassNameType lookup handle this (needed in order to obtain the declaration context)
+                new CClassNameType(inner.getType().getQualifiedName().getIdent()),
+                FACTORY_METHOD_PREFIX+inner.getType().getQualifiedName().getIdent(),
                 JFormalParameter.EMPTY, // formal params
                 CReferenceType.EMPTY,
                 creationBlock,
@@ -525,7 +530,7 @@ public class CClassPreparation implements CaesarConstants {
                 
                 if(
                     mixinMethods[i].isConstructor()
-                    //|| mixinMethods[i].getIdent().startsWith("$new")
+                    //|| mixinMethods[i].isCaesarFactoryMethod()
                 ) {
                     continue;
                 }
