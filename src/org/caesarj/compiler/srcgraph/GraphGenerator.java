@@ -7,6 +7,7 @@
 package org.caesarj.compiler.srcgraph;
 
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
+import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
@@ -18,7 +19,7 @@ import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 
 /**
- * ...
+ * Generated source graph.
  * 
  * @author Ivica Aracic
  */
@@ -40,39 +41,10 @@ public class GraphGenerator implements CaesarConstants {
     ) {
         JTypeDeclaration inners[] = cu.getInners();
         for(int i=0; i<inners.length; i++)
-            if(inners[i] instanceof JClassDeclaration)
+            if(inners[i] instanceof CjClassDeclaration)
                 generateGraph(g, (JClassDeclaration)inners[i]);
-            else
-                generateGraph(g, (JInterfaceDeclaration)inners[i]); 
     }
-
-    private void generateGraph(SourceDependencyGraph g, JInterfaceDeclaration decl) {        
-        CClass thisClass = decl.getCClass();
-            
-        RegularTypeNode thisNode = 
-            (RegularTypeNode)g.getNode(thisClass.getQualifiedName());
-                
-        if(thisNode == null)
-            thisNode = g.createNode(thisClass);
-            
-        thisNode.setTypeDeclaration(decl);
-        
-        CReferenceType interfaces[] = thisClass.getInterfaces();
-        for(int i=0; i<interfaces.length; i++) {
-            CClass superInterfaceClass = interfaces[i].getCClass();
-            RegularTypeNode node = 
-                (RegularTypeNode)g.getNode(superInterfaceClass.getQualifiedName());
-                
-            if(node == null)
-                node = g.createNode(superInterfaceClass);
-                                
-            thisNode.addSuperTypeNode(node);
-        }
-        
-        if(interfaces.length == 0) {
-            thisNode.addSuperTypeNode(g.getRoot());
-        }
-    }
+    
 
     private void generateGraph(
         SourceDependencyGraph g,
@@ -120,20 +92,7 @@ public class GraphGenerator implements CaesarConstants {
                 thisNode.addSuperTypeNode(superTypeNode);
             }
         }
-        
-        // add interface dependencies
-        CReferenceType interfaces[] = thisClass.getInterfaces();
-        for(int i=0; i<interfaces.length; i++) {
-            CClass interfaceClass = interfaces[i].getCClass();
-            TypeNode node = 
-                g.getNode(interfaceClass.getQualifiedName());
-                
-            if(node == null) {
-                node = g.createNode(interfaceClass);
-                thisNode.addSuperTypeNode(node);
-            } 
-        }
-        
+
         // recurse into inners
 		JTypeDeclaration inners[] = decl.getInners();        
         for(int i=0; i<inners.length; i++)

@@ -48,14 +48,10 @@ public abstract class TypeNode {
     public boolean isCompositeType() {
         return superTypes.size() > 1;
     }
-    
-    public void setEnabled(boolean enabled) {
+
+    public void updateLevel() {
     }
-    
-    public boolean isEnabled() {
-        return true;
-    }
-    
+
     public abstract String getName();
 
     public abstract void calculateLevel(int i);

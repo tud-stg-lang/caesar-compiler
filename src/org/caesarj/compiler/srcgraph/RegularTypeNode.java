@@ -44,17 +44,9 @@ public class RegularTypeNode extends TypeNode {
     public void setTypeDeclaration(JTypeDeclaration declaration) {
         typeDeclaration = declaration;
     }
-
-    public void setEnabled(boolean enabled) {
-        if(typeDeclaration != null)
-            typeDeclaration.setEnabled(enabled);
-    }
-
-    public boolean isEnabled() {
-        if(typeDeclaration != null)
-            return typeDeclaration.isEnabled();
-        else
-            return true;
+    
+    public void updateLevel() {
+        typeDeclaration.setEnabledInPass(getLevel());
     }
 
     public void calculateLevel(int i) {
