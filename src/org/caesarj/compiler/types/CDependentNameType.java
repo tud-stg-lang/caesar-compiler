@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentNameType.java,v 1.10 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CDependentNameType.java,v 1.11 2005-01-26 16:11:21 aracic Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -34,6 +34,7 @@ import org.caesarj.compiler.ast.phylum.expression.JLocalVariableExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JOwnerExpression;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CClassBodyContext;
@@ -142,7 +143,12 @@ public class CDependentNameType extends CClassNameType
                 
                 // create and return new CDependentType
                 CType t = clazz.getAbstractType().checkType(context);
-                CDependentType dt = new CDependentType((CContext)context, k, expr, t);
+                
+                if(!t.getCClass().isMixinInterface()) {
+                    throw new UnpositionedError(CaesarMessages.PLAINTYPE_WITH_PATH);
+                }
+                
+                CDependentType dt = new CDependentType((CContext)context, k, expr, t);                               
                 return dt;
             }
 
