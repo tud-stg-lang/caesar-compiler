@@ -86,7 +86,7 @@ public cclass OuterA
 
 	public cclass InnerB extends InnerA
 	{
-		public cclass DeepestD extends DeepestA
+		public cclass DeepestD extends InnerA.DeepestA
 		{
 			public String queryA()
 			{
@@ -94,7 +94,7 @@ public cclass OuterA
 			}
 		}
 
-		public cclass DeepestE extends DeepestB
+		public cclass DeepestE extends InnerA.DeepestB
 		{
 			public String queryA()
 			{
@@ -102,7 +102,7 @@ public cclass OuterA
 			}
 		}
 
-		public cclass DeepestF extends DeepestA
+		public cclass DeepestF extends InnerA.DeepestC
 		{
 			public String queryA()
 			{
@@ -110,7 +110,7 @@ public cclass OuterA
 			}
 		}
 
-		public cclass DeepestG extends DeepestA
+		public cclass DeepestG extends InnerA.DeepestA
 		{
 			public String queryA()
 			{
@@ -126,7 +126,7 @@ public cclass OuterA
 			}
 		}
 
-		public cclass DeepestI extends DeepestC
+		public cclass DeepestI extends InnerA.DeepestC
 		{
 			public String queryA()
 			{
@@ -134,7 +134,7 @@ public cclass OuterA
 			}
 		}
 
-		public cclass DeepestK extends DeepestA
+		public cclass DeepestK extends InnerA.DeepestA
 		{
 			public String queryA()
 			{
@@ -148,7 +148,7 @@ public cclass OuterB extends OuterA
 {
 	public cclass InnerA
 	{
-		public cclass DeepestD extends DeepestB
+		public cclass DeepestD extends OuterA.InnerA.DeepestB
 		{
 			public String queryA()
 			{
@@ -156,7 +156,7 @@ public cclass OuterB extends OuterA
 			}
 		}
 
-		public cclass DeepestE extends DeepestA
+		public cclass DeepestE extends OuterA.InnerA.DeepestA
 		{
 			public String queryA()
 			{
@@ -164,7 +164,7 @@ public cclass OuterB extends OuterA
 			}
 		}
 
-		public cclass DeepestF extends DeepestC
+		public cclass DeepestF extends OuterA.InnerA.DeepestC
 		{
 			public String queryA()
 			{
@@ -180,7 +180,7 @@ public cclass OuterB extends OuterA
 			}
 		}
 
-		public cclass DeepestH extends DeepestA
+		public cclass DeepestH extends OuterA.InnerA.DeepestA
 		{
 			public String queryA()
 			{
@@ -188,7 +188,7 @@ public cclass OuterB extends OuterA
 			}
 		}
 
-		public cclass DeepestI extends DeepestB
+		public cclass DeepestI extends OuterA.InnerA.DeepestB
 		{
 			public String queryA()
 			{
@@ -196,7 +196,7 @@ public cclass OuterB extends OuterA
 			}
 		}
 
-		public cclass DeepestK extends DeepestJ
+		public cclass DeepestK extends OuterA.InnerA.DeepestJ
 		{
 			public String queryA()
 			{
