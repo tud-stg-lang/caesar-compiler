@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldAccessExpression.java,v 1.15 2005-01-14 13:33:48 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.16 2005-01-20 17:29:27 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -254,6 +254,19 @@ public class JFieldAccessExpression extends JExpression {
     CClass	local = context.getClassContext().getCClass();
 
     findPrefix(local, new CExpressionContext(context, context.getEnvironment(), false, false));
+    
+    // IVICA: if we have a cclass, and want to acces the public field, map to accessor method
+    CType prefixType = prefix.getType(factory); 
+    if(prefixType.getCClass().isMixinInterface()) {
+        return
+        	new CjAccessorCallExpression(
+        	    getTokenReference(),
+        	    prefix,
+        	    ident        	    
+        	).analyse(context);
+    }
+    // --- end ---
+    
     checkAccess(local, context);
     
 	if (field instanceof CCjPrivilegedField) {
