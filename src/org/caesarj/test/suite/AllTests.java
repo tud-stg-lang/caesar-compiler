@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AllTests.java,v 1.1 2005-02-24 17:16:53 aracic Exp $
+ * $Id: AllTests.java,v 1.2 2005-02-25 16:48:49 aracic Exp $
  */
 
 package org.caesarj.test.suite;
@@ -28,6 +28,7 @@ package org.caesarj.test.suite;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -45,6 +46,23 @@ public class AllTests {
     public static final String TEST_DIR = WORKING_DIR+File.separatorChar+"suits";
     
     public static Test suite() throws Exception {
+        
+        String testSuffix = "suite.xml";
+        
+        try {
+            Properties props = new Properties();
+            props.load( 
+                AllTests.class.getClassLoader().
+                	getResourceAsStream("org/caesarj/test/suite/test.properties") 
+        	);
+            
+            if(props.containsKey("test.suffix"))
+                testSuffix = props.getProperty("test.suffix");
+        }
+        catch (Exception e) {
+            // do nothing, just continue with default values
+        }
+        
 		TestSuite suite = new TestSuite("Caesar Test Suite");
 		
 		File workingDir = new File(WORKING_DIR);
@@ -54,7 +72,7 @@ public class AllTests {
 		FileUtils.delAllFiles(workingDir, ".java");
 		FileUtils.delAllFiles(workingDir, ".log");
 		
-		List testSuits = FileUtils.findAllFiles(new File(TEST_DIR), "suite.xml");			
+		List testSuits = FileUtils.findAllFiles(new File(TEST_DIR), testSuffix);			
 		
 		for (Iterator it = testSuits.iterator(); it.hasNext();) {
             File f = (File) it.next();
