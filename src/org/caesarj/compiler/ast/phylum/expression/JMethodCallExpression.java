@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.28 2005-03-03 15:49:36 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.29 2005-03-04 18:16:47 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -367,6 +367,7 @@ public class JMethodCallExpression extends JExpression
 		    // we have an outer accessor method (and it has never a prefix?)  
 	        int k = 0;		        
             CClass clazz = type.getCClass();
+	        //CClass clazz = argTypes[0].getCClass();
             
             CContext ctx = context.getBlockContext();
             
@@ -376,16 +377,23 @@ public class JMethodCallExpression extends JExpression
                 k++;
             }
             // ... and search for the correct outer class.
-            while ( ((CClassContext)ctx).getCClass() != clazz ){
+            while ( ((CClassContext)ctx).getCClass() != clazz) {
                 ctx = ctx.getParentContext();
                 k++;
                 
                 check(
                     context,
-                    !(context == null || !(ctx instanceof CClassContext) ),                        
+                    !(ctx == null || ctx.getClassContext() == null ),                        
                     CaesarMessages.ILLEGAL_PATH_ELEMENT, 
                     "accessor method not returning a outer reference"
                 );
+                
+                // this is necessary for nested classes
+                // the check above ensures that this is going to terminate
+                while(!(ctx instanceof CClassContext)) {
+                    ctx = ctx.getParentContext();
+                    k++;
+                }
             }                		       
 	        
 	        family = new ContextExpression(null, k+1, null);
