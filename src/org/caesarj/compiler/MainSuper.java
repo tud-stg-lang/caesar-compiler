@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: MainSuper.java,v 1.17 2005-01-21 18:16:25 aracic Exp $
+ * $Id: MainSuper.java,v 1.18 2005-01-24 16:52:58 aracic Exp $
  */
 
 package org.caesarj.compiler;

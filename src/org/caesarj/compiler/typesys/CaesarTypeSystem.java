@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTypeSystem.java,v 1.9 2005-01-21 18:16:25 aracic Exp $
+ * $Id: CaesarTypeSystem.java,v 1.10 2005-01-24 16:53:02 aracic Exp $
  */
 
 package org.caesarj.compiler.typesys;
