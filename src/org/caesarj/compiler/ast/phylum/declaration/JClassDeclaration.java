@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.8 2004-03-17 13:59:59 aracic Exp $
+ * $Id: JClassDeclaration.java,v 1.9 2004-03-17 14:25:46 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -101,8 +101,6 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 	 String ident,
 	 CTypeVariable[] typeVariables,
 	 CReferenceType superClass,
-	 CReferenceType binding,
-	 CReferenceType providing,
 	 CReferenceType wrappee,
 	 CReferenceType[] interfaces,
 	 JFieldDeclaration[] fields,
@@ -118,8 +116,6 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 		 ident,
 		 typeVariables,
 		 superClass,
-		 binding,
-		 providing,
 		 wrappee,
 		 interfaces,
 		 fields,
@@ -139,8 +135,6 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 	 String ident,
 	 CTypeVariable[] typeVariables,
 	 CReferenceType superClass,
-	 CReferenceType binding,
-	 CReferenceType providing,
 	 CReferenceType wrappee,
 	 CReferenceType[] interfaces,
 	 JFieldDeclaration[] fields,
@@ -155,8 +149,6 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
  {
 	 super(where, modifiers, ident, typeVariables, interfaces, fields, methods, inners, initializers, javadoc, comment);
 	 this.superClass = superClass;
-	 this.providing = providing;
-	 this.binding = binding;
 	 this.wrappee = wrappee;
 	 this.pointcuts = pointcuts;
 	 this.advices = advices;
@@ -510,19 +502,6 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 
   JMethodDeclaration            assertMethod;
   
-  /* 
-   * Integration of CciClassDeclaration code (Karl Klose)
-   */
-   
-  /** 
-   * The CI that the class binds.
-   */
-  protected CReferenceType binding;
-  /** 
-   * The CIs that the class provides.
-   */
-  protected CReferenceType providing;
-
   /** 
    * The reference of the wrappee.
    */
@@ -544,21 +523,6 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 				  Constants.JAV_OBJECT));
   }
 
-  /**
-   * @return CReferenceType the Collaboration Interface which it binds.
-   */
-  public CReferenceType getBinding()
-  {
-	  return binding;
-  }
-
-  /**
-   * @return CReferenceType the Collaboration Interface which it implements.
-   */
-  public CReferenceType getProviding()
-  {
-	  return providing;
-  }
 
   /**
    * @return CReferenceType the Wrappee type.
@@ -601,19 +565,6 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 		  contructors,
 		  JConstructorDeclaration.class);
   }
-
-  /**
-   * Returns the qualified type name of the binding.
-   * @return String
-   */
-  public String getBindingTypeName()
-  {
-	  return ownerDecl != null 
-			  ? ownerDecl.getBindingTypeName() + 
-				  (binding == null ? "" : "$" + binding.toString())
-			  : binding == null ? "" : binding.toString();
-  }
-  
 
   /**
    * Sets the owner declaration. This method was pulled up.
@@ -795,21 +746,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 			  System.out.print(interfaces[i]);
 		  }
 	  }
-		
-	  if (providing != null)
-	  {
-		  System.out.print(" provides ");
-
-		  System.out.print(providing);
-	  }
-			
-		
-	  if (binding != null)
-	  {
-		  System.out.print(" binds ");
-		  System.out.print(binding);
-	  }
-		
+				
 	  System.out.println();
   }
 	/*
@@ -1090,13 +1027,6 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 			inners[k].addOuterThis();
 		  }
 		}
-
-		if (binding != null)
-			binding = resolveCollabortationInterface(context, binding);
-	
-		if (providing != null)
-			providing = resolveCollabortationInterface(context, providing);
-
 
 		if (isPrivileged() || isStaticallyDeployed())
 		{

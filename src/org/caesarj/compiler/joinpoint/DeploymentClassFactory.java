@@ -3165,8 +3165,6 @@ public class DeploymentClassFactory implements CaesarConstants {
 				CTypeVariable.EMPTY,
 				superClass,
 				null,
-				null,
-				null,
 				CReferenceType.EMPTY,
 				(JFieldDeclaration[]) fields.toArray(new JFieldDeclaration[0]),
 				methods,

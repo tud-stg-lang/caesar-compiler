@@ -93,8 +93,6 @@ public class CjDeploymentSupportClassDeclaration extends JClassDeclaration {
 			typeVariables,
 			superClass,
 			null,
-			null,
-			null,
 			interfaces,
 			fields,
 			methods,

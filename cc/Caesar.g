@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.34 2004-03-17 11:41:13 aracic Exp $
+ * $Id: Caesar.g,v 1.35 2004-03-17 14:25:46 aracic Exp $
  */
 
 /*
@@ -433,8 +433,6 @@ jClassDefinition [int modifiers]
 				   ident.getText(),
                    typeVariables,
 				   superClass,
-				   binding,
-				   providing,
 				   wrappee,			   
 				   interfaces,
 				   context.getFields(),
@@ -477,20 +475,7 @@ jSuperTypeName []
 	CReferenceType binding = null;
 }
 :
-  ( collaborationInterface = jTypeName[] )?
-  (	LPAREN implementation = jTypeName[]
-	COMMA 
-	binding = jTypeName[] RPAREN
-  )?
-  {
-  	if (collaborationInterface != null && implementation != null && binding != null)
-	  	self = new CciWeaveletReferenceType(collaborationInterface,
-  					implementation,
-  					binding);
-  	else
-  		self = collaborationInterface;
-
-  }
+  ( self = jTypeName[] )?
 ;
 
 // Definition of a Java Interface
@@ -1907,8 +1892,6 @@ jUnqualifiedNewExpression []
                      CTypeVariable.EMPTY,
 					 null,
 					 null,
-					 null,
-					 null,
 					 CReferenceType.EMPTY,
 					 context.getFields(),
 					 methods,
@@ -1952,8 +1935,6 @@ jQualifiedNewExpression [JExpression prefix]
 				     org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 				     ident.getText(),
                      CTypeVariable.EMPTY,
-				     null,
-				     null,
 				     null,
 				     null,				     
 				     CReferenceType.EMPTY,
