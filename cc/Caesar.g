@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.44 2004-06-15 16:25:50 aracic Exp $
+ * $Id: Caesar.g,v 1.45 2004-06-23 13:05:05 aracic Exp $
  */
 
 /*
@@ -445,40 +445,23 @@ jCClassDefinition [int modifiers]
 
       methods = context.getMethods();
       
-      // IVICA: add default ctor (always empty)
-
-      
           self = new CjClassDeclaration(sourceRef,
-			   modifiers,
-			   ident.getText(),
-			   typeVariables,
-			   superClass,
-			   wrappee,			   
-			   interfaces,
-			   context.getFields(),
-			   methods,
-			   context.getInnerClasses(),
-			   context.getBody(),
-			   javadoc,
-			   comments,				   
-			   context.getPointcuts(),
-			   context.getAdvices(),
-			   context.getDeclares(),
-			   true);
-			
-		JConstructorDeclaration defaultCtor = new JConstructorDeclaration(
-            sourceRef,
-            JConstructorDeclaration.ACC_PUBLIC,
-            ident.getText()+"_Impl",
-            JFormalParameter.EMPTY,
-            CReferenceType.EMPTY,
-            new JConstructorBlock(sourceRef, null, JStatement.EMPTY),
-            null,
-            null,
-            environment.getTypeFactory()
-        );
-
-        self.addMethod(defaultCtor);
+				   modifiers,
+				   ident.getText(),
+                   typeVariables,
+				   superClass,
+				   wrappee,			   
+				   interfaces,
+				   context.getFields(),
+				   methods,
+				   context.getInnerClasses(),
+				   context.getBody(),
+				   javadoc,
+				   comments,				   
+				   context.getPointcuts(),
+				   context.getAdvices(),
+				   context.getDeclares(),
+				   true);
 			
         context.release();
     }
@@ -695,7 +678,7 @@ jCMember [ParseClassContext context]
     		decl = jCClassDefinition[modifiers]              // inner class
       		{ context.addInnerDeclaration(decl); }
   		|
-    		method = jCConstructorDefinition[context, modifiers]
+    		method = jConstructorDefinition[context, modifiers]
       		{ context.addMethodDeclaration(method); }
   		|
     		// method with type variables
@@ -844,84 +827,6 @@ jConstructorDefinition [ParseClassContext context, int modifiers]
     }
 ;
 
-jCConstructorDefinition [ParseClassContext context, int modifiers]
-  returns [JMethodDeclaration self = null]
-{
-  JFormalParameter[]	parameters;
-  CReferenceType[]		throwsList = CReferenceType.EMPTY;
-  JConstructorCall	constructorCall = null;
-  ArrayList		body = new ArrayList();
-  JStatement		stmt;
-  TokenReference	sourceRef = buildTokenReference();
-  JavadocComment	javadoc = getJavadocComment();
-  JavaStyleComment[]	comments = getStatementComment();
-}
-:
-  name : IDENT
-  LPAREN parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN
-  ( throwsList = jThrowsClause[] )?
-  LCURLY
-  (
-    ( ( "this" |  "super") LPAREN ) =>
-    constructorCall = jExplicitConstructorInvocation[]
-  |
-    (jPrimaryExpression[] DOT "super" LPAREN) =>
-    constructorCall = jExplicitConstructorInvocation[]
-  |
-    // nothing
-  )
-  (
-    stmt = jBlockStatement[]
-      {
-	if (stmt instanceof JEmptyStatement) {
-	  reportTrouble(new CWarning(stmt.getTokenReference(), KjcMessages.STRAY_SEMICOLON, null));
-	}
-	body.add(stmt);
-      }
-  )*
-  RCURLY
-    {
-        // IVICA: replacing common java c'tors with caesar $ctor methods
-        body.add(
-            new JReturnStatement(
-                sourceRef,
-                new JThisExpression(sourceRef),
-                null
-            )                    
-        );
-        
-        self = new JMethodDeclaration(
-            sourceRef,
-            modifiers,
-            CTypeVariable.EMPTY,
-            environment.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT),
-            "$ctor",
-            parameters,
-            throwsList,
-            new JBlock(
-                sourceRef,
-                (JStatement[]) body.toArray(new JStatement[body.size()]),
-                null
-            ),
-            javadoc,
-            comments
-        );
-
-    	/*
-        self = new JConstructorDeclaration(sourceRef,
-                                           modifiers,
-                                           name.getText(),
-                                           parameters,
-                                           throwsList,
-                                           new CjConstructorBlock(sourceRef,
-                                                                 constructorCall,
-                                                                 (JStatement[]) body.toArray(new JStatement[body.size()])),
-                                           javadoc,
-                                           comments,
-                                           environment.getTypeFactory());
-		*/
-    }
-;
 
 jExplicitConstructorInvocation []
   returns [JConstructorCall self = null]
