@@ -694,7 +694,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CjClassDeclaration multiInstanceAspectClass =
 			new CjDeploymentSupportClassDeclaration(
 				where,
-				0,
+				ACC_STATIC,
 				multiInstanceAspectClassName,
 				CTypeVariable.EMPTY,
 				null,
@@ -1510,7 +1510,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CjClassDeclaration multiThreadClassDeclaration =
 			new CjDeploymentSupportClassDeclaration(
 				where,
-				0,
+				ACC_STATIC,
 				multiThreadAspectClassName,
 				CTypeVariable.EMPTY,
 				null,
@@ -2383,7 +2383,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				singletonAspect=
 				new CjDeploymentSupportClassDeclaration(
 					aspectClass.getTokenReference(),
-					modifiers,
+					modifiers | ACC_STATIC,
 					singletonAspectName,
 					CTypeVariable.EMPTY,
 					null,
@@ -2415,7 +2415,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				 singletonAspect =
 				new CjDeploymentSupportClassDeclaration(
 					aspectClass.getTokenReference(),
-					modifiers,
+					modifiers | ACC_STATIC,
 					singletonAspectName,
 					CTypeVariable.EMPTY,
 					null,
