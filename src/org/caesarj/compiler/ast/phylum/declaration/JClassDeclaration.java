@@ -671,10 +671,6 @@ public class JClassDeclaration extends JTypeDeclaration {
         return methods;
     }
     
-    public JTypeDeclaration[] getInners() {
-        return inners;
-    }
-
     public void setSuperClass(CReferenceType superClass) {
         this.superClass = superClass;
     }

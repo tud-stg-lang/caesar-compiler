@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjClassDeclaration.java,v 1.9 2004-04-16 16:36:45 aracic Exp $
+ * $Id: CjClassDeclaration.java,v 1.10 2004-04-19 15:23:21 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -338,15 +338,6 @@ public class CjClassDeclaration
      */
     public String getIdent() {
         return ident;
-    }
-
-    /**
-     * Sets the inner classes.
-     * This method was pulled up from FjClassDeclaration.
-     * @param type
-     */
-    public void setInners(JTypeDeclaration[] inners) {
-        this.inners = inners;
     }
 
     /**
@@ -809,5 +800,17 @@ public class CjClassDeclaration
     protected int getInternalModifiers() {
         return ACC_PRIVILEGED | ACC_CROSSCUTTING | ACC_DEPLOYED;
     }
+
+    
+    // IVICA added reference to corresponding CjInterfaceDeclaration    
+    public void setCorrespondingInterfaceDeclaration(CjInterfaceDeclaration caesarInterfaceDeclaration)  {
+        this.caesarInterfaceDeclaration = caesarInterfaceDeclaration;
+    }
+    
+    public CjInterfaceDeclaration getCorrespondingInterfaceDeclaration() {
+        return caesarInterfaceDeclaration;
+    }
+    
+    private CjInterfaceDeclaration caesarInterfaceDeclaration = null;
 
 }

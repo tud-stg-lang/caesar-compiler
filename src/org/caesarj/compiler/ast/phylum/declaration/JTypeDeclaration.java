@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.6 2004-04-16 16:36:45 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.7 2004-04-19 15:22:57 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -557,6 +557,15 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     // ----------------------------------------------------------------------
     // PROTECTED UTILITIES
     // ----------------------------------------------------------------------
+
+    public JTypeDeclaration[] getInners() {
+        return inners;
+    }
+
+    public void setInners(JTypeDeclaration[] inners) {
+        this.inners = inners;
+    }
+
 
     public CClass getOwner() {
         return getCClass().getOwner();
