@@ -58,4 +58,11 @@ public abstract class CaesarTypeGraph {
     public Map getTypeMap() {
         return typeMap;
     }
+    
+    
+	public void debugDumpTypeMap() {
+    	for (Iterator it3 = getTypeMap().values().iterator(); it3.hasNext();) {
+			System.err.println("- "+((CaesarTypeNode)it3.next()).getQualifiedName());
+		}
+	}
 }

@@ -166,7 +166,11 @@ public class CClassPreparation implements CaesarConstants {
                                 null
                             );
                             
-                            CaesarTypeNode topMost = inner.getMixin().getTopmostNode();
+                            CaesarTypeNode topMost = 
+                            	caesarTypeSystem.getCompleteGraph().getType(
+                        			inner.getMixin().getQualifiedName()
+								).getTopmostNode();
+                            
                             CClass returnType = classReader.loadClass(
                                 typeFactory, 
                                 topMost.getQualifiedName().toString()    
@@ -205,7 +209,9 @@ public class CClassPreparation implements CaesarConstants {
         }
         catch (Exception e) {
             // MSG
-            throw new UnpositionedError(CaesarMessages.CANNOT_CREATE);
+        	e.printStackTrace();
+        	System.exit(0);
+            throw new UnpositionedError(CaesarMessages.FATAL_ERROR);
         }
     }
     

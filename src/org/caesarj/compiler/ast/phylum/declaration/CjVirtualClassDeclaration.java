@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CjVirtualClassDeclaration.java,v 1.4 2004-07-09 13:24:41 aracic Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.5 2004-07-09 14:26:32 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -257,6 +257,8 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
                     getMixinIfcDeclaration().getCClass(), 
                     subNode.getQualifiedName().getPrefix()
                 );
+                
+                ifcDecl.join(context);
                 
                 CjVirtualClassDeclaration implDecl =
                     new CjVirtualClassDeclaration(
