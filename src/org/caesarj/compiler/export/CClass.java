@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClass.java,v 1.7 2004-03-22 17:21:44 aracic Exp $
+ * $Id: CClass.java,v 1.8 2004-04-16 14:29:08 aracic Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -109,6 +109,11 @@ public abstract class CClass extends CMember
 	{
 		return this;
 	}
+
+    // CTODO use name from constant pool 
+    public boolean isObjectClass() {
+        return getQualifiedName().equals("java/lang/Object");
+    }
 
 	/**
 	 * Checks whether this type is nested.
