@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JFieldAccessExpression.java,v 1.16 2005-01-20 17:29:27 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.17 2005-01-21 17:01:25 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -25,6 +25,7 @@ import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.cclass.CastUtils;
 import org.caesarj.compiler.codegen.CodeLabel;
 import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CConstructorContext;
 import org.caesarj.compiler.context.CExpressionContext;
@@ -255,9 +256,14 @@ public class JFieldAccessExpression extends JExpression {
 
     findPrefix(local, new CExpressionContext(context, context.getEnvironment(), false, false));
     
+    
     // IVICA: if we have a cclass, and want to acces the public field, map to accessor method
     CType prefixType = prefix.getType(factory); 
     if(prefixType.getCClass().isMixinInterface()) {
+        
+        // CTODO: check here that the field access is read only
+        check(context, !context.isLeftSide(), CaesarMessages.READ_ONLY_ACCESS_TO_CCLASS_FIELDS);        
+        
         return
         	new CjAccessorCallExpression(
         	    getTokenReference(),
@@ -266,6 +272,7 @@ public class JFieldAccessExpression extends JExpression {
         	).analyse(context);
     }
     // --- end ---
+    
     
     checkAccess(local, context);
     
