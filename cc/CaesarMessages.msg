@@ -15,14 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.10 2004-02-05 20:07:49 ostermann Exp $
+ * $Id: CaesarMessages.msg,v 1.11 2004-02-18 11:22:40 klose Exp $
  */
 
 package org.caesarj.compiler
 
 prefix Caesar
 
-parent org.caesarj.compiler.CompilerMessages
+parent org.caesarj.util.Messages
 
 // FJ errors
 error		FJ_IMPL_WITHOUT_FJ_PARSER
