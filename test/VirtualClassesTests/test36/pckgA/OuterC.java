@@ -4,7 +4,6 @@ public cclass OuterC extends OuterB & OuterA
 {
     public cclass InnerA {}
     public cclass InnerB {}
-    public cclass InnerC {}
     public cclass InnerD {}
     
 	public cclass InnerC extends InnerA
