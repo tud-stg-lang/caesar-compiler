@@ -15,18 +15,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: SSAConstructor.java,v 1.1 2003-07-05 18:29:36 werner Exp $
+ * $Id: SSAConstructor.java,v 1.2 2003-08-28 16:12:05 ostermann Exp $
  */
 
 package org.caesarj.ssa;
 
-import org.caesarj.classfile.Constants;
-
-import java.util.Iterator;
 import java.util.BitSet;
-import java.util.Set;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
+
+import org.caesarj.classfile.Constants;
 /**
  * Transform all the variables of a control flow graph of a method
  * in SSA form.

@@ -15,14 +15,14 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: InnerClassTable.java,v 1.1 2003-07-05 18:29:37 werner Exp $
+ * $Id: InnerClassTable.java,v 1.2 2003-08-28 16:12:05 ostermann Exp $
  */
 
 package org.caesarj.classfile;
 
 import java.io.DataInput;
-import java.io.IOException;
 import java.io.DataOutput;
+import java.io.IOException;
 
 /**
  * VMS 4.7.5 : Inner Classes Attribute.

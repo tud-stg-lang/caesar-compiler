@@ -1,6 +1,7 @@
 package org.caesarj.compiler.aspectj;
 
 import java.io.File;
+import java.util.HashMap;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
@@ -20,6 +21,7 @@ import org.caesarj.compiler.UnpositionedError;
 import org.caesarj.compiler.ast.FjClassContext;
 import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CModifier;
+import org.caesarj.kjc.CType;
 import org.caesarj.kjc.JClassImport;
 import org.caesarj.kjc.JPackageImport;
 
@@ -58,6 +60,9 @@ public class CaesarScope implements IScope, CaesarConstants {
 	 * @return TypeX
 	 */
 	public TypeX lookupType(String typeName, IHasPosition location) {
+		
+		if (context.getTypeFactory().isPrimitive(typeName)) return TypeX.forName(typeName); 
+
 		CClass cclass = lookupClass(typeName);
 
 		//If the lookup retrieves a crosscutting class, then its
@@ -81,6 +86,7 @@ public class CaesarScope implements IScope, CaesarConstants {
 	 * Performs a lookup for the given typeName.
 	 */
 	protected CClass lookupClass(String typeName) {
+		
 		//convert qualified names to internal representation
 		typeName = typeName.replace('.', '/');
 

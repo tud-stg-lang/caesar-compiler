@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: TypeFactory.java,v 1.1 2003-07-05 18:29:39 werner Exp $
+ * $Id: TypeFactory.java,v 1.2 2003-08-28 16:11:50 ostermann Exp $
  */
 
 package org.caesarj.kjc;
@@ -107,5 +107,6 @@ public interface TypeFactory {
    * @return the environment.
    */
   boolean isGenericEnabled();
+  boolean isPrimitive(String typeName);  
 
 }

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Main.java,v 1.1 2003-07-05 18:29:36 werner Exp $
+ * $Id: Main.java,v 1.2 2003-08-28 16:12:05 ostermann Exp $
  */
 
 package org.caesarj.ssa;
@@ -37,10 +37,17 @@ package org.caesarj.ssa;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Main.java,v 1.1 2003-07-05 18:29:36 werner Exp $
+ * $Id: Main.java,v 1.2 2003-08-28 16:12:05 ostermann Exp $
  */
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.ClassInfo;

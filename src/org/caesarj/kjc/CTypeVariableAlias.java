@@ -15,14 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CTypeVariableAlias.java,v 1.1 2003-07-05 18:29:38 werner Exp $
+ * $Id: CTypeVariableAlias.java,v 1.2 2003-08-28 16:12:05 ostermann Exp $
  */
 
 package org.caesarj.kjc;
 
-import org.caesarj.util.InconsistencyException;
-import org.caesarj.util.SimpleStringBuffer;
-import org.caesarj.compiler.Compiler;
 import org.caesarj.compiler.UnpositionedError;
 
 public class CTypeVariableAlias extends CTypeVariable {

@@ -15,11 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcTypeFactory.java,v 1.1 2003-07-05 18:29:38 werner Exp $
+ * $Id: KjcTypeFactory.java,v 1.2 2003-08-28 16:11:38 ostermann Exp $
  */
 
 package org.caesarj.kjc;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.compiler.UnpositionedError;
@@ -29,6 +31,23 @@ import org.caesarj.compiler.UnpositionedError;
  */
 public class KjcTypeFactory extends org.caesarj.util.Utils implements TypeFactory, Constants {
 
+  private static HashSet primitives = new HashSet();
+
+  static {
+	  primitives.add("void");
+	  primitives.add("boolean");
+	  primitives.add("byte");
+	  primitives.add("char");
+	  primitives.add("double");
+	  primitives.add("float");
+	  primitives.add("int");
+	  primitives.add("long");
+	  primitives.add("short");
+  }
+  public boolean isPrimitive(String typeName) {
+  	return primitives.contains(typeName);
+  }
+  
   public KjcTypeFactory (ClassReader reader, boolean genericEnabled) {
     CReferenceType.init(null);
 
@@ -38,6 +57,8 @@ public class KjcTypeFactory extends org.caesarj.util.Utils implements TypeFactor
 
     voidType = new CVoidType();
     nullType = new CNullType();
+
+
     
     primitiveBoolean = new CBooleanType();
     primitiveByte = new CByteType();
@@ -47,6 +68,7 @@ public class KjcTypeFactory extends org.caesarj.util.Utils implements TypeFactor
     primitiveInt = new CIntType();
     primitiveLong = new CLongType();
     primitiveShort = new CShortType();
+
 
     objectType = createType(JAV_OBJECT, true);
     classType = createType(JAV_CLASS, true);
