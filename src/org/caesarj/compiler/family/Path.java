@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Path.java,v 1.18 2005-02-15 18:32:40 aracic Exp $
+ * $Id: Path.java,v 1.19 2005-02-16 16:31:40 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -87,29 +87,9 @@ public abstract class Path {
     }
 
     public Path getTypePath() throws UnpositionedError {
-        Path res = type.getPath();
-        
-/*
-        CContext typeCtx = type.getDeclContext();
-        if(typeCtx != null) {
-            CMethodContext methodCtx = type.getDeclContext().getMethodContext();
-            if(methodCtx!=null && methodCtx.getMethodDeclaration().getMethod().isCaesarAccessorMethod()) {
-                ((ContextExpression)res.getHead()).adaptK(-1);
-            }
-        }
-*/
+        Path res = type.getPath();        
         
         return res;
-    }
-
-    /**
-     * Calculate <code>k</code> for an expression in a given context.
-     * @param contextClass The context in which the expression should be analysed
-     * @param expr	The expression containing the path
-     */
-    public static int calcK(CContext context, JExpression expr) throws UnpositionedError {
-        Path p = createFrom(context, expr);
-        return ((ContextExpression)p.getHead()).getK(); 
     }
 
     public Path substituteFirstAccess(Path path){
@@ -124,9 +104,10 @@ public abstract class Path {
             return path;
         }
     }
+        
     
     /**
-     * Create a path from an expression.
+     * Create a path from an expression. valid context are block-, method-, or class-ctx
      * 
      * CTODO this has to be refactored, some of the ast elements implements
      * the generation of the path by themself
@@ -134,7 +115,18 @@ public abstract class Path {
      * @param contextClass The context in which the expression should be analysed
      * @param expr	The expression containing the path
      */
-    public static Path createFrom(CContext context, JExpression expr) throws UnpositionedError {    	
+    public static Path createFrom(CContext context, JExpression expr) throws UnpositionedError {
+        // assert we have a valid context
+        if(
+            !(  
+                context instanceof CClassContext
+                || context instanceof CMethodContext
+                || context instanceof CBlockContext
+            )
+        ) {
+            throw new InconsistencyException("context may not be null");
+        }
+        
         List	path = new LinkedList();
         int 	k =0;
         JExpression tmp = expr;
@@ -182,9 +174,8 @@ public abstract class Path {
             else if (tmp instanceof JFieldAccessExpression){
                 // if tmp is a field-access...
                 JFieldAccessExpression fa = (JFieldAccessExpression)tmp;
-                if ( fa.getIdent().equals(Constants.JAV_OUTER_THIS) ){
-                    // ... if it is this$0.xxx then increase k ...
-                    context = context.getParentContext();
+                if ( fa.getIdent().equals(Constants.JAV_OUTER_THIS) ) {
+                    // ... if it is this$0.xxx then increase k ...                   
                     k++;
                 } else {
                     // ... else add identifier to path.
@@ -194,10 +185,13 @@ public abstract class Path {
             
             }
             else if (tmp instanceof JThisExpression) {
+                // navigate out to the first class context
                 while (! (context instanceof CClassContext)){
                     context = context.getParentContext();
                     k++;
                 }
+                
+                // then navigate to the owner
                 CClass owner = ((JThisExpression)tmp).getSelf();
                 CClass current = context.getClassContext().getCClass();
                 while(current != owner) {
