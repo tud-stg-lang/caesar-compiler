@@ -99,6 +99,11 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 		  outerType = outerType.getOuter();
     	}
     	String[] outers = (String[])outerClasses.toArray( new String[0]);
+    	
+    	System.out.println(
+    			" outer of old super: "+outerOfOldSuper+
+				"\n outer of new super: "+outerOfNewSuper);
+    			
     	// run the algorithm
 		new ClassModifyingVisitor( 
 				className, 
