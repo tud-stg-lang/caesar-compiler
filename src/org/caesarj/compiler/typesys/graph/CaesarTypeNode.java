@@ -220,7 +220,7 @@ public class CaesarTypeNode {
 	public CaesarTypeNode getTypeInContextOf(CaesarTypeNode n) {
 	    
 	    // top level class, no redefinition possible
-	    if(enclosedBy.size() == 0)
+	    if(enclosedBy.size() == 0 || n == null)
 	        return this;
 	    
 	    List l1 = new LinkedList();
