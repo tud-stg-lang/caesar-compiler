@@ -7,61 +7,52 @@ package generated.typesystest09;
  */
 public class TypeSysTestCase {
 
-    final G g1 = new G();
-    final G g2 = new G();
+    final G g1 = null;
+    final G g2 = null;
     
-    final g1.X x1 = g1.new X();
-    final g2.X x2 = g2.new X();
+    final g1.X x1 = null;
+    final g2.X x2 = null;
     
-    x1.N n1 = x1.new N();
-    x2.N n2 = x2.new N();
+    x1.N n1 = null;
+    x2.N n2 = null;
     
 
-    B b = new B();
-    b.g.X x = null;
-    
-	public void foo() {	    
-	    bar(g1, x1, n1);
-	    bar(x1); 
-	    
-	    b.bar(x);
-	    //b.x.bar(x);
-	    
-	    g1.X x;
+	public void foo() {
+	    //g2.X x2 = bar(); // should not work
+	    g1.X x = bar();
+	    x = g1.new X();
 	    x = bar();
+	    bar(x1);
+	    bar(null, null);
+	    bar(g1, x1);
+	    
+	    x = bar(g1);
+	    //x = bar(g2); // should not work
+	    
+	    //x = g1.new X();	    	   
 	}
-
+	
 	public g1.X bar() {
 	    return null;
-	}	
-	
-	/*
+	}		
+
+	public void bar(g1.X x) {	    
+	}		
+
+	public void bar(final G g, g.X x) {	    
+	}		
+
 	public g.X bar(final G g) {
 	    return null;
 	}
-	*/
-	
-	
-	public void bar(final G graph, graph.X x, x.N n) {}
-
-	public void bar(g1.X x) {}
-
 }
 
 public cclass B {
-    public G g = new G();
-    
-    public void bar(g.X x) {
-    }
-    
-    public X x = new X();
-    public cclass X {
-        public void bar(g.X x) { }
-    }
 }
 
 public cclass G {
     public cclass X {
+        public N x() { return null; }
         public cclass N {}
     }    
 }
