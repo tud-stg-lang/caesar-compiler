@@ -53,8 +53,9 @@
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile-run id="casts004" description="Check casts">
 		<test>		
-			final GG gg = new GG();
-			gg.foo();
+			final GG gg = new GG();			
+			final gg.G g = gg.new G();
+			g.foo();
 		</test>
         <code>
 			public cclass GG {
@@ -63,6 +64,23 @@
 						Object res = new N();
 						return (N)res;
 					}
+				}
+				public cclass N {}
+			}
+		</code>
+    </compile-run>		  	
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="casts005" description="Check casts">
+		<test>		
+			final GG gg = new GG();
+			GG gg2 = gg.foo();
+		</test>
+        <code>
+			public cclass GG {
+				public GG foo() {
+					Object res = new GG();
+					return (GG)res;
 				}
 				public cclass N {}
 			}
