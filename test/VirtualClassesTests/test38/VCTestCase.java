@@ -28,6 +28,9 @@ public class VCTestCase extends TestCase {
 public class Client {
 }
 
+public cclass Y {
+}
+
 public cclass X {
 	public cclass W wraps Client {
 		public void print() {		
@@ -48,7 +51,7 @@ public cclass X {
 	}
 }
 
-public cclass Y extends X {
+public cclass XY extends X & Y {
     public void x() {
         W(null);
         getW(null);
