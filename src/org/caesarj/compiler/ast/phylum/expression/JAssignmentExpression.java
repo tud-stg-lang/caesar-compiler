@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JAssignmentExpression.java,v 1.3 2004-11-23 18:28:10 aracic Exp $
+ * $Id: JAssignmentExpression.java,v 1.4 2005-01-14 17:46:42 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -24,6 +24,7 @@ import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.CWarning;
@@ -113,6 +114,18 @@ public class JAssignmentExpression extends JBinaryExpression {
                                                  context.getEnvironment(), 
                                                  false, 
                                                  false));
+    
+    // CTODO mach hier weiter
+    Path rPath = Path.createFrom(context.getBlockContext(), right);
+    Path lPath = Path.createFrom(context.getBlockContext(), left);
+    System.out.println("assignment at line: "+getTokenReference().getLine());
+    System.out.println("\trPath = "+rPath);
+    System.out.println("\tlPath = "+lPath);
+    
+    // 1. 
+    Path path = rPath.getType().getPath(context);
+    
+    
     if (right instanceof JTypeNameExpression) {
       check(context, false, KjcMessages.VAR_UNKNOWN, ((JTypeNameExpression)right).getQualifiedName());
     }
