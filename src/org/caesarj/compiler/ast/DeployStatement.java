@@ -126,7 +126,7 @@ public class DeployStatement extends JStatement implements CaesarConstants {
 	/**
 	 * Returns the following statement:
 	 *
-	 * AspectExpressionType _aspectToDeploy = aspectExpression; 
+	 * AspectIfc <deployVariableName> = DeploySupport.isDeployable(<DEPLOY_EXPRESSION>); 
 	 */
 	private JStatement createVarDec(CBodyContext context) {
 		//consider deploy(null), otherwise compilation error
@@ -134,14 +134,28 @@ public class DeployStatement extends JStatement implements CaesarConstants {
 			return new JEmptyStatement(getTokenReference(), null);
 		}
 
-		return new JVariableDeclarationStatement(
+        TokenReference where = getTokenReference();
+
+        JExpression prefix =
+            new JTypeNameExpression(
+                where,
+                new CClassNameType(CAESAR_DEPLOY_SUPPORT_CLASS));
+
+        JExpression checkIfAspectCall =
+            new FjMethodCallExpression(
+                where,
+                prefix,
+                "checkIfDeployable",
+                new JExpression[] {aspectExpression});
+
+        return new JVariableDeclarationStatement(
 			getTokenReference(),
 			new FjVariableDefinition(
-				getTokenReference(),
+                where,
 				0,
-				aspectExpression.getType(context.getTypeFactory()),
+				new CClassNameType(CAESAR_ASPECT_IFC),
 				deployVariableName,
-				aspectExpression),
+                checkIfAspectCall),
 			null);
 
 	}
@@ -149,108 +163,56 @@ public class DeployStatement extends JStatement implements CaesarConstants {
 	/**
 	 * Returns the following statement:
 	 *
-	 * if (_aspectToDeploy != null)
-	 *		_aspectToDeploy.getSingletonAspect()._deploy(_aspectToDeploy, Thread.currentThread());
+	 * DeploySupport.deployBlock(<deployVariableName>)
 	 */
 	private JStatement createDeployStatement(CBodyContext context) {
 		//consider deploy(null), otherwise compilation error
 		if (aspectExpression instanceof JNullLiteral) {
 			return new JEmptyStatement(getTokenReference(), null);
 		}
+        
+        TokenReference where = getTokenReference();
 
-		JExpression cond =
-			new JEqualityExpression(
-				getTokenReference(),
-				false,
-				new FjNameExpression(
-					getTokenReference(),
-					null,
-					deployVariableName),
-				new JNullLiteral(getTokenReference()));
+        JExpression prefix =
+            new JTypeNameExpression(
+                where,
+                new CClassNameType(CAESAR_DEPLOY_SUPPORT_CLASS));
 
-		JExpression prefix =
-			new JMethodCallExpression(
-				getTokenReference(),
-				new FjNameExpression(getTokenReference(), deployVariableName),
-				GET_SINGLETON_ASPECT_METHOD,
-				JExpression.EMPTY);
-
-		JExpression threadPrefix =
-			new JTypeNameExpression(
-				getTokenReference(),
-				new CClassNameType(QUALIFIED_THREAD_CLASS));
-
-		JExpression[] args =
-			{
-				new FjNameExpression(
-					getTokenReference(),
-					null,
-					deployVariableName),
-				new FjMethodCallExpression(
-					getTokenReference(),
-					threadPrefix,
-					"currentThread",
-					JExpression.EMPTY)};
-		JExpression thenClause =
-			new JMethodCallExpression(
-				getTokenReference(),
-				prefix,
-				DEPLOY_METHOD,
-				args);
-		JStatement ifStatement =
-			new JIfStatement(
-				getTokenReference(),
-				cond,
-				new JExpressionStatement(getTokenReference(), thenClause, null),
-				new JEmptyStatement(getTokenReference(), null),
-				null);
-		JStatement[] statements = { ifStatement };
-		return new JCompoundStatement(getTokenReference(), statements);
-
+        JExpression deployStatementCall =
+            new FjMethodCallExpression(
+                where,
+                prefix,
+                "deployBlock",
+                new JExpression[] {new FjNameExpression(getTokenReference(), deployVariableName)});
+        
+		return new JExpressionStatement(where, deployStatementCall, null);
 	}
 
 	/**
 	 * Returns the following statement:
 	 * 
-	 * if (_aspectToDeploy != null)
-	 *		_aspectToDeploy.getSingletonAspect()._undeploy();
+	 * DeploySupport.undeployBlock(<deployVariableName>)
 	 */
 	private JStatement createUndeployStatement() { //not needed, but should faster
 		if (aspectExpression instanceof JNullLiteral) {
 			return new JEmptyStatement(getTokenReference(), null);
 		}
 
-		JExpression cond =
-			new JEqualityExpression(
-				getTokenReference(),
-				false,
-				new FjNameExpression(
-					getTokenReference(),
-					null,
-					deployVariableName),
-				new JNullLiteral(getTokenReference()));
-		JExpression prefix =
-			new JMethodCallExpression(
-				getTokenReference(),
-				new FjNameExpression(
-					getTokenReference(),
-					null,
-					deployVariableName),
-				GET_SINGLETON_ASPECT_METHOD,
-				JExpression.EMPTY);
-		JExpression thenClause =
-			new JMethodCallExpression(
-				getTokenReference(),
-				prefix,
-				UNDEPLOY_METHOD,
-				JExpression.EMPTY);
+        TokenReference where = getTokenReference();
 
-		return new JIfStatement(
-			getTokenReference(),
-			cond,
-			new JExpressionStatement(getTokenReference(), thenClause, null),
-			new JEmptyStatement(getTokenReference(), null),
-			null);
+        JExpression prefix =
+            new JTypeNameExpression(
+                where,
+                new CClassNameType(CAESAR_DEPLOY_SUPPORT_CLASS));
+        
+        JExpression deployStatementCall =
+            new FjMethodCallExpression(
+                where,
+                prefix,
+                "undeployBlock",
+                new JExpression[] {new FjNameExpression(getTokenReference(), deployVariableName)});
+                
+        return new JExpressionStatement(where, deployStatementCall, null);
 
 	}
 

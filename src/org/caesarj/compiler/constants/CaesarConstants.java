@@ -90,6 +90,12 @@ public interface CaesarConstants extends Constants {
 
 	public static final String CAESAR_SINGLETON_ASPECT_IFC_CLASS =
 		"org/caesarj/runtime/AspectRegistry";
+        
+    public static final String CAESAR_DEPLOY_SUPPORT_CLASS =  
+        "org/caesarj/runtime/DeploySupport";
+
+    public static final String CAESAR_ASPECT_IFC =  
+        "org/caesarj/runtime/AspectIfc";
 
 	//Caesar extension for the generated deployment support classes
 
