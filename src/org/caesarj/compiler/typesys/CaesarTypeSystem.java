@@ -36,5 +36,6 @@ public class CaesarTypeSystem {
 		dumpTypesVisitor.run();
 		
 		javaTypeGraph.generateFrom(caesarTypeGraph);
+		javaTypeGraph.debug();
     }
 }

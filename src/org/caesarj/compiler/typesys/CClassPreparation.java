@@ -262,11 +262,10 @@ public class CClassPreparation implements CaesarConstants {
             }
             
             // get mixin export
-            CReferenceType mixinType = 
-                context.getTypeFactory().createType(node.getMixin().getQualifiedImplName().toString(), false);
-            
-            mixinType = (CReferenceType)mixinType.checkType(context);
-            CClass mixinClass = mixinType.getCClass();
+            CClass mixinClass = context.getClassReader().loadClass(
+        		context.getTypeFactory(),
+        		node.getMixin().getQualifiedImplName().toString()
+    		);
 
             // find owner
             CClass owner = null;
@@ -358,8 +357,13 @@ public class CClassPreparation implements CaesarConstants {
                 fields.put(clone.getIdent(), clone);
             }
             
+            CClass mixinIfcClass = context.getClassReader().loadClass(
+        		context.getTypeFactory(),
+        		node.getMixin().getQualifiedName().toString()
+			);
+            
             // generate interfaces
-            CReferenceType interfaces[] = new CReferenceType[]{mixinClass.getAbstractType()};
+            CReferenceType interfaces[] = new CReferenceType[]{mixinIfcClass.getAbstractType()};
             
             sourceClass.setInnerClasses(new CReferenceType[0]);
             
