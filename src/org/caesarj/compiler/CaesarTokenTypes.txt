@@ -52,78 +52,68 @@ LITERAL_try = "try" = 51
 LITERAL_void = "void" = 52
 LITERAL_volatile = "volatile" = 53
 LITERAL_while = "while" = 54
-LITERAL_virtual = "virtual" = 55
-LITERAL_override = "override" = 56
-LITERAL_clean = "clean" = 57
-FJEQUAL("===") = 58
-LITERAL_collaboration = "collaboration" = 59
-LITERAL_provided = "provided" = 60
-LITERAL_expected = "expected" = 61
-LITERAL_binds = "binds" = 62
-LITERAL_provides = "provides" = 63
-LITERAL_wraps = "wraps" = 64
-LITERAL_wrappee = "wrappee" = 65
-WDESTRUCTOR("#") = 66
-LITERAL_after = "after" = 67
-LITERAL_around = "around" = 68
-LITERAL_before = "before" = 69
-LITERAL_declare = "declare" = 70
-LITERAL_deploy = "deploy" = 71
-LITERAL_deployed = "deployed" = 72
-LITERAL_pointcut = "pointcut" = 73
-LITERAL_precedence = "precedence" = 74
-LITERAL_privileged = "privileged" = 75
-LITERAL_returning = "returning" = 76
-LITERAL_throwing = "throwing" = 77
-ASSIGN("=") = 78
-BAND("&") = 79
-BAND_ASSIGN("&=") = 80
-BNOT("~") = 81
-BOR("|") = 82
-BOR_ASSIGN("|=") = 83
-BSR(">>>") = 84
-BSR_ASSIGN(">>>=") = 85
-BXOR("^") = 86
-BXOR_ASSIGN("^=") = 87
-COLON(":") = 88
-COMMA(",") = 89
-DEC("--") = 90
-DOT(".") = 91
-EQUAL("==") = 92
-GE(">=") = 93
-GT(">") = 94
-INC("++") = 95
-LAND("&&") = 96
-LBRACK("[") = 97
-LCURLY("{") = 98
-LE("<=") = 99
-LNOT("!") = 100
-LOR("||") = 101
-LPAREN("(") = 102
-LT("<") = 103
-MINUS("-") = 104
-MINUS_ASSIGN("-=") = 105
-NOT_EQUAL("!=") = 106
-PERCENT("%") = 107
-PERCENT_ASSIGN("%=") = 108
-PLUS("+") = 109
-PLUS_ASSIGN("+=") = 110
-QUESTION("?") = 111
-RBRACK("]") = 112
-RCURLY("}") = 113
-RPAREN(")") = 114
-SEMI(";") = 115
-SL("<<") = 116
-SLASH("/") = 117
-SLASH_ASSIGN("/=") = 118
-SL_ASSIGN("<<=") = 119
-SR(">>") = 120
-SR_ASSIGN(">>=") = 121
-STAR("*") = 122
-STAR_ASSIGN("*=") = 123
-CHARACTER_LITERAL("a character literal (inside simple quote)") = 124
-IDENT("an identifier") = 125
-INTEGER_LITERAL("an integer literal") = 126
-REAL_LITERAL("a real literal") = 127
-STRING_LITERAL("a string literal (inside double quote)") = 128
-TYPE_PATTERN("a type pattern for pointcut definition") = 129
+LITERAL_wraps = "wraps" = 55
+LITERAL_wrappee = "wrappee" = 56
+LITERAL_after = "after" = 57
+LITERAL_around = "around" = 58
+LITERAL_before = "before" = 59
+LITERAL_declare = "declare" = 60
+LITERAL_deploy = "deploy" = 61
+LITERAL_deployed = "deployed" = 62
+LITERAL_pointcut = "pointcut" = 63
+LITERAL_precedence = "precedence" = 64
+LITERAL_privileged = "privileged" = 65
+LITERAL_returning = "returning" = 66
+LITERAL_throwing = "throwing" = 67
+ASSIGN("=") = 68
+BAND("&") = 69
+BAND_ASSIGN("&=") = 70
+BNOT("~") = 71
+BOR("|") = 72
+BOR_ASSIGN("|=") = 73
+BSR(">>>") = 74
+BSR_ASSIGN(">>>=") = 75
+BXOR("^") = 76
+BXOR_ASSIGN("^=") = 77
+COLON(":") = 78
+COMMA(",") = 79
+DEC("--") = 80
+DOT(".") = 81
+EQUAL("==") = 82
+GE(">=") = 83
+GT(">") = 84
+INC("++") = 85
+LAND("&&") = 86
+LBRACK("[") = 87
+LCURLY("{") = 88
+LE("<=") = 89
+LNOT("!") = 90
+LOR("||") = 91
+LPAREN("(") = 92
+LT("<") = 93
+MINUS("-") = 94
+MINUS_ASSIGN("-=") = 95
+NOT_EQUAL("!=") = 96
+PERCENT("%") = 97
+PERCENT_ASSIGN("%=") = 98
+PLUS("+") = 99
+PLUS_ASSIGN("+=") = 100
+QUESTION("?") = 101
+RBRACK("]") = 102
+RCURLY("}") = 103
+RPAREN(")") = 104
+SEMI(";") = 105
+SL("<<") = 106
+SLASH("/") = 107
+SLASH_ASSIGN("/=") = 108
+SL_ASSIGN("<<=") = 109
+SR(">>") = 110
+SR_ASSIGN(">>=") = 111
+STAR("*") = 112
+STAR_ASSIGN("*=") = 113
+CHARACTER_LITERAL("a character literal (inside simple quote)") = 114
+IDENT("an identifier") = 115
+INTEGER_LITERAL("an integer literal") = 116
+REAL_LITERAL("a real literal") = 117
+STRING_LITERAL("a string literal (inside double quote)") = 118
+TYPE_PATTERN("a type pattern for pointcut definition") = 119

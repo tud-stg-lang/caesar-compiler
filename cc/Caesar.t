@@ -54,19 +54,8 @@
 @literal	while
 
 
-@literal	virtual
-@literal	override
-@literal	clean
-@operator	FJEQUAL	"==="
-
-@literal	collaboration
-@literal	provided
-@literal	expected
-@literal	binds
-@literal	provides
 @literal	wraps
 @literal	wrappee
-@operator	WDESTRUCTOR	"#"
 
 
 @literal	after

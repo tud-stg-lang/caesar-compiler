@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.35 2004-03-17 14:25:46 aracic Exp $
+ * $Id: Caesar.g,v 1.36 2004-03-17 14:34:41 aracic Exp $
  */
 
 /*
@@ -371,27 +371,10 @@ jModifier []
   "transient" { self = org.caesarj.classfile.ClassfileConstants2.ACC_TRANSIENT; }
 |
   "volatile" { self = org.caesarj.classfile.ClassfileConstants2.ACC_VOLATILE; }
-// andreas start
-|
-  "virtual" { self = org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL; }
-|
-  "override" { self = org.caesarj.classfile.ClassfileConstants2.FJC_OVERRIDE; }
-|
-  "clean" { self = org.caesarj.classfile.ClassfileConstants2.FJC_CLEAN; }
-// andreas end
 |
 	"privileged" { self = org.caesarj.classfile.ClassfileConstants2.ACC_PRIVILEGED; }
 |
 	"deployed" { self = org.caesarj.classfile.ClassfileConstants2.ACC_DEPLOYED; }
-
-// Walter start
-|
-  "collaboration" { self = org.caesarj.classfile.ClassfileConstants2.CCI_COLLABORATION; }
-|
-  "provided" { self = org.caesarj.classfile.ClassfileConstants2.CCI_PROVIDED; }
-|
-  "expected" { self = org.caesarj.classfile.ClassfileConstants2.CCI_EXPECTED; }
-// Walter end
 ;
 
 
@@ -403,8 +386,6 @@ jClassDefinition [int modifiers]
   CTypeVariable[]       	typeVariables = CTypeVariable.EMPTY;
   CReferenceType			superClass = null;
   CReferenceType[]			interfaces = CReferenceType.EMPTY;
-  CReferenceType			binding = null;
-  CReferenceType			providing = null;
   CReferenceType			wrappee = null;  
   ParseClassContext	context = ParseClassContext.getInstance();
   TokenReference	sourceRef = buildTokenReference();
@@ -415,9 +396,7 @@ jClassDefinition [int modifiers]
   "class" ident:IDENT
   (typeVariables = kTypeVariableDeclarationList[])?
   //This is like this for prevent non-determinism
-  (superClass =  jSuperClassClause[]
-  | binding = jBindsClause[]
-  | providing = jProvidesClause[])?
+  (superClass =  jSuperClassClause[])?
 
   (interfaces = jImplementsClause[])?
   (wrappee = jWrapsClause[])?
@@ -453,17 +432,6 @@ jSuperClassClause []
   returns [CReferenceType self = null]
 :
   ("extends" self =  jSuperTypeName[])
-;
-
-jBindsClause []
-  returns [CReferenceType self = null]
-:
-  ("binds" self = jTypeName[])
-;
-jProvidesClause []
-  returns [CReferenceType self = null]
-:
-   ("provides" self = jTypeName[])
 ;
 
 
