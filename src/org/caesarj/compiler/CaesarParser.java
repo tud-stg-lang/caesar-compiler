@@ -586,7 +586,11 @@ private static final int MAX_LOOKAHEAD = 2;
 							   context.getInnerClasses(),
 							   context.getBody(),
 							   javadoc,
-							   comments);
+							   comments,
+							   context.getPointcuts(),
+							   context.getAdvices(),
+							   context.getDeclares()				   
+							   );
 				 }
 			else if( CModifier.contains( modifiers, org.caesarj.kjc.Constants.FJC_OVERRIDE ) ) {
 			self = new FjOverrideClassDeclaration(sourceRef,
