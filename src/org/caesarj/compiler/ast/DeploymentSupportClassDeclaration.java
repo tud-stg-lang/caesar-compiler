@@ -17,9 +17,9 @@ import org.caesarj.util.UnpositionedError;
  * 
  * @author Jürgen Hallpap
  */
-public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
+public class DeploymentSupportClassDeclaration extends JClassDeclaration {
 
-	private FjClassDeclaration crosscuttingClass;
+	private JClassDeclaration crosscuttingClass;
 
 	private String postfix;
 
@@ -36,7 +36,7 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
 		JPhylum[] initializers,
 		JavadocComment javadoc,
 		JavaStyleComment[] comment,
-		FjClassDeclaration crosscuttingClass,
+		JClassDeclaration crosscuttingClass,
 		String postfix) {
 		this(
 			where,
@@ -74,7 +74,7 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
 		PointcutDeclaration[] pointcuts,
 		AdviceDeclaration[] advices,
 		CaesarDeclare[] declares,
-		FjClassDeclaration crosscuttingClass,
+		JClassDeclaration crosscuttingClass,
 		String postfix) {
 		super(
 			where,

@@ -5,7 +5,7 @@ import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.CciInterfaceDeclaration;
 import org.caesarj.compiler.ast.CciWeaveletClassDeclaration;
-import org.caesarj.compiler.ast.FjClassDeclaration;
+import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
 import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.FjVisitor;
@@ -113,7 +113,7 @@ public class CollaborationInterfaceTransformation
 	 * Also sets the owner of the classes.
 	 */	
 	public void visitFjClassDeclaration(
-		FjClassDeclaration self,
+		JClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,
@@ -128,7 +128,7 @@ public class CollaborationInterfaceTransformation
 		// owners in order to be able to access
 		// fields when inheriting
 		Object myOwner = owner.get();
-		if (myOwner instanceof FjClassDeclaration)
+		if (myOwner instanceof JClassDeclaration)
 			self.setOwnerDeclaration(myOwner);
 
 		super.visitFjClassDeclaration(
@@ -224,7 +224,7 @@ public class CollaborationInterfaceTransformation
 		JTypeDeclaration[] decls)
 	{
 
-		if (! (owner.get() instanceof FjClassDeclaration))
+		if (! (owner.get() instanceof JClassDeclaration))
 		{
 			superClass = self.getBindingTypeName();
 			self.setSuperClass(new CClassNameType(superClass));
@@ -343,8 +343,8 @@ public class CollaborationInterfaceTransformation
 			JTypeDeclaration[] inners = cciSelf.getInners();
 			for (int i = 0; i < inners.length; i++)
 			{
-				if (inners[i] instanceof FjClassDeclaration)
-					((FjClassDeclaration) inners[i]).setOwnerDeclaration(self);
+				if (inners[i] instanceof JClassDeclaration)
+					((JClassDeclaration) inners[i]).setOwnerDeclaration(self);
 				inners[i].accept(this);
 			}
 			owner.set(oldOwner);

@@ -2,7 +2,7 @@ package org.caesarj.compiler.family;
 
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.ast.FjClassDeclaration;
+import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.FjInterfaceDeclaration;
 import org.caesarj.compiler.ast.FjVisitor;
 import org.caesarj.compiler.ast.JClassImport;
@@ -86,7 +86,7 @@ public class FamiliesInitializerFjVisitor
 	}
 
 	public void visitFjClassDeclaration(
-		FjClassDeclaration self,
+		JClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,

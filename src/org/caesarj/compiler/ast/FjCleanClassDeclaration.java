@@ -24,7 +24,7 @@ import org.caesarj.util.UnpositionedError;
 import org.caesarj.util.Utils;
 
 public class FjCleanClassDeclaration 
-	extends FjClassDeclaration
+	extends JClassDeclaration
 {
 	
 	public FjCleanClassDeclaration(
@@ -246,9 +246,9 @@ public class FjCleanClassDeclaration
 
 		//createAccessorsForPrivateMethods();
 
-		FjClassDeclaration ownerDecl =
-			(owner instanceof FjClassDeclaration)
-				? (FjClassDeclaration) owner
+		JClassDeclaration ownerDecl =
+			(owner instanceof JClassDeclaration)
+				? (JClassDeclaration) owner
 				: null;
 
 		if (cleanInterface == null)
@@ -282,9 +282,9 @@ public class FjCleanClassDeclaration
 	public FjCleanClassIfcImplDeclaration createCleanInterfaceImplementation(Object owner)
 	{
 
-		FjClassDeclaration ownerDecl =
-			(owner instanceof FjClassDeclaration)
-				? (FjClassDeclaration) owner
+		JClassDeclaration ownerDecl =
+			(owner instanceof JClassDeclaration)
+				? (JClassDeclaration) owner
 				: null;
 
 		if (cleanInterfaceImplementation == null)

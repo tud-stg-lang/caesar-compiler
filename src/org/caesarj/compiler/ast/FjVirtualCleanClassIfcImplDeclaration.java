@@ -9,7 +9,7 @@ public class FjVirtualCleanClassIfcImplDeclaration
 	extends FjCleanClassIfcImplDeclaration
 	implements FjResolveable {
 
-	protected FjClassDeclaration ownerDecl;
+	protected JClassDeclaration ownerDecl;
 
 	public FjVirtualCleanClassIfcImplDeclaration(
 		TokenReference tokenReference,
@@ -17,7 +17,7 @@ public class FjVirtualCleanClassIfcImplDeclaration
 		int modifires,
 		CReferenceType[] interfaces,
 		FjCleanMethodDeclaration[] methods,
-		FjClassDeclaration ownerDecl,
+		JClassDeclaration ownerDecl,
 		FjCleanClassDeclaration baseDecl ) {
 		super( tokenReference, ident, 
 			modifires | FJC_VIRTUAL | ACC_PUBLIC | ACC_STATIC, 
@@ -25,7 +25,7 @@ public class FjVirtualCleanClassIfcImplDeclaration
 		this.ownerDecl = ownerDecl;
 	}
 
-	public FjClassDeclaration getOwnerDeclaration() {
+	public JClassDeclaration getOwnerDeclaration() {
 		return ownerDecl;
 	}
 

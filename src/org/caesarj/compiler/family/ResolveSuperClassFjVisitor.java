@@ -5,7 +5,7 @@ import java.util.Vector;
 
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.Main;
-import org.caesarj.compiler.ast.FjClassDeclaration;
+import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.FjInterfaceDeclaration;
 import org.caesarj.compiler.ast.FjOverrideClassDeclaration;
 import org.caesarj.compiler.ast.FjOverrideable;
@@ -103,7 +103,7 @@ public class ResolveSuperClassFjVisitor extends FjVisitor {
 			_override( (FjOverrideable) self, compiler );
 		}			
 
-		JTypeDeclaration[] inners = ((FjClassDeclaration) self).getInners();
+		JTypeDeclaration[] inners = ((JClassDeclaration) self).getInners();
 		for( int i = 0; i < inners.length; i++ ) {
 			enqueue( self, inners[ i ] );
 		}

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JQualifiedAnonymousCreation.java,v 1.2 2004-02-08 20:27:58 ostermann Exp $
+ * $Id: JQualifiedAnonymousCreation.java,v 1.3 2004-02-20 14:24:28 klose Exp $
  */
 
 package org.caesarj.compiler.ast;
@@ -234,8 +234,8 @@ public class JQualifiedAnonymousCreation extends JExpression {
     decl.join(context.getClassContext());
     decl.checkInterface(context.getClassContext());
 	//Walter start
-	if (decl instanceof FjClassDeclaration)
-		((FjClassDeclaration)decl).initFamilies(context.getClassContext());
+	if (decl instanceof JClassDeclaration)
+		((JClassDeclaration)decl).initFamilies(context.getClassContext());
 	//Walter end    
     if (context.isStaticContext()) {
       decl.getCClass().setModifiers(decl.getCClass().getModifiers() | ACC_STATIC);

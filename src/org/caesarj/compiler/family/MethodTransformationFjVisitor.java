@@ -2,7 +2,7 @@ package org.caesarj.compiler.family;
 
 
 import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.ast.FjClassDeclaration;
+import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassIfcImplDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassInterfaceDeclaration;
@@ -85,9 +85,9 @@ public class MethodTransformationFjVisitor extends FjVisitor {
 		// we need the unmodified constructors signatures:
 		// self.addSuperTypeParameterToConstructors() called later!
 		Object objOwner = owner.get();
-		if( objOwner instanceof FjClassDeclaration )
+		if( objOwner instanceof JClassDeclaration )
 		{
-			FjClassDeclaration owner = (FjClassDeclaration) objOwner;
+			JClassDeclaration owner = (JClassDeclaration) objOwner;
 			superClass = self.getSuperClass().getQualifiedName();
 			
 			//It will generated the structure of the wrapper only if 

@@ -1,7 +1,7 @@
 package org.caesarj.compiler.delegation;
 
 import org.caesarj.compiler.KjcEnvironment;
-import org.caesarj.compiler.ast.FjClassDeclaration;
+import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassIfcImplDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassInterfaceDeclaration;
@@ -76,7 +76,7 @@ public class ClassTransformationFjVisitor extends FjVisitor
 	 * sets the owner on visited classes.
 	 */
 	public void visitFjClassDeclaration(
-		FjClassDeclaration self,
+		JClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,
@@ -91,7 +91,7 @@ public class ClassTransformationFjVisitor extends FjVisitor
 		// owners in order to be able to access
 		// fields when inheriting
 		Object myOwner = owner.get();
-		if (myOwner instanceof FjClassDeclaration)
+		if (myOwner instanceof JClassDeclaration)
 			self.setOwnerDeclaration(myOwner);
 
 		super.visitFjClassDeclaration(

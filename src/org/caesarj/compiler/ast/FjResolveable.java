@@ -6,7 +6,7 @@ import org.caesarj.util.MessageDescription;
 import org.caesarj.util.PositionedError;
 
 public interface FjResolveable {
-	FjClassDeclaration getOwnerDeclaration();
+	JClassDeclaration getOwnerDeclaration();
 	void setSuperClass( CReferenceType superType );
 	FjCleanClassDeclaration getBaseClass();
 	void check(CContext context, boolean cond, MessageDescription description, Object param) throws PositionedError;

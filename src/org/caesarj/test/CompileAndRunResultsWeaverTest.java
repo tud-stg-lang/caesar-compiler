@@ -11,7 +11,7 @@ import org.caesarj.compiler.KjcClassReader;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.KjcOptions;
 import org.caesarj.compiler.Main;
-import org.caesarj.compiler.ast.FjClassDeclaration;
+import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.FjCleanClassDeclaration;
 import org.caesarj.compiler.ast.FjVisitor;
 import org.caesarj.compiler.ast.JClassImport;
@@ -214,7 +214,7 @@ public class CompileAndRunResultsWeaverTest extends FjTestCase {
 
 		int visitedClassDeclarations = 0;
 		public void visitFjClassDeclaration(
-			FjClassDeclaration self,
+			JClassDeclaration self,
 			int modifiers,
 			String ident,
 			CTypeVariable[] typeVariables,

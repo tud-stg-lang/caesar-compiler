@@ -21,7 +21,7 @@ public abstract class FjVisitor implements KjcVisitor {
 		Object reference;
 		public void set( Object o ) {
 			if (o == null
-				|| o instanceof FjClassDeclaration
+				|| o instanceof JClassDeclaration
 				|| o instanceof JCompilationUnit
 				|| o instanceof CciInterfaceDeclaration)
 				reference = o;
@@ -39,15 +39,15 @@ public abstract class FjVisitor implements KjcVisitor {
 
 		public void append( JTypeDeclaration decl ) {
 
-			if( reference instanceof FjClassDeclaration )
-				((FjClassDeclaration) reference).append( decl );
+			if( reference instanceof JClassDeclaration )
+				((JClassDeclaration) reference).append( decl );
 			else if( reference instanceof JCompilationUnit )
 				((JCompilationUnit) reference).append( decl );
 		}
 		public String getQualifiedName() {
 
-			if( reference instanceof FjClassDeclaration )
-				return ((FjClassDeclaration) reference).getCClass().getQualifiedName() + "$";
+			if( reference instanceof JClassDeclaration )
+				return ((JClassDeclaration) reference).getCClass().getQualifiedName() + "$";
 			else if( reference instanceof JCompilationUnit )
 				return new String();
 			else
@@ -120,9 +120,9 @@ public abstract class FjVisitor implements KjcVisitor {
 					body,
 					methods,
 					decls );
-			else if( self instanceof FjClassDeclaration )
+			else if( self instanceof JClassDeclaration )
 				visitFjClassDeclaration(
-					(FjClassDeclaration) self,
+					(JClassDeclaration) self,
 					modifiers,
 					ident,
 					typeVariables,
@@ -154,7 +154,7 @@ public abstract class FjVisitor implements KjcVisitor {
 	}
 
 	public void visitFjClassDeclaration(
-		FjClassDeclaration self,
+		JClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,

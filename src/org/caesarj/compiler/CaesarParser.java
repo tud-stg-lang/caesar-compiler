@@ -404,10 +404,10 @@ private static final int MAX_LOOKAHEAD = 2;
 		return self;
 	}
 	
-	private final FjClassDeclaration  jClassDefinition(
+	private final JClassDeclaration  jClassDefinition(
 		int modifiers
 	) throws RecognitionException, TokenStreamException {
-		FjClassDeclaration self = null;
+		JClassDeclaration self = null;
 		
 		Token  ident = null;
 		
@@ -623,7 +623,7 @@ private static final int MAX_LOOKAHEAD = 2;
 							   context.getAdvices(),
 							   context.getDeclares());
 			} else {
-			self = new FjClassDeclaration(sourceRef,
+			self = new JClassDeclaration(sourceRef,
 							   modifiers,
 							   ident.getText(),
 			typeVariables,
@@ -5244,7 +5244,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		CType				type;
 		JExpression[]			args;
 		JArrayInitializer		init = null;
-		FjClassDeclaration		decl = null;
+		JClassDeclaration		decl = null;
 		ParseClassContext		context = null;
 		TokenReference		sourceRef = buildTokenReference();
 		
@@ -5269,7 +5269,7 @@ private static final int MAX_LOOKAHEAD = 2;
 				
 				methods = context.getMethods();
 				
-					decl = new FjClassDeclaration(sourceRef,
+					decl = new JClassDeclaration(sourceRef,
 								     org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 								     ident.getText(),
 				CTypeVariable.EMPTY,
@@ -5361,7 +5361,7 @@ private static final int MAX_LOOKAHEAD = 2;
 		CType				type;
 		JExpression[]			args;
 		JArrayInitializer		init = null;
-		FjClassDeclaration		decl = null;
+		JClassDeclaration		decl = null;
 		ParseClassContext		context = null;
 		TokenReference		sourceRef = buildTokenReference();
 		
@@ -5540,7 +5540,7 @@ private static final int MAX_LOOKAHEAD = 2;
 						
 						methods = context.getMethods();
 						
-							    decl = new FjClassDeclaration(sourceRef,
+							    decl = new JClassDeclaration(sourceRef,
 											 org.caesarj.classfile.ClassfileConstants2.ACC_FINAL, // JLS 15.9.5
 											 "", //((CReferenceType)type).getQualifiedName(),
 						CTypeVariable.EMPTY,

@@ -41,7 +41,7 @@ public class FjVariableDefinition extends JVariableDefinition {
 				(FjFieldDeclaration) 
 					((FjAdditionalContext) context).peekContextInfo();
 			CClass clazz =
-				((FjClassDeclaration) 
+				((JClassDeclaration) 
 					((FjAdditionalContext) 
 						context).peekContextInfo(1)).getCClass();
 	

@@ -11,7 +11,7 @@ public class FjVirtualCleanClassInterfaceDeclaration
 	extends FjCleanClassInterfaceDeclaration
 	implements FjResolveable {
 
-	protected FjClassDeclaration ownerDecl;
+	protected JClassDeclaration ownerDecl;
 
 	public FjVirtualCleanClassInterfaceDeclaration(
 		TokenReference tokenReference,
@@ -19,13 +19,13 @@ public class FjVirtualCleanClassInterfaceDeclaration
 		int modifiers,
 		CReferenceType[] interfaces,
 		FjCleanMethodDeclaration[] methods,
-		FjClassDeclaration owner,
+		JClassDeclaration owner,
 		FjCleanClassDeclaration baseDecl ) {
 		super(tokenReference, ident, modifiers | FJC_VIRTUAL, interfaces, methods, baseDecl );
 		this.ownerDecl = owner;
 	}
 
-	public FjClassDeclaration getOwnerDeclaration() {
+	public JClassDeclaration getOwnerDeclaration() {
 		return ownerDecl;
 	}
 

@@ -183,8 +183,8 @@ public class FjInterfaceDeclaration
 				
 			((FjAdditionalContext)innerContext).pushContextInfo(this);
 			
-			if (inners[j] instanceof FjClassDeclaration)
-				((FjClassDeclaration)inners[j]).initFamilies(innerContext);
+			if (inners[j] instanceof JClassDeclaration)
+				((JClassDeclaration)inners[j]).initFamilies(innerContext);
 			else if (inners[j] instanceof FjInterfaceDeclaration)
 				((FjInterfaceDeclaration)inners[j]).initFamilies(innerContext);
 							

@@ -12,7 +12,7 @@ public class FjOverridingCleanClassInterfaceDeclaration
 		int modifiers,
 		CReferenceType[] interfaces,
 		FjCleanMethodDeclaration[] methods,
-		FjClassDeclaration ownerDecl,
+		JClassDeclaration ownerDecl,
 		FjCleanClassDeclaration baseDecl ) {
 		super(tokenReference, ident, modifiers | FJC_OVERRIDE, interfaces, 
 			methods, ownerDecl, baseDecl );

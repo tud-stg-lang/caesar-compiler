@@ -4,7 +4,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.caesarj.compiler.ast.FjClassDeclaration;
+import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.FjVisitor;
 import org.caesarj.compiler.ast.JMethodDeclaration;
 import org.caesarj.compiler.ast.JPhylum;
@@ -27,7 +27,7 @@ public class CollectClassesFjVisitor extends FjVisitor {
 	}
 
 	public void visitFjClassDeclaration(
-		FjClassDeclaration self,
+		JClassDeclaration self,
 		int modifiers,
 		String ident,
 		CTypeVariable[] typeVariables,
@@ -53,11 +53,11 @@ public class CollectClassesFjVisitor extends FjVisitor {
 			decls);
 	}
 
-	protected FjClassDeclaration findNext() throws PositionedError {
+	protected JClassDeclaration findNext() throws PositionedError {
 		Enumeration e = allClasses.elements();
 		while( e.hasMoreElements() ) {
-			FjClassDeclaration current =
-				(FjClassDeclaration) e.nextElement();
+			JClassDeclaration current =
+				(JClassDeclaration) e.nextElement();
 			
 			String classKey = current.getCClass().getQualifiedName();
 			if( markedClasses.get( classKey ) != null )
@@ -72,11 +72,11 @@ public class CollectClassesFjVisitor extends FjVisitor {
 		return null;
 	}
 
-	protected boolean returnClass( FjClassDeclaration decl ) throws PositionedError {
+	protected boolean returnClass( JClassDeclaration decl ) throws PositionedError {
 		return true;
 	}
 
-	protected boolean collectClass( FjClassDeclaration decl ) {
+	protected boolean collectClass( JClassDeclaration decl ) {
 		return true;
 	}
 	

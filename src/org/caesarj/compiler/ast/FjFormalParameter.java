@@ -163,7 +163,7 @@ public class FjFormalParameter extends JFormalParameter {
 				//If it depends on outer this as well.
 				else if (family.isOuterThis())
 				{
-					FjClassDeclaration fjOwnerClass = 
+					JClassDeclaration fjOwnerClass = 
 						cleanClass.getOwnerDeclaration();
 					if (fjOwnerClass instanceof FjCleanClassDeclaration)
 					{

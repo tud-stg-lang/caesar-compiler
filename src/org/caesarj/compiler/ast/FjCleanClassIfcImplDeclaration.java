@@ -11,7 +11,7 @@ import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
 public class FjCleanClassIfcImplDeclaration
-	extends FjClassDeclaration 
+	extends JClassDeclaration 
 {
 
 	protected FjCleanClassDeclaration baseDecl;

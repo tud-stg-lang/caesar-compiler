@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.caesarj.compiler.ast.AdviceDeclaration;
 import org.caesarj.compiler.ast.CaesarVisitor;
-import org.caesarj.compiler.ast.FjClassDeclaration;
+import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.FjFormalParameter;
 import org.caesarj.compiler.ast.FjMethodCallExpression;
 import org.caesarj.compiler.ast.FjNameExpression;
@@ -66,15 +66,15 @@ public class JoinPointReflectionVisitor
 		JTypeDeclaration[] decls) {
 
 		for (int i = 0; i < body.length; i++) {
-			if (self instanceof FjClassDeclaration
+			if (self instanceof JClassDeclaration
 				&& body[i] instanceof JFieldDeclaration) {
 
 				JFieldDeclaration field = (JFieldDeclaration) body[i];
 				if ((field.getVariable().getModifiers() & ACC_DEPLOYED) != 0) {
-					((FjClassDeclaration) self).addClassBlock(
+					((JClassDeclaration) self).addClassBlock(
 						createStaticDeployBlock(
 							field.getTokenReference(),
-							(FjClassDeclaration) self,
+							(JClassDeclaration) self,
 							field));
 
 				}
@@ -92,8 +92,8 @@ public class JoinPointReflectionVisitor
 			body,
 			methods,
 			decls);
-		if (self instanceof FjClassDeclaration) {
-			FjClassDeclaration clazz = (FjClassDeclaration) self;
+		if (self instanceof JClassDeclaration) {
+			JClassDeclaration clazz = (JClassDeclaration) self;
 			AdviceDeclaration[] advices = clazz.getAdvices();
 			for (int i = 0; i < advices.length; i++) {
 				advices[i].accept(this);
@@ -203,7 +203,7 @@ public class JoinPointReflectionVisitor
 
 	private JClassBlock createStaticDeployBlock(
 		TokenReference where,
-		FjClassDeclaration classDeclaration,
+		JClassDeclaration classDeclaration,
 		JFieldDeclaration fieldDeclaration) {
 
 		JExpression fieldExpr =

@@ -2,7 +2,7 @@ package org.caesarj.compiler.family;
 
 import java.util.Vector;
 
-import org.caesarj.compiler.ast.FjClassDeclaration;
+import org.caesarj.compiler.ast.JClassDeclaration;
 import org.caesarj.compiler.ast.FjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.JCompilationUnit;
 import org.caesarj.compiler.constants.CaesarMessages;
@@ -20,7 +20,7 @@ public class InheritConstructorsFjVisitor
 		}
 	}
 
-	protected boolean returnClass( FjClassDeclaration decl ) throws PositionedError {
+	protected boolean returnClass( JClassDeclaration decl ) throws PositionedError {
 		String superClassKey = null;
 		try {
 			 superClassKey = FjConstants.toFullQualifiedBaseName(
@@ -36,7 +36,7 @@ public class InheritConstructorsFjVisitor
 		return false;
 	}
 
-	protected boolean collectClass( FjClassDeclaration decl ) {
+	protected boolean collectClass( JClassDeclaration decl ) {
 		if( decl instanceof FjVirtualClassDeclaration )
 			return true;
 		return false;
