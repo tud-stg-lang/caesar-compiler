@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: KjcClassReader.java,v 1.2 2004-02-08 20:28:00 ostermann Exp $
+ * $Id: KjcClassReader.java,v 1.3 2004-10-29 13:20:49 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -84,10 +84,15 @@ public class KjcClassReader extends org.caesarj.util.Utils implements ClassReade
     CClass	last = (CClass)allLoadedClasses.put(cl.getQualifiedName(), cl);
     
     allLoadedPackages.add(cl.getPackage());
+    
+    // IVICA: what does the other checks below mean!?
+    return last == null;
+    /*
     return (last == null)
       || (cl.getOwner() != null)
       || !(last instanceof CSourceClass)
       || last.getSourceFile() == cl.getSourceFile();
+   */
   }
 
   /**
