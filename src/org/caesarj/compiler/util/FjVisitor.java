@@ -1,5 +1,7 @@
 package org.caesarj.compiler.util;
 
+import java.util.Stack;
+
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.PositionedError;
@@ -113,7 +115,9 @@ public abstract class FjVisitor implements KjcVisitor {
 		public Object get() {
 			return reference;
 		}
+
 		public void append( JTypeDeclaration decl ) {
+
 			if (reference instanceof CciCollaborationInterfaceDeclaration)
 				((CciCollaborationInterfaceDeclaration) reference).append(decl);
 			else if( reference instanceof FjClassDeclaration )
@@ -122,6 +126,7 @@ public abstract class FjVisitor implements KjcVisitor {
 				((FjCompilationUnit) reference).append( decl );
 		}
 		public String getQualifiedName() {
+
 			if (reference instanceof CciCollaborationInterfaceDeclaration)
 			return ((CciCollaborationInterfaceDeclaration) reference)
 				.getCClass().getQualifiedName() + "$";
@@ -224,11 +229,12 @@ public abstract class FjVisitor implements KjcVisitor {
 		JClassImport[] importedClasses,
 		JTypeDeclaration[] typeDeclarations) {
 		
-		this.owner.set( self );
+		owner.set( self );
 		for( int i = 0; i < typeDeclarations.length; i++ ) {
 			typeDeclarations[i].accept( this );
 		}
-		this.owner.set( null );
+		owner.set(null);
+
 	}
 
 	public void visitFjClassDeclaration(
@@ -243,11 +249,12 @@ public abstract class FjVisitor implements KjcVisitor {
 		JTypeDeclaration[] decls) {
 
 		Object oldOwner = this.owner.get();
-		this.owner.set( self );
+		owner.set( self );
 		for( int i = 0; i < decls.length; i++ ) {
 			decls[i].accept( this );
 		}
-		this.owner.set( oldOwner );
+		owner.set( oldOwner );
+
 	}
 
 	public void visitCciWeaveletClassDeclaration(
@@ -379,9 +386,9 @@ public abstract class FjVisitor implements KjcVisitor {
 			owner.set(self);
 			JTypeDeclaration[] inners = 
 				((CciCollaborationInterfaceDeclaration)self).getInners();
-			for( int i = 0; i < inners.length; i++ ) 
-				inners[i].accept( this );
-				
+			for (int i = 0; i < inners.length; i++) 
+				inners[i].accept(this);
+
 			owner.set(oldOwner);
 		}
 	}

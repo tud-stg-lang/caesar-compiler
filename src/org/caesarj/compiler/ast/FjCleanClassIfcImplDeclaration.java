@@ -124,9 +124,7 @@ public class FjCleanClassIfcImplDeclaration
 		JMethodDeclaration[] newMethods =
 			new JMethodDeclaration[ methods.length + 1 ];
 		newMethods[ 0 ] = constructor;
-		for( int i = 0; i < methods.length; i++ ) {
-			newMethods[ i + 1 ] = methods[ i ];
-		}
+		System.arraycopy(methods, 0, newMethods, 1, methods.length);
 		methods = newMethods;
 	}
 	

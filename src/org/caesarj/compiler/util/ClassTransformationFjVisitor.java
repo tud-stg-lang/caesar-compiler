@@ -1,6 +1,7 @@
 package org.caesarj.compiler.util;
 
 import org.caesarj.classfile.Constants;
+import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.ast.CciCollaborationInterfaceDeclaration;
 import org.caesarj.compiler.ast.CciCollaborationInterfaceProxyDeclaration;
@@ -170,18 +171,27 @@ public class ClassTransformationFjVisitor extends FjVisitor {
 	{
 		if (self instanceof CciCollaborationInterfaceDeclaration)
 		{
-			CciInterfaceDeclaration collaborationInterface = 
-				(CciInterfaceDeclaration)self;
+			CciCollaborationInterfaceDeclaration collaborationInterface = 
+				(CciCollaborationInterfaceDeclaration)self;
 
 			//collaborationInterface.initInnersAsCollaboration();
 			
+			collaborationInterface.transformInnerInterfaces();
+			JTypeDeclaration[] inners = collaborationInterface.getInners();
+			for (int i = 0; i < inners.length; i++)
+			{
+				if (inners[i] instanceof FjVirtualClassDeclaration)
+				{
+					FjVirtualClassDeclaration inner = 
+						(FjVirtualClassDeclaration)inners[i];
+					inner.setTypeFactory(environment.getTypeFactory());
+					collaborationInterface.addMethods(inner.getFactoryMethods());
+				}
+			}
 			CciCollaborationInterfaceProxyDeclaration ciProxy =
 				collaborationInterface.getProxyDeclaration(
 					environment.getTypeFactory());
-			owner.append(ciProxy);
-					
-			collaborationInterface.transformInnerInterfaces();
-			
+			owner.append(ciProxy);			
 			
 		}
 
@@ -217,12 +227,16 @@ public class ClassTransformationFjVisitor extends FjVisitor {
 				&& fjSelf.getBinding() != null)
 			{
 				self.setSuperClass(new CClassNameType(
-					ownerClass.getBinding().getQualifiedName() 
-					+ "$" + fjSelf.getBinding().toString()));
-				fjSelf.setBinding(null);
+					CciConstants.IMPLEMENTATION_FIELD_NAME
+					+ "/" + fjSelf.getBinding().toString()));
+				fjSelf.setBinding(null);//TODO: retirar isto
 			}
 		}
-		// TODO Auto-generated method stub
+		else if (self instanceof FjClassDeclaration)
+		{
+			((FjClassDeclaration)self)
+				.addImplementationToConstructors(environment.getTypeFactory());
+		}
 		super.visitClassDeclaration(
 			self,
 			modifiers,

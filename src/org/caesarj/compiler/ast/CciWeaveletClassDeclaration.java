@@ -268,9 +268,9 @@ public class CciWeaveletClassDeclaration
 		addAccessors();
 		updateConstructors();
 		addCrossReferenceField(getBindingTypeName(), 
-			CciConstants.BINDING_FIELD_NAME);
+			CciConstants.BINDING_FIELD_NAME, false);
 		addCrossReferenceField(getImplementationTypeName(), 
-			CciConstants.IMPLEMENTATION_FIELD_NAME);	
+			CciConstants.IMPLEMENTATION_FIELD_NAME, false);	
 	}
 	
 	public void addFactoryMethods(

@@ -2,6 +2,7 @@ package org.caesarj.compiler.ast;
 
 import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.CciConstants;
+import org.caesarj.compiler.ParseClassContext;
 import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
@@ -48,7 +49,6 @@ public class CciClassContext
 		JTypeDeclaration decl)
 	{
 		super(parent, environment, clazz, decl);
-
 	}
 
 	/**

@@ -87,6 +87,15 @@ public class CciCollaborationInterfaceDeclaration
 		inners = newInners;
 	}
 
+	public void addMethods(JMethodDeclaration[] methodsToAdd)
+	{
+		JMethodDeclaration[] newMethods = new JMethodDeclaration[
+			methods.length + methodsToAdd.length];
+		System.arraycopy(methods, 0, newMethods, 0, methods.length);
+		System.arraycopy(methodsToAdd, 0, newMethods, 
+			methods.length, methodsToAdd.length);
+		methods = newMethods;
+	}
 	
 //	/**
 //	 * It calls for the super implementation of it and after adds the modifier

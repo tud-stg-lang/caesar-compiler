@@ -16,9 +16,11 @@ import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.JMethodDeclaration;
 import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JTypeDeclaration;
+import org.caesarj.kjc.KjcEnvironment;
 
 public class MethodTransformationFjVisitor extends FjVisitor {
 
+	
 	public void visitFjCleanClassDeclaration(
 		FjCleanClassDeclaration self,
 		int modifiers,
@@ -146,4 +148,6 @@ public class MethodTransformationFjVisitor extends FjVisitor {
 			}
 		}		
 	}
+
+
 }

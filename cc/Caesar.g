@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.3 2003-07-14 16:14:44 werner Exp $
+ * $Id: Caesar.g,v 1.4 2003-07-17 11:31:30 werner Exp $
  */
 
 /*
@@ -405,9 +405,9 @@ jClassDefinition [int modifiers]
 {
   CTypeVariable[]       	typeVariables = CTypeVariable.EMPTY;
   CReferenceType			superClass = null;
-  CciWeaveletReferenceType	superCI = null;  
   CReferenceType[]			interfaces = CReferenceType.EMPTY;
-  CReferenceType			binding = null;  
+  CReferenceType			binding = null;
+
   ParseClassContext	context = ParseClassContext.getInstance();
   TokenReference	sourceRef = buildTokenReference();
   JavadocComment	javadoc = getJavadocComment();
@@ -416,17 +416,13 @@ jClassDefinition [int modifiers]
 :
   "class" ident:IDENT
   (typeVariables = kTypeVariableDeclarationList[])?
-  //Walter: Weavelet must extends a CI
-  (superCI = jSuperCollaborationInterfaceClause[]
-  | superClass = jSuperClassClause[])
-  //Walter end
   
-  //Walter start
-  //implements or binds clause
-  (interfaces = jImplementsClause[] 
-  | binding = jBindsClause[])
-  //Walter end
-
+  superClass = jSuperClassClause[]
+  
+  ( binding = jBindsClause[]
+  | interfaces = jImplementsClause[])
+  
+  
   jClassBlock[context]
     {
       JMethodDeclaration[]      methods;
@@ -442,12 +438,12 @@ jClassDefinition [int modifiers]
       } else {
         methods = context.getMethods();
       }
-      if (superCI != null)
+      if (superClass instanceof CciWeaveletReferenceType)
       	self = new CciWeaveletClassDeclaration(sourceRef,
 				   modifiers,
 				   ident.getText(),
 				   typeVariables,
-				   superCI,
+				   (CciWeaveletReferenceType)superClass,
 				   interfaces,
 				   context.getFields(),
 				   methods,
@@ -524,20 +520,20 @@ jClassDefinition [int modifiers]
 jSuperClassClause []
   returns [CReferenceType self = null]
 :
-  ( "extends" self = jTypeName[] )?
+  ( "extends" self =  jSuperTypeName[] )?
 ;
 
-jSuperCollaborationInterfaceClause []
-  returns [CciWeaveletReferenceType self = null]
+
+jSuperTypeName []
+  returns [CReferenceType self = null]
 {
 	CReferenceType collaborationInterface = null;
 	CReferenceType implementation = null;
 	CReferenceType binding = null;
 }
 :
-  (
-  	"extends" collaborationInterface = jTypeName[]
-	LPAREN implementation = jTypeName[]
+  ( collaborationInterface = jTypeName[] )?
+  (	LPAREN implementation = jTypeName[]
 	COMMA 
 	binding = jTypeName[] RPAREN
   )?
@@ -546,11 +542,11 @@ jSuperCollaborationInterfaceClause []
 	  	self = new CciWeaveletReferenceType(collaborationInterface,
   					implementation,
   					binding);
+  	else
+  		self = collaborationInterface;
 
-//				environment.getTypeFactory().createType(binding.getText(), null, false).getCClass());
   }
 ;
-
 
 // Definition of a Java Interface
 jInterfaceDefinition [int modifiers]

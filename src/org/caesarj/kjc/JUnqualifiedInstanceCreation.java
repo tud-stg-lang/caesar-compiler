@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JUnqualifiedInstanceCreation.java,v 1.1 2003-07-05 18:29:40 werner Exp $
+ * $Id: JUnqualifiedInstanceCreation.java,v 1.2 2003-07-17 11:31:30 werner Exp $
  */
 
 package org.caesarj.kjc;
@@ -103,9 +103,9 @@ public class JUnqualifiedInstanceCreation extends JExpression {
     check(context, !type.getCClass().isAbstract(), KjcMessages.NEW_ABSTRACT, type);
     check(context, !type.getCClass().isInterface(), KjcMessages.NEW_INTERFACE, type);
     check(context, 
-          type.getCClass().isAccessible(local),
-	  KjcMessages.CLASS_NOACCESS, 
-          type.getCClass());
+		type.getCClass().isAccessible(local),
+	  	KjcMessages.CLASS_NOACCESS, 
+		type.getCClass());
 
     /////////////////////////////////////////////////////////////////////////
 

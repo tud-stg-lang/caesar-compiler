@@ -189,6 +189,66 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 		body = newBody;
 	}
 
+	/**
+	 * Walter New
+	 *
+	 */
+	public void addImplementationParameter(CReferenceType implementationType, 
+		boolean callSuper) 
+	{
+		TokenReference ref = getTokenReference();
+		JFormalParameter[] newParameters = new JFormalParameter[
+			parameters.length + 1];
+		
+		newParameters[0] = 
+			new FjFormalParameter(
+				ref, 
+				JVariableDefinition.DES_PARAMETER,
+				implementationType,
+				CciConstants.IMPLEMENTATION_FIELD_NAME,
+				false);
+				
+		System.arraycopy(parameters, 0, newParameters, 1, parameters.length);
+		
+		parameters = newParameters;
+		
+		if (callSuper)
+		{
+			setSuperArg(
+				new FjNameExpression(
+					ref, 
+					null, 
+					CciConstants.IMPLEMENTATION_FIELD_NAME));
+		}
+				
+		JStatement[] statements = body.getBody();
+		JStatement[] newStatements = new JStatement[statements.length + 1];
+		
+		newStatements[0] = 
+			new JExpressionStatement(
+				ref,
+				new FjAssignmentExpression(
+					ref, 
+					new FjFieldAccessExpression(
+						ref, 
+						new FjThisExpression(ref), 
+						CciConstants.IMPLEMENTATION_FIELD_NAME),
+					new FjNameExpression(
+						ref, 
+						null, 
+						CciConstants.IMPLEMENTATION_FIELD_NAME)),
+				null);
+				
+		System.arraycopy(statements, 0, newStatements, 1, statements.length);
+
+		body =
+			new FjConstructorBlock(
+				body.getTokenReference(),
+				((FjConstructorBlock)body).getConstructorCall(),
+				newStatements);
+
+	}
+
 	public void setIdent(String newIdent) {
 		ident = newIdent;
 	}
@@ -210,78 +270,121 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 	public FjCleanMethodDeclaration getFactoryMethod(
 		FjVirtualClassDeclaration factoredClass,
 		String superTypeName) {
-
-		// if the factored class extends a fields inner type
-		// the field has to be prepended to the super-factory-call
-		JExpression superFactoryPrefix = null;
-		if (factoredClass.getSuperClassField() != null)
-			superFactoryPrefix =
-				new FjFieldAccessExpression(
-					getTokenReference(),
-					factoredClass
-						.getSuperClassField()
-						.getVariable()
-						.getIdent());
-
-		// eventually set the super-prefix for the superFactoryMethod-call
-		CReferenceType returnType = new CClassNameType("java/lang/Object");
-		if (superTypeName != null
-			&& ident.equals(FjConstants.toImplName(isolateIdent(superTypeName)))
-			&& superFactoryPrefix == null)
-			superFactoryPrefix = new FjSuperExpression(getTokenReference());
+			
+//		// if the factored class extends a fields inner type
+//		// the field has to be prepended to the super-factory-call
+//		JExpression superFactoryPrefix = null;
+//		if (factoredClass.getSuperClassField() != null)
+//			superFactoryPrefix =
+//				new FjFieldAccessExpression(
+//					getTokenReference(),
+//					factoredClass
+//						.getSuperClassField()
+//						.getVariable()
+//						.getIdent());
+//						
+//		FjClassDeclaration factoredOwner = factoredClass.getOwnerDeclaration();
+//
+//		// eventually set the super-prefix for the superFactoryMethod-call
+//		if (superTypeName != null
+//			&& superFactoryPrefix == null
+//			&& ident.equals(
+//				FjConstants.toImplName(FjConstants.isolateIdent(
+//					superTypeName))))
+//			superFactoryPrefix = new FjSuperExpression(getTokenReference());
+//
+//		JFormalParameter[] newParameters =
+//			new JFormalParameter[parameters.length];
+//		for (int i = 0; i < parameters.length; i++) {
+//			newParameters[i] =
+//				(FjFormalParameter) ((FjFormalParameter) parameters[i]).clone();
+//		}
+//		
+//		// calculate the arguments to
+//		// pass to the called constructor
+//		JExpression[] constructorArgs = null;
+//		int argIndex = 0;
+//		if (!superTypeName.equals(FjConstants.CHILD_IMPL_TYPE_NAME)) {
+//			// calculate the parameters for the "supercall"
+//			FjConstructorCall superCall =
+//				((FjConstructorBlock) getBody()).getConstructorCall();
+//			JExpression[] superFactoryMethodArgs = null;
+//			if (superCall == null)
+//				superFactoryMethodArgs = JExpression.EMPTY;
+//			else
+//				superFactoryMethodArgs = superCall.getArguments();
+//			constructorArgs = new JExpression[newParameters.length + 1];
+//			// add "supercall" as first parameter
+//			if (superFactoryPrefix == null)
+//				constructorArgs[0] =
+//					new FjUnqualifiedInstanceCreation(
+//						getTokenReference(),
+//						new CClassNameType(
+//							FjConstants.toIfcName(superTypeName)),
+//						superFactoryMethodArgs);
+//			else
+//				constructorArgs[0] =
+//					new FjQualifiedInstanceCreation(
+//						getTokenReference(),
+//						superFactoryPrefix,
+//						FjConstants.isolateIdent(
+//							FjConstants.toIfcName(superTypeName)),
+//						superFactoryMethodArgs);
+//			argIndex = 1;
+//		} else {
+//			constructorArgs = new JExpression[newParameters.length];
+//			argIndex = 0;
+//		}
+//		for (int i = 0; i < newParameters.length; i++) {
+//			constructorArgs[i + argIndex] =
+//				new JLocalVariableExpression(
+//					getTokenReference(),
+//					newParameters[i]);
+//		}
 
 		JFormalParameter[] newParameters =
 			new JFormalParameter[parameters.length];
-		for (int i = 0; i < parameters.length; i++) {
+		for (int i = 0; i < parameters.length; i++) 
 			newParameters[i] =
 				(FjFormalParameter) ((FjFormalParameter) parameters[i]).clone();
-		}
 
-		// calculate the arguments to
-		// pass to the called constructor
-		JExpression[] constructorArgs = null;
-		int argIndex = 0;
-		if (!superTypeName.equals(FjConstants.CHILD_IMPL_TYPE_NAME)) {
-			// calculate the parameters for the "supercall"
-			FjConstructorCall superCall =
-				((FjConstructorBlock) getBody()).getConstructorCall();
-			JExpression[] superFactoryMethodArgs = null;
-			if (superCall == null)
-				superFactoryMethodArgs = JExpression.EMPTY;
-			else
-				superFactoryMethodArgs = superCall.getArguments();
+		FjConstructorCall superCall =
+			((FjConstructorBlock) getBody()).getConstructorCall();
+		JExpression[] superFactoryMethodArgs = null;
+		if (superCall == null)
+			superFactoryMethodArgs = JExpression.EMPTY;
+		else
+			superFactoryMethodArgs = superCall.getArguments();
+		
+		JExpression factoryArg = factoredClass.createFactoryArgument(
+			superFactoryMethodArgs);
+		JExpression[] constructorArgs;
+		int argIndex;
+		if (factoryArg != null)
+		{
 			constructorArgs = new JExpression[newParameters.length + 1];
-			// add "supercall" as first parameter
-			if (superFactoryPrefix == null)
-				constructorArgs[0] =
-					new FjUnqualifiedInstanceCreation(
-						getTokenReference(),
-						new CClassNameType(
-							FjConstants.toIfcName(superTypeName)),
-						superFactoryMethodArgs);
-			else
-				constructorArgs[0] =
-					new FjQualifiedInstanceCreation(
-						getTokenReference(),
-						superFactoryPrefix,
-						isolateIdent(FjConstants.toIfcName(superTypeName)),
-						superFactoryMethodArgs);
+			constructorArgs[0] = factoryArg;
 			argIndex = 1;
-		} else {
+		}
+		else
+		{
 			constructorArgs = new JExpression[newParameters.length];
 			argIndex = 0;
 		}
-		for (int i = 0; i < newParameters.length; i++) {
-			constructorArgs[i + argIndex] =
-				new JLocalVariableExpression(
-					getTokenReference(),
-					newParameters[i]);
+		
+		for (int i = 0; i < newParameters.length; i++, argIndex++) 
+		{
+			constructorArgs[argIndex] =
+						new JLocalVariableExpression(
+							getTokenReference(),
+							newParameters[i]);
 		}
 
 		JBlock factoryBody =
 			new JBlock(
 				getTokenReference(),
-				new JStatement[] {
+				new JStatement[] 
+				{
 					new JVariableDeclarationStatement(
 						getTokenReference(),
 						new JVariableDefinition(
@@ -308,15 +411,16 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 						getTokenReference(),
 						new FjNameExpression(getTokenReference(), "child"),
 						null)
-		},
+				},
 				null);
+				
 
 		FjCleanMethodDeclaration m =
 			new FjCleanMethodDeclaration(
 				getTokenReference(),
 				Constants.ACC_PUBLIC,
 				typeVariables,
-				returnType,
+				new CClassNameType(org.caesarj.kjc.Constants.JAV_OBJECT),
 				FjConstants.factoryMethodName(FjConstants.toIfcName(ident)),
 				newParameters,
 				exceptions,
@@ -330,16 +434,8 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 		return this.parameters;
 	}
 
-	private String isolateIdent(String fullName) {
-		fullName = fullName.replace('.', '/');
-		fullName = fullName.replace('$', '/');
-		fullName = fullName.replace('#', '/');
-		int lastSeperator = fullName.lastIndexOf('/');
-		return fullName.substring(lastSeperator + 1);
-	}
 	
 	/**
-	 * By now I'm coping the method from FjMethodDeclaration.
 	 * @param context
 	 * @return
 	 * @throws PositionedError
@@ -400,49 +496,41 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 	public void updateWeaveletConstructor(CciWeaveletClassDeclaration owner)
 	{
 		TokenReference ref = getTokenReference();
+		JExpression[] bindingCreationArgs = new JExpression[]
+		{
+			new FjMethodCallExpression(ref, 
+				new FjThisExpression(ref), 
+				CciConstants.toAccessorMethodName(
+					CciConstants.IMPLEMENTATION_FIELD_NAME),
+				JExpression.EMPTY),
+		};
 		JExpression[] bindingCallArgs = new JExpression[]
 		{
-			new FjFieldAccessExpression(ref, 
-				new FjThisExpression(ref), 
-				CciConstants.IMPLEMENTATION_FIELD_NAME)
+			new FjUnqualifiedInstanceCreation(ref,
+				new CClassNameType(owner.getBindingTypeName()), 
+				bindingCreationArgs),
 		};
 		JExpression[] implementationCallArgs = new JExpression[]
 		{
-			new FjFieldAccessExpression(ref, 
-				new FjThisExpression(ref), 
-				CciConstants.BINDING_FIELD_NAME)
+			new FjUnqualifiedInstanceCreation(ref,
+				new CClassNameType(owner.getImplementationTypeName()), 
+				JExpression.EMPTY),
 		};
 		
 		JStatement[] statements = new JStatement[]
 		{
 			new JExpressionStatement(ref,
-				new FjAssignmentExpression(ref, 
-					new FjFieldAccessExpression(ref, 
-						CciConstants.IMPLEMENTATION_FIELD_NAME),
-					new FjUnqualifiedInstanceCreation(ref,
-						new CClassNameType(owner.getImplementationTypeName()), 
-						new JExpression[0])),
-				null),
-			new JExpressionStatement(ref,
-				new FjAssignmentExpression(ref, 
-					new FjFieldAccessExpression(ref, 
-						CciConstants.BINDING_FIELD_NAME),
-					new FjUnqualifiedInstanceCreation(ref,
-						new CClassNameType(owner.getBindingTypeName()), 
-						new JExpression[0])),
-				null),
-			new JExpressionStatement(ref,
 				new FjMethodCallExpression(ref, 
 					new FjThisExpression(ref), 
 					CciConstants.toSettingMethodName(
-						CciConstants.BINDING_FIELD_NAME),
+						CciConstants.IMPLEMENTATION_FIELD_NAME),
 					implementationCallArgs),
-				null),
+				null),	
 			new JExpressionStatement(ref,
 				new FjMethodCallExpression(ref, 
 					new FjThisExpression(ref), 
 					CciConstants.toSettingMethodName(
-						CciConstants.IMPLEMENTATION_FIELD_NAME),
+						CciConstants.BINDING_FIELD_NAME),
 					bindingCallArgs),
 				null)
 		};
@@ -461,7 +549,6 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 		else
 			finalStatements = statements;
 			
-		
 		body = new FjConstructorBlock(
 			ref, 
 			((FjConstructorBlock)body).getConstructorCall(), 
@@ -519,6 +606,38 @@ public class FjConstructorDeclaration extends JConstructorDeclaration {
 //		body = new FjConstructorBlock(getTokenReference(), 
 //			constructorCall, newStatements);
 //	}
+
+//Statements do updateWeaveletConstructor antigo.
+//	new JExpressionStatement(ref,
+//		new FjAssignmentExpression(ref, 
+//			new FjFieldAccessExpression(ref, 
+//				CciConstants.IMPLEMENTATION_FIELD_NAME),
+//			new FjUnqualifiedInstanceCreation(ref,
+//				new CClassNameType(owner.getImplementationTypeName()), 
+//				new JExpression[0])),
+//		null),
+//	new JExpressionStatement(ref,
+//		new FjAssignmentExpression(ref, 
+//			new FjFieldAccessExpression(ref, 
+//				CciConstants.BINDING_FIELD_NAME),
+//			new FjUnqualifiedInstanceCreation(ref,
+//				new CClassNameType(owner.getBindingTypeName()), 
+//				new JExpression[0])),
+//		null),
+//	new JExpressionStatement(ref,
+//		new FjMethodCallExpression(ref, 
+//			new FjThisExpression(ref), 
+//			CciConstants.toSettingMethodName(
+//				CciConstants.BINDING_FIELD_NAME),
+//			implementationCallArgs),
+//		null),
+//	new JExpressionStatement(ref,
+//		new FjMethodCallExpression(ref, 
+//			new FjThisExpression(ref), 
+//			CciConstants.toSettingMethodName(
+//				CciConstants.IMPLEMENTATION_FIELD_NAME),
+//			bindingCallArgs),
+//		null)
 
 	/**
 	 * DEBUG - WALTER

@@ -7,8 +7,8 @@ public class ObserverProtocolWeavelet
 	{
 		final ObserverProtocolWeavelet weavelet = new ObserverProtocolWeavelet();
 		System.out.println(weavelet.getNameParent("x"));
-		weavelet.SubjectWeavelet subject = weavelet.new SubjectWeavelet();
-		weavelet.ObserverWeavelet observer = weavelet.new ObserverWeavelet();
+		weavelet.SubjectBinding subject = weavelet.new SubjectBinding();
+		weavelet.ObserverBinding observer = weavelet.new ObserverBinding();
 		
 		subject.addObserver(observer);
 		subject.changed();
@@ -18,10 +18,5 @@ public class ObserverProtocolWeavelet
 		observer.setSubject(subject);
 		
 	}
-	public class SubjectWeavelet extends Subject(Subject, SubjectBinding)
-	{
-	}
-	public class ObserverWeavelet extends Observer(Observer, ObserverBinding)
-	{
-	}
+
 }

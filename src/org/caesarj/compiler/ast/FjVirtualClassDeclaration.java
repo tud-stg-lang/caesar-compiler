@@ -1,5 +1,6 @@
 package org.caesarj.compiler.ast;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -25,6 +26,7 @@ import org.caesarj.kjc.JMethodDeclaration;
 import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JStatement;
 import org.caesarj.kjc.JTypeDeclaration;
+import org.caesarj.kjc.JUnqualifiedInstanceCreation;
 
 public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 	implements FjResolveable {
@@ -180,6 +182,141 @@ public class FjVirtualClassDeclaration extends FjCleanClassDeclaration
 		}
 		return methods;
 	}
+	
+	private CMethod[] getConstructors(CClass clazz)
+	{
+		CMethod[] classMethods = clazz.getMethods();
+		ArrayList constructors = new ArrayList(classMethods.length);
+		for (int i = 0; i < classMethods.length; i++)
+			if (classMethods[i].isConstructor())
+				constructors.add(classMethods[i]);
+		
+		return (CMethod[])constructors.toArray(
+			new CMethod[constructors.size()]);
+	}
+	
+	private CMethod getConstructor(CClass clazz, CType[] parameters)
+	{
+		CMethod[] classMethods = clazz.getMethods();
+		for (int i = 0; i < classMethods.length; i++)
+		{
+			if (classMethods[i].isConstructor())
+			{
+				CType[] methodParams = classMethods[i].getParameters();
+				
+				if (methodParams.length == parameters.length)
+				{
+					boolean found = true;
+					for (int j = 0; j < parameters.length; j++)
+					{
+						if (! methodParams[j].equals(parameters[i], null))
+						{
+							found = false;
+							break;
+						}
+					}
+					if (found)
+						return classMethods[i];
+				}
+			}
+		}
+		return null;
+	}
+	private JExpression createFactoryArgument(CReferenceType classType)
+	{
+		CReferenceType superClass = classType.getCClass().getSuperType();
+		
+		if (FjConstants.CHILD_IMPL_TYPE_NAME.equals(
+			superClass.getQualifiedName()))
+			return
+				new JUnqualifiedInstanceCreation(
+					getTokenReference(), 
+					new CClassNameType(FjConstants.toImplName(
+						classType.getQualifiedName())),
+					JExpression.EMPTY);
+
+		return new JUnqualifiedInstanceCreation(
+					getTokenReference(),
+					new CClassNameType(FjConstants.toImplName(
+						classType.getQualifiedName())),
+					new JExpression[]{createFactoryArgument(superClass)});
+	}
+	
+	
+	public JExpression createFactoryArgument(JExpression[] superArguments)
+	{
+		if (hasSuperClass())
+		{
+			JExpression prefix = null;
+			FjTypeSystem typeSystem = new FjTypeSystem();
+			JExpression superFactoryPrefix = null;
+			CReferenceType superType = getSuperClass();
+			if (superClassField != null)
+			{
+				prefix =
+					new FjFieldAccessExpression(
+						getTokenReference(),
+						superClassField
+							.getVariable()
+							.getIdent());
+			}
+			else if (typeSystem.declaresInner(
+				ownerDecl.getSuperClass().getCClass(), ident) != null
+				|| typeSystem.declaresInner(
+					ownerDecl.getSuperClass().getCClass(),
+					FjConstants.toProxyName(ident)) != null)
+			{
+				prefix = new FjSuperExpression(getTokenReference());
+			}
+							
+			if (prefix != null)
+			{
+				return 
+					new FjQualifiedInstanceCreation(
+						getTokenReference(),
+						prefix,
+						FjConstants.isolateIdent(
+							FjConstants.toIfcName(
+								getSuperClass().getQualifiedName())),
+						superArguments);
+
+			}
+			
+			if (ownerDecl.getImplementation() != null
+					|| ownerDecl.getBinding() != null)
+			{
+				return createFactoryArgument(getSuperClass());
+			}
+			return 
+				new FjUnqualifiedInstanceCreation(
+					getTokenReference(),
+					new CClassNameType(
+						FjConstants.toIfcName(
+							superType.getQualifiedName())),
+					superArguments);
+						
+			//return createFactoryArgument(getSuperClass());
+			
+/*			if (FjConstants.CHILD_IMPL_TYPE_NAME.replace('.', '/').equals(
+				superClass.getQualifiedName()))
+			{
+				return 
+					new FjUnqualifiedInstanceCreation(
+						getTokenReference(),
+						new CClassNameType(
+							FjConstants.toIfcName(
+								superType.getQualifiedName())),
+						superArguments);
+			}
+
+			/////OWNER NAUM TEM SUPER E A CLASSE EH UM OVERRIDEN DE UMA CI////
+			return createFactoryArgument(getSuperClass());
+			///////////////////////////////////////////////////////////////
+*/
+		}
+		return null;
+	}
+
 
 	public Vector inherritConstructorsFromBaseClass( Hashtable markedVirtualClasses )
 		throws PositionedError {

@@ -6,4 +6,22 @@ public class ObserverProtocolImpl implements ObserverProtocol
 	{
 		return "";
 	}
+	override class Subject
+	{
+		public void addObserver(Observer o)
+		{
+		}
+		public void removeObserver(Observer o)
+		{
+		}
+		public Object getState()
+		{
+			return null;
+		}
+	}
+	
+	override class Observer
+	{
+
+	}	
 }

@@ -3,6 +3,7 @@ package org.caesarj.compiler.ast;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
 import org.caesarj.kjc.CClass;
+import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.JTypeDeclaration;
 
@@ -12,7 +13,8 @@ import org.caesarj.kjc.JTypeDeclaration;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class CciWeaveletSourceClass extends CciSourceClass
+public class CciWeaveletSourceClass 
+	extends CciSourceClass
 {
 	private CciWeaveletReferenceType superCollaborationInterface;
 	
@@ -86,4 +88,20 @@ public class CciWeaveletSourceClass extends CciSourceClass
 		}
 		return foundClass;		
 	}
+
+	public CReferenceType getBinding()
+	{
+		return superCollaborationInterface.getBindingType();
+	}
+
+	public CReferenceType getImplementation()
+	{
+		return superCollaborationInterface.getImplementationType();
+	}
+
+	public boolean isWeaveletClass()
+	{
+		return true;
+	}
+
 }

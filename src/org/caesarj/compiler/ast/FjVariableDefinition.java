@@ -71,6 +71,7 @@ public class FjVariableDefinition extends JVariableDefinition {
 	}
 
 	public void analyse(CBodyContext context) throws PositionedError {
+
 		FjTypeSystem fjts = new FjTypeSystem();		
 		try {
 			//Walter: inserted the sencod param in this method call

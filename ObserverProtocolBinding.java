@@ -21,7 +21,7 @@ public class ObserverProtocolBinding binds ObserverProtocol
 		}
     }
 	
-	virtual class ObserverBinding binds Observer
+	virtual class ObserverBindings binds Observer
 	{
 		public void notify(Subject s)
 		{

@@ -13,6 +13,7 @@ import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
 import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CClassNameType;
+import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
 import org.caesarj.kjc.CTypeVariable;
 import org.caesarj.kjc.JFieldDeclaration;
@@ -72,7 +73,7 @@ public class FjOverrideClassDeclaration extends FjVirtualClassDeclaration implem
 	}
 
 	public static void setOverridingSuperClass( FjOverrideable instance, Compiler compiler ) {
-//TODO: procurar na ci tb
+
 		CClass owner = instance.getCClass().getOwner().getCClass();
 		CClass ownerSuper = owner;
 		CReferenceType superClass = null;
@@ -105,12 +106,46 @@ public class FjOverrideClassDeclaration extends FjVirtualClassDeclaration implem
 			}
 		}
 		
-		if( superClass == null )
+		if (superClass == null)
+		{
+			//Try the collaboration interfaces
+			owner = instance.getCClass().getOwner().getCClass();
+			innerSuper = null;
+			CClass instanceClass = instance.getCClass();
+			CReferenceType[] ownerInterfaces = owner.getInterfaces();
+			for (int i = 0; superClass== null 
+				&& i < ownerInterfaces.length; i++)
+			{
+				ownerSuper = ownerInterfaces[i].getCClass();
+				if (CModifier.contains(ownerSuper.getModifiers(), 
+					CCI_COLLABORATION))
+				{
+					CReferenceType[] inners = ownerSuper.getInnerClasses();
+					for (int j = 0;	innerSuper == null 
+						&& i < inners.length; i++)
+					{
+						if (inners[i].getIdent().equals(FjConstants.toIfcName(
+							instanceClass.getIdent())))
+							innerSuper = inners[ i ].getCClass();
+					}					
+					if (innerSuper != null) 
+					{
+						superClass = new CClassNameType(instance
+							.toSuperClass(innerSuper.getQualifiedName()));
+					}
+				}
+			}
+		}
+		
+		if (superClass == null)
+		{
 			compiler.reportTrouble(
-				new UnpositionedError( CaesarMessages.NO_MATCHING_OVERRIDDEN_CLASS ).
-					addPosition( instance.getTokenReference() ) );
+				new UnpositionedError(
+					CaesarMessages.NO_MATCHING_OVERRIDDEN_CLASS).
+						addPosition(instance.getTokenReference()));
+		}
 		else
-			instance.setSuperClass( superClass );
+			instance.setSuperClass(superClass);
 	}
 	
 	public Vector inherritConstructorsFromBaseClass(Hashtable markedVirtualClasses)

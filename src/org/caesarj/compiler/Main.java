@@ -137,7 +137,7 @@ public class Main extends org.caesarj.kjc.Main implements Constants {
 			System.out.println("JOIN:");
 			for (int count = 0; count < tree.length; count++) {
 				join(tree[count]);
-				tree[count].accept(new DebugVisitor());
+				//tree[count].accept(new DebugVisitor());
 			}
 
 			if (errorFound) {

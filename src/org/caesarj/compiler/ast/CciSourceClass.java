@@ -84,4 +84,9 @@ public class CciSourceClass
 		this.methods = methods;
 	}
 
+	public boolean isWeaveletClass()
+	{
+		return false;
+	}
+
 }

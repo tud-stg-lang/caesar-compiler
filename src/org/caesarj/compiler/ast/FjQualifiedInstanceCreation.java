@@ -50,7 +50,7 @@ public class FjQualifiedInstanceCreation
 	
 	public JExpression analyse(CExpressionContext context)
 		throws PositionedError {
-		
+
 		String factoryMethodName = FjConstants.factoryMethodName( cachedIdent );
 		FjTypeSystem fjts = new FjTypeSystem();
 		

@@ -1,5 +1,6 @@
 package org.caesarj.compiler.ast;
 
+import org.caesarj.compiler.CciConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.PositionedError;
@@ -8,6 +9,7 @@ import org.caesarj.compiler.UnpositionedError;
 import org.caesarj.kjc.CBinaryTypeContext;
 import org.caesarj.kjc.CClass;
 import org.caesarj.kjc.CClassContext;
+import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CMethod;
 import org.caesarj.kjc.CModifier;
 import org.caesarj.kjc.CReferenceType;
@@ -318,6 +320,31 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 			return (CSourceMethod) getMethod();
 		} catch (UnpositionedError cue) {
 			throw cue.addPosition(getTokenReference());
+		}
+	}
+
+	/**
+	 * Walter new
+	 * @param collaborationInterface
+	 */
+	public void fixBindingTypes(CReferenceType collaborationInterface)
+	{
+		FjTypeSystem typeSystem = new FjTypeSystem();
+		CClass ciClass = collaborationInterface.getCClass();
+		for (int i = 0; i < parameters.length; i++)
+		{
+			if (typeSystem.declaresInner(
+					ciClass, 
+					parameters[i].getType().toString()) != null)
+			{
+				parameters[i] = new FjFormalParameter(
+					parameters[i].getTokenReference(),
+					parameters[i].getDescription(),
+					new CClassNameType(CciConstants.IMPLEMENTATION_FIELD_NAME
+						+ "/" + parameters[i].getType()),
+					parameters[i].getIdent(),
+					parameters[i].isFinal());
+			}
 		}
 	}
 	

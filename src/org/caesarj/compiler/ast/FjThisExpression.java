@@ -54,7 +54,7 @@ public class FjThisExpression extends JThisExpression {
 			FjFamily family = fjts.resolveFamily(
 				context.getBlockContext(),
 				FjConstants.OUTER_THIS_NAME,
-				false );
+				false);
 			return family;
 		} catch( UnpositionedError e ) {
 			throw e.addPosition( getTokenReference() );

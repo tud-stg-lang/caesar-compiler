@@ -2,6 +2,7 @@ package org.caesarj.compiler.ast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Vector;
 
 import org.caesarj.compiler.CaesarMessages;
 import org.caesarj.compiler.CciConstants;
@@ -12,6 +13,7 @@ import org.caesarj.compiler.PositionedError;
 import org.caesarj.compiler.TokenReference;
 import org.caesarj.compiler.UnpositionedError;
 import org.caesarj.kjc.CClass;
+import org.caesarj.kjc.CClassContext;
 import org.caesarj.kjc.CClassNameType;
 import org.caesarj.kjc.CContext;
 import org.caesarj.kjc.CMethod;
@@ -35,6 +37,7 @@ import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.KjcMessages;
 import org.caesarj.kjc.TypeFactory;
 import org.caesarj.util.MessageDescription;
+import org.caesarj.util.Utils;
 
 /**
  * AST element for a class declaration.
@@ -46,6 +49,7 @@ import org.caesarj.util.MessageDescription;
  */
 public class CciClassDeclaration 
 	extends JClassDeclaration
+	implements CciNestedContainer
 {
 	/** 
 	 * The CI that the class binds.
@@ -55,6 +59,11 @@ public class CciClassDeclaration
 	 * The CIs that the class implements.
 	 */
 	protected CReferenceType implementation;
+	
+	/**
+	 * Are the setting methods already added?
+	 */
+	protected boolean settingMethodsAdded;	
 	
 	/**
 	 * @param where
@@ -215,58 +224,14 @@ public class CciClassDeclaration
 		{
 			// By now, there is always at most one binding or implementation
 			CReferenceType[] allInterfaces = owner.getInterfaces();
-			CciClass ownerClass = ((CciClass)owner);
+			CciClass ownerClass = ((CciClass) owner);
 		
 			//First try the bindings			
 			CReferenceType ownerCi = ownerClass.getBinding();
 			if (ownerCi != null)
 				ciName = ownerCi.getQualifiedName();
-/*			else
-			{
-				//Now the implementations, adding the implementation interfaces
-				//to the inners.
-				ownerCi = ownerClass.getImplementation();
-				if (ownerCi != null)
-				{
-					ciName = ownerCi.getQualifiedName();
-					addImplementation(ownerCi);
-				}
-				else
-				{
-					//The owner can be an interface, so here we look for the
-					// CI in the interfaces of the owner.
-					CReferenceType[] ownerCis = owner.getInterfaces();
-					if (ownerCis != null && ownerCis.length > 0)
-					{
-						CReferenceType ci = null;
-						for (int i = 0; i < ownerCis.length; i++)
-						{
-							if (CModifier.contains(ownerCis[i].getCClass()
-								.getModifiers(), CCI_COLLABORATION))
-							{
-								ciName = ownerCis[i].getQualifiedName();
-								ci = ownerCis[i];
-								break;
-							}
-						}
-						
-						//Here just add the interface if there is one.
-						if (ci != null)
-							addImplementation(ci);
-					}
-				}
-			}
-*/			
 		}
-		
-		//Resolve the interfaces
-/*		for (int i = 0; i < interfaces.length; i++)
-		{
-			interfaces[i] = resolveInterface(
-				context, ciName, interfaces[i], false);
-			
-		}
-*/
+
 		super.resolveInterfaces(context);
 		//After resolving the interfaces initializes the implementations
 		initImplemetation(context);
@@ -281,27 +246,52 @@ public class CciClassDeclaration
 				ciName != null 
 					? new CClassNameType(ciName + "$" + binding)
 					: binding);
+					
+			fixBindingMethods(binding);
+					
 			
-			addCrossReferenceField(binding.getQualifiedName(), 
-				CciConstants.IMPLEMENTATION_FIELD_NAME);
-			
-			addSettingMethod(
-				binding.getQualifiedName(),
-				CciConstants.IMPLEMENTATION_FIELD_NAME, 
-				context.getTypeFactory());
+			if (! settingMethodsAdded)
+			{
+				addCrossReferenceField(binding.getQualifiedName(), 
+					CciConstants.IMPLEMENTATION_FIELD_NAME, true);
+				
+/*				addSettingMethod(
+					binding.getQualifiedName(),
+					CciConstants.IMPLEMENTATION_FIELD_NAME, 
+					context.getTypeFactory());
+*/
+				settingMethodsAdded = true;
+			}
 		}
-		else if (implementation != null)
+		else if (implementation != null && ! settingMethodsAdded)
 		{
 			addCrossReferenceField(implementation.getQualifiedName(), 
-				CciConstants.BINDING_FIELD_NAME);
+				CciConstants.BINDING_FIELD_NAME, false);
 
 			addSettingMethod(
 				implementation.getQualifiedName(),
 				CciConstants.BINDING_FIELD_NAME, 
 				context.getTypeFactory());
+			
+			settingMethodsAdded = true;
 
 		}
 		sourceClass.setInterfaces(getAllInterfaces());
+	}
+
+	public void fixBindingMethods(CReferenceType binding)
+	{
+		for (int i = 0; i < methods.length; i++)
+		{
+			if (methods[i] instanceof FjMethodDeclaration)
+				((FjMethodDeclaration) methods[i]).fixBindingTypes(
+					binding);
+		}
+		for (int i = 0; i < inners.length; i++)
+		{
+			if (inners[i] instanceof CciNestedContainer)
+				((CciNestedContainer)inners[i]).fixBindingMethods(binding);
+		}
 	}
 	
 	/**
@@ -312,7 +302,7 @@ public class CciClassDeclaration
 	 * @return
 	 */
 	protected void addCrossReferenceField(String typeName, 
-		String fieldName)
+		String fieldName, boolean isFinal)
 	{
 		JFieldDeclaration[] newFields = 
 			new JFieldDeclaration[fields.length + 1];
@@ -322,7 +312,7 @@ public class CciClassDeclaration
 					getTokenReference(), 
 					new FjVariableDefinition(
 						getTokenReference(), 
-						ACC_PRIVATE, 
+						ACC_PRIVATE | (isFinal ? ACC_FINAL : 0), 
 						new CClassNameType(typeName), 
 						fieldName, 
 						null),
@@ -411,6 +401,41 @@ public class CciClassDeclaration
 					FjConstants.CHILD_IMPL_TYPE_NAME))
 			&& ! (getSuperClass().getQualifiedName().equals(
 					Constants.JAV_OBJECT));
+	}
+	
+	public void addImplementationToConstructors(TypeFactory typeFactory)
+	{
+		if (binding != null)
+		{
+			boolean hasSuper = hasSuperClass();
+			FjConstructorDeclaration[] constructors = getConstructors();
+			if (constructors.length == 0)
+			{
+				FjConstructorDeclaration noArgsConstructor =
+					new FjConstructorDeclaration(
+						getTokenReference(),
+						Constants.ACC_PUBLIC,
+						ident,
+						JFormalParameter.EMPTY,
+						CReferenceType.EMPTY,
+						new FjConstructorBlock(
+							getTokenReference(),
+							new FjConstructorCall(
+								getTokenReference(),
+								false,
+								JExpression.EMPTY),
+							JStatement.EMPTY),
+						null,
+						null,
+						typeFactory);
+				addMethod(noArgsConstructor);
+				constructors = 
+					new FjConstructorDeclaration[] {noArgsConstructor};
+			}
+			for (int i = 0; i < constructors.length; i++)
+				constructors[i].addImplementationParameter(binding, hasSuper);
+
+		}
 	}
 	
 
@@ -585,12 +610,30 @@ public class CciClassDeclaration
 //				binding.getCClass().getInnerClasses(), 
 //				binding, 
 //				CaesarMessages.NESTED_TYPE_NOT_BOUND);
-			
-			checkCIMethods(context, binding, CCI_PROVIDED, 
+			CClassContext classContext = constructContext(context);
+			checkCIMethods(classContext, binding, CCI_PROVIDED, 
 				CaesarMessages.PROVIDED_METHOD_IN_BINDING);
 							
-			addUndefinedMethods(constructContext(context), binding, 
+			addUndefinedMethods(classContext, binding, 
 				CCI_PROVIDED, CciConstants.IMPLEMENTATION_FIELD_NAME);
+				
+			CMethod[] bindingMethods = binding.getCClass().getMethods();
+			ArrayList factoryMethods = new ArrayList(bindingMethods.length);
+			for (int i = 0; i < bindingMethods.length; i++)
+			{
+				if (FjConstants.isFactoryMethodName(
+					bindingMethods[i].getIdent()))
+					factoryMethods.add(bindingMethods[i]);
+				
+			}
+			
+			addUndefinedMethods(
+				classContext, 
+				CciConstants.IMPLEMENTATION_FIELD_NAME,
+				(CMethod[])factoryMethods.toArray(
+					new CMethod[factoryMethods.size()]));
+				
+			
 			
 		}
 		else if (implementation != null)
@@ -606,6 +649,7 @@ public class CciClassDeclaration
 			addUndefinedMethods(constructContext(context), implementation, 
 				CCI_EXPECTED, CciConstants.BINDING_FIELD_NAME);
 		}
+		
 		
 		super.checkTypeBody(context);
 	}
@@ -686,6 +730,15 @@ public class CciClassDeclaration
 			collaborationInterface.getCClass(), 
 			methodModifier).toArray(new CMethod[0]);
 		
+		addUndefinedMethods(context, fieldName, ciMethods);
+	}
+
+	protected void addUndefinedMethods(
+		CContext context,
+		String fieldName,
+		CMethod[] ciMethods)
+		throws PositionedError
+	{
 		// We have to store both the method itself and its source reference	
 		ArrayList newMethods = new ArrayList(ciMethods.length);
 		ArrayList sourceMethods = new ArrayList(ciMethods.length);
@@ -943,6 +996,14 @@ public class CciClassDeclaration
 	{
 		this.binding = binding;
 	}
+	
+	/**
+	 * Pulled up
+	 */
+	public JTypeDeclaration[] getInners()
+	{
+		return inners;
+	}
 
 	/* (non-Javadoc)
 	 * @see at.dms.kjc.JTypeDeclaration#print()
@@ -981,6 +1042,23 @@ public class CciClassDeclaration
 		}
 		
 		System.out.println();
+	}
+
+/**
+ * pulled up
+ * @return
+ */
+	protected FjConstructorDeclaration[] getConstructors()
+	{
+		Vector contructors = new Vector(methods.length);
+		for (int i = 0; i < methods.length; i++)
+		{
+			if (methods[i] instanceof FjConstructorDeclaration)
+				contructors.add(methods[i]);
+		}
+		return (FjConstructorDeclaration[]) Utils.toArray(
+			contructors,
+			FjConstructorDeclaration.class);
 	}
 
 //	/**

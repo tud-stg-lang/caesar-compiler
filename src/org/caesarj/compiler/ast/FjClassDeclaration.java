@@ -327,19 +327,6 @@ public class FjClassDeclaration
 		return cacheComment;
 	}
 
-	protected FjConstructorDeclaration[] getConstructors()
-	{
-		Vector contructors = new Vector(methods.length);
-		for (int i = 0; i < methods.length; i++)
-		{
-			if (methods[i] instanceof FjConstructorDeclaration)
-				contructors.add(methods[i]);
-		}
-		return (FjConstructorDeclaration[]) Utils.toArray(
-			contructors,
-			FjConstructorDeclaration.class);
-	}
-
 	public void join(CContext context) throws PositionedError
 	{
 		try

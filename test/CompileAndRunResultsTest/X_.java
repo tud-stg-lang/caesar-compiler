@@ -10,6 +10,7 @@ public class X_ {
 			return 0;
 		}
 	}
+	
 	virtual class SubInner extends Inner {
 		public int bar() {
 			System.out.println("X.SubInner.bar");

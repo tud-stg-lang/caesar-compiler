@@ -222,4 +222,14 @@ public class FjConstants {
 		message = message.replaceAll( PROXY_POSTFIX, "" );
 		return message;
 	}
+	
+	public static String isolateIdent(String fullName) 
+	{
+		fullName = fullName.replace('.', '/');
+		fullName = fullName.replace('$', '/');
+		fullName = fullName.replace('#', '/');
+		int lastSeperator = fullName.lastIndexOf('/');
+		return fullName.substring(lastSeperator + 1);
+	}
+
 }

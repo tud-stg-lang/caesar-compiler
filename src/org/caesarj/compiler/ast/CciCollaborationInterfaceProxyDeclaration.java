@@ -24,10 +24,7 @@ public class CciCollaborationInterfaceProxyDeclaration
 {
 	private String collaborationInterfaceName;
 	
-	/**
-	 * Are the setting methods already added?
-	 */
-	protected boolean settingMethodsAdded;
+
 	
 	/**
 	 * @param where

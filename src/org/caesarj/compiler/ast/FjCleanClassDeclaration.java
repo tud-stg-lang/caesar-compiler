@@ -457,6 +457,7 @@ public class FjCleanClassDeclaration extends FjClassDeclaration
 			append((FjConstructorDeclaration) oldConstructors.elementAt(i));
 		}
 	}
+	
 
 	protected JTypeDeclaration getCleanInterfaceOwner()
 	{

@@ -9,4 +9,5 @@ public interface CciClass
 {
 	public CReferenceType getBinding();
 	public CReferenceType getImplementation();
+	public boolean isWeaveletClass();
 }

@@ -1,0 +1,364 @@
+// Decompiled by Jad v1.5.7. Copyright 1997-99 Pavel Kouznetsov.
+// Jad home page: http://www.geocities.com/SiliconValley/Bridge/8617/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   ObserverProtocolImpl.java
+
+package generated;
+
+import java.io.PrintStream;
+import java.util.*;
+import org.caesarj.runtime.*;
+
+// Referenced classes of package generated:
+//            ObserverProtocol, ObserverProtocolParent
+
+public class ObserverProtocolImpl
+    implements ObserverProtocol
+{
+    public class Subject_Impl extends ChildImpl
+        implements Subject, ObserverProtocol.Subject
+    {
+
+        private final Object _getState_implementation(Subject_Impl subject_impl)
+        {
+            return _binding.getState();
+        }
+
+        public Object _getState_selfContext(Object obj)
+        {
+            return _getState_implementation((Subject_Impl)obj);
+        }
+
+        public Object getState()
+        {
+            return _getState_implementation(this);
+        }
+
+        private final void _setObserver_implementation(Subject_Impl subject_impl, ObserverProtocolParent.Observer observer)
+        {
+            Observer observer1 = (Observer)observer;
+            _binding.setObserver(observer1);
+        }
+
+        public void _setObserver_selfContext(Object obj, ObserverProtocolParent.Observer observer)
+        {
+            _setObserver_implementation((Subject_Impl)obj, observer);
+        }
+
+        public void setObserver(ObserverProtocolParent.Observer observer)
+        {
+            _setObserver_implementation(this, observer);
+        }
+
+        private final void _addObserver_implementation(Subject subject, ObserverProtocolParent.Observer observer)
+        {
+            Observer observer1 = (Observer)observer;
+            System.out.println("Subject.addObserver(" + observer1 + ")");
+            observers.add(observer1);
+        }
+
+        public void _addObserver_selfContext(Object obj, ObserverProtocolParent.Observer observer)
+        {
+            _addObserver_implementation((Subject)obj, observer);
+        }
+
+        public void addObserver(ObserverProtocolParent.Observer observer)
+        {
+            _addObserver_implementation(this, observer);
+        }
+
+        private final void _removeObserver_implementation(Subject subject, ObserverProtocolParent.Observer observer)
+        {
+            Observer observer1 = (Observer)observer;
+            System.out.println("Subject.removeObserver(" + observer1 + ")");
+            getNameParent("X");
+            observers.remove(observer1);
+        }
+
+        public void _removeObserver_selfContext(Object obj, ObserverProtocolParent.Observer observer)
+        {
+            _removeObserver_implementation((Subject)obj, observer);
+        }
+
+        public void removeObserver(ObserverProtocolParent.Observer observer)
+        {
+            _removeObserver_implementation(this, observer);
+        }
+
+        private final void _changed_implementation(Subject subject)
+        {
+            System.out.println("Subject.changed()");
+            for(Iterator iterator = observers.iterator(); iterator.hasNext(); ((Observer)CastImpl.checkFamily(_getFamily(), (Child)CastImpl.checkFamily(_getFamily(), (Child)iterator.next()))).notify(subject));
+        }
+
+        public void _changed_selfContext(Object obj)
+        {
+            _changed_implementation((Subject)obj);
+        }
+
+        public void changed()
+        {
+            _changed_implementation(this);
+        }
+
+        public void _setBinding(ObserverProtocolParent.Subject subject)
+        {
+            Subject subject1 = (Subject)subject;
+            _binding = subject1;
+        }
+
+        private void Block$()
+        {
+            observers = new ArrayList();
+        }
+
+        private ArrayList observers;
+        private ObserverProtocol.Subject _binding;
+        public final ObserverProtocolImpl this$0;
+
+        public Subject_Impl()
+        {
+            super(null);
+            this$0 = ObserverProtocolImpl.this;
+            Block$();
+        }
+    }
+
+    public class Observer_Impl extends ChildImpl
+        implements Observer, ObserverProtocol.Observer
+    {
+
+        private final void _notify_implementation(Observer_Impl observer_impl, ObserverProtocolParent.Subject subject)
+        {
+            Subject subject1 = (Subject)subject;
+            _binding.notify(subject1);
+        }
+
+        public void _notify_selfContext(Object obj, ObserverProtocolParent.Subject subject)
+        {
+            _notify_implementation((Observer_Impl)obj, subject);
+        }
+
+        public void notify(ObserverProtocolParent.Subject subject)
+        {
+            _notify_implementation(this, subject);
+        }
+
+        private final void _setSubject_implementation(Observer observer, ObserverProtocolParent.Subject subject)
+        {
+            Subject subject1 = (Subject)subject;
+            System.out.println("Observer.setSubject(" + subject1 + ")");
+        }
+
+        public void _setSubject_selfContext(Object obj, ObserverProtocolParent.Subject subject)
+        {
+            _setSubject_implementation((Observer)obj, subject);
+        }
+
+        public void setSubject(ObserverProtocolParent.Subject subject)
+        {
+            _setSubject_implementation(this, subject);
+        }
+
+        public void _setBinding(ObserverProtocolParent.Observer observer)
+        {
+            Observer observer1 = (Observer)observer;
+            _binding = observer1;
+        }
+
+        private ObserverProtocol.Observer _binding;
+        public final ObserverProtocolImpl this$0;
+
+        public Observer_Impl()
+        {
+            super(null);
+            this$0 = ObserverProtocolImpl.this;
+        }
+    }
+
+    public static interface Subject
+        extends Child, ObserverProtocol.Subject
+    {
+
+        public abstract void addObserver(ObserverProtocolParent.Observer observer);
+
+        public abstract void _addObserver_selfContext(Object obj, ObserverProtocolParent.Observer observer);
+
+        public abstract void removeObserver(ObserverProtocolParent.Observer observer);
+
+        public abstract void _removeObserver_selfContext(Object obj, ObserverProtocolParent.Observer observer);
+
+        public abstract void changed();
+
+        public abstract void _changed_selfContext(Object obj);
+    }
+
+    public static class Subject_Proxy extends ChildImpl
+        implements Subject, ObserverProtocol.Subject
+    {
+
+        private final Object _getState_implementation(Subject_Proxy subject_proxy)
+        {
+            return _binding.getState();
+        }
+
+        public Object _getState_selfContext(Object obj)
+        {
+            return _getState_implementation((Subject_Proxy)obj);
+        }
+
+        public Object getState()
+        {
+            return _getState_implementation(this);
+        }
+
+        private final void _setObserver_implementation(Subject_Proxy subject_proxy, ObserverProtocolParent.Observer observer)
+        {
+            Observer observer1 = (Observer)observer;
+            _binding.setObserver(observer1);
+        }
+
+        public void _setObserver_selfContext(Object obj, ObserverProtocolParent.Observer observer)
+        {
+            _setObserver_implementation((Subject_Proxy)obj, observer);
+        }
+
+        public void setObserver(ObserverProtocolParent.Observer observer)
+        {
+            _setObserver_implementation(this, observer);
+        }
+
+        public void addObserver(ObserverProtocolParent.Observer observer)
+        {
+            _addObserver_selfContext(this, observer);
+        }
+
+        public void _addObserver_selfContext(Object obj, ObserverProtocolParent.Observer observer)
+        {
+            ((Subject)_parent._getTarget())._addObserver_selfContext(_getDispatcher(obj), observer);
+        }
+
+        public void removeObserver(ObserverProtocolParent.Observer observer)
+        {
+            _removeObserver_selfContext(this, observer);
+        }
+
+        public void _removeObserver_selfContext(Object obj, ObserverProtocolParent.Observer observer)
+        {
+            ((Subject)_parent._getTarget())._removeObserver_selfContext(_getDispatcher(obj), observer);
+        }
+
+        public void changed()
+        {
+            _changed_selfContext(this);
+        }
+
+        public void _changed_selfContext(Object obj)
+        {
+            ((Subject)_parent._getTarget())._changed_selfContext(_getDispatcher(obj));
+        }
+
+        public void _setBinding(ObserverProtocolParent.Subject subject)
+        {
+            Subject subject1 = (Subject)subject;
+            _binding = subject1;
+        }
+
+        private ObserverProtocol.Subject _binding;
+
+        protected Subject_Proxy(Child child)
+        {
+            super(child);
+        }
+    }
+
+    public static interface Observer
+        extends Child, ObserverProtocol.Observer
+    {
+
+        public abstract void setSubject(ObserverProtocolParent.Subject subject);
+
+        public abstract void _setSubject_selfContext(Object obj, ObserverProtocolParent.Subject subject);
+    }
+
+    public static class Observer_Proxy extends ChildImpl
+        implements Observer, ObserverProtocol.Observer
+    {
+
+        private final void _notify_implementation(Observer_Proxy observer_proxy, ObserverProtocolParent.Subject subject)
+        {
+            Subject subject1 = (Subject)subject;
+            _binding.notify(subject1);
+        }
+
+        public void _notify_selfContext(Object obj, ObserverProtocolParent.Subject subject)
+        {
+            _notify_implementation((Observer_Proxy)obj, subject);
+        }
+
+        public void notify(ObserverProtocolParent.Subject subject)
+        {
+            _notify_implementation(this, subject);
+        }
+
+        public void setSubject(ObserverProtocolParent.Subject subject)
+        {
+            _setSubject_selfContext(this, subject);
+        }
+
+        public void _setSubject_selfContext(Object obj, ObserverProtocolParent.Subject subject)
+        {
+            ((Observer)_parent._getTarget())._setSubject_selfContext(_getDispatcher(obj), subject);
+        }
+
+        public void _setBinding(ObserverProtocolParent.Observer observer)
+        {
+            Observer observer1 = (Observer)observer;
+            _binding = observer1;
+        }
+
+        private ObserverProtocol.Observer _binding;
+
+        protected Observer_Proxy(Child child)
+        {
+            super(child);
+        }
+    }
+
+
+    public Object getNameParentExpected(String s)
+    {
+        return _binding.getNameParentExpected(s);
+    }
+
+    public String getNameParent(String s)
+    {
+        System.out.println("ObserverProtocolImpl.getNameParent(" + s + ")");
+        return "ObserverProtocolImpl";
+    }
+
+    public void _setBinding(ObserverProtocol observerprotocol)
+    {
+        _binding = observerprotocol;
+    }
+
+    public Object _createSubject()
+    {
+        Subject_Impl subject_impl = new Subject_Impl();
+        subject_impl._setFamily(this);
+        return subject_impl;
+    }
+
+    public Object _createObserver()
+    {
+        Observer_Impl observer_impl = new Observer_Impl();
+        observer_impl._setFamily(this);
+        return observer_impl;
+    }
+
+    public ObserverProtocolImpl()
+    {
+    }
+
+    private ObserverProtocol _binding;
+}

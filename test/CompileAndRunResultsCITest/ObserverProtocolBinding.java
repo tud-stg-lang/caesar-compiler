@@ -6,4 +6,19 @@ public class ObserverProtocolBinding binds ObserverProtocol
 	{
 		return "";
 	}
+	virtual class SubjectBinding binds Subject
+	{
+		public void changed()
+		{
+			
+		}
+	}
+	
+	virtual class Observer binds Observer
+	{
+		public void notify(Subject s)
+		{
+			
+		}
+	}	
 }

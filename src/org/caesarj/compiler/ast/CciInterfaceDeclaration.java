@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.caesarj.compiler.CciConstants;
+import org.caesarj.compiler.FjConstants;
 import org.caesarj.compiler.JavaStyleComment;
 import org.caesarj.compiler.JavadocComment;
 import org.caesarj.compiler.TokenReference;
@@ -217,7 +218,7 @@ public class CciInterfaceDeclaration
 			if (inners[i] instanceof CciInterfaceDeclaration)
 				inners[i] =
 					((CciInterfaceDeclaration)inners[i])
-						.createEmptyVirtualDeclaration(hasSuper());
+						.createEmptyVirtualDeclaration(this, hasSuper());
 		}
 
 		return inners;
@@ -225,10 +226,11 @@ public class CciInterfaceDeclaration
 	}
 	
 	public FjVirtualClassDeclaration createEmptyVirtualDeclaration(
-		boolean hasSuper)
+		CciInterfaceDeclaration owner, boolean hasSuper)
 	{
+		FjVirtualClassDeclaration returnClass;
 		if (hasSuper)
-			return 
+			returnClass =
 				new FjOverrideClassDeclaration(
 					getTokenReference(), 
 					~ACC_ABSTRACT & ~ACC_INTERFACE & modifiers,
@@ -244,7 +246,7 @@ public class CciInterfaceDeclaration
 					null,
 					null);
 		else
-			return 
+			returnClass =
 				new FjVirtualClassDeclaration(
 					getTokenReference(), 
 					~ACC_ABSTRACT & ~ACC_INTERFACE & modifiers,
@@ -259,7 +261,9 @@ public class CciInterfaceDeclaration
 					new JPhylum[0],
 					null,
 					null);
-		
+					
+		returnClass.setOwnerDeclaration(owner);
+		return returnClass;
 	}
 	
 	protected JMethodDeclaration[] createEmptyMethods()
@@ -336,6 +340,10 @@ public class CciInterfaceDeclaration
 				proxyMethods.add(((CciMethodDeclaration)methods[i])
 					.createDelegationMethod(
 						CciConstants.BINDING_FIELD_NAME));
+			else if (methods[i] instanceof FjCleanMethodDeclaration)//Factory methods
+				proxyMethods.add(((FjCleanMethodDeclaration)methods[i])
+					.createDelegationMethod(
+						CciConstants.IMPLEMENTATION_FIELD_NAME));
 			
 		}
 		return (JMethodDeclaration[])

@@ -26,7 +26,10 @@ import org.caesarj.kjc.JPhylum;
 import org.caesarj.kjc.JTypeDeclaration;
 import org.caesarj.kjc.KjcMessages;
 
-public class FjInterfaceDeclaration extends JInterfaceDeclaration {
+public class FjInterfaceDeclaration 
+	extends JInterfaceDeclaration 
+	implements CciNestedContainer
+{
 
 	public FjInterfaceDeclaration(
 		TokenReference where,
@@ -257,7 +260,22 @@ public class FjInterfaceDeclaration extends JInterfaceDeclaration {
 	    sourceClass.setInnerClasses(innerClasses);
 	    uniqueSourceClass = classReader.addSourceClass(sourceClass);
 	}
-
+	
+	public void fixBindingMethods(CReferenceType binding)
+	{
+		for (int i = 0; i < methods.length; i++)
+		{
+			if (methods[i] instanceof FjMethodDeclaration)
+				((FjMethodDeclaration) methods[i]).fixBindingTypes(
+					binding);
+		}
+		for (int i = 0; i < inners.length; i++)
+		{
+			if (inners[i] instanceof CciNestedContainer)
+				((CciNestedContainer)inners[i]).fixBindingMethods(binding);
+		}
+	}
+	
 	public JTypeDeclaration[] getInners() {
 		return inners;
 	}

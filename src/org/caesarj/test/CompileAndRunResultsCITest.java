@@ -73,8 +73,9 @@ public class CompileAndRunResultsCITest extends FjTestCase
                 String[] args = new String[] {
 					"ObserverProtocolParent.java",
 					"ObserverProtocol.java",
-					"ObserverProtocolBinding.java",
-					"ObserverProtocolImpl.java"};
+
+					"ObserverProtocolImpl.java"
+				};
 
                 compiler = new CompilerMock(this, 
                 	new PrintWriter(System.out)

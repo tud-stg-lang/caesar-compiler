@@ -530,11 +530,60 @@ public class FjTypeSystem
 		String innerTypeName)
 		throws UnpositionedError
 	{
-
+//		return lowerBound(context, owner, owner, innerTypeName);
+//	}
+//
+//	public CReferenceType lowerBound(
+//		CTypeContext context,
+//		CClass owner,
+//		CClass caller,
+//		String innerTypeName)
+//		throws UnpositionedError
+//	{
+//	
+//		CClass inner = null;
+//		try
+//		{
+//			inner = owner.lookupClass(caller, innerTypeName);
+//		}
+//		catch (UnpositionedError e)
+//		{
+//			if (e.getFormattedMessage().getDescription()
+//				!= KjcMessages.CLASS_AMBIGUOUS)
+//				return null;
+//
+//			// the first candidate found is that of the first
+//			// interface found i.e. the most recent implementation
+//			CClass[] candidates =
+//				(CClass[]) e.getFormattedMessage().getParams()[1];
+//			inner = candidates[0];
+//		}
+//		if (inner != null)
+//		{
+//			CClass innerOwner = inner.getOwner();
+//			CReferenceType type = null;
+//			if (innerOwner.getQualifiedName().equals(owner.getQualifiedName()))
+//			{
+//				type =
+//					new CClassNameType(
+//						FjConstants.toIfcName(
+//							owner.getQualifiedName()
+//								+ "$"
+//								+ innerTypeName));
+//			}
+//			else
+//			{
+//				type =
+//					new CClassNameType(
+//						FjConstants.toIfcName(inner.getQualifiedName()));
+//			}
+//			
+//			return (CReferenceType) type.checkType(context);
+//		}
+		
 		CReferenceType inner = declaresInner(owner, innerTypeName);
 		if (inner != null)
 		{
-
 			CReferenceType type =
 				new CClassNameType(
 					FjConstants.toIfcName(
