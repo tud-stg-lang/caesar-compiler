@@ -28,6 +28,11 @@ public class AstGenerator {
         this.base = base;
     }
     
+    public void writeMethod(String[] lines) {
+    	for (int i1 = 0; i1 < lines.length; i1++) {
+    		methodBuffer.append(lines[i1]);
+    	}
+    }
     
     public void writeMethod(String line) {
         methodBuffer.append(line);
@@ -37,6 +42,12 @@ public class AstGenerator {
         JMethodDeclaration res = createMethodDeclaration(methodBuffer.toString());
         methodBuffer = new StringBuffer();
         return res;
+    }
+    
+    public void writeBlock(String[] lines) {
+    	for (int i1 = 0; i1 < lines.length; i1++) {
+    		bodyBuffer.append(lines[i1]);
+    	}
     }
     
     public void writeBlock(String line) {
