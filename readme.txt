@@ -1,3 +1,12 @@
+ObserverProtocolImplSub.java ObserverProtocolBinding.java ObserverProtocolBindingSub.java  ObserverProtocol.java ObserverProtocolParent.java ObserverProtocolImpl.java ObserverProtocolWeavelet.java ObserverProtocolWeaveletSub.java GraphTest.java  CIWithoutProvidedOrExpected.java CollaborationInterface1.java
+ObserverProtocol.java ObserverProtocolBinding.java ObserverProtocolBindingSub.java ObserverProtocolImpl.java ObserverProtocolParent.java ObserverProtocolWeavelet.java
+
+ObserverProtocolImplSub.java ObserverProtocolBinding.java ObserverProtocolBindingSub.java  ObserverProtocol.java ObserverProtocolBindingSubSub.java  ObserverProtocolParent.java ObserverProtocolImpl.java ObserverProtocolImplSubSub.java ObserverProtocolWeavelet.java ObserverProtocolWeaveletSub.java
+
+ObserverProtocolBindingSub.java ObserverProtocolImplSub.java ObserverProtocolBinding.java ObserverProtocol.java  ObserverProtocolParent.java ObserverProtocolImpl.java ObserverProtocolImplSubSub.java ObserverProtocolWeavelet.java ObserverProtocolWeaveletSub.java Wrappee.java
+
+Main.java MediatorProtocol.java MediatorProtocolBinding.java MediatorProtocolBindingSub.java MediatorProtocolImpl.java MediatorProtocolWeavelet.java Button.java Label.java
+
 The familyj compiler 1.0
 
 This file is thought to act as a first introduction

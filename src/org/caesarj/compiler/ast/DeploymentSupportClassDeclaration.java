@@ -120,9 +120,12 @@ public class DeploymentSupportClassDeclaration extends FjClassDeclaration {
 			String superClassName = null;
 			// test klaus
 			if (crosscuttingClass instanceof FjCleanClassDeclaration) {
-				String sc = 
-				  crosscuttingClass.getSuperClass().getIdent();
-				superClassName = sc.substring(0,sc.length()  - FjConstants.PROXY_POSTFIX.length());
+				
+//				String sc = 
+//				  crosscuttingClass.getSuperClass().getIdent();
+//				superClassName = sc.substring(0,sc.length()  - FjConstants.PROXY_POSTFIX.length());
+				superClassName = FjConstants.toIfcName(
+					crosscuttingClass.getSuperClass().getIdent()) + postfix;
 			} else {
 			  superClassName =
 				crosscuttingClass.getSuperClass().getIdent() + postfix;
