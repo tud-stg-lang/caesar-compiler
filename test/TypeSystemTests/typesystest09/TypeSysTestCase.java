@@ -1,5 +1,8 @@
 package generated.typesystest09;
 
+import java.util.*;
+import org.caesarj.runtime.*;
+
 /**
  * dependent types in method signatures
  * 
@@ -38,6 +41,7 @@ public class TypeSysTestCase {
 		b.x1.x( b.x1 );
 		//b.x1.x( b.x2 ); // should fail
 	}
+		
 	
 	/*
 	 * methods with dependent types in the signature

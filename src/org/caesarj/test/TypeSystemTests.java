@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: TypeSystemTests.java,v 1.9 2005-01-28 17:57:31 klose Exp $
+ * $Id: TypeSystemTests.java,v 1.10 2005-02-15 18:31:18 aracic Exp $
  */
 
 package org.caesarj.test;
@@ -69,6 +69,10 @@ public class TypeSystemTests extends FjTestCase {
 
 	public void testCaesarTestCase_09() throws Throwable {
 	    compileDontRun("typesystest09");
+    }
+
+	public void testCaesarTestCase_10() throws Throwable {
+	    compileAndRun("typesystest10", "TypeSysTestCase");
     }
 
 	public void testCaesarTestCase_30() throws Throwable{

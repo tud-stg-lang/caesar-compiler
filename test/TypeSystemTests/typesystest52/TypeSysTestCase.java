@@ -12,9 +12,21 @@ public cclass X {
     public final y.Z z = y.new Z();
     public y.Z z2;
 
+    public void setY2(x.Y y) {
+        this.y2 = y;
+    }
+    
+    public void setZ2(y.Z z) {
+        this.z2 = z;
+    }
+    
     public cclass Y {
   		public cclass Z {
   		    public x.Y y;
+  		    
+  		    public void setY(x.Y y) {  		        
+  		        this.y = y;
+  		    }
   		}
 
     }
@@ -28,10 +40,10 @@ public cclass X {
     public final y.Z z = y.new Z();
     public x.Y y2;
     public void foo() {
-    	x.y2 = myY;  // this should be ok
-    	x.z2 = null; // this should be ok as well
-    	x.z2 = x.z; // this should be ok as well
+    	x.setY2(myY);  // this should be ok
+    	x.setZ2(null); // this should be ok as well
+    	x.setZ2(x.z); // this should be ok as well
     	//y2 = z.y;    // this should not be ok
-    	z.y = x.y;   // this should be ok
+    	z.setY(x.y);   // this should be ok
     }
   }
