@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Path.java,v 1.17 2005-02-14 19:21:16 aracic Exp $
+ * $Id: Path.java,v 1.18 2005-02-15 18:32:40 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -30,8 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.caesarj.compiler.ast.phylum.expression.CjAccessorCallExpression;
+import org.caesarj.compiler.ast.phylum.expression.CjCastExpression;
 import org.caesarj.compiler.ast.phylum.expression.CjOuterExpression;
-import org.caesarj.compiler.ast.phylum.expression.JCastExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
 import org.caesarj.compiler.ast.phylum.expression.JLocalVariableExpression;
@@ -159,6 +159,15 @@ public abstract class Path {
             else if(tmp instanceof CjOuterExpression) {
                 CjOuterExpression oe = (CjOuterExpression)tmp;
                 k += oe.getOuterSteps();
+                
+                // getOuterSteps is relative to the method context - 1
+                // however, we could have a call from the method body
+                CContext ctx = context;
+                while(context.getMethodContext() != null) {
+                    context = context.getParentContext();
+                    k++;
+                }
+                
                 done = true;
             }
             else if(tmp instanceof CjAccessorCallExpression) {
@@ -269,9 +278,9 @@ public abstract class Path {
 //                    throw new InconsistencyException("Path can not include method calls");
 //                }                
             }
-            else if(tmp instanceof JCastExpression) {
+            else if(tmp instanceof CjCastExpression) {
                 // CTODO: ignore for now
-                tmp = ((JCastExpression)tmp).getExpression();
+                tmp = ((CjCastExpression)tmp).getExpression();
             }
             else if(tmp instanceof JUnaryPromote) {
                 // CTODO: ignore for now
