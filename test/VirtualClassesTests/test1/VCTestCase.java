@@ -24,8 +24,8 @@ public class VCTestCase extends TestCase {
 	public void test() {
 		System.out.println("-------> VCTest 1: start");
 
-		TestCase1 testCase = new TestCase1();
-        TestCase1.A a = testCase.new B();
+		final TestCase1 testCase = new TestCase1();
+		testCase.A a = testCase.new B();
         I i = a.new X();
         assertEquals(i.msg(), expectedResult);
 

@@ -20,12 +20,12 @@ public class VCTestCase extends TestCase {
 	public void test() {
 		System.out.println("-------> VCTest 0: start");
 
-        TestCase0 testCase = new TestCase0();
+        final TestCase0 testCase = new TestCase0();
                 
-        TestCase0.A a = testCase.new A();
-        TestCase0.B b = testCase.new B();
-		TestCase0.A.X x1 = a.new X();
-		TestCase0.A.X x2 = b.new X();		
+        final testCase.A a = testCase.new A();
+        final testCase.B b = testCase.new B();
+		a.X x1 = a.new X();
+		b.X x2 = b.new X();		
 		
 		assertEquals(x1.toString()+'-'+x2.toString(), "A.X-B.X");
 
