@@ -4,7 +4,7 @@ import junit.framework.*;
 import java.util.*;
 
 /**
- * Wrapper test
+ * Array Test
  *
  * @author Vaidas Gasiunas
  */
@@ -38,12 +38,22 @@ public class VCTestCase extends TestCase {
 	}
 }
 
+/**
+ * Board interface
+ */
 public cclass BoardIfc
 {
 	public Board makeBoard(int nRows, int nCols) { return null; }
 
 	public cclass Board
 	{
+	    public BoardItem[] getBoardItems() {return null;}
+	    public BoardItem[] getBoardItems(BoardItem[] items) 
+	    {
+	        System.out.println("BoardIfc.Board.getBoardItems()");
+	        return null;
+	    }
+	    
 		public void putAt(int x, int y, BoardItem bi) {}
         public BoardItem itemAt(int x, int y) { return null; }
     }
@@ -56,6 +66,9 @@ public cclass BoardIfc
 	}
 }
 
+/**
+ * Board Implementation
+ */
 public cclass BoardImpl extends BoardIfc
 {
 	public Board makeBoard(int nCols, int nRows)
@@ -69,9 +82,27 @@ public cclass BoardImpl extends BoardIfc
 	{
 		BoardItem[][] _matrix = null;
 
+		public BoardItem[] getBoardItems(BoardItem[] items) 
+		{
+		    System.out.println("BoardImpl.Board.getBoardItems()");
+		    //super.getBordItems(items);
+		    return null;
+		}
+		
 		public void init(int nCols, int nRows)
 		{
 			_matrix = new BoardItem[nCols][nRows];
+			
+			// TEST: casting of array references to the most specific
+			BoardItem[] res = getBoardItems(); // as JVariableDefinition
+			res = getBoardItems(); // as CjAssignmentExpression
+			res = getBoardItems(new BoardItem[10]);
+			try {
+			    _matrix[0][0].positionAt(this, 0, 0);
+			}
+			catch (Exception e) {
+                // do nothing
+            }
 		}
 
 	    public void putAt(int x, int y, BoardItem bi)
