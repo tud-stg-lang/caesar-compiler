@@ -129,6 +129,9 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 		
 
 		newClass = removeFactoryMethods(newClass);
+		
+		// Mixin classes must be abstract, because they do not implement factory methods
+		newClass.setAccessFlags(newClass.getAccessFlags() | Constants.ACC_ABSTRACT);
 
 		// take a look at all methodrefs
 		modifyMethodRefs(newClass);
