@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.41 2004-04-05 15:14:30 aracic Exp $
+ * $Id: Caesar.g,v 1.42 2004-04-06 21:41:39 aracic Exp $
  */
 
 /*
@@ -460,7 +460,8 @@ jCClassDefinition [int modifiers]
 				   comments,				   
 				   context.getPointcuts(),
 				   context.getAdvices(),
-				   context.getDeclares());
+				   context.getDeclares(),
+				   true);
 			
         context.release();
     }

@@ -1,10 +1,7 @@
 package org.caesarj.compiler.types;
 
-import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.export.ExportMixer;
-import org.caesarj.compiler.export.ExportMixerException;
 import org.caesarj.util.UnpositionedError;
 
 /**
@@ -13,7 +10,7 @@ import org.caesarj.util.UnpositionedError;
  */
 public class CCompositeType extends CClassNameType {   
 
-    // CTODO
+    // CTODO CCompositeType
     public CCompositeType(CReferenceType refType[]) {
         super("<gen>");
         this.refType = refType;

@@ -669,7 +669,8 @@ private static final int MAX_LOOKAHEAD = 2;
 							   comments,				   
 							   context.getPointcuts(),
 							   context.getAdvices(),
-							   context.getDeclares());
+							   context.getDeclares(),
+                               true);
 						
 			context.release();
 			

@@ -12,7 +12,7 @@ import org.caesarj.compiler.export.CClass;
  */
 public class CComposite2Type extends CReferenceType {
     
-    // CTODO
+    // CTODO CComposite2Type
     public CComposite2Type(CClass clazz, CReferenceType refType[]) {
         super(clazz);        
         this.refType = refType;
