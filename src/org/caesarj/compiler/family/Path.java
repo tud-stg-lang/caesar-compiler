@@ -30,9 +30,15 @@ import org.caesarj.util.InconsistencyException;
  */
 public abstract class Path {       
     
+    Path prefix;
     CReferenceType type;
     
-    public Path(CReferenceType type) {
+    private Path getPrefix() {
+        return prefix;
+    }      
+    
+    public Path(Path prefix, CReferenceType type) {
+        this.prefix = prefix;
         this.type = type;
     }
     
@@ -256,7 +262,7 @@ public abstract class Path {
         
                 
         // Construct path        
-        Path result = new ContextExpression(k, null);
+        Path result = new ContextExpression(null, k, null);
         
         
         Iterator it1, it2;
@@ -266,5 +272,29 @@ public abstract class Path {
         }        
         return result;        
     }
+
+    public boolean equals(Path other) {
+        return other.toString().equals(this.toString());
+    }
     
+    Path getHead() {
+        if(prefix != null)
+            return prefix.getHead();
+        else 
+            return this;
+    }
+    
+    Path getHeadPred() {
+        if(prefix == null) return null;
+        if(prefix.prefix != null)
+            return prefix.getHeadPred();
+        else 
+            return this;
+    }
+    
+    public abstract Path normalize();
+    
+    protected abstract Path _normalize(Path pred, Path tail);
+    
+    protected abstract Path clonePath();    
 }

@@ -10,11 +10,10 @@ import org.caesarj.util.InconsistencyException;
  */
 public class ContextExpression extends Path {
 
-    private Path prefix;
     private int k = 0;
     
-    public ContextExpression(int k, CReferenceType type) {
-        super(type);
+    public ContextExpression(Path prefix, int k, CReferenceType type) {
+        super(prefix, type);
         this.k = k;
         
         if(k < 0)
@@ -25,11 +24,49 @@ public class ContextExpression extends Path {
         return k;
     }
     
-    public boolean equals(Path other) {
-        return (other instanceof ContextExpression) && ((ContextExpression)other).k==k;
+    public String toString() {
+        return (prefix==null?"":prefix.toString()+".")+"ctx("+k+")";
     }
     
-    public String toString() {
-        return "ctx("+k+")";
+    public Path normalize() {
+        return this.clonePath();
+    }
+    
+    protected Path _normalize(Path pred, Path tail) {
+        
+        System.out.println("\t----->"+tail);
+        
+        if(prefix == null) {
+            return tail;
+        }
+        else {
+            if(k == 0) {
+                pred.prefix = prefix;
+                return prefix._normalize(pred, tail);
+            }
+            else if(prefix instanceof ContextExpression) {
+                this.k += ((ContextExpression)prefix).getK();
+                this.prefix = prefix.prefix;
+                if(prefix == null)
+                    return tail;
+                else 
+                    return this._normalize(pred, tail);
+            }
+            else {
+                Path typePath = prefix.getType().getPath().clonePath();
+                Path typePathHead = typePath.getHead();
+                //Path typePathHeadPred = typePath.getHeadPred();
+                
+                k--;                                
+                typePathHead.prefix = prefix.prefix;
+                prefix = typePath;
+                
+                return this._normalize(pred, tail);
+            }
+        }
+    }
+    
+    protected Path clonePath() {
+        return new ContextExpression(prefix==null ? null : prefix.clonePath(), k, type);
     }
 }

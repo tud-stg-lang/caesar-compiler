@@ -10,12 +10,10 @@ import org.caesarj.compiler.types.CReferenceType;
  */
 public class FieldAccess extends Path {
 
-    private Path prefix;
     private String name;
     
     public FieldAccess(Path prefix, String field, CReferenceType type) {
-        super(type);
-        this.prefix = prefix;
+        super(prefix, type);
         this.name = field;
     }
 
@@ -27,15 +25,24 @@ public class FieldAccess extends Path {
         return null;
     }
     
-    private Path getPrefix() {
-        return prefix;
-    }   
-
-    public boolean equals(Path other) {
-        return false;
-    }
-    
     public String toString() {
         return prefix+"."+name;
+    }
+
+    public Path normalize() {
+        Path typePath = type.getPath().clonePath();
+        Path typePathHeadPred = typePath.getHeadPred();
+        Path typePathHead = typePath.getHead();
+        typePathHead.prefix = prefix.clonePath();
+        
+        return typePathHead._normalize(typePathHeadPred, typePath);
+    }
+
+    protected Path _normalize(Path pred, Path tail) {
+        return prefix._normalize(this, tail);
+    }
+    
+    protected Path clonePath() {
+        return new FieldAccess(prefix==null ? null : prefix.clonePath(), name, type);
     }
 }
