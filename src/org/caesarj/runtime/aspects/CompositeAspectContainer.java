@@ -137,7 +137,6 @@ public class CompositeAspectContainer implements AspectContainerIfc {
 		return null;
 	}
 	
-	
 	/**
 	 * Get implementation list
 	 * 
@@ -145,5 +144,14 @@ public class CompositeAspectContainer implements AspectContainerIfc {
 	 */
 	public List getList() {
 		return containers;
+	}
+	
+	/**
+	 * Is container empty
+	 * 
+	 * @return  Is container empty
+	 */
+	public boolean isEmpty() {
+		return containers.isEmpty();
 	}
 }

@@ -15,6 +15,11 @@ import java.util.List;
 public class AspectList implements AspectContainerIfc 
 {
 	List aspList = new LinkedList();
+	int  _type;
+	
+	public AspectList(int type) {
+		_type = type;
+	}
 	
 	/**
 	 * Get list of deployed aspect objects for which the advice has to be called
@@ -31,7 +36,7 @@ public class AspectList implements AspectContainerIfc
 	 * @return  Constant denoting container type
 	 */
 	public int $getContainerType() {
-		return LOCAL_CONTAINER;
+		return _type;
 	}	
 	
 	/**
@@ -41,5 +46,14 @@ public class AspectList implements AspectContainerIfc
 	 */
 	public List getList() {
 		return aspList;
+	}
+	
+	/**
+	 * Is container empty
+	 * 
+	 * @return  Is container empty
+	 */
+	public boolean isEmpty() {
+		return aspList.isEmpty();
 	}
 }

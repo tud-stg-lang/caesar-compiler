@@ -20,8 +20,8 @@ public interface AspectContainerIfc {
 	
 	public final static int THREAD_MAPPER = 1;
 	
-	public final static int LOCAL_CONTAINER = 2;
-		
+	public final static int FIRST_BASIC_CONTAINER = 100;	
+	
 	/**
 	 * Get list of deployed aspect objects for which the advice has to be called
 	 * 
@@ -35,4 +35,11 @@ public interface AspectContainerIfc {
 	 * @return  Constant denoting container type
 	 */
 	int $getContainerType();
+	
+	/**
+	 * Is container empty
+	 * 
+	 * @return  Is container empty
+	 */
+	boolean isEmpty();	
 }
