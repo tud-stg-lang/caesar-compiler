@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JThisExpression.java,v 1.6 2004-10-25 15:05:16 aracic Exp $
+ * $Id: JThisExpression.java,v 1.7 2004-11-02 18:01:17 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -34,7 +34,6 @@ import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
-import org.caesarj.util.UnpositionedError;
 
 /**
  * A 'this' expression
@@ -95,7 +94,6 @@ public class JThisExpression extends JExpression {
 	// ----------------------------------------------------------------------
 	// SEMANTIC ANALYSIS
 	// ----------------------------------------------------------------------
-
 	/**
 	 * Analyses the expression (semantically).
 	 * @param	context		the analysis context
@@ -112,32 +110,24 @@ public class JThisExpression extends JExpression {
 
 			exprContext.setIsTypeName(true);
             
-            // IVICA: X.this -> X_Impl.this
-            JExpression analysedPrefix = prefix.analyse(exprContext);                        
-            CClass selfClass = analysedPrefix.getType(factory).getCClass();
+            prefix = prefix.analyse(exprContext);
             
-            if(selfClass.isMixinInterface()) {
-                try {                
-                    CReferenceType type = factory.createType(selfClass.getImplQualifiedName(), false);
-                    type = (CReferenceType)type.checkType(context);
-                    prefix = new JTypeNameExpression(prefix.getTokenReference(), type);
-                }
-                catch(UnpositionedError e) {
-                    throw e.addPosition(getTokenReference());					
-				}
-                
-                analysedPrefix = prefix.analyse(exprContext);                        
-                selfClass = prefix.getType(factory).getCClass();
-            }
-            // ---------------------------
-            
-            prefix = analysedPrefix;
-			check(
+            check(
 				context,
 				prefix.getType(factory).isClassType(),
 				KjcMessages.THIS_BADACCESS);
-			            
-            self = selfClass;
+            
+            self = prefix.getType(factory).getCClass();
+            
+            CClass callerClass = context.getClassContext().getCClass();
+            
+            if(callerClass.isMixin()) {
+                JExpression expr =
+                    new CjOuterExpression(getTokenReference(), (CReferenceType)prefix.getType(factory));
+                
+                return expr.analyse(context);                
+            }
+            // ---------------------------            
 		}
 		else if (self == null) {
 			self = context.getClassContext().getCClass();
