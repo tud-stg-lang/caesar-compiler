@@ -7,6 +7,7 @@ import java.util.List;
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CCjSourceClass;
@@ -96,6 +97,24 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
         
         return addInfo;
 	}
+	
+	/**
+	 * - check interface circularities on cclass interfaces already here
+	 *   so that we can be sure in generateCaesarTypeSystem pass 
+	 *   that there are no cyclices in the type graph
+	 *   CTODO this step is repeated later on in checkInterfaces -> optimization needed
+	 */
+	public void join(CContext context) throws PositionedError {
+	    super.join(context);
+	    
+	    for (int i = 0; i < interfaces.length; i++) {
+	        check(
+                context,
+                !interfaces[i].getCClass().descendsFrom(getCClass()),
+                KjcMessages.CLASS_CIRCULARITY,
+                ident);
+        }	   
+    }
 	
     public void adjustSuperType(CContext context) throws PositionedError {
         try {
