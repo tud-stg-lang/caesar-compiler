@@ -16,15 +16,16 @@ public class VCTestCase extends TestCase
 		super("test");
 	}
 
-	public static final String expectedResult = "A.A, C.A, B.A; " +								  // A
-												"A.A, C.A, B.A, A.B, C.B; "	+					  // B < A
-												"A.A, C.A, B.A, A.C, B.C; "	+ 					  // C < A
-												"A.A, C.A, B.A, A.C, B.C, A.B, C.B; " +			  // D < B & C
-												"A.A, C.A, B.A, A.E; " +						  // E < A
-												"A.A, A.E, A.C, A.B, A.D, A.F; " +				  // F < D & A
-												"A.A, A.E, B.A, A.C, A.B, A.D, A.F, B.C, B.G; "	+ // G < C & F
-												"A.A, C.A, B.A, A.C, B.C, A.B, C.B, C.H; " +	  // H < B & C
-												"A.A, A.E, A.C, A.B, A.D, C.D, B.D, A.F, D.I";	  // I < F & D
+	public static final String expectedResult =
+		"A.A, C.A, B.A; " +								  										// A
+		"A.A, C.A, B.A, A.B, C.B; "	+					  										// B < A
+		"A.A, C.A, B.A, A.C, C.C, B.C; "	+ 					  								// C < A
+		"A.A, C.A, B.A, A.C, C.C, B.C, A.B, C.B, A.D, C.D, B.D; " +			  					// D < B & C
+		"A.A, C.A, B.A, A.E; " +						  										// E < A
+		"A.A, C.A, B.A, A.E, A.C, C.C, B.C, A.B, C.B, A.D, C.D, B.D, A.F, B.F; " +				// F < D & A
+		"A.A, C.A, B.A, A.E, A.C, C.C, B.C, A.B, C.B, A.D, C.D, B.D, A.F, B.F, B.G; " + 		// G < C & F
+		"A.A, C.A, B.A, A.C, C.C, B.C, A.B, C.B, C.H; " +	  									// H < B & C
+		"A.A, C.A, B.A, A.E, A.C, C.C, B.C, A.B, C.B, A.D, C.D, B.D, A.F, B.F, D.I";			// I < F & D
 
 	public void test() {
 
@@ -128,14 +129,14 @@ public cclass OuterB extends OuterA
 			return super.queryA() + ", B.D";
 		}
 	}
-	
+
 	// scoping workaround, see InnerC & InnerF bellow
 	public cclass InnerF {
 		public String queryA()
 		{
 			return super.queryA() + ", B.F";
 		}
-	} 
+	}
 
 	public cclass InnerG extends InnerC & InnerF
 	{
@@ -163,14 +164,14 @@ public cclass OuterC extends OuterA
 			return super.queryA() + ", C.B";
 		}
 	}
-	
+
 	// scoping workaround, see InnerB & InnerC bellow
 	public cclass InnerC {
 		public String queryA()
 		{
 			return super.queryA() + ", C.C";
 		}
-	} 
+	}
 
 	public cclass InnerD
 	{
@@ -192,20 +193,12 @@ public cclass OuterC extends OuterA
 public cclass OuterD extends OuterB & OuterC
 {
 	// scoping workaround, see InnerF & InnerD bellow
-	public cclass InnerF {
-		public String queryA()
-		{
-			return super.queryA() + ", D.F";
-		}
-	} 
-	
+	public cclass InnerF
+	{ }
+
 	// scoping workaround, see InnerF & InnerD bellow
-	public cclass InnerD {
-		public String queryA()
-		{
-			return super.queryA() + ", D.D";
-		}
-	} 
+	public cclass InnerD
+	{ }
 
 	public cclass InnerI extends InnerF & InnerD
 	{
