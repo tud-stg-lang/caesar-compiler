@@ -34,12 +34,15 @@
   <!-- 1. TOKDEF: Translates Caesar.t into CaesarTokenTypes.java & .txt.
   		These files are then copied into the compiler dir.  -->
   <echo message="TOKDEF"/>
-  <java 
+  <java fork="true"
+  		dir="${inputFiles}"
    		classname="org.caesarj.compiler.tools.lexgen.Main"
         classpath="bin;${libs}/java-getopt-1.0.9.jar">
    <arg value="-ditf"/>
    <arg value="${inputFiles}/caesar.t"/>
   </java>
+  <copy file="cc/CaesarTokenTypes.java" todir="${source}/compiler"></copy>
+  <copy file="cc/CaesarTokenTypes.txt" todir="${source}/compiler"></copy>
 
   <!-- 2. LEXINC: Creates the .flex file -->
   <echo message="LEXINC"/>
