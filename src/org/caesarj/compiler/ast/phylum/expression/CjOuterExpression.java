@@ -20,16 +20,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjOuterExpression.java,v 1.2 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CjOuterExpression.java,v 1.3 2005-02-17 17:40:54 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.KjcMessages;
+import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.family.ContextExpression;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
@@ -72,6 +74,21 @@ public class CjOuterExpression extends JExpression {
             KjcMessages.THIS_BADACCESS);
         
         transformation.analyse(context);
+        
+        // set family
+        int k = getOuterSteps();
+        
+        // getOuterSteps is relative to the method context - 1
+        // however, we could have a call from the method body
+        CContext ctx = context.getBlockContext();
+        while(ctx.getMethodContext() != null) {
+            ctx = ctx.getParentContext();
+            k++;
+        }
+        
+        thisAsFamily = new ContextExpression(null, k, (CReferenceType)getType(context.getTypeFactory()));
+        family = new ContextExpression(null, k+1, (CReferenceType)getType(context.getTypeFactory()));
+        
         
         return this;
     }
