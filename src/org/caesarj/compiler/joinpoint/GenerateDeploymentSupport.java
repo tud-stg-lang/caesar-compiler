@@ -75,8 +75,8 @@ public class GenerateDeploymentSupport {
 		 		continue;
 		 	}
 		 	if (node.canBeInstantiated()) {
-		 		List ccLst = getCrosscuttingMixinList(node);
-		 		for (Iterator it2 = ccLst.iterator(); it2.hasNext();) {
+		 		List mixinLst = node.getMixinList();
+		 		for (Iterator it2 = mixinLst.iterator(); it2.hasNext();) {
 		 			CaesarTypeNode mixin = (CaesarTypeNode)it2.next();
 		 			if (mixin.isUniqueCrosscutting()) {
 		 				mixin.setNeedsAspectRegistry();
