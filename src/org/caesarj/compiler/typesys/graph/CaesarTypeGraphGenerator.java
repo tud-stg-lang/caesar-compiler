@@ -67,6 +67,7 @@ public class CaesarTypeGraphGenerator {
             for(int i=0; i<superTypes.length; i++) {
                 if(superTypes[i].getCClass().isMixinInterface()) {
                     
+                    /*
                     // super class can only be from the direct enclosing parent
                     JavaQualifiedName superQn = null;
 
@@ -87,6 +88,13 @@ public class CaesarTypeGraphGenerator {
 						superQn.toString().equals(superTypes[i].getCClass().getQualifiedName()) ?                        
 						    CaesarTypeNode.DECLARED : CaesarTypeNode.IMPLICIT
                     );
+                    */
+                    
+                    CaesarTypeNode superNode = g.getTypeCreateIfNotExsistent(
+                        new JavaQualifiedName(superTypes[i].getCClass().getQualifiedName()),                         
+					    CaesarTypeNode.DECLARED
+                    );
+                    
                     new SuperSubRelation(superNode, thisNode);
                 }
             }
