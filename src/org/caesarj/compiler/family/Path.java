@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Path.java,v 1.10 2005-01-25 16:15:32 klose Exp $
+ * $Id: Path.java,v 1.11 2005-01-26 16:10:22 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -30,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.caesarj.compiler.ast.phylum.expression.CjAccessorCallExpression;
+import org.caesarj.compiler.ast.phylum.expression.CjOuterExpression;
 import org.caesarj.compiler.ast.phylum.expression.JCastExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
@@ -40,6 +41,7 @@ import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CClassContext;
@@ -49,6 +51,7 @@ import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.util.InconsistencyException;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * ...
@@ -79,7 +82,7 @@ public abstract class Path {
      * @param contextClass The context in which the expression should be analysed
      * @param expr	The expression containing the path
      */
-    public static int calcK(CContext context, JExpression expr){
+    public static int calcK(CContext context, JExpression expr) throws UnpositionedError {
         Path p = createFrom(context, expr);
         return ((ContextExpression)p.getHead()).getK(); 
     }
@@ -90,31 +93,37 @@ public abstract class Path {
      * @param contextClass The context in which the expression should be analysed
      * @param expr	The expression containing the path
      */
-    public static Path createFrom(CContext context, JExpression expr){    	
-        List 	l1 = new LinkedList();	// stores the field access identifiers (Strings)
-        List 	l2 = new LinkedList();	// stores the corresponding types (CTypes)
+    public static Path createFrom(CContext context, JExpression expr) throws UnpositionedError {    	
+        List 	nameList = new LinkedList();	// stores the field access identifiers (Strings)
+        List 	typeList = new LinkedList();	// stores the corresponding types (CTypes)
         int 	k =0;
         JExpression tmp = expr;
         
-        boolean done=false;
+        boolean done = false;
         
         while (!done){
             if(tmp instanceof JQualifiedInstanceCreation){
                 JQualifiedInstanceCreation qc = (JQualifiedInstanceCreation) tmp;
-                l1.add(0, ANONYMOUS_FIELD_ACCESS );
+                nameList.add(0, ANONYMOUS_FIELD_ACCESS );
                 
                 CReferenceType type = (CReferenceType)qc.getType(context.getTypeFactory());
-                type.setDefCtx(context);
+                type.setDeclContext(context);
                 
-                l2.add(type);
+                typeList.add(type);
                 done = true;
                 
-            } else if(tmp instanceof CjAccessorCallExpression) {
+            }
+            else if(tmp instanceof CjOuterExpression) {
+                CjOuterExpression oe = (CjOuterExpression)tmp;
+                k += oe.getOuterSteps();
+                done = true;
+            }
+            else if(tmp instanceof CjAccessorCallExpression) {
                 CjAccessorCallExpression ac = (CjAccessorCallExpression)tmp;
-                l1.add(0, ac.getFieldIdent());
+                nameList.add(0, ac.getFieldIdent());
                 CType type = ac.getType(context.getTypeFactory()); 
                 
-                l2.add(0, type);
+                typeList.add(0, type);
                 tmp = ac.getPrefix();
             }
             else if (tmp instanceof JFieldAccessExpression){
@@ -126,8 +135,8 @@ public abstract class Path {
                     k++;
                 } else {
                     // ... else add identifier to path.
-                    l1.add(0, fa.getIdent());    
-                    l2.add(0, fa.getType(context.getTypeFactory()));
+                    nameList.add(0, fa.getIdent());    
+                    typeList.add(0, fa.getType(context.getTypeFactory()));
                 }
                 tmp = fa.getPrefix();
             
@@ -150,8 +159,8 @@ public abstract class Path {
                 JLocalVariableExpression local = (JLocalVariableExpression) tmp;
                 JLocalVariable var = local.getVariable();
                 
-                l1.add(0, var.getIdent());
-                l2.add(0, var.getType());
+                nameList.add(0, var.getIdent());
+                typeList.add(0, var.getType());
                 
                 if (var instanceof JFormalParameter) {
                     // find next MethodContext
@@ -164,7 +173,7 @@ public abstract class Path {
                     // find next block-context that declares this variable
                     boolean found = false;
                     do {
-                        if (! (context instanceof CBlockContext)){
+                        if (! (context instanceof CBlockContext)){                            
                             throw new RuntimeException("Cannot find "+var.getIdent());
                         }
                         CBlockContext block = (CBlockContext)context;
@@ -192,7 +201,9 @@ public abstract class Path {
                         context = context.getParentContext();
                         k++;
                         if ( context == null || !(context instanceof CClassContext) ){
-                            throw new InconsistencyException("accessor method does not return outer class");
+                            throw new UnpositionedError(
+                                CaesarMessages.ILLEGAL_PATH_ELEMENT, 
+                                "accessor method not returning a outer reference");
                         }
                     }
                     done = true;
@@ -202,8 +213,8 @@ public abstract class Path {
                     // handle for now as a field
                     // consider that we could have more than one method call
                     // f1.f2.f3.m1().m2().m3()
-                    l1.add(0, me.getIdent());    
-                    l2.add(0, me.getType(context.getTypeFactory()));
+                    nameList.add(0, me.getIdent());    
+                    typeList.add(0, me.getType(context.getTypeFactory()));
                     tmp = me.getPrefix();
                 }
 //                else {
@@ -211,11 +222,11 @@ public abstract class Path {
 //                }                
             }
             else if(tmp instanceof JCastExpression) {
-                // ignore for now
+                // CTODO: ignore for now
                 tmp = ((JCastExpression)tmp).getExpression();
             }
             else {
-                throw new InconsistencyException("Illegal expression in dependent type path: "+tmp);
+                throw new UnpositionedError(CaesarMessages.ILLEGAL_PATH_ELEMENT, tmp.getIdent());
             }
         }
         
@@ -225,9 +236,23 @@ public abstract class Path {
         
         
         Iterator it1, it2;
-        for (it1 = l1.iterator(), it2=l2.iterator(); it1.hasNext();) {
+        for (it1 = nameList.iterator(), it2=typeList.iterator(); it1.hasNext();) {
             String field = (String) it1.next();
-            result = new FieldAccess(result, field, (CReferenceType)it2.next());            
+            CReferenceType refType = (CReferenceType)it2.next();
+
+            /*
+             * In the case we have a nested Java class which is not defined in the context
+             * of the owner of that type, we throw an exception.
+             * Reason: 
+             * 1) Java inner classes may not be annotated with a path to a family.
+             * 2) Even if so, subtype relations are different than those defined for Caesar types
+             *    e.g.: Y y1 = x.new Y(); Y y2 = x2.new Y(); y1 = y2; // ok 
+             */            
+            if(refType.getCClass().isNested() && !refType.getCClass().isMixinInterface()) {                
+                throw new UnpositionedError(CaesarMessages.INNER_PLAIN_JAVA_OBJECTS_IN_PATH);
+            }            
+            
+            result = new FieldAccess(result, field, refType);            
         }        
         return result;        
     }
@@ -251,9 +276,9 @@ public abstract class Path {
             return this;
     }
     
-    public abstract Path normalize();
+    public abstract Path normalize() throws UnpositionedError;
     
-    protected abstract Path _normalize(Path pred, Path tail);
+    protected abstract Path _normalize(Path pred, Path tail) throws UnpositionedError;
     
     protected abstract Path clonePath();    
 }
