@@ -20,12 +20,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.40 2005-03-29 09:47:01 gasiunas Exp $
+ * $Id: DeploymentClassFactory.java,v 1.41 2005-03-29 15:49:16 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.caesarj.compiler.AstGenerator;
@@ -158,7 +160,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new CjMethodDeclaration[advices.length];
 
 		for (int i = 0; i < advices.length; i++) {
-			methods[i] = createInterfaceAdviceMethod(advices[i]);
+			methods[i] = createInterfaceAdviceMethod(advices[i]);			
 		}
 
 		CReferenceType[] superInterfaces =
@@ -195,7 +197,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			where,
 			ACC_PUBLIC | ACC_ABSTRACT,
 			advice.getReturnType(),
-			advice.getIdent(),
+			advice.getAdviceMethodIdent(),
 			advice.getParameters(),
 			advice.getExceptions(),
 			null,
@@ -233,24 +235,46 @@ public class DeploymentClassFactory implements CaesarConstants {
 	public void generateAdviceMethods() {
 		// transform advices to methods
 		CjAdviceDeclaration[] advices = aspectClass.getAdvices();
-		JMethodDeclaration[] methods = aspectClass.getMethods();
-		JMethodDeclaration[] aspectClassMethods =
-			new JMethodDeclaration[methods.length + advices.length];
-
-		System.arraycopy(
-			methods,
-			0,
-			aspectClassMethods,
-			advices.length,
-			methods.length);
+						
+		List adviceMethods = new LinkedList();
 		
 		for (int i = 0; i < advices.length; i++) {
 			// add the advice method to the aspect class
 			createAdviceMethodName(advices[i]);
-			aspectClassMethods[i] = createAspectClassAdviceMethod(advices[i]);		
+			adviceMethods.add(createAspectClassAdviceMethod(advices[i]));
+			if (advices[i].isAroundAdvice()) {
+				adviceMethods.add(createAbstractAspectClassProceedMethod(advices[i]));
+			}
 		}
+		
+		updateAspectClassMethods(adviceMethods);
+	}
+	
+	private void updateAspectClassMethods(List newMethods) {
+		
+		JMethodDeclaration[] methods = aspectClass.getMethods();
+		
+		/* override methods with the same name */
+		for (int i1 = 0; i1 < methods.length; i1++) {
+			for (Iterator it = newMethods.iterator(); it.hasNext(); ) {
+				JMethodDeclaration meth = (JMethodDeclaration)it.next();
+				if (methods[i1].getIdent().equals(meth.getIdent())) {
+					methods[i1] = meth;
+					newMethods.remove(meth);
+					break;
+				}
+			}
+		}		
 				
-		aspectClass.setMethods(aspectClassMethods);
+		JMethodDeclaration[] aspectClassMethods =
+			new JMethodDeclaration[methods.length + newMethods.size()];
+
+		System.arraycopy(methods, 0, 
+				aspectClassMethods, newMethods.size(), methods.length);
+		System.arraycopy(newMethods.toArray(new JMethodDeclaration[0]), 0, 
+				aspectClassMethods, 0, newMethods.size());
+				
+		aspectClass.setMethods(aspectClassMethods);		
 	}
 	
 	/**
@@ -273,12 +297,75 @@ public class DeploymentClassFactory implements CaesarConstants {
 						advice.getTokenReference(),
 						ACC_PUBLIC | ACC_SYNCHRONIZED,
 						advice.getReturnType(),
-						advice.getIdent(),
+						advice.getAdviceMethodIdent(),
 						advice.getParameters(),
 						advice.getExceptions(),
 						advice.getBody(),
 						null,
 						null);
+	}
+	
+	/**
+	 * Create abstract procceed method for the aspect class.
+	 */
+	private JMethodDeclaration createAbstractAspectClassProceedMethod(CjAdviceDeclaration advice) {
+		
+		return new CjMethodDeclaration(
+    			advice.getTokenReference(),
+				ACC_PUBLIC | ACC_SYNCHRONIZED | ACC_ABSTRACT,
+				advice.getReturnType(),
+				advice.getAdviceMethodIdent() + PROCEED_METHOD,
+				advice.getProceedParameters(),
+				advice.getExceptions(),
+				null,
+				null,
+				null);
+	}
+	
+	/**
+	 * Create concrete proceed method for the aspect class
+	 */
+	private JMethodDeclaration createConcreteAspectClassProceedMethod(CjAdviceDeclaration advice) {
+		
+		/* Format line for proceed call */
+		String strProceedCall = "";
+		
+		if (advice.getReturnType() != typeFactory.getVoidType())
+			strProceedCall += "return ";
+	    
+		strProceedCall += srcSingletonAspectName + "." + advice.getIdent() + PROCEED_METHOD + "(";
+	    
+	    JFormalParameter params[] = advice.getProceedParameters();
+	    
+	    for (int i1 = 0; i1 < params.length; i1++) { 
+	    	if (i1 > 0) {
+	    		strProceedCall += ", ";
+			}
+	    	strProceedCall += params[i1].getIdent();
+		}
+	    strProceedCall += ");";
+	    
+		String[] block = new String[] {
+			"{",
+				strProceedCall,
+			"}"	
+	    };
+	    
+	    AstGenerator gen = environment.getAstGenerator();
+	    gen.writeBlock(block);
+	     
+		JStatement[] body = gen.endBlock("proceed-method");
+		
+		return new CjMethodDeclaration(
+    			advice.getTokenReference(),
+				ACC_PUBLIC | ACC_SYNCHRONIZED,
+				advice.getReturnType(),
+				advice.getAdviceMethodIdent() + PROCEED_METHOD,
+				advice.getProceedParameters(),
+				advice.getExceptions(),
+				new JBlock(where, body, null),
+				null,
+				null);
 	}
 	
 	/**
@@ -328,19 +415,20 @@ public class DeploymentClassFactory implements CaesarConstants {
 		List inners = new ArrayList();
 
 		List singletonAspectMethods = new ArrayList();
+		List aspectClassMethods = new ArrayList();
 		
 		CjAdviceDeclaration[] modifiedAdvices =
 			new CjAdviceDeclaration[advices.length];
 
 		for (int i = 0; i < advices.length; i++) {
-			CjAdviceDeclaration adviceCopy = new CjAdviceDeclaration(advices[i]);
 			if (advices[i].isAroundAdvice()) {
-				singletonAspectMethods.add(createProceedMethod(adviceCopy));
-				inners.add(createAroundClosure(adviceCopy));
-				modifiedAdvices[i] = createSingletonAspectAroundAdviceMethod(adviceCopy);
+				singletonAspectMethods.add(createProceedMethod(advices[i]));
+				aspectClassMethods.add(createConcreteAspectClassProceedMethod(advices[i]));
+				inners.add(createAroundClosure(advices[i]));
+				modifiedAdvices[i] = createSingletonAspectAroundAdviceMethod(advices[i]);
 			}
 			else {
-				modifiedAdvices[i] = createSingletonAspectAdviceMethod(adviceCopy);
+				modifiedAdvices[i] = createSingletonAspectAdviceMethod(advices[i]);
 			}
 		}
 
@@ -426,6 +514,10 @@ public class DeploymentClassFactory implements CaesarConstants {
 			environment.getClassReader(),
 			owner,
 			owner == null ? packagePrefix : owner.getQualifiedName() + '$');
+		
+		if (!aspectClassMethods.isEmpty()) {
+			updateAspectClassMethods(aspectClassMethods);
+		}
 
 		return singletonAspect;
 	}
@@ -495,7 +587,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		AstGenerator gen = environment.getAstGenerator();
 		
 		/* Format line for advice method call on variable 'aspObj' */
-		String strAdviceMethodCall = "aspObj." + advice.getIdent() + "(";
+		String strAdviceMethodCall = "aspObj." + advice.getAdviceMethodIdent() + "(";
 		
 		JFormalParameter[] params = advice.getParameters();
 		for (int i1 = 0; i1 < params.length; i1++) {
@@ -667,6 +759,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				adviceDeclaration.getKind(),
 				adviceDeclaration.getTokenReference().getLine());
 		adviceDeclaration.setIdent(ident);
+		adviceDeclaration.setAdviceMethodIdent(ident);
 	}
 	
 	/**
@@ -868,7 +961,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		AstGenerator gen = environment.getAstGenerator();
 		
 		/* Format line for advice method call on variable 'aspObj' */
-		String strAdviceMethodCall = "$aspObj." + advice.getIdent() + "(";
+		String strAdviceMethodCall = "$aspObj." + advice.getAdviceMethodIdent() + "(";
 		
 		int proceedParamCnt = advice.getProceedParameters().length;
 		
