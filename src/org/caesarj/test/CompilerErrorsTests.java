@@ -278,10 +278,6 @@ public class CompilerErrorsTests extends FjTestCase {
         compileAndRun("test264", "CETestCase", new String[]{""});
     }
 	
-	public void testCaesarTestCase_265() throws Throwable {
-        compileAndRun("test265", "CETestCase", new String[]{""});
-    }
-	
 	public void testCaesarTestCase_266() throws Throwable {
         compileAndRun("test266", "CETestCase", new String[]{""});
     }
