@@ -9,7 +9,7 @@ public class TypeSysTestCase {
 
 	final B b = new B();
 			
-	void foo1() {
+	void test1() {
 	    			m1(b.x1);
 	    			m2(b.g1, b.x1);
 	    b.g1.X v1 = m3();
@@ -18,12 +18,30 @@ public class TypeSysTestCase {
 	    b.g1.X v4 = m6(b.g2, b.x2);
 	    			m7(b.g2, b.x2, b.n2);
 	    b.g1.X v5 = m8(b.g1, b.x1, b.n1);
+	    //	        m9(b.x1, b.g1, b.n1); // should fail
 	}
 
-	void foo2() {
+	void test2() {
 	    b.x1.N n = b.n1;
 	}
 	
+	void test3() {
+		b.x1.N n1 = null;
+		b.x2.N n2 = null;
+		n1 = b.x1.n1();
+		n1 = b.x1.n2();
+		n1 = b.x1.n3(n1);
+
+		//n2 = b.x1.n1(); // should fail
+		//n1 = b.x1.n3(n2); // should fail
+		
+		b.x1.x( b.x1 );
+		//b.x1.x( b.x2 ); // should fail
+	}
+	
+	/*
+	 * methods with dependent types in the signature
+	 */
 	void 	m1(b.g1.X x) 		{ }
 	void 	m2(final G g, g.X x) 	{ }	
 	b.g1.X 	m3() 					{ {{return b.g1.new X();}} }
@@ -32,6 +50,8 @@ public class TypeSysTestCase {
 	b.g1.X 	m6(final G g, g.X x) 	{ return null; }
 	void 	m7(final G g, g.X x, x.N n) {}
 	g.X		m8(final G g, g.X x, x.N n) {return null;}
+	
+	//g.X		m9(g.X x, final G g, x.N n) {return null;} // should fail
 }
 
 public cclass B {
@@ -47,7 +67,12 @@ public cclass B {
 
 public cclass G {
     public cclass X {
-        public N x() { return new N(); }
+        public N n1() { return new N(); }
+        public N n2() { {return new N();} }
+        public N n3(N n) { return n; }
+        
+        public void x(X x) {}
+        
         public cclass N {}
     }    
 }
