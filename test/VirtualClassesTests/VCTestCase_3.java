@@ -19,7 +19,7 @@ public class VCTestCase_3 extends TestCase {
 	public void test() {
         System.out.println("-------> VCTestCase_3: start");
         
-        TestCase3 testCase = new TestCase3();
+        TestCase3 testCase = new TestCase3_Impl();
 	    TestCase3.G g = testCase.$newCWG(); 	// testCase.G g = testCase.$newCG();
         TestCase3.G.N n1 = g.$newN(); 		// g.N n1 = g.new N();
         TestCase3.G.N n2 = g.$newN(); 		// g.N n2 = g.new N();
