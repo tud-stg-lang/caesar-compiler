@@ -45,6 +45,7 @@ public class CjMethodCallExpression2 extends JExpression {
             prefix, ident, args
         );
         
+        /* TODO inserting automatic casts
         if(prefix != null) {
 	        prefix = prefix.analyse(context);
 	                
@@ -89,6 +90,7 @@ public class CjMethodCallExpression2 extends JExpression {
 	            );
 	        }
         }
+        */
         
         
         JExpression res = expr.analyse(context);
