@@ -22,7 +22,7 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 7: Outer Class Polymorphism: start");
 
-		OuterA ob = new OuterB_Impl(null); // !!! remove parameter
+		OuterA ob = new OuterB();
 
 		String resA = ((InterfaceA)ob).queryA();
 		String resB = ((InterfaceB)ob).queryB();

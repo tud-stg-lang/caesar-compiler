@@ -23,7 +23,7 @@ public class VCTestCase extends TestCase
 	{
 		System.out.println("-------> VCTest 32: Test Introducing New Inheritance: start");
 
-		OuterB.InnerC bc = (OuterB.InnerC)new OuterB_Impl(null).$newInnerC();
+		OuterB.InnerC bc = (OuterB.InnerC)new OuterB().new InnerC();
 
 		String result = bc.queryA();
 

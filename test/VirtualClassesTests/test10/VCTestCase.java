@@ -22,18 +22,18 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 10: Outer Factory Methods: start");
 
-		OuterA oa = new OuterA_Impl(null); // !!! remove parameter
-		OuterB ob = new OuterB_Impl(null); // !!! remove parameter
+		OuterA oa = new OuterA(); 
+		OuterB ob = new OuterB();
 
-		String resAA = oa.$newInnerA().queryA();
-		String resAB = oa.$newInnerB().queryA();
-		String resBA = ob.$newInnerA().queryA();
-		String resBB = ob.$newInnerB().queryA();
-		String resBC = ob.$newInnerC().queryA();
+		String resAA = oa.new InnerA().queryA();
+		String resAB = oa.new InnerB().queryA();
+		String resBA = ob.new InnerA().queryA();
+		String resBB = ob.new InnerB().queryA();
+		String resBC = ob.new InnerC().queryA();
 
 		oa = ob;
-		String resBA1 = oa.$newInnerA().queryA();
-		String resBB1 = oa.$newInnerB().queryA();
+		String resBA1 = oa.new InnerA().queryA();
+		String resBB1 = oa.new InnerB().queryA();
 
 		String result = resAA + ", " + resAB + ", " + resBA + ", " + resBB + ", " + resBC + ", " + resBA1 + ", " + resBB1;
 

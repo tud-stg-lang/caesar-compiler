@@ -22,7 +22,7 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 18: Multiple Inheritance of Methods: start");
 
-		OuterD d = new OuterD_Impl(null); // !!! remove parameter
+		OuterD d = new OuterD();
 
 		String resA = d.queryA();
 		String resB = d.queryB();

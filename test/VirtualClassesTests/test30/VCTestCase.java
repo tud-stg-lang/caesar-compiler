@@ -62,14 +62,14 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 30: Test Merging Class Hierarchies: start");
 
-		OuterD d = new OuterD_Impl(null);
+		OuterD d = new OuterD();
 
-		OuterD.InnerB db = (OuterD.InnerB)d.$newInnerB();
-		OuterD.InnerC dc = (OuterD.InnerC)d.$newInnerC();
-		OuterD.InnerD dd = (OuterD.InnerD)d.$newInnerD();
-		OuterD.InnerF df = (OuterD.InnerF)d.$newInnerF();
-		OuterD.InnerG dg = (OuterD.InnerG)d.$newInnerG();
-		OuterD.InnerH dh = (OuterD.InnerH)d.$newInnerH();
+		OuterD.InnerB db = (OuterD.InnerB)d.new InnerB();
+		OuterD.InnerC dc = (OuterD.InnerC)d.new InnerC();
+		OuterD.InnerD dd = (OuterD.InnerD)d.new InnerD();
+		OuterD.InnerF df = (OuterD.InnerF)d.new InnerF();
+		OuterD.InnerG dg = (OuterD.InnerG)d.new InnerG();
+		OuterD.InnerH dh = (OuterD.InnerH)d.new InnerH();
 
 		String resBA = db.queryA();
 		String resBB = db.queryB();

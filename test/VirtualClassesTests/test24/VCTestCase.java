@@ -23,7 +23,7 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 24: Test Arrays on Caesar Classes: start");
 
-		OuterB ob = new OuterB_Impl(null);
+		OuterB ob = new OuterB();
 
 		String result = ob.createDefaultA().queryA();
 
@@ -76,10 +76,10 @@ public cclass OuterA
 	public OuterA.InnerA createDefaultA()
 	{
 		InnerA[] arr = new InnerA[2];
-		arr[0] = $newInnerA().init("a1");
-		arr[1] = $newInnerA().init("a2");
+		arr[0] = this.new InnerA().init("a1");
+		arr[1] = this.new InnerA().init("a2");
 
-		InnerA a = $newInnerA().init("a0");
+		InnerA a = this.new InnerA().init("a0");
 		a.setArr(arr);
 		return a;
 	}
@@ -103,7 +103,7 @@ public cclass OuterB extends OuterA
 
 		System.arraycopy(arr, 0, arrNew, 0, arr.length);
 
-		arrNew[arr.length] = (OuterB.InnerA)$newInnerA().init("a3");
+		arrNew[arr.length] = (OuterB.InnerA)this.new InnerA().init("a3");
 		a.setArr(arrNew);
 
 		return a;

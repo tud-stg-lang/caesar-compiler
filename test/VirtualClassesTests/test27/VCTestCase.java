@@ -27,8 +27,8 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 27: Test Multiple Outer Joins: start");
 
-		OuterG og = new OuterG_Impl(null);
-		OuterH oh = new OuterH_Impl(null);
+		OuterG og = new OuterG();
+		OuterH oh = new OuterH();
 
 		String resGA = og.queryA();
 		String resHA = oh.queryA();

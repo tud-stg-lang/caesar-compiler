@@ -22,7 +22,7 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 22: Test joined polymorphism: start");
 
-		OuterD od = new OuterD_Impl(null);
+		OuterD od = new OuterD();
 
 		String resM = ((InterfaceM)od).queryM();
 		String resN = ((InterfaceN)od).queryN();

@@ -24,10 +24,10 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 5: Outer Class Access: start");
 
-		OuterA oa = new OuterA_Impl(null);	// !!! remove the parameter !!!
-		OuterB ob = new OuterB_Impl(null);
-		OuterA.InnerA a1 = (OuterA.InnerA)oa.$newInnerA();
-		OuterB.InnerA a2 = (OuterB.InnerA)ob.$newInnerA();
+		OuterA oa = new OuterA();
+		OuterB ob = new OuterB();
+		OuterA.InnerA a1 = (OuterA.InnerA)oa.new InnerA();
+		OuterB.InnerA a2 = (OuterB.InnerA)ob.new InnerA();
 
 		System.out.println(a1.accessOuterA());
 		assertEquals(a1.accessOuterA(), expectedResult1);

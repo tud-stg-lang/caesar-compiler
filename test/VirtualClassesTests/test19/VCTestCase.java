@@ -28,7 +28,7 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 19: Multiple Inheritance of State: start");
 
-		OuterD d = new OuterD_Impl(null); // !!! remove parameter
+		OuterD d = new OuterD();
 
 		String resA = d.queryA();
 		String resB = d.queryB();

@@ -25,7 +25,7 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 21: Test joining extensions: start");
 
-		String result = (new OuterD_Impl(null)).defaultObject().queryA();
+		String result = (new OuterD()).defaultObject().queryA();
 
 		System.out.println(result);
 		assertEquals(result, expectedResult);
@@ -55,7 +55,7 @@ public cclass OuterA
 
 		public void setDefaultChild()
 		{
-			setChild($outer.$newInnerC());
+			setChild($outer.new InnerC());
 		}
 
 		public String queryA()
@@ -74,7 +74,8 @@ public cclass OuterA
 
 	public OuterA.InnerB defaultObject()
 	{
-		InnerB b = $newInnerB();
+	    //InnerB b = $newInnerB();
+		InnerB b = new InnerB();
 		b.setDefaultChild();
 		return b;
 	}
@@ -101,7 +102,7 @@ public cclass OuterB extends OuterA
 
 		public void setDefaultChild2()
 		{
-			setChild2($outer.$newInnerD());
+			setChild2($outer.new InnerD());
 		}
 
 		public String queryA()
@@ -155,7 +156,7 @@ public cclass OuterC extends OuterA
 
 		public void setDefaultChild3()
 		{
-			setChild3($outer.$newInnerE());
+			setChild3($outer.new InnerE());
 		}
 
 		public String queryA()

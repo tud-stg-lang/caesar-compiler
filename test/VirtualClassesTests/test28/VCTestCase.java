@@ -24,7 +24,7 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 28: Test Merging Class With Multiple Parents: start");
 
-		OuterC.InnerC cc = (OuterC.InnerC)new OuterC_Impl(null).$newInnerC();
+		OuterC.InnerC cc = (OuterC.InnerC)new OuterC().new InnerC();
 
 		String resA = cc.queryA();
 		String resB = cc.queryB();

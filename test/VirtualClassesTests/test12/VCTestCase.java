@@ -23,21 +23,21 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 12: Inner Factory Methods: start");
 
-		OuterA.InnerA aa = (OuterA.InnerA)(new OuterA_Impl(null)).$newInnerA(); // !!! remove parameter
-		OuterB.InnerB bb = (OuterB.InnerB)(new OuterB_Impl(null)).$newInnerB(); // !!! remove parameter
+		OuterA.InnerA aa = (OuterA.InnerA)new OuterA().new InnerA();
+		OuterB.InnerB bb = (OuterB.InnerB)new OuterB().new InnerB();
 
-		String resAAA = aa.$newDeepestA().queryA();
-		String resAAB = aa.$newDeepestB().queryA();
-		String resAAC = aa.$newDeepestC().queryA();
-		String resBBA = bb.$newDeepestA().queryA();
-		String resBBB = bb.$newDeepestB().queryA();
-		String resBBC = bb.$newDeepestC().queryA();
-		String resBBD = bb.$newDeepestD().queryA();
+		String resAAA = aa.new DeepestA().queryA();
+		String resAAB = aa.new DeepestB().queryA();
+		String resAAC = aa.new DeepestC().queryA();
+		String resBBA = bb.new DeepestA().queryA();
+		String resBBB = bb.new DeepestB().queryA();
+		String resBBC = bb.new DeepestC().queryA();
+		String resBBD = bb.new DeepestD().queryA();
 
 		aa = bb;
-		String resAAA1 = aa.$newDeepestA().queryA();
-		String resAAB1 = aa.$newDeepestB().queryA();
-		String resAAC1 = aa.$newDeepestC().queryA();
+		String resAAA1 = aa.new DeepestA().queryA();
+		String resAAB1 = aa.new DeepestB().queryA();
+		String resAAC1 = aa.new DeepestC().queryA();
 
 		String result = resAAA + ", " + resAAB + ", " + resAAC + ", " + resBBA + ", " + resBBB + ", " + resBBC + ", " + resBBD
 			+ ", " + resAAA1 + ", " + resAAB1 + ", " + resAAC1;

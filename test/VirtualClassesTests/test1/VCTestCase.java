@@ -24,9 +24,9 @@ public class VCTestCase extends TestCase {
 	public void test() {
 		System.out.println("-------> VCTest 1: start");
 
-		TestCase1 testCase = new TestCase1_Impl(null); 	// !!! remove the parameter !!!
-        TestCase1.A a = testCase.$newB();
-        I i = a.$newX();
+		TestCase1 testCase = new TestCase1();
+        TestCase1.A a = testCase.new B();
+        I i = a.new X();
         assertEquals(i.msg(), expectedResult);
 
         System.out.println("-------> VCTest 1: end");

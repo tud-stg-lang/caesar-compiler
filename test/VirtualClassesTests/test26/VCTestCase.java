@@ -23,7 +23,7 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 26: Test extends for furtherbindings: start");
 
-		OuterA.InnerB ic = (OuterB.InnerC)new OuterB_Impl(null).$newInnerC();
+		OuterA.InnerB ic = (OuterB.InnerC)new OuterB().new InnerC();
 
 		String result = ic.queryA();
 

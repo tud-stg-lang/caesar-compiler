@@ -23,7 +23,7 @@ public class VCTestCase extends TestCase
 	{
 		System.out.println("-------> VCTest 31: Test Outer Class Creation: start");
 
-		String result = new OuterB_Impl(null).test();
+		String result = new OuterB().test();
 		System.out.println(result);
 		assertEquals(expectedResult, result);
 
@@ -36,7 +36,7 @@ public cclass OuterB
 {
 	public String test()
 	{
-		OuterA oa = new OuterA_Impl(null).init(2);
+		OuterA oa = new OuterA().init(2);
 		return "" + oa.getVal();
 	}
 }

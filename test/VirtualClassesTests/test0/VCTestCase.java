@@ -20,11 +20,13 @@ public class VCTestCase extends TestCase {
 	public void test() {
 		System.out.println("-------> VCTest 0: start");
 
-        TestCase0 testCase = new TestCase0_Impl(null); 	// !!! remove the parameter !!!
-        TestCase0.A a = testCase.$newA();
-        TestCase0.B b = testCase.$newB();
-		TestCase0.A.X x1 = a.$newX();
-		TestCase0.A.X x2 = b.$newX();
+        TestCase0 testCase = new TestCase0();
+                
+        TestCase0.A a = testCase.new A();
+        TestCase0.B b = testCase.new B();
+		TestCase0.A.X x1 = a.new X();
+		TestCase0.A.X x2 = b.new X();		
+		
 		assertEquals(x1.toString()+'-'+x2.toString(), "A.X-B.X");
 
 		System.out.println("-------> VCTest 0: end");

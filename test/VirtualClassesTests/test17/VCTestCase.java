@@ -25,7 +25,7 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 17: Extending Deep Classes: start");
 
-		OuterB.InnerB b = (OuterB.InnerB)(new OuterB_Impl(null)).$newInnerB(); // !!! remove parameter
+		OuterB.InnerB b = (OuterB.InnerB)new OuterB().new InnerB();
 
 		String result = b.defaultObject().queryA();
 
@@ -59,7 +59,7 @@ public cclass OuterA
 
 			public void setDefaultChild()
 			{
-				setChild($outer.$newDeepestC());
+				setChild($outer.new DeepestC());
 			}
 
 			public String queryA()
@@ -78,7 +78,7 @@ public cclass OuterA
 
 		public OuterA.InnerA.DeepestB defaultObject()
 		{
-			DeepestB b = $newDeepestB();
+			DeepestB b = new DeepestB();
 			b.setDefaultChild();
 			return b;
 		}
@@ -105,7 +105,7 @@ public cclass OuterA
 
 			public void setDefaultChild2()
 			{
-				setChild2($outer.$newDeepestD());
+				setChild2($outer.new DeepestD());
 			}
 
 			public String queryA()
@@ -162,7 +162,7 @@ public cclass OuterB extends OuterA
 
 			public void setDefaultChild3()
 			{
-				setChild3($outer.$newDeepestE());
+				setChild3($outer.new DeepestE());
 			}
 
 			public String queryA()

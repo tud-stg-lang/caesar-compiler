@@ -31,17 +31,17 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 23: Test joined polymorphism: start");
 
-		OuterD od = new OuterD_Impl(null);
+		OuterD od = new OuterD();
 
-		String resA = od.$newInnerA().queryA();
-		String resB = od.$newInnerB().queryA();
-		String resC = od.$newInnerC().queryA();
-		String resD = od.$newInnerD().queryA();
-		String resE = od.$newInnerE().queryA();
-		String resF = od.$newInnerF().queryA();
-		String resG = od.$newInnerG().queryA();
-		String resH = od.$newInnerH().queryA();
-		String resI = od.$newInnerI().queryA();
+		String resA = od.new InnerA().queryA();
+		String resB = od.new InnerB().queryA();
+		String resC = od.new InnerC().queryA();
+		String resD = od.new InnerD().queryA();
+		String resE = od.new InnerE().queryA();
+		String resF = od.new InnerF().queryA();
+		String resG = od.new InnerG().queryA();
+		String resH = od.new InnerH().queryA();
+		String resI = od.new InnerI().queryA();
 
 		String result = resA + "; " + resB + "; " + resC + "; " + resD + "; " + resE + "; " + resF + "; " + resG +
 						"; " + resH + "; " + resI;

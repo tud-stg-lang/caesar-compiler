@@ -22,9 +22,9 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 14b: Test Super Calls and extends for furtherbindings: start");
 
-		OuterC oc = new OuterC_Impl(null);
+		OuterC oc = new OuterC();
 
-		String result = ((OuterC.Leaf1)oc.$newLeaf1()).queryA();
+		String result = ((OuterC.Leaf1)oc.new Leaf1()).queryA();
 
 		System.out.println(result);
 		assertEquals(expectedResult, result);

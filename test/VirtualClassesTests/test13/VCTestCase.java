@@ -22,8 +22,8 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 13: Inherited Methods: start");
 
-		OuterB ob = new OuterB_Impl(null); // !!! remove parameter
-		OuterB.InnerB bb = (OuterB.InnerB)ob.$newInnerB();
+		OuterB ob = new OuterB();
+		OuterB.InnerB bb = (OuterB.InnerB)ob.new InnerB();
 
 		String resA = bb.queryA();
 		String resB = bb.queryB();

@@ -22,7 +22,7 @@ public class VCTestCase extends TestCase
 
 		System.out.println("-------> VCTest 6: Outer Class Type Inheritance: start");
 
-		OuterB ob = new OuterB_Impl(null); // !!! remove parameter
+		OuterB ob = new OuterB();
 
 		String resA = ((InterfaceA)ob).queryA();
 		String resB = ((InterfaceB)ob).queryB();

@@ -20,9 +20,9 @@ public class VCTestCase extends TestCase {
 	public void test() {
         System.out.println("-> VCTest 2: start");
 
-        TestCase2 testCase = new TestCase2_Impl(null); 	// !!! remove the parameter !!!
-	    TestCase2.G g = testCase.$newCG(); 		// testCase.G g = testCase.$newCG();
-        TestCase2.G.E e = g.$newUE(); 	// g.E = g.new E();
+        TestCase2 testCase = new TestCase2();
+	    TestCase2.G g = testCase.new CG(); 		// testCase.G g = testCase.$newCG();
+        TestCase2.G.E e = g.new UE(); 	// g.E = g.new E();
         e.init("n1", "n2");
 
 		System.out.println("connecting: "+e.isConnecting("n1", "n2"));

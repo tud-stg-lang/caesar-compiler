@@ -19,11 +19,11 @@ public class VCTestCase extends TestCase {
 	public void test() {
         System.out.println("-------> VCTest 3: start");
 
-        TestCase3 testCase = new TestCase3_Impl(null); 	// !!! remove the parameter !!!
-	    TestCase3.G g = testCase.$newCWG(); 	// testCase.G g = testCase.$newCG();
-        TestCase3.G.N n1 = g.$newN(); 		// g.N n1 = g.new N();
-        TestCase3.G.N n2 = g.$newN(); 		// g.N n2 = g.new N();
-        TestCase3.G.E e = g.$newUE(); 	    // g.E = g.new E();
+        TestCase3 testCase = new TestCase3();
+	    TestCase3.G g = testCase.new CWG(); 	// testCase.G g = testCase.$newCG();
+        TestCase3.G.N n1 = g.new N(); 		// g.N n1 = g.new N();
+        TestCase3.G.N n2 = g.new N(); 		// g.N n2 = g.new N();
+        TestCase3.G.E e = g.new UE(); 	    // g.E = g.new E();
 
         n1.setName("n1");
         n2.setName("n2");

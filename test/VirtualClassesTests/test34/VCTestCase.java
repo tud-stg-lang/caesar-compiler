@@ -23,8 +23,8 @@ public class VCTestCase extends TestCase
 	{
 		System.out.println("-------> VCTest 34: Mixin factory methods: start");
 
-        OuterB.InnerB db = new OuterD_Impl(null).newB();
-        OuterC.InnerC dc = new OuterD_Impl(null).newC();
+        OuterB.InnerB db = new OuterD().newB();
+        OuterC.InnerC dc = new OuterD().newC();
 
 		String result = db.queryB() + ", " + dc.queryC();
 
@@ -51,7 +51,7 @@ public cclass OuterB extends OuterA
 
 	public OuterB.InnerB newB()
 	{
-		return $newInnerB();
+		return new InnerB();
 	}
 }
 
@@ -67,7 +67,7 @@ public cclass OuterC extends OuterA
 
 	public OuterC.InnerC newC()
 	{
-		return $newInnerC();
+		return new InnerC();
 	}
 }
 
