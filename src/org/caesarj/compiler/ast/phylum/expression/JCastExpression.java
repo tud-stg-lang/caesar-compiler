@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JCastExpression.java,v 1.3 2004-10-28 16:08:29 aracic Exp $
+ * $Id: JCastExpression.java,v 1.4 2005-01-21 17:01:34 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -152,6 +152,10 @@ public class JCastExpression extends JExpression {
 
   public void recurse(IVisitor s) {
     expr.accept(s);
+  }
+  
+  public JExpression getExpression() {
+      return expr;
   }
   
   // ----------------------------------------------------------------------
