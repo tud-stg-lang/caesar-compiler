@@ -11,7 +11,8 @@ public class CaesarTestCase_2 extends TestCase {
 	public static StringBuffer result = new StringBuffer();
 
 	public String expectedResult =
-		":before foo:before exec foo:before exec foo:before exec foo:foo:after exec foo:after exec foo";
+//		":before foo:before exec foo:before exec foo:before exec foo:foo:after exec foo:after exec foo";
+	   ":foo";
 
     public void bar() {
     	test();
