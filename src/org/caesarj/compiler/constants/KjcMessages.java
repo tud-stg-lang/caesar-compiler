@@ -194,6 +194,7 @@ public interface KjcMessages extends org.caesarj.util.Messages {
   MessageDescription	AND_BADTYPE = new MessageDescription("Incompatible operand types \"{0}\" and \"{1}\" for operator &&", "JLS 15.23", 0);
   MessageDescription	OR_BADTYPE = new MessageDescription("Incompatible operand types \"{0}\" and \"{1}\" for operator ||", "JLS 15.24", 0);
   MessageDescription	CAST_CANT = new MessageDescription("Cannot cast from \"{0}\" to \"{1}\"", "JLS 15.16", 0);
+  MessageDescription	CAST_CANT_TYPE_NAME_EXPR = new MessageDescription("Cannot cast a type name expression", "JLS ?", 0);
   MessageDescription	RETURN_BADTYPE = new MessageDescription("Type \"{0}\" cannot be returned as a \"{1}\"", "JLS 14.16", 0);
   MessageDescription	RETURN_EMPTY_NONVOID = new MessageDescription("Return statement with no value in method returning non-void", "JLS 14.16", 0);
   MessageDescription	RETURN_NONEMPTY_VOID = new MessageDescription("Return statement with a value in method returning void", "JLS 14.16", 0);

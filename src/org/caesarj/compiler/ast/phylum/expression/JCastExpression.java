@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JCastExpression.java,v 1.2 2004-09-06 13:31:35 aracic Exp $
+ * $Id: JCastExpression.java,v 1.3 2004-10-28 16:08:29 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -92,7 +92,11 @@ public class JCastExpression extends JExpression {
     TypeFactory         factory = context.getTypeFactory();
 
     expr = expr.analyse(context);
-
+    
+    if(expr instanceof JTypeNameExpression) {
+        throw new PositionedError(getTokenReference(), KjcMessages.CAST_CANT_TYPE_NAME_EXPR); 
+    }
+    
     try {
       dest = dest.checkType(context);
     } catch (UnpositionedError e) {
