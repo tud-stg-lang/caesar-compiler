@@ -15,7 +15,8 @@ public class CCompositeType extends CReferenceType {
         CReferenceType checkedInterfaceTypes[],
         CReferenceType checkedImplTypes[]
     ) {
-        super(new CCjCompositeClassProxy(qualifiedName));
+        super();
+        setClass(new CCjCompositeClassProxy(this, qualifiedName));
         this.qualifiedName = qualifiedName;
         this.checkedInterfaceTypes = checkedInterfaceTypes;
         this.checkedImplTypes = checkedImplTypes;        
@@ -40,6 +41,46 @@ public class CCompositeType extends CReferenceType {
     public CReferenceType[] getClassList() {
         return checkedImplTypes; 
     }
+    
+    /**
+	 *
+	 */
+
+	public boolean isAssignableTo(CTypeContext context, CType dest) {
+		for(int i=0; i<checkedInterfaceTypes.length; i++)
+            if(checkedInterfaceTypes[i].isAssignableTo(context, dest))
+                return true;
+        return false;
+	}
+
+    public boolean isAssignableTo(CTypeContext context, CType dest, boolean inst) {
+        for(int i=0; i<checkedInterfaceTypes.length; i++)
+            if(checkedInterfaceTypes[i].isAssignableTo(context, dest, inst))
+                return true;
+        return false;
+    }
+
+    public boolean isAssignableTo(
+    	CTypeContext context,
+    	CType dest,
+    	CReferenceType[] substitution) {
+        for(int i=0; i<checkedInterfaceTypes.length; i++)
+            if(checkedInterfaceTypes[i].isAssignableTo(context, dest, substitution))
+                return true;
+        return false;
+    }
+
+    public boolean isAssignableTo(
+    	CTypeContext context,
+    	CType dest,
+    	CReferenceType[] substitution,
+    	boolean inst) {
+        for(int i=0; i<checkedInterfaceTypes.length; i++)
+            if(checkedInterfaceTypes[i].isAssignableTo(context, dest, substitution, inst))
+                return true;
+        return false;
+    }
+
 
     // --------------------------------------------------------------
 

@@ -4,6 +4,9 @@ import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.ExportMixer;
+import org.caesarj.mixer.Linearizator;
+import org.caesarj.mixer.Mixer;
+import org.caesarj.mixer.MixinList;
 import org.caesarj.util.UnpositionedError;
 
 /**
@@ -30,16 +33,14 @@ public class CCompositeNameType extends CClassNameType {
             checkedInterfaceTypes[i] = 
                 (CReferenceType)refType[i].checkType(context);
             
-            classes[i] = checkedInterfaceTypes[i].getCClass();
+            classes[i] = checkedImplTypes[i].getCClass();
         }
         
         try {
-            CClass mixinList[] = ExportMixer.instance().mix(classes);
-            String mixedClassName = ExportMixer.instance().generateClassName(mixinList);
+            MixinList mixinList = ExportMixer.instance().mix(classes);
+            String mixedClassName = mixinList.generateClassName();
             
-            // CTODO
-            return new CCompositeType("$gen/"+mixedClassName, checkedInterfaceTypes, checkedImplTypes);
-            //return checkedImplTypes[0];
+            return new CCompositeType("$gen/"+mixedClassName, checkedInterfaceTypes, checkedImplTypes);            
         }
         catch (Exception e) {
             // CTODO create correct error message
