@@ -52,7 +52,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 	protected Vector compilationUnits;
 	private Set errorMessages;
 	private CollectClassesFjVisitor inherritConstructors;
-	protected boolean joined;
+
 
 	// The used weaver. An instance ist created when it's needed in generateAndWeaveCode
 	private CaesarWeaver weaver; 
@@ -83,7 +83,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 	 */
 	public boolean run(String[] args) {
 		errorFound = false;
-		joined = false;
 		compilationUnits = null;
 
 		if (!parseArguments(args)) {
@@ -118,7 +117,7 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 		prepareJoinpointReflection(tree);
 		prepareDynamicDeployment(environment, tree);
 		createAllHelperInterfaces(environment, tree);
-		joinAll(tree);
+		joinAll();
 		if (errorFound) { return false; }
 		checkAllInterfaces(tree);
 		if (errorFound) { return false;	}
@@ -144,6 +143,26 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 		return true;
 	}
 
+    /**
+     * - create advice attribute for AspectJ weaver if necessary
+     * - add outer this if necessary
+     * - check constructors
+     * 	  - add super-constructor call if necessary
+     *    - add call to initializer method
+     *    - check super-constructor call
+     *    - check constructor body
+     * - check exception handling of checked exceptions
+     * - check local variables initialization before usage
+     * - check constructor call circularity
+     * - check only abstract methods in abstract classes
+     * - check signature of overriding methods compatible
+     * - check of method bodies including type checking
+     * - more checks...
+     * 
+     * - generation of bridge methods
+     *   Notion of bridge methods not yet clear
+     *   Probably related to support for Generics a la GJ
+     */
 	protected void checkAllBodies(JCompilationUnit[] tree) {
 		for (int count = 0; count < tree.length; count++) {
 			checkBody(tree[count]);
@@ -153,12 +172,23 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 		}
 	}
 
+	/**
+	 * tasks: 
+	 * - check all final fields are initialized
+	 * - check for inheritance circularity
+	 * - check interfaces not implemented by superclasses
+	 * - more (TBD)
+	 */
 	protected void checkAllInitializers(JCompilationUnit[] tree) {
 		for (int count = 0; count < tree.length; count++) {
 			checkInitializers(tree[count]);
 		}
 	}
 
+	/**
+	 * tasks: upcast overridden types
+	 * do something with family parameters (not yet quite clear)
+	 */
 	protected void initAllFamilies(JCompilationUnit[] tree) {
 		for (int count = 0; count < tree.length; count++) {
 			initFamilies(tree[count]);
@@ -166,6 +196,26 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 		}
 	}
 
+	/**
+	 * A lot happens in this phase. We should divide this
+	 * into small steps.
+	 * 
+	 * - create self-enabled methods in clean classes
+	 * - create factory methods for virtual classes
+	 * - create wrapper creater/destructor methods
+	 * - register type at CaesarBCEL world
+	 * - prepare for static deployment if necessary (create advice-, aspectOf-method etc.)
+	 * - check modifiers of classes
+	 * - collect static initializers and create initializer method
+	 * - collect instance initializers and create instance initializer method
+	 * - create default constructor if necessary
+	 * - traverse AST:
+	 * 		- check field and method modifiers
+	 * 		- check field and method signature
+	 * 		- create CSourceMethod/CSourceField for every field/method and enter them in corresponding CClass
+	 * - create perSingleton clause if necessary
+	 * - check pointcuts if necessary 
+	 */
 	protected void checkAllInterfaces(JCompilationUnit[] tree) {
 		for (int count = 0; count < tree.length; count++) {
 			checkInterface(tree[count]);
@@ -173,11 +223,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 		}
 	}
 
-	protected void joinAll(JCompilationUnit[] tree) {
-		for (int count = 0; count < tree.length; count++) {
-			join(tree[count]);
-		}
-	}
 
 	protected void createAllHelperInterfaces(
 		KjcEnvironment environment,
@@ -220,40 +265,49 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 		super.checkInterface(cunit);
 	}
 
-	protected void join(JCompilationUnit cunit) {
-		if (!joined) {
-			joined = true;
+	/**
+	 * In this phase the following things happen:
+	 * - load all imported classes via classloader
+	 * - create CClass object for each imported class
+	 * - register loaded classes in CompilationUnit.allLoadedClasses
+	 * - add type declarations in compilation units in "allLoadedClasses"
+	 * - resolve superclasses and create CClassOrInterface type for superclass
+	 * - check conditions on superclasses like accessibility, superclass not final, superclass not interface
+	 * - similarly for implemented interfaces: resolve, create CClassOrInterface type, check for "is interface", accessiblity, circularity
+	 * - Virtual-Class related stuff: 
+	 *    - resolve/change superclass links in "override" declarations
+	 *    - Copy inherited constructors in virtual classes
+	 */
 
-			for (int i = 0; i < compilationUnits.size(); i++) {
-				cunit = (JCompilationUnit) compilationUnits.elementAt(i);
-				// perform a first join pass to resolve all
-				// directly known (i.e. specified) superclasses
-				super.join(cunit);
+	protected void joinAll() {
+		JCompilationUnit cunit;
+
+		for (int i = 0; i < compilationUnits.size(); i++) {
+			cunit = (JCompilationUnit) compilationUnits.elementAt(i);
+			// perform a first join pass to resolve all
+			// directly known (i.e. specified) superclasses
+			join(cunit);
+		}
+		if (errorFound)
+			return;
+
+		// let a visitor traverse the tree
+		// and resolve all overriders superclasses
+		getResolveSuperClass(this, compilationUnits).transform();
+		if (errorFound)
+			return;
+
+		try {
+			Vector warnings =
+				getInheritConstructors(compilationUnits).transform();
+			for (int i = 0; i < warnings.size(); i++) {
+				inform((PositionedError) warnings.elementAt(i));
 			}
-			if (errorFound)
-				return;
-
-			// let a visitor traverse the tree
-			// and resolve all overriders superclasses
-			getResolveSuperClass(this, compilationUnits).transform();
-			if (errorFound)
-				return;
-
-			try {
-				Vector warnings =
-					getInheritConstructors(compilationUnits).transform();
-				for (int i = 0; i < warnings.size(); i++) {
-					inform((PositionedError) warnings.elementAt(i));
-				}
-			} catch (PositionedError e) {
-				reportTrouble(e);
-			}
+		} catch (PositionedError e) {
+			reportTrouble(e);
 		}
 	}
 
-	public void reJoin(JCompilationUnit unit) {
-		super.join(unit);
-	}
 	
 	/**
 	 * Initializes the families of the compilation unit passed.
@@ -328,6 +382,14 @@ public class Main extends org.caesarj.compiler.MainSuper implements Constants {
 		super.inform(error);
 	}
 
+	/**
+	 * Create AST via parser/scanner
+	 * In addition, the following actions are performed:
+	 * - create empty CClass placeholder for every class (to be filled later)
+	 * - register types in classreader/allLoadedClasses 
+	 * - the transformation of collaboration interfaces happens in
+	 *   this phase, too, but this should be separated from parsing ASAP
+	 */
 	protected JCompilationUnit parseFile(
 		File file,
 		KjcEnvironment environment) {
