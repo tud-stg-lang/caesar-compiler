@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Path.java,v 1.20 2005-02-17 17:41:10 aracic Exp $
+ * $Id: Path.java,v 1.21 2005-02-21 15:17:13 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -43,6 +43,7 @@ import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
+import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.context.CBlockContext;
@@ -230,8 +231,10 @@ public abstract class Path {
                         CBlockContext block = (CBlockContext)context;
                         if (block.containsVariable(var.getIdent())){
                             found = true;
-                        } else {
-                            context = context.getParentContext();
+                        } 
+                        else {
+                            // we only want block context
+                            context = context.getParentContext().getBlockContext();
                             k++;
                         }
                     } while (!found);                    
@@ -257,6 +260,9 @@ public abstract class Path {
                                 "accessor method not returning a outer reference");
                         }
                     }
+                    done = true;
+                }
+                else if(me.getIdent().startsWith(CaesarConstants.FACTORY_METHOD_PREFIX)) {
                     done = true;
                 }
                 else /*if(tmp == expr)*/ {
