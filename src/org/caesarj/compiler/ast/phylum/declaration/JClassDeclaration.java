@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.10 2004-03-17 14:45:53 aracic Exp $
+ * $Id: JClassDeclaration.java,v 1.11 2004-03-17 14:57:48 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -1029,7 +1029,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 			pointcuts[j].checkInterface(self);
 		}
 	
-		
+		// FJTODO initFamilies
 		initFamilies(self);		
 	}
 

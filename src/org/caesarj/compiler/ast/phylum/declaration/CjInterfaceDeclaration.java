@@ -132,9 +132,6 @@ public class CjInterfaceDeclaration
 			| ACC_PRIVILEGED 
 			| ACC_CROSSCUTTING 
 			| ACC_DEPLOYED;
-//		Walter: Collaboration, binding and providing inserted
-
-			
 	}	
 	
 	public void print()
