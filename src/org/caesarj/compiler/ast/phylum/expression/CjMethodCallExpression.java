@@ -2,8 +2,6 @@ package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.compiler.ast.CMethodNotFoundError;
 import org.caesarj.compiler.constants.CaesarMessages;
-import org.caesarj.compiler.constants.CciConstants;
-import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.export.CClass;
@@ -18,7 +16,7 @@ import org.caesarj.util.UnpositionedError;
 
 // FJTODO 
 // it will be best to keep this one and JMethodCallExpression separated  
-public class FjMethodCallExpression extends JMethodCallExpression {
+public class CjMethodCallExpression extends JMethodCallExpression {
 
 	protected JExpression[] unanalysedArgs;
 	
@@ -35,7 +33,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 	 */
 	private boolean typeBound;	
 
-	public FjMethodCallExpression(
+	public CjMethodCallExpression(
 		TokenReference where,
 		JExpression prefix,
 		String ident,
@@ -43,7 +41,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		this(where, prefix, ident, args, args);
 	}
 
-	public FjMethodCallExpression(
+	public CjMethodCallExpression(
 		TokenReference where,
 		JExpression prefix,
 		String ident,
@@ -56,7 +54,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		}
 	}
 
-	public FjMethodCallExpression(
+	public CjMethodCallExpression(
 		TokenReference where,
 		JExpression prefix,
 		CMethod method,
@@ -65,7 +63,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		// FJRM cachedWhere = where;
 	}
 
-	public FjMethodCallExpression(
+	public CjMethodCallExpression(
 		TokenReference where,
 		JExpression prefix,
 		CMethod method,
@@ -157,7 +155,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		JCastExpression result = 
 			new JCastExpression(
 				ref,
-				new FjMethodCallExpression(
+				new CjMethodCallExpression(
 					ref,
 					prefix,
 					ident,
@@ -594,19 +592,7 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		}
 		catch (CMethodNotFoundError e)
 		{
-			//if it does not find the method it may be 
-			//the wrapper recycling operator
-			String wrapperTypeName = CciConstants.toBaseMethodName(ident);
-			String methodName = CciConstants.toWrapperMethodCreationName(
-				wrapperTypeName);
-
-			if (CciConstants.isSelfContextMethodName(ident))
-				ident = FjConstants.selfContextMethodName(methodName);
-			else if (CciConstants.isImplementationMethodName(ident))
-				ident = FjConstants.implementationMethodName(methodName);
-			else
-				ident = methodName;
-
+			
 			
 			try
 			{
@@ -662,7 +648,6 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 		CClass methodOwner = method.getOwner();
 		if (method.isPublic() 
 			&& local != methodOwner 
-			&& FjConstants.isBaseName(methodOwner.getIdent())
 			&& CModifier.contains(methodOwner.getModifiers(), 
 				(FJC_CLEAN | FJC_VIRTUAL | FJC_OVERRIDE)))
 		{
@@ -704,8 +689,8 @@ public class FjMethodCallExpression extends JMethodCallExpression {
 	protected boolean hasAnUnqualifiedInstanceCreationPrefix() {
 		if (prefix instanceof JQualifiedInstanceCreation)
 			return true;
-		else if (prefix instanceof FjMethodCallExpression)
-			return ((FjMethodCallExpression) prefix)
+		else if (prefix instanceof CjMethodCallExpression)
+			return ((CjMethodCallExpression) prefix)
 				.hasAnUnqualifiedInstanceCreationPrefix();
 		else
 			return false;

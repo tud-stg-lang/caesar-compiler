@@ -84,7 +84,7 @@ public class JoinPointReflectionVisitor
 			decls);
 		if (self instanceof JClassDeclaration) {
 			JClassDeclaration clazz = (JClassDeclaration) self;
-			AdviceDeclaration[] advices = clazz.getAdvices();
+			CjAdviceDeclaration[] advices = clazz.getAdvices();
 			for (int i = 0; i < advices.length; i++) {
 				advices[i].accept(this);
 			}
@@ -105,9 +105,9 @@ public class JoinPointReflectionVisitor
 		CReferenceType[] exceptions,
 		JBlock body) {
 
-		if (self instanceof AdviceDeclaration) {
+		if (self instanceof CjAdviceDeclaration) {
 
-			AdviceDeclaration adviceDec = (AdviceDeclaration) self;
+			CjAdviceDeclaration adviceDec = (CjAdviceDeclaration) self;
 			List adviceParameters = new ArrayList();
 			//include the old parameters
 			for (int i = 0; i < parameters.length; i++) {
@@ -203,7 +203,7 @@ public class JoinPointReflectionVisitor
 				fieldDeclaration.getVariable().getIdent());
 
 		JExpression prefix =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				fieldExpr,
 				GET_SINGLETON_ASPECT_METHOD,
@@ -217,14 +217,14 @@ public class JoinPointReflectionVisitor
 		JExpression[] args =
 			{
 				fieldExpr,
-				new FjMethodCallExpression(
+				new CjMethodCallExpression(
 					where,
 					threadPrefix,
 					"currentThread",
 					JExpression.EMPTY)};
 
 		JExpression expr =
-			new FjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
+			new CjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
 
 		JStatement[] body = { new JExpressionStatement(where, expr, null)};
 

@@ -86,7 +86,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		this.qualifiedSingletonAspectName =
 			aspectClass.getCClass().getQualifiedName() + REGISTRY_EXTENSION;
 
-		AdviceDeclaration[] advices = aspectClass.getAdvices();
+		CjAdviceDeclaration[] advices = aspectClass.getAdvices();
 		for (int i = 0; i < advices.length; i++) {
 			createAdviceMethodName(advices[i]);
 		}
@@ -96,12 +96,12 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 * Creates the Aspect Interface.
 	 */
-	public FjInterfaceDeclaration createAspectInterface() {
+	public CjInterfaceDeclaration createAspectInterface() {
 
-		AdviceDeclaration[] adviceDeclarations = aspectClass.getAdvices();
+		CjAdviceDeclaration[] adviceDeclarations = aspectClass.getAdvices();
 
-		FjMethodDeclaration[] methods =
-			new FjMethodDeclaration[adviceDeclarations.length];
+		CjMethodDeclaration[] methods =
+			new CjMethodDeclaration[adviceDeclarations.length];
 
 		for (int i = 0; i < adviceDeclarations.length; i++) {
 			methods[i] = createInterfaceAdviceMethod(adviceDeclarations[i]);
@@ -110,14 +110,14 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CReferenceType[] superInterfaces =
 			{ new CClassNameType(CAESAR_ASPECT_IFC_CLASS)};
 
-		FjInterfaceDeclaration aspectInterface =
-			new FjInterfaceDeclaration(
+		CjInterfaceDeclaration aspectInterface =
+			new CjInterfaceDeclaration(
 				aspectClass.getTokenReference(),
 				ACC_PUBLIC,
 				aspectInterfaceName,
 				CTypeVariable.EMPTY,
 				superInterfaces,
-				FjFieldDeclaration.EMPTY,
+				JFieldDeclaration.EMPTY,
 				methods,
 				new JTypeDeclaration[0],
 				new JPhylum[0],
@@ -135,8 +135,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 * Creates an advice method for the aspect interface.
 	 */
-	private FjMethodDeclaration createInterfaceAdviceMethod(AdviceDeclaration advice) {
-		return new FjMethodDeclaration(
+	private CjMethodDeclaration createInterfaceAdviceMethod(CjAdviceDeclaration advice) {
+		return new CjMethodDeclaration(
 			where,
 			ACC_PUBLIC | ACC_ABSTRACT,
 			CTypeVariable.EMPTY,
@@ -190,7 +190,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				DEPLOYMENT_THREAD,
 				null);
 
-		FjFieldDeclaration	field = new FjFieldDeclaration(where, var, true, null, null);
+		JFieldDeclaration	field = new JFieldDeclaration(where, var, true, null, null);
 		field.setGenerated();
 		aspectClass.addField( field );
 	}
@@ -199,7 +199,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * Create the appropriate advice method for the aspect class.
 	 * That means, creates a "normal" method with the former advice body.
 	 */
-	private JMethodDeclaration createAspectClassAdviceMethod(AdviceDeclaration advice) {
+	private JMethodDeclaration createAspectClassAdviceMethod(CjAdviceDeclaration advice) {
 		JStatement[] body = { createAspectClassAdviceStatement_1(advice)};
 
 		return
@@ -231,9 +231,9 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * 		->createAspectClassAdviceStatement_1_1(advice)
 	 * }
 	 */
-	private JStatement createAspectClassAdviceStatement_1(AdviceDeclaration advice) {
+	private JStatement createAspectClassAdviceStatement_1(CjAdviceDeclaration advice) {
 		JExpression left =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				null,
 				GET_DEPLOYMENT_THREAD_METHOD,
@@ -242,7 +242,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CReferenceType threadType = new CClassNameType("java/lang/Thread");
 		JExpression prefix = new JTypeNameExpression(where, threadType);
 		JExpression right =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				prefix,
 				"currentThread",
@@ -262,7 +262,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new CClassNameType(qualifiedSingletonAspectName);
 
 		JExpression elseExpr =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				new JTypeNameExpression(where, singletonType),
 				advice.getIdent() + PROCEED_METHOD,
@@ -286,7 +286,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * 
 	 * (return) proceed(..);
 	 */
-	private JStatement createAspectClassAdviceStatement_1_1(AdviceDeclaration advice) {
+	private JStatement createAspectClassAdviceStatement_1_1(CjAdviceDeclaration advice) {
 		JFormalParameter[] params = advice.getProceedParameters();
 
 		List args = new ArrayList();
@@ -298,7 +298,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new CClassNameType(qualifiedSingletonAspectName);
 
 		JExpression proceedCallExpr =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				new JTypeNameExpression(where, singletonType),
 				advice.getIdent() + PROCEED_METHOD,
@@ -383,7 +383,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JNameExpression(where, null, INSTANCE_TO_DEPLOY);
 
 		JExpression right =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				prefix,
 				GET_DEPLOYMENT_THREAD_METHOD,
@@ -433,7 +433,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				multiInstanceType,
 				JExpression.EMPTY);
 
-		JExpression expr = new FjAssignmentExpression(where, left, right);
+		JExpression expr = new CjAssignmentExpression(where, left, right);
 
 		return new JExpressionStatement(where, expr, null);
 	}
@@ -449,7 +449,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JExpression prefix = new JNameExpression(where, null, ASPECT_INSTANCE);
 		JExpression expr =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				prefix,
 				SET_DEPLOYMENT_THREAD_METHOD,
@@ -469,7 +469,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new CClassNameType(qualifiedMultiThreadAspectClassName);
 		JExpression right =
 			new JUnqualifiedInstanceCreation(where, type, JExpression.EMPTY);
-		JExpression expr = new FjAssignmentExpression(where, left, right);
+		JExpression expr = new CjAssignmentExpression(where, left, right);
 
 		return new JExpressionStatement(where, expr, null);
 	}
@@ -483,7 +483,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression[] args = { new JThisExpression(where)};
 		JExpression prefix = new JNameExpression(where, null, ASPECT_INSTANCE);
 		JExpression expr =
-			new FjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
+			new CjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
 		return new JExpressionStatement(where, expr, null);
 	}
 
@@ -497,7 +497,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			{ new JNameExpression(where, null, INSTANCE_TO_DEPLOY)};
 		JExpression prefix = new JNameExpression(where, null, ASPECT_INSTANCE);
 		JExpression expr =
-			new FjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
+			new CjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
 		return new JExpressionStatement(where, expr, null);
 	}
 
@@ -557,7 +557,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				"threadLocalRegistries");
 
 		JExpression getCall =
-			new FjMethodCallExpression(where, expr, "get", JExpression.EMPTY);
+			new CjMethodCallExpression(where, expr, "get", JExpression.EMPTY);
 
 		JExpression init = new JCastExpression(where, getCall, setType);
 
@@ -590,7 +590,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 					type,
 					PER_SINGLETON_INSTANCE_FIELD)};
 		JExpression methodCall =
-			new FjMethodCallExpression(where, prefix, "remove", args);
+			new CjMethodCallExpression(where, prefix, "remove", args);
 
 		return new JExpressionStatement(where, methodCall, null);
 	}
@@ -658,14 +658,14 @@ public class DeploymentClassFactory implements CaesarConstants {
 				DEPLOYMENT_THREAD,
 				null);
 
-		FjFieldDeclaration[] fields = new FjFieldDeclaration[2];
+		JFieldDeclaration[] fields = new JFieldDeclaration[2];
 
 		fields[0] =
-			new FjFieldDeclaration(where, deployedInstances, true, null, null);
+			new JFieldDeclaration(where, deployedInstances, true, null, null);
 		fields[0].setGenerated();
 		
 		fields[1] =
-			new FjFieldDeclaration(where, deploymentThread, true, null, null);
+			new JFieldDeclaration(where, deploymentThread, true, null, null);
 		fields[0].setGenerated();
 
 		List methods = new ArrayList();
@@ -677,7 +677,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		methods.add(createMultiInstanceGetDeployedInstancesMethod());
 		methods.add(createGetThreadLocalDeployedInstancesMethod(false));
 
-		AdviceDeclaration[] adviceMethods = aspectClass.getAdvices();
+		CjAdviceDeclaration[] adviceMethods = aspectClass.getAdvices();
 		List inners = new ArrayList();
 
 		for (int i = 0; i < adviceMethods.length; i++) {
@@ -694,7 +694,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JPhylum[] initializers = { fields[0] };
 
 		JClassDeclaration multiInstanceAspectClass =
-			new DeploymentSupportClassDeclaration(
+			new CjDeploymentSupportClassDeclaration(
 				where,
 				0,
 				multiInstanceAspectClassName,
@@ -722,14 +722,14 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 *  Creates the advice method (for the given advice) for the multi instance aspect.
 	 */
-	private FjMethodDeclaration createMultiInstanceAdviceMethod(AdviceDeclaration advice) {
+	private CjMethodDeclaration createMultiInstanceAdviceMethod(CjAdviceDeclaration advice) {
 		JStatement[] statements =
 			{ createMultiInstanceAdviceStatement_1(advice)};
 
 		JBlock body = new JBlock(where, statements, null);
 
-		FjMethodDeclaration adviceMethod =
-			new FjMethodDeclaration(
+		CjMethodDeclaration adviceMethod =
+			new CjMethodDeclaration(
 				where,
 				ACC_PUBLIC | ACC_SYNCHRONIZED,
 				CTypeVariable.EMPTY,
@@ -759,9 +759,9 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * 		->createMultiInstanceSimpleAdviceStatement_1_4
 	 * }	 
 	 */
-	private JStatement createMultiInstanceAdviceStatement_1(AdviceDeclaration advice) {
+	private JStatement createMultiInstanceAdviceStatement_1(CjAdviceDeclaration advice) {
 		JExpression left =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				null,
 				GET_DEPLOYMENT_THREAD_METHOD,
@@ -770,7 +770,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CReferenceType threadType = new CClassNameType("java/lang/Thread");
 		JExpression prefix = new JTypeNameExpression(where, threadType);
 		JExpression right =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				prefix,
 				"currentThread",
@@ -807,16 +807,16 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * 
 	 * Iterator iterator = getDeployedInstances().iterator();
 	 */
-	private JStatement createMultiInstanceAdviceStatement_1_1(AdviceDeclaration advice) {
+	private JStatement createMultiInstanceAdviceStatement_1_1(CjAdviceDeclaration advice) {
 		JExpression prefix =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				null,
 				GET_DEPLOYED_INSTANCES_METHOD,
 				JExpression.EMPTY);
 
 		JExpression initializer =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				prefix,
 				"iterator",
@@ -843,11 +843,11 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 *  ->createMultiInstanceSimpleAdviceStatement_1_2_2()
 	 * }
 	 */
-	private JStatement createMultiInstanceAdviceStatement_1_2(AdviceDeclaration advice) {
+	private JStatement createMultiInstanceAdviceStatement_1_2(CjAdviceDeclaration advice) {
 		JExpression prefix = new JNameExpression(where, null, "iterator");
 
 		JExpression cond =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				prefix,
 				"hasNext",
@@ -867,14 +867,14 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * AspectInterface aspectInstance =
 	 * 		(AspectInterface) iterator.next();
 	 */
-	private JStatement createMultiInstanceAdviceStatement_1_2_1(AdviceDeclaration advice) {
+	private JStatement createMultiInstanceAdviceStatement_1_2_1(CjAdviceDeclaration advice) {
 
 		CType ifcType = new CClassNameType(qualifiedAspectInterfaceName);
 
 		JExpression prefix = new JNameExpression(where, null, "iterator");
 
 		JExpression expr =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				prefix,
 				"next",
@@ -898,7 +898,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		* 
 		* aspectInstance.advice();
 		*/
-	private JStatement createMultiInstanceAdviceStatement_1_2_2(AdviceDeclaration advice) {
+	private JStatement createMultiInstanceAdviceStatement_1_2_2(CjAdviceDeclaration advice) {
 		JFormalParameter[] params = advice.getParameters();
 
 		JExpression[] args = new JExpression[params.length];
@@ -909,7 +909,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression prefix = new JNameExpression(where, null, ASPECT_INSTANCE);
 
 		JExpression expr =
-			new FjMethodCallExpression(where, prefix, advice.getIdent(), args);
+			new CjMethodCallExpression(where, prefix, advice.getIdent(), args);
 
 		if (advice.getReturnType() == typeFactory.getVoidType()) {
 			return new JExpressionStatement(where, expr, null);
@@ -923,7 +923,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * 
 	 * (return) proceed();
 	 */
-	private JStatement createMultiInstanceAdviceStatement_1_3(AdviceDeclaration advice) {
+	private JStatement createMultiInstanceAdviceStatement_1_3(CjAdviceDeclaration advice) {
 		JFormalParameter[] params = advice.getParameters();
 
 		List args = new ArrayList();
@@ -933,7 +933,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		}
 		//		args.add(new JNameExpression(where, DEPLOYED_INSTANCES));
 		args.add(
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				null,
 				GET_DEPLOYED_INSTANCES_METHOD,
@@ -958,7 +958,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * 
 	 * (return) proceed();
 	 */
-	private JStatement createMultiInstanceAdviceStatement_1_4(AdviceDeclaration advice) {
+	private JStatement createMultiInstanceAdviceStatement_1_4(CjAdviceDeclaration advice) {
 		JFormalParameter[] params = advice.getProceedParameters();
 
 		List args = new ArrayList();
@@ -970,7 +970,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new CClassNameType(qualifiedSingletonAspectName);
 
 		JExpression proceedCallExpr =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				new JTypeNameExpression(where, singletonType),
 				advice.getIdent() + PROCEED_METHOD,
@@ -984,7 +984,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 	}
 
-	private FjMethodDeclaration createDoAroundMethod(AdviceDeclaration advice) {
+	private CjMethodDeclaration createDoAroundMethod(CjAdviceDeclaration advice) {
 		JFormalParameter[] adviceParams = advice.getParameters();
 
 		JFormalParameter[] params =
@@ -1011,7 +1011,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JStatement[] body = { createAdviceDoAroundMethodStatement_0(advice)};
 
-		return new FjMethodDeclaration(
+		return new CjMethodDeclaration(
 			where,
 			ACC_PROTECTED | ACC_SYNCHRONIZED,
 			CTypeVariable.EMPTY,
@@ -1032,10 +1032,10 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * else 
 	 * 	-> createAdviceDoAroundMethodStatement_2
 	 */
-	private JStatement createAdviceDoAroundMethodStatement_0(AdviceDeclaration advice) {
+	private JStatement createAdviceDoAroundMethodStatement_0(CjAdviceDeclaration advice) {
 		JNameExpression list = new JNameExpression(where, null, "stack");
 		JExpression cond =
-			new FjMethodCallExpression(where, list, "empty", JExpression.EMPTY);
+			new CjMethodCallExpression(where, list, "empty", JExpression.EMPTY);
 
 		JStatement thenClause = createAdviceDoAroundMethodStatement_1(advice);
 		JStatement elseClause = createAdviceDoAroundMethodStatement_2(advice);
@@ -1043,7 +1043,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		return new JIfStatement(where, cond, thenClause, elseClause, null);
 	}
 
-	private JStatement createAdviceDoAroundMethodStatement_1(AdviceDeclaration advice) {
+	private JStatement createAdviceDoAroundMethodStatement_1(CjAdviceDeclaration advice) {
 		JFormalParameter[] params = advice.getProceedParameters();
 
 		List args = new ArrayList();
@@ -1055,7 +1055,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new CClassNameType(qualifiedSingletonAspectName);
 
 		JExpression proceedCallExpr =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				new JTypeNameExpression(where, singletonType),
 				advice.getIdent() + PROCEED_METHOD,
@@ -1072,14 +1072,14 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * list.get(0).around(
 	 * 
 	 */
-	private JStatement createAdviceDoAroundMethodStatement_2(AdviceDeclaration advice) {
+	private JStatement createAdviceDoAroundMethodStatement_2(CjAdviceDeclaration advice) {
 		JExpression list = new JNameExpression(where, null, "stack");
 		JFormalParameter[] params = advice.getParameters();
 
 		JExpression[] getArgs = { new JIntLiteral(where, 0)};
 
 		JExpression get =
-			new FjMethodCallExpression(where, list, "get", getArgs);
+			new CjMethodCallExpression(where, list, "get", getArgs);
 
 		CReferenceType type =
 			new CClassNameType(
@@ -1115,7 +1115,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		}
 
 		JExpression aroundCall =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				new JCastExpression(
 					where,
@@ -1134,7 +1134,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 * Creates the getDeployedInstances() method for multi-instance aspects.
 	 */
-	private FjMethodDeclaration createMultiInstanceGetDeployedInstancesMethod() {
+	private CjMethodDeclaration createMultiInstanceGetDeployedInstancesMethod() {
 		JStatement[] body =
 			{
 				 new JReturnStatement(
@@ -1142,7 +1142,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 					new JNameExpression(where, DEPLOYED_INSTANCES),
 					null)};
 
-		return new FjMethodDeclaration(
+		return new CjMethodDeclaration(
 			where,
 			ACC_PROTECTED | ACC_SYNCHRONIZED,
 			CTypeVariable.EMPTY,
@@ -1159,7 +1159,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 * Creates the deploy method for multi instance aspects.
 	 */
-	private FjMethodDeclaration createMultiInstanceDeployMethod() {
+	private CjMethodDeclaration createMultiInstanceDeployMethod() {
 
 		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
 
@@ -1176,8 +1176,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JBlock body = new JBlock(where, statements, null);
 
-		FjMethodDeclaration deployMethod =
-			new FjMethodDeclaration(
+		CjMethodDeclaration deployMethod =
+			new CjMethodDeclaration(
 				where,
 				ACC_PUBLIC | ACC_SYNCHRONIZED,
 				CTypeVariable.EMPTY,
@@ -1209,7 +1209,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JNameExpression(where, null, INSTANCE_TO_DEPLOY);
 
 		JExpression right =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				prefix,
 				GET_DEPLOYMENT_THREAD_METHOD,
@@ -1245,7 +1245,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		body[0] =
 			new JExpressionStatement(
 				where,
-				new FjMethodCallExpression(where, prefix, "push", args),
+				new CjMethodCallExpression(where, prefix, "push", args),
 				null);
 
 		body[1] =
@@ -1315,7 +1315,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression[] args = { new JThisExpression(where)};
 
 		JExpression methodCall =
-			new FjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
+			new CjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
 
 		return new JExpressionStatement(where, methodCall, null);
 	}
@@ -1332,7 +1332,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			{ new JNameExpression(where, null, INSTANCE_TO_DEPLOY)};
 
 		JExpression methodCall =
-			new FjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
+			new CjMethodCallExpression(where, prefix, DEPLOY_METHOD, args);
 
 		return new JExpressionStatement(where, methodCall, null);
 	}
@@ -1353,7 +1353,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 * Creates the undeploy method for multi instance aspects.
 	 */
-	private FjMethodDeclaration createMultiInstanceUndeployMethod() {
+	private CjMethodDeclaration createMultiInstanceUndeployMethod() {
 		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
 
 		JStatement[] statements =
@@ -1364,7 +1364,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JBlock body = new JBlock(where, statements, null);
 
-		return new FjMethodDeclaration(
+		return new CjMethodDeclaration(
 			where,
 			ACC_PUBLIC | ACC_SYNCHRONIZED,
 			CTypeVariable.EMPTY,
@@ -1388,7 +1388,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression prefix =
 			new JFieldAccessExpression(where, DEPLOYED_INSTANCES);
 		JExpression methodCall =
-			new FjMethodCallExpression(where, prefix, "pop", JExpression.EMPTY);
+			new CjMethodCallExpression(where, prefix, "pop", JExpression.EMPTY);
 
 		return new JExpressionStatement(where, methodCall, null);
 	}
@@ -1406,7 +1406,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JFieldAccessExpression(where, DEPLOYED_INSTANCES);
 
 		JExpression left =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				prefix,
 				"size",
@@ -1417,8 +1417,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression cond =
 			new JRelationalExpression(where, OPE_LT, left, right);
 
-		FjMethodCallExpression pop =
-			new FjMethodCallExpression(where, prefix, "pop", JExpression.EMPTY);
+		CjMethodCallExpression pop =
+			new CjMethodCallExpression(where, prefix, "pop", JExpression.EMPTY);
 
 		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
 
@@ -1466,8 +1466,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 				PER_THREAD_DEPLOYED_INSTANCES,
 				initializer);
 
-		FjFieldDeclaration perThreadMap =
-			new FjFieldDeclaration(where, var, true, null, null);
+		JFieldDeclaration perThreadMap =
+			new JFieldDeclaration(where, var, true, null, null);
 		perThreadMap.setGenerated();
 		
 		CType threadType = new CClassNameType(QUALIFIED_THREAD_CLASS);
@@ -1480,15 +1480,15 @@ public class DeploymentClassFactory implements CaesarConstants {
 				DEPLOYMENT_THREAD,
 				new JNullLiteral(where));
 
-		FjFieldDeclaration deploymentThread =
-			new FjFieldDeclaration(
+		JFieldDeclaration deploymentThread =
+			new JFieldDeclaration(
 				where,
 				deploymentThreadVar,
 				true,
 				null,
 				null);
 		deploymentThread.setGenerated();
-		FjFieldDeclaration[] fields = { perThreadMap, deploymentThread };
+		JFieldDeclaration[] fields = { perThreadMap, deploymentThread };
 
 		List methods = new ArrayList();
 
@@ -1499,7 +1499,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		methods.add(createMultiThreadGetDeployedInstancesMethod());
 		methods.add(createMultiThreadGetThreadLocalDeployedInstancesMethod());
 
-		AdviceDeclaration[] adviceMethods = aspectClass.getAdvices();
+		CjAdviceDeclaration[] adviceMethods = aspectClass.getAdvices();
 		for (int i = 0; i < adviceMethods.length; i++) {
 			methods.add(createMultiThreadAdviceMethod(adviceMethods[i]));
 		}
@@ -1510,7 +1510,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JPhylum[] initializers = { perThreadMap };
 
 		JClassDeclaration multiThreadClassDeclaration =
-			new DeploymentSupportClassDeclaration(
+			new CjDeploymentSupportClassDeclaration(
 				where,
 				0,
 				multiThreadAspectClassName,
@@ -1539,7 +1539,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 *  Creates the advice method (for the given adivice) for the multi thread aspect.
 	 */
-	private FjMethodDeclaration createMultiThreadAdviceMethod(AdviceDeclaration advice) {
+	private CjMethodDeclaration createMultiThreadAdviceMethod(CjAdviceDeclaration advice) {
 		JStatement[] statements =
 			{
 				createMultiThreadAdviceStatement_1(advice),
@@ -1547,8 +1547,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JBlock body = new JBlock(where, statements, null);
 
-		FjMethodDeclaration adviceMethod =
-			new FjMethodDeclaration(
+		CjMethodDeclaration adviceMethod =
+			new CjMethodDeclaration(
 				where,
 				ACC_PUBLIC | ACC_SYNCHRONIZED,
 				CTypeVariable.EMPTY,
@@ -1569,27 +1569,27 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * AspectInterface aspectInstance =
 	 * 	(AspectInterface) getDeployedInstances().get(Thread.currentThread());
 	 */
-	private JStatement createMultiThreadAdviceStatement_1(AdviceDeclaration advice) {
+	private JStatement createMultiThreadAdviceStatement_1(CjAdviceDeclaration advice) {
 
 		CReferenceType threadType = new CClassNameType(QUALIFIED_THREAD_CLASS);
 		JExpression threadPrefix = new JTypeNameExpression(where, threadType);
 		JExpression[] args =
 			{
-				 new FjMethodCallExpression(
+				 new CjMethodCallExpression(
 					where,
 					threadPrefix,
 					"currentThread",
 					JExpression.EMPTY)};
 
 		JExpression prefix =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				null,
 				GET_DEPLOYED_INSTANCES_METHOD,
 				JExpression.EMPTY);
 
 		JExpression getMethodCall =
-			new FjMethodCallExpression(where, prefix, "get", args);
+			new CjMethodCallExpression(where, prefix, "get", args);
 
 		CType ifcType = new CClassNameType(qualifiedAspectInterfaceName);
 
@@ -1616,7 +1616,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * }
 	 * 	
 	 */
-	private JStatement createMultiThreadAdviceStatement_2(AdviceDeclaration advice) {
+	private JStatement createMultiThreadAdviceStatement_2(CjAdviceDeclaration advice) {
 
 		JExpression left = new JNameExpression(where, null, ASPECT_INSTANCE);
 
@@ -1642,7 +1642,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * 
 	 * aspectInstance.advice();
 	 */
-	private JStatement createMultiThreadAdviceStatement_2_1(AdviceDeclaration advice) {
+	private JStatement createMultiThreadAdviceStatement_2_1(CjAdviceDeclaration advice) {
 		JExpression[] args = new JExpression[advice.getParameters().length];
 		for (int i = 0; i < advice.getParameters().length; i++) {
 
@@ -1657,7 +1657,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression prefix = new JNameExpression(where, null, ASPECT_INSTANCE);
 
 		JExpression expr =
-			new FjMethodCallExpression(where, prefix, advice.getIdent(), args);
+			new CjMethodCallExpression(where, prefix, advice.getIdent(), args);
 
 		if (advice.getReturnType() == typeFactory.getVoidType()) {
 			return new JExpressionStatement(where, expr, null);
@@ -1666,7 +1666,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		}
 	}
 
-	private JStatement createMultiThreadAdviceStatement_2_2(AdviceDeclaration advice) {
+	private JStatement createMultiThreadAdviceStatement_2_2(CjAdviceDeclaration advice) {
 		JFormalParameter[] params = advice.getProceedParameters();
 
 		List args = new ArrayList();
@@ -1678,7 +1678,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new CClassNameType(qualifiedSingletonAspectName);
 
 		JExpression proceedCallExpr =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				new JTypeNameExpression(where, singletonType),
 				advice.getIdent() + PROCEED_METHOD,
@@ -1691,7 +1691,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		}
 	}
 
-	private FjMethodDeclaration createMultiThreadGetDeployedInstancesMethod() {
+	private CjMethodDeclaration createMultiThreadGetDeployedInstancesMethod() {
 		JStatement[] body =
 			{
 				 new JReturnStatement(
@@ -1702,7 +1702,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 						PER_THREAD_DEPLOYED_INSTANCES),
 					null)};
 
-		return new FjMethodDeclaration(
+		return new CjMethodDeclaration(
 			where,
 			ACC_PROTECTED | ACC_SYNCHRONIZED,
 			CTypeVariable.EMPTY,
@@ -1719,7 +1719,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 * Creates the deploy method for multi thread aspects.
 	 */
-	private FjMethodDeclaration createMultiThreadDeployMethod() {
+	private CjMethodDeclaration createMultiThreadDeployMethod() {
 
 		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
 
@@ -1740,8 +1740,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JBlock body = new JBlock(where, statements, null);
 
-		FjMethodDeclaration deployMethod =
-			new FjMethodDeclaration(
+		CjMethodDeclaration deployMethod =
+			new CjMethodDeclaration(
 				where,
 				ACC_PUBLIC | ACC_SYNCHRONIZED,
 				CTypeVariable.EMPTY,
@@ -1770,7 +1770,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JExpression args[] =
 			{
-				 new FjMethodCallExpression(
+				 new CjMethodCallExpression(
 					where,
 					instanceToDeployPrefix,
 					GET_DEPLOYMENT_THREAD_METHOD,
@@ -1780,7 +1780,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JFieldAccessExpression(where, PER_THREAD_DEPLOYED_INSTANCES);
 
 		JExpression getMethodCall =
-			new FjMethodCallExpression(where, prefix, "get", args);
+			new CjMethodCallExpression(where, prefix, "get", args);
 
 		CType type = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
 		JExpression initializer =
@@ -1854,9 +1854,9 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JExpression[] args = { param };
 		JExpression right =
-			new FjMethodCallExpression(where, left, DEPLOY_METHOD, args);
+			new CjMethodCallExpression(where, left, DEPLOY_METHOD, args);
 
-		JExpression assignment = new FjAssignmentExpression(where, left, right);
+		JExpression assignment = new CjAssignmentExpression(where, left, right);
 
 		return new JExpressionStatement(where, assignment, null);
 
@@ -1873,7 +1873,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JExpression[] args =
 			{
-				new FjMethodCallExpression(
+				new CjMethodCallExpression(
 					where,
 					instanceToDeploy,
 					GET_DEPLOYMENT_THREAD_METHOD,
@@ -1884,7 +1884,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JFieldAccessExpression(where, PER_THREAD_DEPLOYED_INSTANCES);
 
 		JExpression expr =
-			new FjMethodCallExpression(where, prefix, "put", args);
+			new CjMethodCallExpression(where, prefix, "put", args);
 
 		return new JExpressionStatement(where, expr, null);
 	}
@@ -1899,7 +1899,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression prefix =
 			new JNameExpression(where, null, INSTANCE_TO_DEPLOY);
 		JExpression methodCall =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				prefix,
 				GET_DEPLOYMENT_THREAD_METHOD,
@@ -1912,7 +1912,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression map =
 			new JFieldAccessExpression(where, PER_THREAD_DEPLOYED_INSTANCES);
 
-		JExpression expr = new FjMethodCallExpression(where, map, "put", args);
+		JExpression expr = new CjMethodCallExpression(where, map, "put", args);
 
 		return new JExpressionStatement(where, expr, null);
 	}
@@ -1929,7 +1929,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 * Creates the undeploy method for the multi thread aspect.
 	 */
-	private FjMethodDeclaration createMultiThreadUndeployMethod() {
+	private CjMethodDeclaration createMultiThreadUndeployMethod() {
 		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
 
 		JStatement[] statements =
@@ -1941,7 +1941,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JBlock body = new JBlock(where, statements, null);
 
-		return new FjMethodDeclaration(
+		return new CjMethodDeclaration(
 			where,
 			ACC_PUBLIC | ACC_SYNCHRONIZED,
 			CTypeVariable.EMPTY,
@@ -1971,14 +1971,14 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JExpression[] args =
 			{
-				 new FjMethodCallExpression(
+				 new CjMethodCallExpression(
 					where,
 					thread,
 					"currentThread",
 					JExpression.EMPTY)};
 
 		JExpression getMethodCall =
-			new FjMethodCallExpression(where, prefix, "get", args);
+			new CjMethodCallExpression(where, prefix, "get", args);
 
 		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
 
@@ -2016,14 +2016,14 @@ public class DeploymentClassFactory implements CaesarConstants {
 				new JNullLiteral(where));
 
 		JExpression assignmentRight =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				left,
 				UNDEPLOY_METHOD,
 				JExpression.EMPTY);
 
 		JExpression expr =
-			new FjAssignmentExpression(where, left, assignmentRight);
+			new CjAssignmentExpression(where, left, assignmentRight);
 
 		return new JIfStatement(
 			where,
@@ -2083,7 +2083,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression threadClass = new JTypeNameExpression(where, threadType);
 
 		JExpression methodCall =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				threadClass,
 				"currentThread",
@@ -2095,7 +2095,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JFieldAccessExpression(where, PER_THREAD_DEPLOYED_INSTANCES);
 
 		JExpression expr =
-			new FjMethodCallExpression(where, prefix, "remove", args);
+			new CjMethodCallExpression(where, prefix, "remove", args);
 
 		return new JExpressionStatement(where, expr, null);
 	}
@@ -2113,7 +2113,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JFieldAccessExpression(where, PER_THREAD_DEPLOYED_INSTANCES);
 
 		JExpression left =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				prefix,
 				"size",
@@ -2127,21 +2127,21 @@ public class DeploymentClassFactory implements CaesarConstants {
 				new JIntLiteral(where, 2));
 
 		JExpression entrySetCall =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				prefix,
 				"values",
 				JExpression.EMPTY);
 
 		JExpression iteratorCall =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				entrySetCall,
 				"iterator",
 				JExpression.EMPTY);
 
 		JExpression returnExpr =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				iteratorCall,
 				"next",
@@ -2170,7 +2170,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression threadPrefix = new JTypeNameExpression(where, threadType);
 
 		JExpression methodCall =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				threadPrefix,
 				"currentThread",
@@ -2183,7 +2183,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JFieldAccessExpression(where, PER_THREAD_DEPLOYED_INSTANCES);
 
 		JExpression expr =
-			new FjMethodCallExpression(where, prefix, "put", args);
+			new CjMethodCallExpression(where, prefix, "put", args);
 
 		return new JExpressionStatement(where, expr, null);
 	}
@@ -2238,7 +2238,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression right =
 			new JNameExpression(where, null, DEPLOYMENT_THREAD);
 
-		JExpression assignment = new FjAssignmentExpression(where, left, right);
+		JExpression assignment = new CjAssignmentExpression(where, left, right);
 
 		JStatement[] body =
 			{ new JExpressionStatement(where, assignment, null)};
@@ -2272,7 +2272,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * advice method calls to the deployed instances.
 	 */
 	public JClassDeclaration createSingletonAspect() {
-		AdviceDeclaration[] advices = aspectClass.getAdvices();
+		CjAdviceDeclaration[] advices = aspectClass.getAdvices();
 		JMethodDeclaration[] methods = aspectClass.getMethods();
 		List fields = new ArrayList();
 
@@ -2280,8 +2280,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JMethodDeclaration[] aspectClassMethods =
 			new JMethodDeclaration[methods.length + advices.length];
 
-		AdviceDeclaration[] modifiedAdvices =
-			new AdviceDeclaration[advices.length];
+		CjAdviceDeclaration[] modifiedAdvices =
+			new CjAdviceDeclaration[advices.length];
 
 		System.arraycopy(
 			methods,
@@ -2320,7 +2320,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				DEPLOYED_INSTANCES,
 				null);
 
-		FjFieldDeclaration field = new FjFieldDeclaration(
+		JFieldDeclaration field = new JFieldDeclaration(
 									where,
 									deployedInstancesVar,
 									true,
@@ -2344,7 +2344,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				PER_SINGLETON_INSTANCE_FIELD,
 				null);
 
-		field = new FjFieldDeclaration(where, aspectInstanceVar, true, null, null);
+		field = new JFieldDeclaration(where, aspectInstanceVar, true, null, null);
 		field.setGenerated();
 		fields.add(field);
 
@@ -2383,15 +2383,15 @@ public class DeploymentClassFactory implements CaesarConstants {
 				
 				//create the aspect
 				singletonAspect=
-				new DeploymentSupportClassDeclaration(
+				new CjDeploymentSupportClassDeclaration(
 					aspectClass.getTokenReference(),
 					modifiers,
 					singletonAspectName,
 					CTypeVariable.EMPTY,
 					null,
 					interfaces,
-					(FjFieldDeclaration[]) fields.toArray(
-						new FjFieldDeclaration[0]),
+					(JFieldDeclaration[]) fields.toArray(
+						new JFieldDeclaration[0]),
 					(JMethodDeclaration[]) singletonAspectMethods.toArray(
 						new JMethodDeclaration[0]),
 					new JTypeDeclaration[0],
@@ -2401,7 +2401,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 						//in concrete Aspects, COPY the pointcuts to the singleton. 
 						// Only the Pointcutresolver complains.
 					//aspectClass.getPointcuts(),
-					new PointcutDeclaration[0],
+					new CjPointcutDeclaration[0],
 					modifiedAdvices,
 					aspectClass.getDeclares(),
 					aspectClass,
@@ -2415,15 +2415,15 @@ public class DeploymentClassFactory implements CaesarConstants {
 			}else{
 				//create the aspect
 				 singletonAspect =
-				new DeploymentSupportClassDeclaration(
+				new CjDeploymentSupportClassDeclaration(
 					aspectClass.getTokenReference(),
 					modifiers,
 					singletonAspectName,
 					CTypeVariable.EMPTY,
 					null,
 					interfaces,
-					(FjFieldDeclaration[]) fields.toArray(
-						new FjFieldDeclaration[0]),
+					(JFieldDeclaration[]) fields.toArray(
+						new JFieldDeclaration[0]),
 					(JMethodDeclaration[]) singletonAspectMethods.toArray(
 						new JMethodDeclaration[0]),
 					new JTypeDeclaration[0],
@@ -2441,10 +2441,10 @@ public class DeploymentClassFactory implements CaesarConstants {
 				CaesarPointcut.createPerSingleton());
 
 			
-			aspectClass.setPointcuts(new PointcutDeclaration[0]);
+			aspectClass.setPointcuts(new CjPointcutDeclaration[0]);
 			}
 		
-		aspectClass.setAdvices(new AdviceDeclaration[0]);
+		aspectClass.setAdvices(new CjAdviceDeclaration[0]);
 		aspectClass.setDeclares(null);
 		aspectClass.setMethods(aspectClassMethods);
 
@@ -2465,7 +2465,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression prefix = new JTypeNameExpression(where, type);
 
 		JExpression expr =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				prefix,
 				AJC_CLINIT_METHOD,
@@ -2480,7 +2480,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * Creates an AdviceDeclaration, that has the same interface
 	 * as the given advice but dispatches calls the aspect instance.
 	 */
-	private AdviceDeclaration createSingletonAspectAdviceMethod(AdviceDeclaration advice) {
+	private CjAdviceDeclaration createSingletonAspectAdviceMethod(CjAdviceDeclaration advice) {
 		JStatement[] body = { createSingletonAdviceStatement_1(advice)};
 		advice.setBody(new JBlock(where, body, null));
 		return advice;
@@ -2495,10 +2495,10 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * 	->createSingletonAdviceStatement_1_2()	
 	 * }
 	 */
-	private JStatement createSingletonAdviceStatement_1(AdviceDeclaration advice) {
+	private JStatement createSingletonAdviceStatement_1(CjAdviceDeclaration advice) {
 
 		JExpression left =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				null,
 				GET_DEPLOYED_INSTANCES_METHOD,
@@ -2528,7 +2528,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	* else
 	* 	return getDeployedInstances().adviceMethod();
 	*/
-	private JStatement createSingletonAdviceStatement_1_1(AdviceDeclaration advice) {
+	private JStatement createSingletonAdviceStatement_1_1(CjAdviceDeclaration advice) {
 		JFormalParameter[] params = advice.getParameters();
 		JExpression[] args = new JExpression[params.length];
 		for (int i = 0; i < params.length; i++) {
@@ -2538,14 +2538,14 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression prefix =
 			new JCastExpression(
 				where,
-				new FjMethodCallExpression(
+				new CjMethodCallExpression(
 					where,
 					null,
 					GET_DEPLOYED_INSTANCES_METHOD,
 					JExpression.EMPTY),
 				new CClassNameType(qualifiedAspectInterfaceName));
 		JExpression expr =
-			new FjMethodCallExpression(where, prefix, advice.getIdent(), args);
+			new CjMethodCallExpression(where, prefix, advice.getIdent(), args);
 		if (advice.getReturnType() == typeFactory.getVoidType()) {
 			return new JExpressionStatement(where, expr, null);
 		} else {
@@ -2562,7 +2562,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	* else
 	* 	return proceed();
 	*/
-	private JStatement createSingletonAdviceStatement_1_2(AdviceDeclaration advice) {
+	private JStatement createSingletonAdviceStatement_1_2(CjAdviceDeclaration advice) {
 		JFormalParameter[] params = advice.getProceedParameters();
 		JExpression[] args = new JExpression[params.length];
 		for (int i = 0; i < params.length; i++) {
@@ -2570,7 +2570,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		}
 
 		JExpression expr =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				null,
 				advice.getProceedMethodDeclaration().getIdent(),
@@ -2583,12 +2583,12 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 	}
 
-	private FjMethodDeclaration createSingletonAjcClinitMethod() {
+	private CjMethodDeclaration createSingletonAjcClinitMethod() {
 		JStatement[] body =
 			{
 				createSingletonClinitMethodStatement_1(),
 				createSingletonClinitMethodStatement_2()};
-		return new FjMethodDeclaration(
+		return new CjMethodDeclaration(
 			where,
 			ACC_PRIVATE | ACC_STATIC,
 			CTypeVariable.EMPTY,
@@ -2616,7 +2616,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				JExpression.EMPTY);
 		return new JExpressionStatement(
 			where,
-			new FjAssignmentExpression(where, left, right),
+			new CjAssignmentExpression(where, left, right),
 			null);
 	}
 
@@ -2667,14 +2667,14 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	* Creates the getDeployedInstances() method for the singleton aspect.
 	*/
-	private FjMethodDeclaration createSingletonGetDeployedInstancesMethod() {
+	private CjMethodDeclaration createSingletonGetDeployedInstancesMethod() {
 		JStatement[] body =
 			{
 				 new JReturnStatement(
 					where,
 					new JNameExpression(where, null, DEPLOYED_INSTANCES),
 					null)};
-		return new FjMethodDeclaration(
+		return new CjMethodDeclaration(
 			where,
 			ACC_PUBLIC | ACC_SYNCHRONIZED,
 			CTypeVariable.EMPTY,
@@ -2690,7 +2690,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	* Creates the deploy method for the singleton aspect.
 	*/
-	private FjMethodDeclaration createSingletonAspectDeployMethod() {
+	private CjMethodDeclaration createSingletonAspectDeployMethod() {
 
 		CType ifcType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
 		CType threadType = new CClassNameType(QUALIFIED_THREAD_CLASS);
@@ -2717,7 +2717,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				createSingletonDeployStatement_3(),
 				createSingletonDeployStatement_4(),
 				};
-		return new FjMethodDeclaration(
+		return new CjMethodDeclaration(
 			where,
 			ACC_PUBLIC | ACC_SYNCHRONIZED,
 			CTypeVariable.EMPTY,
@@ -2767,7 +2767,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JNameExpression(where, prefix, "threadLocalRegistries");
 
 		JExpression getCall =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				threadLocalRegistries,
 				"get",
@@ -2792,7 +2792,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression[] args = { new JThisExpression(where)};
 
 		JExpression methodCall =
-			new FjMethodCallExpression(where, prefix, "add", args);
+			new CjMethodCallExpression(where, prefix, "add", args);
 
 		return new JExpressionStatement(where, methodCall, null);
 	}
@@ -2811,7 +2811,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression prefix = new JNameExpression(where, INSTANCE_TO_DEPLOY);
 
 		JExpression expr =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				prefix,
 				SET_DEPLOYMENT_THREAD_METHOD,
@@ -2853,7 +2853,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression varExpr =
 			new JNameExpression(where, null, INSTANCE_TO_DEPLOY);
 		JExpression right = new JCastExpression(where, varExpr, ifcType);
-		JExpression expr = new FjAssignmentExpression(where, left, right);
+		JExpression expr = new CjAssignmentExpression(where, left, right);
 		return new JExpressionStatement(where, expr, null);
 	}
 
@@ -2872,24 +2872,24 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression right =
 			new JCastExpression(
 				where,
-				new FjMethodCallExpression(
+				new CjMethodCallExpression(
 					where,
 					deployedInstancesField,
 					DEPLOY_METHOD,
 					args),
 				ifcType);
 		JExpression expr =
-			new FjAssignmentExpression(where, deployedInstancesField, right);
+			new CjAssignmentExpression(where, deployedInstancesField, right);
 		return new JExpressionStatement(where, expr, null);
 	}
 
 	/**
 	* Creates the undeploy method for singleton aspect.
 	*/
-	private FjMethodDeclaration createSingletonAspectUndeployMethod() {
+	private CjMethodDeclaration createSingletonAspectUndeployMethod() {
 
 		JStatement[] body = { createSingletonUndeployStatement_2()};
-		return new FjMethodDeclaration(
+		return new CjMethodDeclaration(
 			where,
 			ACC_PUBLIC | ACC_SYNCHRONIZED,
 			CTypeVariable.EMPTY,
@@ -2915,17 +2915,17 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JExpression right =
 			new JCastExpression(
 				where,
-				new FjMethodCallExpression(
+				new CjMethodCallExpression(
 					where,
 					left,
 					UNDEPLOY_METHOD,
 					JExpression.EMPTY),
 				ifcType);
-		JExpression expr = new FjAssignmentExpression(where, left, right);
+		JExpression expr = new CjAssignmentExpression(where, left, right);
 		return new JExpressionStatement(where, expr, null);
 	}
 
-	private FjMethodDeclaration createAspectOfMethod() {
+	private CjMethodDeclaration createAspectOfMethod() {
 
 		CType singletonType = new CClassNameType(qualifiedSingletonAspectName);
 		JExpression expr =
@@ -2934,7 +2934,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				null,
 				PER_SINGLETON_INSTANCE_FIELD);
 		JStatement[] body = { new JReturnStatement(where, expr, null)};
-		return new FjMethodDeclaration(
+		return new CjMethodDeclaration(
 			where,
 			ACC_PUBLIC | ACC_STATIC,
 			CTypeVariable.EMPTY,
@@ -2973,7 +2973,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		CType deployableType = new CClassNameType(CAESAR_ASPECT_IFC_CLASS);
 		JExpression[] args =
 			{
-				 new FjMethodCallExpression(
+				 new CjMethodCallExpression(
 					where,
 					new JTypeNameExpression(
 						where,
@@ -2982,14 +2982,14 @@ public class DeploymentClassFactory implements CaesarConstants {
 					JExpression.EMPTY)};
 
 		JExpression getDeployedInstancesCall =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				null,
 				GET_DEPLOYED_INSTANCES_METHOD,
 				JExpression.EMPTY);
 
 		JExpression methodCall =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				getDeployedInstancesCall,
 				"get",
@@ -3002,7 +3002,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 					new JCastExpression(where, methodCall, deployableType),
 					null)};
 
-		return new FjMethodDeclaration(
+		return new CjMethodDeclaration(
 			where,
 			ACC_PUBLIC,
 			CTypeVariable.EMPTY,
@@ -3028,7 +3028,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JStatement[] body =
 			{ createSingletonGetThreadLocalDeployedInstancesStatement_1()};
 
-		return new FjMethodDeclaration(
+		return new CjMethodDeclaration(
 			where,
 			ACC_PUBLIC,
 			CTypeVariable.EMPTY,
@@ -3043,7 +3043,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 	private JStatement createSingletonGetThreadLocalDeployedInstancesStatement_1() {
 		JExpression left =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				null,
 				GET_DEPLOYED_INSTANCES_METHOD,
@@ -3056,14 +3056,14 @@ public class DeploymentClassFactory implements CaesarConstants {
 				new JNullLiteral(where));
 
 		JExpression prefix =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				null,
 				GET_DEPLOYED_INSTANCES_METHOD,
 				JExpression.EMPTY);
 
 		JExpression expr =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				prefix,
 				GET_THREAD_LOCAL_DEPLOYED_INSTANCES_METHOD,
@@ -3082,9 +3082,9 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	* Creates the proceed method for the given around advice.
 	*/
-	private JMethodDeclaration createProceedMethod(AdviceDeclaration advice) {
-		ProceedDeclaration proceedMethodDeclaration =
-			new ProceedDeclaration(
+	private JMethodDeclaration createProceedMethod(CjAdviceDeclaration advice) {
+		CjProceedDeclaration proceedMethodDeclaration =
+			new CjProceedDeclaration(
 				where,
 				advice.getReturnType(),
 				advice.getIdent() + PROCEED_METHOD,
@@ -3098,7 +3098,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 		* Changes the name of the given advice.
 		*/
-	private void createAdviceMethodName(AdviceDeclaration adviceDeclaration) {
+	private void createAdviceMethodName(CjAdviceDeclaration adviceDeclaration) {
 		String ident =
 			CaesarNameMangler.adviceName(
 				aspectClass.getCClass().getQualifiedName(),
@@ -3107,7 +3107,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		adviceDeclaration.setIdent(ident);
 	}
 
-	private JClassDeclaration createAroundClosure(AdviceDeclaration advice) {
+	private JClassDeclaration createAroundClosure(CjAdviceDeclaration advice) {
 		CReferenceType superClass =
 			new CClassNameType("org/aspectj/runtime/internal/AroundClosure");
 
@@ -3124,7 +3124,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 					type,
 					params[i].getIdent(),
 					init);
-			FjFieldDeclaration field = new FjFieldDeclaration(where, var, true, null, null);
+			JFieldDeclaration field = new JFieldDeclaration(where, var, true, null, null);
 			field.setGenerated(); 
 			fields.add(field);
 		}
@@ -3137,7 +3137,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				stack,
 				"stack",
 				new JNullLiteral(where));
-		FjFieldDeclaration field = new FjFieldDeclaration(where, var, true, null, null);
+		JFieldDeclaration field = new JFieldDeclaration(where, var, true, null, null);
 		field.setGenerated(); 
 		fields.add(field);
 
@@ -3150,7 +3150,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				multiInstanceType,
 				"multiInstanceContainer",
 				new JNullLiteral(where));
-		field = new FjFieldDeclaration(where, var, true, null, null);
+		field = new JFieldDeclaration(where, var, true, null, null);
 		field.setGenerated();
 		fields.add(field);
 
@@ -3168,7 +3168,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				null,
 				null,
 				CReferenceType.EMPTY,
-				(JFieldDeclaration[]) fields.toArray(new FjFieldDeclaration[0]),
+				(JFieldDeclaration[]) fields.toArray(new JFieldDeclaration[0]),
 				methods,
 				new JTypeDeclaration[0],
 				new JPhylum[0],
@@ -3178,7 +3178,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		return closure;
 	}
 
-	private JConstructorDeclaration createClosureConstructor(AdviceDeclaration advice) {
+	private JConstructorDeclaration createClosureConstructor(CjAdviceDeclaration advice) {
 		JFormalParameter[] adviceParameters = advice.getParameters();
 
 		JFormalParameter[] params =
@@ -3251,7 +3251,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * 
 	 * Creates the run method for the AroundClosure.
 	 */
-	private FjMethodDeclaration createRunMethod(AdviceDeclaration advice) {
+	private CjMethodDeclaration createRunMethod(CjAdviceDeclaration advice) {
 		CReferenceType objectType = new CClassNameType("java/lang/Object");
 		CArrayType arrayType = new CArrayType(objectType, 1);
 		JFormalParameter[] objArray =
@@ -3275,7 +3275,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				new JReturnStatement(where, new JNullLiteral(where), null));
 		}
 
-		return new FjMethodDeclaration(
+		return new CjMethodDeclaration(
 			where,
 			ACC_PUBLIC,
 			CTypeVariable.EMPTY,
@@ -3300,7 +3300,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JExpression prefix = new JNameExpression(where, null, "stack");
 		JExpression init =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				where,
 				prefix,
 				"clone",
@@ -3323,7 +3323,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		JExpression[] args = { new JIntLiteral(where, 0)};
 		JExpression methodCall =
-			new FjMethodCallExpression(where, prefix, "remove", args);
+			new CjMethodCallExpression(where, prefix, "remove", args);
 
 		return new JExpressionStatement(where, methodCall, null);
 
@@ -3332,7 +3332,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	/**
 	 * multiInstanceContainer.doaround..();
 	 */
-	private JStatement createRunStatement_3(AdviceDeclaration advice) {
+	private JStatement createRunStatement_3(CjAdviceDeclaration advice) {
 		JFormalParameter[] params = advice.getParameters();
 
 		List args = new ArrayList();
@@ -3369,7 +3369,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * Wraps the primitive value of the expr in a ReferenceType.
 	 */
 	private JExpression createWrapper(
-		AdviceDeclaration advice,
+		CjAdviceDeclaration advice,
 		JExpression expr) {
 		CType returnType = advice.getReturnType();
 		JExpression[] args = { expr };

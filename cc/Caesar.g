@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.33 2004-03-16 11:38:39 aracic Exp $
+ * $Id: Caesar.g,v 1.34 2004-03-17 11:41:13 aracic Exp $
  */
 
 /*
@@ -582,8 +582,8 @@ jMember [ParseClassContext context]
   CaesarAdviceKind kind = null;
   TypeFactory factory = environment.getTypeFactory();
   CReferenceType[]		throwsList = CReferenceType.EMPTY;  
-  PointcutDeclaration pointcutDecl;
-  AdviceDeclaration adviceDecl;
+  CjPointcutDeclaration pointcutDecl;
+  CjAdviceDeclaration adviceDecl;
 }
 :
   	(
@@ -633,7 +633,7 @@ jMember [ParseClassContext context]
   			//before advice declaration
   			"before"
 	  		LPAREN  parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN   	
- 			adviceDecl = jAdviceDeclaration[CaesarAdviceKind.Before, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, null]
+ 			adviceDecl = jCjAdviceDeclaration[CaesarAdviceKind.Before, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, null]
 			{ 	
 				context.addAdviceDeclaration(adviceDecl);
 			}  	 		  		 	 
@@ -654,7 +654,7 @@ jMember [ParseClassContext context]
   				RPAREN)? 
   				{kind = CaesarAdviceKind.AfterThrowing;}
 			)?  	
- 			adviceDecl = jAdviceDeclaration[kind, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, extraParam]   
+ 			adviceDecl = jCjAdviceDeclaration[kind, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, extraParam]   
 			{ 
 				context.addAdviceDeclaration(adviceDecl);			
 			}  	 		  		 	 
@@ -665,7 +665,7 @@ jMember [ParseClassContext context]
 	  	  		"around"		  	
 		      	LPAREN  parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN   	
 	  		  	(throwsList = jThrowsClause[])?
-	 	  		adviceDecl = jAdviceDeclaration[CaesarAdviceKind.Around, modifiers, parameters, type, throwsList, extraParam] 	
+	 	  		adviceDecl = jCjAdviceDeclaration[CaesarAdviceKind.Around, modifiers, parameters, type, throwsList, extraParam] 	
 		  		{ 
 		  			context.addAdviceDeclaration(adviceDecl);	  			
 		  		}  	 		  		    
@@ -676,7 +676,7 @@ jMember [ParseClassContext context]
 	      		vars = jVariableDefinitions[modifiers, type] SEMI
 	        	{
 		  			for (int i = 0; i < vars.length; i++) {
-			    		context.addFieldDeclaration(new FjFieldDeclaration(sourceRef,
+			    		context.addFieldDeclaration(new JFieldDeclaration(sourceRef,
 																			vars[i],
 																			getJavadocComment(),
 																			getStatementComment()));
@@ -732,12 +732,12 @@ jConstructorDefinition [ParseClassContext context, int modifiers]
   )*
   RCURLY
     {
-        self = new FjConstructorDeclaration(sourceRef,
+        self = new JConstructorDeclaration(sourceRef,
                                            modifiers,
                                            name.getText(),
                                            parameters,
                                            throwsList,
-                                           new FjConstructorBlock(sourceRef,
+                                           new CjConstructorBlock(sourceRef,
                                                                  constructorCall,
                                                                  (JStatement[]) body.toArray(new JStatement[body.size()])),
                                            javadoc,
@@ -769,7 +769,7 @@ jExplicitConstructorInvocation []
   )
   LPAREN args = jArgList[] RPAREN
   SEMI
-    { self = new FjConstructorCall(sourceRef, functorIsThis, expr, args); }
+    { self = new CjConstructorCall(sourceRef, functorIsThis, expr, args); }
 ;
 
 jMethodDefinition [ParseClassContext context, int modifiers, CType type, CTypeVariable[] typeVariables]
@@ -1464,7 +1464,7 @@ jAssignmentExpression []
   self = jConditionalExpression[]
   (
     ASSIGN right = jAssignmentExpression[]
-      { self = new FjAssignmentExpression(self.getTokenReference(), self, right); }
+      { self = new CjAssignmentExpression(self.getTokenReference(), self, right); }
   |
     oper = jCompoundAssignmentOperator[] right = jAssignmentExpression[]
       { self = new JCompoundAssignmentExpression(self.getTokenReference(), oper, self, right); }
@@ -1792,8 +1792,6 @@ jPostfixExpression[]
     |
       "class"
         { self = new JClassExpression(sourceRef, self, 0); }
-    |    
-      self = jWrapperDestructorExpression[self]
     |      
       self = jQualifiedNewExpression[self]
     )
@@ -1811,9 +1809,9 @@ jPostfixExpression[]
 	if (! (self instanceof JNameExpression)) {
 	  reportTrouble(new PositionedError(sourceRef, KjcMessages.INVALID_METHOD_NAME, null));
 	} else if(((JNameExpression)self).getName().equals("proceed")) {
-	  self = new ProceedExpression(sourceRef, args);	
+	  self = new CjProceedExpression(sourceRef, args);	
 	} else {
-	  self = new FjMethodCallExpression(sourceRef,
+	  self = new CjMethodCallExpression(sourceRef,
 					   ((JNameExpression)self).getPrefix(),
 					   ((JNameExpression)self).getName(),
 					   args);
@@ -1859,13 +1857,8 @@ jPrimaryExpression []
   "this"
     { self = new JThisExpression(sourceRef); }
 | 
-  "wrappee"
-    { self = new CciWrappeeExpression(sourceRef); }
-|
   "null"
     { self = new JNullLiteral(sourceRef); }
-|
-   self = jWrapperDestructorExpression[null]
 |
   LPAREN self = jAssignmentExpression[] RPAREN
     { self = new JParenthesedExpression(sourceRef, self); }
@@ -1876,18 +1869,6 @@ jPrimaryExpression []
     { self = new JClassExpression(buildTokenReference(), type, bounds); }
 ;
 
-jWrapperDestructorExpression [JExpression prefix]
-  returns [JExpression self = null]
-{
-  CType				type;
-  JExpression[]			args;
-  TokenReference		sourceRef = buildTokenReference();
-}
-:
-  WDESTRUCTOR type = jTypeName[]
-  LPAREN args = jArgList[] RPAREN
-  { self = new CciWrapperDestructorExpression(sourceRef, prefix, (CReferenceType) type, args); }
-;
 
 jUnqualifiedNewExpression []
   returns [JExpression self = null]
@@ -2202,8 +2183,8 @@ kTypeVariableDeclaration []
 
 
 
-jAdviceDeclaration  [CaesarAdviceKind kind, int modifiers, JFormalParameter[] parameters, CType type, CReferenceType[] throwsList, JFormalParameter extraParam]
-	returns [AdviceDeclaration self = null]
+jCjAdviceDeclaration  [CaesarAdviceKind kind, int modifiers, JFormalParameter[] parameters, CType type, CReferenceType[] throwsList, JFormalParameter extraParam]
+	returns [CjAdviceDeclaration self = null]
 {
   int			bounds = 0;
   JStatement[]		body = null;
@@ -2233,7 +2214,7 @@ jAdviceDeclaration  [CaesarAdviceKind kind, int modifiers, JFormalParameter[] pa
 				parameters = newParameters;			
 			}
 		
-			self = new AdviceDeclaration(sourceRef,
+			self = new CjAdviceDeclaration(sourceRef,
                                        modifiers,
                                        CTypeVariable.EMPTY,
                                        type,
@@ -2257,7 +2238,7 @@ jAdviceDeclaration  [CaesarAdviceKind kind, int modifiers, JFormalParameter[] pa
 ;
 
 jPointcutDefinition [int modifiers, CTypeVariable[] typeVariables]
-	returns [PointcutDeclaration self = null]
+	returns [CjPointcutDeclaration self = null]
 {
   JFormalParameter[]	parameters;
   int			bounds = 0;
@@ -2272,7 +2253,7 @@ jPointcutDefinition [int modifiers, CTypeVariable[] typeVariables]
   LPAREN parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN
   pointcut = jPointcut []
   SEMI
-	{self = new PointcutDeclaration(sourceRef,
+	{self = new CjPointcutDeclaration(sourceRef,
                                                modifiers,
                                                typeVariables,
                                                factory.getVoidType(),

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JClassDeclaration.java,v 1.5 2004-03-17 09:16:33 aracic Exp $
+ * $Id: JClassDeclaration.java,v 1.6 2004-03-17 11:41:13 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -33,15 +33,17 @@ import org.caesarj.compiler.ast.CBlockError;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.expression.JExpression;
-import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
-import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
-import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
-import org.caesarj.compiler.ast.phylum.statement.*;
+import org.caesarj.compiler.ast.phylum.statement.JBlock;
+import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
+import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
+import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.visitor.KjcPrettyPrinter;
 import org.caesarj.compiler.ast.visitor.KjcVisitor;
-import org.caesarj.compiler.constants.*;
+import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.compiler.constants.Constants;
+import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.*;
 import org.caesarj.compiler.export.*;
 import org.caesarj.compiler.joinpoint.DeploymentPreparation;
@@ -126,8 +128,8 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 		 initializers,
 		 javadoc,
 		 comment,
-		 PointcutDeclaration.EMPTY,
-		 AdviceDeclaration.EMPTY,
+		 CjPointcutDeclaration.EMPTY,
+		 CjAdviceDeclaration.EMPTY,
 		 null);
  }
 
@@ -147,8 +149,8 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 	 JPhylum[] initializers,
 	 JavadocComment javadoc,
 	 JavaStyleComment[] comment,
-	 PointcutDeclaration[] pointcuts,
-	 AdviceDeclaration[] advices,
+	 CjPointcutDeclaration[] pointcuts,
+	 CjAdviceDeclaration[] advices,
 	 CaesarDeclare[] declares)
  {
 	 super(where, modifiers, ident, typeVariables, interfaces, fields, methods, inners, initializers, javadoc, comment);
@@ -539,8 +541,6 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
   {
 	  return getSuperClass() != null
 		  && ! (getSuperClass().getQualifiedName().equals(
-				  FjConstants.CHILD_IMPL_TYPE_NAME))
-		  && ! (getSuperClass().getQualifiedName().equals(
 				  Constants.JAV_OBJECT));
   }
 
@@ -589,17 +589,17 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
    * Returns all constructors. This method was pulled up. 
    * @return FjConstructorDeclaration[]
    */
-  protected FjConstructorDeclaration[] getConstructors()
+  protected JConstructorDeclaration[] getConstructors()
   {
 	  Vector contructors = new Vector(methods.length);
 	  for (int i = 0; i < methods.length; i++)
 	  {
-		  if (methods[i] instanceof FjConstructorDeclaration)
+		  if (methods[i] instanceof JConstructorDeclaration)
 			  contructors.add(methods[i]);
 	  }
-	  return (FjConstructorDeclaration[]) Utils.toArray(
+	  return (JConstructorDeclaration[]) Utils.toArray(
 		  contructors,
-		  FjConstructorDeclaration.class);
+		  JConstructorDeclaration.class);
   }
 
   /**
@@ -768,64 +768,10 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
   }
 	
 	
-  /**
-   * Adds the providing reference accessor. The class must be a binding class.
-   * The method will actually return a dispatcher of self in this context.
-   */
-  public void addProvidingAcessor()
-  {
-	  TokenReference ref = getTokenReference();
-	  //Adds the implementation accessor.
-	  addMethod(
-		  createAccessor(
-			  CciConstants.PROVIDING_REFERENCE_NAME,
-			  new JMethodCallExpression(
-				  ref,
-				  new JThisExpression(ref),
-				  FjConstants.GET_DISPATCHER_METHOD_NAME,
-				  new JExpression[]
-				  {
-					  new JNameExpression(
-							  ref,
-							  FjConstants.SELF_NAME)
-				  }),
-			  FjConstants.CHILD_TYPE));	
-  }
+
 	
 
-  /**
-   * Creates an accessor method.
-   * @param accessedName The name to be accessed
-   * @param returnExpression The return expression
-   * @param returnType The return type
-   * @return FjCleanMethodDeclaration
-   */
-  protected JMethodDeclaration createAccessor(
-	  String accessedName, 
-	  JExpression returnExpression, 
-	  CReferenceType returnType)
-  {
-	  JStatement[] statements =
-		  new JStatement[] {
-			   new JReturnStatement(
-				  getTokenReference(),
-				  returnExpression,
-				  null)};
-					
-	  JBlock body = new JBlock(getTokenReference(), statements, null);
-	
-	  return new JMethodDeclaration(
-		  getTokenReference(),
-		  ACC_PUBLIC,
-		  new CTypeVariable[0],
-		  returnType,
-		  CciConstants.toAccessorMethodName(accessedName),
-		  new JFormalParameter[0],
-		  new CReferenceType[0],
-		  body,
-		  null,
-		  null);
-  }
+
 	
   /* DEBUG
    * (non-Javadoc)
@@ -871,7 +817,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 	 */
 
 	/** The declared advices */
-	protected AdviceDeclaration[] advices;
+	protected CjAdviceDeclaration[] advices;
 
 	/** e.g. declare precedence */
 	protected CaesarDeclare[] declares;
@@ -880,7 +826,7 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 	protected CaesarPointcut perClause;
 
 	/** The declared pointcuts */
-	protected PointcutDeclaration[] pointcuts;
+	protected CjPointcutDeclaration[] pointcuts;
 
 	public JMethodDeclaration[] getMethods()
 	{
@@ -1277,22 +1223,22 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 		this.fields = fields;
 	}
 
-	public PointcutDeclaration[] getPointcuts()
+	public CjPointcutDeclaration[] getPointcuts()
 	{
 		return pointcuts;
 	}
 
-	public AdviceDeclaration[] getAdvices()
+	public CjAdviceDeclaration[] getAdvices()
 	{
 		return advices;
 	}
 
-	public void setPointcuts(PointcutDeclaration[] pointcuts)
+	public void setPointcuts(CjPointcutDeclaration[] pointcuts)
 	{
 		this.pointcuts = pointcuts;
 	}
 
-	public void setAdvices(AdviceDeclaration[] advices)
+	public void setAdvices(CjAdviceDeclaration[] advices)
 	{
 		this.advices = advices;
 	}
@@ -1344,8 +1290,13 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 			new Hashtable(fields.length + generatedFields + 1);
 		for (int i = fields.length - 1; i >= 0; i--)
 		{
+			/* FJRM
 			CSourceField field =
 				((FjFieldDeclaration) fields[i]).initFamily(context);
+			*/
+			
+			// FJADD
+			CSourceField field = fields[i].checkInterface(context);
 
 			field.setPosition(i);
 
@@ -1376,9 +1327,9 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 		int i = 0;
 		for (; i < methods.length; i++)
 		{
-			if (methods[i] instanceof FjMethodDeclaration)
+			if (methods[i] instanceof CjMethodDeclaration)
 				methodList[i] =
-					((FjMethodDeclaration) methods[i]).initFamilies(context);
+					((CjMethodDeclaration) methods[i]).initFamilies(context);
 			else
 				methodList[i] = methods[i].getMethod();
 
@@ -1387,11 +1338,13 @@ public class JClassDeclaration extends JTypeDeclaration implements CaesarConstan
 		JConstructorDeclaration defaultConstructor = getDefaultConstructor();
 		if (defaultConstructor != null)
 		{
-			if (defaultConstructor instanceof FjConstructorDeclaration)
+			/*
+			if (defaultConstructor instanceof JConstructorDeclaration)
 				methodList[i++] =
-					((FjConstructorDeclaration) defaultConstructor)
+					((JConstructorDeclaration) defaultConstructor)
 								.initFamilies(context);
 			else
+			*/
 				methodList[i++] = defaultConstructor.getMethod();
 		}
 		if (statInit != null)

@@ -1,21 +1,21 @@
 package org.caesarj.compiler.ast.phylum.statement;
 
-import org.caesarj.compiler.ast.phylum.expression.FjConstructorCall;
+import org.caesarj.compiler.ast.phylum.expression.CjConstructorCall;
 import org.caesarj.compiler.ast.phylum.expression.JConstructorCall;
 import org.caesarj.util.TokenReference;
 
-public class FjConstructorBlock extends JConstructorBlock {
+public class CjConstructorBlock extends JConstructorBlock {
 
-	public FjConstructorBlock(
+	public CjConstructorBlock(
 		TokenReference where,
 		JConstructorCall constructorCall,
 		JStatement[] body) {
 		super(where, constructorCall, body);
-		cacheConstructorCall = (FjConstructorCall) constructorCall;
+		cacheConstructorCall = (CjConstructorCall) constructorCall;
 	}
 
-	private FjConstructorCall cacheConstructorCall;
-	public FjConstructorCall getConstructorCall() {
+	private CjConstructorCall cacheConstructorCall;
+	public CjConstructorCall getConstructorCall() {
 		return cacheConstructorCall;
 	}
 }

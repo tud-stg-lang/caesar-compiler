@@ -16,7 +16,7 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Jürgen Hallpap
  */
-public class ProceedExpression
+public class CjProceedExpression
 	extends JMethodCallExpression
 	implements CaesarConstants {
 
@@ -26,7 +26,7 @@ public class ProceedExpression
 	 * @param JExpression[]
 	 * @param comments
 	 */
-	public ProceedExpression(TokenReference where, JExpression[] args) {
+	public CjProceedExpression(TokenReference where, JExpression[] args) {
 
 		super(
 			where,

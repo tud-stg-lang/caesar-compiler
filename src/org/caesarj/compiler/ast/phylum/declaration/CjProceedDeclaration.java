@@ -19,7 +19,7 @@ import org.caesarj.util.UnpositionedError;
  * 
  * @author Jürgen Hallpap
  */
-public class ProceedDeclaration extends FjMethodDeclaration {
+public class CjProceedDeclaration extends CjMethodDeclaration {
 
 	/** The name of the enclosing advice-method.*/
 	private String adviceName;
@@ -32,7 +32,7 @@ public class ProceedDeclaration extends FjMethodDeclaration {
 	 * @param parameters
 	 * @param adviceName
 	 */
-	public ProceedDeclaration(
+	public CjProceedDeclaration(
 		TokenReference where,
 		CType returnType,
 		String ident,

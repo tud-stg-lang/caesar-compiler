@@ -6,17 +6,17 @@ import org.caesarj.compiler.types.CType;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
-// FJPULLUP hard
-public class FjAssignmentExpression extends JAssignmentExpression {
+// FJKEEP this one is needed to handle privileged access properly
+public class CjAssignmentExpression extends JAssignmentExpression {
 
-	public FjAssignmentExpression(
+	public CjAssignmentExpression(
 		TokenReference where,
 		JExpression left,
 		JExpression right) {
 		super(where, left, right);
 	}
 
-	public FjAssignmentExpression(
+	public CjAssignmentExpression(
 		TokenReference where,
 		JExpression left,
 		JExpression right,
@@ -32,33 +32,18 @@ public class FjAssignmentExpression extends JAssignmentExpression {
 		JExpression oldLeft = left;
 		JExpression oldRight = right;
 		JExpression result = null;
-		PositionedError aError = null;
+
 		try {
 			result = super.analyse(context);
 		} catch (PositionedError e) {
-			aError = e;
-		}
-		/* FJRM
-		PositionedError fError = null;		
-		try {
-			FjTypeSystem fjts = new FjTypeSystem();
-			fjts.checkFamilies(context, oldLeft, oldRight);
-		} catch (PositionedError e) {
-			fError = e;
-		}
-		if (fError != null) {
-			if (aError != null)
-				context.reportTrouble(aError);
-			throw fError;
-		} else*/ if (aError != null) {
-			if (aError
+			if (e
 				.getFormattedMessage()
 				.getDescription()
 				.equals(KjcMessages.ASSIGNMENT_NOTLVALUE)
-				&& left instanceof FjMethodCallExpression) {
+				&& left instanceof CjMethodCallExpression) {
 
-				FjMethodCallExpression methodCallExp =
-					(FjMethodCallExpression) left;
+				CjMethodCallExpression methodCallExp =
+					(CjMethodCallExpression) left;
 
 				JExpression[] args = { methodCallExp.getPrefix(), right };
 				methodCallExp.setArgs(args);
@@ -66,24 +51,12 @@ public class FjAssignmentExpression extends JAssignmentExpression {
 				result = methodCallExp;
 
 			} else {
-
-				throw aError;
-
+				throw e;
 			}
-
 		}
+				
 		
 		return result;
 	}
 	
-	/* FJRM
-	public FjFamily getFamily(CExpressionContext context)
-		throws PositionedError {
-		return left.getFamily(context);
-	}
-
-	public FjFamily toFamily(CBlockContext context) throws PositionedError {
-		return left.toFamily(context);
-	}
-	*/
 }

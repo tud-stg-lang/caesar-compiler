@@ -2,16 +2,16 @@ package org.caesarj.compiler.ast.phylum.expression;
 
 import org.caesarj.util.TokenReference;
 
-public class FjConstructorCall extends JConstructorCall {
+public class CjConstructorCall extends JConstructorCall {
 
-	public FjConstructorCall(
+	public CjConstructorCall(
 		TokenReference where,
 		boolean functorIsThis,
 		JExpression[] arguments) {
 		this(where, functorIsThis, null, arguments);
 	}
 
-	public FjConstructorCall(
+	public CjConstructorCall(
 		TokenReference where,
 		boolean functorIsThis,
 		JExpression expr,

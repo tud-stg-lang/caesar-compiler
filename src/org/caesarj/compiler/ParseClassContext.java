@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: ParseClassContext.java,v 1.8 2004-03-15 11:56:53 aracic Exp $
+ * $Id: ParseClassContext.java,v 1.9 2004-03-17 11:41:12 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -25,11 +25,11 @@ import java.util.Stack;
 
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.declaration.AdviceDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjAdviceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.PointcutDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjPointcutDeclaration;
 import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
 
 
@@ -91,11 +91,11 @@ public class ParseClassContext {
 		body.add(block);
 	}
 
-	public void addPointcutDeclaration(PointcutDeclaration pointcut) {
+	public void addPointcutDeclaration(CjPointcutDeclaration pointcut) {
 		pointcuts.add(pointcut);
 	}
 
-	public void addAdviceDeclaration(AdviceDeclaration advice) {
+	public void addAdviceDeclaration(CjAdviceDeclaration advice) {
 		advices.add(advice);
 	}
 
@@ -131,14 +131,14 @@ public class ParseClassContext {
 		return (JPhylum[]) body.toArray(new JPhylum[body.size()]);
 	}
 
-	public PointcutDeclaration[] getPointcuts() {
-		return (PointcutDeclaration[]) pointcuts.toArray(
-			new PointcutDeclaration[0]);
+	public CjPointcutDeclaration[] getPointcuts() {
+		return (CjPointcutDeclaration[]) pointcuts.toArray(
+			new CjPointcutDeclaration[0]);
 	}
 
-	public AdviceDeclaration[] getAdvices() {
-		return (AdviceDeclaration[]) advices.toArray(
-			new AdviceDeclaration[0]);
+	public CjAdviceDeclaration[] getAdvices() {
+		return (CjAdviceDeclaration[]) advices.toArray(
+			new CjAdviceDeclaration[0]);
 	}
 
 	public CaesarDeclare[] getDeclares() {

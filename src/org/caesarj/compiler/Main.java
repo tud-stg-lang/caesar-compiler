@@ -15,7 +15,6 @@ import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.visitor.DeclarationVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
-import org.caesarj.compiler.constants.CciConstants;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.export.CSourceClass;
@@ -533,7 +532,6 @@ public class Main extends org.caesarj.compiler.MainSuper implements  Constants  
 		 * @param s the String to be written
 		 */
 		public void write(String s) {
-			s = CciConstants.removeCaesarInternalNames(s);
 			if (otherPrinter != null) {
 				otherPrinter.write(s);
 				//super.write( s );

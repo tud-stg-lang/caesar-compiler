@@ -4,7 +4,7 @@ import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.expression.FjMethodCallExpression;
+import org.caesarj.compiler.ast.phylum.expression.CjMethodCallExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
@@ -27,13 +27,13 @@ import org.caesarj.util.UnpositionedError;
  * 
  * @author Jürgen Hallpap
  */
-public class DeploymentSupportClassDeclaration extends JClassDeclaration {
+public class CjDeploymentSupportClassDeclaration extends JClassDeclaration {
 
 	private JClassDeclaration crosscuttingClass;
 
 	private String postfix;
 
-	public DeploymentSupportClassDeclaration(
+	public CjDeploymentSupportClassDeclaration(
 		TokenReference where,
 		int modifiers,
 		String ident,
@@ -61,14 +61,14 @@ public class DeploymentSupportClassDeclaration extends JClassDeclaration {
 			initializers,
 			javadoc,
 			comment,
-			PointcutDeclaration.EMPTY,
-			AdviceDeclaration.EMPTY,
+			CjPointcutDeclaration.EMPTY,
+			CjAdviceDeclaration.EMPTY,
 			null,
 			crosscuttingClass,
 			postfix);
 	}
 
-	public DeploymentSupportClassDeclaration(
+	public CjDeploymentSupportClassDeclaration(
 		TokenReference where,
 		int modifiers,
 		String ident,
@@ -81,8 +81,8 @@ public class DeploymentSupportClassDeclaration extends JClassDeclaration {
 		JPhylum[] initializers,
 		JavadocComment javadoc,
 		JavaStyleComment[] comment,
-		PointcutDeclaration[] pointcuts,
-		AdviceDeclaration[] advices,
+		CjPointcutDeclaration[] pointcuts,
+		CjAdviceDeclaration[] advices,
 		CaesarDeclare[] declares,
 		JClassDeclaration crosscuttingClass,
 		String postfix) {
@@ -136,8 +136,8 @@ public class DeploymentSupportClassDeclaration extends JClassDeclaration {
 				if(isRegistry()&&(!CModifier.contains(crosscuttingClass.getSuperClass().getCClass().getModifiers(),ACC_ABSTRACT))){
 				
 //					//setPointcuts(crosscuttingClass.getPointcuts());
-					crosscuttingClass.setPointcuts(new PointcutDeclaration[0]);
-					pointcuts=new PointcutDeclaration[0];
+					crosscuttingClass.setPointcuts(new CjPointcutDeclaration[0]);
+					pointcuts=new CjPointcutDeclaration[0];
 				}							
 				if(isRegistry()&&
 					(!CModifier.contains(
@@ -208,7 +208,7 @@ public class DeploymentSupportClassDeclaration extends JClassDeclaration {
 			argString+=args[i]+", ";
 		}		
 		JExpression methodCall =
-			new FjMethodCallExpression(TokenReference.NO_REF, fac, methodName, args);
+			new CjMethodCallExpression(TokenReference.NO_REF, fac, methodName, args);
 //		System.out.println("weaved in: "+dprefix+methodName+"("+argString+")");
 		newStatements[deployStatements.length] = new JExpressionStatement(TokenReference.NO_REF, methodCall, null);
 		method.setBlockBody(new JBlock(TokenReference.NO_REF,newStatements,null));

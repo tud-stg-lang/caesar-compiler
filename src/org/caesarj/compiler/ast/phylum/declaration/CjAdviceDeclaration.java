@@ -25,11 +25,11 @@ import org.caesarj.util.UnpositionedError;
  * 
  * @author Jürgen Hallpap
  */
-public class AdviceDeclaration
-	extends FjMethodDeclaration
+public class CjAdviceDeclaration
+	extends CjMethodDeclaration
 	implements CaesarConstants {
 
-	public static final AdviceDeclaration[] EMPTY = new AdviceDeclaration[0];
+	public static final CjAdviceDeclaration[] EMPTY = new CjAdviceDeclaration[0];
 
 	/** Pointcut */
 	private CaesarPointcut pointcut;
@@ -38,7 +38,7 @@ public class AdviceDeclaration
 	private CaesarAdviceKind kind;
 
 	/** The proceed method for around advices.*/
-	private ProceedDeclaration proceedMethodDeclaration;
+	private CjProceedDeclaration proceedMethodDeclaration;
 
 	/** Flags, that show which extraArgument are needed (e.g. AroundClosure).*/
 	private int extraArgumentFlags = 0;
@@ -59,7 +59,7 @@ public class AdviceDeclaration
 	 * @param javadoc
 	 * @param comments
 	 */
-	public AdviceDeclaration(
+	public CjAdviceDeclaration(
 		TokenReference where,
 		int modifiers,
 		CTypeVariable[] typeVariables,
@@ -209,7 +209,7 @@ public class AdviceDeclaration
 	 * Returns the proceedMethodDeclaration.
 	 * @return CaesarProceedMethodDeclaration
 	 */
-	public ProceedDeclaration getProceedMethodDeclaration() {
+	public CjProceedDeclaration getProceedMethodDeclaration() {
 		return proceedMethodDeclaration;
 	}
 
@@ -217,7 +217,7 @@ public class AdviceDeclaration
 	 * Sets the proceedMethodDeclaration.
 	 * @param proceedMethodDeclaration The proceedMethodDeclaration to set
 	 */
-	public void setProceedMethodDeclaration(ProceedDeclaration proceedMethodDeclaration) {
+	public void setProceedMethodDeclaration(CjProceedDeclaration proceedMethodDeclaration) {
 		this.proceedMethodDeclaration = proceedMethodDeclaration;
 	}
 

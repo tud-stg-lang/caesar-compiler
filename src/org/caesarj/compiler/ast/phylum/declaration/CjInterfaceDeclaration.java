@@ -16,11 +16,12 @@ import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
-public class FjInterfaceDeclaration 
+// FJKEEP 
+public class CjInterfaceDeclaration 
 	extends JInterfaceDeclaration 
 {
 
-	public FjInterfaceDeclaration(
+	public CjInterfaceDeclaration(
 		TokenReference where,
 		int modifiers,
 		String ident,
@@ -147,26 +148,35 @@ public class FjInterfaceDeclaration
 		throws PositionedError		
 	{
 		//Initializes the families of the fields.
+		
 		Hashtable hashField = new Hashtable(fields.length + 1);
 		for (int i = fields.length - 1; i >= 0 ; i--) 
 		{
+			/* FJRM
 			CSourceField field = ((FjFieldDeclaration)fields[i])
 				.initFamily(context);
-				
+			*/
+			
+			// FJADD
+			CSourceField field = fields[i].checkInterface(context);
+							
 			field.setPosition(i);
 			
 			hashField.put(field.getIdent(), field);
 		}
+		
 		
 		// Initializes the families of the methods.
 		CMethod[] methodList = new CMethod[methods.length];
 		int i = 0;
 		for (; i < methods.length; i++)
 		{ 
+			/* FJRM
 			if (methods[i] instanceof FjMethodDeclaration)
 				methodList[i] = ((FjMethodDeclaration)methods[i])
 					.initFamilies(context);
 			else
+			*/
 				methodList[i] = methods[i].checkInterface(context);
 		}
 		
@@ -187,8 +197,8 @@ public class FjInterfaceDeclaration
 			
 			if (inners[j] instanceof JClassDeclaration)
 				((JClassDeclaration)inners[j]).initFamilies(null);
-			else if (inners[j] instanceof FjInterfaceDeclaration)
-				((FjInterfaceDeclaration)inners[j]).initFamilies(null);
+			else if (inners[j] instanceof CjInterfaceDeclaration)
+				((CjInterfaceDeclaration)inners[j]).initFamilies(null);
 							
 		}
 	}

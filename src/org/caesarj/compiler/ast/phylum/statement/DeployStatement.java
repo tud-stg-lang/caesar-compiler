@@ -1,7 +1,7 @@
 package org.caesarj.compiler.ast.phylum.statement;
 
 import org.caesarj.compiler.ast.JavaStyleComment;
-import org.caesarj.compiler.ast.phylum.expression.FjMethodCallExpression;
+import org.caesarj.compiler.ast.phylum.expression.CjMethodCallExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
@@ -149,7 +149,7 @@ public class DeployStatement extends JStatement implements CaesarConstants {
                 new CClassNameType(CAESAR_DEPLOY_SUPPORT_CLASS));
 
         JExpression checkIfAspectCall =
-            new FjMethodCallExpression(
+            new CjMethodCallExpression(
                 where,
                 prefix,
                 "checkIfDeployable",
@@ -186,7 +186,7 @@ public class DeployStatement extends JStatement implements CaesarConstants {
                 new CClassNameType(CAESAR_DEPLOY_SUPPORT_CLASS));
 
         JExpression deployStatementCall =
-            new FjMethodCallExpression(
+            new CjMethodCallExpression(
                 where,
                 prefix,
                 "deployBlock",
@@ -213,7 +213,7 @@ public class DeployStatement extends JStatement implements CaesarConstants {
                 new CClassNameType(CAESAR_DEPLOY_SUPPORT_CLASS));
         
         JExpression deployStatementCall =
-            new FjMethodCallExpression(
+            new CjMethodCallExpression(
                 where,
                 prefix,
                 "undeployBlock",

@@ -124,7 +124,7 @@ public class DebugVisitor extends DeclarationVisitor
 		printIdent();
 		System.out.println("{");
 		addIdent();
-		JTypeDeclaration[] decls = ((FjInterfaceDeclaration)self).getInners();
+		JTypeDeclaration[] decls = ((CjInterfaceDeclaration)self).getInners();
 	
 		for (int i = 0; i < decls.length; i++)
 			decls[i].accept(this);

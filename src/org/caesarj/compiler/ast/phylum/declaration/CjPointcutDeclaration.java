@@ -28,10 +28,10 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Jürgen Hallpap
  */
-public class PointcutDeclaration extends FjMethodDeclaration {
+public class CjPointcutDeclaration extends CjMethodDeclaration {
 
-	public static final PointcutDeclaration[] EMPTY =
-		new PointcutDeclaration[0];
+	public static final CjPointcutDeclaration[] EMPTY =
+		new CjPointcutDeclaration[0];
 
 	/**The corresponding Pointcut.*/
 	private CaesarPointcut pointcut;
@@ -51,7 +51,7 @@ public class PointcutDeclaration extends FjMethodDeclaration {
 	 * @param javadoc
 	 * @param comments
 	 */
-	public PointcutDeclaration(
+	public CjPointcutDeclaration(
 		TokenReference where,
 		int modifiers,
 		CTypeVariable[] typeVariables,

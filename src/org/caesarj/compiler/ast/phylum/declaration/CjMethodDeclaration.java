@@ -4,9 +4,6 @@ import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
-import org.caesarj.compiler.constants.CaesarMessages;
-import org.caesarj.compiler.constants.CciConstants;
-import org.caesarj.compiler.constants.FjConstants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
@@ -21,9 +18,9 @@ import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
 // FJPULLUP hard
-public class FjMethodDeclaration extends JMethodDeclaration {
+public class CjMethodDeclaration extends JMethodDeclaration {
 
-	public FjMethodDeclaration(
+	public CjMethodDeclaration(
 		TokenReference where,
 		int modifiers,
 		CTypeVariable[] typeVariables,
@@ -288,6 +285,7 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 			(modifiers & ACC_ABSTRACT) == 0 || (modifiers & ACC_STRICT) == 0,
 			KjcMessages.METHOD_ABSTRACT_STRICT);
 		
+		/* FJRM
 		//These checks must be done only for base methods...
 		if (FjConstants.isBaseMethodName(ident) 
 			&& ! FjConstants.isFactoryMethodName(ident)
@@ -313,6 +311,7 @@ public class FjMethodDeclaration extends JMethodDeclaration {
 				CaesarMessages.PROVIDED_AND_EXPECTED_METHOD,
 				ident);
 		}
+		*/
 			
 		if (inInterface && isExported) {
 			check(

@@ -154,7 +154,7 @@ public class DeploymentPreparation implements CaesarConstants {
 				singletonType,
 				PER_SINGLETON_INSTANCE_FIELD,
 				null);
-		FjFieldDeclaration field = new FjFieldDeclaration(
+		JFieldDeclaration field = new JFieldDeclaration(
 										cd.getTokenReference(),
 										aspectInstanceVar,
 										true,
@@ -171,10 +171,10 @@ public class DeploymentPreparation implements CaesarConstants {
 	/**
 	 * Creates the proceed method for around advices.
 	 * */
-	private JMethodDeclaration createProceedMethod(AdviceDeclaration advice)
+	private JMethodDeclaration createProceedMethod(CjAdviceDeclaration advice)
 	{
-		ProceedDeclaration proceedMethodDeclaration =
-			new ProceedDeclaration(
+		CjProceedDeclaration proceedMethodDeclaration =
+			new CjProceedDeclaration(
 				advice.getTokenReference(),
 				advice.getReturnType(),
 				advice.getIdent() + CaesarConstants.PROCEED_METHOD,
@@ -189,7 +189,7 @@ public class DeploymentPreparation implements CaesarConstants {
 	/**
 	 * Changes the name of the given advice.
 	 */
-	protected void createAdviceMethodName(AdviceDeclaration adviceDeclaration)
+	protected void createAdviceMethodName(CjAdviceDeclaration adviceDeclaration)
 	{
 		String ident =
 			CaesarNameMangler.adviceName(
@@ -199,10 +199,10 @@ public class DeploymentPreparation implements CaesarConstants {
 		adviceDeclaration.setIdent(ident);
 	}
 	
-	protected FjMethodDeclaration createSingletonAjcClinitMethod(TypeFactory typeFactory)
+	protected CjMethodDeclaration createSingletonAjcClinitMethod(TypeFactory typeFactory)
 	{
 		JStatement[] body = { createSingletonClinitMethodStatement_1()};
-		return new FjMethodDeclaration(
+		return new CjMethodDeclaration(
 			TokenReference.NO_REF,
 			ACC_PRIVATE | ACC_STATIC,
 			CTypeVariable.EMPTY,
@@ -214,7 +214,7 @@ public class DeploymentPreparation implements CaesarConstants {
 			null,
 			null);
 	}
-	private FjMethodDeclaration createAspectOfMethod() {
+	private CjMethodDeclaration createAspectOfMethod() {
 
 		CType singletonType = new CClassNameType(cd.getFjSourceClass().getQualifiedName());
 		JExpression expr =
@@ -223,7 +223,7 @@ public class DeploymentPreparation implements CaesarConstants {
 				null,
 				PER_SINGLETON_INSTANCE_FIELD);
 		JStatement[] body = { new JReturnStatement(TokenReference.NO_REF, expr, null)};
-		return new FjMethodDeclaration(
+		return new CjMethodDeclaration(
 			TokenReference.NO_REF,
 			ACC_PUBLIC | ACC_STATIC,
 			CTypeVariable.EMPTY,
@@ -254,7 +254,7 @@ public class DeploymentPreparation implements CaesarConstants {
 				JExpression.EMPTY);
 		return new JExpressionStatement(
 			TokenReference.NO_REF,
-			new FjAssignmentExpression(TokenReference.NO_REF, left, right),
+			new CjAssignmentExpression(TokenReference.NO_REF, left, right),
 			null);
 	}
 
@@ -266,7 +266,7 @@ public class DeploymentPreparation implements CaesarConstants {
 		JExpression prefix = new JTypeNameExpression(cd.getTokenReference(), type);
 
 		JExpression expr =
-			new FjMethodCallExpression(
+			new CjMethodCallExpression(
 				cd.getTokenReference(),
 				prefix,
 				AJC_CLINIT_METHOD,

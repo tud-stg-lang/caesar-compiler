@@ -7,7 +7,7 @@ import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.JPackageImport;
 import org.caesarj.compiler.ast.phylum.JPackageName;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.declaration.FjInterfaceDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
@@ -70,10 +70,10 @@ public class FamiliesInitializerFjVisitor
 		
 		((FjClassContext) context).pushContextInfo(self);
 		
-		if (self instanceof FjInterfaceDeclaration)
+		if (self instanceof CjInterfaceDeclaration)
 			try
 			{
-				((FjInterfaceDeclaration)self).initFamilies(context.getClassContext());
+				((CjInterfaceDeclaration)self).initFamilies(context.getClassContext());
 			}
 			catch (PositionedError e)
 			{

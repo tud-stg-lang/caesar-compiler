@@ -1,6 +1,6 @@
 Caesar // output vocabulary
 
-// Definitions from C:\ivica\eclipse.workspace\Caesar\cc/caesar.t
+// Definitions from D:\eclipse\workspaces\uni\Caesar\cc/caesar.t
 LITERAL_abstract = "abstract" = 4
 LITERAL_boolean = "boolean" = 5
 LITERAL_break = "break" = 6
