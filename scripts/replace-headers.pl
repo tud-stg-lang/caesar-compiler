@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # This script replaces the source file headers 
 
-$files = `find ../../org.caesarj.ui/src/* -name *.java`;
+$files = `find ../src/* -name *.java`;
 
 @files = split(/\n/, $files);
 
