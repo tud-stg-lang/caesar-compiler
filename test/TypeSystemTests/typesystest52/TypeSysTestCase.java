@@ -13,19 +13,19 @@ public cclass X {
     public y.Z z2;
 
     public cclass Y {
-  		public class Z {
+  		public cclass Z {
   		    public x.Y y;
   		}
 
     }
   }
 
-  public cclass Test {
-    public final X x =null;
-    public final x.x.Y myY = null;
+  public class Test {
+    public final X x = new X();
+    public final x.x.Y myY = x.x.new Y();
     
-    public final x.Y y = null;
-    public final y.Z z = null;
+    public final x.Y y = x.new Y();
+    public final y.Z z = y.new Z();
     public x.Y y2;
     public void foo() {
     	x.y2 = myY;  // this should be ok
