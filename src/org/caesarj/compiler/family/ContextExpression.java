@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ContextExpression.java,v 1.9 2005-02-07 18:23:54 aracic Exp $
+ * $Id: ContextExpression.java,v 1.10 2005-02-09 16:51:04 aracic Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -48,6 +48,13 @@ public class ContextExpression extends Path {
         
     public int getK() {
         return k;
+    }
+    
+    public boolean containsJavaElements() {
+        if(prefix == null)
+            return false;
+        else 
+            return prefix.containsJavaElements();
     }
     
     public String toString() {
@@ -102,7 +109,7 @@ public class ContextExpression extends Path {
         }
     }
     
-    protected Path clonePath() {
+    public Path clonePath() {
         return new ContextExpression(prefix==null ? null : prefix.clonePath(), k, type);
     }
 }
