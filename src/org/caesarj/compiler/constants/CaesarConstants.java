@@ -46,6 +46,15 @@ public interface CaesarConstants extends Constants {
 	public static final String PROCEED_METHOD = "proceed";
 
 	//Some qualified class names
+	
+	public static final String SRC_AROUND_CLOSURE_CLASS =
+		"org.aspectj.runtime.internal.AroundClosure";
+
+	public static final String SRC_ASPECT_CONTAINER_IFC =
+		"org.caesarj.runtime.aspects.AspectContainerIfc";
+	
+	public static final String SRC_ASPECT_DEPLOYER_IFC =
+		"org.caesarj.runtime.aspects.AspectDeployerIfc";
 
 	public static final String QUALIFIED_ITERATOR_CLASS = "java/util/Iterator";
 
@@ -53,7 +62,7 @@ public interface CaesarConstants extends Constants {
 
 	public static final String AROUND_CLOSURE_CLASS =
 		"org/aspectj/runtime/internal/AroundClosure";
-
+	
 	public static final String CONVERSIONS_CLASS =
 		"org/aspectj/runtime/internal/Conversions";
 
@@ -73,12 +82,17 @@ public interface CaesarConstants extends Constants {
     
     public static final String CAESAR_OBJECT =  
         "org/caesarj/runtime/CaesarObject";
+    
+    public static final String ASPECT_CONTAINER_IFC =  
+    	"org/caesarj/runtime/aspects/AspectContainerIfc";
 
 	//Caesar extension for the generated deployment support classes
 
 	public static final String ASPECT_IFC_EXTENSION = "$Ifc";
 
 	public static final String REGISTRY_EXTENSION = "$Registry";
+	
+	public static final String MULTI_INST_CLOSURE_EXTENSION = "$MultiInstClosure";
 	
 	// Constants for Advice-Attributes taken from ...aspectj.advice
 	public static final int ExtraArgument = 1;

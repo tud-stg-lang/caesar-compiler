@@ -63,6 +63,9 @@ public class DeploymentClassFactory implements CaesarConstants {
 		initNames();
 	}
 
+	/**
+	 * Initialize generated names
+	 */
 	private void initNames() {
 		
 		String packageName = aspectClass.getCClass().getPackage();
@@ -203,7 +206,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	    AstGenerator gen = environment.getAstGenerator();
 	    
 	    String[] body = new String[] {
-	    	"public void $deploySelf(org.caesarj.runtime.aspects.AspectDeployerIfc depl)",
+	    	"public void $deploySelf(" + SRC_ASPECT_DEPLOYER_IFC + " depl)",
 			"{",
  	      		"depl.$deployOn(" + srcSingletonAspectName + ".ajc$perSingletonInstance, this);",
 				"super.$deploySelf(depl);",
@@ -222,7 +225,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		AstGenerator gen = environment.getAstGenerator();
 	    
 	    String[] body = new String[] {
-	    	"public void $undeploySelf(org.caesarj.runtime.aspects.AspectDeployerIfc depl)",
+	    	"public void $undeploySelf(" + SRC_ASPECT_DEPLOYER_IFC + " depl)",
 			"{",
  	      		"depl.$undeployFrom(" + srcSingletonAspectName + ".ajc$perSingletonInstance, this);",
 				"super.$undeploySelf(depl);",
@@ -279,7 +282,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		singletonAspectMethods.add(createSingletonSetAspectContainerMethod());
 		
 		/* create the $aspectContainer field */
-		CType containerType = new CClassNameType("org/caesarj/runtime/aspects/AspectContainerIfc");
+		CType containerType = new CClassNameType(ASPECT_CONTAINER_IFC);
 		JVariableDefinition deployedInstancesVar =
 			new JVariableDefinition(
 				where,
@@ -374,7 +377,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		AstGenerator gen = environment.getAstGenerator();
 	    
 	    String[] body = new String[] {
-	    	"public org.caesarj.runtime.aspects.AspectContainerIfc $getAspectContainer()",
+	    	"public " + SRC_ASPECT_CONTAINER_IFC + " $getAspectContainer()",
 			"{",
  	      		"return $aspectContainer;",
 			"}"	
@@ -392,7 +395,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		AstGenerator gen = environment.getAstGenerator();
 	    
 	    String[] body = new String[] {
-	    	"public void $setAspectContainer(org.caesarj.runtime.aspects.AspectContainerIfc cont)",
+	    	"public void $setAspectContainer(" + SRC_ASPECT_CONTAINER_IFC + " cont)",
 			"{",
  	      		"$aspectContainer = cont;",
 			"}"	
@@ -499,7 +502,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	    strProceedCall += ");";
 	    
 	    /* Format line for closure construction */
-		String strClosureConstruction = "new " + advice.getIdent() + "$MultiInstClosure(";
+		String strClosureConstruction = "new " + advice.getIdent() + MULTI_INST_CLOSURE_EXTENSION + "(";
 		
 		JFormalParameter adviceParams[] = advice.getParameters();
 		
@@ -514,7 +517,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	    /* Format advice body */
 	    String[] block = new String[] {
 	    	"{",
-	    		"org.aspectj.runtime.internal.AroundClosure $closure = aroundClosure;",
+	    		SRC_AROUND_CLOSURE_CLASS + " $closure = aroundClosure;",
 				"if ($aspectContainer != null)",
 				"{",
 					"java.util.Iterator $it = $aspectContainer.$getInstances();",
@@ -534,6 +537,9 @@ public class DeploymentClassFactory implements CaesarConstants {
 		return advice;
 	}
 	
+	/**
+	 * Creates method for registry singleton initialization
+	 */
 	private JMethodDeclaration createSingletonAjcClinitMethod() {
 		
 		AstGenerator gen = environment.getAstGenerator();
@@ -554,6 +560,9 @@ public class DeploymentClassFactory implements CaesarConstants {
 		return gen.endMethod();
 	}
 
+	/**
+	 * Creates aspectOf method for registry class
+	 */
 	private JMethodDeclaration createAspectOfMethod() {
 		
 		AstGenerator gen = environment.getAstGenerator();
@@ -606,7 +615,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	private CjClassDeclaration createAroundClosure(CjAdviceDeclaration advice) {
 		
 		CReferenceType superClass =
-			new CClassNameType("org/aspectj/runtime/internal/AroundClosure");
+			new CClassNameType(AROUND_CLOSURE_CLASS);
 
 		/* create field for every advice parameter */
 		List fields = new ArrayList();
@@ -641,7 +650,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		fields.add(field1);
 		
 		/* create next call closure field */
-		CType closure = new CClassNameType(advice.getIdent() + "$MultiInstClosure");
+		CType closure = new CClassNameType(advice.getIdent() + MULTI_INST_CLOSURE_EXTENSION);
 		JVariableDefinition var2 =
 			new JVariableDefinition(
 				where,
@@ -677,7 +686,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new CjClassDeclaration(
 				where,
 				0,
-				(advice.getIdent() + "$MultiInstClosure").intern(),
+				(advice.getIdent() + MULTI_INST_CLOSURE_EXTENSION).intern(),
 				CTypeVariable.EMPTY,
 				superClass,
 				null,
@@ -741,7 +750,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		
 		/* Format line for closure construction */
 		String strNextClosureConstruction = "$nextCall = new " 
-					+ advice.getIdent() + "$MultiInstClosure(";
+					+ advice.getIdent() + MULTI_INST_CLOSURE_EXTENSION + "(";
 		
 		for (int i1 = 0; i1 < adviceParameters.length; i1++) {
 			if (i1 > 0) {
@@ -782,7 +791,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		return new JConstructorDeclaration(
 			where,
 			ACC_PUBLIC,
-			(advice.getIdent() + "$MultiInstClosure").intern(),
+			(advice.getIdent() + MULTI_INST_CLOSURE_EXTENSION).intern(),
 			params,
 			CReferenceType.EMPTY,
 			body,
