@@ -45,6 +45,17 @@
     </compile>
 
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="binary004" description="Test type checks on method calls defined in super.">
+        <code>
+			public class A {
+				public void foo() {
+					System.out.println();
+				}
+			}
+		</code>
+    </compile>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile id="static001" description="Check initializer of static fields.">
         <code>
 			public cclass A {
@@ -63,5 +74,21 @@
 			}
 		</code>
     </compile>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="accessor001" description="Check accessor methods.">
+        <code>
+			public class A {
+				private Object o = new Object();
+				public void foo() {
+					new Runnable() {
+						public void run() {
+							o.toString();
+						}
+					}.run();
+				}
+			}
+		</code>
+    </compile>	
 
 </testsuite>

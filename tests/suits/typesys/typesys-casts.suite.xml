@@ -2,7 +2,11 @@
 
 	<common-code-base>		
 		public cclass G {
-			public cclass N {}
+			public cclass N {
+				public void x(M m) {}
+			}
+			public cclass M {
+			}
 		}
 	</common-code-base>
 
@@ -85,7 +89,21 @@
 				public cclass N {}
 			}
 		</code>
-    </compile-run>		  	
+    </compile-run>		  
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="casts006" description="Check casts">		
+        <code>
+			public cclass GG extends G {
+				public cclass M {					
+					public void foo() {	
+						Object o = new N();
+						((N)o).x( this ); 			// ( (ctx(4).N) o).x( ctx(3) );
+					}
+				}
+			}
+		</code>
+    </compile>		
 	
 
 </testsuite>

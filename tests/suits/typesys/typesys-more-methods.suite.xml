@@ -10,6 +10,35 @@
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile id="mmethods001" description="Test method calls.">
         <code>
+			public cclass A {	
+				public cclass B {
+					public static final G allG = new G();
+					public void foo() {
+						allG.new N();
+					}
+				}								
+			}			
+		</code>
+    </compile>	
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="mmethods002" description="Test method calls.">
+        <code>
+			public cclass A {	
+				public static final G allG = new G();			
+				public cclass B {
+
+					public void foo() {
+						allG.new N();
+					}
+				}								
+			}			
+		</code>
+    </compile>	
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="mmethods003" description="Test method calls.">
+        <code>
 			public cclass A {				
 				public cclass B {
 					public static final G allG = new G();
@@ -24,7 +53,6 @@
 				}								
 			}			
 		</code>
-    </compile>	
-	
+    </compile>		
 
 </testsuite>

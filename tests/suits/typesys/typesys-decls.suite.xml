@@ -201,4 +201,21 @@
         </code>     
     </compile>	
 
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="anonymous001" description="Check declarations in anonymous.">
+        <code>
+			public class A {
+				private final G g = new G();
+				private g.N n = g.new N();
+				public void foo() {
+					new Runnable() {
+						public void run() {
+							g.N nn = n;
+						}
+					}.run();
+				}
+			}
+		</code>
+    </compile>
+
 </testsuite>
