@@ -58,8 +58,6 @@
 @literal	collaboration
 @literal	provided
 @literal	expected
-@literal	binds
-@literal	provides
 @literal	wraps
 @literal	wrappee
 @operator	WDESTRUCTOR	"~"

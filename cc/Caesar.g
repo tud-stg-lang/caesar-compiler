@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.19 2004-02-28 17:58:06 ostermann Exp $
+ * $Id: Caesar.g,v 1.20 2004-03-01 16:43:24 aracic Exp $
  */
 
 /*
@@ -160,6 +160,28 @@ jTypeDefinition [CParseCompilationUnitContext context]
 {
   int			mods = 0;
   JTypeDeclaration	decl = null;
+  TokenReference	sourceRef = buildTokenReference();
+}
+:
+  mods = jModifiers[]
+  (
+    decl = jClassOrInterfaceDefinition[context]
+  |
+    decl = jCaesarClassDefinition[mods]
+  )
+    {
+       context.addTypeDeclaration(environment.getClassReader(), decl);
+    }
+  |
+    SEMI
+      { reportTrouble(new CWarning(sourceRef, KjcMessages.STRAY_SEMICOLON, null)); }
+;
+
+// A type definition in a file is either a class or interface definition.
+jClassOrInterfaceDefinition [CParseCompilationUnitContext context]
+returns [JTypeDeclaration	decl = null;]
+{
+  int			mods = 0;
   TokenReference	sourceRef = buildTokenReference();
 }
 :
@@ -372,8 +394,6 @@ jModifier []
 
 // Walter start
 |
-  "collaboration" { self = org.caesarj.classfile.ClassfileConstants2.CCI_COLLABORATION; }
-|
   "provided" { self = org.caesarj.classfile.ClassfileConstants2.CCI_PROVIDED; }
 |
   "expected" { self = org.caesarj.classfile.ClassfileConstants2.CCI_EXPECTED; }
@@ -381,16 +401,13 @@ jModifier []
 ;
 
 
-
 // Definition of a Java class
-jClassDefinition [int modifiers]
-  returns [JClassDeclaration self = null]
+jCaesarClassDefinition [int modifiers]
+  returns [JCaesarClassDeclaration self = null]
 {
   CTypeVariable[]       	typeVariables = CTypeVariable.EMPTY;
   CReferenceType			superClass = null;
   CReferenceType[]			interfaces = CReferenceType.EMPTY;
-  CReferenceType			binding = null;
-  CReferenceType			providing = null;
   CReferenceType			wrappee = null;  
   ParseClassContext	context = ParseClassContext.getInstance();
   TokenReference	sourceRef = buildTokenReference();
@@ -398,17 +415,14 @@ jClassDefinition [int modifiers]
   JavaStyleComment[]	comments = getStatementComment();
 }
 :
-  "class" ident:IDENT
+  "cclass" ident:IDENT
   (typeVariables = kTypeVariableDeclarationList[])?
   //This is like this for prevent non-determinism
-  (superClass =  jSuperClassClause[]
-  | binding = jBindsClause[]
-  | providing = jProvidesClause[])?
-
+  (superClass =  jCompositeTypeClause[])?
   (interfaces = jImplementsClause[])?
   (wrappee = jWrapsClause[])?
    
-  jClassBlock[context]
+  jCaesarClassBlock[context]
   {
       JMethodDeclaration[]      methods;
 
@@ -427,6 +441,8 @@ jClassDefinition [int modifiers]
 				   context.getBody(),
 				   javadoc,
 				   comments);
+				   
+	  // TODO
 	  else if (providing != null || binding != null)
 	  {
 	  	if (CModifier.contains(modifiers, org.caesarj.classfile.ClassfileConstants2.FJC_VIRTUAL))
@@ -517,71 +533,85 @@ jClassDefinition [int modifiers]
 				   context.getPointcuts(),
 				   context.getAdvices(),
 				   context.getDeclares());
-      } else {
-          self = new JClassDeclaration(sourceRef,
-				   modifiers,
-				   ident.getText(),
-                   typeVariables,
-				   superClass,
-				   binding,
-				   providing,
-				   wrappee,			   
-				   interfaces,
-				   context.getFields(),
-				   methods,
-				   context.getInnerClasses(),
-				   context.getBody(),
-				   javadoc,
-				   comments,				   
-				   context.getPointcuts(),
-				   context.getAdvices(),
-				   context.getDeclares());
-			}
+      } 
         context.release();
     }
+;
+
+// Definition of a Java class
+jClassDefinition [int modifiers]
+  returns [JClassDeclaration self = null]
+{
+  CTypeVariable[]       	typeVariables = CTypeVariable.EMPTY;
+  CReferenceType			superClass = null;
+  CReferenceType[]			interfaces = CReferenceType.EMPTY;
+  ParseClassContext	context = ParseClassContext.getInstance();
+  TokenReference	sourceRef = buildTokenReference();
+  JavadocComment	javadoc = getJavadocComment();
+  JavaStyleComment[]	comments = getStatementComment();
+}
+:
+  "class" ident:IDENT
+  (typeVariables = kTypeVariableDeclarationList[])?
+  (superClass = jSuperClassClause[])?
+  (interfaces = jImplementsClause[])?
+   
+  jClassBlock[context]
+  {
+      JMethodDeclaration[]      methods;
+
+      methods = context.getMethods();
+      
+      self = new JClassDeclaration(sourceRef,
+			   modifiers,
+			   ident.getText(),
+               typeVariables,
+			   superClass,
+			   binding,
+			   providing,
+			   wrappee,			   
+			   interfaces,
+			   context.getFields(),
+			   methods,
+			   context.getInnerClasses(),
+			   context.getBody(),
+			   javadoc,
+			   comments,				   
+			   context.getPointcuts(),
+			   context.getAdvices(),
+			   context.getDeclares());
+		
+        context.release();
+    }
+;
+
+jCompositeTypeClause []
+  returns [CReferenceType self = null]
+:
+  ("extends" self =  jCompositeTypeList[])
+;
+
+jCompositeTypeList []
+  returns [CReferenceType[] self = null]
+{
+  CReferenceType	name;
+  ArrayList	container = new ArrayList();
+}
+:
+  name = jTypeName[] { container.add(name); }
+  (
+    BAND
+    name = jTypeName[] { container.add(name); }
+  )*
+  { self = (CReferenceType[])container.toArray(new CReferenceType[container.size()]); }
 ;
 
 jSuperClassClause []
   returns [CReferenceType self = null]
 :
-  ("extends" self =  jSuperTypeName[])
+  ("extends" self =  jTypeName[])
 ;
 
-jBindsClause []
-  returns [CReferenceType self = null]
-:
-  ("binds" self = jTypeName[])
-;
-jProvidesClause []
-  returns [CReferenceType self = null]
-:
-   ("provides" self = jTypeName[])
-;
-
-
-jSuperTypeName []
-  returns [CReferenceType self = null]
-{
-	CReferenceType collaborationInterface = null;
-	CReferenceType implementation = null;
-	CReferenceType binding = null;
-}
-:
-  ( collaborationInterface = jTypeName[] )?
-  (	LPAREN implementation = jTypeName[]
-	COMMA 
-	binding = jTypeName[] RPAREN
-  )?
-  {
-  	if (collaborationInterface != null && implementation != null && binding != null)
-	  	self = new CciWeaveletReferenceType(collaborationInterface,
-  					implementation,
-  					binding);
-  	else
-  		self = collaborationInterface;
-
-  }
-;
 
 // Definition of a Java Interface
 jInterfaceDefinition [int modifiers]
@@ -620,6 +650,20 @@ jInterfaceDefinition [int modifiers]
 
 // This is the body of a class.  You can have fields and extra semicolons,
 // That's about it (until you see what a field is...)
+jCaesarClassBlock [ParseClassContext context]
+:
+  LCURLY
+  (
+    jCaesarMember[context]
+  |
+    SEMI
+      { reportTrouble(new CWarning(buildTokenReference(), KjcMessages.STRAY_SEMICOLON, null)); }
+  )*
+  RCURLY
+;
+
+// This is the body of a class.  You can have fields and extra semicolons,
+// That's about it (until you see what a field is...)
 jClassBlock [ParseClassContext context]
 :
   LCURLY
@@ -652,12 +696,7 @@ jImplementsClause[]
   ( "implements" self = jNameList[] )
 ;
 
-// Now the various things that can be defined inside a class or interface:
-// methods, constructors, or variable declaration
-// Note that not all of these are really valid in an interface (constructors,
-// for example), and if this grammar were used for a compiler there would
-// need to be some semantic checks to make sure we're doing the right thing...
-jMember [ParseClassContext context]
+jCaesarMember [ParseClassContext context]
 {
   int				modifiers = 0;
   CType				type;
@@ -665,7 +704,6 @@ jMember [ParseClassContext context]
   CTypeVariable[]               typeVariables;
   JTypeDeclaration		decl;
   JVariableDefinition[]		vars;
-  JStatement[]			body = null;
   TokenReference		sourceRef = buildTokenReference();
   JFormalParameter[] parameters;
   JFormalParameter extraParam = null;  
@@ -679,22 +717,10 @@ jMember [ParseClassContext context]
   	(
    		modifiers = jModifiers[]
    		(
-    		decl = jClassDefinition[modifiers]              // inner class
+    		decl = jCaesarClassDefinition[modifiers]              // inner class
       		{ context.addInnerDeclaration(decl); }
   		|
-    		decl = jInterfaceDefinition[modifiers]          // inner interface
-      		{
-        		context.addInnerDeclaration(decl);
-      	}
-  		|
-    		method = jConstructorDefinition[context, modifiers]
-      		{ context.addMethodDeclaration(method); }
-  		|
-    		// method with type variables
-	    	typeVariables = kTypeVariableDeclarationList[]
-    		type = jTypeSpec[]
-    		method = jMethodDefinition [context, modifiers, type, typeVariables]
-	    	{ context.addMethodDeclaration(method); }
+    		jCommonMember[modifiers, context]
 	  	|
 	  		//pointcut declaration  	
   			"pointcut" pointcutDecl = jPointcutDefinition[modifiers, CTypeVariable.EMPTY] 
@@ -704,8 +730,7 @@ jMember [ParseClassContext context]
     	|	
         	"declare"
     		pattern : TYPE_PATTERN
-    		{
-    		
+    		{    		
 				try {
 
 					CaesarPatternParser patternParser = new CaesarPatternParser(
@@ -775,6 +800,85 @@ jMember [ParseClassContext context]
     	)
 	)
 	|
+		jInitializerBlock[context]
+	
+	)
+;
+
+// Now the various things that can be defined inside a class or interface:
+// methods, constructors, or variable declaration
+// Note that not all of these are really valid in an interface (constructors,
+// for example), and if this grammar were used for a compiler there would
+// need to be some semantic checks to make sure we're doing the right thing...
+jMember [ParseClassContext context]
+{
+  int				modifiers = 0;
+  CType				type;
+  JMethodDeclaration		method;
+  JTypeDeclaration		decl;
+  JVariableDefinition[]		vars;
+  TokenReference		sourceRef = buildTokenReference();
+  JFormalParameter[] parameters;
+  JFormalParameter extraParam = null;  
+  TypeFactory factory = environment.getTypeFactory();
+  CReferenceType[]		throwsList = CReferenceType.EMPTY;  
+}
+:
+  	(
+   		modifiers = jModifiers[]
+   		(
+    		decl = jClassDefinition[modifiers]              // inner class
+      		{ context.addInnerDeclaration(decl); }
+  		|
+    		decl = jInterfaceDefinition[modifiers]          // inner interface
+      		{
+        		context.addInnerDeclaration(decl);
+      	}
+  		|
+    		jCommonMember[modifiers, context]	
+    	|
+      		method = jMethodDefinition [context, modifiers, type, CTypeVariable.EMPTY]
+	        { context.addMethodDeclaration(method); }
+    	|
+      		vars = jVariableDefinitions[modifiers, type] SEMI
+        	{
+	  			for (int i = 0; i < vars.length; i++) {
+		    		context.addFieldDeclaration(new FjFieldDeclaration(sourceRef,
+																		vars[i],
+																		getJavadocComment(),
+																		getStatementComment()));
+		  		}
+			}
+    	)
+	)
+	|
+		jInitializerBlock[context]
+;
+
+jCommonMember [int modifiers, ParseClassContext context]
+{
+  JMethodDeclaration		method;
+  CTypeVariable[]               typeVariables;
+}
+:
+	(
+    		method = jConstructorDefinition[context, modifiers]
+      		{ context.addMethodDeclaration(method); }
+  		|
+    		// method with type variables
+	    	typeVariables = kTypeVariableDeclarationList[]
+    		type = jTypeSpec[]
+    		method = jMethodDefinition [context, modifiers, type, typeVariables]
+	    	{ context.addMethodDeclaration(method); }
+	)
+;
+
+jInitializerBlock [ParseClassContext context] 
+{
+	JStatement[]			body = null;
+}
+:
+	(
 		// "static { ... }" class initializer
 		"static" body = jCompoundStatement[]
     	{ context.addBlockInitializer(new JClassBlock(sourceRef, true, body)); }
@@ -1717,9 +1821,6 @@ jEqualityExpression []
   (
     NOT_EQUAL right = jRelationalExpression[]
       { self = new JEqualityExpression(self.getTokenReference(), false, self, right); }
-  |
-    FJEQUAL right = jRelationalExpression[]
-      { self = new FjEqualityExpression(self.getTokenReference(), true, self, right); }
   |
     EQUAL right = jRelationalExpression[]
       { self = new JEqualityExpression(self.getTokenReference(), true, self, right); }
