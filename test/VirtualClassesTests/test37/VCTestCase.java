@@ -137,7 +137,7 @@ public cclass X {
 	}
 	
 	public cclass B {
-		protected A a;
+		protected A.A a;
 	}
 }
 
