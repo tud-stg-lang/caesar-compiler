@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectDeploymentTests.java,v 1.18 2005-03-30 07:20:52 gasiunas Exp $
+ * $Id: AspectDeploymentTests.java,v 1.19 2005-03-30 14:25:12 gasiunas Exp $
  */
 
 package org.caesarj.test;
@@ -190,5 +190,15 @@ public class AspectDeploymentTests extends FjTestCase
 	/* Tests deploying class without crosscuts */
 	public void testCaesarTestCase_32() throws Throwable {
 		compileAndRun("test132", "ADTestCase");
+	}
+	
+	/*  Tests deploying fields in non-crosscutting class */
+	public void testCaesarTestCase_33() throws Throwable {
+		compileAndRun("test133", "ADTestCase");
+	}
+	
+	/*  Tests declares in abstract classes */
+	public void testCaesarTestCase_34() throws Throwable {
+		compileAndRun("test134", "ADTestCase");
 	}
 }
