@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.56 2004-10-28 13:06:26 aracic Exp $
+ * $Id: Caesar.g,v 1.57 2004-11-03 14:17:14 aracic Exp $
  */
 
 /*
@@ -2143,22 +2143,14 @@ jNameList []
 jTypeName []
   returns [CReferenceType self = null]
 {
-  CReferenceType[]          typeParameters = null;
-  CReferenceType[][]        allTypeParameters; // incl. outer
   ArrayList                container = new ArrayList();
   StringBuffer          buffer = null;
 }
 :
-  i:IDENT ( typeParameters = kReferenceTypeList[] )?
-  {
-    container.add(typeParameters);
-    typeParameters = null;
-  }
+  i:IDENT 
   (
-    DOT j:IDENT ( typeParameters = kReferenceTypeList[] )?
+    DOT j:IDENT 
     {
-      container.add(typeParameters);
-      typeParameters = null;
       (buffer == null ? (buffer = new StringBuffer(i.getText())) : buffer).append('/').append(j.getText());
     }
   )*
@@ -2168,31 +2160,6 @@ jTypeName []
     self = environment.getTypeFactory().createType(name, false);
   }
 ;
-
-kReferenceTypeList []
-  returns [CReferenceType[] self = null]
-{
-  CReferenceType    typeParameter;
-  ArrayList        container = new ArrayList();
-}
-:
-  LT
-    typeParameter = jClassTypeSpec[] { container.add(typeParameter); }
-    (
-      COMMA typeParameter = jClassTypeSpec[] { container.add(typeParameter); }
-    )*
-    {
-      self = (CReferenceType[])container.toArray(new CReferenceType[container.size()]);
-    }
-  GT
-  {
-    if (!environment.isGenericEnabled()) {
-      reportTrouble(new PositionedError(buildTokenReference(), KjcMessages.UNSUPPORTED_GENERIC_TYPE, null));
-    }
-  }
-;
-
-
 
 
 jCjAdviceDeclaration  [CaesarAdviceKind kind, int modifiers, JFormalParameter[] parameters, CType type, CReferenceType[] throwsList, JFormalParameter extraParam]
