@@ -157,11 +157,11 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 */
 	public void modifyAspectClass() {
 
-		//implement the aspect interface
-		aspectClass.addInterface(
+		//IVICA: implement the aspect interface
+		aspectClass.getCorrespondingInterfaceDeclaration().addInterface(
 			new CClassNameType(qualifiedAspectInterfaceName));
         
-        aspectClass.addInterface(            
+        aspectClass.getCorrespondingInterfaceDeclaration().addInterface(            
             new CClassNameType("org/caesarj/runtime/AspectIfc"));
         
 		//add support methods
