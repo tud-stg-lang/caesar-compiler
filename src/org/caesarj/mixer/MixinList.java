@@ -54,7 +54,7 @@ public class MixinList {
     /**
      * Generates a name for the class represented by the mixin list.
      */
-    public String generateClassName() throws MixerException {
+    public String generateClassName() {
     	return generateClassName(0, size()-1);
     }
     
@@ -62,14 +62,18 @@ public class MixinList {
      * Generates a name for the class represented by the (partial) list 
      * beginning with item start and icnluding element end. 
      */
-    public String generateClassName(int start, int end) throws MixerException {
+    public String generateClassName(int start, int end) {
         try {       
             StringBuffer packageNames = new StringBuffer();
             StringBuffer className    = new StringBuffer();
             for (int element = start; element<=end; element++){
                 Element e = get(element);
+                
+                if(className.length() == 0)
+                    className.append(e.getPrefix());
+                
                 className.append('_');
-                className.append(e.getInterfaceName());
+                className.append(e.getMixinListIdentToken());
                     
                 if(e.getPackageName().length() > 0)
                     packageNames.append(e.getPackageName());
@@ -85,7 +89,7 @@ public class MixinList {
                 className.toString();
         }
         catch(Exception e) {
-            throw new MixerException(e);
+            return null;
         }
 
     }
@@ -153,9 +157,10 @@ public class MixinList {
     
     public static class Element {
         private String className;
-        private String packageName;        
-        private String fullQualifiedName;
-        private String interfaceName;
+        private String packageName;
+        private String prefix;
+        private String mixinListIdentToken;  
+        private String fullQualifiedName;       
         
         public Element(String fullQualifiedName) {
             String packageName = "";
@@ -177,11 +182,22 @@ public class MixinList {
         
         private void init(String packageName, String className) {
             this.packageName = packageName;
-            this.className   = className;
-            fullQualifiedName = packageName+'/'+className;
-            interfaceName = className;
-            if(interfaceName.endsWith("_Impl")) {
-                interfaceName = interfaceName.substring(0, interfaceName.lastIndexOf("_Impl"));
+            
+            int i;
+            
+            this.prefix = "";
+            this.className = className;
+            i = className.lastIndexOf('$');
+            if(i >= 0) {
+                prefix = className.substring(0, i+1);
+                this.className = className.substring(i+1); 
+            }
+            
+            this.fullQualifiedName = packageName+'/'+className;
+            
+            this.mixinListIdentToken = this.className;
+            if(mixinListIdentToken.endsWith("_Impl")) {
+                mixinListIdentToken = mixinListIdentToken.substring(0, mixinListIdentToken.lastIndexOf("_Impl"));
             }
         }
 
@@ -189,13 +205,17 @@ public class MixinList {
 			return className;
 		}
         
-        public String getInterfaceName() {
-            return interfaceName;
+        public String getMixinListIdentToken() {
+            return mixinListIdentToken;
         }
 
-		public String getPackageName() {
-			return packageName;
-		}
+        public String getPackageName() {
+            return packageName;
+        }
+        
+        public String getPrefix() {
+            return prefix;
+        }
         
         public String getFullQualifiedName() {
             return fullQualifiedName;
@@ -211,7 +231,7 @@ public class MixinList {
 		}
 
         public String toString() {
-            return getInterfaceName();
+            return getMixinListIdentToken();
         }
     }
 }
