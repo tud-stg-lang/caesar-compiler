@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.59 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: Caesar.g,v 1.60 2005-03-10 12:32:54 gasiunas Exp $
  */
 
 /*
@@ -677,9 +677,9 @@ jCMember [ParseClassContext context]
 					context.addDeclare(patternParser.parseDeclare());		
 					
 				} catch(CaesarPatternParser.CaesarParserException e) {
-					reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));			
+					reportTrouble(new PositionedError(sourceRef, CaesarMessages.DECLARE_SYNTAX_ERROR, e.getMessage()));			
 				} catch(RuntimeException e) {
-			  		reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));							
+			  		reportTrouble(new PositionedError(sourceRef, CaesarMessages.DECLARE_SYNTAX_ERROR, e.getMessage()));							
 				}  			
 			}  			
 	  	|  	  	
@@ -2211,9 +2211,9 @@ jCjAdviceDeclaration  [CaesarAdviceKind kind, int modifiers, JFormalParameter[] 
                                        extraParam != null);
 			
 		} catch(CaesarPatternParser.CaesarParserException e) {
-			reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));			
+			reportTrouble(new PositionedError(sourceRef, CaesarMessages.POINTCUT_SYNTAX_ERROR, e.getMessage()));			
 		} catch(RuntimeException e) {
-			reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));							
+			reportTrouble(new PositionedError(sourceRef, CaesarMessages.POINTCUT_SYNTAX_ERROR, e.getMessage()));							
 		}  			
 
 		
@@ -2263,9 +2263,9 @@ jPointcut []
 														new CaesarSourceContext(sourceRef) );
 				self = patternParser.parsePointcut();
 			} catch(CaesarPatternParser.CaesarParserException e) {
-				reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));			
+				reportTrouble(new PositionedError(sourceRef, CaesarMessages.POINTCUT_SYNTAX_ERROR, e.getMessage()));			
 			} catch(RuntimeException e) {
-			  	reportTrouble(new PositionedError(sourceRef, CaesarMessages.WEAVER_ERROR, e.getMessage()));							
+			  	reportTrouble(new PositionedError(sourceRef, CaesarMessages.POINTCUT_SYNTAX_ERROR, e.getMessage()));							
 			}  			
 			
 			

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.29 2005-03-10 10:42:58 gasiunas Exp $
+ * $Id: CaesarMessages.msg,v 1.30 2005-03-10 12:32:54 gasiunas Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -144,3 +144,10 @@ error   CANNOT_FIND_ENCLOSING_CCLASS
 		
 error	MIXER_ERROR
 		"Failed to generate mixin list for class \"{0}\": {1}."
+		
+error	POINTCUT_SYNTAX_ERROR
+		"Syntax error in pointcut: {0}"
+
+error	DECLARE_SYNTAX_ERROR
+		"Syntax error in declaration: {0}"
+		
