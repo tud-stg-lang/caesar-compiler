@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CBinaryClass.java,v 1.2 2004-04-14 11:49:13 klose Exp $
+ * $Id: CBinaryClass.java,v 1.3 2004-06-04 10:57:12 klose Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -27,6 +27,7 @@ import org.caesarj.classfile.Attribute;
 import org.caesarj.classfile.ClassInfo;
 import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.classfile.ExtraModifiersAttribute;
+import org.caesarj.classfile.AdditionalTypeInformationAttribute;
 import org.caesarj.classfile.FieldInfo;
 import org.caesarj.classfile.GenericAttribute;
 import org.caesarj.classfile.InnerClassInfo;
@@ -38,6 +39,7 @@ import org.caesarj.compiler.types.CTypeVariable;
 import org.caesarj.compiler.types.SignatureParser;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.UnpositionedError;
+import org.eclipse.jdt.internal.core.builder.AdditionalTypeCollection;
 
 /**
  * This class represents the exported members of a binary class, i.e.
@@ -118,6 +120,12 @@ public class CBinaryClass extends CClass {
 				ExtraModifiersAttribute ema = ((ExtraModifiersAttribute)ga);
 				int extraModifiers = ema.getExtraModifiers();
 				setModifiers(getModifiers()|extraModifiers);
+			}
+			// restore implicit and generated flag
+			else if (name.equals(AdditionalTypeInformationAttribute.AttributeName)){
+				AdditionalTypeInformationAttribute ati = ((AdditionalTypeInformationAttribute)ga);
+				setImplicit( ati.isImplicit() );
+				setGenerated( ati.isGenerated() );
 			}
 		}
 	}

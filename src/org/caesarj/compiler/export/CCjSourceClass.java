@@ -11,6 +11,8 @@ import org.caesarj.classfile.AttributedClassInfo;
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.ClassInfo;
 import org.caesarj.classfile.ConstantPoolOverflowException;
+import org.caesarj.classfile.ExtraModifiersAttribute;
+import org.caesarj.classfile.AdditionalTypeInformationAttribute;
 import org.caesarj.classfile.InstructionOverflowException;
 import org.caesarj.classfile.LocalVariableOverflowException;
 import org.caesarj.compiler.aspectj.AttributeAdapter;
@@ -35,7 +37,7 @@ import org.caesarj.util.Utils;
 // FJKEEP
 public class CCjSourceClass extends CSourceClass
 {
-
+	
 	protected CaesarPointcut perClause;
 	protected CaesarDeclare[] declares = new CaesarDeclare[0];
 
@@ -447,6 +449,15 @@ public class CCjSourceClass extends CSourceClass
     {
         List attributeList = new ArrayList();
 
+		// Write extra modifiers to attribute
+		int extraModifiers = getModifiers() & ExtraModifiersAttribute.EXTRA_MOD_MASK;
+		if ( extraModifiers != 0 ){
+			attributeList.add(new ExtraModifiersAttribute(extraModifiers));
+		}
+        
+        // store implicit and generated flag
+        attributeList.add( new AdditionalTypeInformationAttribute(implicitClass,generatedClass));
+        
         if (perClause != null)
         {
             attributeList.add( AttributeAdapter.createAspect(perClause) );
