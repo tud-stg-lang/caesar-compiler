@@ -120,7 +120,18 @@ public class CjInterfaceDeclaration
 		CClass owner,
 		String prefix
     ) {
-	    sourceClass = new CCjSourceClass(owner, getTokenReference(), modifiers, ident, prefix + ident, typeVariables, isDeprecated(), false, this); 
+	    sourceClass = 
+            new CCjSourceClass(
+                owner, 
+                getTokenReference(), 
+                modifiers, 
+                ident, 
+                prefix + ident, 
+                typeVariables, 
+                isDeprecated(), 
+                false, 
+                this
+            ); 
 	    setInterface(sourceClass);		   
 	}
     
@@ -154,7 +165,9 @@ public class CjInterfaceDeclaration
 			//Jurgen's
 			| ACC_PRIVILEGED 
 			| ACC_CROSSCUTTING 
-			| ACC_DEPLOYED;
+			| ACC_DEPLOYED
+            // Ivica's
+            | ACC_CCLASS_INTERFACE;
 	}	
 	
 	public void print()

@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: ClassfileConstants2.java,v 1.5 2004-03-17 14:45:53 aracic Exp $
+ * $Id: ClassfileConstants2.java,v 1.6 2004-04-21 14:21:09 aracic Exp $
  */
 
 package org.caesarj.classfile;
@@ -81,6 +81,7 @@ public interface ClassfileConstants2 {
   int		ACC_PRIVILEGED = 0x00008000;
   int		ACC_CROSSCUTTING = 0x00010000;
   int		ACC_DEPLOYED = 0x00020000;
+  int       ACC_CCLASS_INTERFACE = 0x04000000; // IVICA
 
   int		ACC_SUPER = 0x0020;
 

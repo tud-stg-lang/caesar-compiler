@@ -119,7 +119,7 @@ public class CClassFactory implements CaesarConstants {
 		CjInterfaceDeclaration cclassInterface =
 			new CjInterfaceDeclaration(
 				caesarClass.getTokenReference(),
-				ACC_PUBLIC,
+				ACC_PUBLIC | ACC_CCLASS_INTERFACE,
 				interfaceName,
 				CTypeVariable.EMPTY,
 				superInterfaces,
@@ -197,6 +197,8 @@ public class CClassFactory implements CaesarConstants {
         }
 	}
 
+    // this one will make problems!
+    // fullQualifiedName of (e.g.) generated.G$E will be generated/G/E 
     private String mapToImplClassName(String fullQualifiedName) {
         StringBuffer res = new StringBuffer();
         StringTokenizer tok = new StringTokenizer(fullQualifiedName, "/");
