@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjAccessorCallExpression.java,v 1.3 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CjAccessorCallExpression.java,v 1.4 2005-01-27 15:18:13 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -28,13 +28,14 @@ package org.caesarj.compiler.ast.phylum.expression;
 import org.caesarj.util.TokenReference;
 
 /**
- * handles read only field access to public caesar fields
+ * handles access to public caesar fields
  * 
  * @author Ivica Aracic
  */
 public class CjAccessorCallExpression extends JMethodCallExpression {
    
     private String fieldIdent;
+    private boolean setter = false;
     
     public CjAccessorCallExpression(
         TokenReference where,
@@ -45,7 +46,26 @@ public class CjAccessorCallExpression extends JMethodCallExpression {
         fieldIdent = ident;
     }
     
+    public CjAccessorCallExpression(
+        TokenReference where,
+        JExpression prefix,
+        JExpression argument,
+        String ident
+    ) {
+        super(where, prefix, "set_"+ident, new JExpression[]{argument});
+        fieldIdent = ident;
+        setter = true;
+    }
+    
+    public boolean isSetter() {
+        return setter;
+    }
+    
     public String getFieldIdent() {
         return fieldIdent;
+    }
+
+    public void setArgument(JExpression arg) {
+        args = new JExpression[]{arg};
     }
 }
