@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.asm.StructureModelManager;
-import org.caesarj.compiler.asm.AsmBuilder;
-import org.caesarj.compiler.asm.StructureModelDump;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
@@ -151,19 +149,23 @@ public class Main extends MainSuper implements Constants {
          
         genMixinCopies(environment);
         if(errorFound) return false;
-
+               
         
+        /*
         AsmBuilder builder = new AsmBuilder(CaesarBcelWorld.getInstance().getWorld().getModel());
         for (int i = 0; i < tree.length; i++) {
             tree[i].accept(builder);
         }
-        
+                
         {
         StructureModelDump dump = new StructureModelDump(System.out);
         System.out.println("== model before weaving ==============");
         dump.print("", CaesarBcelWorld.getInstance().getWorld().getModel().getRoot());
         System.out.println("======================================");
     	}
+    	*/
+        
+        preWeaveProcessing(tree);
         
         tree = null;
         
@@ -175,17 +177,23 @@ public class Main extends MainSuper implements Constants {
                
         CodeSequence.endSession();
         
+        /*
         {
         StructureModelDump dump = new StructureModelDump(System.out);
         System.out.println("== model after weaving ===============");
         dump.print("", CaesarBcelWorld.getInstance().getWorld().getModel().getRoot());
         System.out.println("======================================");
         }
+        */
 
         
         return true;
     }
 
+
+    protected void preWeaveProcessing(JCompilationUnit[] cu) {
+        // redefine in subclass
+    }
 
     // generates factory methods and wrappee recycling    
     private void generateSupportMembers(KjcEnvironment environment) {
