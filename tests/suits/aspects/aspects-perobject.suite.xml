@@ -27,7 +27,7 @@
 		abstract public cclass PerThisDeployer extends PerObjectDeployer {
   		    abstract pointcut filter();
 		    	
-		    after(Object o) : execution(* *.*(..)) &amp;&amp; filter() &amp;&amp; this(o) {
+		    before(Object o) : execution(* *.*(..)) &amp;&amp; filter() &amp;&amp; this(o) {
 		    	_key = o;
 		   }    
 		}
@@ -40,9 +40,10 @@
 			Model m2 = new Model();
 			View v = new View();
 			PerModelDeployer_Impl.aspect().deployAspect(v, m2);
-			m1.setA(3);
 			m2.setA(2);
-			assertEquals(res.toString(), ":model-2-changed");
+			m1.setA(3);			
+			m2.setA(4);
+			assertEquals(":model-0:model-2:model-2:model-4", res.toString());
 		</test>
         <code>
         	import org.caesarj.runtime.aspects.AspectIfc;
@@ -65,8 +66,11 @@
 				pointcut filter() : this(Model);
 			}
 			public cclass View {
+				before(Model m): execution(* Model.set*(..)) &amp;&amp; this(m) {
+					Test.res.append(m.toString());
+				}
 				after(Model m): execution(* Model.set*(..)) &amp;&amp; this(m) {
-					Test.res.append(m.toString() + "-changed");
+					Test.res.append(m.toString());
 				}
 			}
         </code>
