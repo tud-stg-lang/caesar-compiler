@@ -1,7 +1,7 @@
 package org.caesarj.runtime;
 
 /**
- * The key used for identify wrapper which are not explicitily defined.
+ * The key used for identify wrappers which are not explicitily defined.
  * 
  * @author Walter Augusto Werner
  */
