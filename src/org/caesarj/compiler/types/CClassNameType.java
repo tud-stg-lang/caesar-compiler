@@ -15,15 +15,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CClassNameType.java,v 1.8 2004-11-19 13:04:05 aracic Exp $
+ * $Id: CClassNameType.java,v 1.9 2004-11-19 15:59:38 klose Exp $
  */
 
 package org.caesarj.compiler.types;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.declaration.CClassBodyContext;
+import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JFieldAccessExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
@@ -181,7 +184,7 @@ public class CClassNameType extends CReferenceType
                 
                 CExpressionContext ctx = null;
                                 
-                if(ctx instanceof CExpressionContext) {
+                if(context instanceof CExpressionContext) {
                     ctx = (CExpressionContext)ctx;
                 }
                 else if(context instanceof CBodyContext) {
@@ -201,11 +204,28 @@ public class CClassNameType extends CReferenceType
 	                    expr.getType(context.getTypeFactory()).getCClass().getQualifiedName()+"$"+pathSegs[pathSegs.length-1]
 	                );
 	                
+	                // strip occurences of CClassBodyContext from 
+	                JPhylum[] pos = makePos(context);
+	                Vector v = new Vector();
+	                
+	                for (int i = 0; i < pos.length; i++) {
+                        if (pos[i] instanceof JMethodDeclaration){
+                            JMethodDeclaration md = (JMethodDeclaration)pos[i];
+                            if (md.getIdent().equals(CClassBodyContext.METHOD_NAME)){
+                                continue;
+                            }
+                        }
+                        v.add(pos[i]);
+                    }
+	                
+	                pos = (JPhylum[]) v.toArray(new JPhylum[0]);
+	                
 	                return 
-	                	new CDependentType(makePos(context), expr, clazz.getAbstractType());
+	                	new CDependentType(pos, expr, clazz.getAbstractType());
                 }
             }
             catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("not dependent type");
             }            
 	    }

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: JTypeDeclaration.java,v 1.28 2004-11-19 13:03:49 aracic Exp $
+ * $Id: JTypeDeclaration.java,v 1.29 2004-11-19 15:59:14 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -27,6 +27,9 @@ import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
+import org.caesarj.compiler.ast.phylum.statement.JBlock;
+import org.caesarj.compiler.ast.phylum.statement.JStatement;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.KjcMessages;
@@ -42,6 +45,7 @@ import org.caesarj.compiler.export.CSourceField;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
+import org.caesarj.compiler.types.CVoidType;
 import org.caesarj.util.CWarning;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
@@ -511,46 +515,70 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         
         
         // IVICA: check the dependent types
-        
+        //**********************************************************************
         boolean refresh = false;
         
+        boolean remaining = false;
+        
         for (int i = 0; i < fields.length; i++) {
+           
+
             CType t = fields[i].getType(context.getTypeFactory());
             if(t instanceof CClassNameType) {
                 // this one couldn't be resolved in checkInterface pass
                 
+                               
                 refresh = true;
                 
+                
                 try {
-                    JMethodDeclaration m = null;
-                    for (int j = methods.length-1; j >= 0; j--) {
-                        if(methods[j].getIdent().equals("Block$"))
-                            m = methods[i];
-                    }
-                    
-                    if(m == null) {
-                        throw new InconsistencyException();
-                    }
+//                    JMethodDeclaration m = null;
+//                    for (int j = methods.length-1; j >= 0; j--) {
+//                        if(methods[j].getIdent().equals("Block$"))
+//                            m = methods[i];
+//                    }
+//                    
+//                    if(m == null) {
+//                       m=	new JMethodDeclaration(
+//                    	        new TokenReference("",0),
+//                    	        0,
+//                    	        new CVoidType(),
+//                    	        "$BLOCK",
+//                    	        new JFormalParameter[0],
+//                    	        new CReferenceType[0],
+//                    	        new JBlock(null, new JStatement[0],null),
+//                    	        new JavadocComment("",false,false),
+//                    	        new JavaStyleComment[0] ); 
+//
+//                       m.
+//                    	 throw new InconsistencyException();
+//                    }
                     
                     CBlockContext ctx = new CBlockContext(
-                        new CMethodContext(
-                            self, 
-                            context.getEnvironment(),
-                            m
-                        ),
+                            new CClassBodyContext(self,context.getEnvironment()),
+                            //                        new CMethodContext(
+//                            self, 
+//                            context.getEnvironment(),
+//                            m
+//                        ),
                         context.getEnvironment(),
                         0
                     );
                     
                     t = t.checkType(ctx);
                     
+                    System.out.println("Dependent type: "+t.toString());
+                    
                     fields[i].getField().setType(t);
                 }
                 catch (UnpositionedError e) {
                     throw e.addPosition(fields[i].getTokenReference());
                 }
+            
             }
-        }        
+        }
+        //**********************************************************************
+        
     }
 
     // ----------------------------------------------------------------------
