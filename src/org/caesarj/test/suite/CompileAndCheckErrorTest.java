@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CompileAndCheckErrorTest.java,v 1.1 2005-02-24 17:16:53 aracic Exp $
+ * $Id: CompileAndCheckErrorTest.java,v 1.2 2005-02-25 13:43:29 aracic Exp $
  */
 
 package org.caesarj.test.suite;
@@ -30,9 +30,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.caesarj.compiler.ast.CLineError;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
+import org.caesarj.util.CWarning;
 import org.caesarj.util.MessageDescription;
 import org.caesarj.util.PositionedError;
 
@@ -81,16 +81,22 @@ public class CompileAndCheckErrorTest extends CompileTest {
         List errors = new LinkedList();
         for (Iterator iter = positionedErrorList.iterator(); iter.hasNext();) {
             Object o = iter.next();
-            if (o instanceof CLineError){
+            // ignore warnings which are a subtype of PositionedError
+            if (!(o instanceof CWarning)) {
                 errors.add(o);
             }
         }
         PositionedError[] found = (PositionedError[]) errors.toArray( new PositionedError[0] );
         
-        assertTrue("No errors found.", found.length > 0);
-        assertTrue("Less/more errors than expected.", expected.length == found.length);
-        for (int i = 0; i < found.length; i++) {            
-            assertTrue("Unexpected error occured.", expected[i] == found[i].getFormattedMessage().getDescription() ); 
+        if(found.length == 0)
+            fail("No errors found : "+getId()+" : "+getDescription());
+        
+        if(expected.length != found.length)
+            fail("More ("+errors.size()+") errors found than expected: "+getId()+" : "+getDescription());
+        
+        for (int i = 0; i < found.length; i++) {
+            if(!(expected[i] == found[i].getFormattedMessage().getDescription()))
+                fail("Unexpected error occured : "+found[i].getMessage()+" : "+getId()+" : "+getDescription()); 
         }
     }
 }
