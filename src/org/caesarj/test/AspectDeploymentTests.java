@@ -73,4 +73,8 @@ public class AspectDeploymentTests extends FjTestCase
 	public void testCaesarTestCase_17() throws Throwable {
 		compileAndRun("test117", "ADTestCase");
 	}
+	
+	public void testCaesarTestCase_18() throws Throwable {
+		compileAndRun("test118", "ADTestCase");
+	}
 }
