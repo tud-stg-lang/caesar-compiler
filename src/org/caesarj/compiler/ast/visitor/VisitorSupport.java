@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: VisitorSupport.java,v 1.3 2005-01-24 16:53:02 aracic Exp $
+ * $Id: VisitorSupport.java,v 1.4 2005-04-11 09:00:45 thiago Exp $
  */
 
 package org.caesarj.compiler.ast.visitor;
@@ -38,19 +38,34 @@ import org.caesarj.util.InconsistencyException;
  */
 public class VisitorSupport implements IVisitor {
 
+    /**
+     * 
+     * Represents an entry on the stack, to keep track of visitations
+     */
     private static class StackEntry {
         JPhylum astNode = null;
         Method visitMethod = null;
         Method endVisitMethod = null;
     }  
 
-    Stack s = new Stack();
-    Object visitorObject;    
     
+    private Stack/*StackEntry*/ s = new Stack();
+    private Object visitorObject;    
+    
+    /**
+     * Constructs a new VisitorSupport that Adapts this visitorObject
+     * 
+     * @param visitorObj a visitor object being adapted
+     */
     public VisitorSupport(Object visitorObj) {
         this.visitorObject = visitorObj;
     }
     
+    /**
+     * 
+     * @param node
+     * @return
+     */
     private StackEntry selectNode(JPhylum node) {
         StackEntry e = new StackEntry();
         
@@ -82,6 +97,10 @@ public class VisitorSupport implements IVisitor {
         return e;
     }
 
+    /**
+     * Implementation for the IVisitor Interface
+     * 
+     */
     public boolean start(JPhylum node) {        
         if(node == null)
             throw new InconsistencyException("can not visit null node");
@@ -107,6 +126,9 @@ public class VisitorSupport implements IVisitor {
         return false;
     }
 
+    /**
+     * Implementation for the IVisitor Interface
+     */
     public void end() {
         StackEntry e = (StackEntry)s.pop();
         

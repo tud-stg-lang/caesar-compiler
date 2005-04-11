@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.96 2005-04-06 11:59:35 gasiunas Exp $
+ * $Id: Main.java,v 1.97 2005-04-11 09:00:45 thiago Exp $
  */
 
 package org.caesarj.compiler;
@@ -34,6 +34,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.aspectj.asm.IHierarchy;
+import org.caesarj.compiler.asm.CaesarAsmBuilder;
+import org.caesarj.compiler.asm.StructureModelDump;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
@@ -72,7 +75,7 @@ public class Main extends MainSuper implements Constants {
     private CaesarMessageHandler messageHandler;
     private Set errorMessages;
 
-    // The used weaver. An instance ist created when it's needed in generateAndWeaveCode
+    // The used weaver. An instance is created when it's needed in generateAndWeaveCode
     private CaesarWeaver weaver;
 
 	/**
@@ -80,9 +83,11 @@ public class Main extends MainSuper implements Constants {
      * In the end of the compilation, it represents the structure of the program and can
      * be used, for example, by the Eclipse Plug-in, in order to get information and 
      * display for the user.
+     * Since caesarj started using the version 1.2.1 of the aspectj weaver the type of the
+     * structure model changed to IHierarchy
      */
-    //protected StructureModel model;
-
+    protected IHierarchy model;
+    
     protected static boolean buildAsm = false;
     protected static boolean printAsm = false;
     
@@ -117,19 +122,16 @@ public class Main extends MainSuper implements Constants {
      * Overriden in order to introduce some additional passes in the
      * compiler control flow.
      */
-    public boolean run(String[] args) {   
-        /*
-	    // Make sure we have an instance of the structure model
-    	if (model == null) {
-    		model = new StructureModel();
-    	}
+    public boolean run(String[] args) {
     
+    	// If we should build the asm, create a new model and start the build
     	if(Main.buildAsm){
-    		// starting to build CaesarAsm........
-    		CaesarAsmBuilder.preBuild(model);
-    		//System.out.println("after preBuid");
+    	    // Make sure we have an instance of the structure model
+        	if (model == null) {
+        		model = CaesarAsmBuilder.createHierarchy();
+        	}
+    		CaesarAsmBuilder.preBuild(model);	
     	}
-    	*/
         
     	errorFound = false;
 
@@ -279,7 +281,7 @@ public class Main extends MainSuper implements Constants {
             weaveGeneratedCode(environment.getTypeFactory());               
                
         CodeSequence.endSession();
-        /*
+        
         // CJ Aspect: structure model postprocessing
         if(Main.buildAsm){
         	CaesarAsmBuilder.postBuild(model);
@@ -290,7 +292,7 @@ public class Main extends MainSuper implements Constants {
                 System.out.println("======================================");
         	}
         }
-        */
+
         Log.verbose("compilation ended");
         
         return true;
@@ -316,9 +318,9 @@ public class Main extends MainSuper implements Constants {
 	        	// note: AsmBuilder.build() starts the Visitor-part of AsmBuilder
 	        	// iterating over the compilationunits and adding appropriate Nodes to 
 	        	// the StructureModel.
-	        	//System.out.println("before AsmBuilder.build");
-	        	//CaesarAsmBuilder.build(cu[i], model);
-	        	//System.out.println("after AsmBuilder.build");
+	        	System.out.println("before AsmBuilder.build");
+	        	CaesarAsmBuilder.build(cu[i], model);
+	        	System.out.println("after AsmBuilder.build");
 	        }
 		}
     }
@@ -776,16 +778,14 @@ public class Main extends MainSuper implements Constants {
         CaesarBcelWorld world = CaesarBcelWorld.getInstance();
         world.setMessageHandler(messageHandler);
         
-        /*
         // TODO make this optional, as command line argument
         CaesarBcelWorld.getInstance().getWorld().setModel(model);
-        
+        /*
         model.setRoot(
             new ProgramElementNode(
                 "<root>", 
                 ProgramElementNode.Kind.FILE_JAVA, 
                 new LinkedList())
-        );
-        */
+        );*/
     }
 }
