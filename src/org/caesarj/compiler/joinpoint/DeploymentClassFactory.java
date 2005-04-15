@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.45 2005-03-31 11:58:18 gasiunas Exp $
+ * $Id: DeploymentClassFactory.java,v 1.46 2005-04-15 12:42:09 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -282,9 +282,9 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 *  Clean crosscutting information from original classes 
 	 */
 	public void cleanCrosscuttingInfo() {
-		aspectClass.setAdvices(new CjAdviceDeclaration[0]);
+		aspectClass.deactivateAdvices();
+		aspectClass.deactivatePointcuts();
 		aspectClass.setDeclares(null);
-		aspectClass.setPointcuts(new CjPointcutDeclaration[0]);
 	}
 
 	/**

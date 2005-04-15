@@ -20,10 +20,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjAdviceDeclaration.java,v 1.11 2005-04-04 09:46:19 gasiunas Exp $
+ * $Id: CjAdviceDeclaration.java,v 1.12 2005-04-15 12:42:09 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.caesarj.compiler.aspectj.CaesarAdviceKind;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
@@ -76,6 +80,15 @@ public class CjAdviceDeclaration
     /** Relative orderNr of the advice, used to determine its precedence */
     private int orderNr = 0;
     
+    /** Advice copies (needed for crosscutting view) */
+    private List adviceCopies = new LinkedList(); /* List<CjAdviceDeclaration> */
+    
+    /** is this originally declared advice */
+    private boolean declared;
+    
+    /** it the advice activated for weaving */
+    private boolean active;
+    
     public CjAdviceDeclaration(
         TokenReference where,
         int modifiers,
@@ -102,7 +115,7 @@ public class CjAdviceDeclaration
         this.pointcut = pointcut;
         this.kind = kind;
         this.orderNr = where.getLine();
-
+        
         if (kind == CaesarAdviceKind.Around) {
             addAroundClosureParameter();
         }
@@ -110,6 +123,9 @@ public class CjAdviceDeclaration
         if (hasExtraParameter) {
             extraArgumentFlags |= CaesarConstants.ExtraArgument;
         }
+        
+        this.declared = true;
+        this.active = true;
     }
     
     /**
@@ -131,6 +147,9 @@ public class CjAdviceDeclaration
         this.proceedParameters = decl.proceedParameters;
         this.adviceMethodIdent = decl.adviceMethodIdent;
         this.orderNr = decl.orderNr;
+        decl.addAdviceCopy(this);
+        this.declared = false;
+        this.active = true;
     }
 
     /**
@@ -294,5 +313,25 @@ public class CjAdviceDeclaration
     
     public void setOrderNr(int orderNr) {
     	this.orderNr = orderNr;
+    }
+    
+    public Iterator getAdviceCopies(int orderNr) {
+    	return adviceCopies.iterator();
+    }
+    
+    public void addAdviceCopy(CjAdviceDeclaration copy) {
+    	adviceCopies.add(copy);
+    }
+    
+    public boolean isActive() {
+    	return active;
+    }
+    
+    public boolean isDeclared() {
+    	return declared;
+    }
+    
+    public void deactivate() {
+    	active = false;
     }
 }

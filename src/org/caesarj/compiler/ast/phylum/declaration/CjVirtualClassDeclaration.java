@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjVirtualClassDeclaration.java,v 1.25 2005-03-29 09:46:04 gasiunas Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.26 2005-04-15 12:42:09 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -38,6 +38,7 @@ import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
+import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CCompilationUnitContext;
@@ -588,6 +589,58 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     public CjClassDeclaration getRegistryClass()  {
         return registryCls;
     }
+    
+    /** Return children for visitor traversal */
+    public void recurse(IVisitor p) {
+        super.recurse(p);
+        
+        // iterate over original advices
+        for (int i1 = 0; i1 < origAdvices.length; i1++) {
+			origAdvices[i1].accept(p);
+        }
+		
+        // iterate over original pointcuts
+		for (int i1 = 0; i1 < origPointcuts.length; i1++) {
+			origPointcuts[i1].accept(p);
+        }
+    }
+    
+    /**
+     * Delete pointcuts from the class, but make their backup,
+     * because it it is needed to build crosscutting view
+     */
+    public void deactivatePointcuts() {
+    	origPointcuts = pointcuts;
+    	pointcuts = new CjPointcutDeclaration[0];    	    	
+    }
+    
+    /**
+     * Delete advices from the class, but make their backup,
+     * because it it is needed to build crosscutting view
+     */
+    public void deactivateAdvices() {
+    	origAdvices = advices;
+    	for (int i1 = 0; i1 < origAdvices.length; i1++) {
+    		origAdvices[i1].deactivate();
+    	}
+    	advices = new CjAdviceDeclaration[0];    	    	
+    }
+
+    /**
+     * Get original advices as they were declared
+     * in the source code
+     */
+    public CjAdviceDeclaration[] getOriginalAdvices() {
+    	return origAdvices;
+    }
+    
+    /**
+     * Get original pointcuts as they were declared
+     * in the source code
+     */
+    public CjPointcutDeclaration[] getOriginalPointcuts() {
+    	return origPointcuts;
+    }
         
     private CjMixinInterfaceDeclaration mixinIfcDecl = null;
     
@@ -597,5 +650,10 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     private CjInterfaceDeclaration aspectIfc = null;
 	
 	private CjClassDeclaration registryCls = null;
-
+	
+	/** The originally declared advices */
+    protected CjAdviceDeclaration[] origAdvices = new CjAdviceDeclaration[0];
+    
+    /** The originally declared pointcuts */
+    protected CjPointcutDeclaration[] origPointcuts = new CjPointcutDeclaration[0];
 }
