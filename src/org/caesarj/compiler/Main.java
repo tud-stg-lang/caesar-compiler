@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.97 2005-04-11 09:00:45 thiago Exp $
+ * $Id: Main.java,v 1.98 2005-04-15 10:23:13 thiago Exp $
  */
 
 package org.caesarj.compiler;
@@ -34,8 +34,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.aspectj.asm.IHierarchy;
 import org.caesarj.compiler.asm.CaesarAsmBuilder;
+import org.caesarj.compiler.asm.CaesarJAsmManager;
 import org.caesarj.compiler.asm.StructureModelDump;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
@@ -84,9 +84,10 @@ public class Main extends MainSuper implements Constants {
      * be used, for example, by the Eclipse Plug-in, in order to get information and 
      * display for the user.
      * Since caesarj started using the version 1.2.1 of the aspectj weaver the type of the
-     * structure model changed to IHierarchy
+     * structure model changed to IHierarchy and IRelationshipMap, which are encapsulated
+     * by CaesarJAsmManager
      */
-    protected IHierarchy model;
+    protected CaesarJAsmManager asmManager;
     
     protected static boolean buildAsm = false;
     protected static boolean printAsm = false;
@@ -123,15 +124,6 @@ public class Main extends MainSuper implements Constants {
      * compiler control flow.
      */
     public boolean run(String[] args) {
-    
-    	// If we should build the asm, create a new model and start the build
-    	if(Main.buildAsm){
-    	    // Make sure we have an instance of the structure model
-        	if (model == null) {
-        		model = CaesarAsmBuilder.createHierarchy();
-        	}
-    		CaesarAsmBuilder.preBuild(model);	
-    	}
         
     	errorFound = false;
 
@@ -163,6 +155,14 @@ public class Main extends MainSuper implements Constants {
             return false;
         }
 
+    	// CJ Aspect: prepare the structure model.
+    	if(Main.buildAsm){
+    	    // Make sure we have an instance of the Asm Manager
+        	if (asmManager == null) {
+        	    asmManager = new CaesarJAsmManager();
+        	}
+    		CaesarAsmBuilder.preBuild(asmManager);
+    	}
 
         // KOPI step - parsing
         JCompilationUnit[] tree = parseFiles(environment);    
@@ -284,11 +284,11 @@ public class Main extends MainSuper implements Constants {
         
         // CJ Aspect: structure model postprocessing
         if(Main.buildAsm){
-        	CaesarAsmBuilder.postBuild(model);
+        	CaesarAsmBuilder.postBuild(asmManager);
         	if(Main.printAsm){
         		StructureModelDump dump = new StructureModelDump(System.out);
                 System.out.println("== model after weaving ===============");
-                dump.print("", model.getRoot());
+                dump.print(asmManager);
                 System.out.println("======================================");
         	}
         }
@@ -311,6 +311,7 @@ public class Main extends MainSuper implements Constants {
         }
     }
 
+    
     protected void preWeaveProcessing(JCompilationUnit[] cu) {
         // redefine in subclass
     	if(Main.buildAsm){
@@ -319,7 +320,7 @@ public class Main extends MainSuper implements Constants {
 	        	// iterating over the compilationunits and adding appropriate Nodes to 
 	        	// the StructureModel.
 	        	System.out.println("before AsmBuilder.build");
-	        	CaesarAsmBuilder.build(cu[i], model);
+	        	CaesarAsmBuilder.build(cu[i], asmManager);
 	        	System.out.println("after AsmBuilder.build");
 	        }
 		}
@@ -726,9 +727,12 @@ public class Main extends MainSuper implements Constants {
      */
     protected void weaveClasses() {
     	/* Reset the world for the weaver, so that it does not see source files */
-    	CaesarBcelWorld.createInstance();
-        CaesarBcelWorld bcelWorld = CaesarBcelWorld.getInstance();
-
+        CaesarBcelWorld bcelWorld = CaesarBcelWorld.createInstance();
+    	// Make sure the weaver is using a model
+        if (asmManager != null) {
+            bcelWorld.getWorld().setModel(asmManager.getHierarchy());
+        }
+        
         //tells the weaver whether it should inline the around advices in the calling code,
         //leads to better performance
         bcelWorld.setXnoInline(true);
@@ -773,19 +777,7 @@ public class Main extends MainSuper implements Constants {
         messageHandler = new CaesarMessageHandler(this);
         
         // create static instance of bcel world
-        CaesarBcelWorld.createInstance(options.classpath);
-        
-        CaesarBcelWorld world = CaesarBcelWorld.getInstance();
+        CaesarBcelWorld world = CaesarBcelWorld.createInstance(options.classpath);
         world.setMessageHandler(messageHandler);
-        
-        // TODO make this optional, as command line argument
-        CaesarBcelWorld.getInstance().getWorld().setModel(model);
-        /*
-        model.setRoot(
-            new ProgramElementNode(
-                "<root>", 
-                ProgramElementNode.Kind.FILE_JAVA, 
-                new LinkedList())
-        );*/
     }
 }

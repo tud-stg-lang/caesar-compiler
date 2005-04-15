@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: StructureModelDump.java,v 1.5 2005-04-11 09:00:45 thiago Exp $
+ * $Id: StructureModelDump.java,v 1.6 2005-04-15 10:23:13 thiago Exp $
  */
 
 package org.caesarj.compiler.asm;
@@ -28,8 +28,12 @@ package org.caesarj.compiler.asm;
 import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
+import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 
@@ -48,7 +52,12 @@ public class StructureModelDump {
 		this.out = outArg;
 	}
 
-	public void print(String indentArg, IProgramElement node) {
+	public void print(CaesarJAsmManager asmManager) {
+	    print("", asmManager.getHierarchy().getRoot());
+	    printRelationshipMap(asmManager);
+	}
+	
+	protected void print(String indentArg, IProgramElement node) {
 		this.out.print(indentArg);
 
 		printNodeHeader(this.out, node);
@@ -92,6 +101,28 @@ public class StructureModelDump {
 		if (srcLoc != null) {
 			outArg.print("(L " + srcLoc.getLine() + ") "); 
 		}
+	}
+	
+	protected void printRelationshipMap(CaesarJAsmManager asmManager) {
+	    System.out.println("Dumping Relationship Map");
+        IHierarchy hierarchy = asmManager.getHierarchy();
+        IRelationshipMap map = asmManager.getRelationshipMap();
+		Set entries = map.getEntries();
+	    Iterator i = entries.iterator();
+	    while(i.hasNext()) {
+	        List relationships = map.get((String) i.next());
+	        Iterator j = relationships.iterator();
+	        while(j.hasNext()) {
+	            IRelationship relationship = (IRelationship) j.next();
+	            System.out.println("Relationship '" + relationship.getName() + "' of kind '" + relationship.getKind() + "' has " + relationship.getTargets().size() + " target(s) ");
+	            System.out.println("   source handle -->" + relationship.getSourceHandle());
+	            Iterator k = relationship.getTargets().iterator();
+	            while(k.hasNext()) {
+	                IProgramElement element = hierarchy.findElementForHandle((String) k.next());
+	                System.out.println("  -> '" + element.getName() + "' of kind '" + element.getKind() + "' with handle " + element.getHandleIdentifier());
+	            }
+	        }
+	    }
 	}
 
 }

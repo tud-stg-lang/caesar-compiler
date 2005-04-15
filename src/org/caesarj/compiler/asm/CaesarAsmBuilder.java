@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarAsmBuilder.java,v 1.5 2005-04-11 09:00:45 thiago Exp $
+ * $Id: CaesarAsmBuilder.java,v 1.6 2005-04-15 10:23:13 thiago Exp $
  */
 
 package org.caesarj.compiler.asm;
@@ -39,7 +39,12 @@ import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
+import org.aspectj.weaver.patterns.AndPointcut;
+import org.aspectj.weaver.patterns.OrPointcut;
+import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.ReferencePointcut;
 import org.caesarj.classfile.ClassfileConstants2;
+import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.ast.phylum.JClassImport;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.JPackageImport;
@@ -70,62 +75,65 @@ import org.caesarj.util.TokenReference;
 public class CaesarAsmBuilder {
 
 	private static final String REGISTRY_CLASS_NAME = "Registry"; //$NON-NLS-1$
-
-	protected IHierarchy hierarchy = null;
 	
 	protected Stack asmStack = new Stack();
 
 	protected Stack classStack = new Stack();
+	
+	protected CaesarJAsmManager asmManager = null;
 
 	/**
-	 * Creates a new hierarchy object and returns it
+	 * Prepares the asmManager to build.
 	 * 
-	 * @return a newly created IHierarchy object
-	 */
-	public static IHierarchy createHierarchy() {
-	    return new CaesarJElementHierarchy();
-	}
-	
-	/**
-	 *  Initializes the hierarchy, setting its root node and
-	 * creating the filemap.
+	 * This method will initialize the IHierarchy with a root node, reset
+	 * the maps we can and clear the relationship map.
 	 * 
-	 * @param hierarchy The hierarchy to be initialized
+	 * @param asmManager The asmManager to be initialized
 	 */
-	public static void preBuild(IHierarchy hierarchy) {
+	public static void preBuild(CaesarJAsmManager asmManager) {
 	    
 		String rootLabel = "<root>"; //$NON-NLS-1$
 		
+		IHierarchy hierarchy = asmManager.getHierarchy();
+		
 		hierarchy.setRoot(
 		        new ProgramElement(
-		                rootLabel, 
+		                rootLabel.replaceAll("/", "."), 
 		                IProgramElement.Kind.FILE_JAVA,
 		                new ArrayList()));
 		hierarchy.setFileMap(new HashMap());
 		
-    	
-		// TODO - Check why they do it.
-		// AsmManager.getDefault().getRelationshipMap().clear();
+    	asmManager.getRelationshipMap().clear();
 	}
 
 	/**
 	 * resolve advice and method signatures before weaving
 	 */
-	public static void preWeave(IHierarchy hierarchy) {
+	public static void preWeave(CaesarJAsmManager asmManager) {
 
 	}
 
 	/**
-	 * remove support methods and inner classes
+	 * Finalization method for the asmManager.
+	 * 
+	 * After building the structure model, the asmManager has its instances
+	 * attached to AsmManager from AspectJ (because the weaver uses it as singleton).
+	 * Since we want to keep the IHierarchy and IRelationshipMap separated for each
+	 * asmManager, we have to clone them.
+	 * 
+	 * remove support methods and inner classes --> this is an old comment
+	 * 
+	 * @param asmManager the asmManager that will have its instances deattached
 	 */
-	public static void postBuild(IHierarchy hierarchy) {
+	public static void postBuild(CaesarJAsmManager asmManager) {
+	    asmManager.deattach();
 	}
 
 	/**
 	 * insert a single compilation unit to model
 	 */
-	public static void build(JCompilationUnit unit, IHierarchy hierarchy) {
-		new CaesarAsmBuilder().internalBuild(unit, hierarchy);
+	public static void build(JCompilationUnit unit, CaesarJAsmManager asmManager) {
+		new CaesarAsmBuilder().internalBuild(unit, asmManager);
 	}
 
 	/**
@@ -133,18 +141,17 @@ public class CaesarAsmBuilder {
 	 * @param unit
 	 * @param hierarchy
 	 */
-	private void internalBuild(JCompilationUnit unit, IHierarchy hierarchy) {
+	private void internalBuild(JCompilationUnit unit, CaesarJAsmManager asmManager) {
 		if (unit == null)
 			return;
 
-		setHierarchy(hierarchy);
-		this.asmStack.push(hierarchy.getRoot());
+		this.asmManager = asmManager;
+		this.asmStack.push(asmManager.getHierarchy().getRoot());
 
 		VisitorSupport visitor = new VisitorSupport(this);
 		unit.accept(visitor);
 
 		this.asmStack.pop();
-		setHierarchy(null);
 	}
 
 	/**
@@ -155,7 +162,7 @@ public class CaesarAsmBuilder {
 		File file = new File(new String(ref.getFile()));
 		// create node for file
 		CaesarProgramElement node = new CaesarProgramElement(
-				file.getName(), 
+				file.getName().replaceAll("/", "."), 
 		    	CaesarProgramElement.Kind.FILE_JAVA, 
 		    	0, 
 		    	makeLocation(ref),
@@ -168,11 +175,11 @@ public class CaesarAsmBuilder {
 			String packageName = self.getPackageName().getName();
 			
 			CaesarProgramElement fileListNode = null;
-			fileListNode = findChildByName(getHierarchy().getRoot().getChildren(), packageName);
+			fileListNode = findChildByName(asmManager.getHierarchy().getRoot().getChildren(), packageName);
 			if(fileListNode == null){
 				// create new filelist
 				fileListNode = new CaesarProgramElement(
-						packageName,
+						packageName.replaceAll("/", "."),
 						// Have to use PACKAGE as parent type because of ProgramElementNode.getPackagename()
 						// instead of ---> CaesarProgramElementNode.Kind.FILE_LST,
 						CaesarProgramElement.Kind.PACKAGE,
@@ -183,7 +190,7 @@ public class CaesarAsmBuilder {
 						"",
 						"");
 				// add file-list to root node
-				getHierarchy().getRoot().addChild(fileListNode);
+				asmManager.getHierarchy().getRoot().addChild(fileListNode);
 			}
 			// remove all children of filelist node, which have the same source-file
 			Iterator it = fileListNode.getChildren().iterator();
@@ -232,11 +239,11 @@ public class CaesarAsmBuilder {
 			// self.getPackageName() == null
 			
 			// if the node already exists remove before adding
-			Iterator it = getHierarchy().getRoot().getChildren().iterator();
+			Iterator it = asmManager.getHierarchy().getRoot().getChildren().iterator();
 			while(it.hasNext()) {
 				CaesarProgramElement child = (CaesarProgramElement) it.next();
 				if (child.getSourceLocation().getSourceFile().equals(file)) {
-				    ((ProgramElement) getHierarchy().getRoot()).removeChild(child);
+				    ((ProgramElement) asmManager.getHierarchy().getRoot()).removeChild(child);
 				}
 			}
 			getCurrentStructureNode().addChild(node);
@@ -252,7 +259,7 @@ public class CaesarAsmBuilder {
 			pkgName = self.getPackageName().getName().replaceAll("/", ".");
 		}
 		CaesarProgramElement pkgNode = new CaesarProgramElement(
-				pkgName, 
+				pkgName.replaceAll("/", "."), 
 		    	CaesarProgramElement.Kind.PACKAGE, 
 		    	0, 
 		    	makeLocation(self.getPackageName().getTokenReference()),
@@ -276,7 +283,7 @@ public class CaesarAsmBuilder {
 					firstRef = currentPi.getTokenReference();
 				}
 				CaesarProgramElement currentPiNode = new CaesarProgramElement(
-						currentPi.getName(),
+						currentPi.getName().replaceAll("/", "."),
 						CaesarProgramElement.Kind.PACKAGE_IMPORT,
 						0,
 						makeLocation(currentPi.getTokenReference()),
@@ -294,7 +301,7 @@ public class CaesarAsmBuilder {
 					firstRef = currentCi.getTokenReference();
 				}
 				CaesarProgramElement currentCiNode = new CaesarProgramElement(
-						currentCi.getQualifiedName(),
+						currentCi.getQualifiedName().replaceAll("/", "."),
 						CaesarProgramElement.Kind.CLASS_IMPORT,
 						0,
 						makeLocation(currentCi.getTokenReference()),
@@ -320,7 +327,7 @@ public class CaesarAsmBuilder {
 		}
 
 		try {
-		    getHierarchy().addToFileMap(file.getCanonicalPath(), node);
+		    asmManager.getHierarchy().addToFileMap(file.getCanonicalPath(), node);
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
@@ -350,7 +357,7 @@ public class CaesarAsmBuilder {
 		this.classStack.push(self);
 		*/
 		CaesarProgramElement node = new CaesarProgramElement(
-				self.getIdent(), 
+				self.getIdent().replaceAll("/", "."), 
 		    	CaesarProgramElement.Kind.INTERFACE, 
 		    	self.getModifiers(), 
 		    	makeLocation(self.getTokenReference()),
@@ -428,7 +435,7 @@ public class CaesarAsmBuilder {
 			kind = CaesarProgramElement.Kind.ASPECT;
 		}
 		CaesarProgramElement node = new CaesarProgramElement(
-				self.getIdent(), 
+				self.getIdent().replaceAll("/", "."), 
 		    	kind, 
 		    	self.getModifiers(), 
 		    	makeLocation(self.getTokenReference()),
@@ -460,7 +467,7 @@ public class CaesarAsmBuilder {
 			kind = CaesarProgramElement.Kind.ASPECT;
 		}
 		CaesarProgramElement node = new CaesarProgramElement(
-				self.getIdent(), 
+				self.getIdent().replaceAll("/", "."), 
 				kind, 
 		    	self.getModifiers(), 
 		    	makeLocation(self.getTokenReference()),
@@ -504,7 +511,7 @@ public class CaesarAsmBuilder {
 		JFormalParameter[] parameterArray = self.getArgs();
 		for(int i=0; i < parameterArray.length; i++){
 			CaesarProgramElement parameter = new CaesarProgramElement(
-					parameterArray[i].getIdent(),
+					parameterArray[i].getIdent().replaceAll("/", "."),
 					CaesarProgramElement.Kind.PARAMETER,
 					0,
 					null,
@@ -517,7 +524,7 @@ public class CaesarAsmBuilder {
 		}
 		// create node
 		CaesarProgramElement node = new CaesarProgramElement(
-				self.getIdent(), 
+				self.getIdent().replaceAll("/", "."), 
 		    	CaesarProgramElement.Kind.CONSTRUCTOR, 
 		    	self.getModifiers(), 
 		    	makeLocation(self.getTokenReference()),
@@ -562,7 +569,7 @@ public class CaesarAsmBuilder {
 		JFormalParameter[] parameterArray = self.getArgs();
 		for(int i=0; i < parameterArray.length; i++){
 			CaesarProgramElement parameter = new CaesarProgramElement(
-					parameterArray[i].getIdent(),
+					parameterArray[i].getIdent().replaceAll("/", "."),
 					CaesarProgramElement.Kind.PARAMETER,
 					0,
 					null,
@@ -575,7 +582,7 @@ public class CaesarAsmBuilder {
 		}
 		// create node
 		CaesarProgramElement node = new CaesarProgramElement(
-				self.getIdent(), 
+				self.getIdent().replaceAll("/", "."), 
 		    	CaesarProgramElement.Kind.METHOD, 
 		    	self.getModifiers(), 
 		    	makeLocation(self.getTokenReference()),
@@ -602,11 +609,13 @@ public class CaesarAsmBuilder {
 				new ArrayList());
 		getCurrentStructureNode().addChild(peNode);
 		*/
+	    System.out.println("POINTCUT DECL " + self.toString());
+	    System.out.println("POINTCUT - " + self.getPointcut().wrappee().toString());
 		List parameters = new ArrayList();
 		JFormalParameter[] parameterArray = self.getArgs();
 		for(int i=0; i < parameterArray.length; i++){
 			CaesarProgramElement parameter = new CaesarProgramElement(
-					parameterArray[i].getIdent(),
+					parameterArray[i].getIdent().replaceAll("/", "."),
 					CaesarProgramElement.Kind.PARAMETER,
 					0,
 					null,
@@ -619,7 +628,7 @@ public class CaesarAsmBuilder {
 		}
 		// create node
 		CaesarProgramElement node = new CaesarProgramElement(
-				self.getIdent(), 
+				self.getIdent().replaceAll("/", "."), 
 		    	CaesarProgramElement.Kind.POINTCUT, 
 		    	self.getModifiers(), 
 		    	makeLocation(self.getTokenReference()),
@@ -658,7 +667,7 @@ public class CaesarAsmBuilder {
 		}
 		*/
 		CaesarProgramElement node = new CaesarProgramElement(
-				self.getAdvice().getKind().wrappee().getName(), 
+				self.getAdvice().getKind().wrappee().getName().replaceAll("/", "."), 
 		    	CaesarProgramElement.Kind.ADVICE, 
 		    	self.getModifiers(), 
 		    	makeLocation(self.getTokenReference()),
@@ -669,13 +678,40 @@ public class CaesarAsmBuilder {
 		node.setBytecodeName(self.getIdent());
 		node.setBytecodeSignature(self.getMethod().getSignature());
 
+		
+	    CaesarPointcut pointcut = self.getAdvice().getPointcut();
+	    System.out.println("ADVICE METHOD " + self.toString());
+	    List l = new ArrayList();
+	    addAllNamed(pointcut.wrappee(), l);
+	    Iterator i = l.iterator();
+	    while(i.hasNext()) {
+	        ReferencePointcut rp = (ReferencePointcut) i.next();
+	        System.out.println("GOT REFERENCE " + rp.name + " - " + rp.onType);
+	        //ResolvedMember member = getPointcutDeclaration(rp, self);
+	        
+	    }
+	    /*
+	    IRelationship forward = asmManager.getMap().get(node, );        
+	    IRelationship foreward = AsmManager.getDefault().getRelationshipMap().
+	    	get(peNode.getHandleIdentifier(), IRelationship.Kind.USES_POINTCUT, "uses pointcut", false, true);
+        foreward.addTarget(ProgramElement.genHandleIdentifier(member.getSourceLocation())); 
+        
+        IRelationship back = AsmManager.getDefault().getRelationshipMap().
+        	get(ProgramElement.genHandleIdentifier(member.getSourceLocation()), IRelationship.Kind.USES_POINTCUT, "pointcut used by", false, true);
+        back.addTarget(peNode.getHandleIdentifier()); 
+        
+		public IRelationship get(String source, IRelationship.Kind kind,
+                String relationshipName, boolean runtimeTest,
+                boolean createIfMissing);
+		*/
+	    
 		// TODO [understand]: why use a registry?
 		// When adding directly, LinkNodes won't be created. 
 		// (Based on REGISTRY_CLASS_NAME?)
 		CaesarProgramElement registry = findChildByName(getCurrentStructureNode().getChildren(), REGISTRY_CLASS_NAME);
 		if(registry == null){
 			registry = new CaesarProgramElement(
-					REGISTRY_CLASS_NAME,
+					REGISTRY_CLASS_NAME.replaceAll("/", "."),
 					CaesarProgramElement.Kind.ADVICE_REGISTRY,
 					0,
 					null,
@@ -690,6 +726,59 @@ public class CaesarAsmBuilder {
 		return false;
 	}
 
+	/*
+    private List genNamedPointcuts(MethodDeclaration methodDeclaration) {
+        List pointcuts = new ArrayList();
+        if (methodDeclaration instanceof AdviceDeclaration) {
+            if (((AdviceDeclaration)methodDeclaration).pointcutDesignator != null) 
+                addAllNamed(((AdviceDeclaration)methodDeclaration).pointcutDesignator.getPointcut(), pointcuts);
+		} else if (methodDeclaration instanceof PointcutDeclaration) { 
+		    if (((PointcutDeclaration)methodDeclaration).pointcutDesignator != null)
+		        addAllNamed(((PointcutDeclaration)methodDeclaration).pointcutDesignator.getPointcut(), pointcuts);	
+		} 
+		return pointcuts;
+    }
+*/
+    /**
+     * @param left
+     * @param pointcuts	accumulator for named pointcuts
+     */
+    private void addAllNamed(Pointcut pointcut, List pointcuts) {
+        if (pointcut == null) return;
+        if (pointcut instanceof ReferencePointcut) {
+			ReferencePointcut rp = (ReferencePointcut)pointcut;
+			pointcuts.add(rp);
+		} else if (pointcut instanceof AndPointcut) {
+		    AndPointcut ap = (AndPointcut)pointcut;
+		    addAllNamed(ap.getLeft(), pointcuts);
+		    addAllNamed(ap.getRight(), pointcuts);
+		} else if (pointcut instanceof OrPointcut) {
+			OrPointcut op = (OrPointcut)pointcut;
+			addAllNamed(op.getLeft(), pointcuts);
+		    addAllNamed(op.getRight(), pointcuts);
+		} 
+    }
+    /*
+    private ResolvedMember getPointcutDeclaration(ReferencePointcut rp, CjAdviceMethodDeclaration declaration) {
+        
+		World world = ((AjLookupEnvironment)declaration.scope.environment()).factory.getWorld();
+		TypeX onType = rp.onType;
+		if (onType == null) {
+		    Member member = EclipseFactory.makeResolvedMember(declaration.binding);
+			onType = member.getDeclaringType();
+		}
+		ResolvedMember[] members = onType.getDeclaredPointcuts(world);
+		if (members != null) {
+			for (int i = 0; i < members.length; i++) {
+			    if (members[i].getName().equals(rp.name)) {
+			        return members[i];
+			    }
+			}
+		}
+		return null;
+    }
+	*/
+	
 	public boolean visit(CjAdviceDeclaration self) {
 		/*CaesarProgramElementNode peNode = new AdviceDeclarationNode(
 				((JTypeDeclaration) this.classStack.peek()).getCClass()
@@ -704,8 +793,10 @@ public class CaesarAsmBuilder {
 
 		getCurrentStructureNode().addChild(peNode);
 		*/
+	    System.out.println("ADVICE  " + self.toString());
+	    System.out.println("POINTCUT  " + self.getKind().wrappee().getName());
 		CaesarProgramElement node = new CaesarProgramElement(
-				self.getKind().wrappee().getName(), //self.getIdent(), 
+				self.getKind().wrappee().getName().replaceAll("/", "."), //self.getIdent(), 
 		    	CaesarProgramElement.Kind.ADVICE, 
 		    	self.getModifiers(), 
 		    	makeLocation(self.getTokenReference()),
@@ -742,7 +833,7 @@ public class CaesarAsmBuilder {
 			return false;
 		
 		CaesarProgramElement node = new CaesarProgramElement(
-				var.getIdent(), 
+				var.getIdent().replaceAll("/", "."), 
 		    	CaesarProgramElement.Kind.FIELD, 
 		    	var.getModifiers(), 
 		    	makeLocation(self.getTokenReference()),
@@ -762,14 +853,6 @@ public class CaesarAsmBuilder {
 
 	private IProgramElement getCurrentStructureNode() {
 		return (IProgramElement) this.asmStack.peek();
-	}
-
-	private void setHierarchy(IHierarchy hierarchy) {
-	    this.hierarchy = hierarchy;
-	}
-
-	private IHierarchy getHierarchy() {
-		return this.hierarchy;
 	}
 
 	/*

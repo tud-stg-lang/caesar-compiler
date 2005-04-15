@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarBcelWorld.java,v 1.9 2005-04-05 16:51:43 gasiunas Exp $
+ * $Id: CaesarBcelWorld.java,v 1.10 2005-04-15 10:23:13 thiago Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -54,14 +54,16 @@ public class CaesarBcelWorld /*extends BcelWorld */{
 	}
 	
 	/* resets the singleton instance */
-	public static void createInstance(String classPath) {
+	public static CaesarBcelWorld createInstance(String classPath) {
 		theInstance = new CaesarBcelWorld(classPath);
 		lastClassPath = classPath;
+		return theInstance;
 	}
 
 	/* resets the singleton instance */
-	public static void createInstance() {
+	public static CaesarBcelWorld createInstance() {
 		theInstance = new CaesarBcelWorld(lastClassPath);
+		return theInstance;
 	}
 	
 	/* returns the BcelWorld object */
