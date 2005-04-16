@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarProgramElement.java,v 1.1 2005-04-11 09:00:45 thiago Exp $
+ * $Id: CaesarProgramElement.java,v 1.2 2005-04-16 09:54:45 thiago Exp $
  */
 
 package org.caesarj.compiler.asm;
@@ -47,6 +47,10 @@ import org.aspectj.bridge.ISourceLocation;
  */
 public class CaesarProgramElement extends ProgramElement {
 
+    static final String ID_DELIM = "|";
+    
+    private String handle = null;
+    
 	/**
 	 * List of CaesarProgramElementNodes representing the formal parameters.
 	 */
@@ -120,6 +124,21 @@ public class CaesarProgramElement extends ProgramElement {
     	this.kind = kind;
     }	
 
+    /**
+     * Works like ShadowMunger
+     */
+	public String getHandleIdentifier() {
+		if (null == handle) {
+		    if (sourceLocation != null) {
+				handle = ProgramElement.createHandleIdentifier(
+				        	sourceLocation.getSourceFile(),
+				        	sourceLocation.getLine(),
+				        	sourceLocation.getColumn());
+			}
+		}
+		return handle;
+	}
+    
     /**
      * Returns this element's parameters
      * 

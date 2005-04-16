@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: StructureModelDump.java,v 1.6 2005-04-15 10:23:13 thiago Exp $
+ * $Id: StructureModelDump.java,v 1.7 2005-04-16 09:51:51 thiago Exp $
  */
 
 package org.caesarj.compiler.asm;
@@ -63,7 +63,8 @@ public class StructureModelDump {
 		printNodeHeader(this.out, node);
 
 		if(node instanceof CaesarProgramElement){
-			this.out.print(node.toString());
+		    ProgramElement peNode = (CaesarProgramElement) node;
+			this.out.print(" {" + peNode.getHandleIdentifier() + "}");
 			this.out.println();
 		} else if (node instanceof ProgramElement) {
 			ProgramElement peNode = (ProgramElement) node;
