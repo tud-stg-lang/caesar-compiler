@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarAsmBuilder.java,v 1.7 2005-04-16 09:53:33 thiago Exp $
+ * $Id: CaesarAsmBuilder.java,v 1.8 2005-04-20 19:32:59 gasiunas Exp $
  */
 
 package org.caesarj.compiler.asm;
@@ -560,31 +560,12 @@ public class CaesarAsmBuilder {
 	    System.out.println("ADVICE  " + self.toString());
 	    System.out.println("   WITH POINTCUT  " + h);
 	    
-	    
-	    ArrayList children = new ArrayList();
-	    Iterator i = self.getAdviceCopies(0);
-	    while(i.hasNext()) {
-	        CjAdviceDeclaration copy = (CjAdviceDeclaration) i.next();
-	        System.out.println(" COPY - " + copy.getIdent());
-	        System.out.println("      - " + copy.getKind());
-			CaesarProgramElement child = new CaesarProgramElement(
-			        copy.getIdent(),
-			    	CaesarProgramElement.Kind.ADVICE, 
-			    	copy.getModifiers(), 
-			    	makeLocation(copy.getTokenReference()),
-			    	new ArrayList(),
-			    	new ArrayList(),
-					"",
-					"");
-			children.add(child);
-	    }
-	    
-		CaesarProgramElement node = new CaesarProgramElement(
+	    CaesarProgramElement node = new CaesarProgramElement(
 				self.getKind().wrappee().getName().replaceAll("/", "."), //self.getIdent(), 
 		    	CaesarProgramElement.Kind.ADVICE, 
 		    	self.getModifiers(), 
 		    	makeLocation(self.getTokenReference()),
-		    	children,
+		    	new ArrayList(),
 		    	new ArrayList(),
 				"",
 				"");
@@ -633,18 +614,6 @@ public class CaesarAsmBuilder {
 		return new SourceLocation(new File(fileName), ref.getLine());
 	}
 
-	public String getHandle(TokenReference ref) {
-		
-		ISourceLocation sl = makeLocation(ref);
-		if (sl != null) {
-			return ProgramElement.createHandleIdentifier(
-				           sl.getSourceFile(),
-				           sl.getLine(),
-				           sl.getColumn());
-		}
-		return null;
-	}
-	
 	/**
 	 * Return the node that is in the top of the stack,
 	 * without removing it.
