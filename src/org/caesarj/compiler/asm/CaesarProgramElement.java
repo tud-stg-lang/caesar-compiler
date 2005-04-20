@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarProgramElement.java,v 1.2 2005-04-16 09:54:45 thiago Exp $
+ * $Id: CaesarProgramElement.java,v 1.3 2005-04-20 19:33:43 gasiunas Exp $
  */
 
 package org.caesarj.compiler.asm;
@@ -105,23 +105,18 @@ public class CaesarProgramElement extends ProgramElement {
 		String returnType,
 		String type) 
     {
-/*    	super(	signature,
+    	super(	signature,
     	        convertKind(kind),
     	        sourceLocation,
 				modifiers,
 				"", // formalComment ??
-				children); */
-    	super ( signature, convertKind(kind), children);
-
-		this.sourceLocation = sourceLocation;
+				children);
+    	
 		this.kind = kind;
-		this.setAccessibility(genAccessibility(modifiers));
-		
-    	this.parameters = parameters;
+		this.parameters = parameters;
     	this.returnType = returnType;
     	this.type = type;
     	this.modifiers = genModifiers(modifiers);
-    	this.kind = kind;
     }	
 
     /**
