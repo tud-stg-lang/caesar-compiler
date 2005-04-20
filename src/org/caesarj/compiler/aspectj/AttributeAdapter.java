@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AttributeAdapter.java,v 1.5 2005-04-04 09:44:45 gasiunas Exp $
+ * $Id: AttributeAdapter.java,v 1.6 2005-04-20 19:32:00 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -108,6 +108,7 @@ public class AttributeAdapter extends Attribute {
 		CaesarAdviceKind	kind,
 		CaesarPointcut		pointcut,
 		int					extraArgumentFlags,
+		int					orderNr,
 		int					line
 	)
 	{
@@ -115,8 +116,8 @@ public class AttributeAdapter extends Attribute {
 										kind.wrappee(),
 										pointcut.wrappee(),
 										extraArgumentFlags,
-										line,
-										line,
+										orderNr, /* write orderNr as start line */
+										line,	 /* write line as end line */
 										null,
 										false,
 										new ResolvedMember[0],
@@ -133,6 +134,7 @@ public class AttributeAdapter extends Attribute {
 		CaesarAdviceKind	kind,
 		CaesarPointcut		pointcut,
 		int					extraArgumentFlags,
+		int					orderNr,
 		int					line
 	)
 	{
@@ -141,8 +143,8 @@ public class AttributeAdapter extends Attribute {
 				kind.wrappee(),
 				pointcut.wrappee(),
 				extraArgumentFlags,
-				line,
-				line,
+				orderNr, /* write orderNr as start line */
+				line,	 /* write line as end line */
 				null);
 		return new AttributeAdapter(attribute);
 	}

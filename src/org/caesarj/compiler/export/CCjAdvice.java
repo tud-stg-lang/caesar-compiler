@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjAdvice.java,v 1.4 2005-04-04 09:47:11 gasiunas Exp $
+ * $Id: CCjAdvice.java,v 1.5 2005-04-20 19:31:40 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -168,7 +168,8 @@ public class CCjAdvice extends CSourceMethod {
 					kind, 
 					pointcut,
 					extraArgumentFlags,
-					orderNr
+					orderNr,
+					tokenReference.getLine()
 				);
 				/*
 			ajAttribute =
@@ -189,7 +190,8 @@ public class CCjAdvice extends CSourceMethod {
 					kind, 
 					pointcut,
 					extraArgumentFlags,
-					orderNr
+					orderNr,
+					tokenReference.getLine()
 				);
 			/*
 			ajAttribute =
