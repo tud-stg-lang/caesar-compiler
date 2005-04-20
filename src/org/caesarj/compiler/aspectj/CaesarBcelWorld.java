@@ -20,15 +20,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarBcelWorld.java,v 1.10 2005-04-15 10:23:13 thiago Exp $
+ * $Id: CaesarBcelWorld.java,v 1.11 2005-04-20 19:32:34 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
 
+import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.BcelWorld;
+import org.caesarj.compiler.ClassReader;
+import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
 
 /**
@@ -89,6 +93,8 @@ public class CaesarBcelWorld /*extends BcelWorld */{
 	 */
 	private class BcelWorldAdapter extends BcelWorld{
 		
+		ClassReader classReader = null;
+		
 		public BcelWorldAdapter(String classPath) {
 			super(classPath == null ? "" : classPath);
 		}
@@ -143,6 +149,29 @@ public class CaesarBcelWorld /*extends BcelWorld */{
 			}
 			return aspect;			
 		}
+		
+		public void setClassReader(ClassReader reader) {
+			classReader = reader;
+		}
+		
+		/**
+		 * Override source context for added class files.
+		 * We need this to override the handle generation for advices.
+		 */
+		public BcelObjectType addSourceObjectType(JavaClass jc) {
+			BcelObjectType objectType = super.addSourceObjectType(jc);
+			String qualifiedName = jc.getClassName().replace('.', '/');
+			CCjSourceClass sourceClass = classReader.findSourceClass(qualifiedName);
+			if (sourceClass != null) {
+				String fileName = sourceClass.getSourceFile();
+				objectType.getResolvedTypeX().setSourceContext(new CaesarBcelSourceContext(objectType, fileName));
+			}			
+			return objectType;
+		}
+	}
+	
+	public void setClassReader(ClassReader reader) {
+		theWorld.setClassReader(reader);
 	}
 
 	public void setXnoInline(boolean b) {
