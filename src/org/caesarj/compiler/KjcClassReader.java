@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: KjcClassReader.java,v 1.5 2005-01-24 16:52:58 aracic Exp $
+ * $Id: KjcClassReader.java,v 1.6 2005-04-20 19:34:21 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -32,6 +32,7 @@ import org.caesarj.classfile.ClassInfo;
 import org.caesarj.classfile.ClassPath;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.export.CBinaryClass;
+import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.types.SignatureParser;
@@ -78,6 +79,19 @@ public class KjcClassReader extends org.caesarj.util.Utils implements ClassReade
 
       return cl;
     }
+  }
+  
+  /**
+   * Try to find source class for given fully qualified class name
+   */
+  public CCjSourceClass findSourceClass(String name) {
+  	 Object cls =allLoadedClasses.get(name);
+  	 if (cls instanceof CCjSourceClass) {
+  	 	return (CCjSourceClass)cls;
+  	 }
+  	 else {
+  	 	return null;
+  	 }  	 
   }
 
   /**

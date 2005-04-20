@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ClassReader.java,v 1.3 2005-01-24 16:52:58 aracic Exp $
+ * $Id: ClassReader.java,v 1.4 2005-04-20 19:34:21 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
 
+import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.types.SignatureParser;
@@ -63,4 +64,9 @@ public interface ClassReader {
    * @param	name		the name of the package
    */
   boolean packageExists(String name);
+  
+  /**
+   * Try to find source class for given fully qualified class name
+   */
+  public CCjSourceClass findSourceClass(String name);
 }

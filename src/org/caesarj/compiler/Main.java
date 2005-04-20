@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.98 2005-04-15 10:23:13 thiago Exp $
+ * $Id: Main.java,v 1.99 2005-04-20 19:34:21 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -52,7 +52,6 @@ import org.caesarj.compiler.joinpoint.JoinDeploymentSupport;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.joinpoint.StaticDeploymentPreparation;
 import org.caesarj.compiler.joinpoint.StaticFieldDeploymentVisitor;
-import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.compiler.typesys.graph.CaesarTypeGraphGenerator;
 import org.caesarj.compiler.typesys.java.JavaTypeGraph;
 import org.caesarj.compiler.typesys.java.JavaTypeNode;
@@ -278,7 +277,7 @@ public class Main extends MainSuper implements Constants {
         
         // CJ Aspect: Weaving
         if(!noWeaveMode())
-            weaveGeneratedCode(environment.getTypeFactory());               
+            weaveGeneratedCode(environment);               
                
         CodeSequence.endSession();
         
@@ -700,7 +699,7 @@ public class Main extends MainSuper implements Constants {
      * 
      * @param factory
      */
-    public void weaveGeneratedCode(TypeFactory factory) {
+    public void weaveGeneratedCode(KjcEnvironment env) {
         String filename;
 
         this.classes.setSize(0);
@@ -716,7 +715,7 @@ public class Main extends MainSuper implements Constants {
             weaver.addUnwovenClassFile(fileName, byteCodeBuf);
         }
 
-        weaveClasses();
+        weaveClasses(env);
     }
 
     /**
@@ -725,9 +724,10 @@ public class Main extends MainSuper implements Constants {
      * 
      * @param unwovenClassFiles
      */
-    protected void weaveClasses() {
+    protected void weaveClasses(KjcEnvironment env) {
     	/* Reset the world for the weaver, so that it does not see source files */
         CaesarBcelWorld bcelWorld = CaesarBcelWorld.createInstance();
+        bcelWorld.setClassReader(env.getClassReader());
     	// Make sure the weaver is using a model
         if (asmManager != null) {
             bcelWorld.getWorld().setModel(asmManager.getHierarchy());
