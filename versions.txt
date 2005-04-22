@@ -1,3 +1,6 @@
+VC_M20 - 22.04.2005
+- Asm is fixed for the new weaver version
+
 VC_M19 - 06.04.2005
 - More tolerant mixin linearization algorithm
 - Fixed problem when inheriting crosscuts from different inheritance paths
