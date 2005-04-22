@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarAsmBuilder.java,v 1.8 2005-04-20 19:32:59 gasiunas Exp $
+ * $Id: CaesarAsmBuilder.java,v 1.9 2005-04-22 07:28:53 thiago Exp $
  */
 
 package org.caesarj.compiler.asm;
@@ -544,36 +544,70 @@ public class CaesarAsmBuilder {
 	}
 
 	/**
-	 * TODO - Check this method
+	 * Visitor for the advices.
+	 * 
+	 * Creates only one node with the first copy.
 	 * 
 	 * @param self
 	 * @return
 	 */
 	public boolean visit(CjAdviceDeclaration self) {
+	    
+	    // Get the first copy to create the node
+	    Iterator i = self.getAdviceCopies(0);
+	    
+	    // TODO - CHANGE IT	
+	    // At least one of the copies contain the export field and so we can iterate over
+	    // the copies until we find the copy with the export. This is needed because we
+	    // want to get the name of the advice, if it is before, after, etc. It is normally
+	    // in the wrappee from the CaesarAdvice.
+	    // Below is the code as it should be, when we correct it and make the first copy
+	    // always with the export.
+	    CjAdviceDeclaration copy = null;
+	    while(i.hasNext()) {
+	        CjAdviceDeclaration curr = (CjAdviceDeclaration) i.next();
+	        try {
+	            curr.getMethod();
+	            copy = curr;
+	            break;
+	        } catch (Exception e) {
+	        }
+	    }
+	    if (copy != null) {
+	        CaesarProgramElement node = new CaesarProgramElement(
+			        copy.getCaesarAdvice().getKind().wrappee().getName(),
+			    	CaesarProgramElement.Kind.ADVICE, 
+			    	copy.getModifiers(), 
+			    	makeLocation(copy.getTokenReference()),
+			    	new ArrayList(),
+			    	new ArrayList(),
+					"",
+					"");
 
-	    ISourceLocation sourceLocation = self.getPointcut().wrappee().getSourceLocation();
-	    
-	    String h = ProgramElement.createHandleIdentifier(
-	        	sourceLocation.getSourceFile(),
-	        	sourceLocation.getLine(),
-	        	sourceLocation.getColumn());
-	    System.out.println("ADVICE  " + self.toString());
-	    System.out.println("   WITH POINTCUT  " + h);
-	    
-	    CaesarProgramElement node = new CaesarProgramElement(
-				self.getKind().wrappee().getName().replaceAll("/", "."), //self.getIdent(), 
-		    	CaesarProgramElement.Kind.ADVICE, 
-		    	self.getModifiers(), 
-		    	makeLocation(self.getTokenReference()),
-		    	new ArrayList(),
-		    	new ArrayList(),
-				"",
-				"");
-		node.setBytecodeName(self.getIdent());
-		// THE NEXT LINE WILL BREAK!
-		//node.setBytecodeSignature(self.getMethod().getSignature());
-		 
-	    getCurrentStructureNode().addChild(node);
+			node.setBytecodeName(copy.getIdent());
+			node.setBytecodeSignature(copy.getMethod().getSignature());			 
+		    getCurrentStructureNode().addChild(node);	        
+	    }
+	    /*
+	     IMPLEMENTATION HOW IT SHOULD BE
+	    if(i.hasNext()) {
+	        CjAdviceDeclaration copy = (CjAdviceDeclaration) i.next();
+	        
+	        CaesarProgramElement node = new CaesarProgramElement(
+			        copy.getCaesarAdvice().getKind().wrappee().getName(),
+			    	CaesarProgramElement.Kind.ADVICE, 
+			    	copy.getModifiers(), 
+			    	makeLocation(copy.getTokenReference()),
+			    	new ArrayList(),
+			    	new ArrayList(),
+					"",
+					"");
+
+			node.setBytecodeName(copy.getIdent());
+			node.setBytecodeSignature(copy.getMethod().getSignature());			 
+		    getCurrentStructureNode().addChild(node);  
+	    }
+	    */
 		return false;
 	}
 
@@ -662,7 +696,7 @@ public class CaesarAsmBuilder {
 		return child;
 	}
 
-	/**
+	/********************************************************************************************************************
 	 * JUST HERE FOR DEBUG AND BACKUP
 	 * TODO REMOVE IT!!!
 	 * 
