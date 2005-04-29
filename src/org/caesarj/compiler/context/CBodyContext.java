@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CBodyContext.java,v 1.4 2005-02-16 16:32:45 aracic Exp $
+ * $Id: CBodyContext.java,v 1.5 2005-04-29 14:45:48 klose Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -547,6 +547,10 @@ public abstract class CBodyContext extends CContext {
 	    return "Bo-ctx <- "+parent;
 	}
   
+	public CBodyContext getBodyContext() {
+	    return this;
+	}
+	
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------

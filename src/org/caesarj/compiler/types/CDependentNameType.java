@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentNameType.java,v 1.19 2005-03-06 14:11:20 aracic Exp $
+ * $Id: CDependentNameType.java,v 1.20 2005-04-29 14:45:48 klose Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -33,6 +33,7 @@ import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
+import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CClassBodyContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
@@ -109,9 +110,9 @@ public class CDependentNameType extends CClassNameType
                     env
                 );
         
-        } else if (context instanceof CBlockContext){
-            env = ((CBlockContext)context).getEnvironment();
-            ectx = new CExpressionContext( (CBlockContext)context, env );
+        } else if (context instanceof CBodyContext){
+            env = ((CBodyContext)context).getEnvironment();
+            ectx = new CExpressionContext( (CBodyContext)context, env );
             
         } else if (context instanceof CMethodContext){
             CMethodContext mc = (CMethodContext)context;
@@ -128,6 +129,7 @@ public class CDependentNameType extends CClassNameType
             ectx = new CExpressionContext( block, env  );
             
         } else {
+            // TODO Error message should be changed to something like "invalid context"
             throw new UnpositionedError(KjcMessages.TYPE_UNKNOWN, qualifiedName);
         }
         

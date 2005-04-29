@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CContext.java,v 1.11 2005-02-11 18:45:22 aracic Exp $
+ * $Id: CContext.java,v 1.12 2005-04-29 14:45:48 klose Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -416,4 +416,7 @@ public abstract class CContext extends org.caesarj.util.Utils implements CTypeCo
 
   protected final CContext      parent;
   private final KjcEnvironment  environment;
+public CBodyContext getBodyContext() {
+    return parent.getBodyContext();
+}
 }
