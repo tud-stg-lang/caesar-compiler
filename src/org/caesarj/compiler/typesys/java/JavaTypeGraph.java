@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JavaTypeGraph.java,v 1.5 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JavaTypeGraph.java,v 1.6 2005-05-04 13:28:35 aracic Exp $
  */
 
 package org.caesarj.compiler.typesys.java;
@@ -61,8 +61,6 @@ public class JavaTypeGraph {
         root.setType(typeNode);
     }
     
-    // CTODO this is buggy!
-    // we can not sort into inheritance hierarchy, we also have to consider outer!
     public void generateFrom(CaesarTypeGraph completeGraph) {
     	buildJavaTypeGraph(completeGraph);
                        
@@ -109,14 +107,21 @@ public class JavaTypeGraph {
         }
     }
 
-    private JavaTypeNode findCompatibleSubNode(
-        JavaTypeNode[] outerList, 
-        CaesarTypeNode[] mixinList,
-        int i
-    ) {        
-        return null;
+    public Collection findMixinCopies(CaesarTypeNode mixin) {        
+        Collection res = new LinkedList();
+        
+        // check first that passed node is not a mixin copy itself        
+        Collection typesToGen = getTypesToGenerate();
+        
+        for (Iterator it = typesToGen.iterator(); it.hasNext();) {
+            JavaTypeNode item = (JavaTypeNode) it.next();
+            if(item.getType() == mixin)
+                res.add(item);
+        }        
+        
+        return res;
     }
-
+    
     public void debug() {
         StringBuffer sb = new StringBuffer();
         root.debug(0, sb);
