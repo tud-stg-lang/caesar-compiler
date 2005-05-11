@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: StructureModelDump.java,v 1.7 2005-04-16 09:51:51 thiago Exp $
+ * $Id: StructureModelDump.java,v 1.8 2005-05-11 13:40:38 thiago Exp $
  */
 
 package org.caesarj.compiler.asm;
@@ -96,7 +96,7 @@ public class StructureModelDump {
 	protected void printNodeHeader(PrintStream outArg, IProgramElement node) {
 		//out.print(node.getClass().getName());
 
-		outArg.print("[" + node.getKind() + "] " + node.getName());
+		outArg.print("[" + node.getKind() + "] " + node.getName() + " package ='" + node.getPackageName() + "' ");
 
 		ISourceLocation srcLoc = node.getSourceLocation();
 		if (srcLoc != null) {

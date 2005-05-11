@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarAsmBuilder.java,v 1.9 2005-04-22 07:28:53 thiago Exp $
+ * $Id: CaesarAsmBuilder.java,v 1.10 2005-05-11 13:40:38 thiago Exp $
  */
 
 package org.caesarj.compiler.asm;
@@ -48,6 +48,7 @@ import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.ast.phylum.JClassImport;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.JPackageImport;
+import org.caesarj.compiler.ast.phylum.JPackageName;
 import org.caesarj.compiler.ast.phylum.declaration.CjAdviceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjAdviceMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjDeploymentSupportClassDeclaration;
@@ -60,6 +61,7 @@ import org.caesarj.compiler.ast.phylum.declaration.JConstructorDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.ast.visitor.VisitorSupport;
@@ -80,6 +82,8 @@ public class CaesarAsmBuilder {
 	
 	protected CaesarJAsmManager asmManager = null;
 
+	protected VisitorSupport visitor = null;
+	
 	/**
 	 * Prepares the asmManager to build.
 	 * 
@@ -147,7 +151,7 @@ public class CaesarAsmBuilder {
 		this.asmManager = asmManager;
 		this.asmStack.push(asmManager.getHierarchy().getRoot());
 
-		VisitorSupport visitor = new VisitorSupport(this);
+		visitor = new VisitorSupport(this);
 		unit.accept(visitor);
 
 		this.asmStack.pop();
@@ -163,6 +167,7 @@ public class CaesarAsmBuilder {
 	    
 		TokenReference ref = self.getTokenReference();
 		File file = new File(new String(ref.getFile()));
+		
 		// create node for file
 		CaesarProgramElement node = new CaesarProgramElement(
 				file.getName().replaceAll("/", "."), 
@@ -174,8 +179,11 @@ public class CaesarAsmBuilder {
 				"",
 				"");
 		
-		
-		if (self.getPackageName() == null) {
+		// Get the package name object
+		JPackageName packageName = self.getPackageName();
+		String pkgName = "";
+
+		if (packageName == null) {
 			
 		    // if the node already exists remove before adding
 			Iterator it = asmManager.getHierarchy().getRoot().getChildren().iterator();
@@ -188,14 +196,27 @@ public class CaesarAsmBuilder {
 			getCurrentStructureNode().addChild(node);
 			
 		} else {
-			String packageName = self.getPackageName().getName();
-			
+		    // The package name is "" if null or the real package name for non-collaborations.
+		    // For collaboration, the package name is the collaboration package (must remove the name)
+		    String name = packageName.getName();
+		    if (name == null || name.trim().length() == 0) {
+	            pkgName = "";
+		    } else if (packageName.isCollaboration()) {
+		           if (name.lastIndexOf('/') == -1) {
+		               pkgName = name;
+		           } else {
+		               pkgName = name.substring(0, name.lastIndexOf('/'));   
+		           }
+		    } else {
+		        pkgName = name.replaceAll("/", ".");
+		    }
+
 			CaesarProgramElement fileListNode = null;
-			fileListNode = findChildByName(asmManager.getHierarchy().getRoot().getChildren(), packageName);
+			fileListNode = findChildByName(asmManager.getHierarchy().getRoot().getChildren(), packageName.getName());
 			if(fileListNode == null) {
 				// create new filelist
 				fileListNode = new CaesarProgramElement(
-						packageName.replaceAll("/", "."),
+						pkgName,
 						// Have to use PACKAGE as parent type because of ProgramElementNode.getPackagename()
 						// instead of ---> CaesarProgramElementNode.Kind.FILE_LST,
 						CaesarProgramElement.Kind.PACKAGE,
@@ -220,19 +241,11 @@ public class CaesarAsmBuilder {
 			fileListNode.addChild(node);
 		}
 		
-		// add package
-		String pkgName = "";
-		if(self.getPackageName() == null){
-			pkgName = "(default package)";
-		}else if(self.getPackageName().getName().equals("")){
-			pkgName = "(default package)";
-		}else{
-			pkgName = self.getPackageName().getName().replaceAll("/", ".");
-		}
+		// Add package
 		CaesarProgramElement pkgNode = new CaesarProgramElement(
 				pkgName, 
 		    	CaesarProgramElement.Kind.PACKAGE, 
-		    	0, 
+		    	0,
 		    	makeLocation(self.getPackageName().getTokenReference()),
 		    	new ArrayList(),
 		    	new ArrayList(),
@@ -297,15 +310,44 @@ public class CaesarAsmBuilder {
 			
 			node.addChild(imports);
 		}
+		
+		// Check if the package name is actually a cclass (externalized classes)
+		if (packageName.isCollaboration() ) {
+		    // In this case, get the collaboration and create a node for it
+		    CjVirtualClassDeclaration collab = self.getCollaboration();
+		    
+			// Create the node
+		    CaesarProgramElement collabNode = new CaesarProgramElement(
+					collab.getIdent().replaceAll("/", "."), 
+					CaesarProgramElement.Kind.EXTERNAL_COLLABORATION, 
+			    	collab.getModifiers(), 
+			    	makeLocation(collab.getTokenReference()),
+			    	new ArrayList(),
+			    	new ArrayList(),
+					"",
+					"");
+			
+		    // Add the collaboration node to the tree and push in the stack
+			node.addChild(collabNode);
+			this.asmStack.push(collabNode);
+			
+			// Here we visit all the original inners, which are not normally
+			// visited, because they belong to the collaboration cclass.
+			JTypeDeclaration[] inners = self.getOriginalInners();
+		    for (int i = 0; i < inners.length; i++) {
+		        inners[i].accept(visitor);
+	        }
 
+		} else {
+		    this.asmStack.push(node);
+		}
+		
 		try {
 		    asmManager.getHierarchy().addToFileMap(file.getCanonicalPath(), node);
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
-
-		this.asmStack.push(node);
-			
+		
 		return true;
 	}
 
@@ -401,10 +443,12 @@ public class CaesarAsmBuilder {
 		if (CModifier.contains(self.getModifiers(),	ClassfileConstants2.ACC_CROSSCUTTING)){
 			kind = CaesarProgramElement.Kind.ASPECT;
 		}
+		//System.out.println(self.toString() + " has " + self.getCjSourceClass().getPackage());
 		CaesarProgramElement node = new CaesarProgramElement(
 				self.getIdent().replaceAll("/", "."), 
-				kind, 
-		    	self.getModifiers(), 
+				kind,
+		    	self.getModifiers(),
+		    	//self.getCjSourceClass().getPackage(),
 		    	makeLocation(self.getTokenReference()),
 		    	new ArrayList(),
 		    	new ArrayList(),
@@ -722,13 +766,13 @@ public class CaesarAsmBuilder {
 
 		
 	    CaesarPointcut pointcut = self.getAdvice().getPointcut();
-	    System.out.println("ADVICE METHOD " + self.toString());
+	    //System.out.println("ADVICE METHOD " + self.toString());
 	    List l = new ArrayList();
 	    addAllNamed(pointcut.wrappee(), l);
 	    Iterator i = l.iterator();
 	    while(i.hasNext()) {
 	        ReferencePointcut rp = (ReferencePointcut) i.next();
-	        System.out.println("GOT REFERENCE " + rp.name + " - " + rp.onType);
+	      //  System.out.println("GOT REFERENCE " + rp.name + " - " + rp.onType);
 	        //ResolvedMember member = getPointcutDeclaration(rp, self);
 	        
 	    }

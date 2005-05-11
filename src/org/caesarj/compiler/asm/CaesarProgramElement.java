@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarProgramElement.java,v 1.3 2005-04-20 19:33:43 gasiunas Exp $
+ * $Id: CaesarProgramElement.java,v 1.4 2005-05-11 13:40:38 thiago Exp $
  */
 
 package org.caesarj.compiler.asm;
@@ -104,7 +104,7 @@ public class CaesarProgramElement extends ProgramElement {
 		List parameters,
 		String returnType,
 		String type) 
-    {
+    {  	
     	super(	signature,
     	        convertKind(kind),
     	        sourceLocation,
@@ -302,7 +302,9 @@ public class CaesarProgramElement extends ProgramElement {
 		public static final Kind VIRTUAL_CLASS = new Kind("virtual class");
 		public static final Kind PARAMETER = new Kind("parameter");
 		public static final Kind ADVICE_REGISTRY = new Kind("advice registry");
-
+		public static final Kind EXTERNAL_COLLABORATION = new Kind("external collaboration");
+		
+		
 		public static final Kind[] ALL =
 		{
 			PROJECT,
@@ -334,7 +336,7 @@ public class CaesarProgramElement extends ProgramElement {
 			ERROR,
 			// And Caesarj Kinds
 			IMPORTS, CLASS_IMPORT, PACKAGE_IMPORT, VIRTUAL_CLASS,
-			PARAMETER, ADVICE_REGISTRY 
+			PARAMETER, ADVICE_REGISTRY, EXTERNAL_COLLABORATION
 			};
 	
 		
