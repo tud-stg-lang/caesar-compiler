@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JCompilationUnit.java,v 1.12 2005-03-22 10:20:10 gasiunas Exp $
+ * $Id: JCompilationUnit.java,v 1.13 2005-05-11 13:40:18 thiago Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -31,6 +31,7 @@ import java.util.Vector;
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
+import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.KjcMessages;
@@ -421,17 +422,37 @@ public class JCompilationUnit extends JPhylum {
             typeDeclarations[i].accept(p);
         }
 	}
-
+	
+	/**
+	 * Sets the collaboration class declaration, if this compilation unit
+	 * uses an externalized class.
+	 * 
+	 * @param collaboration the class declaration
+	 */
+	public void setCollaboration(CjVirtualClassDeclaration collaboration) {
+	    this.collaboration = collaboration;
+	}
+	  
+	/**
+	 * Gets the collaboration class declaration
+	 * 
+	 * @return
+	 */
+	public CjVirtualClassDeclaration getCollaboration() {
+	    return this.collaboration;
+	}
+	  
 	// ----------------------------------------------------------------------
 	// DATA MEMBERS
 	// ----------------------------------------------------------------------
-
 	private JPackageName packageName;
 	private JClassImport[] importedClasses;
 	private JPackageImport[] importedPackages;
 	// andreas start
 	//private JTypeDeclaration[]		typeDeclarations;
 	protected JTypeDeclaration[] typeDeclarations;
+	protected JTypeDeclaration[] origTypeDeclarations;
+	private CjVirtualClassDeclaration collaboration;
 	// andreas end
 
 	private Hashtable allLoadedClasses = new Hashtable();
@@ -470,4 +491,17 @@ public class JCompilationUnit extends JPhylum {
 		typeDeclarations = newInners;
 	}
 
+	public JTypeDeclaration[] getOriginalInners() {
+	    return origTypeDeclarations;
+	}
+	
+	/**
+	 * When inners have been copied, store them in the origTypeDeclarations
+	 * and set the typeDeclarations to the empty array
+	 *
+	 */
+	public void fireInnersCopied() {
+	    this.origTypeDeclarations = this.typeDeclarations;
+	    this.typeDeclarations = new JTypeDeclaration[0];
+	}
 }
