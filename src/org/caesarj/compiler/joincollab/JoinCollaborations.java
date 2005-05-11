@@ -56,6 +56,9 @@ public class JoinCollaborations {
                         )
                     );
         		continue;
+        	} else {
+        	    // Set the collaboration declaration in the compilation unit
+        	    cu.setCollaboration(collabDecl);
         	}
             
            	moveInners(cu, collabDecl);            
@@ -119,6 +122,9 @@ public class JoinCollaborations {
         	}            		
         }
         
-        cu.setInners(new JTypeDeclaration[0]);
+        // Warn the compilation unit, that the inners were already copied.
+        // It will cause the inners to be moved to origTypeDeclarations
+        cu.fireInnersCopied();
+        //cu.setInners(new JTypeDeclaration[0]);
 	}
 }
