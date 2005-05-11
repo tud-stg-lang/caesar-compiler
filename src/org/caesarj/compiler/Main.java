@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.99 2005-04-20 19:34:21 gasiunas Exp $
+ * $Id: Main.java,v 1.100 2005-05-11 13:39:18 thiago Exp $
  */
 
 package org.caesarj.compiler;
@@ -318,9 +318,7 @@ public class Main extends MainSuper implements Constants {
 	        	// note: AsmBuilder.build() starts the Visitor-part of AsmBuilder
 	        	// iterating over the compilationunits and adding appropriate Nodes to 
 	        	// the StructureModel.
-	        	System.out.println("before AsmBuilder.build");
 	        	CaesarAsmBuilder.build(cu[i], asmManager);
-	        	System.out.println("after AsmBuilder.build");
 	        }
 		}
     }
