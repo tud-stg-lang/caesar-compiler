@@ -1,3 +1,6 @@
+VC_M21 - 11.05.2005
+- Compilation Units keep track of removed type declarations (when external collaboration)
+
 VC_M20 - 22.04.2005
 - Asm is fixed for the new weaver version
 
