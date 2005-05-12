@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: MethodOptimizer.java,v 1.2 2005-01-24 16:52:57 aracic Exp $
+ * $Id: MethodOptimizer.java,v 1.3 2005-05-12 10:38:34 meffert Exp $
  */
 
 package org.caesarj.compiler.ssa;
@@ -29,7 +29,6 @@ import org.caesarj.classfile.CodeInfo;
 import org.caesarj.classfile.HandlerInfo;
 import org.caesarj.classfile.Instruction;
 import org.caesarj.classfile.LineNumberInfo;
-import org.caesarj.classfile.LocalVariableInfo;
 import org.caesarj.classfile.MethodInfo;
 
 /**
@@ -55,8 +54,8 @@ public class MethodOptimizer {
 	CodeInfo info  = new CodeInfo(instructions,
 				      handlers,
 				      new LineNumberInfo[0],
-				      new LocalVariableInfo[0]);
-				      //this.info.getLocalVariables());
+				      //CM: new LocalVariableInfo[0]);
+				      this.info.getLocalVariables());
 	return info;
 
     }

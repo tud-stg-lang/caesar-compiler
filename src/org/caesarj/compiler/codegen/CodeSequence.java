@@ -20,13 +20,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CodeSequence.java,v 1.5 2005-01-24 16:53:02 aracic Exp $
+ * $Id: CodeSequence.java,v 1.6 2005-05-12 10:38:34 meffert Exp $
  */
 
 package org.caesarj.compiler.codegen;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Stack;
+import java.util.Vector;
 
 import org.caesarj.classfile.AccessorContainer;
 import org.caesarj.classfile.AccessorTransformer;
@@ -36,10 +39,12 @@ import org.caesarj.classfile.FieldRefInstruction;
 import org.caesarj.classfile.HandlerInfo;
 import org.caesarj.classfile.Instruction;
 import org.caesarj.classfile.InstructionAccessor;
+import org.caesarj.classfile.JLocalVariableEntry;
 import org.caesarj.classfile.JumpInstruction;
 import org.caesarj.classfile.LineNumberInfo;
 import org.caesarj.classfile.LocalVarInstruction;
 import org.caesarj.classfile.LocalVariableInfo;
+import org.caesarj.classfile.LocalVariableScope;
 import org.caesarj.classfile.MethodRefInstruction;
 import org.caesarj.classfile.NewarrayInstruction;
 import org.caesarj.classfile.NoArgInstruction;
@@ -52,6 +57,7 @@ import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.util.InconsistencyException;
+import org.caesarj.util.Utils;
 
 public final class CodeSequence extends org.caesarj.util.Utils implements org.caesarj.compiler.constants.Constants {
 
@@ -66,9 +72,7 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
     instructions = new Instruction[org.caesarj.classfile.ClassfileConstants2.MAX_CODE_PER_METHOD];
     handlers = new ArrayList();
     lines = new ArrayList();
-    /* LOCAL VARIABLES NOT USED
     locals = new Hashtable();
-    LOCAL VARIABLES NOT USED */
   }
 
   /**
@@ -85,6 +89,9 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
     seq.labelAtEnd = false;
     seq.lineNumber = 0;
     seq.lastLine = -1;
+    
+    //System.out.println("CodeSequence.getCodeSequence()");
+    
     return seq;
   }
 
@@ -96,9 +103,8 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
       stack.push(this);
       handlers.clear();
       lines.clear();
-      /* LOCAL VARIABLES NOT USED
-      seq.locals.clear();
-      LOCAL VARIABLES NOT USED */
+      this.locals.clear();
+      this.scopes.clear();
     }
   }
 
@@ -125,6 +131,9 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
       lastLine = lineNumber;
       lines.add(new LineNumberInfo((short)lineNumber, insn));
     }
+    
+    // update last instruction variable (used for local variable scopes)
+    this.last = insn;
   }
 
   /**
@@ -305,11 +314,10 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
   }
 
   /**
+   * Generates the local variables info for this code sequence.
    * @return	an array of local vars information
    */
   public final LocalVariableInfo[] getLocalVariableInfos() {
-    return null;
-    /* LOCAL VARIABLES NOT USED
     if (locals.size() == 0) {
       return null;
     }
@@ -323,9 +331,8 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
 	compress.addElement(((JLocalVariableEntry)current.pop()).getInfo());
       }
     }
-
+    
     return (LocalVariableInfo[])Utils.toArray(compress, LocalVariableInfo.class);
-    LOCAL VARIABLES NOT USED */
   }
 
   /**
@@ -379,6 +386,26 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
     verify((JStatement)contexts.pop() == stmt);
   }
 
+  // --------------------------------------------------------------------
+  // Variable Scopes
+  // --------------------------------------------------------------------
+  
+  /**
+   * Opens a new scope for local variables.
+   */
+  public final void openNewScope(){
+  	scopes.push(new LocalVariableScope());
+  }
+  
+  /**
+   * Closes the last opend local variable scope.
+   */
+  public final void closeScope(){
+  	LocalVariableScope scope = (LocalVariableScope)scopes.pop();
+  	scope.close(this.last);
+  	//this.last.dump();
+  }
+  
 
   // --------------------------------------------------------------------
   // EXCEPTIONS
@@ -484,24 +511,36 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
   // DATA MEMBERS
   // --------------------------------------------------------------------
 
+  // TODO : instead of this var use the compiler argument. (see addLocalVarInfo(...))
+  private static final boolean generateLocalVarInfo = true;
+  
   /**
    * Add a local variable name information
    */
   private final void addLocalVarInfo(LocalVarInstruction insn,
 				     JLocalVariable var) {
-/* //  DISABLED, SLOW AND NOT USED AFTER
-    Integer		pos = new Integer(var.getLocalIndex());
+  	// TODO : test for compiler-argument falg, if local variable info should be generated!
+  	if(! CodeSequence.generateLocalVarInfo) return;
+  	
+  	// Only generate entry in classfile for locale variable defined in
+  	// the sourcecode, not for compiler generated once.
+  	if(var.isGenerated()){
+  		return;
+  	}
+  	
+  	Integer		pos = new Integer(var.getPosition());
     Stack		elemsAtPos;
-    JLocalVariableEntry	entry = new JLocalVariableEntry(insn, var);
-
-    elemsAtPos  = (Stack)locals.get(pos);
+    
+    JLocalVariableEntry	entry = new JLocalVariableEntry(insn, var, (LocalVariableScope)scopes.peek());
+	elemsAtPos  = (Stack)locals.get(pos);
+    // Check if entry for local variable at this position already exists.
+    // If not create new entry using the current instruction and the active scope.
     if (elemsAtPos == null) {
-      locals.put(pos, elemsAtPos = new Stack());
-      elemsAtPos.push(entry);
-    } else if (!((JLocalVariableEntry)elemsAtPos.peek()).merge(entry)) {
-      elemsAtPos.push(entry);
+    	locals.put(pos, elemsAtPos = new Stack());
+    	elemsAtPos.push(entry);
+    } else if (! ((JLocalVariableEntry)elemsAtPos.peek()).getVar().getIdent().equals(var.getIdent())){
+    	elemsAtPos.push(entry);
     }
-*/
   }
 
 
@@ -512,9 +551,7 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
   private Instruction[]			instructions;
   private ArrayList			handlers;
   private ArrayList			lines;
-    /* LOCAL VARIABLES NOT USED
   private Hashtable			locals;
-    LOCAL VARIABLES NOT USED */
   private int				pc;
   // is a label after the last instruction ?
   private boolean			labelAtEnd;
@@ -523,4 +560,7 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
   private Stack				contexts = new Stack();
 
   private static final Stack		stack = new Stack();
+  
+  private final Stack 		scopes = new Stack();
+  private Instruction 		last;
 }

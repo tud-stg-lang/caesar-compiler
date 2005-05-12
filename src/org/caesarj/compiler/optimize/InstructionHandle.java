@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: InstructionHandle.java,v 1.3 2005-01-24 16:52:59 aracic Exp $
+ * $Id: InstructionHandle.java,v 1.4 2005-05-12 10:38:34 meffert Exp $
  */
 
 package org.caesarj.compiler.optimize;
@@ -36,6 +36,7 @@ import org.caesarj.classfile.Instruction;
 import org.caesarj.classfile.JumpInstruction;
 import org.caesarj.classfile.LineNumberInfo;
 import org.caesarj.classfile.LocalVarInstruction;
+import org.caesarj.classfile.LocalVariableInfo;
 import org.caesarj.classfile.NoArgInstruction;
 import org.caesarj.classfile.SwitchInstruction;
 import org.caesarj.util.InconsistencyException;
@@ -377,7 +378,39 @@ public class InstructionHandle extends AbstractInstructionAccessor implements Cl
       }
     } else if (container instanceof Optimizer) {
       ((Optimizer)container).setCodeStart(target);
-    } else {
+    } else if (container instanceof LocalVariableInfo) {
+    	// [mef] update localvarinfo
+    	LocalVariableInfo localVar = (LocalVariableInfo)container;
+    	if(localVar.getStart() == this){
+    		if(localVar.getStart() == localVar.getEnd()){
+    			// local variable is not used any more.
+    			localVar.setStart(null);
+    			localVar.setEnd(null);
+    			this.removeAccessor(localVar);
+    			this.removeAccessor(localVar);
+    		}else{
+    			// update start instruction
+    			localVar.setStart(target);
+    			this.removeAccessor(localVar);
+    			target.addAccessor(localVar);
+    		}
+    	}else if(localVar.getEnd() == this){
+    		if(localVar.getStart() == localVar.getEnd()){
+    			// local variable is not used any more.
+    			localVar.setStart(null);
+    			localVar.setEnd(null);
+    			this.removeAccessor(localVar);
+    			this.removeAccessor(localVar);
+    		}else{
+    			// update end instruction
+    			localVar.setEnd(target.prev);
+    			this.removeAccessor(localVar);
+    			if(target.prev != null){
+    				target.prev.addAccessor(localVar);
+    			}
+    		}
+    	}
+    }else {
       throw new InconsistencyException("" + container);
     }
   }

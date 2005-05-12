@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JSwitchGroup.java,v 1.3 2005-01-24 16:52:59 aracic Exp $
+ * $Id: JSwitchGroup.java,v 1.4 2005-05-12 10:38:34 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -156,9 +156,11 @@ public class JSwitchGroup extends JPhylum {
     setLineNumber(code);
 
     code.plantLabel(pos);
+    code.openNewScope();
     for (int i = 0; i < stmts.length; i++) {
       stmts[i].genCode(context);
     }
+    code.closeScope();
   }
 
   public JSwitchLabel[] getLabels() {return labels;}

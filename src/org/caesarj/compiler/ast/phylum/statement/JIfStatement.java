@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JIfStatement.java,v 1.4 2005-01-24 16:52:59 aracic Exp $
+ * $Id: JIfStatement.java,v 1.5 2005-05-12 10:38:34 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -138,20 +138,28 @@ public class JIfStatement extends JStatement {
 
     if (cond.isConstant()) {
       if (cond.booleanValue()) {
+      	code.openNewScope();
 	thenClause.genCode(context);
+	code.closeScope();
       } else if (elseClause != null) {
+      	code.openNewScope();
 	elseClause.genCode(context);
+	code.closeScope();
       }
     } else {
       CodeLabel		elseLabel = new CodeLabel();
       CodeLabel		nextLabel = new CodeLabel();
 
       cond.genBranch(false, context, elseLabel);   //		COND IFEQ else
+      code.openNewScope();
       thenClause.genCode(context);			//		THEN CODE
+      code.closeScope();
       code.plantJumpInstruction(opc_goto, nextLabel);	//		GOTO next
       code.plantLabel(elseLabel);		//	else:
       if (elseClause != null) {
+      	code.openNewScope();
 	elseClause.genCode(context);		//		ELSE CODE
+	code.closeScope();
       }
       code.plantLabel(nextLabel);		//	next	...
     }

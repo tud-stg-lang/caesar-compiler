@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Optimizer.java,v 1.2 2005-01-24 16:52:59 aracic Exp $
+ * $Id: Optimizer.java,v 1.3 2005-05-12 10:38:34 meffert Exp $
  */
 
 package org.caesarj.compiler.optimize;
@@ -57,7 +57,7 @@ public class Optimizer implements AccessorContainer {
     // do work at specified level
     boolean	codeChanged = true;
 
-    while (/*level-- > 0 &&*/ codeChanged) {
+    while (level-- > 0 && codeChanged) {
       codeChanged = opt.optimizeCodeSequence();
     }
 
@@ -92,7 +92,7 @@ public class Optimizer implements AccessorContainer {
     codeInfo = new CodeInfo(buildInstructionArray(),
 			    handlers,
 			    buildLineNumberInfo(),
-			    localVariables);
+			    buildLocalVariableInfo());
 
     // replace instruction handles by actual instructions
     try {
@@ -129,6 +129,14 @@ public class Optimizer implements AccessorContainer {
       // !!! WHY ??? graf 010111
       // ((InstructionHandle)handlers[i].getEnd()).addAccessor(handlers[i]);
       // !!! WHY ??? graf 010111
+    }
+    
+    
+    // add local variable infos as accessors to their start and end instructions in order
+    // to be notified by changes.
+    for (int j = 0; localVariables != null && j < localVariables.length; j++){
+    	((InstructionHandle)localVariables[j].getEnd()).addAccessor(localVariables[j]);
+        ((InstructionHandle)localVariables[j].getStart()).addAccessor(localVariables[j]);
     }
   }
 
@@ -267,6 +275,22 @@ public class Optimizer implements AccessorContainer {
     }
 
     return (LineNumberInfo[])Utils.toArray(lineNumbers, LineNumberInfo.class);
+  }
+  
+  /**
+   * Build the array of local variables information for the optimized
+   * instruction sequence.
+   */
+  private LocalVariableInfo[] buildLocalVariableInfo(){
+  	Vector tempLocalVars = new Vector();
+  	for(int i = 0; localVariables != null && i < localVariables.length; i++){
+  		// Only add informations for variables with valid start and end instructions.
+  		if(localVariables[i].getStart() != null 
+  				&& localVariables[i].getEnd() != null){
+  			tempLocalVars.add(localVariables[i]);
+  		}
+  	}
+  	return (LocalVariableInfo[])Utils.toArray(tempLocalVars, LocalVariableInfo.class);
   }
 
   /**

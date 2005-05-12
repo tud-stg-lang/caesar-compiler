@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JForStatement.java,v 1.4 2005-01-24 16:52:59 aracic Exp $
+ * $Id: JForStatement.java,v 1.5 2005-05-12 10:38:34 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -179,6 +179,7 @@ public class JForStatement extends JLoopStatement {
     CodeLabel		condLabel = new CodeLabel();
 
     code.pushContext(this);
+    code.openNewScope();
     if (init != null) {
       init.genCode(context);			//		INIT
     }
@@ -197,6 +198,7 @@ public class JForStatement extends JLoopStatement {
     } else {
       code.plantJumpInstruction(opc_goto, startLabel);	//		GOTO start
     }
+    code.closeScope();
     code.plantLabel(getBreakLabel());			//	end:
 
     code.popContext(this);

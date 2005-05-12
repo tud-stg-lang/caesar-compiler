@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CSourceMethod.java,v 1.6 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CSourceMethod.java,v 1.7 2005-05-12 10:38:34 meffert Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -222,16 +222,29 @@ public class CSourceMethod extends CMethod {
     CodeSequence	code = CodeSequence.getCodeSequence();
 
     GenerationContext   context = new GenerationContext(factory, code);
-
-    body.genCode(context);
+    
+    code.openNewScope();
+    
+//    TODO [mef] : add "this" and parameters to local variable info
+//    if(this.getParameters().length > 0){
+//	    for(int i = 0; i < this.getParameters().length; i++){
+//	    	
+//	    }
+//    }
+    						 
+	body.genCode(context);
     if (getReturnType().getTypeID() == TID_VOID) {
+    	//TODO [mef] : add linenumber attribute for return instruction
       code.plantNoArgInstruction(opc_return);
     }
 
+    code.closeScope();
+    
     CodeInfo            info = new CodeInfo(code.getInstructionArray(),
                                             code.getHandlers(),
                                             code.getLineNumbers(),
-                                            null);
+                                            code.getLocalVariableInfos());
+
     code.release();
     body = null;
     return info;
