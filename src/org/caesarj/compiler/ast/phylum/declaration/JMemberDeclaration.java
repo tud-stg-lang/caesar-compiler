@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMemberDeclaration.java,v 1.5 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: JMemberDeclaration.java,v 1.6 2005-05-12 09:29:35 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -112,6 +112,9 @@ public abstract class JMemberDeclaration extends JPhylum {
    * @return	the interface
    */
   public CClass getCClass() {
+  	if(export == null){
+  		return null; 
+  	}
     return export.getCClass();
   }
 
