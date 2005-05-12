@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JavaQualifiedName.java,v 1.3 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JavaQualifiedName.java,v 1.4 2005-05-12 10:34:41 meffert Exp $
  */
 
 package org.caesarj.compiler.typesys.java;
@@ -78,7 +78,7 @@ public class JavaQualifiedName {
         return new JavaQualifiedName(newQualifiedName);
     }
     
-    public char getInnerSep() {
+	public char getInnerSep() {
         return innerSep;
     }
 
@@ -112,7 +112,7 @@ public class JavaQualifiedName {
     }
     
     public boolean equals(Object other) {
-        return qualifiedName.equals(((JavaQualifiedName)other).qualifiedName);
+    	return qualifiedName.equals(((JavaQualifiedName)other).qualifiedName);
     }
 
 	public String convertToMixinClassName() {
@@ -121,5 +121,42 @@ public class JavaQualifiedName {
 
 	public String getClassName() {
 		return className;
+	}
+	
+	/**
+	 * Converts for exampe:
+	 * or.caesarj.test.Collaboration.ExternalizedClass into 
+	 * org.caesarj.test.Collaboration_Impl$ExternalizedClass_Impl
+	 * @return
+	 */
+	public JavaQualifiedName convertToExternalizedClassName(){
+		StringBuffer newQualifiedName = new StringBuffer();
+		String[] packages = qualifiedName.split(String.valueOf(getPackageSep()));
+		boolean innerClass = false;
+		for(int i = 0; i < packages.length; i++){
+			if(!packages[i].equals(packages[i].toLowerCase())){
+				if(!innerClass){
+					newQualifiedName.append(packages[i] + "_Impl");
+					innerClass = true;
+				}else{
+					newQualifiedName.append(String.valueOf(getInnerSep()) + packages[i] + "_Impl");
+				}
+			}else{
+				newQualifiedName.append(packages[i]);
+				newQualifiedName.append(String.valueOf(getPackageSep()));
+			}
+		}
+		//System.out.println("/// JavaQualifiedName : " + newQualifiedName.toString());
+		return new JavaQualifiedName(newQualifiedName.toString());
+	}
+
+	/**
+	 * Replaces the package seperator.
+	 * @param newSep
+	 * @return
+	 */
+	public JavaQualifiedName convertPkgSeperator(String newSep){
+		String newQualifiedName = qualifiedName.replaceAll(String.valueOf(getPackageSep()), newSep);
+        return new JavaQualifiedName(newQualifiedName);
 	}
 }
