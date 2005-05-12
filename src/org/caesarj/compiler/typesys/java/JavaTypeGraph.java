@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JavaTypeGraph.java,v 1.6 2005-05-04 13:28:35 aracic Exp $
+ * $Id: JavaTypeGraph.java,v 1.7 2005-05-12 10:36:01 meffert Exp $
  */
 
 package org.caesarj.compiler.typesys.java;
@@ -115,7 +115,8 @@ public class JavaTypeGraph {
         
         for (Iterator it = typesToGen.iterator(); it.hasNext();) {
             JavaTypeNode item = (JavaTypeNode) it.next();
-            if(item.getType() == mixin)
+            // test against mixin of item.
+            if(item.getMixin() == mixin) 
                 res.add(item);
         }        
         
