@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarAsmBuilder.java,v 1.10 2005-05-11 13:40:38 thiago Exp $
+ * $Id: CaesarAsmBuilder.java,v 1.11 2005-05-13 14:23:11 thiago Exp $
  */
 
 package org.caesarj.compiler.asm;
@@ -34,8 +34,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
+import org.aspectj.asm.HierarchyWalker;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
+import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
@@ -130,6 +133,9 @@ public class CaesarAsmBuilder {
 	 */
 	public static void postBuild(CaesarJAsmManager asmManager) {
 	    asmManager.deattach();
+	    
+	    // Create the link nodes
+	    new NodeLinker(asmManager).process(asmManager.hierarchy.getRoot());
 	}
 
 	/**
@@ -212,7 +218,8 @@ public class CaesarAsmBuilder {
 		    }
 
 			CaesarProgramElement fileListNode = null;
-			fileListNode = findChildByName(asmManager.getHierarchy().getRoot().getChildren(), packageName.getName());
+			// See if there is already a package node
+			fileListNode = findChildByName(asmManager.getHierarchy().getRoot().getChildren(), pkgName);
 			if(fileListNode == null) {
 				// create new filelist
 				fileListNode = new CaesarProgramElement(
@@ -740,6 +747,67 @@ public class CaesarAsmBuilder {
 		return child;
 	}
 
+	
+	/**
+	 * 
+	 * TODO - Comments
+	 *
+	 * @author Thiago Tonelli Bartolomei <bart@macacos.org>
+	 *
+	 */
+	public static class NodeLinker extends HierarchyWalker {
+	    
+	    private IRelationshipMap map = null;
+	    private IHierarchy hierarchy = null;
+	    
+	    public NodeLinker(CaesarJAsmManager asmManager) {
+	        this.map = asmManager.getRelationshipMap();
+	        this.hierarchy = asmManager.getHierarchy();
+	    }
+	    
+	    /**
+	     * 
+	     */
+	    public void preProcess(IProgramElement node) {
+	    
+	        // Get this node's relationship list
+	        List relationships = map.get(node.getHandleIdentifier());
+	        if (relationships != null) {
+	            
+	            // Iterate the relationships
+	            Iterator j = relationships.iterator();
+				while(j.hasNext()) {
+				    
+				    // Create the relationship node and append it
+					IRelationship relationship = (IRelationship) j.next();
+					LinkNode relationNode = new LinkNode(relationship);
+					node.addChild(relationNode);
+					
+					// Check the relation type
+					int type = LinkNode.LINK_NODE_ADVISED_BY;
+					if (relationship.getName().equals("advises")) {
+					    type =  LinkNode.LINK_NODE_ADVISES;
+					}
+					
+					// For each target, create a node
+					Iterator k = relationship.getTargets().iterator();
+					while(k.hasNext()) {
+					    
+					    IProgramElement targetElement = hierarchy.findElementForHandle((String) k.next());
+					    LinkNode link = new LinkNode(relationship, targetElement, type);
+					    
+					    // Append to the relation node
+					    relationNode.addChild(link);
+					} 
+				}	  
+			}
+	    }
+	    
+	    public void postProcess(IProgramElement node) {
+	        
+	    }
+	}
+	
 	/********************************************************************************************************************
 	 * JUST HERE FOR DEBUG AND BACKUP
 	 * TODO REMOVE IT!!!

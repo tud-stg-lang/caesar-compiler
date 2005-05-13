@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.100 2005-05-11 13:39:18 thiago Exp $
+ * $Id: Main.java,v 1.101 2005-05-13 14:23:11 thiago Exp $
  */
 
 package org.caesarj.compiler;
@@ -274,7 +274,7 @@ public class Main extends MainSuper implements Constants {
         preWeaveProcessing(tree);
         
         tree = null;
-        
+              
         // CJ Aspect: Weaving
         if(!noWeaveMode())
             weaveGeneratedCode(environment);               
@@ -283,11 +283,12 @@ public class Main extends MainSuper implements Constants {
         
         // CJ Aspect: structure model postprocessing
         if(Main.buildAsm){
+
         	CaesarAsmBuilder.postBuild(asmManager);
         	if(Main.printAsm){
-        		StructureModelDump dump = new StructureModelDump(System.out);
                 System.out.println("== model after weaving ===============");
-                dump.print(asmManager);
+                StructureModelDump dump = new StructureModelDump(System.out, asmManager);
+                dump.print();
                 System.out.println("======================================");
         	}
         }

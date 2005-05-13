@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: StructureModelDump.java,v 1.8 2005-05-11 13:40:38 thiago Exp $
+ * $Id: StructureModelDump.java,v 1.9 2005-05-13 14:23:11 thiago Exp $
  */
 
 package org.caesarj.compiler.asm;
@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.aspectj.asm.HierarchyWalker;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
@@ -43,65 +44,97 @@ import org.aspectj.bridge.ISourceLocation;
  * @author Ivica Aracic <ivica.aracic@bytelords.de>
  * @author Thiago Tonelli Bartolomei <bart@macacos.org>
  */
-public class StructureModelDump {
+public class StructureModelDump extends HierarchyWalker {
 
-	String indent = ""; //$NON-NLS-1$
-	protected PrintStream out;
-
-	public StructureModelDump(PrintStream outArg) {
+	protected PrintStream out = null;
+    protected CaesarJAsmManager asmManager = null;
+    protected int depth = 0;
+    
+	public StructureModelDump(PrintStream outArg, CaesarJAsmManager asmManager) {
 		this.out = outArg;
+		this.asmManager = asmManager;
+		this.depth = 0;
 	}
 
-	public void print(CaesarJAsmManager asmManager) {
-	    print("", asmManager.getHierarchy().getRoot());
+	public void print() {
+	    this.process(asmManager.hierarchy.getRoot());
 	    printRelationshipMap(asmManager);
 	}
 	
-	protected void print(String indentArg, IProgramElement node) {
-		this.out.print(indentArg);
-
-		printNodeHeader(this.out, node);
-
-		if(node instanceof CaesarProgramElement){
+	/**
+	 * Print the node and advance the depth
+	 */
+	public void preProcess(IProgramElement node) {
+	    
+	    // Print the ident
+	    for (int i = 0; i < depth; i++) {
+	        out.print("..");
+	    }
+	    depth++;
+	    
+		// Print the node
+	    if (node instanceof LinkNode) {
+			LinkNode linkNode = (LinkNode) node;
+			this.out.print(" ->> "); 
+			printNodeHeader(this.out, linkNode);
+			this.out.println();
+			
+	    } else if(node instanceof CaesarProgramElement){
 		    ProgramElement peNode = (CaesarProgramElement) node;
+			printNodeHeader(this.out, node);
 			this.out.print(" {" + peNode.getHandleIdentifier() + "}");
 			this.out.println();
+			
 		} else if (node instanceof ProgramElement) {
 			ProgramElement peNode = (ProgramElement) node;
+			printNodeHeader(this.out, node);
 			this.out.print(
 				" '" + peNode.getBytecodeName() + "' '" + peNode.getBytecodeSignature() + peNode.getAccessibility()+"'");   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
 			this.out.println();
 
+			/*
 			List relations = peNode.getRelations();
 			if (relations.size() > 0) {
 				for (Iterator it = relations.iterator(); it.hasNext();) {
 					print(indentArg + "++", (IProgramElement) it.next());
 				}
-			}
-		/*} else if (node instanceof LinkNode) {
-			LinkNode linkNode = (LinkNode) node;
-			this.out.print(" ->> "); 
-			printNodeHeader(this.out, linkNode.getProgramElementNode());
-			this.out.println();*/
+			}*/
 		} else {
 			this.out.println();
-		}
-
-		for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
-			print(indentArg + "..", (IProgramElement) it.next()); 
-		}
+		}   
 	}
 
+	/**
+	 * Postprocess just decrement the depth
+	 */
+    public void postProcess(IProgramElement node) {
+        depth--;
+    }
+    
+    
 	protected void printNodeHeader(PrintStream outArg, IProgramElement node) {
-		//out.print(node.getClass().getName());
-
-		outArg.print("[" + node.getKind() + "] " + node.getName() + " package ='" + node.getPackageName() + "' ");
-
+	    
+		outArg.print("[" + node.getKind() + "] " + node.getName());
+		
 		ISourceLocation srcLoc = node.getSourceLocation();
 		if (srcLoc != null) {
 			outArg.print("(L " + srcLoc.getLine() + ") "); 
 		}
+	}
+	
+	protected void printNodeHeader(PrintStream outArg, LinkNode node) {
+	    
+	    if (node.type == LinkNode.LINK_NODE_RELATIONSHIP) {
+	        outArg.print("[relationship] " + node.getRelationship().getName());
+	    } else {
+			outArg.print("[link] " + node.getTargetElement().getName());
+			
+			ISourceLocation srcLoc = node.getTargetElement().getSourceLocation();
+			if (srcLoc != null) {
+				outArg.print("(L " + srcLoc.getLine() + ") "); 
+			}
+	    }
 	}
 	
 	protected void printRelationshipMap(CaesarJAsmManager asmManager) {
