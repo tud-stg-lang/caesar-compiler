@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CompileTest.java,v 1.3 2005-04-01 12:11:43 klose Exp $
+ * $Id: CompileTest.java,v 1.4 2005-05-18 10:53:26 klose Exp $
  */
 
 package org.caesarj.test.suite;
@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -44,6 +45,7 @@ import org.caesarj.compiler.types.KjcSignatureParser;
 import org.caesarj.compiler.types.KjcTypeFactory;
 import org.caesarj.compiler.types.SignatureParser;
 import org.caesarj.tools.antlr.runtime.ParserException;
+import org.caesarj.util.CWarning;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.UnpositionedError;
 
@@ -53,66 +55,74 @@ import org.caesarj.util.UnpositionedError;
  * @author Ivica Aracic
  */
 public class CompileTest extends CaesarTest {
-    
+
     protected List positionedErrorList = new LinkedList();
-    protected List unpositionedErrorList = new LinkedList();    
-    
-    
-    public CompileTest(CaesarTestSuite testSuite, String id, String description, String codeBlock) {
+
+    protected List unpositionedErrorList = new LinkedList();
+
+    protected String compilerErrors = "";
+
+    public CompileTest(CaesarTestSuite testSuite, String id,
+            String description, String codeBlock) {
         super(testSuite, id, description, codeBlock);
     }
-    
+
     protected String getPackageName() {
-        return getTestSuite().getPackagePrefix()+".p"+getId();
+        return getTestSuite().getPackagePrefix() + ".p" + getId();
     }
-    
+
     protected String getJavaFileName() {
-        return getTestSuite().getOutputPath()+"."+getId()+".java";
+        return getTestSuite().getOutputPath() + "." + getId() + ".java";
     }
-    
+
     protected StringBuffer genJavaCodeBlock() {
         StringBuffer res = new StringBuffer();
-        res.append("package "+getPackageName()+";\n");
+        res.append("package " + getPackageName() + ";\n");
         res.append(getCodeBlock());
         return res;
     }
-    
+
     public void test() throws Throwable {
         // Create compiler
-    	File f = new File( getJavaFileName() );
-    	f.getParentFile().mkdirs();
-    	
-        PrintWriter pw = new PrintWriter( new FileOutputStream( getJavaFileName()+".log" ) );
+        File f = new File(getJavaFileName());
+        f.getParentFile().mkdirs();
+
+        PrintWriter pw = new PrintWriter(new FileOutputStream(getJavaFileName()
+                + ".log"));
         CompilerMock compiler = new CompilerMock("tests", pw);
 
         StringBuffer genJavaCodeBlock = genJavaCodeBlock();
-        
+
         FileOutputStream fos = new FileOutputStream(f);
         fos.write(genJavaCodeBlock.toString().getBytes());
-        fos.close();        
-        
+        fos.close();
+
         // Compile test
         String[] args = { "-v", "-d", "bin", f.getAbsolutePath() };
         boolean ok = compiler.run(args);
-        
-        pw.close();               
-        
-        if(ok)
+
+        pw.close();
+
+        if (ok)
             compilerSuccess();
-        else
-            compilerFailed();               
-        
+        else {
+            PositionedError[] errors = compiler.getPositionedErrors();
+            compilerErrors = errors.length == 0 ? "" : errors[0].getMessage();
+            compilerFailed();
+        }
+
         //f.delete();
     }
-    
+
     public void compilerFailed() {
-        failure("failed : "+getId()+" : "+getDescription());
+        failure("(" + getId() + ") Compiler failed: " + compilerErrors +": "
+                + getDescription());
     }
-    
+
     public void compilerSuccess() {
-        
+
     }
-    
+
     class CompilerMock extends Main {
         protected Vector allUnits;
 
@@ -123,11 +133,28 @@ public class CompileTest extends CaesarTest {
             allUnits = new Vector();
         }
 
+        /**
+         * Returns an array containing all PositionedErrors without CWarnings
+         */
+        public PositionedError[] getPositionedErrors() {
+            Vector errors = new Vector();
+
+            for (Iterator iter = positionedErrorList.iterator(); iter.hasNext();) {
+                PositionedError element = (PositionedError) iter.next();
+                // Filter warnings out of errors
+                if (!(element instanceof CWarning))
+                    errors.add(element);
+            }
+
+            return (PositionedError[]) errors.toArray(new PositionedError[0]);
+        }
+
         private KjcEnvironment cachedEnvironment;
 
         protected JCompilationUnit getJCompilationUnit(CaesarParser parser)
                 throws ParserException {
-            JCompilationUnit compilationUnit = super.getJCompilationUnit(parser);
+            JCompilationUnit compilationUnit = super
+                    .getJCompilationUnit(parser);
             allUnits.add(compilationUnit);
             return compilationUnit;
         }
