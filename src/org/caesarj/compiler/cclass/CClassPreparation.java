@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassPreparation.java,v 1.35 2005-03-30 07:22:07 gasiunas Exp $
+ * $Id: CClassPreparation.java,v 1.36 2005-05-31 09:00:55 meffert Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -49,6 +49,7 @@ import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
+import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CCompilationUnitContext;
@@ -244,13 +245,16 @@ public class CClassPreparation implements CaesarConstants {
                 new JVariableDefinition(
                     where,
                     ACC_PRIVATE,
+					JLocalVariable.DES_GENERATED,
                     new CClassNameType("java/util/WeakHashMap"),
                     wrapperMapName,
                     null
                 ),
+				true, // [mef] mark as synthetic
                 null, null
             )
         );
+        decl.setGenerated(); // [mef] generated
         
         AstGenerator gen = environment.getAstGenerator();
         
@@ -506,13 +510,15 @@ public class CClassPreparation implements CaesarConstants {
 
 
             // generate methods
-            CMethod mixinMethods[] = mixinClass.getMethods();
-            List methods = new LinkedList();
+            // Iterate over JMethodDeclarations and extract formal parameters
             int i;
-            for (i = 0; i < mixinMethods.length; i++) {
-                
+            JMethodDeclaration mixinMethodsDecl[] = mixinClass.getTypeDeclaration().getMethods();
+            CMethod mixinMethod = null;
+            List methods = new LinkedList();
+            for (i = 0; i < mixinMethodsDecl.length; i++) {
+                mixinMethod = mixinMethodsDecl[i].getMethod();
                 if(
-                    mixinMethods[i].isConstructor()
+                	mixinMethod.isConstructor()
                     //|| mixinMethods[i].isCaesarFactoryMethod()
                 ) {
                     continue;
@@ -521,17 +527,19 @@ public class CClassPreparation implements CaesarConstants {
                 methods.add(
                     new CSourceMethod(
 	                    sourceClass,
-	                    mixinMethods[i].getModifiers(),
-	                    mixinMethods[i].getIdent(),
-	                    mixinMethods[i].getReturnType(),
-	                    mixinMethods[i].getParameters(),
-	                    mixinMethods[i].getThrowables(),
-	                    mixinMethods[i].isDeprecated(),
-	                    mixinMethods[i].isSynthetic(),
+	                    mixinMethod.getModifiers(),
+	                    mixinMethod.getIdent(),
+	                    mixinMethod.getReturnType(),
+	                    mixinMethodsDecl[i].getParameters(),
+	                    mixinMethod.getParameters(),
+	                    mixinMethod.getThrowables(),
+	                    mixinMethod.isDeprecated(),
+	                    mixinMethod.isSynthetic(),
 	                    null // CTODO JBlock is null?
 	                )
                 );
             }
+
             
             // def ctor 
             methods.add(
@@ -540,6 +548,7 @@ public class CClassPreparation implements CaesarConstants {
 	                ACC_PROTECTED,
 	                JAV_CONSTRUCTOR,
 					new CVoidType(),
+					new JFormalParameter[0], //TODO [mef] : Method parameters for debugging
 	                new CType[]{
 	            		context.getTypeFactory().createReferenceType(TypeFactory.RFT_OBJECT)
 	        		},

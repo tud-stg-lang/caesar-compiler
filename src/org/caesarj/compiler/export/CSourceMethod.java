@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CSourceMethod.java,v 1.7 2005-05-12 10:38:34 meffert Exp $
+ * $Id: CSourceMethod.java,v 1.8 2005-05-31 09:03:28 meffert Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -30,8 +30,10 @@ import java.util.ArrayList;
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.CodeEnv;
 import org.caesarj.classfile.CodeInfo;
+import org.caesarj.classfile.LocalVariableScope;
 import org.caesarj.classfile.MethodInfo;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
@@ -61,19 +63,53 @@ public class CSourceMethod extends CMethod {
    * @param	deprecated	is this method deprecated
    * @param	body		the source code
    */
+//  public CSourceMethod(CClass owner,
+//		       int modifiers,
+//		       String ident,
+//		       CType returnType,
+//		       CType[] paramTypes,
+//		       CReferenceType[] exceptions,
+//		       boolean deprecated,
+//		       boolean synthetic,
+//		       JBlock body)
+//  {
+//    super(owner, modifiers, ident, returnType, paramTypes, exceptions, deprecated, synthetic);
+//    this.body = body;
+//    this.fparameters = new JFormalParameter[0];
+//  }
+  
+  /**
+   * Constructs a method export.
+   *
+   * @param	owner		the owner of this method
+   * @param	modifiers	the modifiers on this method
+   * @param	ident		the ident of this method
+   * @param	returnType	the return type of this method
+   * @param params		the full parameter information (necessary for local variable table)
+   * @param	paramTypes	the parameter types of this method
+   * @param	exceptions	a list of all exceptions in the throws list
+   * @param	deprecated	is this method deprecated
+   * @param	body		the source code
+   */
   public CSourceMethod(CClass owner,
-		       int modifiers,
-		       String ident,
-		       CType returnType,
-		       CType[] paramTypes,
-		       CReferenceType[] exceptions,
-		       boolean deprecated,
-		       boolean synthetic,
-		       JBlock body)
-  {
-    super(owner, modifiers, ident, returnType, paramTypes, exceptions, deprecated, synthetic);
-    this.body = body;
-  }
+	       int modifiers,
+	       String ident,
+	       CType returnType,
+		   JFormalParameter[] params,
+	       CType[] paramTypes,
+	       CReferenceType[] exceptions,
+	       boolean deprecated,
+	       boolean synthetic,
+	       JBlock body)
+	{
+  		super(owner, modifiers, ident, returnType, paramTypes, exceptions, deprecated, synthetic);
+  		this.body = body;
+  		if(params != null){
+  			this.fparameters = params;
+  		}else{
+  			this.fparameters = new JFormalParameter[0];
+  		}
+	}
 
   // ----------------------------------------------------------------------
   // ACCESSORS
@@ -108,6 +144,20 @@ public class CSourceMethod extends CMethod {
     } else{
       return (CMethod[])superMethods.toArray(new CMethod[superMethods.size()]); 
     }
+  }
+  
+  /**
+   * @return the formal parameters for this method
+   */
+  public JFormalParameter[] getFormalParameters(){
+  	return this.fparameters;
+  }
+  
+  /**
+   * @param params the formal parameters for this method
+   */
+  protected void setFormalParameters(JFormalParameter[] params){
+  	this.fparameters = params;
   }
  
   /**
@@ -223,22 +273,23 @@ public class CSourceMethod extends CMethod {
 
     GenerationContext   context = new GenerationContext(factory, code);
     
-    code.openNewScope();
+    LocalVariableScope scope = new LocalVariableScope();
+    code.pushLocalVariableScope(scope);
     
-//    TODO [mef] : add "this" and parameters to local variable info
-//    if(this.getParameters().length > 0){
-//	    for(int i = 0; i < this.getParameters().length; i++){
-//	    	
-//	    }
-//    }
+    // TODO [mef] : add "this" to local variable info
+    JFormalParameter[] params = this.getFormalParameters();
+	for(int i = 0; i < params.length; i++){
+		code.addLocalVarInfo(null, params[i]);
+	}
+    
     						 
 	body.genCode(context);
+    // TODO [mef] : add linenumber attribute for return instruction
     if (getReturnType().getTypeID() == TID_VOID) {
-    	//TODO [mef] : add linenumber attribute for return instruction
       code.plantNoArgInstruction(opc_return);
     }
 
-    code.closeScope();
+    code.popLocalVariableScope(scope);
     
     CodeInfo            info = new CodeInfo(code.getInstructionArray(),
                                             code.getHandlers(),
@@ -284,4 +335,6 @@ public class CSourceMethod extends CMethod {
 
   private boolean               used;
   private ArrayList             superMethods;
+  
+  private JFormalParameter[]	fparameters;
 }

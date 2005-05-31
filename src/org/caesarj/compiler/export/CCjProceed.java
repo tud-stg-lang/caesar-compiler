@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjProceed.java,v 1.3 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CCjProceed.java,v 1.4 2005-05-31 09:02:36 meffert Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -32,6 +32,7 @@ import org.caesarj.classfile.Instruction;
 import org.caesarj.classfile.LocalVarInstruction;
 import org.caesarj.classfile.MethodInfo;
 import org.caesarj.classfile.PushLiteralInstruction;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
@@ -78,6 +79,7 @@ public class CCjProceed extends CSourceMethod implements CaesarConstants {
 		CClass owner,
 		String ident,
 		CType returnType,
+		JFormalParameter[] params,
 		CType[] parameterTypes,
 		String adviceName) {
 		super(
@@ -85,6 +87,7 @@ public class CCjProceed extends CSourceMethod implements CaesarConstants {
 			ACC_STATIC,
 			ident,
 			returnType,
+			params,
 			parameterTypes,
 			new CReferenceType[0],
 			false,

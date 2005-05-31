@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjAdvice.java,v 1.5 2005-04-20 19:31:40 gasiunas Exp $
+ * $Id: CCjAdvice.java,v 1.6 2005-05-31 09:01:52 meffert Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -65,12 +65,14 @@ public class CCjAdvice extends CSourceMethod {
 	/** The extraArgumentFlags of the advice, needed for attribute creation.*/
 	private int extraArgumentFlags;
 
+
 	/**
 	 * Constructor for CaesarSourceAdvice.
 	 * @param owner
 	 * @param modifiers
 	 * @param ident
 	 * @param returnType
+	 * @param params the formal parameters for this advice (necessary for local variable table)
 	 * @param paramTypes
 	 * @param exceptions
 	 * @param typeVariables
@@ -84,6 +86,7 @@ public class CCjAdvice extends CSourceMethod {
 		int modifiers,
 		String ident,
 		CType returnType,
+		JFormalParameter[] params,
 		CType[] paramTypes,
 		CReferenceType[] exceptions,
 		JBlock body,
@@ -95,6 +98,7 @@ public class CCjAdvice extends CSourceMethod {
 			modifiers | ACC_FINAL,
 			ident,
 			returnType,
+			params,
 			paramTypes,
 			exceptions,
 			false,

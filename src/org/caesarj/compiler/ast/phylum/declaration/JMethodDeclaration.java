@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodDeclaration.java,v 1.13 2005-02-14 16:28:27 aracic Exp $
+ * $Id: JMethodDeclaration.java,v 1.14 2005-05-31 08:57:44 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -262,6 +262,7 @@ public class JMethodDeclaration extends JMemberDeclaration {
                 modifiers,
                 ident,
                 returnType,
+                parameters,
                 parameterTypes,
                 exceptions,
                 isDeprecated(),

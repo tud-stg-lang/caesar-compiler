@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjPrivilegedMethod.java,v 1.3 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CCjPrivilegedMethod.java,v 1.4 2005-05-31 09:02:26 meffert Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -29,6 +29,7 @@ import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.util.TokenReference;
 
@@ -63,6 +64,7 @@ public class CCjPrivilegedMethod extends CSourceMethod {
 			baseMethod.getModifiers(),
 			baseMethod.getIdent(),
 			baseMethod.getReturnType(),
+			new JFormalParameter[0],	// TODO [mef] : Method parameters for debugging
 			baseMethod.getParameters(),
 			CReferenceType.EMPTY,
 			false,
@@ -72,6 +74,7 @@ public class CCjPrivilegedMethod extends CSourceMethod {
 				JBlock.EMPTY,
 				new JavaStyleComment[0])
 			);
+
 
 		this.baseMethod = baseMethod;
 	}

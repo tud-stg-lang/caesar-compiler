@@ -20,13 +20,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjPrivilegedField.java,v 1.4 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CCjPrivilegedField.java,v 1.5 2005-05-31 09:02:16 meffert Exp $
  */
 
 package org.caesarj.compiler.export;
 
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMember;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.CVoidType;
@@ -96,6 +97,7 @@ public class CCjPrivilegedField extends CSourceField {
 				readerMember.getModifiers(),
 				readerMember.getName(),
 				getType(),
+				new JFormalParameter[0], //TODO [mef] : Method parameters for debugging
 				readerParameterTypes,
 				CReferenceType.EMPTY,
 				false,
@@ -116,6 +118,7 @@ public class CCjPrivilegedField extends CSourceField {
 				writerMember.getModifiers(),
 				writerMember.getName(),
 				new CVoidType(),
+				new JFormalParameter[0], //TODO [mef] : Method parameters for debugging
 				writerParameterTypes,
 				CReferenceType.EMPTY,
 				false,

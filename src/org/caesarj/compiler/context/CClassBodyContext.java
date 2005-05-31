@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassBodyContext.java,v 1.5 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CClassBodyContext.java,v 1.6 2005-05-31 09:01:33 meffert Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -53,7 +53,7 @@ public class CClassBodyContext extends CMethodContext {
         super(cctx, env, null);
         method =         new CSourceMethod(
 			                getClassContext().getCClass(),ACC_PRIVATE,METHOD_NAME,new CVoidType(),
-			                new CType[0], new CReferenceType[0],false, false,
+			                new JFormalParameter[0], new CType[0], new CReferenceType[0],false, false,
 			                	new JBlock(
 			                	        TokenReference.NO_REF,
 			                	        new JStatement[0],
