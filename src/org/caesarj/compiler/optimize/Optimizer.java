@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Optimizer.java,v 1.3 2005-05-12 10:38:34 meffert Exp $
+ * $Id: Optimizer.java,v 1.4 2005-05-31 09:05:15 meffert Exp $
  */
 
 package org.caesarj.compiler.optimize;
@@ -57,7 +57,7 @@ public class Optimizer implements AccessorContainer {
     // do work at specified level
     boolean	codeChanged = true;
 
-    while (level-- > 0 && codeChanged) {
+    while (/*level-- > 0 &&*/ codeChanged) {
       codeChanged = opt.optimizeCodeSequence();
     }
 
@@ -158,6 +158,14 @@ public class Optimizer implements AccessorContainer {
   private boolean cleanCode() {
     boolean		codeRemoved = false;
 
+    // Test if all end-instructions are reached... (copied from exception"handlers" see below)
+    for(int j = 0; localVariables != null && j < localVariables.length; j++){
+    	while(!((InstructionHandle)localVariables[j].getEnd()).isReached()) {
+    		localVariables[j].setEnd(((InstructionHandle)localVariables[j].getEnd()).getPrevious());
+        }
+    }
+    
+    
     for (int i = 0; i < handlers.length; i++) {
       while (!((InstructionHandle)handlers[i].getEnd()).isReached()) {
 	handlers[i].setEnd(((InstructionHandle)handlers[i].getEnd()).getPrevious());
