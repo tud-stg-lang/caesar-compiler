@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JForStatement.java,v 1.5 2005-05-12 10:38:34 meffert Exp $
+ * $Id: JForStatement.java,v 1.6 2005-05-31 08:59:21 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
 
+import org.caesarj.classfile.LocalVariableScope;
 import org.caesarj.compiler.ast.CBlockError;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
@@ -179,7 +180,8 @@ public class JForStatement extends JLoopStatement {
     CodeLabel		condLabel = new CodeLabel();
 
     code.pushContext(this);
-    code.openNewScope();
+    LocalVariableScope scope = new LocalVariableScope();
+    code.pushLocalVariableScope(scope);
     if (init != null) {
       init.genCode(context);			//		INIT
     }
@@ -198,7 +200,7 @@ public class JForStatement extends JLoopStatement {
     } else {
       code.plantJumpInstruction(opc_goto, startLabel);	//		GOTO start
     }
-    code.closeScope();
+    code.popLocalVariableScope(scope);
     code.plantLabel(getBreakLabel());			//	end:
 
     code.popContext(this);

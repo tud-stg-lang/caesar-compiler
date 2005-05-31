@@ -20,13 +20,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JSwitchGroup.java,v 1.4 2005-05-12 10:38:34 meffert Exp $
+ * $Id: JSwitchGroup.java,v 1.5 2005-05-31 08:59:46 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
 
 import java.util.Vector;
 
+import org.caesarj.classfile.LocalVariableScope;
 import org.caesarj.compiler.ast.CLineError;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.visitor.IVisitor;
@@ -156,11 +157,12 @@ public class JSwitchGroup extends JPhylum {
     setLineNumber(code);
 
     code.plantLabel(pos);
-    code.openNewScope();
+    LocalVariableScope scope = new LocalVariableScope();
+    code.pushLocalVariableScope(scope);
     for (int i = 0; i < stmts.length; i++) {
       stmts[i].genCode(context);
     }
-    code.closeScope();
+    code.popLocalVariableScope(scope);
   }
 
   public JSwitchLabel[] getLabels() {return labels;}

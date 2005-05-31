@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CodeSequence.java,v 1.6 2005-05-12 10:38:34 meffert Exp $
+ * $Id: CodeSequence.java,v 1.7 2005-05-31 09:01:22 meffert Exp $
  */
 
 package org.caesarj.compiler.codegen;
@@ -90,7 +90,8 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
     seq.lineNumber = 0;
     seq.lastLine = -1;
     
-    //System.out.println("CodeSequence.getCodeSequence()");
+    seq.lastInstruction = null;
+    seq.firstInstruction = null;
     
     return seq;
   }
@@ -132,8 +133,9 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
       lines.add(new LineNumberInfo((short)lineNumber, insn));
     }
     
-    // update last instruction variable (used for local variable scopes)
-    this.last = insn;
+    // update instruction variables (used for local variable scopes)
+    if(this.firstInstruction == null) this.firstInstruction = insn;
+    this.lastInstruction = insn;
   }
 
   /**
@@ -387,23 +389,27 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
   }
 
   // --------------------------------------------------------------------
-  // Variable Scopes
+  // Local Variable Scopes
   // --------------------------------------------------------------------
   
   /**
-   * Opens a new scope for local variables.
+   * Adds a new local variable scope.
    */
-  public final void openNewScope(){
-  	scopes.push(new LocalVariableScope());
+  public final void pushLocalVariableScope(LocalVariableScope scope){
+  	if(this.lastInstruction != null) scope.setStart(this.lastInstruction);
+  	scopes.push(scope);
   }
   
   /**
-   * Closes the last opend local variable scope.
+   * Verifies that the local variable scope is the last added, and removes it.
    */
-  public final void closeScope(){
-  	LocalVariableScope scope = (LocalVariableScope)scopes.pop();
-  	scope.close(this.last);
-  	//this.last.dump();
+  public final void popLocalVariableScope(LocalVariableScope scope){
+  	LocalVariableScope s = (LocalVariableScope)scopes.pop();
+  	verify(s == scope);
+  	scope.setEnd(this.lastInstruction);
+  	
+  	// 	used for scope of method-parameters
+  	if(!scope.isOpen()) scope.setStart(this.firstInstruction); 
   }
   
 
@@ -517,7 +523,7 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
   /**
    * Add a local variable name information
    */
-  private final void addLocalVarInfo(LocalVarInstruction insn,
+  public final void addLocalVarInfo(LocalVarInstruction insn,
 				     JLocalVariable var) {
   	// TODO : test for compiler-argument falg, if local variable info should be generated!
   	if(! CodeSequence.generateLocalVarInfo) return;
@@ -562,5 +568,6 @@ public final class CodeSequence extends org.caesarj.util.Utils implements org.ca
   private static final Stack		stack = new Stack();
   
   private final Stack 		scopes = new Stack();
-  private Instruction 		last;
+  private Instruction 		lastInstruction = null;
+  private Instruction 		firstInstruction = null;
 }

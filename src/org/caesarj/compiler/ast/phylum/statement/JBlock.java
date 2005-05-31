@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JBlock.java,v 1.5 2005-05-12 10:38:34 meffert Exp $
+ * $Id: JBlock.java,v 1.6 2005-05-31 08:59:08 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
 
+import org.caesarj.classfile.LocalVariableScope;
 import org.caesarj.compiler.ast.CLineError;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.visitor.IVisitor;
@@ -129,11 +130,12 @@ public class JBlock extends JStatement {
 
     setLineNumber(code);
     
-    code.openNewScope();
+    LocalVariableScope scope = new LocalVariableScope();
+    code.pushLocalVariableScope(scope);
     for (int i = 0; i < body.length; i++) {
       body[i].genCode(context);
     }
-    code.closeScope();
+    code.popLocalVariableScope(scope);
   }
   
   public String toString() {

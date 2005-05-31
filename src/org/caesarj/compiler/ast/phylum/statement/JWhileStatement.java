@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JWhileStatement.java,v 1.4 2005-05-12 10:38:34 meffert Exp $
+ * $Id: JWhileStatement.java,v 1.5 2005-05-31 09:00:20 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
 
+import org.caesarj.classfile.LocalVariableScope;
 import org.caesarj.compiler.ast.CBlockError;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.phylum.expression.JAssignmentExpression;
@@ -153,18 +154,20 @@ public class JWhileStatement extends JLoopStatement {
     if (cond.isConstant() && cond.booleanValue()) {
       // while (true)
       code.plantLabel(getContinueLabel());			//	body:
-      code.openNewScope();
+      LocalVariableScope scope = new LocalVariableScope();
+      code.pushLocalVariableScope(scope);
       body.genCode(context);					//		BODY CODE
-      code.closeScope();
+      code.popLocalVariableScope(scope);
       code.plantJumpInstruction(opc_goto, getContinueLabel());		//		GOTO body
     } else {
       CodeLabel		bodyLabel = new CodeLabel();
 
       code.plantJumpInstruction(opc_goto, getContinueLabel());		//		GOTO cont
       code.plantLabel(bodyLabel);				//	body:
-      code.openNewScope();
+      LocalVariableScope scope = new LocalVariableScope();
+      code.pushLocalVariableScope(scope);
       body.genCode(context);					//		BODY CODE
-      code.closeScope();
+      code.popLocalVariableScope(scope);
       code.plantLabel(getContinueLabel());			//	cont:
       cond.genBranch(true, context, bodyLabel);			//		EXPR CODE; IFNE body
     }

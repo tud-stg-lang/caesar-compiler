@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JIfStatement.java,v 1.5 2005-05-12 10:38:34 meffert Exp $
+ * $Id: JIfStatement.java,v 1.6 2005-05-31 08:59:35 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
 
+import org.caesarj.classfile.LocalVariableScope;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.phylum.expression.JAssignmentExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
@@ -138,28 +139,32 @@ public class JIfStatement extends JStatement {
 
     if (cond.isConstant()) {
       if (cond.booleanValue()) {
-      	code.openNewScope();
-	thenClause.genCode(context);
-	code.closeScope();
+        LocalVariableScope scope = new LocalVariableScope();
+        code.pushLocalVariableScope(scope);
+		thenClause.genCode(context);
+		code.popLocalVariableScope(scope);
       } else if (elseClause != null) {
-      	code.openNewScope();
-	elseClause.genCode(context);
-	code.closeScope();
+        LocalVariableScope scope = new LocalVariableScope();
+        code.pushLocalVariableScope(scope);
+		elseClause.genCode(context);
+		code.popLocalVariableScope(scope);
       }
     } else {
       CodeLabel		elseLabel = new CodeLabel();
       CodeLabel		nextLabel = new CodeLabel();
 
       cond.genBranch(false, context, elseLabel);   //		COND IFEQ else
-      code.openNewScope();
+      LocalVariableScope scope = new LocalVariableScope();
+      code.pushLocalVariableScope(scope);
       thenClause.genCode(context);			//		THEN CODE
-      code.closeScope();
+      code.popLocalVariableScope(scope);
       code.plantJumpInstruction(opc_goto, nextLabel);	//		GOTO next
       code.plantLabel(elseLabel);		//	else:
       if (elseClause != null) {
-      	code.openNewScope();
-	elseClause.genCode(context);		//		ELSE CODE
-	code.closeScope();
+        LocalVariableScope scope2 = new LocalVariableScope();
+        code.pushLocalVariableScope(scope2);
+		elseClause.genCode(context);		//		ELSE CODE
+		code.popLocalVariableScope(scope2);
       }
       code.plantLabel(nextLabel);		//	next	...
     }
