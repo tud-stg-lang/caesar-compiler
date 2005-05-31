@@ -29,6 +29,7 @@ package org.caesarj.classfile;
 public class LocalVariableScope {
 
 	Instruction end = null;
+	Instruction start = null;
 	
 	
 	public LocalVariableScope(){
@@ -36,11 +37,10 @@ public class LocalVariableScope {
 	}
 	
 	/**
-	 * Closes this scope and sets the end instruction.
-	 * @param end instruction
+	 * @return if this scope is open.
 	 */
-	public void close(Instruction end){
-		this.setEnd(end);
+	public boolean isOpen(){
+		return this.getStart() != null;
 	}
 	
 	/**
@@ -51,6 +51,18 @@ public class LocalVariableScope {
 	}
 	
 	/**
+	 * @return Returns the start.
+	 */
+	public Instruction getStart() {
+		return start;
+	}
+	/**
+	 * @param start The start to set.
+	 */
+	public void setStart(Instruction start) {
+		this.start = start;
+	}
+	/**
 	 * @return Returns the end instruction.
 	 */
 	public Instruction getEnd() {
@@ -59,7 +71,7 @@ public class LocalVariableScope {
 	/**
 	 * @param end The end instruction to set.
 	 */
-	protected void setEnd(Instruction end) {
+	public void setEnd(Instruction end) {
 		this.end = end;
 	}
 }

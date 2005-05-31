@@ -33,9 +33,9 @@ public class JLocalVariableEntry {
 
 	JLocalVariable var;
 	LocalVariableScope scope;
-	LocalVarInstruction insn;
+	Instruction insn;
 	
-	public JLocalVariableEntry(LocalVarInstruction insn, JLocalVariable var, LocalVariableScope scope){
+	public JLocalVariableEntry(Instruction insn, JLocalVariable var, LocalVariableScope scope){
 		this.var = var;
 		this.insn = insn;
 		this.scope = scope;
@@ -57,19 +57,23 @@ public class JLocalVariableEntry {
 	 */
 	public LocalVariableInfo getInfo(){
 		LocalVariableInfo info;
+		if(this.insn == null){
+			this.insn = this.scope.getStart(); // for method parameters
+		}
 		if(scope.isClosed()){ 
 			info = new LocalVariableInfo(
 					this.insn,
 					this.scope.getEnd(),
 					this.getVar().getIdent(), 
-					this.getVar().getType().getSignature(), 
+					this.getVar().getType().getSignature(),
 					new Integer(this.getVar().getPosition()).shortValue());
 		} else {
+			// Throw Exception ??? 
 			info = new LocalVariableInfo(
 					this.insn,
 					this.insn,
 					this.getVar().getIdent(), 
-					this.getVar().getType().getSignature(), 
+					this.getVar().getType().getSignature(),
 					new Integer(this.getVar().getPosition()).shortValue());
 		}
 		return info;
@@ -92,14 +96,14 @@ public class JLocalVariableEntry {
 	/**
 	 * @return Returns the insn.
 	 */
-	public LocalVarInstruction getInsn() {
+	public Instruction getInsn() {
 		return insn;
 	}
 	
 	/**
 	 * @param insn The insn to set.
 	 */
-	protected void setInsn(LocalVarInstruction insn) {
+	protected void setInsn(Instruction insn) {
 		this.insn = insn;
 	}
 }
