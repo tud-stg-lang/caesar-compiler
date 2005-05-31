@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclaration.java,v 1.45 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: JTypeDeclaration.java,v 1.46 2005-05-31 08:58:19 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -36,6 +36,7 @@ import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
+import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.KjcMessages;
@@ -657,12 +658,15 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
 	                    new JVariableDefinition(
 	                        getTokenReference(),
 	                        ACC_PRIVATE | ACC_FINAL,
+							JLocalVariable.DES_GENERATED,
 	                        //getOwner().getCorrespondingCClass().getAbstractType(),
 	                        ownerType,
 	                        JAV_OUTER_THIS,
 	                        null),
+						true, // [mef] mark field as synthetic
 	                    null,
 	                    null);
+	            outerThis.setGenerated(); //[mef]
 	            ((CSourceClass)getCClass()).addField(
 	                new CSourceField(
 	                    getCClass(),

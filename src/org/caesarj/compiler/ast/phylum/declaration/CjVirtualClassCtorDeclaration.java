@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjVirtualClassCtorDeclaration.java,v 1.4 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CjVirtualClassCtorDeclaration.java,v 1.5 2005-05-31 08:57:13 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -33,6 +33,7 @@ import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
 import org.caesarj.compiler.ast.phylum.statement.JEmptyStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
+import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CClassContext;
@@ -122,8 +123,10 @@ public class CjVirtualClassCtorDeclaration extends JConstructorDeclaration {
     private static JFormalParameter genFormalParameter(
         TokenReference where,
         TypeFactory factory) {
-        return new JFormalParameter(where, 0, factory
-            .createReferenceType(TypeFactory.RFT_OBJECT), "_$outer", true);
+//        return new JFormalParameter(where, 0, factory
+//            .createReferenceType(TypeFactory.RFT_OBJECT), "_$outer", true);
+        return new JFormalParameter(where, JLocalVariable.DES_GENERATED, factory
+                .createReferenceType(TypeFactory.RFT_OBJECT), "_$outer", true);
     }
 
     private static JConstructorCall genSuperCall(TokenReference where) {

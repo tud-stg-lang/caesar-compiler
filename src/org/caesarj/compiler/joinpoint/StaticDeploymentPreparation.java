@@ -26,6 +26,7 @@ import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
 import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
 import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
+import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.CaesarMessages;
@@ -204,6 +205,7 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 			new JVariableDefinition(
 				cd.getTokenReference(),
 				ACC_PUBLIC | ACC_FINAL | ACC_STATIC,
+				JLocalVariable.DES_GENERATED,
 				singletonType,
 				STATIC_INSTANCE_FIELD,
 				null);

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjClassDeclaration.java,v 1.34 2005-04-05 16:50:18 gasiunas Exp $
+ * $Id: CjClassDeclaration.java,v 1.35 2005-05-31 08:55:43 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -47,6 +47,7 @@ import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
 import org.caesarj.compiler.ast.phylum.statement.JExpressionListStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
+import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.CaesarConstants;
@@ -195,18 +196,22 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
         
         // add wrappee field and method
         if(wrappee != null) {
-            addField(
-                new JFieldDeclaration(
+        	JFieldDeclaration newField = new JFieldDeclaration(
                     where,
                     new JVariableDefinition(
                         where,
                         ACC_PRIVATE,
+						JLocalVariable.DES_GENERATED,
                         wrappee,
                         WRAPPER_WRAPPEE_FIELD,
                         new JNullLiteral(where)
                     ),
+					true, // [mef] mark as synthetic
                     null, null
-                )
+                );
+        	newField.setGenerated();
+            addField(
+            		newField
             );
             
             addMethod( 

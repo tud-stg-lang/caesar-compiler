@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjDeployStatement.java,v 1.6 2005-01-24 16:52:59 aracic Exp $
+ * $Id: CjDeployStatement.java,v 1.7 2005-05-31 08:58:38 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -31,6 +31,7 @@ import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
+import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
@@ -186,6 +187,7 @@ public class CjDeployStatement extends JStatement implements CaesarConstants {
 			new JVariableDefinition(
                 where,
 				0,
+				JLocalVariable.DES_GENERATED,
 				new CClassNameType(CAESAR_ASPECT_IFC),
 				deployVariableName,
                 checkIfAspectCall),

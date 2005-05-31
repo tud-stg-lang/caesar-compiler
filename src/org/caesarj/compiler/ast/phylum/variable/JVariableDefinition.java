@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JVariableDefinition.java,v 1.19 2005-03-10 15:02:16 aracic Exp $
+ * $Id: JVariableDefinition.java,v 1.20 2005-05-31 09:00:34 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -71,6 +71,20 @@ public class JVariableDefinition extends JLocalVariable {
     public JVariableDefinition(TokenReference where, int modifiers, CType type,
             String ident, JExpression initializer) {
         super(where, modifiers, DES_LOCAL_VAR, type, ident, initializer);
+        verify(type != null);
+    }
+    
+    /**
+     * @param where
+     * @param modifiers
+     * @param kind			the kind of the variable
+     * @param type
+     * @param ident
+     * @param initializer
+     */
+    public JVariableDefinition(TokenReference where, int modifiers, int kind, CType type,
+            String ident, JExpression initializer) {
+        super(where, modifiers, kind, type, ident, initializer);
         verify(type != null);
     }
 

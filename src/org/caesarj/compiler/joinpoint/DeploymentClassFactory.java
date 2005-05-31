@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.46 2005-04-15 12:42:09 gasiunas Exp $
+ * $Id: DeploymentClassFactory.java,v 1.47 2005-05-31 09:03:42 meffert Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -63,6 +63,7 @@ import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
 import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
+import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.export.CClass;
@@ -425,6 +426,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JVariableDefinition(
 				where,
 				ACC_PRIVATE,
+				JLocalVariable.DES_GENERATED,
 				new CClassNameType(ASPECT_CONTAINER_IFC),
 				ASPECT_CONTAINER_FIELD,
 				null);
@@ -443,6 +445,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JVariableDefinition(
 				where,
 				ACC_PRIVATE,
+				JLocalVariable.DES_GENERATED,
 				new CClassNameType(qualifiedAspectInterfaceName),
 				"$singleAspect",
 				null);
@@ -465,6 +468,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JVariableDefinition(
 				where,
 				ACC_PUBLIC | ACC_FINAL | ACC_STATIC,
+				JLocalVariable.DES_GENERATED,
 				singletonType,
 				PER_SINGLETON_INSTANCE_FIELD,
 				null);
@@ -822,6 +826,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JVariableDefinition(
 				where,
 				ACC_PRIVATE,
+				JLocalVariable.DES_GENERATED,
 				iterator,
 				"$inst",
 				new JNullLiteral(where));
@@ -834,6 +839,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JVariableDefinition(
 				where,
 				ACC_PRIVATE,
+				JLocalVariable.DES_GENERATED,
 				typeFactory.getPrimitiveType(TypeFactory.PRM_INT),
 				"$ind",
 				null);
@@ -847,6 +853,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JVariableDefinition(
 				where,
 				ACC_PRIVATE,
+				JLocalVariable.DES_GENERATED,
 				closure,
 				"$nextCall",
 				new JNullLiteral(where));
@@ -860,6 +867,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 			new JVariableDefinition(
 				where,
 				ACC_PRIVATE,
+				JLocalVariable.DES_GENERATED,
 				aspectIfc,
 				"$aspObj",
 				new JNullLiteral(where));
