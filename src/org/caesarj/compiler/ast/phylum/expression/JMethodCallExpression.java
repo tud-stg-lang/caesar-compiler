@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.33 2005-03-10 17:53:05 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.34 2005-06-02 15:30:52 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -51,6 +51,7 @@ import org.caesarj.compiler.family.ArgumentAccess;
 import org.caesarj.compiler.family.ContextExpression;
 import org.caesarj.compiler.family.Dummy;
 import org.caesarj.compiler.family.FieldAccess;
+import org.caesarj.compiler.family.InfiniteContextExpression;
 import org.caesarj.compiler.family.MethodAccess;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CArrayType;
@@ -366,8 +367,9 @@ public class JMethodCallExpression extends JExpression
 		    && method.isSynthetic()
 	    ) { 
             try {
-    	        int k = 0;		      
-                
+    	        //int k = 0;		      
+    	        ContextExpression initialContext = new ContextExpression(null,0,null);
+    	        
                 CCjSourceAccessorMethod accessorMethod = (CCjSourceAccessorMethod)method;
                 JAccessorMethod accessorMethodDecl = accessorMethod.getDecl();
                 
@@ -375,44 +377,59 @@ public class JMethodCallExpression extends JExpression
     	        //CClass clazz = argTypes[0].getCClass();
                 
                 CContext ctx = context.getBlockContext();
-                
-                // ... find first class context ... 
-                while (!(ctx instanceof CClassContext)){
-                    ctx = ctx.getParentContext();
-                    k++;
-                }
-                // ... and search for the correct outer class.
-                while ( ((CClassContext)ctx).getCClass() != clazz) {
-                    ctx = ctx.getParentContext();
-                    k++;
-                    
-                    check(
-                        context,
-                        !(ctx == null || ctx.getClassContext() == null ),                        
-                        CaesarMessages.ILLEGAL_PATH_ELEMENT, 
-                        "accessor method not returning an outer reference"
-                    );
-                    
-                    // this is necessary for nested classes
-                    // the check above ensures that this is going to terminate
-                    while(!(ctx instanceof CClassContext)) {
-                        ctx = ctx.getParentContext();
-                        k++;
-                    }
-                }                		       
-    	                    
+
                 CMember accessedMember = accessorMethodDecl.getMember();
-                if(accessedMember instanceof CField) {
-                    CField accessedField = (CField)accessedMember;
+                
+                if (accessedMember instanceof CField){
+                    CField accessedField = (CField) accessedMember;
+                    // ... find first class context ... 
+                    while (!(ctx instanceof CClassContext)){
+                        ctx = ctx.getParentContext();
+//                        k++;
+                        initialContext.adaptK(1);
+                    }
+                    // ... and search for the correct outer class.
+                    while ( ((CClassContext)ctx).getCClass() != clazz) {
+                        ctx = ctx.getParentContext();
+//                        k++;
+                        initialContext.adaptK(1);
+                       
+//                        check(
+//                            context,
+//                            !(ctx == null || ctx.getClassContext() == null ),                        
+//                            CaesarMessages.ILLEGAL_PATH_ELEMENT, 
+//                            "accessor method not returning an outer reference"
+//                        );
+                        if (ctx == null || ctx.getClassContext() == null ){
+                            // no outer path can be computed
+                            initialContext = new InfiniteContextExpression();
+                            break;
+                        }
+                        
+                        // this is necessary for nested classes
+                        // the check above ensures that this is going to terminate
+                        while(!(ctx instanceof CClassContext)) {
+                            ctx = ctx.getParentContext();
+//                            k++;
+                            initialContext.adaptK(1);
+
+                        }
+                    }
+                    
                     if(accessedField.getIdent().equals(JAV_OUTER_THIS)) {
-                        family = new ContextExpression(null, k+2, null);
-                        thisAsFamily = new ContextExpression(null, k+1, null);        
+                        ContextExpression k1 = initialContext.cloneWithAdaptedK(1),
+                        					k2 = initialContext.cloneWithAdaptedK(2);
+                      family = k2;
+                      thisAsFamily = k1;        
+//                        family = new ContextExpression(null, initialContext.getK()+2, null);
+//                        thisAsFamily = new ContextExpression(null, initialContext.getK()+1, null);        
                     }
                     else {                    
                         thisAsFamily = 
                             new FieldAccess(
                                 accessedField.isFinal(),
-                                new ContextExpression(null, k, null),
+                                initialContext,
+                                //new ContextExpression(null, k, null),
                                 accessedField.getIdent(),
                                 (CReferenceType)accessedField.getType()
                             );

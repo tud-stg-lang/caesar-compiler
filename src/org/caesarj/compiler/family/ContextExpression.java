@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ContextExpression.java,v 1.14 2005-03-10 15:02:32 aracic Exp $
+ * $Id: ContextExpression.java,v 1.15 2005-06-02 15:30:52 klose Exp $
  */
 
 package org.caesarj.compiler.family;
@@ -111,6 +111,10 @@ public class ContextExpression extends Path {
     
     public Path clonePath() {
         return new ContextExpression(prefix==null ? null : prefix.clonePath(), k, type);
+    }
+    
+    public ContextExpression cloneWithAdaptedK(int offset){
+        return new ContextExpression(prefix,k+offset,type);
     }
 
     /**
