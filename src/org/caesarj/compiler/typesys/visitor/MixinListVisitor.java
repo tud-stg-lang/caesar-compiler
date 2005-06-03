@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: MixinListVisitor.java,v 1.7 2005-03-10 10:42:58 gasiunas Exp $
+ * $Id: MixinListVisitor.java,v 1.8 2005-06-03 13:05:58 klose Exp $
  */
 
 package org.caesarj.compiler.typesys.visitor;
@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.constants.CaesarMessages;
@@ -58,6 +59,8 @@ public class MixinListVisitor implements ICaesarTypeVisitor {
 		this.compiler = compiler;
 	}
 	
+	private Vector visitedMixins;
+	
 	public void visitCaesarTypeNode(CaesarTypeNode n) {        
 		if(visited.contains(n)) return;
 		visited.add(n);
@@ -72,6 +75,7 @@ public class MixinListVisitor implements ICaesarTypeVisitor {
         }
         
         try {
+            visitedMixins = new Vector();
         	createMixinList(n.getMixinList(), outerMixinList, 0, n.getQualifiedName());
         }
         catch (MixerException e) {
@@ -95,7 +99,7 @@ public class MixinListVisitor implements ICaesarTypeVisitor {
         int m,         
         JavaQualifiedName qualifiedName        
     ) throws MixerException
-	{    	    
+	{    
         CaesarTypeNode currentMixin;
         CaesarTypeNode t;
 
@@ -108,6 +112,12 @@ public class MixinListVisitor implements ICaesarTypeVisitor {
         }
         
         if(t != null) {
+            // check if we analysed this mixin before to detect circularity
+            if (visitedMixins.contains(t)){
+                throw new MixerException("Circlularity in mixin list");
+            }
+            visitedMixins.add(t);
+            
             mixinListToAppend.add(t);
             
             List superClassMixinLists = new LinkedList();
@@ -136,6 +146,7 @@ public class MixinListVisitor implements ICaesarTypeVisitor {
                     mixinListToAppend.add(it.next());
                 }
             }
+            visitedMixins.remove(t);
         }
         else if (m < outerMixinList.size()-1) {
             createMixinList(mixinListToAppend, outerMixinList, m+1, qualifiedName);
