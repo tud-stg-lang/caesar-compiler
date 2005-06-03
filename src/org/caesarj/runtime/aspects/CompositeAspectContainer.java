@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CompositeAspectContainer.java,v 1.6 2005-03-31 11:58:18 gasiunas Exp $
+ * $Id: CompositeAspectContainer.java,v 1.7 2005-06-03 08:24:47 klose Exp $
  */
 
 package org.caesarj.runtime.aspects;
@@ -29,8 +29,7 @@ package org.caesarj.runtime.aspects;
 /**
  * @author User
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * TODO [documentation]
  */
 public class CompositeAspectContainer implements AspectContainerIfc {
 	

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjExternClassContext.java,v 1.2 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: CjExternClassContext.java,v 1.3 2005-06-03 08:24:47 klose Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -35,8 +35,7 @@ import org.caesarj.util.UnpositionedError;
 /**
  * @author vaidas
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * TODO [documentation]
  */
 public class CjExternClassContext extends FjClassContext {
 	
