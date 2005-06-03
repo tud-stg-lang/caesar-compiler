@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JConstructorDeclaration.java,v 1.6 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JConstructorDeclaration.java,v 1.7 2005-06-03 12:00:57 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -186,12 +186,8 @@ public class JConstructorDeclaration extends JMethodDeclaration {
   // CODE GENERATION
   // ----------------------------------------------------------------------
 
-	/**
-	 * 
-	 */
 	public void genCode(GenerationContext context)
 	{
-		// TODO Auto-generated method stub
 		super.genCode(context);
 	}
 }

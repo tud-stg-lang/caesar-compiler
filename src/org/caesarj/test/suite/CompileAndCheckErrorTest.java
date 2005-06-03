@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CompileAndCheckErrorTest.java,v 1.5 2005-04-01 12:11:43 klose Exp $
+ * $Id: CompileAndCheckErrorTest.java,v 1.6 2005-06-03 12:00:57 klose Exp $
  */
 
 package org.caesarj.test.suite;
@@ -77,9 +77,15 @@ public class CompileAndCheckErrorTest extends CompileTest {
     }
     
     public void compilerSuccess() {
-        failure("failed : compiler success: "+getId()+" : "+getDescription());
+        failure("failed: compiler success: "+getId()+" : "+getDescription());
     }
     
+    
+    
+    /**
+     * Check that the errors match our expected messages.
+     * Warnings are ignored.
+     */
     private void checkErrors(MessageDescription[] expected){
         List errors = new LinkedList();
         for (Iterator iter = positionedErrorList.iterator(); iter.hasNext();) {
@@ -92,13 +98,18 @@ public class CompileAndCheckErrorTest extends CompileTest {
         PositionedError[] found = (PositionedError[]) errors.toArray( new PositionedError[0] );
         
         if (errorCode.equals(TestProperties.UNDEF_MESSAGE)) {
-        	if (!TestProperties.instance().ignoreUndefMessages()) {
-        		failure("failed : undefined message: " + getId() + " : "+getDescription());
-        	}
+            // check that at least one error occurred
+	        if(found.length == 0)
+	            failure("No errors found: "+getId()+" : "+getDescription());
+           
+            
+//        	if (!TestProperties.instance().ignoreUndefMessages()) {
+//        		failure("failed : undefined message: " + getId() + " : "+getDescription());
+//        	}
         }
         else {
 	        if(found.length == 0)
-	            failure("No errors found : "+getId()+" : "+getDescription());
+	            failure("No errors found: "+getId()+" : "+getDescription());
 	        
 	        if(expected.length != found.length)
 	            failure("More ("+errors.size()+") errors found than expected: "+getId()+" : "+getDescription());

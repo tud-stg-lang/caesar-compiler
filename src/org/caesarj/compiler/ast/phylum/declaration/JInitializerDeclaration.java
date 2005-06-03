@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JInitializerDeclaration.java,v 1.5 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JInitializerDeclaration.java,v 1.6 2005-06-03 12:00:57 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -131,7 +131,7 @@ public class JInitializerDeclaration extends JMethodDeclaration {
   }
 
   /**
-   * FIXME: document
+   * TODO [documentation]
    * @param	context		the actual context of analyse
    * @exception	PositionedError		Error catched as soon as possible
    */
