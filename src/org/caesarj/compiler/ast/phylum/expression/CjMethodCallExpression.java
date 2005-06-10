@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjMethodCallExpression.java,v 1.12 2005-02-15 18:33:10 aracic Exp $
+ * $Id: CjMethodCallExpression.java,v 1.13 2005-06-10 12:21:02 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -70,10 +70,11 @@ public class CjMethodCallExpression extends JExpression implements CaesarConstan
         // cast the return type
         CType returnType = expr.getType(factory);        
         
-        if(returnType.isClassType()) {
+        //TODO Fix this code when implementing cclass arrays
+        if(!returnType.isArrayType() && returnType.isClassType()) {
             
             CClass returnClass = returnType.getCClass();
-            
+
             if(returnClass.isMixinInterface()) {
                 
                 String contextClassName = null;

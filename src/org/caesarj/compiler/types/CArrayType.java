@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CArrayType.java,v 1.7 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CArrayType.java,v 1.8 2005-06-10 12:21:02 klose Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -127,6 +127,8 @@ public class CArrayType extends CReferenceType {
     return baseType;
   }
 
+  
+  
   /**
    * Returns the type of the elements of an array of this type.
    */
@@ -234,8 +236,7 @@ public class CArrayType extends CReferenceType {
     if (!isChecked()) {
       throw new InconsistencyException("type not checked");
     }
-    
-    return super.getCClass();
+    return baseType.getCClass();
   }
   // ----------------------------------------------------------------------
   // BODY CHECKING

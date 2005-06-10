@@ -20,13 +20,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CastUtils.java,v 1.4 2005-01-24 16:53:02 aracic Exp $
+ * $Id: CastUtils.java,v 1.5 2005-06-10 12:21:02 klose Exp $
  */
 
 package org.caesarj.compiler.cclass;
 
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.types.CArrayType;
 import org.caesarj.compiler.types.CType;
 
 /**
@@ -50,7 +51,7 @@ public class CastUtils {
         CType res = null;
         //CArrayType arrayType = t.isArrayType() ? (CArrayType)t : null;        
         //CType type = arrayType != null ? arrayType.getBaseType() : t;
-        CType type = t;
+        CType type = t.isArrayType()? ((CArrayType)t).getBaseType() : t;
         
         if(type.isClassType()) {
 		    CClass tClass = type.getCClass();

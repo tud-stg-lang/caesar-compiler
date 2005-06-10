@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JVariableDefinition.java,v 1.20 2005-05-31 09:00:34 meffert Exp $
+ * $Id: JVariableDefinition.java,v 1.21 2005-06-10 12:21:02 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -154,9 +154,19 @@ public class JVariableDefinition extends JLocalVariable {
             type = type.checkType(context);
         } catch (UnpositionedError cue) {            
             try {
-                type = 
-                    new CDependentNameType(((CClassNameType)type).getQualifiedName()) 
-                		.checkType(context);
+                
+                /* 
+                 * If the type check fails it may be due to a dependent-type
+                 * declaration. So, if the type which failed to check was a 
+                 * Classname-type, we mark it as a possible dependent type 
+                 * and re-check it later.
+                 */
+                if( type instanceof CClassNameType){
+                    type = 
+                        new CDependentNameType(((CClassNameType)type).getQualifiedName()) 
+                    		.checkType(context);
+                }
+                
             }
             catch (UnpositionedError cue2) {
 	            throw cue2.addPosition(getTokenReference());
@@ -173,11 +183,11 @@ public class JVariableDefinition extends JLocalVariable {
                                         context.getClassContext().getCClass()),
                         KjcMessages.CLASS_NOACCESS, ((CArrayType) type)
                                 .getBaseType());
+            } else {
+	            check(context, type.getCClass().isAccessible(
+	                    context.getClassContext().getCClass()),
+	                    KjcMessages.CLASS_NOACCESS, type);
             }
-
-            check(context, type.getCClass().isAccessible(
-                    context.getClassContext().getCClass()),
-                    KjcMessages.CLASS_NOACCESS, type);
         }
 
         if (expr != null) {

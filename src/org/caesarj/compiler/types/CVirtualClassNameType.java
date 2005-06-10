@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CVirtualClassNameType.java,v 1.3 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CVirtualClassNameType.java,v 1.4 2005-06-10 12:21:02 klose Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -59,7 +59,7 @@ public class CVirtualClassNameType extends CClassNameType {
                 }
             }
 	        	        
-	        throw new UnpositionedError(CaesarMessages.CCLASS_SUPER_NOT_FOUND);
+	        throw new UnpositionedError(CaesarMessages.CCLASS_SUPER_NOT_FOUND, this);
 	    }
 	    else {
 	        return super.checkType(context);
