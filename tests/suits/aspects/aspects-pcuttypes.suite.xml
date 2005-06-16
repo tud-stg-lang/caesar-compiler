@@ -1,0 +1,67 @@
+<testsuite name="Test types of pointcuts" package="suits.aspects.pcuttypes">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+	<compile-run id="pcuttypes001" description="Constructor and field pointcuts">
+		<test>
+			ClassC c = new ClassC();
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+			   ":class-init:class-init:class-init" +
+			   ":inst-preinit:inst-preinit:inst-preinit" +
+			   ":field-set:constr-execution:constr-execution:inst-init" +
+			   ":field-get:field-set:constr-execution:inst-init" +
+			   ":constr-execution:inst-init" +
+			   ":constr-call", res.toString());
+		</test>
+        <code>
+        	public class ClassA {
+        		int a;
+        		public ClassA(int a) {
+        			this.a = a;
+        		}
+        		
+        		public ClassA() {
+        			this(0);
+        		}
+        	}        	
+        	public class ClassB extends ClassA {
+        		int b;
+        		public ClassB() {
+        			this.b = a;
+        		}
+        	}
+        	public class ClassC extends ClassB {
+        	}
+        	
+        	public deployed cclass AspectA {
+        		after() : set(* ClassA+.*) {
+					Test.res.append(":field-set");
+				}
+				
+				after() : get(* ClassA+.*) {
+					Test.res.append(":field-get");
+				}
+				
+				after() : initialization(ClassA+.new(..)) {
+					Test.res.append(":inst-init");
+				}
+				
+				after() : preinitialization(ClassA+.new(..)) {
+					Test.res.append(":inst-preinit");
+				}
+				
+				after() : execution(ClassA+.new(..)) {
+					Test.res.append(":constr-execution");
+				}
+				
+				after() : call(ClassA+.new(..)) {
+					Test.res.append(":constr-call");
+				}
+				
+				after() : staticinitialization(ClassA+) {
+					Test.res.append(":class-init");
+				}
+			}
+        </code>
+    </compile-run>
+</testsuite>
