@@ -19,7 +19,7 @@ public class ADTestCase extends TestCase
 	public static StringBuffer result = new StringBuffer();
 
 	public String expectedResult =
-		":before test:test:test:test";
+		":before test:test:test:test:test";
 
 	public void test()
 	{
@@ -43,7 +43,8 @@ public cclass Test
 {
     public void test(int n)
     {
-    	System.out.println(":test");
+    	//System.out.println(":test");
+    	ADTestCase.result.append(":test");
     	if (n > 0) {
     		test(n-1);
     	}
@@ -52,7 +53,7 @@ public cclass Test
 
 public cclass AspectA
 {
-	pointcut testMeth() : call(* test());
+	pointcut testMeth() : call(* test(*));
 	
 	pointcut testCls() : target(Test);
 	
