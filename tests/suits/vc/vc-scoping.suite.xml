@@ -1,0 +1,55 @@
+<testsuite name="Test Caesar class scoping" package="suits.vc.scoping">
+
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+	<compile-run id="vcscoping001" description="Inherit from implicit class">
+		<test>
+			OuterB.InnerA a = new OuterB().new InnerB();
+			assertEquals(a.a(), ":B:A");
+		</test>
+        <code>
+        	public cclass OuterA {
+        	    public cclass InnerA {
+        	       public String a() {
+        	          return ":A";
+        	       }
+        	    }
+        	}
+        	public cclass OuterB extends OuterA {
+        	    public cclass InnerB extends InnerA {
+        	       public String a() {
+        	          return ":B" + super.a();
+        	       }
+        	    }        	
+        	}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+	<compile-run id="vcscoping002" description="Inherit from implicit class at deep level">
+		<test>
+			OuterB.InnerA.DeepA a = new OuterB().new InnerB().new DeepB();
+			assertEquals(a.a(), ":B:A");
+		</test>
+        <code>
+        	public cclass OuterA {
+        	    public cclass InnerA {
+        	       public cclass DeepA {
+	        	       public String a() {
+	        	          return ":A";
+	        	       }
+	        	   }
+        	    }
+        	}
+        	public cclass OuterB extends OuterA {
+        	    public cclass InnerB extends InnerA {
+        	       public cclass DeepB extends DeepA {
+	        	       public String a() {
+	        	          return ":B" + super.a();
+	        	       }
+	        	   }
+        	    }        	
+        	}
+        </code>
+    </compile-run>    
+	    
+</testsuite>
