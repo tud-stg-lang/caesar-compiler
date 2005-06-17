@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.32 2005-06-10 12:21:02 klose Exp $
+ * $Id: CaesarMessages.msg,v 1.33 2005-06-17 15:35:22 gasiunas Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -79,7 +79,7 @@ error	CCLASS_EXTENDS_ONLY_IDENTIFIER_ALLOWED
 		"Only single identifier allowed in the extends clause of an inner cclass."
 
 error	CCLASS_SUPER_NOT_FOUND
-		"Can not find the super cclass {0} in the direct enclosing class. May need to provide empty redefinition for implicit cclass."
+		"Can not find the super cclass {0} in the direct enclosing class and its parents."
 
 error	TOPLEVEL_CCLASS_EXTENDS_TOPLEVEL_CLASS
 		"A top-level cclass may only extend from another top-level cclass."
