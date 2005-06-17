@@ -88,9 +88,7 @@ public cclass ModelA
 
 public cclass ModelB extends ModelA
 {
-    public cclass RoleA {}
-    
-	public cclass BindAA extends RoleA wraps ClassA
+   public cclass BindAA extends RoleA wraps ClassA
 	{
 	    protected static int sequence = 0;
 

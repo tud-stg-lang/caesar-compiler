@@ -85,9 +85,7 @@ public cclass OuterA
 
 public cclass OuterB extends OuterA
 {
-    public cclass InnerA {}
-    
-	public cclass InnerD extends InnerA
+    public cclass InnerD extends InnerA
 	{
 		public String queryA()
 		{

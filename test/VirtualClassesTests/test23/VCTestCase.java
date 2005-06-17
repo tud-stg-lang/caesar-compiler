@@ -190,10 +190,7 @@ public cclass OuterC extends OuterA
 
 public cclass OuterD extends OuterB & OuterC
 {
-    public cclass InnerF {}
-    public cclass InnerD {}
-    
-	public cclass InnerI extends InnerF & InnerD
+    public cclass InnerI extends InnerF & InnerD
 	{
 		public String queryA()
 		{

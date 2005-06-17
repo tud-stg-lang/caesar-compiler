@@ -106,8 +106,6 @@ public cclass PrettyPrintAST extends AST {
 
 //=========================================================
 public cclass NegAST extends AST {
-	public cclass Expression {}
-
 	public cclass NegExpression extends Expression {
 		protected Expression expr;
 		public void init(Expression expr) {
