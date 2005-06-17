@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjUnqualifiedInstanceCreation.java,v 1.9 2005-02-15 18:30:20 aracic Exp $
+ * $Id: CjUnqualifiedInstanceCreation.java,v 1.10 2005-06-17 15:32:54 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -83,23 +83,25 @@ public class CjUnqualifiedInstanceCreation extends JExpression {
         // and add null parameter to the constructor
         // new C() -> (C)(new C_Impl(null)) if not a nested class (owner == null)
         // new C() -> this.$newC() if a nested class (owner != null)
-        if((typeClass.isMixinInterface() || typeClass.isMixin()) && params.length == 0) {
+        if (typeClass.isMixinInterface() || typeClass.isMixin()) {
                         
             if( type.getCClass().isNested() ) {
                 expr = new CjMethodCallExpression(
                     getTokenReference(),
                     null,
                     CaesarConstants.FACTORY_METHOD_PREFIX+type.getCClass().getIdent(),
-                    params
+					JExpression.EMPTY
                 );
             }
             else {      
                 String typeName = type.getCClass().convertToImplQn();
                 CReferenceType newType = new CClassNameType(typeName);
                 
-	            params = new JExpression[]{new JNullLiteral(getTokenReference())};            
-	            expr = new JUnqualifiedInstanceCreation(getTokenReference(), newType, params);
-	            expr = new CjCastExpression(getTokenReference(), expr, type);
+	            expr = new JUnqualifiedInstanceCreation(getTokenReference(), newType, new JExpression[]{new JNullLiteral(getTokenReference())});
+	            expr = new CjCastExpression(getTokenReference(), expr, type);	            
+            }
+            if (this.params.length != 0) {
+            	expr = new CjMethodCallExpression(getTokenReference(), expr, "init$"+type.getIdent(), this.params);            	            	
             }
         }
         else {

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.102 2005-06-17 11:07:22 gasiunas Exp $
+ * $Id: Main.java,v 1.103 2005-06-17 15:32:41 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -46,6 +46,7 @@ import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
+import org.caesarj.compiler.contructors.ConstructorTransformVisitor;
 import org.caesarj.compiler.joincollab.JoinCollaborations;
 import org.caesarj.compiler.joinpoint.GenerateDeploymentSupport;
 import org.caesarj.compiler.joinpoint.JoinDeploymentSupport;
@@ -214,6 +215,11 @@ public class Main extends MainSuper implements Constants {
         // must be called before check interfaces, but
         // lookup in type context must already work
         prepareStaticFieldDeployment(environment, tree);
+        if(errorFound) return false;
+        
+        // CJ VC
+        // tranforms constructors to init methods
+        transformConstructors(environment, tree);
         if(errorFound) return false;
         
         // KOPI step - check the interfaces of type declarations
@@ -546,6 +552,18 @@ public class Main extends MainSuper implements Constants {
         }
         
         
+    }
+    
+    protected void transformConstructors(
+        KjcEnvironment environment,
+        JCompilationUnit[] tree) {
+    	
+    	Log.verbose("transforming constructors to init methods");
+        ConstructorTransformVisitor transfVisitor = 
+            new ConstructorTransformVisitor(this, environment);
+        for (int i = 0; i < tree.length; i++) {            
+            tree[i].accept(transfVisitor);
+        }
     }
 
     /**

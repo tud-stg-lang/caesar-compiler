@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjQualifiedInstanceCreation.java,v 1.8 2005-02-09 16:55:04 aracic Exp $
+ * $Id: CjQualifiedInstanceCreation.java,v 1.9 2005-06-17 15:32:54 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -79,7 +79,7 @@ public class CjQualifiedInstanceCreation extends JExpression {
         CType prefixType = prefix.getType(factory);
         CClass prefixClass = prefixType.getCClass();
         
-        if((prefixClass.isMixinInterface() || prefixClass.isMixin()) && params.length == 0) {
+        if (prefixClass.isMixinInterface() || prefixClass.isMixin()) {
             
             if(prefixClass.isMixin()) {
                 prefixType = prefixClass.getInterfaces()[0];
@@ -93,8 +93,11 @@ public class CjQualifiedInstanceCreation extends JExpression {
             
             // convert to factory method
             // a.new C() -> a.$newC()
-            expr = new CjMethodCallExpression(getTokenReference(), prefix, CaesarConstants.FACTORY_METHOD_PREFIX+ident, params);
+            expr = new CjMethodCallExpression(getTokenReference(), prefix, CaesarConstants.FACTORY_METHOD_PREFIX+ident, JExpression.EMPTY);
             //expr = new JCastExpression(getTokenReference(), expr, returnClass.getAbstractType());
+            if (this.params.length != 0) {
+            	expr = new CjMethodCallExpression(getTokenReference(), expr, "init$"+ident, this.params);            	
+            }
         }
         else {
             // create normal qualified instance creation

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjVirtualClassDeclaration.java,v 1.27 2005-06-17 11:09:30 gasiunas Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.28 2005-06-17 15:32:41 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -33,8 +33,6 @@ import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.JPhylum;
-import org.caesarj.compiler.ast.phylum.statement.JBlock;
-import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.CaesarMessages;
@@ -46,7 +44,6 @@ import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.types.CReferenceType;
-import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
 import org.caesarj.compiler.typesys.graph.FurtherboundFurtherbindingRelation;
@@ -339,60 +336,12 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
      * super implementation of the method also.
      */
     public void checkInterface(CContext context) throws PositionedError {
-        // add outer variable
-    	CType outerType = null;
-    	
     	// if an inner class, set to static
     	// we are manually managing the outer references
         if(getCClass().isNested()) {
             this.modifiers |= ACC_STATIC;
             getCClass().setModifiers(this.modifiers);
         }
-        
-        // search for default ctor
-        int ctorIndex = -1;
-        for (int i = 0; i < methods.length; i++) {
-			if(methods[i] instanceof JConstructorDeclaration) {
-				if(methods[i].getParameters().length == 0) {
-					ctorIndex = i;
-				}
-				else {
-					throw new PositionedError(
-						methods[i].getTokenReference(),
-						CaesarMessages.ONLY_DEF_CTOR_ALLOWED
-					);
-				}
-			}
-		}
-                
-        if(ctorIndex != -1) {
-        	// we've found def ctor and only the def ctor
-        	methods[ctorIndex] = new CjVirtualClassCtorDeclaration(
-				methods[ctorIndex].getTokenReference(),
-				methods[ctorIndex].getModifiers(),
-				methods[ctorIndex].getIdent(),
-				outerType,
-				new JBlock(
-					methods[ctorIndex].getTokenReference(), 
-					((JConstructorBlock)methods[ctorIndex].getBlockBody()).getBody(), 
-					null
-				),
-				context.getTypeFactory()
-			);
-        }
-        else {
-	        // add default ctor
-	        addMethod(
-	    		new CjVirtualClassCtorDeclaration(
-					getTokenReference(),
-					ACC_PUBLIC,
-					getIdent(),
-					outerType,
-					context.getTypeFactory()
-				)
-			);
-        }
-    	
         
         checkAbstractInners(context);    	
         
