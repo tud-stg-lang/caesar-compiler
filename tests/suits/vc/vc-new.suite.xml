@@ -142,5 +142,45 @@
 			}
         </code>
     </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcnew011" description="constructor with parameter">
+	    <test>
+			OuterB.InnerA a1 = new OuterB().new InnerA(5);
+			assertEquals(a1.getA(), 5);
+			assertEquals(a1.getB(), -1);
+			OuterB.InnerA a2 = new OuterB().new InnerA(4, 7);
+			assertEquals(a2.getB(), 7);
+		</test>
+        <code>
+        	public cclass OuterA {
+        		public cclass InnerA {
+        			protected int a;
+					public InnerA(int a) {
+					    this.a = a;
+					}
+					public int getA() {
+						return a;
+					}
+        		}
+			}
+			public cclass OuterB extends OuterA {
+        		public cclass InnerA {
+        			protected int b;
+        			public InnerA(int a) {
+					    this.a = a;
+					    this.b = -1;
+					}
+					public InnerA(int a, int b) {
+					    this.a = a;
+					    this.b = b;
+					}
+					public int getB() {
+						return b;
+					}
+        		}
+			}			
+        </code>
+    </compile-run>
 	    
 </testsuite>
