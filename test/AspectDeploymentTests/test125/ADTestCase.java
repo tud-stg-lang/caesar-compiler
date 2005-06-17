@@ -35,7 +35,7 @@ public class ADTestCase extends TestCase
 	{
 		System.out.println("-------> ADTest 25: Passing join point reflection");
 
-		new DeployA_Impl(null).test();
+		new DeployA().test();
 
 		System.out.println(result);
 		assertEquals(expectedResult, result.toString());

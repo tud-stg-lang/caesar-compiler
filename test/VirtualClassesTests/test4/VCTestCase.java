@@ -20,16 +20,10 @@ public class VCTestCase extends TestCase {
         System.out.println("-------> VCTest 4: start");
 
 		final EvalPrettyPrintNegAST ast = new EvalPrettyPrintNegAST();
-		ast.Literal l1 = ast.new Literal();
-		ast.Literal l2 = ast.new Literal();
-		ast.AddExpression add = ast.new AddExpression();
-		ast.NegExpression neg = ast.new NegExpression();
-
-		l1.init(5);
-		l2.init(4);
-		add.init(l1, l2);
-		neg.init(add);
-
+		ast.Literal l1 = ast.new Literal(5);
+		ast.Literal l2 = ast.new Literal(4);
+		ast.AddExpression add = ast.new AddExpression(l1, l2);
+		ast.NegExpression neg = ast.new NegExpression(add);
 
 		System.out.println(neg.print()+" = "+neg.eval());
 
@@ -49,19 +43,17 @@ public cclass AST  {
 		protected Expression r;
 		protected Expression l;
 
-		public Expression init(Expression l, Expression r) {
+		public AddExpression(Expression l, Expression r) {
 			this.r = r;
 			this.l = l;
-			return this;
 		}
 	}
 
 	public cclass Literal extends Expression {
 		protected int val;
 
-		public Literal init(int val) {
+		public Literal(int val) {
 			this.val = val;
-			return this;
 		}
 	}
 }
@@ -108,7 +100,7 @@ public cclass PrettyPrintAST extends AST {
 public cclass NegAST extends AST {
 	public cclass NegExpression extends Expression {
 		protected Expression expr;
-		public void init(Expression expr) {
+		public NegExpression(Expression expr) {
 			this.expr = expr;
 		}
 	}

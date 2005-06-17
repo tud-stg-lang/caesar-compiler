@@ -64,7 +64,7 @@ public class ADTestCase extends TestCase
 	{
 		System.out.println("-------> ADTest 23: Multi-instance around calls");
 
-		new DeployA_Impl(null).test();
+		new DeployA().test();
 
 		System.out.println(result);
 		assertEquals(expectedResult, result.toString());

@@ -25,7 +25,7 @@ public class ADTestCase extends TestCase
 	{
 		System.out.println("-------> ADTest 24: Primitive types in around");
 
-		new DeployA_Impl(null).test();
+		new DeployA().test();
 
 		System.out.println(result);
 		assertEquals(expectedResult, result.toString());

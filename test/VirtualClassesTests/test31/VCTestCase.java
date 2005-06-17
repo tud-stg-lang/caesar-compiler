@@ -36,7 +36,7 @@ public cclass OuterB
 {
 	public String test()
 	{
-		OuterA oa = new OuterA().init(2);
+		OuterA oa = new OuterA(2);
 		return "" + oa.getVal();
 	}
 }
@@ -45,10 +45,9 @@ public cclass OuterA
 {
     protected int _val;
 
-	public OuterA init(int val)
+	public OuterA(int val)
 	{
 		_val = val;
-		return this;
 	}
 
 	public int getVal()

@@ -22,9 +22,9 @@ public class VCTestCase extends TestCase {
 		{
 		final B b = new B();
         final b.CG cg = b.new CG();
-        cg.N n1 = cg.new N().init("n1", Color.BLACK);
-        cg.N n2 = cg.new N().init("n2", Color.RED);
-		cg.E e = cg.new E().init(n1, n2);
+        cg.N n1 = cg.new N("n1", Color.BLACK);
+        cg.N n2 = cg.new N("n2", Color.RED);
+		cg.E e = cg.new E(n1, n2);
 		e.doSomethingWithNodes();
 		
 		System.out.println(n1);
@@ -53,10 +53,9 @@ public cclass A {
 		public cclass E {
 			protected N n1, n2;
 			
-			public E init(N n1, N n2) {
+			public E(N n1, N n2) {
 				this.n1 = n1;
 				this.n2 = n2;
-				return this;
 			}
 			
 			public N getStartNode() {return n1;}
@@ -74,9 +73,8 @@ public cclass A {
 		public cclass N {
 			protected String name;
 			
-			public N init(String name) {
+			public N(String name) {
 				this.name = name;
-				return this;
 			}
 	 
 			public String toString() {
@@ -97,10 +95,10 @@ public cclass A {
 		    
 		    public Color getColor() {return col;}
 		    
-			public N init(String name, Color color) {
-				init(name);
+			public N(String name, Color color) {
+				//super(name);
+				this.name = name;
 				this.col = color;
-				return this;
 			}
 			
 			public String toString() {		
