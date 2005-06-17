@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTypeGraphGenerator.java,v 1.9 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: CaesarTypeGraphGenerator.java,v 1.10 2005-06-17 11:12:22 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.graph;
@@ -28,7 +28,6 @@ package org.caesarj.compiler.typesys.graph;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.declaration.CjMixinInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
-import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 
@@ -54,33 +53,28 @@ public class CaesarTypeGraphGenerator {
         JCompilationUnit cu
     ) {
         JTypeDeclaration inners[] = cu.getInners();
-        for(int i=0; i<inners.length; i++)
-            if(inners[i].getCClass().isMixinInterface())
-                generateGraph(g, (CjMixinInterfaceDeclaration)inners[i]);
-    }
-    
+        for (int i = 0; i < inners.length; i++)
+            if (inners[i] instanceof CjMixinInterfaceDeclaration)
+                generateGraph(g, (CjMixinInterfaceDeclaration)inners[i], null, cu.getPackageName().getName() + "/");
+    }    
 
     private void generateGraph(
         CaesarTypeGraph g,
-        CjMixinInterfaceDeclaration decl
+        CjMixinInterfaceDeclaration decl,
+        CaesarTypeNode ownerNode,
+		String prefix
     ) {
-        CClass thisClass   = decl.getCClass();
-        CType[] superTypes = decl.getInterfaces();
-        CClass ownerClass  = thisClass.getOwner();
+        CType[] superTypes = decl.getExtendedTypes();
+        String qualName = prefix + decl.getIdent();
         
         CaesarTypeNode thisNode  = g.getTypeCreateIfNotExsistent(
-            new JavaQualifiedName(thisClass.getQualifiedName()), 
-			CaesarTypeNode.DECLARED
+            new JavaQualifiedName(qualName)
         );
         
         thisNode.setTypeDecl(decl);
          
         // check inner outer relations
-        if(ownerClass != null) {
-            CaesarTypeNode ownerNode = g.getTypeCreateIfNotExsistent(
-                new JavaQualifiedName(ownerClass.getQualifiedName()),
-				CaesarTypeNode.DECLARED
-            );
+        if (ownerNode != null) {
             new OuterInnerRelation(ownerNode, thisNode);
         }
         else {
@@ -90,40 +84,16 @@ public class CaesarTypeGraphGenerator {
         // check super type relations
         // shift super class references to the context of the thisNode
         // if thisNode is not a top level class
-        if(superTypes.length > 0) {
-            for(int i=0; i<superTypes.length; i++) {
-                if(superTypes[i].getCClass().isMixinInterface()) {
-                    
-                    /*
-                    // super class can only be from the direct enclosing parent
-                    JavaQualifiedName superQn = null;
-
-                    if(!thisNode.isTopLevelClass()) {
-	                    superQn = new JavaQualifiedName(
-	                        thisNode.getQualifiedName().getPrefix()
-	                        +superTypes[i].getCClass().getIdent()
-	                    );
-                	}
-                    else {
-                        superQn = new JavaQualifiedName(	                        
-                            superTypes[i].getCClass().getQualifiedName()
-	                    ); 
-                    }
-                    
-                    CaesarTypeNode superNode = g.getTypeCreateIfNotExsistent(
-                        superQn, 
-						superQn.toString().equals(superTypes[i].getCClass().getQualifiedName()) ?                        
-						    CaesarTypeNode.DECLARED : CaesarTypeNode.IMPLICIT
-                    );
-                    */
-                    
-                    CaesarTypeNode superNode = g.getTypeCreateIfNotExsistent(
-                        new JavaQualifiedName(superTypes[i].getCClass().getQualifiedName()),                         
-					    CaesarTypeNode.DECLARED
-                    );
-                    
-                    new SuperSubRelation(superNode, thisNode);
-                }
+        if (superTypes.length > 0) {
+            for (int i = 0; i < superTypes.length; i++) {
+            	/* only the types of outer classes are resolved */
+            	CaesarTypeNode superNode = g.getTypeCreateIfNotExsistent(
+            			(ownerNode == null) ?
+            					new JavaQualifiedName(superTypes[i].getCClass().getQualifiedName()) :
+            					new JavaQualifiedName(prefix + superTypes[i].toString())
+                );
+                
+                new SuperSubRelation(superNode, thisNode);
             }
         }
         else {
@@ -132,7 +102,7 @@ public class CaesarTypeGraphGenerator {
 
         // recurse into inners (here we can be sure all inners has ACC_CCLASS_INTERFACE)
 		JTypeDeclaration inners[] = decl.getInners();        
-        for(int i=0; i<inners.length; i++)
-            generateGraph(g, (CjMixinInterfaceDeclaration)inners[i]);
+        for (int i = 0; i < inners.length; i++)
+            generateGraph(g, (CjMixinInterfaceDeclaration)inners[i], thisNode, qualName + "$");
 	}
 }
