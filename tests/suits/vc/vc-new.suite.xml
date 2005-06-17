@@ -115,14 +115,23 @@
     </compile-check-error>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="ONLY_DEF_CTOR_ALLOWED"  id="vcnew009" description="constructor with parameter">
+    <compile-run id="vcnew009" description="constructor with parameter">
+	    <test>
+			ClassA a = new ClassA(5);
+			assertEquals(a.getA(), 5);
+		</test>
         <code>
         	public cclass ClassA {
+        	    protected int a;
 				public ClassA(int a) {
+				    this.a = a;
+				}
+				public int getA() {
+					return a;
 				}
 			}
         </code>
-    </compile-check-error>
+    </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile-check-error error="CONSTRUCTOR_BAD_NAME"  id="vcnew010" description="constructor with wrong name">
