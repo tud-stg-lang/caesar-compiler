@@ -1,3 +1,7 @@
+VC_M22 - 17.06.2005
+- Inheritance from implicit virtual classes allowed
+- Constructors with multiple parameters allowed
+
 VC_M21 - 11.05.2005
 - Compilation Units keep track of removed type declarations (when external collaboration)
 
