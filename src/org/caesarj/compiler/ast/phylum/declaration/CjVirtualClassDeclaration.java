@@ -20,15 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjVirtualClassDeclaration.java,v 1.26 2005-04-15 12:42:09 gasiunas Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.27 2005-06-17 11:09:30 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
 
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.ast.JavaStyleComment;
@@ -152,6 +150,86 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     }
     
     /**
+     * Create new empty inner type with given name and join it.
+     * 
+     * @param context		- context for type resolving
+     * @param ident			- name of the class
+     * @param bAbstract		- is class abstract
+     * @return
+     * @throws PositionedError
+     */
+    public CjVirtualClassDeclaration createInnerCaesarType(
+    		CContext context, String ident, boolean bAbstract) 
+    	throws PositionedError {
+    	// generate here
+    	String implPrefix = getCClass().getQualifiedName() + "$";
+    	String ifcPrefix = getMixinIfcDeclaration().getCClass().getQualifiedName() + "$";
+        CjMixinInterfaceDeclaration ifcDecl = 
+            new CjMixinInterfaceDeclaration(
+                getTokenReference(),
+                ACC_PUBLIC,
+                ident,
+                CReferenceType.EMPTY,
+                CReferenceType.EMPTY,
+                new JFieldDeclaration[0],
+                new JMethodDeclaration[0],
+                new JTypeDeclaration[0],
+                new JPhylum[0]
+            ); 
+        
+        ifcDecl.generateInterface(
+            context.getClassReader(), 
+            getMixinIfcDeclaration().getCClass(), 
+            ifcPrefix
+        );
+        
+        /* determine if the class is abstract */
+        int abstractModifier = bAbstract ? ACC_ABSTRACT : 0;
+        
+        CjVirtualClassDeclaration implDecl =
+            new CjVirtualClassDeclaration(
+                getTokenReference(),
+                ACC_PUBLIC | abstractModifier,
+                ident + "_Impl",
+                CReferenceType.EMPTY,
+                null, // wrappee
+                new CReferenceType[]{ifcDecl.getCClass().getAbstractType()}, // CTODO ifcs
+                new JFieldDeclaration[0],
+				new JMethodDeclaration[0],
+                new JTypeDeclaration[0],
+                new JPhylum[0], null, null, 
+                CjPointcutDeclaration.EMPTY,
+                CjAdviceDeclaration.EMPTY,
+                new CaesarDeclare[0],
+                false
+            );
+        
+        implDecl.generateInterface(
+            context.getClassReader(),   
+            this.getCClass(), 
+            implPrefix
+        );
+        
+        implDecl.getCClass().close(
+            implDecl.getInterfaces(),
+            new Hashtable(),
+            CMethod.EMPTY
+        );
+        
+        implDecl.setMixinIfcDeclaration(ifcDecl);
+        ifcDecl.setCorrespondingClassDeclaration(implDecl);
+        
+        implDecl.getCClass().setImplicit(true);
+        ifcDecl.getCClass().setImplicit(true);
+        
+        // add inners
+        addInners(new JTypeDeclaration[] {implDecl });
+        getMixinIfcDeclaration().addInners(new JTypeDeclaration[] {ifcDecl });
+        
+        return implDecl;
+    }
+    
+    /**
      * this one generates recursively implicit inner types 
      */
     public void createImplicitCaesarTypes(CContext context) throws PositionedError {
@@ -167,99 +245,24 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         
         javaTypeNode.setCClass(getCClass());
         javaTypeNode.setDeclaration(this);
-
-        /*
-         * add implicit subtypes
-         */ 
-        List newImpls = new LinkedList();
-        List newIfcs  = new LinkedList();           
-        
-        for(Iterator it = typeNode.implicitInners(); it.hasNext(); ) {
-            CaesarTypeNode subNode = ((OuterInnerRelation)it.next()).getInnerNode();
-            
-            // generate here
-            CjMixinInterfaceDeclaration ifcDecl = 
-                new CjMixinInterfaceDeclaration(
-                    getTokenReference(),
-                    ACC_PUBLIC,
-                    subNode.getQualifiedName().getIdent(),
-                    CReferenceType.EMPTY,
-                    CReferenceType.EMPTY,
-                    new JFieldDeclaration[0],
-                    new JMethodDeclaration[0],
-                    new JTypeDeclaration[0],
-                    new JPhylum[0]
-                ); 
-            
-            ifcDecl.generateInterface(
-                context.getClassReader(), 
-                getMixinIfcDeclaration().getCClass(), 
-                subNode.getQualifiedName().getPrefix()
-            );
-            
-            ifcDecl.join(context);
-            
-            /* determine if the class is abstract */
-            int abstractModifier = subNode.isAbstract() ? ACC_ABSTRACT : 0;
-            
-            CjVirtualClassDeclaration implDecl =
-                new CjVirtualClassDeclaration(
-                    getTokenReference(),
-                    ACC_PUBLIC | abstractModifier,
-                    subNode.getQualifiedImplName().getIdent(),
-                    CReferenceType.EMPTY,
-                    null, // wrappee
-                    new CReferenceType[]{ifcDecl.getCClass().getAbstractType()}, // CTODO ifcs
-                    new JFieldDeclaration[0],
-					new JMethodDeclaration[0],
-                    new JTypeDeclaration[0],
-                    new JPhylum[0], null, null, 
-                    CjPointcutDeclaration.EMPTY,
-                    CjAdviceDeclaration.EMPTY,
-                    new CaesarDeclare[0],
-                    false
-                );
-            
-            implDecl.generateInterface(
-                context.getClassReader(),   
-                this.getCClass(), 
-                subNode.getQualifiedImplName().getPrefix()
-            );
-            
-            implDecl.join(context); // CTODO do we need this join here?
-            
-            implDecl.getCClass().close(
-                implDecl.getInterfaces(),
-                new Hashtable(),
-                CMethod.EMPTY
-            );
-            
-            implDecl.setMixinIfcDeclaration(ifcDecl);
-            ifcDecl.setCorrespondingClassDeclaration(implDecl);
-            
-            implDecl.getCClass().setImplicit(true);
-            ifcDecl.getCClass().setImplicit(true);
-            
-            newImpls.add(implDecl);
-            newIfcs.add(ifcDecl);
-            
-            // and recurse into
-            implDecl.createImplicitCaesarTypes(context);
-        }
         
         // recurse in original inners
         for(int i=0; i<inners.length; i++) {
             inners[i].createImplicitCaesarTypes(context);
         }
-        
-        // add inners
-        addInners(
-            (JTypeDeclaration[])newImpls.toArray(new JTypeDeclaration[newImpls.size()])
-        );
-        
-        getMixinIfcDeclaration().addInners(
-            (JTypeDeclaration[])newIfcs.toArray(new JTypeDeclaration[newIfcs.size()])
-        );        
+
+        /*
+         * add implicit subtypes
+         */ 
+        for(Iterator it = typeNode.implicitInners(); it.hasNext(); ) {
+            CaesarTypeNode subNode = ((OuterInnerRelation)it.next()).getInnerNode();
+            
+            CjVirtualClassDeclaration implDecl = 
+            	createInnerCaesarType(context, subNode.getQualifiedName().getIdent(), subNode.isAbstract());
+            
+            // and recurse into
+            implDecl.createImplicitCaesarTypes(context);
+        }        
     }   
     
     /**
@@ -317,7 +320,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     /**
      * - check that cclass modifier is always set to public
      */
-    public void join(CContext context) throws PositionedError {
+    public void join(CContext context, boolean recurse) throws PositionedError {
 
         if(!CModifier.contains(ACC_PUBLIC, modifiers)) {
 	        context.reportTrouble(
@@ -328,7 +331,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
             );
         }
              
-        super.join(context);        
+        super.join(context, recurse);        
     }
     
     /**
