@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ConstructorTransformVisitor.java,v 1.1 2005-06-17 15:34:28 gasiunas Exp $
+ * $Id: ConstructorTransformVisitor.java,v 1.2 2005-06-17 16:17:46 gasiunas Exp $
  */
 
 package org.caesarj.compiler.contructors;
@@ -136,17 +136,6 @@ public class ConstructorTransformVisitor implements IVisitor, CaesarConstants  {
 							null
 						)
 					);
-					
-					mixinIfc.addMethod(new JMethodDeclaration(
-							methods[i].getTokenReference(),
-							methods[i].getModifiers(),
-							selfType,
-							methIdent,
-							methods[i].getParameters(),
-							methods[i].getExceptions(),
-							null,
-							null,
-							null));
 				}
 			}
 		}
