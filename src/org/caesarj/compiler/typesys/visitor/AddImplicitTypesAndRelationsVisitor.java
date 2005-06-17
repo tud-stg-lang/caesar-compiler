@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AddImplicitTypesAndRelationsVisitor.java,v 1.5 2005-01-24 16:52:59 aracic Exp $
+ * $Id: AddImplicitTypesAndRelationsVisitor.java,v 1.6 2005-06-17 11:11:23 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.visitor;
@@ -73,8 +73,7 @@ public class AddImplicitTypesAndRelationsVisitor implements ICaesarTypeVisitor {
                 	furtherbindingType = g.getTypeCreateIfNotExsistent(
             			new JavaQualifiedName(
         					n.getQualifiedName().toString()+JavaQualifiedName.innerSep+(virtualType.getQualifiedName().getIdent())
-						),
-						CaesarTypeNode.IMPLICIT
+						)
         			);
                 	                	
                 	new OuterInnerRelation(true, n, furtherbindingType);

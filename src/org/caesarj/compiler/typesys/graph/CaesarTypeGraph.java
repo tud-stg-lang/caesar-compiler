@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTypeGraph.java,v 1.4 2005-01-24 16:53:02 aracic Exp $
+ * $Id: CaesarTypeGraph.java,v 1.5 2005-06-17 11:11:49 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.graph;
@@ -50,11 +50,11 @@ public class CaesarTypeGraph {
         return typeMap.containsKey(qualifiedName);
     }
     
-    public CaesarTypeNode getTypeCreateIfNotExsistent(JavaQualifiedName qualifiedName, CaesarTypeNode.Kind kind) {
+    public CaesarTypeNode getTypeCreateIfNotExsistent(JavaQualifiedName qualifiedName) {
         CaesarTypeNode res = getType(qualifiedName);
         
-        if(res == null) {
-            res = new CaesarTypeNode(this, kind, qualifiedName);
+        if (res == null) {
+            res = new CaesarTypeNode(this, qualifiedName);
             typeMap.put(qualifiedName, res);
         }
         

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTypeNode.java,v 1.16 2005-03-29 09:47:27 gasiunas Exp $
+ * $Id: CaesarTypeNode.java,v 1.17 2005-06-17 11:12:00 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.graph;
@@ -75,7 +75,11 @@ public class CaesarTypeNode {
 	public static Kind IMPLICIT = new Kind(2, "IMPLICIT");
 		
 
-	public CaesarTypeNode(CaesarTypeGraph g, Kind kind, JavaQualifiedName qn) {
+	public CaesarTypeNode(CaesarTypeGraph g, JavaQualifiedName qn) {
+		this(g, CaesarTypeNode.IMPLICIT, qn);
+	}
+	
+	public CaesarTypeNode(CaesarTypeGraph g, CaesarTypeNode.Kind kind, JavaQualifiedName qn) {
 		this.kind = kind;
 		this.qualifiedName = qn;
 		this.qualifiedImplName = qn.convertToImplName();
@@ -190,6 +194,7 @@ public class CaesarTypeNode {
 	
 	public void setTypeDecl(CjMixinInterfaceDeclaration decl) {
 		typeDecl = decl;
+		this.kind = CaesarTypeNode.DECLARED;
 	} 
 	
 	public void addEnclosedBy(BidirectionalRelation relation) {	    
