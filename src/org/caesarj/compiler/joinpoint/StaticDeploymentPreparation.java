@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: StaticDeploymentPreparation.java,v 1.6 2005-06-03 08:24:47 klose Exp $
+ * $Id: StaticDeploymentPreparation.java,v 1.7 2005-06-17 15:35:03 gasiunas Exp $
  */
 package org.caesarj.compiler.joinpoint;
 
@@ -37,10 +37,13 @@ import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.expression.JAssignmentExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
+import org.caesarj.compiler.ast.phylum.expression.JUnqualifiedInstanceCreation;
+import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
 import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
@@ -146,22 +149,33 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 			TokenReference where,
 			CjClassDeclaration classDeclaration,
 			JFieldDeclaration fieldDeclaration) { 
-			
-		AstGenerator gen = environment.getAstGenerator();
 		
-		String srcClassName = Utils.getClassSourceName(classDeclaration.getCClass().getQualifiedName());
+		String fieldName = fieldDeclaration.getVariable().getIdent();
 			
-		/* Format advice body */
-	    String[] block = new String[] {
-	    	"{",
-	    		"$staticInstance = new " + srcClassName + "(null);",
-				"org.caesarj.runtime.DeploySupport.deployLocal($staticInstance);",								
-			"}"
-	    };
-	    
-	    gen.writeBlock(block);
-	      	    	     
-		JStatement[] body = gen.endBlock("static-deploy-block");
+		JExpression prefix =
+            new JTypeNameExpression(
+                where,
+                new CClassNameType(CAESAR_DEPLOY_SUPPORT_CLASS));
+
+        JExpression deployStatementCall =
+            new JMethodCallExpression(
+                where,
+                prefix,
+                "deployLocal",
+                new JExpression[] {new JNameExpression(where, fieldName)});
+        
+        JExpression instantiation = new JUnqualifiedInstanceCreation(where,
+        		new CClassNameType(classDeclaration.getCClass().getQualifiedName()), 
+				new JExpression[] {new JNullLiteral(where)});
+        
+        JExpression assignment = new JAssignmentExpression(where,
+        		new JNameExpression(where, fieldName),
+        		instantiation);
+
+		JStatement[] body = {
+				new JExpressionStatement(where, assignment, null),
+				new JExpressionStatement(where, deployStatementCall, null) };
+		
 		return new JClassBlock(where, true, body);
 	}
 	
