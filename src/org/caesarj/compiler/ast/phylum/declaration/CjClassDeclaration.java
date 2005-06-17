@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjClassDeclaration.java,v 1.35 2005-05-31 08:55:43 meffert Exp $
+ * $Id: CjClassDeclaration.java,v 1.36 2005-06-17 11:08:09 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -253,8 +253,8 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
         }
     }
     
-    public void join(CContext context) throws PositionedError {
-        super.join(context);
+    public void join(CContext context, boolean recurse) throws PositionedError {
+        super.join(context, recurse);
         
         // IVICA: top-level class may not use the wraps clause
         if(!getCClass().isNested()) {

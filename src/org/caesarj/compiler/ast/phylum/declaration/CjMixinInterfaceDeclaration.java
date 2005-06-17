@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjMixinInterfaceDeclaration.java,v 1.15 2005-05-31 08:56:18 meffert Exp $
+ * $Id: CjMixinInterfaceDeclaration.java,v 1.16 2005-06-17 11:08:36 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -87,6 +87,10 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
 		System.arraycopy(implementedTypes, 0, interfaces, extendedTypes.length, implementedTypes.length);
 	}
 	
+	public CReferenceType[] getExtendedTypes() {
+		return extendedTypes;
+	}
+	
 	protected AdditionalCaesarTypeInformation constructAdditionalTypeInformation(CaesarTypeNode n) {	    
 	    List mixinList = new LinkedList();
 	    List nestedClasses = new LinkedList();
@@ -140,9 +144,9 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
 	 *   that there are no cyclices in the type graph
 	 *   CTODO this step is repeated later on in checkInterfaces -> optimization needed
 	 */
-	public void join(CContext context) throws PositionedError {
-	    
-	    super.join(context);    	    	  
+	public void join(CContext context, boolean recurse) throws PositionedError {
+		
+		super.join(context, recurse);
 	    
 	    try {	        
 		    for (int i = 0; i < extendedTypes.length; i++) {

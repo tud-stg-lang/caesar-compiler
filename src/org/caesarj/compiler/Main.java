@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.101 2005-05-13 14:23:11 thiago Exp $
+ * $Id: Main.java,v 1.102 2005-06-17 11:07:22 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -176,13 +176,21 @@ public class Main extends MainSuper implements Constants {
         
         // CJ Aspects: prepare the advices, which use joinpoint reflection
         prepareJoinpointReflection(tree);
-        
-        // KOPI step - resolves inheritance hierarchy
-        joinAll(tree);                  
+
+        // KOPI step - resolves outer inheritance hierarchy
+        joinOuter(tree);                  
         if(errorFound) return false;
         
         // CJ VC 
         generateCaesarTypeSystem(environment, tree);
+        if(errorFound) return false;
+        
+        // CJ VC
+        createImplicitCaesarTypes(tree);
+        if(errorFound) return false;
+        
+        // KOPI step - resolves inner inheritance hierarchy
+        joinInner(tree);                  
         if(errorFound) return false;
         
         // need Caesar type system
@@ -192,10 +200,6 @@ public class Main extends MainSuper implements Constants {
         
         // CJ VC 
         createMixinCloneTypeInfo(environment, tree[0]);
-        
-        // CJ VC
-        createImplicitCaesarTypes(tree);
-        if(errorFound) return false;
         
         // CJ VC
         adjustSuperTypes(tree);
@@ -606,15 +610,35 @@ public class Main extends MainSuper implements Constants {
      * - similarly for implemented interfaces: resolve, create CClassOrInterface type, check for "is interface", accessiblity, circularity
      */
 
-    protected void joinAll(JCompilationUnit[] tree) {
-        Log.verbose("joinAll");
+    protected void joinOuter(JCompilationUnit[] tree) {
+        Log.verbose("joinOuter");
         JCompilationUnit cunit;
 
         for (int i = 0; i < tree.length; i++) {
             cunit = tree[i];
-            // perform a first join pass to resolve all
-            // directly known (i.e. specified) superclasses
-            join(cunit);
+            try {
+            	cunit.joinOuter(this);
+            }
+            catch (PositionedError e) {
+            	reportTrouble(e);
+            }            
+        }
+        if (errorFound)
+            return;
+    }
+    
+    protected void joinInner(JCompilationUnit[] tree) {
+        Log.verbose("joinInner");
+        JCompilationUnit cunit;
+
+        for (int i = 0; i < tree.length; i++) {
+            cunit = tree[i];
+            try {
+            	cunit.joinInner(this);
+            }
+            catch (PositionedError e) {
+            	reportTrouble(e);
+            }            
         }
         if (errorFound)
             return;

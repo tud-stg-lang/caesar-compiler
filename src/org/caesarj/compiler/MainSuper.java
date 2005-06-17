@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: MainSuper.java,v 1.19 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: MainSuper.java,v 1.20 2005-06-17 11:07:22 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -203,19 +203,7 @@ public abstract class MainSuper extends CompilerBase {
     protected abstract JCompilationUnit parseFile(
         File file,
         KjcEnvironment environment);
-    /**
-     * creates the class hierarchie (superclass, interfaces, ...)
-     * @param	cunit		the compilation unit
-     */
-    public void join(JCompilationUnit cunit) {
-        try {
-            cunit.join(this);
-        }
-        catch (PositionedError e) {
-            reportTrouble(e);
-        }
-    }
-
+   
     /**
      * check that interface of a given compilation unit is correct
      * side effect: increment error number

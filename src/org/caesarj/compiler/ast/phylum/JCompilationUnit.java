@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JCompilationUnit.java,v 1.13 2005-05-11 13:40:18 thiago Exp $
+ * $Id: JCompilationUnit.java,v 1.14 2005-06-17 11:07:47 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -111,7 +111,7 @@ public class JCompilationUnit extends JPhylum {
 	 * It is not possible to check the interface of methods, fields, ... in 
 	 * the same pass.
 	 */
-	public void join(CompilerBase compiler) throws PositionedError {
+	public void joinOuter(CompilerBase compiler) throws PositionedError {
 		CCompilationUnitContext context;
 
 		export =
@@ -224,7 +224,16 @@ public class JCompilationUnit extends JPhylum {
 			}
 		}
 		for (int i = 0; i < typeDeclarations.length; i++) {
-			typeDeclarations[i].join(context);
+			typeDeclarations[i].join(context, false);
+		}
+	}
+	
+	public void joinInner(CompilerBase compiler) throws PositionedError {
+		CCompilationUnitContext context;
+		context = new CCompilationUnitContext(compiler, environment, export);
+		
+		for (int i = 0; i < typeDeclarations.length; i++) {
+			typeDeclarations[i].join(context, true);
 		}
 	}
 	

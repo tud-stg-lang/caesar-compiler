@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JClassDeclaration.java,v 1.26 2005-02-16 16:34:22 aracic Exp $
+ * $Id: JClassDeclaration.java,v 1.27 2005-06-17 11:09:49 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -91,7 +91,7 @@ public class JClassDeclaration extends JTypeDeclaration {
      * It is not possible to check the interface of methods, fields, ... in 
      * the same pass.
      */
-    public void join(CContext context) throws PositionedError {
+    public void join(CContext context, boolean recurse) throws PositionedError {
         CReferenceType objectType;
 
         objectType =
@@ -144,7 +144,7 @@ public class JClassDeclaration extends JTypeDeclaration {
         }
         sourceClass.setSuperClass(superClass);
 
-        super.join(context);
+        super.join(context, recurse);
     }
 
     protected void checkModifiers(final CContext context)
