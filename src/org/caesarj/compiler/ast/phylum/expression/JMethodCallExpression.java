@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.35 2005-06-03 12:00:57 klose Exp $
+ * $Id: JMethodCallExpression.java,v 1.36 2005-06-20 11:18:44 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -703,6 +703,7 @@ public class JMethodCallExpression extends JExpression
 				throw e.addPosition(getTokenReference());
 			}
 		}
+		/* generate error message */
 		if (method == null)
 		{
 			String prefixName;
