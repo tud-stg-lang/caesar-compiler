@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjIfcSourceClass.java,v 1.2 2005-06-20 12:56:00 gasiunas Exp $
+ * $Id: CCjIfcSourceClass.java,v 1.3 2005-06-20 15:37:38 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -119,6 +119,6 @@ public class CCjIfcSourceClass extends CCjSourceClass
 			return field;
 		}
 		
-		return getImplClass().lookupClassField(caller, primary, ident);
+		return getImplClass().lookupStaticClassField(caller, primary, ident);
 	}
 }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjMixinSourceClass.java,v 1.3 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CCjMixinSourceClass.java,v 1.4 2005-06-20 15:37:38 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -32,6 +32,7 @@ import java.util.List;
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * @author Vaidas Gasiunas
@@ -66,6 +67,27 @@ public class CCjMixinSourceClass extends CCjSourceClass
 			null);
 		
 		_originClass = originClass;
+	}
+	
+	/**
+	 * Don't use static fields of the mixin copy
+	 */
+	public CField getField(String ident)
+	{
+		CField field = (CField) fields.get(ident);
+		if (field != null && !field.isStatic()) {
+			return field;
+		}
+		return null;		
+	}
+	
+	/**
+	 * Don't use static fields of the mixin copy
+	 */
+	public CField lookupStaticClassField(CClass caller, CClass primary, String ident)
+		throws UnpositionedError
+	{
+		return null;
 	}
 	
 	/**

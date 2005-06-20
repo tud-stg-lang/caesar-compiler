@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JNameExpression.java,v 1.5 2005-06-20 12:55:36 gasiunas Exp $
+ * $Id: JNameExpression.java,v 1.6 2005-06-20 15:37:38 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -313,7 +313,7 @@ public class JNameExpression extends JExpression
 						getTokenReference(),
 						new JTypeNameExpression(
 								prefix.getTokenReference(),
-								field.getOwnerType()),
+								field.getOwnerType()).analyse(context),
 						ident,
 						factory).analyse(
 						context);

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClass.java,v 1.37 2005-06-20 12:56:23 gasiunas Exp $
+ * $Id: CClass.java,v 1.38 2005-06-20 15:37:38 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -741,7 +741,7 @@ public abstract class CClass extends CMember
 	}
 	
 	/**
-	 * Searches the class and super classes to locate declarations of fields that are
+	 * Searches the class and super classes to locate declarations of static fields that are
 	 * accessible.
 	 * 
 	 * @param	caller		the class of the caller
@@ -749,12 +749,12 @@ public abstract class CClass extends CMember
 	 * @return	the field definition
 	 * @exception UnpositionedError	this error will be positioned soon
 	 */
-	public CField lookupClassField(CClass caller, CClass primary, String ident)
+	public CField lookupStaticClassField(CClass caller, CClass primary, String ident)
 		throws UnpositionedError
 	{
 		CField field = getField(ident);
 
-		if (field != null && field.isAccessible(primary, caller))
+		if (field != null && field.isStatic() && field.isAccessible(primary, caller))
 		{
 			return field;
 		}
@@ -766,7 +766,7 @@ public abstract class CClass extends CMember
 		}
 		else
 		{
-			field = getSuperClass().lookupClassField(caller, primary, ident);
+			field = getSuperClass().lookupStaticClassField(caller, primary, ident);
 		}
 
 		return field;
