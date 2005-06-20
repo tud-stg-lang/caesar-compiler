@@ -39,7 +39,7 @@
 			Model m1 = new Model();
 			Model m2 = new Model();
 			View v = new View();
-			PerModelDeployer_Impl.aspect().deployAspect(v, m2);
+			PerModelDeployer.aspect().deployAspect(v, m2);
 			m2.setA(2);
 			m1.setA(3);			
 			m2.setA(4);

@@ -37,9 +37,9 @@ public cclass DeployA
 {
     public void test()
     {
-    	AspectD_Impl.aspect().setId("1");
+    	AspectD.aspect().setId("1");
     	foo();
-    	AspectD_Impl.aspect().setId("2");
+    	AspectD.aspect().setId("2");
     	foo();
     }
 
