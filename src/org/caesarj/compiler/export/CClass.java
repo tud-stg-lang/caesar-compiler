@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClass.java,v 1.36 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: CClass.java,v 1.37 2005-06-20 12:56:23 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -738,6 +738,38 @@ public abstract class CClass extends CMember
 		{
 			return lookupSuperField(caller, primary, ident);
 		}
+	}
+	
+	/**
+	 * Searches the class and super classes to locate declarations of fields that are
+	 * accessible.
+	 * 
+	 * @param	caller		the class of the caller
+	 * @param	ident		the simple name of the field
+	 * @return	the field definition
+	 * @exception UnpositionedError	this error will be positioned soon
+	 */
+	public CField lookupClassField(CClass caller, CClass primary, String ident)
+		throws UnpositionedError
+	{
+		CField field = getField(ident);
+
+		if (field != null && field.isAccessible(primary, caller))
+		{
+			return field;
+		}
+		
+		if (superClassType == null)
+		{
+			// java.lang.Object
+			field = null;
+		}
+		else
+		{
+			field = getSuperClass().lookupClassField(caller, primary, ident);
+		}
+
+		return field;
 	}
 
 	/**
