@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AllTests.java,v 1.16 2005-03-02 13:15:02 gasiunas Exp $
+ * $Id: AllTests.java,v 1.17 2005-06-20 17:19:37 gasiunas Exp $
  */
 
 package org.caesarj.test;
@@ -43,7 +43,6 @@ public class AllTests {
         suite.addTestSuite( VirtualClassesTests.class );
         //suite.addTestSuite( CompileAndRunResultsWeaverTest.class );
         suite.addTestSuite( AspectDeploymentTests.class);
-        suite.addTestSuite( CompilerErrorsTests.class);
         suite.addTestSuite( StructureModelTests.class);
         suite.addTestSuite( PackageTests.class );
         //$JUnit-END$

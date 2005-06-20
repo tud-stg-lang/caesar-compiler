@@ -61,5 +61,19 @@
 			}
         </code>
     </compile-check-error>
-	    
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="vcscoping004" description="Outer access">
+		<code>
+        	public cclass OuterA {
+				public int v;
+				public cclass InnerA {
+					public void m() {
+						int a = OuterA.this.v;
+					}
+				}
+			}
+        </code>
+    </compile>	
+   	    
 </testsuite>

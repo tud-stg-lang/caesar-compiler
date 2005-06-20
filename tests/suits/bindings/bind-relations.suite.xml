@@ -1,0 +1,92 @@
+<testsuite name="Test binding relationships" package="suits.bind.relations">
+	
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ASSIGNMENT_NOTLVALUE"  id="bindrel001" description="changing wrappee">
+        <code>
+        	public cclass OuterA {
+				public cclass InnerA wraps String {
+					public void m() {
+						wrappee = "boom!";
+					}
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="TOPLEVEL_CCLASS_WRAPS"  id="bindrel002" description="top level wrapper">
+        <code>
+        	public class ClassA {
+			}
+			
+			public cclass CclassA wraps ClassA {
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="SYNTAX_ERROR"  id="bindrel003" description="wraps in simple class">
+        <code>
+        	public class ClassA {
+			}
+			
+			public class ClassB wraps ClassA {
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="OVERRIDE_WRAPPER"  id="bindrel004" description="overriding wraps in furtherbinding">
+        <code>
+        	public class ClassA {
+			}
+			public class ClassB {
+			}
+			public cclass OuterA {
+				public cclass InnerA wraps ClassA {
+				}
+			}
+			public cclass OuterB extends OuterA {
+				public cclass InnerA wraps ClassB {
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="OVERRIDE_WRAPPER"  id="bindrel005" description="overriding wraps in subclass">
+        <code>
+        	public class ClassA {
+			}
+			public class ClassB {
+			}
+			public cclass OuterA {
+				public cclass InnerA wraps ClassA {
+				}
+				public cclass InnerB extends InnerA wraps ClassB {
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="METHOD_NOT_FOUND"  id="bindrel006" description="applying wrapper constructor on wrong type">
+        <code>
+        	public class Test {
+				public void test() {
+					final OuterA oa = new OuterA();
+					oa.InnerA ia = oa.InnerA(new ClassB());
+				}
+			}
+			public class ClassA {
+			}
+			public class ClassB {
+			}
+			public cclass OuterA {
+				public cclass InnerA wraps ClassA {
+				}
+			}
+        </code>
+    </compile-check-error>
+	    
+</testsuite>

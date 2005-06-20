@@ -1,0 +1,146 @@
+<testsuite name="Various consistency tests" package="suits.vc.consist">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="DUPLICATE_TYPE_NAME"  id="vcconsist001" description="duplicate inner class">
+        <code>
+        	public cclass ClassA {
+				public cclass InnerA {
+				}
+				public cclass InnerA {
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="UNDEF_MESSAGE"  id="vcconsist002" description="duplicate constructors">
+        <code>
+        	public cclass OuterA {
+				public OuterA() {
+				}
+				public OuterA() {
+				}
+			}
+	    </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="UNDEF_MESSAGE"  id="vcconsist003" description="duplicate methods">
+        <code>
+        	public cclass OuterA {
+				public void m(int a) {
+				}
+				public void m(int a) {
+				}
+			}
+	    </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="UNDEF_MESSAGE"  id="vcconsist004" description="overriding inner with incompatible signature">
+        <code>
+        	public cclass OuterA {
+				public cclass InnerA {
+					public void m() {
+					}
+				}
+			}
+			public cclass OuterB extends OuterA {
+				public cclass InnerA {
+					public int m() {
+					}
+				}
+			}
+	    </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="UNDEF_MESSAGE"  id="vcconsist005" description="overriding method with incompatible signature">
+        <code>
+        	public cclass OuterA {
+				public void m() {
+				}
+			}
+			public cclass OuterB extends OuterA {
+				public int m() {
+				}
+			}
+	    </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="METHOD_THROWS_DIFFERENT"  id="vcconsist006" description="overriding method with exception specification">
+        <code>
+        	public cclass OuterA {
+				public void m() {
+				}
+			}
+			public cclass OuterB extends OuterA {
+				public void m() throws Exception {
+				}
+			}
+	    </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="METHOD_RETURN_DIFFERENT"  id="vcconsist007" description="mixing incompatible methods">
+        <code>
+        	public cclass OuterA {
+				public int m() {
+					return 0;
+				}
+			}
+			public cclass OuterB {
+				public void m() {
+				}
+			}
+			public cclass OuterC extends OuterA &amp; OuterB {
+			}
+	    </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="METHOD_RETURN_DIFFERENT"  id="vcconsist008" description="mixing inner classes with incompatible signatures">
+        <code>
+        	public cclass OuterA {
+				public cclass InnerA {
+					public void m() {
+					}
+				}
+			}
+			public cclass OuterB {
+				public cclass InnerA {
+					public int m() {
+						return 2;
+					}
+				}
+			}
+			public cclass OuterC extends OuterA &amp; OuterB {
+			}
+	    </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="METHOD_NOT_FOUND"  id="vcconsist009" description="non-existing super call">
+        <code>
+        	public cclass OuterA {
+			}
+			public cclass OuterB extends OuterA {
+				public void m(double a) {
+					super.m(a);
+				}
+			}
+	    </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="DUPLICATE_TYPE_NAME"  id="vcconsist010" description="cclass and class with the same names">
+        <code>
+        	public cclass ClassA {
+			}
+			public class ClassA {
+			}
+	    </code>
+    </compile-check-error>
+    	    
+</testsuite>

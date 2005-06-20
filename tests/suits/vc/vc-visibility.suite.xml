@@ -161,5 +161,23 @@
 			}
         </code>
     </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="VAR_UNKNOWN"  id="vcvis014" description="private access in overriden class">
+        <code>
+        	public cclass ClassA {
+				public cclass InnerA {
+					private int a;
+				}
+			}
+			public cclass ClassB extends ClassA {
+				public cclass InnerA {
+					public void m() {
+						a = 2;
+					}
+				}
+			}
+        </code>
+    </compile-check-error>    
 	    
 </testsuite>
