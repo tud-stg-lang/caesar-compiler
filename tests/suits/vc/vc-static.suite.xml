@@ -14,5 +14,112 @@
 			}
         </code>
     </compile-run>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcstatic002" description="Test static field access">
+		<test>			
+			assertEquals(OuterA.a, 5);
+		</test>
+        <code>
+        	public cclass OuterA {
+        		static public int a = 5;
+			}
+        </code>
+    </compile-run>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcstatic003" description="Test static field access from inner">
+		<test>			
+			assertEquals(new OuterA().new InnerA().getA(), 5);
+		</test>
+        <code>
+        	public cclass OuterA {
+        		static public int a = 5;
+        		
+        		public cclass InnerA {
+        			public int getA() {
+        				return a;
+        			}
+        		}
+			}
+        </code>
+    </compile-run>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcstatic004" description="Test static method access from inner">
+		<test>			
+			assertEquals(new OuterA().new InnerA().getA(), 5);
+		</test>
+        <code>
+        	public cclass OuterA {
+        		static private int a = 5;
+        		static public int getAA() {
+        		   return a;
+        		}
+        		
+        		public cclass InnerA {
+        			public int getA() {
+        				return getAA();
+        			}
+        		}
+			}
+        </code>
+    </compile-run>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcstatic005" description="Test inner static method">
+		<test>			
+			assertEquals(OuterA.InnerA.getA(), 5);
+		</test>
+        <code>
+        	public cclass OuterA {
+        		public cclass InnerA {
+        		    static private int a = 5;
+        			public static int getA() {
+        				return a;
+        			}
+        		}
+			}
+        </code>
+    </compile-run>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcstatic006" description="Test inherited static field">
+		<test>			
+			assertEquals(new OuterB().getA(), 5);
+			assertEquals(OuterB.CONST, 5);
+		</test>
+        <code>
+        	public cclass OuterA {
+        		static protected int CONST = 5;
+			}
+			public cclass OuterB extends OuterA {
+        		public int getA() {
+        		   return CONST;
+        		}
+			}
+        </code>
+    </compile-run>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcstatic007" description="Test inherited static method">
+		<test>
+			assertEquals(new OuterB().getB(), 5);			
+			assertEquals(OuterB.getA(), 5);
+		</test>
+        <code>
+        	public cclass OuterA {
+        		static protected int CONST = 5;
+        		static public int getA() {
+        		   return CONST;
+        		}
+			}
+			public cclass OuterB extends OuterA {  
+				public int getB() {
+        		   return getA();
+        		}      		
+			}
+        </code>
+    </compile-run>	
 	    
 </testsuite>
