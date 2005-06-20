@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JNameExpression.java,v 1.4 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JNameExpression.java,v 1.5 2005-06-20 12:55:36 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -32,6 +32,7 @@ import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
@@ -298,19 +299,21 @@ public class JNameExpression extends JExpression
 			// If the name to the left of the "." is reclassified as a TypeName
 			if (prefix instanceof JTypeNameExpression)
 			{
-				if (((JTypeNameExpression) prefix)
-					.getClassType()
-					.getCClass()
-					.lookupField(
-						context.getClassContext().getCClass(),
-						prefix.getType(factory).getCClass(),
-						ident)
-					!= null)
+				CField field = ((JTypeNameExpression) prefix)
+									.getClassType()
+									.getCClass()
+									.lookupField(
+											context.getClassContext().getCClass(),
+											prefix.getType(factory).getCClass(),
+											ident);
+				if (field != null)
 				{
 					// there is a field
 					return createClassField(
 						getTokenReference(),
-						prefix,
+						new JTypeNameExpression(
+								prefix.getTokenReference(),
+								field.getOwnerType()),
 						ident,
 						factory).analyse(
 						context);
