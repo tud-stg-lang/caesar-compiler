@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjMixinInterfaceDeclaration.java,v 1.16 2005-06-17 11:08:36 gasiunas Exp $
+ * $Id: CjMixinInterfaceDeclaration.java,v 1.17 2005-06-20 11:19:03 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -39,7 +39,7 @@ import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CjExternClassContext;
-import org.caesarj.compiler.export.CCjSourceClass;
+import org.caesarj.compiler.export.CCjIfcSourceClass;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceMethod;
@@ -353,7 +353,7 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
 		String prefix
     ) {
 	    sourceClass = 
-            new CCjSourceClass(
+            new CCjIfcSourceClass(
                 owner, 
                 getTokenReference(), 
                 modifiers, 

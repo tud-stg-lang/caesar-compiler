@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CMethod.java,v 1.15 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: CMethod.java,v 1.16 2005-06-20 11:19:03 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -698,8 +698,8 @@ public abstract class CMethod extends CMember {
     
     public void genCode(GenerationContext context, boolean nonVirtual, CClass callTarget) {
         CodeSequence code = context.getCodeSequence();
-
-        if (callTarget.isInterface()) {
+        
+        if (callTarget.isInterface() && !isStatic()) {
             int size = 0;
 
             for (int i = 0; i < parameters.length; i++) {
@@ -717,6 +717,10 @@ public abstract class CMethod extends CMember {
 
             if (isStatic()) {
                 opcode = opc_invokestatic;
+                /* direct static calls to the impl class */
+                if (callTarget.isMixinInterface()) {
+                	callTarget = ((CCjIfcSourceClass)callTarget).getImplClass();
+                }
             }
             else if (nonVirtual || isPrivate()) {
                 // JDK1.2 does not like ...|| isPrivate() || isFinal()
