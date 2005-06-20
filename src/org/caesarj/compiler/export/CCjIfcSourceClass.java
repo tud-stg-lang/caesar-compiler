@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjIfcSourceClass.java,v 1.1 2005-06-20 11:19:03 gasiunas Exp $
+ * $Id: CCjIfcSourceClass.java,v 1.2 2005-06-20 12:56:00 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -31,6 +31,7 @@ import org.caesarj.compiler.ast.phylum.declaration.CjMixinInterfaceDeclaration;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * @author Vaidas Gasiunas
@@ -93,5 +94,31 @@ public class CCjIfcSourceClass extends CCjSourceClass
 				container.add(implMeth[i]);
 			}
 		}
+	}
+	
+	/**
+	 * Searches the class or interface to locate declarations of fields that are
+	 * accessible.
+	 * 
+	 * @param	caller		the class of the caller
+	 * @param     primary         the class of the primary expression (can be null)
+	 * @param	ident		the simple name of the field
+	 * @return	the field definition
+	 * @exception UnpositionedError	this error will be positioned soon
+	 */
+	public CField lookupField(CClass caller, CClass primary, String ident)
+		throws UnpositionedError
+	{
+		CField field = getField(ident);
+
+		if (field != null && field.isAccessible(primary, caller)) {
+			return field;
+		}
+		field = lookupSuperField(caller, primary, ident);
+		if (field != null && field.isAccessible(primary, caller)) {
+			return field;
+		}
+		
+		return getImplClass().lookupClassField(caller, primary, ident);
 	}
 }
