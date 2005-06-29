@@ -1,0 +1,161 @@
+<testsuite name="Test pointcuts resolution" package="suits.pointcuts.resolve">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile  id="pointcutresolve001" description="referencing pointcuts in the same class">
+        <code>
+        	public cclass ClsA {
+        		public void m() {
+        		}			    
+
+				pointcut testCall() : call(* m(*));
+	
+				pointcut ref() : testCall() &amp;&amp; target(ClsA);
+			}
+			
+        </code>
+    </compile>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile  id="pointcutresolve002" description="referencing pointcuts in the same class, inverted order">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m() {
+        		}			    
+
+				pointcut ref() : testCall() &amp;&amp; target(ClsA);
+
+				pointcut testCall() : call(* m(*));
+			}
+			
+        </code>
+    </compile>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile  id="pointcutresolve003" description="referencing pointcuts in different classes">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m() {
+        		}
+				public void test() {
+        		}
+	
+				pointcut ref() : target(ClsA) &amp;&amp; ClsB.testB();
+				
+				pointcut testCall() : call(* m(*));
+			}
+			
+			public cclass ClsB
+			{
+			 
+			    pointcut testB() : call(* test(*)); 
+			        
+			}
+        </code>
+    </compile>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile  id="pointcutresolve004" description="referencing pointcuts in the same class, with arguments">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m(String aString) {
+        		}			    
+
+				pointcut ref(String s) : testCall(s) &amp;&amp; target(ClsA);
+
+				pointcut testCall(String s) : call(* m(String)) &amp;&amp; args(s);
+				
+			}
+			
+        </code>
+    </compile>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile  id="pointcutresolve005" description="referencing pointcuts in different classes, with arguments">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m() {
+        		}
+				public void test(Integer anInt) {
+        		}
+	
+				pointcut ref(Integer i) : testCall() &amp;&amp; ClsB.testB(i);
+				
+				pointcut testCall() : call(* m(*));
+			}
+			
+			public cclass ClsB
+			{
+			 
+			    pointcut testB(Integer i) : call(* test(Integer)) &amp;&amp; args(i); 
+			        
+			}
+        </code>
+    </compile>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="pointcutresolve006" description="referencing pointcuts in the same class">
+		<test>
+			ClsA cls = new ClsA();
+			cls.m();
+			assertEquals(":before:execm", res.toString());
+		</test>
+        <code>
+            public deployed cclass ClsA {
+            
+        		public void m() {
+        			Test.res.append(":execm");
+        		}			    
+
+				pointcut testCall() : call(* m());
+	
+				// THIS IS NOT IMPLEMENTED YET
+				pointcut ref() : testCall() &amp;&amp; target(ClsA_Impl);
+				
+				before(): ref() {
+					Test.res.append(":before");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="pointcutresolve007" description="referencing pointcuts in diferent classes">
+		<test>
+			ClsA cls = new ClsA();
+			deploy(cls) {
+				cls.m();
+				cls.test();
+			}
+			assertEquals(":execm:before:exectest", res.toString());
+		</test>
+        <code>
+			
+        	public cclass ClsA 
+        	{
+        		public void m() {
+        			Test.res.append(":execm");
+        		}
+				public void test() {
+					Test.res.append(":exectest");
+        		}
+	
+				pointcut ref() : ClsB.testB();
+				
+				before(): ref() {
+					Test.res.append(":before");
+				}
+			}
+			
+			public cclass ClsB
+			{
+			 
+			    pointcut testB() : call(* test()); 
+			        
+			}
+        </code>
+    </compile-run>	
+</testsuite>
