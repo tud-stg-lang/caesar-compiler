@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjPointcutDeclaration.java,v 1.6 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CjPointcutDeclaration.java,v 1.7 2005-06-29 07:47:33 thiago Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -31,7 +31,7 @@ import java.util.List;
 import org.caesarj.compiler.aspectj.CaesarFormalBinding;
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
-import org.caesarj.compiler.aspectj.CaesarScope;
+import org.caesarj.compiler.aspectj.CaesarPointcutScope;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
@@ -106,7 +106,7 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 		throws PositionedError {
 
 		FjClassContext caesarContext = (FjClassContext) context;
-	
+
 		CBinaryTypeContext typeContext =
 			new CBinaryTypeContext(
 				context.getClassReader(),
@@ -123,7 +123,6 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 
 		CCjSourceClass crosscuttingClass = (CCjSourceClass) context.getCClass();
 
-		
 		CaesarMember rpd =
 			resolve(
 				context,
@@ -132,6 +131,7 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 				getTokenReference());
 
 		crosscuttingClass.addResolvedPointcut(rpd);
+		
 		checked=true;
 		return null;
 	}
@@ -170,7 +170,7 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 			(CaesarFormalBinding[]) formalBindings.toArray(new CaesarFormalBinding[0]));
 
 		if (((modifiers & ACC_ABSTRACT) == 0)&&!checked) {
-				pointcut.resolve(new CaesarScope((FjClassContext) context, caller));
+				pointcut.resolve(new CaesarPointcutScope((FjClassContext) context, caller));
 		}
 
 		CaesarMember rpd =

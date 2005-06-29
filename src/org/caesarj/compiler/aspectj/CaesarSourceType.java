@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarSourceType.java,v 1.11 2005-04-04 09:45:48 gasiunas Exp $
+ * $Id: CaesarSourceType.java,v 1.12 2005-06-29 07:47:32 thiago Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -215,10 +215,22 @@ public class CaesarSourceType extends ConcreteName implements Constants {
 			superClass = world.resolve(cclass.getSuperClass());
 		}
 
+		/*
 		List pointcuts = new ArrayList();
 		if (cclass instanceof CCjSourceClass) {
 			CCjSourceClass caesarClass = (CCjSourceClass) cclass;
 			pointcuts.addAll(caesarClass.getResolvedPointcuts());
+		}
+		declaredPointcuts =
+			(ResolvedMember[]) pointcuts.toArray(
+				new ResolvedMember[pointcuts.size()]);
+		*/
+	
+		// Get the declared pointcuts
+		List pointcuts = new ArrayList();
+		if (cclass instanceof CCjSourceClass) {
+			CCjSourceClass caesarClass = (CCjSourceClass) cclass;
+			pointcuts.addAll(caesarClass.getDeclaredPointcuts());
 		}
 		declaredPointcuts =
 			(ResolvedMember[]) pointcuts.toArray(

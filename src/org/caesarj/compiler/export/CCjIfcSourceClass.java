@@ -20,13 +20,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjIfcSourceClass.java,v 1.3 2005-06-20 15:37:38 gasiunas Exp $
+ * $Id: CCjIfcSourceClass.java,v 1.4 2005-06-29 07:47:33 thiago Exp $
  */
 
 package org.caesarj.compiler.export;
 
 import java.util.ArrayList;
 
+import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjMixinInterfaceDeclaration;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.types.CType;
@@ -68,6 +69,13 @@ public class CCjIfcSourceClass extends CCjSourceClass
 	
 	public CCjSourceClass getImplClass() {
 		return _mixinIfcDecl.getCorrespondingClassDeclaration().getCjSourceClass();
+	}
+
+	public CCjSourceClass getRegistryClass() {
+		CjClassDeclaration registry =  _mixinIfcDecl.getCorrespondingClassDeclaration().getRegistryClass();
+		if (registry != null)
+		    return registry.getCjSourceClass();
+		return null;
 	}
 	
 	/**

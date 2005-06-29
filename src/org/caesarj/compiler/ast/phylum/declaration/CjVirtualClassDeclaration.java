@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjVirtualClassDeclaration.java,v 1.28 2005-06-17 15:32:41 gasiunas Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.29 2005-06-29 07:47:33 thiago Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -40,6 +40,7 @@ import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CjExternClassContext;
+import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
@@ -554,6 +555,25 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         // iterate over original pointcuts
 		for (int i1 = 0; i1 < origPointcuts.length; i1++) {
 			origPointcuts[i1].accept(p);
+        }
+    }
+    
+    /**
+     * Get the declared pointcuts in the registry and declare them in the
+     * CClass. When resolving the pointcut, the weaver will look in the CClass
+     * and not directly here.
+     *
+     */
+    public void declarePointcuts() {
+        // Add the declared pointcuts to the source class
+        CjClassDeclaration registry = this.getRegistryClass();
+        if (registry != null) {
+
+            CCjSourceClass registryCrosscuttingClass = (CCjSourceClass) registry.getCClass();
+            CjPointcutDeclaration[] pointcuts = registry.getPointcuts();
+	        for (int j = 0; j < pointcuts.length; j++) {
+	            registryCrosscuttingClass.addDeclaredPointcut(this, pointcuts[j]);
+	        }
         }
     }
     

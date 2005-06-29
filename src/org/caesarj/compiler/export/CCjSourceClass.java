@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjSourceClass.java,v 1.14 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: CCjSourceClass.java,v 1.15 2005-06-29 07:47:32 thiago Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.weaver.ResolvedPointcutDefinition;
+import org.aspectj.weaver.TypeX;
 import org.caesarj.classfile.Attribute;
 import org.caesarj.classfile.AttributedClassInfo;
 import org.caesarj.classfile.CaesarExtraAttributes;
@@ -43,7 +45,11 @@ import org.caesarj.compiler.aspectj.AttributeAdapter;
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
+import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjPointcutDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.AdditionalGenerationContext;
 import org.caesarj.compiler.context.CTypeContext;
@@ -68,7 +74,8 @@ public class CCjSourceClass extends CSourceClass
 	protected PrivilegedAccessHandler privilegedAccessHandler;
 
 	protected List resolvedPointcuts = new ArrayList();
-
+	protected List declaredPointcuts = new ArrayList();
+	
 	public CCjSourceClass(
 		CClass owner,
 		TokenReference where,
@@ -236,6 +243,25 @@ public class CCjSourceClass extends CSourceClass
 
 			ret.addAll(
 				((CCjSourceClass) getSuperClass()).getResolvedPointcuts());
+		}
+
+		return ret;
+	}
+	
+	public List getDeclaredPointcuts()
+	{
+		List ret = new ArrayList();
+		
+		ret.addAll(declaredPointcuts);
+
+		if (getSuperClass() != null
+			&& CModifier.contains(
+				getSuperClass().getModifiers(),
+				ACC_CROSSCUTTING))
+		{
+
+			ret.addAll(
+				((CCjSourceClass) getSuperClass()).getDeclaredPointcuts());
 		}
 
 		return ret;
@@ -605,7 +631,56 @@ public class CCjSourceClass extends CSourceClass
 
 	public void addResolvedPointcut(CaesarMember rpd)
 	{
-		resolvedPointcuts.add(rpd);
+		//resolvedPointcuts.put(rpd.getName(), rpd);
+	    resolvedPointcuts.add(rpd);
 	}
+	
 
+
+	/**
+	 * Add the pointcut declaration made in this cclass to the list.
+	 * 
+	 * Here a new ResolvedPointcutDefinition is created and stored in the list. When
+	 * resolving the pointcut, this definition is used to check if there's a related
+	 * pointcut. In the end, this is just a fake resolution, since the pointcuts
+	 * stored in the resolvedPointcuts array are the ones that will really be translated
+	 * to code.
+	 * 
+	 * @param cclass
+	 * @param pointcutDecl
+	 */
+	public void addDeclaredPointcut(CjVirtualClassDeclaration cclass, CjPointcutDeclaration pointcutDecl)
+	{
+	    CjClassDeclaration registry = cclass.getRegistryClass();
+	    
+	    JFormalParameter[] parameters = pointcutDecl.getParameters();
+		List parameterSignatures = new ArrayList();
+		
+		for (int i = 0; i < parameters.length; i++) {
+		    
+			if (! parameters[i].isGenerated()) {
+			    try {
+			        CType type = parameters[i].getType().checkType(registry.getTypeContext());
+			        parameterSignatures.add(type.getSignature());
+			    } catch (UnpositionedError e) {
+			        
+			    }
+			}
+		}
+		
+		TypeX parameterTypes[] = TypeX.forSignatures((String[]) parameterSignatures.toArray(new String[0]));
+		
+		TypeX declaringType = TypeX.forName(registry.getCClass().getQualifiedName());
+
+	    ResolvedPointcutDefinition resolvedPointcutDeclaration = new ResolvedPointcutDefinition (
+            declaringType,
+            pointcutDecl.getModifiers(), 
+            pointcutDecl.getIdent(),
+            parameterTypes,
+            pointcutDecl.getPointcut().wrappee());
+			
+		resolvedPointcutDeclaration.setPosition(pointcutDecl.getTokenReference().getLine(), pointcutDecl.getTokenReference().getLine());
+		
+		declaredPointcuts.add(resolvedPointcutDeclaration);
+	}
 }

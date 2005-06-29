@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.103 2005-06-17 15:32:41 gasiunas Exp $
+ * $Id: Main.java,v 1.104 2005-06-29 07:47:32 thiago Exp $
  */
 
 package org.caesarj.compiler;
@@ -51,6 +51,7 @@ import org.caesarj.compiler.joincollab.JoinCollaborations;
 import org.caesarj.compiler.joinpoint.GenerateDeploymentSupport;
 import org.caesarj.compiler.joinpoint.JoinDeploymentSupport;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
+import org.caesarj.compiler.joinpoint.PointcutSupport;
 import org.caesarj.compiler.joinpoint.StaticDeploymentPreparation;
 import org.caesarj.compiler.joinpoint.StaticFieldDeploymentVisitor;
 import org.caesarj.compiler.typesys.graph.CaesarTypeGraphGenerator;
@@ -551,7 +552,12 @@ public class Main extends MainSuper implements Constants {
             statDeplPrep.prepareForStaticDeployment(cu);
         }
         
-        
+        Log.verbose("prepare pointcut declarations");
+        // Prepare the pointcut declarations
+        for (int i = 0; i < tree.length; i++) {
+            JCompilationUnit cu = tree[i];
+            PointcutSupport.preparePointcutDeclarations(this, cu);
+        }       
     }
     
     protected void transformConstructors(
