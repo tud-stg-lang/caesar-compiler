@@ -1,0 +1,85 @@
+<testsuite name="cclass constructors" package="suits.vc.constr">
+	
+	<common-code-base> 
+		public cclass GraphLib{ public cclass Node{} }
+	</common-code-base>
+
+	<compile-check-error 
+		description="Need explicit super" 
+		error="UNDEF_MESSAGE" 
+		id="vcconstr000">
+		
+		<code>
+			public class X{
+				public X(int i){
+				}
+			}
+			
+			public class Y{
+				public Y(String s){
+					super(Y y);
+				}
+			}
+		</code>
+			
+		
+	</compile-check-error>
+		
+	<compile-check-error 
+			description="Using undefined constructor" 
+			error="METHOD_NOT_FOUND"
+			id="vcconstr001">
+		<code>
+			public cclass X{
+				public X(int i){ 
+				}
+			}
+			
+			public class Main{
+			 public static void main(String[] args){
+				new X();
+			 }
+			}
+		</code>
+	</compile-check-error>
+
+		<compile
+				description="initializing final field in cclass-constructor"
+				id="vcconstr002">
+		<code>
+			public cclass X{
+				public final GraphLib g; 
+			
+				public X(GraphLib graph)
+				{ 
+					g = graph; 
+				}
+			
+				public void foo(){ 
+					g.Node node = g.new Node(); 
+				}
+			}
+		</code>
+	</compile>
+
+	<compile-run description="super constructor" id="vcconstr003">
+		<test>
+			assertEquals(42, new Z(42).i);
+		</test>
+		<code>
+			public cclass X{
+				public int i = 0;
+				public X(int i){
+					this.i = i;
+				}
+			}
+			
+			public cclass Z extends  X  {
+				public Y(int i){
+					super(i);
+				}
+			}
+		</code>
+	</compile-run>	
+
+</testsuite>
