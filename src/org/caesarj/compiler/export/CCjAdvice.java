@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjAdvice.java,v 1.6 2005-05-31 09:01:52 meffert Exp $
+ * $Id: CCjAdvice.java,v 1.7 2005-07-07 14:25:18 thiago Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -35,7 +35,7 @@ import org.caesarj.compiler.aspectj.AttributeAdapter;
 import org.caesarj.compiler.aspectj.CaesarAdviceKind;
 import org.caesarj.compiler.aspectj.CaesarFormalBinding;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
-import org.caesarj.compiler.aspectj.CaesarScope;
+import org.caesarj.compiler.aspectj.CaesarPointcutScope;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.context.CContext;
@@ -163,7 +163,7 @@ public class CCjAdvice extends CSourceMethod {
 			//CaesarFormalBinding.wrappees(
 			(CaesarFormalBinding[]) formalBindings.toArray(new CaesarFormalBinding[0]));
 		//resolve the pointcut
-		pointcut.resolve(new CaesarScope(classContext, caller));
+		pointcut.resolve(new CaesarPointcutScope(classContext, caller));
 
 		//create the advice attribute
 		//AjAttribute ajAttribute;

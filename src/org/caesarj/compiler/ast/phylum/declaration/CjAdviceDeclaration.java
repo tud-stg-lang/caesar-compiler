@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjAdviceDeclaration.java,v 1.13 2005-05-31 08:53:41 meffert Exp $
+ * $Id: CjAdviceDeclaration.java,v 1.14 2005-07-07 14:25:18 thiago Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -89,6 +89,9 @@ public class CjAdviceDeclaration
     /** it the advice activated for weaving */
     private boolean active;
     
+    /** The virtual class where this advice was declared */
+    private CjVirtualClassDeclaration originalClass;
+    
     public CjAdviceDeclaration(
         TokenReference where,
         int modifiers,
@@ -131,7 +134,7 @@ public class CjAdviceDeclaration
     /**
      * Copy constructor
      */
-    public CjAdviceDeclaration(CjAdviceDeclaration decl) {
+    public CjAdviceDeclaration(CjAdviceDeclaration decl, CjVirtualClassDeclaration originalClass) {
     	super(decl.getTokenReference(), 
     		decl.modifiers, 
 			decl.returnType, 
@@ -150,6 +153,7 @@ public class CjAdviceDeclaration
         decl.addAdviceCopy(this);
         this.declared = false;
         this.active = true;
+        this.originalClass = originalClass;
     }
 
     /**
@@ -191,13 +195,29 @@ public class CjAdviceDeclaration
             // FJTODO what to do with exception
         }
 
-        CBinaryTypeContext typeContext =
-            new CBinaryTypeContext(
-                context.getClassReader(),
-                context.getTypeFactory(),
-                context,
-                (modifiers & ACC_STATIC) == 0);
-
+        // It there's an original class, use it to resolve the parameters types
+        CBinaryTypeContext typeContext = null;
+        CClassContext c = null;
+        if (this.originalClass != null && this.originalClass.self != null) {            
+            c = 
+                originalClass.constructContext(
+                        originalClass.self.getCompilationUnitContext());
+            
+            typeContext =
+                new CBinaryTypeContext(
+                        c.getClassReader(),
+                        c.getTypeFactory(),
+                        c,
+                    (modifiers & ACC_STATIC) == 0);
+        } else {
+            typeContext =
+                new CBinaryTypeContext(
+                    context.getClassReader(),
+                    context.getTypeFactory(),
+                    context,
+                    (modifiers & ACC_STATIC) == 0);
+        }
+        
         CType[] parameterTypes = new CType[parameters.length];
         String[] parameterNames = new String[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
@@ -284,12 +304,24 @@ public class CjAdviceDeclaration
      * @see org.caesarj.kjc.JMethodDeclaration#checkBody1(CClassContext)
      */
     public void checkBody1(CClassContext context) throws PositionedError {
+        
+        // Create an advice context, using the class where the advice was declared.
+        CClassContext adviceContext = context;
+        if (this.originalClass != null && this.originalClass.self != null) {            
+            adviceContext = 
+                originalClass.constructContext(
+                        originalClass.self.getCompilationUnitContext());
+        }
+        
+        // Check the body using a regular context
         super.checkBody1(context);
 
-        //create a method attribute for the advice
-        // this has to be done after the pointcut declarations are resolved	
+        // create a method attribute for the advice
+        // this has to be done after the pointcut declarations are resolved
+        // Note that, if we don't have an originalClass, the adviceContext
+        // is the normal context of the body.
         getCaesarAdvice().createAttribute(
-            context,
+            adviceContext,
             context.getCClass(),
             parameters,
             getTokenReference(),

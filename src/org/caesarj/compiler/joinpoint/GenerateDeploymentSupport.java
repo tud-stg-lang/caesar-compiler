@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: GenerateDeploymentSupport.java,v 1.6 2005-06-03 08:24:47 klose Exp $
+ * $Id: GenerateDeploymentSupport.java,v 1.7 2005-07-07 14:25:18 thiago Exp $
  */
 package org.caesarj.compiler.joinpoint;
 
@@ -227,7 +227,7 @@ public class GenerateDeploymentSupport {
  			/* add all before and around advices to the list */
  			CjAdviceDeclaration declAdv[] = classDecl.getAdvices();
  			for (int i1 = 0; i1 < declAdv.length; i1++) {
- 				CjAdviceDeclaration advCopy = new CjAdviceDeclaration(declAdv[i1]);
+ 				CjAdviceDeclaration advCopy = new CjAdviceDeclaration(declAdv[i1], classDecl);
  				
  				/* put advice at the order of correct precedence */
  				if (declAdv[i1].getKind() != CaesarAdviceKind.After &&
@@ -249,6 +249,7 @@ public class GenerateDeploymentSupport {
  				String ident = declPct[i1].getIdent();
  				if (!pctSet.contains(ident)) {
  					pctSet.add(ident);
+ 					declPct[i1].setOriginalClass(classDecl); // Tell the pointcut where to resolve imports
  					pointcuts.add(declPct[i1]);
  				} 				
  			}
@@ -270,7 +271,7 @@ public class GenerateDeploymentSupport {
  			/* add all after advices to the list */
  			CjAdviceDeclaration declAdv[] = classDecl.getAdvices();
  			for (int i1 = 0; i1 < declAdv.length; i1++) {
- 				CjAdviceDeclaration advCopy = new CjAdviceDeclaration(declAdv[i1]);
+ 				CjAdviceDeclaration advCopy = new CjAdviceDeclaration(declAdv[i1], classDecl);
  				
  				/* put advice at the order of correct precedence */
  				if (declAdv[i1].getKind() == CaesarAdviceKind.After ||
