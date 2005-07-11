@@ -47,6 +47,43 @@
 				}
 			}
         </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="abstrasp002" description="Test pointcuts in inner classes of abstract classes">
+		<test>
+			new TestA().test();
+			System.out.println(TestA.result.toString());
+			assertEquals(TestA.result.toString(), ":before call foo:foo");
+		</test>
+        <code>
+        	public class TestA {
+        		public static StringBuffer result = new StringBuffer();
+        	   	public void test() {
+					deploy(new OuterB().new AspectA()) {
+						foo();
+					}			
+					foo();
+				}			
+				public void foo() {
+					result.append(":foo");
+				}
+			}
+        	abstract public cclass OuterA {
+        	    abstract public void log();
+        	    public cclass AspectA { 
+        			pointcut callFoo() : cflow(call(* TestA.test())) &amp;&amp; call(* TestA.foo());
+					before() : callFoo() {
+						log();
+					}
+				}
+			}
+			public cclass OuterB extends OuterA {
+				public void log() {
+					TestA.result.append(":before call foo");
+				}
+			}
+        </code>
     </compile-run>	
     
 </testsuite>
