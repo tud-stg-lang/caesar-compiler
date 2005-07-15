@@ -1,0 +1,139 @@
+<testsuite name="Test advice weaving" package="suits.aspects.advice">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile  id="advice001" description="compiling before advice">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m(int i) {
+        		}			    
+
+				pointcut testCall(int i) : call(* m(int))  &amp;&amp; args(i);
+				
+				before(int i) : testCall(i) {
+					System.out.println("");
+				} 
+			}
+        </code>
+    </compile>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile  id="advice002" description="compiling after advice">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m(int i) {
+        		}			    
+
+				pointcut testCall(int i) : call(* m(int))  &amp;&amp; args(i);
+				
+				after(int i) : testCall(i) {
+					System.out.println("");
+				} 
+			}
+        </code>
+    </compile>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile  id="advice003" description="compiling after returning advice">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m(int i) {
+        		}			    
+
+				pointcut testCall(int i) : call(* m(int))  &amp;&amp; args(i);
+				
+				after(int i) returning : testCall(i) {
+					System.out.println("");
+				} 
+			}
+        </code>
+    </compile>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile  id="advice004" description="compiling after throwing advice">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m(int i) {
+        		}			    
+
+				pointcut testCall(int i) : call(* m(int))  &amp;&amp; args(i);
+				
+				after(int i) throwing : testCall(i) {
+					System.out.println("");
+				} 
+			}
+        </code>
+    </compile>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile  id="advice005" description="compiling around advice">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m(int i) {
+        		}			    
+
+				pointcut testCall(int i) : call(* m(int))  &amp;&amp; args(i);
+				
+				void around(int i) : testCall(i) {
+					System.out.println("");
+				} 
+			}
+        </code>
+    </compile>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile  id="advice006" description="compiling advice with thisJoinPoint ">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m(int i) {
+        		}			    
+
+				pointcut testCall(int i) : call(* m(int))  &amp;&amp; args(i);
+				
+				before(int i) : testCall(i) {
+					System.out.println("");
+				} 
+			}
+        </code>
+    </compile>
+	
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile  id="advice007" description="compiling advice with thisJoinPointStaticPart ">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m(int i) {
+        		}			    
+
+				pointcut testCall(int i) : call(* m(int))  &amp;&amp; args(i);
+				
+				before(int i) : testCall(i) {
+					System.out.println("");
+				} 
+			}
+        </code>
+    </compile>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile  id="advice008" description="compiling advice with thisEnclosingJoinPointStaticPart ">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m(int i) {
+        		}			    
+
+				pointcut testCall(int i) : call(* m(int))  &amp;&amp; args(i);
+				
+				before(int i) : testCall(i) {
+					System.out.println("");
+				} 
+			}
+        </code>
+    </compile>
+    
+</testsuite>

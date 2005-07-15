@@ -96,8 +96,33 @@
         </code>
     </compile>
     
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile  id="pointcutresolve006" description="referencing pointcuts from advice">
+        <code>
+        	public deployed cclass ClsA 
+        	{
+        		public void m(int i) {
+        		}
+				public void test() {
+        		}
+	
+				pointcut ref(int i) : call(* m(*))  &amp;&amp; args(i);
+				
+				after(int i) : call(* m(*))  &amp;&amp; args(i) {
+				}
+			}
+			
+			public cclass ClsB
+			{
+			 
+			     pointcut testB(Integer i) : call(* test(Integer)) &amp;&amp; args(i);
+			        
+			}
+        </code>
+    </compile>
+    
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run id="pointcutresolve006" description="referencing pointcuts in the same class">
+    <compile-run id="pointcutresolve007" description="referencing pointcuts in the same class">
 		<test>
 			ClsA cls = new ClsA();
 			cls.m();
@@ -112,7 +137,7 @@
 
 				pointcut testCall() : call(* m());
 	
-				// THIS IS NOT IMPLEMENTED YET
+				// STILL HAVE TO USE _Impl
 				pointcut ref() : testCall() &amp;&amp; target(ClsA_Impl);
 				
 				before(): ref() {
@@ -123,7 +148,7 @@
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run id="pointcutresolve007" description="referencing pointcuts in diferent classes">
+    <compile-run id="pointcutresolve008" description="referencing pointcuts in diferent classes">
 		<test>
 			ClsA cls = new ClsA();
 			deploy(cls) {
@@ -154,6 +179,43 @@
 			{
 			 
 			    pointcut testB() : call(* test()); 
+			        
+			}
+        </code>
+    </compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="pointcutresolve009" description="referencing pointcuts in diferent classes with arguments">
+		<test>
+			ClsA cls = new ClsA();
+			deploy(cls) {
+				cls.m();
+				cls.test(3);
+			}
+			assertEquals(":execm:before3:exectest3", res.toString());
+		</test>
+        <code>
+			
+        	public cclass ClsA 
+        	{
+        		public void m() {
+        			Test.res.append(":execm");
+        		}
+				public void test(int i) {
+					Test.res.append(":exectest" + i);
+        		}
+	
+				pointcut ref(int i) : ClsB.testB(i);
+				
+				before(int i): ref(i) {
+					Test.res.append(":before" + i);
+				}
+			}
+			
+			public cclass ClsB
+			{
+			 
+			    pointcut testB(int i) : call(* test(int)) &amp;&amp; args(i) ; 
 			        
 			}
         </code>
