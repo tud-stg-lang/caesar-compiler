@@ -1,76 +1,136 @@
 <testsuite name="Test pointcuts resolution" package="suits.pointcuts.resolve">
 
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile  id="pointcutresolve001" description="referencing pointcuts in the same class">
+    <compile-run  id="pointcutresolve001" description="referencing pointcuts in the same class">
+    	<test>
+	    	ClsA c = new ClsA();
+	    	ClsA1 c1 = new ClsA1();
+	    	deploy (c) {
+		    	c.m();
+		    	c1.m();
+		    }
+			System.out.println("result: "+ res.toString());
+			assertEquals(":m:m:after", res.toString());			
+		</test>
         <code>
         	public cclass ClsA {
         		public void m() {
+        			Test.res.append(":m");
         		}			    
 
-				pointcut testCall() : call(* m(*));
+				pointcut testCall() : execution(* ClsA.m(..));
 	
-				pointcut ref() : testCall() &amp;&amp; target(ClsA);
+				pointcut ref() : testCall() &amp;&amp; this(ClsA1);
+				
+				after() : ref() {
+					Test.res.append(":after");
+				}
 			}
-			
+			public cclass ClsA1 extends ClsA {
+			}			
         </code>
-    </compile>
+    </compile-run>
 
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile  id="pointcutresolve002" description="referencing pointcuts in the same class, inverted order">
+    <compile-run  id="pointcutresolve002" description="referencing pointcuts in the same class, inverted order">
+	    <test>
+	    	ClsA c = new ClsA();
+	    	ClsA1 c1 = new ClsA1();
+	    	deploy (c) {
+		    	c.m();
+		    	c1.m();
+		    }
+			System.out.println("result: "+ res.toString());
+			assertEquals(":m:m:after", res.toString());			
+		</test>
         <code>
         	public cclass ClsA 
         	{
         		public void m() {
+        			Test.res.append(":m");
         		}			    
 
-				pointcut ref() : testCall() &amp;&amp; target(ClsA);
+				pointcut ref() : testCall() &amp;&amp; target(ClsA1);
 
-				pointcut testCall() : call(* m(*));
+				pointcut testCall() : call(* ClsA.m(..));
+				
+				after() : ref() {
+					Test.res.append(":after");
+				}
 			}
-			
+			public cclass ClsA1 extends ClsA {
+			}
         </code>
-    </compile>
+    </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile  id="pointcutresolve003" description="referencing pointcuts in different classes">
+    <compile-run  id="pointcutresolve003" description="referencing pointcuts in different classes">
+    	<test>
+	    	ClsA c = new ClsA();
+	    	deploy (c) {
+		    	c.m();
+		    	c.test();
+		    }
+			System.out.println("result: "+ res.toString());
+			assertEquals(":m:test:after", res.toString());			
+		</test>
         <code>
         	public cclass ClsA 
         	{
         		public void m() {
+        			Test.res.append(":m");
         		}
 				public void test() {
+					Test.res.append(":test");
         		}
 	
 				pointcut ref() : target(ClsA) &amp;&amp; ClsB.testB();
 				
-				pointcut testCall() : call(* m(*));
+				pointcut testCall() : call(* m(..));
+				
+				
+				after() : ref() {
+					Test.res.append(":after");
+				}
 			}
-			
 			public cclass ClsB
-			{
-			 
-			    pointcut testB() : call(* test(*)); 
-			        
+			{	
+				pointcut testB() : call(* test(..));
 			}
         </code>
-    </compile>
+    </compile-run>
     
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile  id="pointcutresolve004" description="referencing pointcuts in the same class, with arguments">
+    <compile-run  id="pointcutresolve004" description="referencing pointcuts in the same class, with arguments">
+    	<test>
+	    	ClsA c = new ClsA();
+	    	ClsA1 c1 = new ClsA1();
+	    	deploy (c) {
+		    	c.m("a");
+		    	c1.m("a");
+		    }
+			System.out.println("result: "+ res.toString());
+			assertEquals(":m:a:m:a:after:a", res.toString());			
+		</test>
         <code>
         	public cclass ClsA 
         	{
         		public void m(String aString) {
+        			Test.res.append(":m:"+aString);
         		}			    
 
-				pointcut ref(String s) : testCall(s) &amp;&amp; target(ClsA);
+				pointcut ref(String s) : testCall(s) &amp;&amp; target(ClsA1);
 
-				pointcut testCall(String s) : call(* m(String)) &amp;&amp; args(s);
+				pointcut testCall(String s) : call(* ClsA.m(String)) &amp;&amp; args(s);
 				
+				after(String s) : ref(s) {
+					Test.res.append(":after:"+s);
+				}
 			}
-			
+			public cclass ClsA1 extends ClsA {
+			}			
         </code>
-    </compile>
+    </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile  id="pointcutresolve005" description="referencing pointcuts in different classes, with arguments">
@@ -89,14 +149,14 @@
 			
 			public cclass ClsB
 			{
-			 
-			    pointcut testB(Integer i) : call(* test(Integer)) &amp;&amp; args(i); 
-			        
+			   pointcut testB(Integer i) : call(* test(Integer)) &amp;&amp; args(i); 
+			}
+			public cclass ClsA1 extends ClsA {
 			}
         </code>
     </compile>
     
-    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile  id="pointcutresolve006" description="referencing pointcuts from advice">
         <code>
         	public deployed cclass ClsA 
