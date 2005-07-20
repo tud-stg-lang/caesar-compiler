@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CType.java,v 1.11 2005-06-10 12:21:02 klose Exp $
+ * $Id: CType.java,v 1.12 2005-07-20 10:11:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -137,7 +137,9 @@ public abstract class CType extends Utils implements Constants {
           // TODO Fix when implementing arrays of cclasses
           return false;
       }
-      return isReference() && (getCClass().isMixinInterface() || getCClass().isMixin());
+      return isReference() && (getCClass().isMixinInterface() || 
+      		getCClass().isMixin() || 
+			getCClass().isCaesarObjectClass());
   }
 
   /**
