@@ -123,7 +123,7 @@
     </compile-run>	
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="INSTANCE_METHOD_CALL_IN_STATIC_CONTEXT"  id="vcstatic008" description="method call from static context">
+    <compile-check-error error="INSTANCE_METHOD_CALL_IN_STATIC_CONTEXT" id="vcstatic008" description="method call from static context">
         <code>
         	public class Test {
 				public void test() {
@@ -138,7 +138,7 @@
     </compile-check-error>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile id="vcstatic009" description="qualified instance method call">
+    <compile-check-error error="INSTANCE_METHOD_CALL_IN_STATIC_CONTEXT" id="vcstatic009" description="qualified instance method call">
         <code>
         	public cclass OuterA {
 				public void m() {
@@ -146,6 +146,6 @@
 				}
 			}
         </code>
-    </compile>
+    </compile-check-error>
 	    
 </testsuite>

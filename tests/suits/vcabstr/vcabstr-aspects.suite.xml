@@ -54,7 +54,7 @@
 		<test>
 			new TestA().test();
 			System.out.println(TestA.result.toString());
-			assertEquals(TestA.result.toString(), ":before call foo:foo");
+			assertEquals(TestA.result.toString(), ":before call foo:foo:foo");
 		</test>
         <code>
         	public class TestA {

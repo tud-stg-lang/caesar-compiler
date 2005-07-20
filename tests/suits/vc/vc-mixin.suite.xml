@@ -92,7 +92,7 @@
     </compile-check-error>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="UNDEF_MESSAGE"  id="vcmixin007" description="changing mixing order">
+    <compile id="vcmixin007" description="changing mixing order">
         <code>
         	public cclass OuterA {
 				public cclass InnerA {
@@ -116,10 +116,10 @@
 			}
 			public cclass OuterD extends OuterB &amp; OuterC {}
         </code>
-    </compile-check-error>
+    </compile>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="MIXER_ERROR"  id="vcmixin008" description="mixing conflicting sequences">
+    <compile id="vcmixin008" description="mixing conflicting sequences">
         <code>
         	public cclass OuterA {
 			}
@@ -132,6 +132,6 @@
 			public cclass OuterE extends OuterC &amp; OuterD {
 			}			
         </code>
-    </compile-check-error>
+    </compile>
 	    
 </testsuite>
