@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JConstructorCall.java,v 1.4 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JConstructorCall.java,v 1.5 2005-07-20 10:08:20 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -76,12 +76,26 @@ public class JConstructorCall extends JExpression {
   // ----------------------------------------------------------------------
   // ACCESSORS
   // ----------------------------------------------------------------------
+  
+  /**
+   * Return target
+   */
+  public boolean isFunctorThis() {
+  	return functorIsThis;
+  }
 
   /**
    * Returns the called method.
    */
   public CMethod getMethod() {
     return method;
+  }
+  
+  /**
+   * Returns arguments 
+   */
+  public JExpression[] getArguments() {
+  	return arguments;
   }
 
   /**
