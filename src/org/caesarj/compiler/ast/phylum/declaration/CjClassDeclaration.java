@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjClassDeclaration.java,v 1.38 2005-07-20 12:07:09 gasiunas Exp $
+ * $Id: CjClassDeclaration.java,v 1.39 2005-07-20 15:07:59 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -64,6 +64,8 @@ import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceField;
+import org.caesarj.compiler.types.CClassNameType;
+import org.caesarj.compiler.types.CDependentNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CVoidType;
 import org.caesarj.util.PositionedError;
@@ -288,16 +290,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
 	            context,
 	            wrappee == null,
 	            CaesarMessages.TOPLEVEL_CCLASS_WRAPS);
-        }
-        
-        if(wrappee != null) {
-            try {
-                wrappee = (CReferenceType)wrappee.checkType(self);
-            }
-            catch (UnpositionedError e) {
-                throw e.addPosition(getTokenReference());
-            }            
-        }
+        }        
     }
 
     // ----------------------------------------------------------------------
@@ -659,6 +652,31 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
             }
 
             getCjSourceClass().setDeclares(declares);
+        }
+        
+        if (wrappee != null) {
+        	
+        	 try {
+        	 	wrappee = (CReferenceType)wrappee.checkType(context);
+        	 }
+        	 catch (UnpositionedError e) {
+        	 	// IVICA: give him a second chance ;)
+                // it could be a dependent type
+                try {
+                	wrappee = (CReferenceType)new CDependentNameType(((CClassNameType)wrappee)
+                        .getQualifiedName()).checkType(context);
+                }
+                catch (UnpositionedError ue2) {
+                    throw ue2.addPosition(getTokenReference());
+                }
+            }
+        	
+            try {
+                wrappee = (CReferenceType)wrappee.checkType(context);
+            }
+            catch (UnpositionedError e) {
+                throw e.addPosition(getTokenReference());
+            }            
         }
         
         // check that we do not override a wrapper

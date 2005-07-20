@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassPreparation.java,v 1.36 2005-05-31 09:00:55 meffert Exp $
+ * $Id: CClassPreparation.java,v 1.37 2005-07-20 15:07:59 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -261,16 +261,15 @@ public class CClassPreparation implements CaesarConstants {
         gen.writeMethod(
             new String[] {
                 "public "+wrapperClassName+" "+wrapperClassIdent+"("+wrappeeClassName+" w) {",
-                "final "+decl.getOriginalIdent()+" This = this;",
                 "if (w == null)",
                 "    return null;",               
                 "if("+wrapperMapName+" == null) "+wrapperMapName+" = new java.util.WeakHashMap();",
-                "This."+wrapperClassIdent+" res = (This."+wrapperClassIdent+")"+wrapperMapName+".get(w);",
-                "if (res == null) {",
-                "    res = This.new "+wrapperClassIdent+"();",
-                "    res.$initWrappee(w);",
-                "    "+wrapperMapName+".put(w, res);",
-                "}",
+                wrapperClassIdent+" res = ("+wrapperClassIdent+")"+wrapperMapName+".get(w);",
+                "if (res != null) " +
+				"    return res;" +
+                "res = new "+wrapperClassIdent+"();",
+                "res.$initWrappee(w);",
+                wrapperMapName+".put(w, res);",
                 "return res;",
                 "}"
             }
@@ -282,12 +281,10 @@ public class CClassPreparation implements CaesarConstants {
         gen.writeMethod(
             new String[] {
                 "public "+wrapperClassName+" get"+wrapperClassIdent+"("+wrappeeClassName+" w) {",
-                "final "+decl.getOriginalIdent()+" This = this;",
                 "if (w == null)",
                 "    return null;",               
                 "if("+wrapperMapName+" == null) "+wrapperMapName+" = new java.util.WeakHashMap();",
-                "This."+wrapperClassIdent+" res = (This."+wrapperClassIdent+")"+wrapperMapName+".get(w);",
-                
+                wrapperClassIdent+" res = ("+wrapperClassIdent+")"+wrapperMapName+".get(w);",
                 "return res;",
                 "}"
             }
