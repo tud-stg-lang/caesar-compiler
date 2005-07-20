@@ -45,6 +45,28 @@
 				}
 			}			
         </code>
-    </compile-check-error>    	
+    </compile-check-error> 
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="methods004" description="Check simple method with explicit family.">
+        <code>
+        	public cclass FO {
+        		public cclass FI {
+        		}
+        	}
+			public cclass G {
+				public final FO f = new FO();
+				public void foo() {
+					f.FI n = f.new FI();
+					m( n );
+				}
+				public N m(f.FI n) {
+					return new N();
+				}				
+				public cclass N {
+				}
+			}			
+        </code>
+    </compile>    	
 
 </testsuite>
