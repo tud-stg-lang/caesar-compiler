@@ -35,7 +35,7 @@
     </compile-run>	
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run id="bindvc002" description="test binding encapsulated family type">
+    <compile-run id="bindvc002" description="test binding family referenced by inner field">
     	<test>
     		final GraphView gv = new GraphView();
     		assertEquals(":0:1:2:3:4", gv.display());
@@ -66,7 +66,7 @@
 	    		}
 	    	}
         	public cclass GraphView {
-        		final public Graph g = new Graph();
+        		final public static Graph g = new Graph();
         		public cclass NodeView wraps g.Node {
         			public String view() {
         				return ":" + wrappee.getId();
@@ -84,5 +84,70 @@
         	}
         </code>
     </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="bindvc003" description="test overriding wrapped type">
+    	<test>
+    		final OuterB ob = new OuterB();
+    		ob.InnerB b = ob.new InnerB("txt");
+    		assertEquals(":txt", ob.InnerA(b).text());
+    		b = ob.getInnerA(b).wrappee;
+    		assertEquals("::txt", b.altText());
+    	</test>
+        <code>
+            public cclass OuterA {
+        		public cclass InnerB {
+        			private String txt;
+        			public InnerB(String txt) {
+        				this.txt = txt;
+        			}
+					public String text() {
+						return txt;
+					}
+				}
+        		public cclass InnerA wraps InnerB {
+					public String text() {
+						return wrappee.text();		
+					}
+				}
+			}
+			public cclass OuterB extends OuterA {
+        		public cclass InnerB {
+					public String text() {
+						return ":"+super.text();
+					}
+					public String altText() {
+						return "::"+super.text();
+					}
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error error="ASSIGNMENT_BADTYPE" id="bindvc004" description="test wrapping object of another family">
+        <code>
+            public cclass OuterA {
+        		public cclass InnerB {
+        			public String text() {
+						return "mmm";
+					}
+				}        	
+				public cclass InnerA wraps InnerB {
+					public String text() {
+						return wrappee.text();		
+					}
+				}
+			}
+			public cclass Outside {
+				public void test() {
+		    		final OuterA oa1 = new OuterA();
+		    		final OuterA oa2 = new OuterA();
+    				oa1.InnerB b = oa1.new InnerB();
+    				oa2.InnerA(b).text();
+    			}
+			}
+        </code>
+    </compile-check-error>
 	    
 </testsuite>
