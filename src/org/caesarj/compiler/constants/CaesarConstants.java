@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarConstants.java,v 1.14 2005-03-31 10:43:20 gasiunas Exp $
+ * $Id: CaesarConstants.java,v 1.15 2005-07-20 10:09:04 gasiunas Exp $
  */
 
 package org.caesarj.compiler.constants;
@@ -55,6 +55,8 @@ public interface CaesarConstants extends Constants {
 	
 	public static final String ASPECT_CONTAINER_FIELD =
 		"$aspectContainer";
+	
+	public static final String CONSTR_METH_NAME = "$constructor";
 
 	public static final String AJC_CLINIT_METHOD = "ajc$clinit";
 	
