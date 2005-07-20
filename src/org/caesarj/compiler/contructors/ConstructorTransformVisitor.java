@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ConstructorTransformVisitor.java,v 1.2 2005-06-17 16:17:46 gasiunas Exp $
+ * $Id: ConstructorTransformVisitor.java,v 1.3 2005-07-20 10:09:29 gasiunas Exp $
  */
 
 package org.caesarj.compiler.contructors;
@@ -37,13 +37,18 @@ import org.caesarj.compiler.ast.phylum.declaration.JMemberDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
+import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.ast.visitor.VisitorSupport;
 import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.compiler.constants.CaesarMessages;
+import org.caesarj.compiler.constants.KjcMessages;
+import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
+import org.caesarj.util.PositionedError;
 
 /**
  * Visits all classthe AST down to expression granularity.
@@ -101,58 +106,77 @@ public class ConstructorTransformVisitor implements IVisitor, CaesarConstants  {
         
         JMethodDeclaration methods[] = cd.getMethods();
         
-        // transform contructors to "init" methods
-        int ctorIndex = -1;
+        // transform contructors to  methods
+        boolean defConstrFound = false;
         for (int i = 0; i < methods.length; i++) {
 			if (methods[i] instanceof JConstructorDeclaration) {
-				if (methods[i].getParameters().length == 0) {
-					ctorIndex = i;
-					methods[ctorIndex] = new CjVirtualClassCtorDeclaration(
-						methods[ctorIndex].getTokenReference(),
-						methods[ctorIndex].getModifiers(),
-						methods[ctorIndex].getIdent(),
-						outerType,
-						new JBlock(
-							methods[ctorIndex].getTokenReference(), 
-							((JConstructorBlock)methods[ctorIndex].getBlockBody()).getBody(), 
-							null
-						),
-						factory
-					);
+				// IVICA: check ctor name
+		        // here we tune the error message in order to avoid displaying _Impl
+		        // suffix
+				if (methods[i].getIdent() != cd.getIdent()) {
+					compiler.reportTrouble(
+							new PositionedError(
+									methods[i].getTokenReference(),
+									KjcMessages.CONSTRUCTOR_BAD_NAME,
+									methods[i].getIdent().substring(0, methods[i].getIdent().length() - 5),
+									cd.getIdent().substring(0, cd.getIdent().length() - 5)));
 				}
-				else {
-					String methIdent = "init$"+mixinIfc.getIdent();
-			        
-					methods[i] = new CjInitMethodDeclaration(
-						methods[i].getTokenReference(),
-						methods[i].getModifiers(),
-						selfType,
-						methIdent,
-						methods[i].getParameters(),
-						methods[i].getExceptions(),
-						new JBlock(
-							methods[i].getTokenReference(), 
-							((JConstructorBlock)methods[i].getBlockBody()).getBody(), 
-							null
-						)
-					);
+				
+				if (!CModifier.contains(methods[i].getModifiers(), ACC_PUBLIC)) {
+					compiler.reportTrouble(
+							new PositionedError(
+									methods[i].getTokenReference(),
+									CaesarMessages.CCLASS_CTOR_PUBLIC));
+				}				
+				
+				methods[i] = new CjInitMethodDeclaration(
+					methods[i].getTokenReference(),
+					methods[i].getModifiers(),
+					selfType,
+					CONSTR_METH_NAME,
+					methods[i].getParameters(),
+					methods[i].getExceptions(),
+					new JBlock(
+						methods[i].getTokenReference(), 
+						((JConstructorBlock)methods[i].getBlockBody()).getBody(), 
+						null
+					)
+				);
+				
+				if (methods[i].getArgs().length == 0) {
+					defConstrFound = true;
 				}
 			}
 		}
         
         cd.setMethods(methods);
-                
-        if (ctorIndex == -1) {
-	        // add default ctor
+        
+        // create method for default contructor
+        if (!defConstrFound) {
+        	String methIdent = CONSTR_METH_NAME;
 	        cd.addMethod(
-	    		new CjVirtualClassCtorDeclaration(
-					cd.getTokenReference(),
-					ACC_PUBLIC,
-					cd.getIdent(),
-					outerType,
-					factory
-				)
-			);
+				new CjInitMethodDeclaration(
+						cd.getTokenReference(),
+						ACC_PUBLIC,
+						selfType,
+						CONSTR_METH_NAME,
+						new JFormalParameter[] {},
+						CReferenceType.EMPTY,
+						new JBlock(
+								cd.getTokenReference(), 
+								JBlock.EMPTY, 
+								null
+					)
+				));
         }
+        
+	    // add real constructor
+	    cd.addMethod(
+	    	new CjVirtualClassCtorDeclaration(
+				cd.getTokenReference(),
+				ACC_PUBLIC,
+				cd.getIdent(),
+				outerType,
+				factory));    
     }
 }
