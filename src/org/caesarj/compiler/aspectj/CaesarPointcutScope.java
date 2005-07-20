@@ -63,7 +63,7 @@ public class CaesarPointcutScope extends CaesarScope {
 		if (context.getTypeFactory().isPrimitive(typeName)) return TypeX.forName(typeName); 
 
 		CClass cclass = lookupClass(typeName);
-		
+/*
 		// hack - extract information if subtypes included
 		boolean includeSubtypes = false;
 		if (location instanceof WildTypePattern) {
@@ -80,7 +80,7 @@ public class CaesarPointcutScope extends CaesarScope {
 				cclass = aspectType;
 			}
 		}
-
+*/
 		if (cclass == null) {
 			return ResolvedTypeX.MISSING;
 		} 
