@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: StaticDeploymentPreparation.java,v 1.7 2005-06-17 15:35:03 gasiunas Exp $
+ * $Id: StaticDeploymentPreparation.java,v 1.8 2005-07-20 10:11:08 gasiunas Exp $
  */
 package org.caesarj.compiler.joinpoint;
 
@@ -37,13 +37,13 @@ import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
+import org.caesarj.compiler.ast.phylum.expression.CjCastExpression;
+import org.caesarj.compiler.ast.phylum.expression.CjUnqualifiedInstanceCreation;
 import org.caesarj.compiler.ast.phylum.expression.JAssignmentExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JMethodCallExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.JTypeNameExpression;
-import org.caesarj.compiler.ast.phylum.expression.JUnqualifiedInstanceCreation;
-import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
 import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
@@ -147,7 +147,7 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 	 */
 	private JClassBlock createStaticClassDeployBlock(
 			TokenReference where,
-			CjClassDeclaration classDeclaration,
+			CjVirtualClassDeclaration classDeclaration,
 			JFieldDeclaration fieldDeclaration) { 
 		
 		String fieldName = fieldDeclaration.getVariable().getIdent();
@@ -164,9 +164,12 @@ public class StaticDeploymentPreparation implements CaesarConstants {
                 "deployLocal",
                 new JExpression[] {new JNameExpression(where, fieldName)});
         
-        JExpression instantiation = new JUnqualifiedInstanceCreation(where,
-        		new CClassNameType(classDeclaration.getCClass().getQualifiedName()), 
-				new JExpression[] {new JNullLiteral(where)});
+        JExpression instantiation = new CjUnqualifiedInstanceCreation(where,
+        		new CClassNameType(classDeclaration.getMixinIfcDeclaration().getCClass().getQualifiedName()), 
+				JExpression.EMPTY);
+        
+        instantiation = new CjCastExpression(where, instantiation, 
+        		new CClassNameType(classDeclaration.getCClass().getQualifiedName()));	
         
         JExpression assignment = new JAssignmentExpression(where,
         		new JNameExpression(where, fieldName),
