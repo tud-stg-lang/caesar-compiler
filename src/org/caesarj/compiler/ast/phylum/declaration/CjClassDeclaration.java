@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjClassDeclaration.java,v 1.37 2005-07-20 10:04:42 gasiunas Exp $
+ * $Id: CjClassDeclaration.java,v 1.38 2005-07-20 12:07:09 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -45,6 +45,7 @@ import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
 import org.caesarj.compiler.ast.phylum.statement.JExpressionListStatement;
+import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
@@ -214,6 +215,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
             		newField
             );
             
+            /* wrappee initialization method */
             addMethod( 
                 new JMethodDeclaration(
                     where,
@@ -243,6 +245,30 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
                                     )
                                 },
                                 null
+                            )
+                        },
+                        null
+                    ),
+                    null, null
+                )
+            ); 
+            
+            /* wrappee access method */
+            addMethod( 
+                new JMethodDeclaration(
+                    where,
+                    ACC_PUBLIC,
+                    wrappee,
+                    WRAPPER_WRAPPEE_ACCESS,
+                    JFormalParameter.EMPTY,
+                    CReferenceType.EMPTY,
+                    new JBlock(
+                        where,
+                        new JStatement[]{                        
+                            new JReturnStatement(
+                                where,
+                                new JNameExpression(where, WRAPPER_WRAPPEE_FIELD),
+								null
                             )
                         },
                         null

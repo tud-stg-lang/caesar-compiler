@@ -88,5 +88,28 @@
 			}
         </code>
     </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="bindrel007" description="test wrappee access from outside">
+    	<test>
+    		final OuterA oa = new OuterA();
+    		assertEquals("txt1", oa.getText(oa.InnerA("txt1")));
+    		assertEquals("txt2", oa.InnerA("txt2").wrappee);
+    		assertEquals("txt3", oa.InnerA("txt3").text());
+    	</test>
+        <code>
+        	public cclass OuterA {
+				public cclass InnerA wraps String {
+					public String text() {
+						return wrappee;		
+					}
+				}
+				
+				public String getText(InnerA a) {
+					return a.wrappee;
+				}
+			}
+        </code>
+    </compile-run >
 	    
 </testsuite>

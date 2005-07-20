@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.60 2005-03-10 12:32:54 gasiunas Exp $
+ * $Id: Caesar.g,v 1.61 2005-07-20 12:07:09 gasiunas Exp $
  */
 
 /*
@@ -1859,6 +1859,9 @@ jPostfixExpression[]
     |
       "class"
         { self = new JClassExpression(sourceRef, self, 0); }
+    | 
+      "wrappee"
+        { self = new CjWrappeeExpression(sourceRef, self); }
     |      
       self = jQualifiedNewExpression[self]
     )
@@ -1924,11 +1927,11 @@ jPrimaryExpression []
   "this"
     { self = new JThisExpression(sourceRef); }
 | 
-  "wrappee"
-    { self = new CjWrappeeExpression(sourceRef); }
-| 
   "null"
     { self = new JNullLiteral(sourceRef); }
+| 
+  "wrappee"
+    { self = new CjWrappeeExpression(sourceRef); }    
 |
   LPAREN self = jAssignmentExpression[] RPAREN
     { self = new JParenthesedExpression(sourceRef, self); }

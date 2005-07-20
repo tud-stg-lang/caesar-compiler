@@ -20,19 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjWrappeeExpression.java,v 1.3 2005-03-07 12:20:11 aracic Exp $
+ * $Id: CjWrappeeExpression.java,v 1.4 2005-07-20 12:07:09 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
-import org.caesarj.compiler.constants.CaesarConstants;
-import org.caesarj.compiler.context.CExpressionContext;
-import org.caesarj.compiler.context.GenerationContext;
-import org.caesarj.compiler.family.Path;
-import org.caesarj.compiler.types.CType;
-import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.util.InconsistencyException;
-import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
 /**
@@ -41,39 +33,13 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Ivica Aracic
  */
-public class CjWrappeeExpression extends JExpression {
+public class CjWrappeeExpression extends CjMethodCallExpression {
+	
+	public CjWrappeeExpression(TokenReference where) {
+		this(where, null);
+    }
 
-    private JExpression fieldAccess = null;
-    
-    public CjWrappeeExpression(TokenReference where) {
-        super(where);
-    }
-    
-    public CType getType(TypeFactory factory) {
-        if(fieldAccess == null) throw new InconsistencyException();
-        return fieldAccess.getType(factory);
-    }
-    
-    public void genCode(GenerationContext context, boolean discardValue) {
-        if(fieldAccess == null) throw new InconsistencyException();
-        fieldAccess.genCode(context, discardValue);
-    }
-    
-    public Path getFamily() {
-        return fieldAccess.getFamily();
-    }
-    
-    public Path getThisAsFamily() {
-        return fieldAccess.getThisAsFamily();
-    }
-    
-    public JExpression analyse(CExpressionContext context) throws PositionedError {
-        fieldAccess = new JNameExpression(getTokenReference(), CaesarConstants.WRAPPER_WRAPPEE_FIELD);
-        fieldAccess = fieldAccess.analyse(context);
-        return this;
-    }
-    
-    public boolean isFinal() {
-        return true;
+	public CjWrappeeExpression(TokenReference where, JExpression prefix) {
+    	super(where, prefix, WRAPPER_WRAPPEE_ACCESS, JExpression.EMPTY);
     }
 }
