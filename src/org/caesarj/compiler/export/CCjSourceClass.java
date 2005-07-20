@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjSourceClass.java,v 1.16 2005-07-07 14:25:18 thiago Exp $
+ * $Id: CCjSourceClass.java,v 1.17 2005-07-20 10:10:38 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -76,6 +76,9 @@ public class CCjSourceClass extends CSourceClass
 	protected List resolvedPointcuts = new ArrayList();
 	protected List declaredPointcuts = new ArrayList();
 	
+	/** Is it virtual class */
+	protected boolean virtual;
+	
 	public CCjSourceClass(
 		CClass owner,
 		TokenReference where,
@@ -84,6 +87,7 @@ public class CCjSourceClass extends CSourceClass
 		String qualifiedName,
 		boolean deprecated,
 		boolean synthetic,
+		boolean virtual,
 		JTypeDeclaration decl)
 	{
 		this(
@@ -94,6 +98,7 @@ public class CCjSourceClass extends CSourceClass
 			qualifiedName,
 			deprecated,
 			synthetic,
+			virtual,
 			decl,
 			null);
 	}
@@ -106,6 +111,7 @@ public class CCjSourceClass extends CSourceClass
 		String qualifiedName,
 		boolean deprecated,
 		boolean synthetic,
+		boolean virtual,
 		JTypeDeclaration decl,
 		CaesarPointcut perClause)
 	{
@@ -119,6 +125,7 @@ public class CCjSourceClass extends CSourceClass
 			synthetic,
 			decl);
 
+		this.virtual = virtual;
 		this.perClause = perClause;
 
 		//privileged classes need an priviledge handler
@@ -267,12 +274,16 @@ public class CCjSourceClass extends CSourceClass
 		return ret;
 	}
 	
+	public boolean isVirtual() {
+		return virtual;
+	}
+	
 	public boolean isAbstract()
 	{
 		if (CModifier.contains(getModifiers(), ACC_ABSTRACT)) {
 			return true;
 		}
-		if (getOwner() != null && getOwner().isAbstract()) {
+		if (virtual && getOwner() != null && getOwner().isAbstract()) {
 			return true;
 		}
 		return false;
