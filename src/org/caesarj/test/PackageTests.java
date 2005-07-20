@@ -30,4 +30,9 @@ public class PackageTests extends FjTestCase
 	public void testJavaTestCase_4() throws Throwable {
 		compileAndCheckErrors("pckgtest4", new String[] { "" });;
 	}
+	
+	/* Test default package */
+	public void testJavaTestCase_5() throws Throwable {
+		compileAndCheckErrors("pckgtest5", new String[] { "" });;
+	}
 }
