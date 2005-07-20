@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclaration.java,v 1.47 2005-06-17 11:09:49 gasiunas Exp $
+ * $Id: JTypeDeclaration.java,v 1.48 2005-07-20 10:33:15 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -707,7 +707,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
             for (int j = 0; j < i; j++) {
                 check(
                     context,
-                    !methods[i].equals(methods[j]),
+                    !methods[i].getMethod().equals(methods[j].getMethod()),
                     KjcMessages.METHOD_REDEFINE,
                     methods[i]);
             }
