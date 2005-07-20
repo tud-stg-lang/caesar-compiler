@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CompileAndCheckErrorTest.java,v 1.6 2005-06-03 12:00:57 klose Exp $
+ * $Id: CompileAndCheckErrorTest.java,v 1.7 2005-07-20 10:32:56 gasiunas Exp $
  */
 
 package org.caesarj.test.suite;
@@ -110,14 +110,9 @@ public class CompileAndCheckErrorTest extends CompileTest {
         else {
 	        if(found.length == 0)
 	            failure("No errors found: "+getId()+" : "+getDescription());
-	        
-	        if(expected.length != found.length)
-	            failure("More ("+errors.size()+") errors found than expected: "+getId()+" : "+getDescription());
-	        
-	        for (int i = 0; i < found.length; i++) {
-	            if(!(expected[i] == found[i].getFormattedMessage().getDescription()))
-	                failure("Unexpected error occured : "+found[i].getMessage()+" : "+getId()+" : "+getDescription()); 
-	        }
+	      
+	        if(!(expected[0] == found[0].getFormattedMessage().getDescription()))
+	        	failure("Unexpected error occured : "+found[0].getMessage()+" : "+getId()+" : "+getDescription());
         }
     }
 }
