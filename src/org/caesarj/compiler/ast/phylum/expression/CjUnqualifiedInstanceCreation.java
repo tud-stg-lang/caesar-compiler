@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjUnqualifiedInstanceCreation.java,v 1.10 2005-06-17 15:32:54 gasiunas Exp $
+ * $Id: CjUnqualifiedInstanceCreation.java,v 1.11 2005-07-20 10:07:15 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -45,7 +45,7 @@ import org.caesarj.util.UnpositionedError;
  * 
  * @author Ivica Aracic
  */
-public class CjUnqualifiedInstanceCreation extends JExpression {
+public class CjUnqualifiedInstanceCreation extends JExpression implements CaesarConstants {
     private CReferenceType type;
     private JExpression[] params;
 
@@ -84,25 +84,27 @@ public class CjUnqualifiedInstanceCreation extends JExpression {
         // new C() -> (C)(new C_Impl(null)) if not a nested class (owner == null)
         // new C() -> this.$newC() if a nested class (owner != null)
         if (typeClass.isMixinInterface() || typeClass.isMixin()) {
+        	
+        	JExpression createExpr;
                         
             if( type.getCClass().isNested() ) {
-                expr = new CjMethodCallExpression(
+            	createExpr = new CjMethodCallExpression(
                     getTokenReference(),
                     null,
                     CaesarConstants.FACTORY_METHOD_PREFIX+type.getCClass().getIdent(),
 					JExpression.EMPTY
-                );
+                ).analyse(context);
             }
             else {      
                 String typeName = type.getCClass().convertToImplQn();
                 CReferenceType newType = new CClassNameType(typeName);
                 
 	            expr = new JUnqualifiedInstanceCreation(getTokenReference(), newType, new JExpression[]{new JNullLiteral(getTokenReference())});
-	            expr = new CjCastExpression(getTokenReference(), expr, type);	            
+	            createExpr = new CjCastExpression(getTokenReference(), expr, type).analyse(context);	            
             }
-            if (this.params.length != 0) {
-            	expr = new CjMethodCallExpression(getTokenReference(), expr, "init$"+type.getIdent(), this.params);            	            	
-            }
+            expr = new CjMethodCallExpression(getTokenReference(), createExpr, CONSTR_METH_NAME, this.params);
+            expr = new JCastExpression(getTokenReference(), expr, type);
+            expr = new CjFamilyCastExpression(getTokenReference(), expr, createExpr.getFamily().clonePath(), createExpr.getThisAsFamily().clonePath());
         }
         else {
             expr = new JUnqualifiedInstanceCreation(getTokenReference(), type, params);

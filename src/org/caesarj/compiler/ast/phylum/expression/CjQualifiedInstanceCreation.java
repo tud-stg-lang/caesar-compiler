@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjQualifiedInstanceCreation.java,v 1.9 2005-06-17 15:32:54 gasiunas Exp $
+ * $Id: CjQualifiedInstanceCreation.java,v 1.10 2005-07-20 10:07:15 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -42,7 +42,7 @@ import org.caesarj.util.TokenReference;
  * 
  * @author Ivica Aracic
  */
-public class CjQualifiedInstanceCreation extends JExpression {
+public class CjQualifiedInstanceCreation extends JExpression implements CaesarConstants {
     private JExpression prefix;
     private String ident;
     private JExpression[] params;
@@ -93,11 +93,11 @@ public class CjQualifiedInstanceCreation extends JExpression {
             
             // convert to factory method
             // a.new C() -> a.$newC()
-            expr = new CjMethodCallExpression(getTokenReference(), prefix, CaesarConstants.FACTORY_METHOD_PREFIX+ident, JExpression.EMPTY);
+            JExpression createExpr = new CjMethodCallExpression(getTokenReference(), prefix, CaesarConstants.FACTORY_METHOD_PREFIX+ident, JExpression.EMPTY).analyse(context);
             //expr = new JCastExpression(getTokenReference(), expr, returnClass.getAbstractType());
-            if (this.params.length != 0) {
-            	expr = new CjMethodCallExpression(getTokenReference(), expr, "init$"+ident, this.params);            	
-            }
+            expr = new CjMethodCallExpression(getTokenReference(), createExpr, CONSTR_METH_NAME, this.params);
+            expr = new JCastExpression(getTokenReference(), expr, returnClass.getAbstractType());
+            expr = new CjFamilyCastExpression(getTokenReference(), expr, createExpr.getFamily().clonePath(), createExpr.getThisAsFamily().clonePath());            
         }
         else {
             // create normal qualified instance creation
