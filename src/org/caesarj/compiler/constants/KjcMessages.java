@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: KjcMessages.java,v 1.4 2005-01-24 16:52:59 aracic Exp $
+ * $Id: KjcMessages.java,v 1.5 2005-07-20 11:12:04 gasiunas Exp $
  */
 
 package org.caesarj.compiler.constants;
@@ -259,7 +259,7 @@ public interface KjcMessages extends org.caesarj.util.Messages {
   MessageDescription	UNNECESSARY_CAST = new MessageDescription("Type \"{0}\" does not need to be casted into \"{1}\"", "KOPI", 3);
   MessageDescription	UNUSED_CATCH_PARAMETER = new MessageDescription("Catch parameter \"{0}\" is not used", "KOPI", 3);
   MessageDescription	UNUSED_PARAMETER = new MessageDescription("Parameter \"{0}\" is not used", "KOPI", 3);
-  MessageDescription	PACKAGE_IS_MISSING = new MessageDescription("There is no package declaration for this compilation unit", "KOPI", 3);
+  MessageDescription	PACKAGE_IS_MISSING = new MessageDescription("There is no package declaration for this compilation unit", "KOPI", 0);
   MessageDescription	SWITCH_NO_DEFAULT = new MessageDescription("There is no default label in switch statement", "KOPI", 3);
   MessageDescription	EMPTY_CATCH_BLOCK = new MessageDescription("Catch block is empty", "KOPI", 3);
   MessageDescription	PACKAGE_PROTECTED_ATTRIBUTE = new MessageDescription("Field \"{0}\" should be declared private or public", "KOPI", 3);

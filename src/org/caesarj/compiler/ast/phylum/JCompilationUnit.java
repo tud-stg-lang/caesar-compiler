@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JCompilationUnit.java,v 1.14 2005-06-17 11:07:47 gasiunas Exp $
+ * $Id: JCompilationUnit.java,v 1.15 2005-07-20 11:12:04 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -113,6 +113,12 @@ public class JCompilationUnit extends JPhylum {
 	 */
 	public void joinOuter(CompilerBase compiler) throws PositionedError {
 		CCompilationUnitContext context;
+		
+		if (packageName == JPackageName.UNNAMED) {
+			throw new PositionedError(
+					getTokenReference(),
+					KjcMessages.PACKAGE_IS_MISSING);
+		}
 
 		export =
 			new CCompilationUnit(
@@ -361,13 +367,6 @@ public class JCompilationUnit extends JPhylum {
 		throws PositionedError {
 		CCompilationUnitContext context =
 			new CCompilationUnitContext(compiler, environment, export, classes);
-
-		if (packageName == JPackageName.UNNAMED) {
-			compiler.reportTrouble(
-				new CWarning(
-					getTokenReference(),
-					KjcMessages.PACKAGE_IS_MISSING));
-		}
 
 		for (int i = 0; i < typeDeclarations.length; i++) {
 			typeDeclarations[i].checkTypeBody(context);
