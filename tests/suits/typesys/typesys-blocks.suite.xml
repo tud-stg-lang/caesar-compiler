@@ -1,0 +1,42 @@
+<testsuite name="Test types inside block statements" package="suits.typesystem.blocks">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="blocks001" description="Test this family in blocks">
+		<test>			
+		    final Pool p = new Pool();
+		    p.Res n = g.getRes(true, true);
+		    n = p.getRes(false, false);
+		    assertEquals(1, n.getId());
+		</test>
+        <code>
+        	public cclass Pool {
+        		public cclass Res {
+        		   private int id;
+        		   public Res(int id) {
+        		      this.id = id;
+        		   }
+        		   public int getId() {
+        		      return id;
+        		   }
+				}
+								
+				private Res lastRes = new Res(0);
+				
+				public Res getRes(boolean genNew, boolean save) {
+					Res n = null;
+					if (genNew) {
+						n = new Res(lastRes.getId() + 1);
+					}
+					else {
+						n = lastRes;
+					}
+					if (save) {
+					   lastRes = n;
+					}
+					return n;
+				}	
+			}
+		</code>
+    </compile-run>		  	
+
+</testsuite>
