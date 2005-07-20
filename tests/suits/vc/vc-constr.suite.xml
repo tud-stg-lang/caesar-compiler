@@ -4,9 +4,8 @@
 		public cclass GraphLib{ public cclass Node{} }
 	</common-code-base>
 
-	<compile-check-error 
+	<compile-check-error error="CONSTRUCTOR_NOTFOUND"
 		description="Need explicit super" 
-		error="UNDEF_MESSAGE" 
 		id="vcconstr000">
 		
 		<code>
@@ -15,9 +14,8 @@
 				}
 			}
 			
-			public class Y{
+			public class Y extends X{
 				public Y(String s){
-					super(Y y);
 				}
 			}
 		</code>
@@ -64,19 +62,20 @@
 
 	<compile-run description="super constructor" id="vcconstr003">
 		<test>
-			assertEquals(42, new Z(42).i);
+			assertEquals(42, new Y(42).i);
 		</test>
 		<code>
 			public cclass X{
-				public int i = 0;
+				public int i;
 				public X(int i){
 					this.i = i;
 				}
 			}
 			
-			public cclass Z extends  X  {
+			public cclass Y extends  X  {
 				public Y(int i){
-					super(i);
+					super( i );
+					System.out.println("Test");
 				}
 			}
 		</code>
