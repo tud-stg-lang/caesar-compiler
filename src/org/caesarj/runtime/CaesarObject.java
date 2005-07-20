@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarObject.java,v 1.8 2005-03-31 12:31:40 gasiunas Exp $
+ * $Id: CaesarObject.java,v 1.9 2005-07-20 10:11:57 gasiunas Exp $
  */
 
 package org.caesarj.runtime;
@@ -42,6 +42,10 @@ public class CaesarObject implements CaesarObjectIfc {
     
     public Object outer() {
         return $outer;
+    }
+    
+    public CaesarObject $constructor() {
+    	return this;
     }
     
     public Object family() {
