@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjClassDeclaration.java,v 1.36 2005-06-17 11:08:09 gasiunas Exp $
+ * $Id: CjClassDeclaration.java,v 1.37 2005-07-20 10:04:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -392,6 +392,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
             prefix + ident,
             isDeprecated(),
             false,
+			false,
             this,
             perClause);
     }

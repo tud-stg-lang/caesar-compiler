@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjInterfaceDeclaration.java,v 1.16 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CjInterfaceDeclaration.java,v 1.17 2005-07-20 10:05:27 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -119,7 +119,7 @@ public class CjInterfaceDeclaration extends JInterfaceDeclaration {
         CClass owner,
         String prefix
     ) {
-    	sourceClass = new CCjSourceClass(owner, getTokenReference(), modifiers, ident, prefix + ident, isDeprecated(), false, this);
+    	sourceClass = new CCjSourceClass(owner, getTokenReference(), modifiers, ident, prefix + ident, isDeprecated(), false, false, this);
         setInterface(sourceClass);     
         
         CReferenceType[]    innerClasses = new CReferenceType[inners.length];

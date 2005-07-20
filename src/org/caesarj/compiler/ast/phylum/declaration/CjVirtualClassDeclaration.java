@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjVirtualClassDeclaration.java,v 1.29 2005-06-29 07:47:33 thiago Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.30 2005-07-20 10:05:10 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -44,6 +44,7 @@ import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
+import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
@@ -145,6 +146,20 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     	            this,
 					originalCompUnit.getExport());
     	}
+    }
+    
+    protected CSourceClass createSourceClass(CClass owner, String prefix) {
+        return new CCjSourceClass(
+            owner,
+            getTokenReference(),
+            modifiers,
+            ident,
+            prefix + ident,
+            isDeprecated(),
+            false,
+			true,
+            this,
+            perClause);
     }
     
     /**

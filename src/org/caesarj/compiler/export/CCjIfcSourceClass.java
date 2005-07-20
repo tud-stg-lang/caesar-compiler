@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjIfcSourceClass.java,v 1.4 2005-06-29 07:47:33 thiago Exp $
+ * $Id: CCjIfcSourceClass.java,v 1.5 2005-07-20 10:10:01 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -62,7 +62,8 @@ public class CCjIfcSourceClass extends CCjSourceClass
 			qualifiedName,
 			deprecated,
 			synthetic,
-			decl,
+			false,
+			decl,			
 			null);
 		_mixinIfcDecl = decl;
 	}
