@@ -6,13 +6,23 @@
  */
 package org.caesarj.compiler.ast.phylum.declaration;
 
+import java.util.Vector;
+
+import org.caesarj.compiler.ast.phylum.expression.CjMethodCallExpression;
+import org.caesarj.compiler.ast.phylum.expression.JConstructorCall;
+import org.caesarj.compiler.ast.phylum.expression.JExpression;
+import org.caesarj.compiler.ast.phylum.expression.JSuperExpression;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
+import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
 import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
+import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.Utils;
 
 /**
  * @author vaidas
@@ -20,7 +30,7 @@ import org.caesarj.util.TokenReference;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class CjInitMethodDeclaration extends JMethodDeclaration {
+public class CjInitMethodDeclaration extends JMethodDeclaration implements CaesarConstants {
 	
 	/**
 	   * Construct a node in the parsing tree
@@ -35,7 +45,7 @@ public class CjInitMethodDeclaration extends JMethodDeclaration {
 	   */
 	  public CjInitMethodDeclaration(TokenReference where,
 					 int modifiers,
-					 CReferenceType returnType,
+					 CReferenceType ownerType,
 					 String ident,
 					 JFormalParameter[] parameters,
 					 CReferenceType[] exceptions,
@@ -43,7 +53,7 @@ public class CjInitMethodDeclaration extends JMethodDeclaration {
 	  {
 	  	super(where,
 	  			modifiers,
-	  			returnType,
+	  			new CClassNameType(CAESAR_OBJECT),
 				ident,
 				parameters,
 				exceptions,
@@ -51,12 +61,37 @@ public class CjInitMethodDeclaration extends JMethodDeclaration {
 				null,
 				null);
 	  	
+	  	CjMethodCallExpression superInit = new CjMethodCallExpression(where,
+	  				new JSuperExpression(where),
+  					CONSTR_METH_NAME, 
+  					JExpression.EMPTY);
+	  	
+	  	Vector block = Utils.toVector(body.getBody());
+	  	
+	  	if (block.size() > 0 && block.get(0) instanceof JExpressionStatement) {
+	  		JExpression expr = ((JExpressionStatement)block.get(0)).getExpression();
+	  		if (expr instanceof JConstructorCall) {
+	  			JExpression target =  null;
+	  			if (((JConstructorCall)expr).isFunctorThis()) {
+	  				target = new JThisExpression(where);
+	  			}
+	  			else {
+	  				target = new JSuperExpression(where);
+	  			}
+	  			superInit = new CjMethodCallExpression(where,
+	  					target,
+	  					CONSTR_METH_NAME, 
+	  					((JConstructorCall)expr).getArguments());
+	  			block.remove(0);
+	  		}	  		
+	  	}
+	  	
+	  	block.add(0, new JExpressionStatement(where, superInit, null));
+	  	block.add(new JReturnStatement(where, new JThisExpression(where), null));
+	  	
         this.body = new JBlock(
                 where,
-	            new JStatement[] {
-	                    body,
-						new JReturnStatement(where, new JThisExpression(where), null)
-	            }, 
+                (JStatement[])block.toArray(new JStatement[] {}),
 				null);        
 	  }
 }
