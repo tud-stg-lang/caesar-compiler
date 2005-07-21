@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.36 2005-06-20 11:18:44 gasiunas Exp $
+ * $Id: JMethodCallExpression.java,v 1.37 2005-07-21 10:04:33 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -545,10 +545,10 @@ public class JMethodCallExpression extends JExpression
 			            // this dependent type does not depend on a family defined
 			            // in the signature of the method
 			            
-			            Path p = prefix.getThisAsFamily();
+			            Path p = prefix.getThisAsFamily().clonePath();
 			            				            
 			            p = new MethodAccess(p, method.getIdent(), null);				            
-			            p = p.append( depTypePath ); 
+			            p = p.append( depTypePath.clonePath() ); 
 			            
 			            Path pNorm = p.normalize2();
 			            
