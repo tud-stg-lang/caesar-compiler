@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JFieldAccessExpression.java,v 1.28 2005-03-04 18:17:41 aracic Exp $
+ * $Id: JFieldAccessExpression.java,v 1.29 2005-07-21 14:06:56 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -298,43 +298,28 @@ public class JFieldAccessExpression extends JExpression {
 	        
 	        check(context, field != null, KjcMessages.FIELD_UNKNOWN, ident);
 	
-	        if( local.isMixin() ) {	            
-	            if(local.getDepth() == field.getOwner().getDepth()) {
+	        if( local.isMixin() ) {
+	        	if (field.isStatic()) {
+	        		prefix = 
+                        new JTypeNameExpression(
+                            getTokenReference(),
+                            new CClassNameType(field.getOwnerType().getQualifiedName())
+                        );
+	        	}
+	        	else if(local.getDepth() == field.getOwner().getDepth()) {
 	              	//IVICA: use "this" as target for the field calls within a cclass
-	                if(!field.isStatic()) {
-	                    prefix = new JOwnerExpression(getTokenReference(), local);
-	                }
-	                else {
-	                    prefix = 
-	                        new JTypeNameExpression(
-	                            getTokenReference(),
-	                            new CClassNameType(field.getOwnerType().getQualifiedName())
-                            );
-	                }
+	                prefix = new JOwnerExpression(getTokenReference(), local);	                
 	            }
 	            else {
 	                // return accessor method for this field access
-	                
 	                // check it is not an write access
-	                check(context, !context.isLeftSide(), CaesarMessages.READ_ONLY_ACCESS_TO_CCLASS_FIELDS);        
+	                check(context, !context.isLeftSide(), CaesarMessages.READ_ONLY_ACCESS_TO_CCLASS_FIELDS);
 	                
-	                //if(!context.isLeftSide()) {
-	                    return
-	        	        	new CjAccessorCallExpression(
-	        	        	    getTokenReference(),
-	        	        	    prefix,
-	        	        	    field
-	        	        	).analyse(context);
-	                /*}
-	                else {
-	                    return
-		                	new CjAccessorCallExpression(
-		                	    getTokenReference(),
-		                	    prefix,
-		                	    new JNullLiteral(getTokenReference()),
-		                	    ident        	    
-		                	).analyse(context);
-	                }*/
+	                return new CjAccessorCallExpression(
+	                			getTokenReference(),
+								prefix,
+								field
+	        	       		).analyse(context);
 	            }
 	        }
 	        else {
