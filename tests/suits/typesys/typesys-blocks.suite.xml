@@ -4,7 +4,7 @@
     <compile-run id="blocks001" description="Test this family in blocks">
 		<test>			
 		    final Pool p = new Pool();
-		    p.Res n = g.getRes(true, true);
+		    p.Res n = p.getRes(true, true);
 		    n = p.getRes(false, false);
 		    assertEquals(1, n.getId());
 		</test>
