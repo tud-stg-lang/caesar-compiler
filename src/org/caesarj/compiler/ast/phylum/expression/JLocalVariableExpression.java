@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JLocalVariableExpression.java,v 1.10 2005-03-06 13:46:23 aracic Exp $
+ * $Id: JLocalVariableExpression.java,v 1.11 2005-07-21 08:43:53 aracic Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -34,6 +34,7 @@ import org.caesarj.compiler.cclass.CastUtils;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CBlockContext;
+import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CMethodContext;
@@ -193,21 +194,22 @@ public class JLocalVariableExpression extends JExpression {
                 } 
                 else if (variable instanceof JVariableDefinition) {
                     // find next block-context that declares this variable
-                    boolean found = false;
                     do {
-                        if (! (ctx instanceof CBlockContext)){                            
+                        if (! (ctx instanceof CBodyContext)){                            
                             throw new InconsistencyException("Cannot find "+variable.getIdent());
                         }
-                        CBlockContext block = (CBlockContext)ctx;
-                        if (block.containsVariable(variable.getIdent())){
-                            found = true;
+                        
+                        if(ctx instanceof CBlockContext) {                           
+                            CBlockContext block = (CBlockContext)ctx;
+                            if (block.containsVariable(variable.getIdent())) {
+                                break;
+                            }
                         } 
-                        else {
-                            // we only want block context
-                            ctx = ctx.getParentContext().getBlockContext();
-                            k++;
-                        }
-                    } while (!found);                    
+
+                        // we only want block context
+                        ctx = ctx.getParentContext();
+                        k++;                        
+                    } while (true);                    
                 }
                 
                 ContextExpression ctxExpr = new ContextExpression(null, k, null);
