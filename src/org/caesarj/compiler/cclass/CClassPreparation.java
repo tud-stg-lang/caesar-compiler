@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassPreparation.java,v 1.37 2005-07-20 15:07:59 gasiunas Exp $
+ * $Id: CClassPreparation.java,v 1.38 2005-07-21 14:06:00 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -260,7 +260,7 @@ public class CClassPreparation implements CaesarConstants {
         
         gen.writeMethod(
             new String[] {
-                "public "+wrapperClassName+" "+wrapperClassIdent+"("+wrappeeClassName+" w) {",
+                "public "+wrapperClassIdent+" "+wrapperClassIdent+"("+wrappeeClassName+" w) {",
                 "if (w == null)",
                 "    return null;",               
                 "if("+wrapperMapName+" == null) "+wrapperMapName+" = new java.util.WeakHashMap();",
@@ -280,7 +280,7 @@ public class CClassPreparation implements CaesarConstants {
         
         gen.writeMethod(
             new String[] {
-                "public "+wrapperClassName+" get"+wrapperClassIdent+"("+wrappeeClassName+" w) {",
+                "public "+wrapperClassIdent+" get"+wrapperClassIdent+"("+wrappeeClassName+" w) {",
                 "if (w == null)",
                 "    return null;",               
                 "if("+wrapperMapName+" == null) "+wrapperMapName+" = new java.util.WeakHashMap();",
