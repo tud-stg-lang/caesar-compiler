@@ -3,6 +3,7 @@
 	<common-code-base>
 		public cclass G {
 			public cclass N {}
+			public N getN() { return new N(); }
         }
 	</common-code-base>
 
@@ -73,6 +74,25 @@
 				public void foo(final G g, g.N n) {}
 				public void bar() {
 					foo( Singleton.g, Singleton.g.new N() );
+				}
+			}
+        </code>
+    </compile>
+    
+     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="singleton006" description="Test static in owner context.">
+        <code>
+			public cclass A {
+				public static final G g = new G(); 
+				
+				public cclass B {
+					public void foo2(g.N n) {
+					}	
+				}
+				
+				public void foo(g.N n) {
+					B b = new B();
+					b.foo2(n);
 				}
 			}
         </code>
