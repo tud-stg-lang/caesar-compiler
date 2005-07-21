@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CSimpleBodyContext.java,v 1.2 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CSimpleBodyContext.java,v 1.3 2005-07-21 08:43:20 aracic Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -44,5 +44,9 @@ public class CSimpleBodyContext extends CBodyContext {
    */
   public CSimpleBodyContext(CBodyContext parent, KjcEnvironment environment, CBodyContext source) {
     super(parent, environment, source);
+  }
+  
+  public String toString() {      
+    return "simple-body-ctx <- " + parent.toString();
   }
 }
