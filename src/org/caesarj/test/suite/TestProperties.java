@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: TestProperties.java,v 1.3 2005-03-02 17:41:42 gasiunas Exp $
+ * $Id: TestProperties.java,v 1.4 2005-07-21 13:14:23 aracic Exp $
  */
 
 package org.caesarj.test.suite;
@@ -45,6 +45,9 @@ public class TestProperties {
     private String binDir = "tests/bin";
     private String genSrcDir = "tests/src";
     private String testDir = "tests/suits";
+    
+    private String logFileName = "tests/log/failure.log";
+    
     private boolean ignoreUndefMsg = false;
     
     public static TestProperties instance() {
@@ -75,6 +78,9 @@ public class TestProperties {
 
             if(props.containsKey("testDir"))
                 testDir = props.getProperty("testDir");
+
+            if(props.containsKey("logFileName"))
+                logFileName = props.getProperty("logFileName");
             
             if(props.containsKey("genSrcDir"))
                 genSrcDir = props.getProperty("genSrcDir");
@@ -110,6 +116,10 @@ public class TestProperties {
     
     public String getTestDir() {
         return testDir;
+    }
+    
+    public String getLogFileName() {
+        return logFileName;
     }
     
     public String getWorkingDir() {

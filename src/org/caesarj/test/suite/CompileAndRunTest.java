@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CompileAndRunTest.java,v 1.1 2005-02-24 17:16:53 aracic Exp $
+ * $Id: CompileAndRunTest.java,v 1.2 2005-07-21 13:14:23 aracic Exp $
  */
 
 package org.caesarj.test.suite;
@@ -66,6 +66,12 @@ public class CompileAndRunTest extends CompileTest {
         // Execute the compiled test
         Object generatedTest = 
             Class.forName( getPackageName()+".Test" ).newInstance();
-        ((TestCase)generatedTest).runBare();
+        
+        try {
+            ((TestCase)generatedTest).runBare();
+        }
+        catch (Exception e) {  
+            failure(e.getMessage());
+        }
     }
 }

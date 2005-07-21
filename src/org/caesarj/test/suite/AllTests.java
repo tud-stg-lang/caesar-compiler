@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AllTests.java,v 1.4 2005-03-02 09:45:55 gasiunas Exp $
+ * $Id: AllTests.java,v 1.5 2005-07-21 13:14:23 aracic Exp $
  */
 
 package org.caesarj.test.suite;
@@ -58,6 +58,13 @@ public class AllTests {
 		    TestProperties.instance().getSuiteSearchPattern()
 	    );			
 		
+		File testLogFile = 
+		    new File(TestProperties.instance().getLogFileName());
+		
+		testLogFile.createNewFile();
+		
+		TestLog testLog = new TestLog( testLogFile );
+		
 		for (Iterator it = testSuits.iterator(); it.hasNext();) {
             File f = (File) it.next();
             
@@ -65,7 +72,11 @@ public class AllTests {
             	f.getAbsolutePath().substring(testDir.getAbsolutePath().length());            
             
             CaesarTestSuite s = 
-                CaesarTestSuite.parseXml(TestProperties.instance().getTestFilter(), f, outputPath);
+                CaesarTestSuite.parseXml(
+                    testLog,
+                    TestProperties.instance().getTestFilter(), 
+                    f, 
+                    outputPath);
             
             if(s.countTestCases() > 0) {
                 suite.addTest( s );

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTestSuite.java,v 1.3 2005-03-02 09:45:55 gasiunas Exp $
+ * $Id: CaesarTestSuite.java,v 1.4 2005-07-21 13:14:23 aracic Exp $
  */
 
 package org.caesarj.test.suite;
@@ -45,10 +45,12 @@ public class CaesarTestSuite extends TestSuite {
     private String name;
     private String packagePrefix;
     private String outputPath;
-    private File file;    
+    private File file;
+    private TestLog testLog;    
     
-    private CaesarTestSuite(File file, String name, String outputPath) {
+    private CaesarTestSuite(TestLog testLog, File file, String name, String outputPath) {
         super(name);
+        this.testLog = testLog;
         this.file = file;
         this.outputPath = outputPath;
     }                
@@ -60,13 +62,17 @@ public class CaesarTestSuite extends TestSuite {
     public String getOutputPath() {
     	return outputPath;
     }
+    
+    public TestLog getTestLog() {
+        return testLog;
+    }
         
     public String getPackagePrefix() {
         return packagePrefix;
     }
     
-    public static CaesarTestSuite parseXml(String idFilter, File file, String outputPath) throws Exception {
-        CaesarTestSuite res = new CaesarTestSuite(file, file.getName(), outputPath);
+    public static CaesarTestSuite parseXml(TestLog testLog, String idFilter, File file, String outputPath) throws Exception {
+        CaesarTestSuite res = new CaesarTestSuite(testLog, file, file.getName(), outputPath);
         
         SAXBuilder builder = new SAXBuilder();
         Document doc = builder.build(file);
