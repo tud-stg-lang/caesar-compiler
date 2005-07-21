@@ -149,5 +149,33 @@
 			}
         </code>
     </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="bindvc005" description="test binding on static family">
+    	<test>
+    		final OuterA oa1 = new OuterA();
+		    final OuterA oa2 = new OuterA();
+    		oa1.InnerA a1 = oa1.InnerA(OuterA.g.new N());
+    		oa2.InnerA a2 = oa2.InnerA(a1.wrappee);
+    		assertEquals("n", a2.text());
+    	</test>
+        <code>
+        	public cclass G {
+        		public cclass N { 
+        			public String text() {
+        				return "n";
+        			}
+        		}
+        	}
+            public cclass OuterA {
+            	final public static G g = new G();
+				public cclass InnerA wraps g.N {
+					public String text() {
+						return wrappee.text();		
+					}
+				}
+			}
+        </code>
+    </compile-run>
 	    
 </testsuite>
