@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ConstructorTransformVisitor.java,v 1.3 2005-07-20 10:09:29 gasiunas Exp $
+ * $Id: ConstructorTransformVisitor.java,v 1.4 2005-07-22 11:30:39 gasiunas Exp $
  */
 
 package org.caesarj.compiler.contructors;
@@ -136,11 +136,7 @@ public class ConstructorTransformVisitor implements IVisitor, CaesarConstants  {
 					CONSTR_METH_NAME,
 					methods[i].getParameters(),
 					methods[i].getExceptions(),
-					new JBlock(
-						methods[i].getTokenReference(), 
-						((JConstructorBlock)methods[i].getBlockBody()).getBody(), 
-						null
-					)
+					(JConstructorBlock)methods[i].getBlockBody()
 				);
 				
 				if (methods[i].getArgs().length == 0) {
@@ -161,13 +157,9 @@ public class ConstructorTransformVisitor implements IVisitor, CaesarConstants  {
 						selfType,
 						CONSTR_METH_NAME,
 						new JFormalParameter[] {},
-						CReferenceType.EMPTY,
-						new JBlock(
-								cd.getTokenReference(), 
-								JBlock.EMPTY, 
-								null
+						CReferenceType.EMPTY
 					)
-				));
+				);
         }
         
 	    // add real constructor

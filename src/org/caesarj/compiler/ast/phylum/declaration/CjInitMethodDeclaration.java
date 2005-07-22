@@ -14,6 +14,7 @@ import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JSuperExpression;
 import org.caesarj.compiler.ast.phylum.expression.JThisExpression;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
+import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
 import org.caesarj.compiler.ast.phylum.statement.JExpressionStatement;
 import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
@@ -56,7 +57,7 @@ public class CjInitMethodDeclaration extends JMethodDeclaration implements Caesa
 					 String ident,
 					 JFormalParameter[] parameters,
 					 CReferenceType[] exceptions,
-					 JBlock body)
+					 JConstructorBlock body)
 	  {
 	  	super(where,
 	  			modifiers,
@@ -75,23 +76,20 @@ public class CjInitMethodDeclaration extends JMethodDeclaration implements Caesa
 	  	
 	  	Vector block = Utils.toVector(body.getBody());
 	  	
-	  	if (block.size() > 0 && block.get(0) instanceof JExpressionStatement) {
-	  		JExpression expr = ((JExpressionStatement)block.get(0)).getExpression();
-	  		if (expr instanceof JConstructorCall) {
-	  			JExpression target =  null;
-	  			if (((JConstructorCall)expr).isFunctorThis()) {
-	  				target = new JThisExpression(where);
-	  			}
-	  			else {
-	  				target = new JSuperExpression(where);
-	  			}
-	  			superInit = new CjMethodCallExpression(where,
-	  					target,
-	  					CONSTR_METH_NAME, 
-	  					((JConstructorCall)expr).getArguments());
-	  			block.remove(0);
-	  		}	  		
-	  	}
+  		JConstructorCall constrCall = body.getConstructorCall();
+  		if (constrCall != null) {
+  			JExpression target =  null;
+  			if (constrCall.isFunctorThis()) {
+  				target = new JThisExpression(where);
+  			}
+  			else {
+  				target = new JSuperExpression(where);
+  			}
+  			superInit = new CjMethodCallExpression(where,
+  					target,
+  					CONSTR_METH_NAME, 
+  					constrCall.getArguments());
+  		}
 	  	
 	  	block.add(0, new JExpressionStatement(where, superInit, null));
 	  	block.add(new JReturnStatement(where, new JThisExpression(where), null));
@@ -101,6 +99,38 @@ public class CjInitMethodDeclaration extends JMethodDeclaration implements Caesa
                 (JStatement[])block.toArray(new JStatement[] {}),
 				null);        
 	  }
+	  
+	  /**
+	   *	Construct default constructor 
+	   */
+	  public CjInitMethodDeclaration(TokenReference where,
+			 int modifiers,
+			 CReferenceType ownerType,
+			 String ident,
+			 JFormalParameter[] parameters,
+			 CReferenceType[] exceptions)
+		{
+			super(where,
+					modifiers,
+					new CClassNameType(CAESAR_OBJECT),
+				ident,
+				parameters,
+				exceptions,
+				new JBlock(
+						where,
+						new JStatement[] {
+							new JExpressionStatement(where, 
+									new CjMethodCallExpression(where,
+											new JSuperExpression(where),
+											CONSTR_METH_NAME, 
+											JExpression.EMPTY),
+									null),									
+							new JReturnStatement(where, new JThisExpression(where), null)	
+						},					    
+						null),
+				null,
+				null);			        
+		}
 	  
 	  /**
 	   * Check expression and evaluate and alter context
