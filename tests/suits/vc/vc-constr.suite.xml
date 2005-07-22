@@ -23,10 +23,8 @@
 		
 	</compile-check-error>
 		
-	<compile-check-error 
-			description="Using undefined constructor" 
-			error="METHOD_NOT_FOUND"
-			id="vcconstr001">
+	<compile description="Default constructor is always available" 
+			  id="vcconstr001">
 		<code>
 			public cclass X{
 				public X(int i){ 
@@ -39,7 +37,7 @@
 			 }
 			}
 		</code>
-	</compile-check-error>
+	</compile>
 
 	<compile-run
 			description="initializing final field in cclass-constructor"
@@ -53,19 +51,18 @@
 			public cclass X{
 				public final GraphLib g; 
 			
-				public X(GraphLib graph)
-				{ 
+				public X(GraphLib graph) { 
 					g = graph; 
 				}
 			
 				public void foo(){ 
-					g.Node node = g.new Node(); 
+					g.Node node = g.new Node();
 				}
 			}
 		</code>
 	</compile-run>
 
-	<compile-run description="super constructor" id="vcconstr003">
+	<compile-run description="test explicit super call" id="vcconstr003">
 		<test>
 			assertEquals(42, new Y(42).i);
 		</test>
@@ -77,10 +74,51 @@
 				}
 			}
 			
-			public cclass Y extends  X  {
+			public cclass Y extends X {
 				public Y(int i){
-					super( i );
-					System.out.println("Test");
+					super(i);
+				}
+			}
+		</code>
+	</compile-run>	
+	
+	<compile-run description="test implicit super call" id="vcconstr004">
+		<test>
+			assertEquals(42, new Y(0).i);
+		</test>
+		<code>
+			public cclass X{
+				public int i;
+				public X(){
+					this.i = 42;
+				}
+			}
+			
+			public cclass Y extends X {
+				public Y(int i){					
+				}
+			}
+		</code>
+	</compile-run>	
+	
+	<compile-run description="test this constructor call" id="vcconstr005">
+		<test>
+			assertEquals(42, new Y().i);
+		</test>
+		<code>
+			public cclass X{
+				public int i;
+				public X(int i){
+					this.i = i;
+				}
+			}
+			
+			public cclass Y extends X {
+				public Y() {
+					this(42);
+				}
+				public Y(int i){
+					super(i);
 				}
 			}
 		</code>
