@@ -112,6 +112,96 @@
 			    }						    
 			}
 		</code>
-    </compile>	
+    </compile>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="tsifc001" description="Check assignment to interface.">
+        <code>
+			public class A {
+				private Object o = new Object();
+				public void foo() {
+					new Runnable() {
+						public void run() {
+							o.toString();
+						}
+					}.run();
+				}
+			}
+		</code>
+    </compile>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="tsifc001" description="Assign virtual class to interface.">
+		<test>
+			assertEquals("aaa", new BBB().test());
+		</test>
+        <code>
+        	interface IfcA {
+        		public String text();
+        	}
+        	public cclass BBB {
+	        	public cclass AAA implements IfcA {
+	        		public String text() {
+	        			return "aaa";
+	        		}        		
+	        	}
+	        	public String test() {
+	        		IfcA ia;
+					ia = new AAA();
+					return ia.text();
+	        	}
+	        }
+		</code>
+    </compile-run>		
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="tsifc002" description="Call with virtual class as interface.">
+		<test>
+			assertEquals("aaa", new BBB().test());
+		</test>
+        <code>
+        	interface IfcA {
+        		public String text();
+        	}
+        	public cclass BBB {
+	        	public cclass AAA implements IfcA {
+	        		public String text() {
+	        			return "aaa";
+	        		}        		
+	        	}
+	        	public String foo(IfcA ia) {
+					return ia.text();
+	        	}
+	        	public String test() {
+	        		return foo(new AAA());
+	        	}
+	        }
+		</code>
+    </compile-run>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="tsifc003" description="Return virtual class as interface.">
+		<test>
+			assertEquals("aaa", new BBB().test());
+		</test>
+        <code>
+        	interface IfcA {
+        		public String text();
+        	}
+        	public cclass BBB {
+	        	public cclass AAA implements IfcA {
+	        		public String text() {
+	        			return "aaa";
+	        		}        		
+	        	}
+	        	public IfcA newA() {
+					return new AAA();
+	        	}
+	        	public String test() {
+	        		return newA().text();
+	        	}
+	        }
+		</code>
+    </compile-run>	
 
 </testsuite>

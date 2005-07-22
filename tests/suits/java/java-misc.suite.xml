@@ -97,7 +97,20 @@
 			public class ClassB extends ClassA {	
 			}
 		</code>
-    </compile-run>		  	
-	
+    </compile-run>		
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="javamisc006" description="Implementing method with array as return type">
+		<code>
+        	interface IfcA {
+        		public int[] elems();
+        	}
+        	class ClsB implements IfcA {
+        		public int[] elems() {
+        			return null;
+        		}
+        	}
+		</code>
+    </compile>
 
 </testsuite>
