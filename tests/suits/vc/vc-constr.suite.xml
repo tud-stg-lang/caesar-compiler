@@ -41,9 +41,14 @@
 		</code>
 	</compile-check-error>
 
-		<compile
-				description="initializing final field in cclass-constructor"
-				id="vcconstr002">
+	<compile-run
+			description="initializing final field in cclass-constructor"
+			id="vcconstr002">
+		<test>
+			GraphLib graph = new GraphLib();
+			X x = new X(graph);
+			x.foo();
+		</test>
 		<code>
 			public cclass X{
 				public final GraphLib g; 
@@ -58,7 +63,7 @@
 				}
 			}
 		</code>
-	</compile>
+	</compile-run>
 
 	<compile-run description="super constructor" id="vcconstr003">
 		<test>
