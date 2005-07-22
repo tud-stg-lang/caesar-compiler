@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CArrayType.java,v 1.8 2005-06-10 12:21:02 klose Exp $
+ * $Id: CArrayType.java,v 1.9 2005-07-22 10:03:54 gasiunas Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -236,7 +236,7 @@ public class CArrayType extends CReferenceType {
     if (!isChecked()) {
       throw new InconsistencyException("type not checked");
     }
-    return baseType.getCClass();
+    return super.getCClass();
   }
   // ----------------------------------------------------------------------
   // BODY CHECKING
