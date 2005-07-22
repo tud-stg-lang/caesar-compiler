@@ -19,8 +19,15 @@ import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.compiler.constants.KjcMessages;
+import org.caesarj.compiler.context.CBlockContext;
+import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.CConstructorContext;
+import org.caesarj.compiler.context.CMethodContext;
+import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.Utils;
 
@@ -93,5 +100,35 @@ public class CjInitMethodDeclaration extends JMethodDeclaration implements Caesa
                 where,
                 (JStatement[])block.toArray(new JStatement[] {}),
 				null);        
+	  }
+	  
+	  /**
+	   * Check expression and evaluate and alter context
+	   * @param	context			the actual context of analyse
+	   * @return	a pure java expression including promote node
+	   * @exception	PositionedError Error catched as soon as possible
+	   */
+	  public void checkBody1(CClassContext context) throws PositionedError {
+	    check(context, body != null, KjcMessages.CONSTRUCTOR_NOBODY, ident);
+
+	    CMethodContext	self = new CConstructorContext(context, 
+	                                                       context.getEnvironment(), 
+	                                                       this);
+	    CBlockContext	block = new CBlockContext(self, 
+	                                                  context.getEnvironment(), 
+	                                                  parameters.length);
+	    CClass              owner = context.getClassContext().getCClass();
+
+	    block.addThisVariable();
+	    if (owner.isNested() && owner.hasOuterThis()) {
+	      block.addThisVariable(); // add enclosing this$0
+	    }
+	    for (int i = 0; i < parameters.length; i++) {
+	      parameters[i].analyse(block);
+	    }
+	    body.analyse(block);
+
+	    block.close(getTokenReference());
+	    self.close(getTokenReference());
 	  }
 }

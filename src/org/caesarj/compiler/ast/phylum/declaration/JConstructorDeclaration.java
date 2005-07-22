@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JConstructorDeclaration.java,v 1.7 2005-06-03 12:00:57 klose Exp $
+ * $Id: JConstructorDeclaration.java,v 1.8 2005-07-22 10:28:52 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -34,16 +34,13 @@ import org.caesarj.compiler.context.CBlockContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CConstructorContext;
 import org.caesarj.compiler.context.CMethodContext;
-import org.caesarj.compiler.context.CVariableInfo;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.export.CClass;
-import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.util.CWarning;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 
@@ -166,7 +163,7 @@ public class JConstructorDeclaration extends JMethodDeclaration {
     self.close(getTokenReference());
 
     // check that all final instance fields are initialized
-    CField[]	classFields = context.getCClass().getFields();
+/*  CField[]	classFields = context.getCClass().getFields();
 
     for (int i = 0; i < classFields.length; i++) {
       if (! classFields[i].isStatic() && !CVariableInfo.isInitialized(self.getFieldInfo(i))) {
@@ -179,7 +176,7 @@ public class JConstructorDeclaration extends JMethodDeclaration {
 					   KjcMessages.UNINITIALIZED_FIELD,
 					   classFields[i].getIdent()));
       }
-    }
+    }*/
   }
 
   // ----------------------------------------------------------------------
