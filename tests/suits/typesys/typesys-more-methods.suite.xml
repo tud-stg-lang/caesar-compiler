@@ -54,5 +54,80 @@
 			}			
 		</code>
     </compile>		
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="mmethods004" description="Call on cast target.">
+    	<test>
+    		B.test();
+    	</test>
+        <code>
+			public class A {
+				final public G g = new G();
+				public void foo(g.N n) { 
+				}
+			}
+			public cclass B {
+				public static void test() {
+					final Object a = new A(); 					
+					((A)a).foo(((A)a).g.new N());
+				}			
+			}
+		</code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error id="mmethods005" error="ASSIGNMENT_BADTYPE" description="Call on cast target.">
+    	<code>
+			public class A {
+				final public G g = new G();
+				public void foo(g.N n) { 
+				}
+			}
+			public cclass B {
+				public static void test() {
+					final Object a = new A();
+					final Object a1 = new A();
+					((A)a).foo(((A)a1).g.new N());
+				}			
+			}
+		</code>
+    </compile-check-error>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="mmethods006" description="Explicit static method call.">
+    	<test>
+    		B.test();
+    	</test>
+        <code>
+			public class A {
+				final static public G g = new G();
+				public static void foo(g.N n) { 
+				}
+			}
+			public cclass B {
+				public static void test() {
+					A.foo(A.g.new N());
+				}			
+			}
+		</code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="mmethods007" description="Implicit static method call.">
+    	<test>
+    		A.test();
+    	</test>
+        <code>
+			public class A {
+				final static public G g = new G();
+				public static void foo(g.N n) { 
+				}
+				public static void test() {
+					foo(g.new N());
+				}			
+			}
+		</code>
+    </compile-run>
+    
 
 </testsuite>

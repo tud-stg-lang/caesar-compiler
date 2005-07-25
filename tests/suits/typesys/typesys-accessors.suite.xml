@@ -1,0 +1,161 @@
+<testsuite name="Test accessor type checking" package="suits.typesystem.accessors">
+
+	<common-code-base>		
+		public cclass G {
+			public cclass N {
+				public void x(M m) {}
+			}
+			public cclass M {
+			}
+		}
+	</common-code-base>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="acc001" description="Test explicit accessor family">
+		<test>
+			new ClsB().test();
+		</test>
+        <code>
+        	public cclass ClsA {
+        		final public G g = new G();        	
+        	}
+        	public cclass ClsB {
+        		public void test() {
+        			final ClsA a = new ClsA();			
+					a.g.N n = a.g.new N();
+        		}
+        	}
+		</code>
+    </compile-run>		  	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error id="acc002" error="ASSIGNMENT_BADTYPE" description="Test explicit accessor family">
+		<code>
+        	public cclass ClsA {
+        		final public G g = new G();
+        	}
+        	public cclass ClsB {
+        		public void test() {
+        			final ClsA a1 = new ClsA();
+        			final ClsA a2 = new ClsA();			
+					a1.g.N n = a2.g.new N();
+        		}
+        	}
+		</code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="acc003" description="Test explicit accessor identity">
+		<test>
+			new ClsB().test();
+		</test>
+        <code>
+        	public cclass ClsA {
+        		final public G g = new G();          			
+        	}
+        	public cclass ClsC {
+        		final public ClsA a1 = new ClsA();
+        	}
+        	public cclass ClsB {
+        		public void test() {
+        			final ClsC c = new ClsC();			
+					c.a1.g.N n = c.a1.g.new N();
+        		}
+        	}
+		</code>
+    </compile-run>		  	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error id="acc004" error="ASSIGNMENT_BADTYPE" description="Test explicit accessor identity">
+		<code>
+        	public cclass ClsA {
+        		final public G g = new G();        		
+        	}
+        	public cclass ClsC {
+        		final public ClsA a1 = new ClsA();
+        		final public ClsA a2 = new ClsA();
+        	}
+        	public cclass ClsB {
+        		public void test() {
+        			final ClsC c = new ClsC();	
+        			c.a1.g.N n = c.a2.g.new N();
+        		}
+        	}
+		</code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="acc005" description="Test explicit accessor family">
+		<test>
+			new ClsA().new ClsB().test();
+		</test>
+        <code>
+        	public cclass ClsA {
+        		final public G g = new G();        	
+        		public cclass ClsB {
+	        		public void test() {
+	        			g.N n = g.new N();
+	        		}
+	        	}
+        	}
+		</code>
+    </compile-run>		  	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error id="acc006" error="ASSIGNMENT_BADTYPE" description="Test explicit accessor family">
+		<code>
+        	public cclass ClsA {
+        		final public G g1 = new G();
+        		final public G g2 = new G();
+        		
+        		public cclass ClsB {
+	        		public void test() {
+	        			g1.N n = g2.new N();
+	        		}
+	        	}
+        	}
+		</code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="acc007" description="Test explicit accessor identity">
+		<test>
+			new ClsC().new ClsB().test();
+		</test>
+        <code>
+        	public cclass ClsA {
+        		final public G g = new G();          			
+        	}
+        	public cclass ClsC {
+        		final public ClsA a1 = new ClsA();
+        		
+        		public cclass ClsB {
+	        		public void test() {
+	        			a1.g.N n = a1.g.new N();
+	        		}
+	        	}
+        	}
+		</code>
+    </compile-run>		  	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error id="acc008" error="ASSIGNMENT_BADTYPE" description="Test explicit accessor identity">
+		<code>
+        	public cclass ClsA {
+        		final public G g = new G();        		
+        	}
+        	public cclass ClsC {
+        		final public ClsA a1 = new ClsA();
+        		final public ClsA a2 = new ClsA();
+        	
+	        	public cclass ClsB {
+	        		public void test() {
+	        			a1.g.N n = a2.g.new N();
+	        		}
+	        	}
+	        }        	
+		</code>
+    </compile-check-error>
+   
+    
+</testsuite>

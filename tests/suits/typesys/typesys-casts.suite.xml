@@ -103,7 +103,54 @@
 				}
 			}
 		</code>
-    </compile>		
+    </compile>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="casts007" description="Cast in method parameter.">
+    	<test>
+    		try {
+    			B.test();
+    		}
+			catch(ClassCastException cce) {
+				return;
+			}
+			fail();	
+    	</test>
+        <code>
+			public class A {
+				final public G g = new G();
+				public void foo(g.N n) { 
+				}
+			}
+			public cclass B {
+				public static void test() {
+					final A a = new A(); 					
+					final A a1 = new A();
+					a.foo((a.g.N)a1.g.new N());
+				}			
+			}
+		</code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="casts008" description="Check cast to implicit sibling class">		
+        <code>
+        	public cclass P {
+        		public cclass A {
+	        		public final G g = new G();
+	        	}
+	        	public cclass B extends A {        		
+	        		public g.N getN() { return null; }
+	        	}
+        		public cclass Q {					
+					public void foo() {	
+						final A a = new B();
+						a.g.N n = ((B)a).getN();
+					}
+				}
+			}
+		</code>
+    </compile>			
 	
 
 </testsuite>
