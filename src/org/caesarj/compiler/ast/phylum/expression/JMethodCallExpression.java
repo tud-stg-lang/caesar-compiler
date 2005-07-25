@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.37 2005-07-21 10:04:33 aracic Exp $
+ * $Id: JMethodCallExpression.java,v 1.38 2005-07-25 09:00:04 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -55,6 +55,7 @@ import org.caesarj.compiler.family.InfiniteContextExpression;
 import org.caesarj.compiler.family.MethodAccess;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CArrayType;
+import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CThrowableInfo;
 import org.caesarj.compiler.types.CType;
@@ -161,45 +162,12 @@ public class JMethodCallExpression extends JExpression
 		CClass local = context.getClassContext().getCClass();
 
 		if(local.isMixin() && prefix == null) {
-		    // IVICA: this part is quite tricky :(
-		    // the problem is, when accessing a cclass method with prefix == null
-		    // but the searched method is in one of the outer classes, we have to search in
-		    // interfaces, but our context is mixin implementation itself
-		    // so we do the following:
-		    try {
-		        // start searching the method in this
-		        prefix = new JThisExpression(getTokenReference());
-		        findMethod(context, local, argTypes);
-		    }
-		    catch(PositionedError e) {
-		        // if there is no method in this, go to the mixin interface owner of 
-		        // the mixin implementation
-		        CClass clazz = local.getMixinInterface().getOwner();
-		        
-		        // successivelly append outer() calls
-		        // outer().m() ?
-		        // outer().outer().m() ?
-		        // etc.
-		        boolean found = false;
-		        while(!found && clazz != null) {
-		            prefix = new CjOuterExpression(getTokenReference(), clazz.getAbstractType());
-		            try {
-		                findMethod(context, local, argTypes);
-		                found = true;
-		            }
-		            catch (PositionedError e2) {
-		                clazz = clazz.getOwner();		                
-                    }
-		        }
-		        
-                if(!found)
-                    throw e;
-            }
+		    findImplicitCjMethod(context, local, argTypes);
 		}
 		else {
 		    findMethod(context, local, argTypes);
-		}
-		
+		}		
+		// assert(method != null)
 
  		CReferenceType[] exceptions = method.getThrowables();
 
@@ -222,31 +190,9 @@ public class JMethodCallExpression extends JExpression
 			}
 		}
 
-		CClass access = method.getOwner();
-
-		if (prefix == null && !method.isStatic())
-		{
-			if (access == local)
-			{
-				prefix = new JThisExpression(getTokenReference());
-			}
-			else
-			{
-			    // IVICA    
-			    if(local.isMixin()) {
-			        prefix = new CjOuterExpression(getTokenReference(), access.getAbstractType());
-			    }			    
-			    else {
-			        prefix = new JOwnerExpression(getTokenReference(), access);
-			    }
-			}
-			prefix = prefix.analyse(context);
-		}
-
-		if ((prefixType == null) && (prefix != null))
-		{
-			prefixType = prefix.getType(factory);
-		}
+		determineImplicitTarget(context, local);
+		// assert (prefix != null)
+		// assert (prefixType != null)
 
 		// JLS 8.8.5.1
 		// An explicit constructor invocation statement in a constructor body may 
@@ -271,9 +217,7 @@ public class JMethodCallExpression extends JExpression
 			KjcMessages.INSTANCE_METHOD_CALL_IN_STATIC_CONTEXT,
 			method);
 
-		if (method.isStatic()
-			&& prefix != null
-			&& !(prefix instanceof JTypeNameExpression))
+		if (method.isStatic() && !(prefix instanceof JTypeNameExpression))
 		{
 			context.reportTrouble(
 				new CWarning(
@@ -366,80 +310,7 @@ public class JMethodCallExpression extends JExpression
 		    && getIdent().startsWith(JAV_ACCESSOR)
 		    && method.isSynthetic()
 	    ) { 
-            try {
-    	        //int k = 0;		      
-    	        ContextExpression initialContext = new ContextExpression(null,0,null);
-    	        
-                CCjSourceAccessorMethod accessorMethod = (CCjSourceAccessorMethod)method;
-                JAccessorMethod accessorMethodDecl = accessorMethod.getDecl();
-                
-                CClass clazz = accessorMethod.getOwner();
-    	        //CClass clazz = argTypes[0].getCClass();
-                
-                CContext ctx = context.getBlockContext();
-
-                CMember accessedMember = accessorMethodDecl.getMember();
-                
-                if (accessedMember instanceof CField){
-                    CField accessedField = (CField) accessedMember;
-                    // ... find first class context ... 
-                    while (!(ctx instanceof CClassContext)){
-                        ctx = ctx.getParentContext();
-//                        k++;
-                        initialContext.adaptK(1);
-                    }
-                    // ... and search for the correct outer class.
-                    while ( ((CClassContext)ctx).getCClass() != clazz) {
-                        ctx = ctx.getParentContext();
-//                        k++;
-                        initialContext.adaptK(1);
-                       
-//                        check(
-//                            context,
-//                            !(ctx == null || ctx.getClassContext() == null ),                        
-//                            CaesarMessages.ILLEGAL_PATH_ELEMENT, 
-//                            "accessor method not returning an outer reference"
-//                        );
-                        if (ctx == null || ctx.getClassContext() == null ){
-                            // no outer path can be computed
-                            initialContext = new InfiniteContextExpression();
-                            break;
-                        }
-                        
-                        // this is necessary for nested classes
-                        // the check above ensures that this is going to terminate
-                        while(!(ctx instanceof CClassContext)) {
-                            ctx = ctx.getParentContext();
-//                            k++;
-                            initialContext.adaptK(1);
-
-                        }
-                    }
-                    
-                    if(accessedField.getIdent().equals(JAV_OUTER_THIS)) {
-                        ContextExpression k1 = initialContext.cloneWithAdaptedK(1),
-                        					k2 = initialContext.cloneWithAdaptedK(2);
-                      family = k2;
-                      thisAsFamily = k1;        
-//                        family = new ContextExpression(null, initialContext.getK()+2, null);
-//                        thisAsFamily = new ContextExpression(null, initialContext.getK()+1, null);        
-                    }
-                    else {                    
-                        thisAsFamily = 
-                            new FieldAccess(
-                                accessedField.isFinal(),
-                                initialContext,
-                                //new ContextExpression(null, k, null),
-                                accessedField.getIdent(),
-                                (CReferenceType)accessedField.getType()
-                            );
-                        family = thisAsFamily.clonePath().normalize();
-                    }
-                }
-            }
-            catch (UnpositionedError e) {
-                throw e.addPosition(getTokenReference());
-            }
+			calcAccessorFamily(context);
 		}
         else if( type.isCaesarReference() ) {
             calcExpressionFamily();
@@ -450,6 +321,123 @@ public class JMethodCallExpression extends JExpression
 		// fixed lackner 18.03.2002 commment out because sometimes it is necessary to evaluate it twice.
 		//    analysed = true;
 		return this;
+	}
+	
+	protected void determineImplicitTarget(
+		CExpressionContext context,
+		CClass local) 
+		throws PositionedError 
+	{
+		CClass access = method.getOwner();
+		
+		// Determine implicit prefix
+		if (prefix == null)
+		{
+			if (method.isStatic()) {
+				prefix =
+					new JTypeNameExpression(
+							getTokenReference(),
+							new CClassNameType(method.getOwnerType().getQualifiedName())
+                        );
+	        }
+			else if (access == local)
+			{
+				prefix = new JThisExpression(getTokenReference());
+			}
+			else
+			{
+			    // IVICA    
+			    if(local.isMixin()) {
+			        prefix = new CjOuterExpression(getTokenReference(), access.getAbstractType());
+			    }			    
+			    else {
+			        prefix = new JOwnerExpression(getTokenReference(), access);
+			    }
+			}
+			prefix = prefix.analyse(context);
+		}
+		
+		if (prefixType == null)
+		{
+			prefixType = prefix.getType(context.getTypeFactory());
+		}
+	}
+	
+	protected void calcAccessorFamily(CContext methCtx) throws PositionedError {
+		 try {
+	        //int k = 0;		      
+	        ContextExpression initialContext = new ContextExpression(null,0,null);
+	        
+            CCjSourceAccessorMethod accessorMethod = (CCjSourceAccessorMethod)method;
+            JAccessorMethod accessorMethodDecl = accessorMethod.getDecl();
+            
+            CClass clazz = accessorMethod.getOwner();
+	        //CClass clazz = argTypes[0].getCClass();
+            
+            CContext ctx = methCtx.getBlockContext();
+
+            CMember accessedMember = accessorMethodDecl.getMember();
+            
+            if (accessedMember instanceof CField){
+                CField accessedField = (CField) accessedMember;
+                // ... find first class context ... 
+                while (!(ctx instanceof CClassContext)){
+                    ctx = ctx.getParentContext();
+//                    k++;
+                    initialContext.adaptK(1);
+                }
+                // ... and search for the correct outer class.
+                while ( ((CClassContext)ctx).getCClass() != clazz) {
+                    ctx = ctx.getParentContext();
+//                    k++;
+                    initialContext.adaptK(1);
+                   
+//                    check(
+//                        context,
+//                        !(ctx == null || ctx.getClassContext() == null ),                        
+//                        CaesarMessages.ILLEGAL_PATH_ELEMENT, 
+//                        "accessor method not returning an outer reference"
+//                    );
+                    if (ctx == null || ctx.getClassContext() == null ){
+                        // no outer path can be computed
+                        initialContext = new InfiniteContextExpression();
+                        break;
+                    }
+                    
+                    // this is necessary for nested classes
+                    // the check above ensures that this is going to terminate
+                    while(!(ctx instanceof CClassContext)) {
+                        ctx = ctx.getParentContext();
+//                        k++;
+                        initialContext.adaptK(1);
+
+                    }
+                }
+                
+                if(accessedField.getIdent().equals(JAV_OUTER_THIS)) {
+                    ContextExpression k1 = initialContext.cloneWithAdaptedK(1),
+                    					k2 = initialContext.cloneWithAdaptedK(2);
+                  family = k2;
+                  thisAsFamily = k1;        
+//                    family = new ContextExpression(null, initialContext.getK()+2, null);
+//                    thisAsFamily = new ContextExpression(null, initialContext.getK()+1, null);        
+                }
+                else {                    
+                    thisAsFamily = 
+                        new FieldAccess(
+                            accessedField.isFinal(),
+                            initialContext,
+                            //new ContextExpression(null, k, null),
+                            accessedField.getIdent(),
+                            (CReferenceType)accessedField.getType()
+                        );
+                    family = thisAsFamily.clonePath().normalize();
+                }
+            }
+        }
+        catch (UnpositionedError e) {
+            throw e.addPosition(getTokenReference());
+        }
 	}
 	
 	/**
@@ -545,7 +533,10 @@ public class JMethodCallExpression extends JExpression
 			            // this dependent type does not depend on a family defined
 			            // in the signature of the method
 			            
-			            Path p = prefix.getThisAsFamily().clonePath();
+			            Path p = null;
+			            if (prefix.getThisAsFamily() != null) {
+			            	p = prefix.getThisAsFamily().clonePath();
+			            }
 			            				            
 			            p = new MethodAccess(p, method.getIdent(), null);				            
 			            p = p.append( depTypePath.clonePath() ); 
@@ -603,6 +594,48 @@ public class JMethodCallExpression extends JExpression
 			}
 		}
 		return argTypes;
+	}
+	
+	protected void findImplicitCjMethod(
+		CExpressionContext context,
+		CClass local,
+		CType[] argTypes)
+		throws PositionedError
+	{
+		// IVICA: this part is quite tricky :(
+	    // the problem is, when accessing a cclass method with prefix == null
+	    // but the searched method is in one of the outer classes, we have to search in
+	    // interfaces, but our context is mixin implementation itself
+	    // so we do the following:
+	    try {
+	        // start searching the method in this
+	        prefix = new JThisExpression(getTokenReference());
+	        findMethod(context, local, argTypes);
+	    }
+	    catch(PositionedError e) {
+	        // if there is no method in this, go to the mixin interface owner of 
+	        // the mixin implementation
+	        CClass clazz = local.getMixinInterface().getOwner();
+	        
+	        // successivelly append outer() calls
+	        // outer().m() ?
+	        // outer().outer().m() ?
+	        // etc.
+	        boolean found = false;
+	        while(!found && clazz != null) {
+	            prefix = new CjOuterExpression(getTokenReference(), clazz.getAbstractType());
+	            try {
+	                findMethod(context, local, argTypes);
+	                found = true;
+	            }
+	            catch (PositionedError e2) {
+	                clazz = clazz.getOwner();		                
+	            }
+	        }
+	        
+	        if(!found)
+	            throw e;
+	    }
 	}
 
 	protected void findMethod(
