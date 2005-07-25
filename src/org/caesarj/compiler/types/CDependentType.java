@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentType.java,v 1.23 2005-04-29 14:45:48 klose Exp $
+ * $Id: CDependentType.java,v 1.24 2005-07-25 12:46:33 gasiunas Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -28,6 +28,7 @@ package org.caesarj.compiler.types;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.context.CContextUtil;
 import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.export.CClass;
@@ -91,13 +92,7 @@ public class CDependentType extends CReferenceType {
         
         // if the family expression has not been evaluated in the declaring context
         // -> adapt k (e.g., field declarations which are evaluate in the Block$ ctx)
-        CContext ctx = exprContext.getBodyContext();
-        //CContext ctx = exprContext.getBlockContext();
-        int adaptK = 0;
-        while(declContext != ctx) {
-            adaptK++;
-            ctx = ctx.getParentContext();
-        }
+        int adaptK = CContextUtil.getRelativeDepth(exprContext.getBodyContext(), declContext);
         
         if(adaptK > 0)
             ((ContextExpression)path.getHead()).adaptK(-adaptK);
