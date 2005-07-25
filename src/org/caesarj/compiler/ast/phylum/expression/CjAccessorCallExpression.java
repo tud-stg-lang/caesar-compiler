@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjAccessorCallExpression.java,v 1.8 2005-03-03 12:16:23 aracic Exp $
+ * $Id: CjAccessorCallExpression.java,v 1.9 2005-07-25 12:43:52 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -77,10 +77,8 @@ public class CjAccessorCallExpression extends JMethodCallExpression {
         try {
 	        // store family here 
 	        Path prefixFam = prefix.getThisAsFamily();
-	        if(prefixFam != null && type.isCaesarReference()) {
-	            thisAsFamily = new FieldAccess(field.isFinal(), prefixFam.clonePath(), field.getIdent(), (CReferenceType)type);
-	            family = thisAsFamily.normalize();
-	        }
+	        thisAsFamily = new FieldAccess(field.isFinal(), prefixFam.clonePath(), field.getIdent(), (CReferenceType)type);
+	        family = thisAsFamily.normalize();	        
         }
         catch (UnpositionedError e) {
             throw e.addPosition(getTokenReference());

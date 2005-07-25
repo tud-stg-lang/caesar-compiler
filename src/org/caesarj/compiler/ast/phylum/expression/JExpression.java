@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JExpression.java,v 1.5 2005-02-09 16:56:01 aracic Exp $
+ * $Id: JExpression.java,v 1.6 2005-07-25 12:43:52 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -34,6 +34,7 @@ import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.family.Dummy;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
@@ -385,8 +386,8 @@ public abstract class JExpression extends JPhylum {
   // PUBLIC CONSTANTS
   // ----------------------------------------------------------------------
 
-  protected Path family = null;
-  protected Path thisAsFamily = null;
+  protected Path family = new Dummy(null);
+  protected Path thisAsFamily = new Dummy(null);
   
   public static final JExpression[]		EMPTY = new JExpression[0];
 }

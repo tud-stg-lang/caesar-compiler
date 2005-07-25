@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JCastExpression.java,v 1.10 2005-03-04 18:17:00 aracic Exp $
+ * $Id: JCastExpression.java,v 1.11 2005-07-25 12:43:52 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -130,7 +130,7 @@ public class JCastExpression extends JExpression {
             TokenReference where = getTokenReference();
             
             if(famExpr == null) {
-                famExpr = 
+            	famExpr = 
 	                new JThisExpression(
 	                    where,
 	                    new JTypeNameExpression(where, dest.getCClass().getOwnerType())
@@ -141,6 +141,9 @@ public class JCastExpression extends JExpression {
             thisAsFamily = family.clonePath();
             thisAsFamily = new Dummy(thisAsFamily);
             
+            // preserve identity
+            // thisAsFamily = expr.getThisAsFamily().clonePath();
+                        
             // put the expr into a cast call
             JMethodCallExpression castCall = new JMethodCallExpression(
                 where,
@@ -150,6 +153,10 @@ public class JCastExpression extends JExpression {
             );
          
             expr = castCall.analyse(context);
+        }
+        else {
+        	family = expr.getFamily().clonePath();
+        	thisAsFamily = expr.getThisAsFamily().clonePath();
         }
 
         check(

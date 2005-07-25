@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeNameExpression.java,v 1.6 2005-03-04 18:16:25 aracic Exp $
+ * $Id: JTypeNameExpression.java,v 1.7 2005-07-25 12:43:52 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -31,6 +31,7 @@ import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.family.ClassAccess;
 import org.caesarj.compiler.family.ContextExpression;
 import org.caesarj.compiler.family.FieldAccess;
 import org.caesarj.compiler.types.CReferenceType;
@@ -120,7 +121,7 @@ public class JTypeNameExpression extends JExpression {
           k++;
       }
       family = new ContextExpression(null, k, null);
-      thisAsFamily = new FieldAccess(true, family, type.getQualifiedName(), type);
+      thisAsFamily = new ClassAccess(true, family, type.getQualifiedName(), type);
       
     } catch (UnpositionedError e) {
       throw e.addPosition(getTokenReference());

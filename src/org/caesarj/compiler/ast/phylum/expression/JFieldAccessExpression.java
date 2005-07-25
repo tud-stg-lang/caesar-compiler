@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JFieldAccessExpression.java,v 1.29 2005-07-21 14:06:56 gasiunas Exp $
+ * $Id: JFieldAccessExpression.java,v 1.30 2005-07-25 12:43:52 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -361,23 +361,12 @@ public class JFieldAccessExpression extends JExpression {
         
         checkAccess(local, context, true);
         
-        //if(!context.isLeftSide()) {
-            return
-	        	new CjAccessorCallExpression(
-	        	    getTokenReference(),
-	        	    prefix,
-	        	    field
-	        	).analyse(context);
-        /*}
-        else {
-            return
-	        	new CjAccessorCallExpression(
-	        	    getTokenReference(),
-	        	    prefix,
-	        	    new JNullLiteral(getTokenReference()),
-	        	    ident        	    
-	        	).analyse(context);
-        }*/
+        return
+        	new CjAccessorCallExpression(
+        	    getTokenReference(),
+        	    prefix,
+        	    field
+        	).analyse(context);        
     }
     // --- end ---      
 
@@ -440,33 +429,7 @@ public class JFieldAccessExpression extends JExpression {
     }
 
     type = field.getType();
-    
-    
-    //IVICA: calc family type
-    try {
-        // store family here
-        if(getIdent().equals(JAV_OUTER_THIS)) {
-            thisAsFamily = prefix.getThisAsFamily().clonePath(); 
-            ((ContextExpression)thisAsFamily.getHead()).adaptK(+1);
-            
-            family = thisAsFamily.clonePath();
-		    ((ContextExpression)family.getHead()).adaptK(+1);
-        }
-        else {
-	        Path prefixFam = prefix.getThisAsFamily();	        	       
-	        
-	        if(prefixFam != null && type.isReference() && !type.isArrayType()) {
-	            Path p = new FieldAccess(field.isFinal(), prefixFam.clonePath(), field.getIdent(), (CReferenceType)type);
-	            family = p.normalize();
-	            
-	            thisAsFamily = p;	            
-	        }
-        }
-    }
-    catch (UnpositionedError e) {
-        throw e.addPosition(getTokenReference());
-    }
-
+    calcFamilyType();
     
 
     if (isConstant()) {
@@ -523,6 +486,33 @@ public class JFieldAccessExpression extends JExpression {
         }
       
       return this;
+    }
+  }
+  
+  protected void calcFamilyType() throws PositionedError {
+  	 //IVICA: calc family type
+    try {
+        // store family here
+        if(getIdent().equals(JAV_OUTER_THIS)) {
+            thisAsFamily = prefix.getThisAsFamily().clonePath(); 
+            ((ContextExpression)thisAsFamily.getHead()).adaptK(+1);
+            
+            family = thisAsFamily.clonePath();
+		    ((ContextExpression)family.getHead()).adaptK(+1);
+        }
+        else {
+	        Path prefixFam = prefix.getThisAsFamily();	        	       
+	        
+	        if (type.isReference() && !type.isArrayType()) {
+	            Path p = new FieldAccess(field.isFinal(), prefixFam.clonePath(), field.getIdent(), (CReferenceType)type);
+	            family = p.normalize();
+	            
+	            thisAsFamily = p;	            
+	        }
+        }
+    }
+    catch (UnpositionedError e) {
+        throw e.addPosition(getTokenReference());
     }
   }
 

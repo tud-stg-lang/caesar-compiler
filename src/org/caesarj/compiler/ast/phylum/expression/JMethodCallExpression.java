@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.38 2005-07-25 09:00:04 gasiunas Exp $
+ * $Id: JMethodCallExpression.java,v 1.39 2005-07-25 12:43:52 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -35,9 +35,9 @@ import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.AdditionalGenerationContext;
-import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CConstructorContext;
 import org.caesarj.compiler.context.CContext;
+import org.caesarj.compiler.context.CContextUtil;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.export.CCjSourceAccessorMethod;
@@ -51,7 +51,6 @@ import org.caesarj.compiler.family.ArgumentAccess;
 import org.caesarj.compiler.family.ContextExpression;
 import org.caesarj.compiler.family.Dummy;
 import org.caesarj.compiler.family.FieldAccess;
-import org.caesarj.compiler.family.InfiniteContextExpression;
 import org.caesarj.compiler.family.MethodAccess;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CArrayType;
@@ -365,73 +364,41 @@ public class JMethodCallExpression extends JExpression
 	
 	protected void calcAccessorFamily(CContext methCtx) throws PositionedError {
 		 try {
-	        //int k = 0;		      
-	        ContextExpression initialContext = new ContextExpression(null,0,null);
-	        
-            CCjSourceAccessorMethod accessorMethod = (CCjSourceAccessorMethod)method;
+	        CCjSourceAccessorMethod accessorMethod = (CCjSourceAccessorMethod)method;
             JAccessorMethod accessorMethodDecl = accessorMethod.getDecl();
-            
-            CClass clazz = accessorMethod.getOwner();
-	        //CClass clazz = argTypes[0].getCClass();
-            
-            CContext ctx = methCtx.getBlockContext();
-
             CMember accessedMember = accessorMethodDecl.getMember();
             
             if (accessedMember instanceof CField){
                 CField accessedField = (CField) accessedMember;
-                // ... find first class context ... 
-                while (!(ctx instanceof CClassContext)){
-                    ctx = ctx.getParentContext();
-//                    k++;
-                    initialContext.adaptK(1);
-                }
-                // ... and search for the correct outer class.
-                while ( ((CClassContext)ctx).getCClass() != clazz) {
-                    ctx = ctx.getParentContext();
-//                    k++;
-                    initialContext.adaptK(1);
-                   
-//                    check(
-//                        context,
-//                        !(ctx == null || ctx.getClassContext() == null ),                        
-//                        CaesarMessages.ILLEGAL_PATH_ELEMENT, 
-//                        "accessor method not returning an outer reference"
-//                    );
-                    if (ctx == null || ctx.getClassContext() == null ){
-                        // no outer path can be computed
-                        initialContext = new InfiniteContextExpression();
-                        break;
-                    }
-                    
-                    // this is necessary for nested classes
-                    // the check above ensures that this is going to terminate
-                    while(!(ctx instanceof CClassContext)) {
-                        ctx = ctx.getParentContext();
-//                        k++;
-                        initialContext.adaptK(1);
-
-                    }
-                }
+                CClass clazz = accessorMethod.getOwner();
+    	        CContext ctx = methCtx.getBlockContext();
                 
-                if(accessedField.getIdent().equals(JAV_OUTER_THIS)) {
-                    ContextExpression k1 = initialContext.cloneWithAdaptedK(1),
-                    					k2 = initialContext.cloneWithAdaptedK(2);
-                  family = k2;
-                  thisAsFamily = k1;        
-//                    family = new ContextExpression(null, initialContext.getK()+2, null);
-//                    thisAsFamily = new ContextExpression(null, initialContext.getK()+1, null);        
+                // ... search for the correct outer class.
+                CContext fieldCtx = CContextUtil.findClassContext(ctx, clazz);
+                
+                if (fieldCtx == null) {
+                	family = new Dummy(null);
+                	thisAsFamily = new Dummy(null);
                 }
-                else {                    
-                    thisAsFamily = 
-                        new FieldAccess(
-                            accessedField.isFinal(),
-                            initialContext,
-                            //new ContextExpression(null, k, null),
-                            accessedField.getIdent(),
-                            (CReferenceType)accessedField.getType()
-                        );
-                    family = thisAsFamily.clonePath().normalize();
+                else {
+                	int depth = CContextUtil.getRelativeDepth(ctx, fieldCtx);
+                	ContextExpression initialContext = new ContextExpression(null, depth, null);
+                	
+                	if (accessedField.getIdent().equals(JAV_OUTER_THIS)) {
+                		family = initialContext.cloneWithAdaptedK(2);
+                		thisAsFamily = initialContext.cloneWithAdaptedK(1);        
+                	}
+	                else {                    
+	                    thisAsFamily = 
+	                        new FieldAccess(
+	                            accessedField.isFinal(),
+	                            initialContext,
+	                            //new ContextExpression(null, k, null),
+	                            accessedField.getIdent(),
+	                            (CReferenceType)accessedField.getType()
+	                        );
+	                    family = thisAsFamily.clonePath().normalize();
+	                }
                 }
             }
         }
@@ -463,14 +430,7 @@ public class JMethodCallExpression extends JExpression
 		        }
 		        else {
 		            // here we have a dependent type not depending on a method argument
-	                thisAsFamily = prefix.getThisAsFamily();
-	                
-	                if(thisAsFamily == null) {
-	                    thisAsFamily = new InfiniteContextExpression();
-//	                    throw new PositionedError(getTokenReference(), CaesarMessages.PREFIX_FAMILY_PATH_NOT_AVAILABLE, ident);
-	                }
-	                
-	                thisAsFamily = thisAsFamily.clonePath();
+	                thisAsFamily = prefix.getThisAsFamily().clonePath();
 		            thisAsFamily = new MethodAccess(thisAsFamily, method.getIdent(), null);		            
 		            thisAsFamily = thisAsFamily.append( returnTypePath );
 		            thisAsFamily = new Dummy(thisAsFamily);
