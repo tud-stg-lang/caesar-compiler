@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CReferenceType.java,v 1.20 2005-03-10 15:02:43 aracic Exp $
+ * $Id: CReferenceType.java,v 1.21 2005-07-25 12:45:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -115,7 +115,7 @@ public class CReferenceType extends CType {
         // subtract 1 from k 
         // (we want ot start our path relative to the field decl rather than the context of the accessor method)
         try {
-	        if(declContext.getMethodContext() != null) {            
+	        if (declContext != null && declContext.getMethodContext() != null) {            
 	            if(declContext.getMethodContext().getMethodDeclaration().getMethod().isCaesarAccessorMethod())
 	                k--;
 	        }
