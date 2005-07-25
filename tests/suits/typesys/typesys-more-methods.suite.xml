@@ -2,7 +2,9 @@
 
 	<common-code-base>		
 		public cclass G {
-			public cclass N {}
+			public cclass N {
+				public N getSelf() { return this; }
+			}
 		}
 	</common-code-base>
 
@@ -124,6 +126,46 @@
 				}
 				public static void test() {
 					foo(g.new N());
+				}			
+			}
+		</code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="mmethods008" description="Implicit static method call as target.">
+    	<test>
+    		A.test();
+    	</test>
+        <code>
+			public class A {
+				final static public G g = new G();
+				public static g.N foo(g.N n) { 
+					return n;
+				}
+				public static void test() {
+					g.N n = foo(g.new N()).getSelf();
+				}			
+			}
+		</code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="mmethods009" description="Plain type as return type.">
+    	<test>
+    		new A().test();
+    	</test>
+        <code>
+        	public class B {
+        		public void setN(A.g.N n) {
+        		}
+        	}
+			public cclass A {
+				final static public G g = new G();
+				public B getB() {
+					return new B();
+				}
+				public void test() {
+					getB().setN(g.new N());
 				}			
 			}
 		</code>
