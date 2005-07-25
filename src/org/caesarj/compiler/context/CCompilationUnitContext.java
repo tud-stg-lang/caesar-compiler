@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCompilationUnitContext.java,v 1.8 2005-02-16 16:32:45 aracic Exp $
+ * $Id: CCompilationUnitContext.java,v 1.9 2005-07-25 12:44:09 gasiunas Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -128,7 +128,7 @@ public class CCompilationUnitContext extends CContext {
 	 * @return	the parent
 	 */
 	public CContext getParentContext() {
-		throw new InconsistencyException();
+		return null;
 	}
 
 	/**
