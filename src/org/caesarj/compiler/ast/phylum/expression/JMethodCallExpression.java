@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.39 2005-07-25 12:43:52 gasiunas Exp $
+ * $Id: JMethodCallExpression.java,v 1.40 2005-07-25 15:01:02 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -311,7 +311,7 @@ public class JMethodCallExpression extends JExpression
 	    ) { 
 			calcAccessorFamily(context);
 		}
-        else if( type.isCaesarReference() ) {
+        else if( type.isReference() ) {
             calcExpressionFamily();
         }
 
