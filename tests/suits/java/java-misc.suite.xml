@@ -86,7 +86,7 @@
 				public void m() {
 					final Runnable inlined = new Runnable() {
 						public void run() {
-							System.out.println("run");
+							System.out.println("run5");
 						}
 			        };
 			        
@@ -112,5 +112,51 @@
         	}
 		</code>
     </compile>
+    
+    !-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="javamisc007" description="Test accessor from inlined class">
+		<test>		
+			new ClassA().m();
+		</test>
+        <code>
+			public class ClassA {
+				private String getMsg() {
+					return "run7";
+				}
+				public void m() {
+					final Runnable inlined = new Runnable() {
+						public void run() {
+							System.out.println(getMsg());
+						}
+			        };
+			        new Thread(inlined).start();
+				}
+			}
+		</code>
+    </compile-run>
+    
+    !-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="javamisc008" description="Test superaccessor from inlined class">
+		<test>		
+			new ClassA().m();
+		</test>
+        <code>
+        	public class ClassB {
+        		protected String getMsg() {
+					return "run8";
+				}
+        	}
+			public class ClassA extends ClassB {
+				public void m() {
+					final Runnable inlined = new Runnable() {
+						public void run() {
+							System.out.println(ClassA.super.getMsg());
+						}
+			        };
+			        new Thread(inlined).start();
+				}
+			}
+		</code>
+    </compile-run>		
 
 </testsuite>
