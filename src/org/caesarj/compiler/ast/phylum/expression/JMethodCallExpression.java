@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMethodCallExpression.java,v 1.40 2005-07-25 15:01:02 gasiunas Exp $
+ * $Id: JMethodCallExpression.java,v 1.41 2005-07-27 08:47:44 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -283,18 +283,20 @@ public class JMethodCallExpression extends JExpression
 					prefix =
 						new JFieldAccessExpression(
 							getTokenReference(),
-							new JThisExpression(getTokenReference()),
+							new JThisExpression(getTokenReference()).analyse(context),
 							local.getField(JAV_OUTER_THIS));
 				}
 				argsTmp[0] = prefix;
 				System.arraycopy(args, 0, argsTmp, 1, args.length);
-				prefix = null;
 				args = argsTmp;
+				prefix = null;
 			}
 			CSourceClass target = method.getAccessorOwner((CSourceClass) local);
 
 			method =
 				method.getAccessor(context.getTypeFactory(), target, isSuper);
+			
+			determineImplicitTarget(context, local);
 		}
 
 		// if the returntype is generic (and the owner of the method not 'this class')
