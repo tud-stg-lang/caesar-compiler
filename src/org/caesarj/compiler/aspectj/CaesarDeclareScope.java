@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarDeclareScope.java,v 1.1 2005-04-05 16:53:12 gasiunas Exp $
+ * $Id: CaesarDeclareScope.java,v 1.2 2005-07-27 15:36:14 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -52,7 +52,7 @@ public class CaesarDeclareScope extends CaesarScope {
 	ClassReader classReader;
 	
 	public CaesarDeclareScope(FjClassContext context, CClass caller) {
-		super(context, caller);
+		super(context, caller, null);
 		typeGraph = context.getEnvironment().getCaesarTypeSystem().getCaesarTypeGraph();
 		typeFactory = context.getTypeFactory();
 		classReader = context.getClassReader();

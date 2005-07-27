@@ -27,10 +27,9 @@ package org.caesarj.compiler.aspectj;
 import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.patterns.WildTypePattern;
 import org.caesarj.compiler.context.FjClassContext;
-import org.caesarj.compiler.export.CCjIfcSourceClass;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.util.TokenReference;
 
 /**
  * 
@@ -46,8 +45,8 @@ public class CaesarPointcutScope extends CaesarScope {
      * @param context
      * @param caller
      */
-	public CaesarPointcutScope(FjClassContext context, CClass caller) {
-		super(context, caller);
+	public CaesarPointcutScope(FjClassContext context, CClass caller, TokenReference where) {
+		super(context, caller, where);
 	}
 	
 	/**

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjAdvice.java,v 1.7 2005-07-07 14:25:18 thiago Exp $
+ * $Id: CCjAdvice.java,v 1.8 2005-07-27 15:36:14 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -163,7 +163,7 @@ public class CCjAdvice extends CSourceMethod {
 			//CaesarFormalBinding.wrappees(
 			(CaesarFormalBinding[]) formalBindings.toArray(new CaesarFormalBinding[0]));
 		//resolve the pointcut
-		pointcut.resolve(new CaesarPointcutScope(classContext, caller));
+		pointcut.resolve(new CaesarPointcutScope(classContext, caller, tokenReference));
 
 		//create the advice attribute
 		//AjAttribute ajAttribute;

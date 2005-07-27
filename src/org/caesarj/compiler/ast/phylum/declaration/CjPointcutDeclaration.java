@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjPointcutDeclaration.java,v 1.8 2005-07-07 14:25:18 thiago Exp $
+ * $Id: CjPointcutDeclaration.java,v 1.9 2005-07-27 15:36:14 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -186,7 +186,7 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 			(CaesarFormalBinding[]) formalBindings.toArray(new CaesarFormalBinding[0]));
 
 		if (((modifiers & ACC_ABSTRACT) == 0)&&!checked) {
-				pointcut.resolve(new CaesarPointcutScope((FjClassContext) classContext, caller));
+				pointcut.resolve(new CaesarPointcutScope((FjClassContext) classContext, caller, getTokenReference()));
 		}
 
 		CaesarMember rpd =

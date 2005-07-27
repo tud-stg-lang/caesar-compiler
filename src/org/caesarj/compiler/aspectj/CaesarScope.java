@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarScope.java,v 1.15 2005-04-05 16:51:26 gasiunas Exp $
+ * $Id: CaesarScope.java,v 1.16 2005-07-27 15:36:14 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -32,19 +32,21 @@ import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
+import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.weaver.IHasPosition;
+import org.aspectj.weaver.IHasSourceLocation;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.IScope;
-import org.aspectj.weaver.patterns.PatternNode;
 import org.caesarj.compiler.ast.phylum.JClassImport;
 import org.caesarj.compiler.ast.phylum.JPackageImport;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 
 /**
@@ -62,10 +64,13 @@ public class CaesarScope implements IScope, CaesarConstants {
 	protected CaesarBcelWorld world;
 
 	protected IMessageHandler messageHandler;
+	
+	protected TokenReference where;
 
-	public CaesarScope(FjClassContext context, CClass caller) {
+	public CaesarScope(FjClassContext context, CClass caller, TokenReference where) {
 		super();
 
+		this.where = where;
 		this.world = CaesarBcelWorld.getInstance();
 		this.context = context;
 		this.caller = caller;
@@ -248,18 +253,25 @@ public class CaesarScope implements IScope, CaesarConstants {
 	 */
 	protected ISourceLocation makeSourceLocation(IHasPosition location) {
 
-		if (location instanceof PatternNode) {
-			PatternNode pattern = (PatternNode) location;
+		if (location instanceof IHasSourceLocation) {
+			IHasSourceLocation pattern = (IHasSourceLocation) location;
 			ISourceContext sourceContext = pattern.getSourceContext();
 
 			if (sourceContext != null) {
 				return pattern.getSourceContext().makeSourceLocation(location);
 			}
 		}
-
-		return new SourceLocation(
-			new File(context.getCClass().getSourceFile()),
-			0);
+		
+		if (where != null) {
+			return new SourceLocation(
+				where.getPath(),
+				where.getLine());
+		}
+		else {
+			return new SourceLocation(
+				new File(context.getCClass().getSourceFile()),
+				location.getStart());
+		}
 	}
 
 	/**
