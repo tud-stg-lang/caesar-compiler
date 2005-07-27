@@ -26,11 +26,11 @@ public class ADTestCase extends TestCase
 		System.out.println("-------> ADTest 37: Aspect Precedence: start");
 		
 		AspectA a = new AspectA();
-		a.simpleDeploy();
+		deploy a;
 		
 		new Test().test(3);
 		
-		a.simpleUndeploy();
+		undeploy a;
 
 		System.out.println(result.toString());
 		assertEquals(expectedResult, result.toString());

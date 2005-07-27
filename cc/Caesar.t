@@ -70,6 +70,7 @@
 @literal	privileged
 @literal	returning
 @literal	throwing
+@literal	undeploy
 
 @operator	ASSIGN	"="
 @operator	BAND	"&"

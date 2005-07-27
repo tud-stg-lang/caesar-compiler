@@ -68,7 +68,7 @@ public cclass DeployA
         {
 			deploy(new AspectA().init("ta2"))
 			{
-				g1.simpleDeploy();
+				deploy g1;
 				a.setId("m1");
 				a.trigger();
 
@@ -78,7 +78,7 @@ public cclass DeployA
 			a.trigger();
 		}
 		a.trigger();
-		g1.simpleUndeploy();
+		undeploy g1;
 
 		Barrier.getInstance().check(); //Checkpoint 3
 		Barrier.getInstance().check(); //Checkpoint 4
@@ -94,7 +94,7 @@ public cclass AnotherThread implements Runnable
 
 		Barrier.getInstance().check(); //Checkpoint 1
 
-		g2.simpleDeploy();
+		deploy g2;
 
 		deploy(new AspectA().init("tb1"))
 		{
@@ -111,7 +111,7 @@ public cclass AnotherThread implements Runnable
 		}
 		a.trigger();
 
-		g2.simpleUndeploy();
+		undeploy g2;
 
 		Barrier.getInstance().check();  //Checkpoint 4
 	}

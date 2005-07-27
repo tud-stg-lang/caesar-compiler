@@ -26,11 +26,11 @@ public class ADTestCase extends TestCase
 		StockPricing.PerRequestDiscount pricing = new StockPricing().new PerRequestDiscount();
 		Test test = new Test();
 
-		pricing.simpleDeploy();
+		deploy pricing;
 
 		test.foo();
 
-		pricing.simpleUndeploy();
+		undeploy pricing;
 
 		assertEquals(expectedResult, result.toString());
 

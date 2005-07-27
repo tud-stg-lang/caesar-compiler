@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.61 2005-07-20 12:07:09 gasiunas Exp $
+ * $Id: Caesar.g,v 1.62 2005-07-27 13:45:15 gasiunas Exp $
  */
 
 /*
@@ -1107,6 +1107,10 @@ jStatement []
 |
   self = jDeployStatement[]  
 |
+  self = jDeploySimpleStatement[] 
+|
+  self = jUndeploySimpleStatement[] 
+|
   // empty statement
   SEMI
     { self = new JEmptyStatement(sourceRef, comments); }
@@ -1234,6 +1238,40 @@ jThrowStatement []
 :
   "throw" expr = jExpression[] SEMI
     { self = new JThrowStatement(sourceRef, expr, getStatementComment()); }
+;
+
+jDeploySimpleStatement []
+  returns [JExpressionStatement self = null]
+{
+  JExpression		expr;
+  TokenReference	sourceRef = buildTokenReference();
+}
+:
+  "deploy" expr = jExpression[] SEMI
+    { self = new JExpressionStatement(
+    				sourceRef,
+    				new CjMethodCallExpression(sourceRef,
+					        expr,
+					        "simpleDeploy",
+					        JExpression.EMPTY),
+					getStatementComment()); }
+;
+
+jUndeploySimpleStatement []
+  returns [JExpressionStatement self = null]
+{
+  JExpression		expr;
+  TokenReference	sourceRef = buildTokenReference();
+}
+:
+  "undeploy" expr = jExpression[] SEMI
+    { self = new JExpressionStatement(
+    				sourceRef,
+    				new CjMethodCallExpression(sourceRef,
+					        expr,
+					        "simpleUndeploy",
+					        JExpression.EMPTY),
+					getStatementComment()); }
 ;
 
 jSynchronizedStatement []
