@@ -136,4 +136,33 @@
         </code>
     </compile>
     
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error id="advice009" error="VAR_UNKNOWN" description="proceed in method">
+        <code>
+        	public cclass AspectA {
+				public void m() {
+					System.out.println("Msg");
+					proceed();
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error id="advice010" error="VAR_UNKNOWN" description="proceed in after advice">
+        <code>
+        	public class ClsA {
+        		public void m() {
+        		}			    
+			}
+			public cclass AspectA {
+				after() : execution(* *.m(..)) {
+					System.out.println("Msg");
+					proceed();
+				}
+			}
+        </code>
+    </compile-check-error>
+    
+    
 </testsuite>
