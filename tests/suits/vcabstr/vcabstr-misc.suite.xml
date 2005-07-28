@@ -256,4 +256,29 @@
         </code>
     </compile-check-error>   
     
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="abstrmisc016" description="Super method call">
+		<test>			
+		    new AAB().doSomething();
+		</test>
+        <code>
+        	abstract public cclass A {
+				public cclass SubA {
+					public abstract int methodA();
+					public int methodB() { return 1 + methodA(); }
+				}
+			}
+			abstract public cclass AA extends A {
+				public cclass SubA {
+					public int methodA() { return 3; }
+					public int methodB() { return super.methodB(); }
+				}
+			}
+			public cclass B { }
+			public cclass AAB extends AA &amp; B {
+				public void doSomething() { int x = new SubA().methodB(); }
+			}
+        </code>
+    </compile-run>	
+    
 </testsuite>
