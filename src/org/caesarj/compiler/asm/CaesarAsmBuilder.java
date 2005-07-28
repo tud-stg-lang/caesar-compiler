@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarAsmBuilder.java,v 1.11 2005-05-13 14:23:11 thiago Exp $
+ * $Id: CaesarAsmBuilder.java,v 1.12 2005-07-28 15:01:15 gasiunas Exp $
  */
 
 package org.caesarj.compiler.asm;
@@ -55,6 +55,7 @@ import org.caesarj.compiler.ast.phylum.JPackageName;
 import org.caesarj.compiler.ast.phylum.declaration.CjAdviceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjAdviceMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjDeploymentSupportClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.CjInitMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjMixinInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjPointcutDeclaration;
@@ -444,6 +445,10 @@ public class CaesarAsmBuilder {
 	 * @return
 	 */
 	public boolean visit(CjVirtualClassDeclaration self) {
+		
+		// do not show implicit classes
+		if (self.getCClass().isImplicit())
+			return false;
 	    
 		// If class is an Aspect, kind = aspect instead of virtual_class
 		CaesarProgramElement.Kind kind = CaesarProgramElement.Kind.VIRTUAL_CLASS;
@@ -471,7 +476,9 @@ public class CaesarAsmBuilder {
 	}
 
 	public void endVisit(CjVirtualClassDeclaration self) {
-		this.asmStack.pop();
+		if (!self.getCClass().isImplicit()) {
+			this.asmStack.pop();
+		}
 	}
 
 	/**
@@ -479,6 +486,10 @@ public class CaesarAsmBuilder {
 	 *  
 	 */
 	public boolean visit(JConstructorDeclaration self) {
+		
+		// Do not create nodes for generated constructors
+		if (self.isGenerated())
+			return false;
 
 	    // Create nodes for the parameters
 		List parameters = new ArrayList();
@@ -518,7 +529,7 @@ public class CaesarAsmBuilder {
 	public boolean visit(JMethodDeclaration self) {
 
 	    // Do not create nodes for generated methods
-		if (self.getIdent().startsWith("$"))
+		if (self.isGenerated())
 			return false;
 		
 		// Create nodes for the parameters
@@ -537,15 +548,25 @@ public class CaesarAsmBuilder {
 			parameters.add(parameter);
 		}
 		
+		String displayIdent = self.getIdent().replaceAll("/", ".");
+		String displayRettype = self.getReturnType().toString(); 
+		
+		/* show class name for generated contructors */
+		if (self instanceof CjInitMethodDeclaration) {
+			displayIdent = self.getMethod().getOwner().getIdent();
+			displayIdent = displayIdent.replaceAll("_Impl", "");
+			displayRettype = displayIdent;
+		}
+		
 		// Create a node for the method, including the parameters
 		CaesarProgramElement node = new CaesarProgramElement(
-				self.getIdent().replaceAll("/", "."), 
+				displayIdent, 
 		    	CaesarProgramElement.Kind.METHOD, 
 		    	self.getModifiers(), 
 		    	makeLocation(self.getTokenReference()),
 		    	new ArrayList(),
 		    	parameters,
-				self.getReturnType().toString(),
+		    	displayRettype,
 				"");
 		node.setBytecodeName(self.getIdent());
 		node.setBytecodeSignature(self.getMethod().getSignature());
@@ -668,9 +689,10 @@ public class CaesarAsmBuilder {
 	public boolean visit(JFieldDeclaration self) {
 		
 	    // Don't create nodes for generated fields
-		JVariableDefinition var = self.getVariable();
-		if (var.getIdent().startsWith("$"))
+		if (self.isGenerated())
 			return false;
+		
+		JVariableDefinition var = self.getVariable();
 		
 		// Create hte field node
 		CaesarProgramElement node = new CaesarProgramElement(
