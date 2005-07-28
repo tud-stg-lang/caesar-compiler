@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjAdviceDeclaration.java,v 1.14 2005-07-07 14:25:18 thiago Exp $
+ * $Id: CjAdviceDeclaration.java,v 1.15 2005-07-28 11:44:20 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -170,7 +170,7 @@ public class CjAdviceDeclaration
 
         newParameters[newParameters.length - 1] =
             new JFormalParameter(
-                TokenReference.NO_REF,
+                getTokenReference(),
                 JFormalParameter.DES_GENERATED,
                 aroundClosureType,
                 AROUND_CLOSURE_PARAMETER,

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjProceedExpression.java,v 1.3 2005-03-29 15:48:35 gasiunas Exp $
+ * $Id: CjProceedExpression.java,v 1.4 2005-07-28 11:44:36 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -55,21 +55,21 @@ public class CjProceedExpression
 			where,
 			null,
 			"PROCEED EXPRESSION",
-			addAroundClosureArgument(args));
+			addAroundClosureArgument(args, where));
 
 	}
 
 	/**
 	 * Appends an additional argument for the aroundClosure.
 	 */
-	private static JExpression[] addAroundClosureArgument(JExpression[] args) {
+	private static JExpression[] addAroundClosureArgument(JExpression[] args, TokenReference where) {
 		JExpression[] newArgs = new JExpression[args.length + 1];
 
 		System.arraycopy(args, 0, newArgs, 0, args.length);
 
 		newArgs[newArgs.length - 1] =
 			new JNameExpression(
-				TokenReference.NO_REF,
+				where,
 				AROUND_CLOSURE_PARAMETER);
 
 		return newArgs;

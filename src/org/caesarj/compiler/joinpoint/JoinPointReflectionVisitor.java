@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JoinPointReflectionVisitor.java,v 1.22 2005-03-30 14:23:47 gasiunas Exp $
+ * $Id: JoinPointReflectionVisitor.java,v 1.23 2005-07-28 11:47:04 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -38,7 +38,6 @@ import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.ast.visitor.VisitorSupport;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.types.CClassNameType;
-import org.caesarj.util.TokenReference;
 
 /**
  * Visits the AST down to expression granularity.
@@ -100,7 +99,7 @@ public class JoinPointReflectionVisitor implements IVisitor, CaesarConstants  {
 				CaesarConstants.ThisJoinPointStaticPart);
 			JFormalParameter extraParameter =
 				new JFormalParameter(
-					TokenReference.NO_REF,
+					adviceDec.getTokenReference(),
 					JFormalParameter.DES_GENERATED,
 					new CClassNameType(JOIN_POINT_STATIC_PART_CLASS),
 					THIS_JOIN_POINT_STATIC_PART,
@@ -113,7 +112,7 @@ public class JoinPointReflectionVisitor implements IVisitor, CaesarConstants  {
 			adviceDec.setExtraArgumentFlag(CaesarConstants.ThisJoinPoint);
 			JFormalParameter extraParameter =
 				new JFormalParameter(
-					TokenReference.NO_REF,
+					adviceDec.getTokenReference(),
 					JFormalParameter.DES_GENERATED,
 					new CClassNameType(JOIN_POINT_CLASS),
 					THIS_JOIN_POINT,
@@ -127,7 +126,7 @@ public class JoinPointReflectionVisitor implements IVisitor, CaesarConstants  {
 				CaesarConstants.ThisEnclosingJoinPointStaticPart);
 			JFormalParameter extraParameter =
 				new JFormalParameter(
-					TokenReference.NO_REF,
+					adviceDec.getTokenReference(),
 					JFormalParameter.DES_GENERATED,
 					new CClassNameType(JOIN_POINT_STATIC_PART_CLASS),
 					THIS_ENCLOSING_JOIN_POINT_STATIC_PART,
