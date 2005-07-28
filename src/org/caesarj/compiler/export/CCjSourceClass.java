@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjSourceClass.java,v 1.17 2005-07-20 10:10:38 gasiunas Exp $
+ * $Id: CCjSourceClass.java,v 1.18 2005-07-28 13:06:20 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -593,9 +593,13 @@ public class CCjSourceClass extends CSourceClass
         
         try
         {
+        	short modifiers = (short) (getModifiers() & (~ACC_STATIC));
+        	if (isAbstract()) {
+        		modifiers |= ACC_ABSTRACT;
+        	}
             AttributedClassInfo classInfo =
                 new AttributedClassInfo(
-                    (short) (getModifiers() & (~ACC_STATIC)),
+                    modifiers,
                     getQualifiedName(),
                     getSuperClass() == null
                         ? null
