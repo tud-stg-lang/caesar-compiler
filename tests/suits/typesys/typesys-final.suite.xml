@@ -66,5 +66,25 @@
 			}
         </code>
     </compile-check-error>	
-
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="final006" description="Check family of inherited class.">
+        <code>
+			public cclass C {
+				public cclass A {
+					public cclass X {
+					   public A e;
+					}
+				}
+				public void main(String[] args) {
+					final C2 c = new C2(); 
+					c.A e2;
+					e2 = c.new A().new X().e; 					
+				}
+			}
+			public cclass C2 extends C {
+			}
+        </code>
+    </compile>	
+    
 </testsuite>

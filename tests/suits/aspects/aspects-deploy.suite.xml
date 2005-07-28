@@ -1,0 +1,27 @@
+<testsuite name="Test aspect deployment" package="suits.aspects.aspdeploy">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="deploy001" description="static deployment of mixin class">
+        <test>
+        	new Y().foo();
+        	assertEquals(":foo", res.toString());
+        </test>
+        <code>
+        	public cclass A {
+        	}
+			deployed public cclass B extends A {
+				after() : execution(* Y.foo(..)) {
+					Test.res.append(":foo");
+				}
+			}
+			public cclass C extends A {
+			}
+			public cclass X extends B &amp; C{
+			}
+			public class Y {
+				public void foo() {}
+			}
+        </code>
+    </compile-run>
+    
+</testsuite>
