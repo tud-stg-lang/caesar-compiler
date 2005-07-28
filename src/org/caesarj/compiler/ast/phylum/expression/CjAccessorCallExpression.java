@@ -20,17 +20,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjAccessorCallExpression.java,v 1.9 2005-07-25 12:43:52 gasiunas Exp $
+ * $Id: CjAccessorCallExpression.java,v 1.10 2005-07-28 11:44:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
 
+import org.caesarj.compiler.cclass.CastUtils;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.family.FieldAccess;
 import org.caesarj.compiler.family.Path;
 import org.caesarj.compiler.types.CReferenceType;
+import org.caesarj.compiler.types.CType;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -66,8 +68,23 @@ public class CjAccessorCallExpression extends JMethodCallExpression {
     }
     
     public JExpression analyse(CExpressionContext context) throws PositionedError {
-        JExpression res = super.analyse(context);        	        
-        return res;
+    	 JExpression res = super.analyse(context);
+    	 
+    	 // cast the return type
+         CType returnType = getType(context.getTypeFactory());
+    	 
+    	 CType castType = 
+	          CastUtils.instance().castFrom(
+	              context, returnType, getPrefixType().getCClass());
+    	  
+	     if(castType != null) {
+	         return new CjCastExpression(
+	            getTokenReference(),
+	            res,
+	            castType
+	         );
+	     }
+         return res;
     } 
     
     /**
