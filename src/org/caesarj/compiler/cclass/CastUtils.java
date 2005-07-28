@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CastUtils.java,v 1.5 2005-06-10 12:21:02 klose Exp $
+ * $Id: CastUtils.java,v 1.6 2005-07-28 11:44:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -53,40 +53,44 @@ public class CastUtils {
         //CType type = arrayType != null ? arrayType.getBaseType() : t;
         CType type = t.isArrayType()? ((CArrayType)t).getBaseType() : t;
         
-        if(type.isClassType()) {
-		    CClass tClass = type.getCClass();
-		        
-		    if(tClass.isMixinInterface() && contextClass.isMixin()) {
-	            String tNewClassQn = 
-	                context.getEnvironment().getCaesarTypeSystem().
-	                	findInContextOf(
-	                	    tClass.getQualifiedName(),
-		                    contextClass.convertToIfcQn()
-		                );
-	            
-	            if(tNewClassQn != null) {
-		            CClass newPrefixClass = 
-		                context.getClassReader().loadClass(
-		                    context.getTypeFactory(),
-		                    tNewClassQn
-		                );
-		            
-		            CType newT = newPrefixClass.getAbstractType();          
-		            
-		            res = newT;
-	            }	        
-	        }  
+        if (!type.isClassType()) {
+        	return null;
         }
+		 
+        CClass tClass = type.getCClass();
+		if (!tClass.isMixinInterface()) 
+			return null;
+		
+		String contextClassQn;
+		if (contextClass.isMixin()) {
+			contextClassQn = contextClass.convertToIfcQn();
+		}
+		else if (contextClass.isMixinInterface()) {
+			contextClassQn = contextClass.getQualifiedName();			
+		}
+		else {
+			return null;
+		}
+		
+        String tNewClassQn = 
+            context.getEnvironment().getCaesarTypeSystem().
+            	findInContextOf(
+            	    tClass.getQualifiedName(),
+                    contextClass.convertToIfcQn()
+                );
+        if (tNewClassQn == null) 
+        	return null;
         
-        /*
-        if(arrayType != null) {
-            res = new CArrayType(res, arrayType.getArrayBound());
-        }
-        */
+        CClass newPrefixClass = 
+            context.getClassReader().loadClass(
+                context.getTypeFactory(),
+                tNewClassQn
+            );
         
-        // cast not necessary
-        if(res != null && res.equals(t))
-            res = null;
+        res = newPrefixClass.getAbstractType();          
+		
+        if (res.equals(t))
+        	return null;
         
         return res;
     }
