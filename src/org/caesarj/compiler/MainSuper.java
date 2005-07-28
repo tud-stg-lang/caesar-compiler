@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: MainSuper.java,v 1.20 2005-06-17 11:07:22 gasiunas Exp $
+ * $Id: MainSuper.java,v 1.21 2005-07-28 11:46:31 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -44,7 +44,6 @@ import org.caesarj.util.CWarning;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.Messages;
 import org.caesarj.util.PositionedError;
-import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
 import org.caesarj.util.Utils;
 
@@ -280,13 +279,8 @@ public abstract class MainSuper extends CompilerBase {
             }
         }
         else {
-            if (trouble.getTokenReference() != TokenReference.NO_REF) {
-                Log.error(trouble.getMessage());
-                errorFound = true;
-            }
-            else {
-                Log.error(trouble.getMessage());
-            }
+            Log.error(trouble.getMessage());
+            errorFound = true;            
         }
     }
 
