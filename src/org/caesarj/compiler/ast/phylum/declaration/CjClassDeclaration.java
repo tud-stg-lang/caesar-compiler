@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjClassDeclaration.java,v 1.39 2005-07-20 15:07:59 gasiunas Exp $
+ * $Id: CjClassDeclaration.java,v 1.40 2005-07-28 15:00:54 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -218,45 +218,47 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
             );
             
             /* wrappee initialization method */
-            addMethod( 
-                new JMethodDeclaration(
-                    where,
-                    ACC_PUBLIC,
-                    new CVoidType(),
-                    WRAPPER_WRAPPEE_INIT,
-                    new JFormalParameter[]{
-                        new JFormalParameter(
-                            where,
-                            JFormalParameter.DES_PARAMETER,
-                            wrappee,
-                            "w",
-                            false
-                        )
-                    },
-                    CReferenceType.EMPTY,
-                    new JBlock(
+            JMethodDeclaration wrapperInitMeth = 
+            	new JMethodDeclaration(
                         where,
-                        new JStatement[]{                        
-                            new JExpressionListStatement(
+                        ACC_PUBLIC,
+                        new CVoidType(),
+                        WRAPPER_WRAPPEE_INIT,
+                        new JFormalParameter[]{
+                            new JFormalParameter(
                                 where,
-                                new JExpression[]{
-                                    new JAssignmentExpression(
-                                        where,
-                                        new JNameExpression(where, WRAPPER_WRAPPEE_FIELD),
-                                        new JNameExpression(where, "w")
-                                    )
-                                },
-                                null
+                                JFormalParameter.DES_PARAMETER,
+                                wrappee,
+                                "w",
+                                false
                             )
                         },
-                        null
-                    ),
-                    null, null
-                )
-            ); 
+                        CReferenceType.EMPTY,
+                        new JBlock(
+                            where,
+                            new JStatement[]{                        
+                                new JExpressionListStatement(
+                                    where,
+                                    new JExpression[]{
+                                        new JAssignmentExpression(
+                                            where,
+                                            new JNameExpression(where, WRAPPER_WRAPPEE_FIELD),
+                                            new JNameExpression(where, "w")
+                                        )
+                                    },
+                                    null
+                                )
+                            },
+                            null
+                        ),
+                        null, null
+                    );
+            wrapperInitMeth.setGenerated();
+            addMethod(wrapperInitMeth);
             
+                        
             /* wrappee access method */
-            addMethod( 
+            JMethodDeclaration getWrappeeMeth = 
                 new JMethodDeclaration(
                     where,
                     ACC_PUBLIC,
@@ -276,8 +278,9 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
                         null
                     ),
                     null, null
-                )
-            ); 
+                );
+            getWrappeeMeth.setGenerated();
+            addMethod(getWrappeeMeth); 
         }
     }
     

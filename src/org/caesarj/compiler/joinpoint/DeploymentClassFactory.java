@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.47 2005-05-31 09:03:42 meffert Exp $
+ * $Id: DeploymentClassFactory.java,v 1.48 2005-07-28 15:00:54 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -294,7 +294,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 */
 	private JMethodDeclaration createAspectClassAdviceMethod(CjAdviceDeclaration advice) {
 		
-		return new CjAdviceMethodDeclaration(
+		JMethodDeclaration decl =
+			new CjAdviceMethodDeclaration(
 		    			advice,
 						advice.getTokenReference(),
 						ACC_PUBLIC | ACC_SYNCHRONIZED,
@@ -305,6 +306,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 						advice.getBody(),
 						null,
 						null);
+		decl.setGenerated();
+		return decl;
 	}
 	
 	/**
@@ -312,7 +315,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 */
 	private JMethodDeclaration createAbstractAspectClassProceedMethod(CjAdviceDeclaration advice) {
 		
-		return new CjMethodDeclaration(
+		JMethodDeclaration decl =
+			new CjMethodDeclaration(
     			advice.getTokenReference(),
 				ACC_PUBLIC | ACC_SYNCHRONIZED | ACC_ABSTRACT,
 				advice.getReturnType(),
@@ -322,6 +326,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 				null,
 				null,
 				null);
+		decl.setGenerated();
+		return decl;
 	}
 	
 	/**
@@ -358,7 +364,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 	     
 		JStatement[] body = gen.endBlock("proceed-method");
 		
-		return new CjMethodDeclaration(
+		JMethodDeclaration decl =
+			new CjMethodDeclaration(
     			advice.getTokenReference(),
 				ACC_PUBLIC | ACC_SYNCHRONIZED,
 				advice.getReturnType(),
@@ -368,6 +375,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 				new JBlock(where, body, null),
 				null,
 				null);
+		decl.setGenerated();
+		return decl;
 	}
 	
 	/**
@@ -385,7 +394,9 @@ public class DeploymentClassFactory implements CaesarConstants {
 	    };
 	    
 	    gen.writeMethod(body);
-	    return gen.endMethod("getAspectRegistry");
+	    JMethodDeclaration decl = gen.endMethod("getAspectRegistry");
+	    decl.setGenerated();
+	    return decl;
 	}	
 
 	/**

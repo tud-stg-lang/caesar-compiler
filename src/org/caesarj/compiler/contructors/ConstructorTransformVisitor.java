@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ConstructorTransformVisitor.java,v 1.5 2005-07-28 11:46:54 gasiunas Exp $
+ * $Id: ConstructorTransformVisitor.java,v 1.6 2005-07-28 15:00:54 gasiunas Exp $
  */
 
 package org.caesarj.compiler.contructors;
@@ -149,25 +149,28 @@ public class ConstructorTransformVisitor implements IVisitor, CaesarConstants  {
         // create method for default contructor
         if (!defConstrFound) {
         	String methIdent = CONSTR_METH_NAME;
-	        cd.addMethod(
-				new CjInitMethodDeclaration(
+        	JMethodDeclaration defConstr =
+        		new CjInitMethodDeclaration(
 						cd.getTokenReference(),
 						ACC_PUBLIC,
 						selfType,
 						CONSTR_METH_NAME,
 						new JFormalParameter[] {},
 						CReferenceType.EMPTY
-					)
-				);
+					);
+        	defConstr.setGenerated();
+	        cd.addMethod(defConstr);				
         }
         
 	    // add real constructor
-	    cd.addMethod(
-	    	new CjVirtualClassCtorDeclaration(
+        JMethodDeclaration defConstr =
+        	new CjVirtualClassCtorDeclaration(
 				cd.getTokenReference(),
 				ACC_PUBLIC,
 				cd.getIdent(),
 				outerType,
-				factory));    
+				factory);
+        defConstr.setGenerated();
+	    cd.addMethod(defConstr);
     }
 }
