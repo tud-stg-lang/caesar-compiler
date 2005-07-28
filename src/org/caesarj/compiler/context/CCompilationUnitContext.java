@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCompilationUnitContext.java,v 1.9 2005-07-25 12:44:09 gasiunas Exp $
+ * $Id: CCompilationUnitContext.java,v 1.10 2005-07-28 11:46:45 gasiunas Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -33,7 +33,6 @@ import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CCompilationUnit;
 import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CSourceClass;
-import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.UnpositionedError;
 

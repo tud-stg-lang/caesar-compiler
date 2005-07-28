@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ConstructorTransformVisitor.java,v 1.4 2005-07-22 11:30:39 gasiunas Exp $
+ * $Id: ConstructorTransformVisitor.java,v 1.5 2005-07-28 11:46:54 gasiunas Exp $
  */
 
 package org.caesarj.compiler.contructors;
@@ -35,7 +35,6 @@ import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JConstructorDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMemberDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
-import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JConstructorBlock;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.visitor.IVisitor;
