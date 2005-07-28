@@ -1,3 +1,13 @@
+VC_M23 - 28.07.2005
+- Constructors with parameters and super calls.
+	- Final field initialization supported.
+- "deploy"/"undeploy" statements for local deployment.
+- "wrappee" keyword available from outside.
+- Dependent types as "wraps" targets.
+- Pointcut and advice resolving problems fixed.
+- Numerous fixes related with dependent types. 
+- Hiding generated members in ASM structure.
+
 VC_M22 - 17.06.2005
 - Inheritance from implicit virtual classes allowed
 - Constructors with multiple parameters allowed
