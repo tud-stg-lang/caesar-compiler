@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassFactory.java,v 1.32 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: CClassFactory.java,v 1.33 2005-07-29 15:13:47 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -203,7 +203,7 @@ public class CClassFactory implements CaesarConstants {
                 //TokenReference where = TokenReference.NO_REF;
                 TokenReference where = f.getTokenReference();
                 
-                accessors.add(
+                JMethodDeclaration decl = 
                 	new JMethodDeclaration(
                 	    where,
                 	    CModifier.ACC_PUBLIC,
@@ -225,8 +225,9 @@ public class CClassFactory implements CaesarConstants {
                 	        null
             	        ),
                 	    null, null
-                	)
-                );    
+                	);
+                decl.setGenerated();                
+                accessors.add(decl);  
                   
                 /*
                 accessors.add(

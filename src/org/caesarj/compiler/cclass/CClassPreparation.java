@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassPreparation.java,v 1.39 2005-07-28 15:00:54 gasiunas Exp $
+ * $Id: CClassPreparation.java,v 1.40 2005-07-29 15:13:47 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -239,8 +239,8 @@ public class CClassPreparation implements CaesarConstants {
         String wrapperMapName = "$"+wrapperClassIdent+"_wrapper_map";
         
         // TODO map = new WeakHashMap() didn't work
-        decl.addField(
-            new JFieldDeclaration(
+        JFieldDeclaration mapDecl = 
+        	new JFieldDeclaration(
                 decl.getTokenReference(),
                 new JVariableDefinition(
                     where,
@@ -252,10 +252,10 @@ public class CClassPreparation implements CaesarConstants {
                 ),
 				true, // [mef] mark as synthetic
                 null, null
-            )
-        );
-        decl.setGenerated(); // [mef] generated
-        
+            );
+        mapDecl.setGenerated();
+        decl.addField(mapDecl);
+                
         AstGenerator gen = environment.getAstGenerator();
         
         gen.writeMethod(

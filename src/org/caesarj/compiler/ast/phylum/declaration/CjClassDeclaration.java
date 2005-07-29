@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjClassDeclaration.java,v 1.40 2005-07-28 15:00:54 gasiunas Exp $
+ * $Id: CjClassDeclaration.java,v 1.41 2005-07-29 15:13:47 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -213,9 +213,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
                     null, null
                 );
         	newField.setGenerated();
-            addField(
-            		newField
-            );
+            addField(newField);
             
             /* wrappee initialization method */
             JMethodDeclaration wrapperInitMeth = 

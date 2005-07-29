@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassBodyContext.java,v 1.6 2005-05-31 09:01:33 meffert Exp $
+ * $Id: CClassBodyContext.java,v 1.7 2005-07-29 15:13:47 gasiunas Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -44,50 +44,34 @@ import org.caesarj.util.TokenReference;
  */
 public class CClassBodyContext extends CMethodContext {
 
-    public static final String METHOD_NAME = "$TEMPORARY_METHOD_ENTRY"; 
-    
-    CMethod method;
-    JMethodDeclaration	decl;
-    
-    public CClassBodyContext( CClassContext cctx, KjcEnvironment env ){
-        super(cctx, env, null);
-        method =         new CSourceMethod(
-			                getClassContext().getCClass(),ACC_PRIVATE,METHOD_NAME,new CVoidType(),
-			                new JFormalParameter[0], new CType[0], new CReferenceType[0],false, false,
-			                	new JBlock(
-			                	        TokenReference.NO_REF,
-			                	        new JStatement[0],
-			                	        new JavaStyleComment[0]
-			                	)
-			            	);
+	public static final String METHOD_NAME = "$TEMPORARY_METHOD_ENTRY";
 
-		decl  =        new JMethodDeclaration(
-			                TokenReference.NO_REF,
-			                ACC_PUBLIC,
-			                new CVoidType(),
-			                METHOD_NAME,
-			                new JFormalParameter[0],
-			                new CReferenceType[0],
-			               	new JBlock(
-			               	     TokenReference.NO_REF,
-			            	        new JStatement[0],
-			            	        new JavaStyleComment[0]
-			            	),
-			            	new JavadocComment("",false,false),
-			            	new JavaStyleComment[0]
-			        );
-			    }
+	CMethod method;
 
-    
-    
-    
-    public CMethod getCMethod() {
-        return method;
-    }
-    
-    public JMethodDeclaration getMethodDeclaration() {
-        return decl;
-     }
-    
-    
+	JMethodDeclaration decl;
+
+	public CClassBodyContext(CClassContext cctx, KjcEnvironment env) {
+		super(cctx, env, null);
+		method = new CSourceMethod(getClassContext().getCClass(), ACC_PRIVATE,
+				METHOD_NAME, new CVoidType(), new JFormalParameter[0],
+				new CType[0], new CReferenceType[0], false, false, new JBlock(
+						TokenReference.NO_REF, new JStatement[0],
+						new JavaStyleComment[0]));
+
+		decl = new JMethodDeclaration(TokenReference.NO_REF, ACC_PUBLIC,
+				new CVoidType(), METHOD_NAME, new JFormalParameter[0],
+				new CReferenceType[0], new JBlock(TokenReference.NO_REF,
+						new JStatement[0], new JavaStyleComment[0]),
+				new JavadocComment("", false, false), new JavaStyleComment[0]);
+		decl.setGenerated();
+	}
+
+	public CMethod getCMethod() {
+		return method;
+	}
+
+	public JMethodDeclaration getMethodDeclaration() {
+		return decl;
+	}
+
 }
