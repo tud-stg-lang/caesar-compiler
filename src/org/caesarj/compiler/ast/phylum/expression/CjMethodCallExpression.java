@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjMethodCallExpression.java,v 1.14 2005-07-28 11:31:22 gasiunas Exp $
+ * $Id: CjMethodCallExpression.java,v 1.15 2005-08-03 11:00:19 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -30,6 +30,7 @@ import org.caesarj.compiler.cclass.CastUtils;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
+import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.InconsistencyException;
@@ -69,9 +70,16 @@ public class CjMethodCallExpression extends JExpression implements CaesarConstan
         // cast the return type
         CType returnType = expr.getType(factory);        
         
+        CClass prefixClass = expr.getPrefixType().getCClass();
+        if (prefixClass.isMixin()) {
+            // in this case we have this or super;
+            // in both cases the context class is the local class
+        	prefixClass = context.getClassContext().getCClass();
+        }
+        
         CType castType = 
           CastUtils.instance().castFrom(
-              context, returnType, expr.getPrefixType().getCClass());
+              context, returnType, prefixClass);
       
         if (castType != null) {
             JExpression res = new CjCastExpression(
