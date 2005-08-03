@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarConstants.java,v 1.16 2005-07-20 12:07:09 gasiunas Exp $
+ * $Id: CaesarConstants.java,v 1.17 2005-08-03 11:00:38 gasiunas Exp $
  */
 
 package org.caesarj.compiler.constants;
@@ -129,7 +129,7 @@ public interface CaesarConstants extends Constants {
     public static final String
     	WRAPPER_WRAPPEE_FIELD = "wrappee",
     	WRAPPER_WRAPPEE_INIT  = "$initWrappee",
-    	WRAPPER_WRAPPEE_ACCESS = "$getWrappee()",
+    	WRAPPER_WRAPPEE_ACCESS = "$getWrappee",
     	
     	OUTER_ACCESS          = "outer",
     	OUTER_FIELD           = "$outer",
