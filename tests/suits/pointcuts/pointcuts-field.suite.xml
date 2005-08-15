@@ -1,0 +1,147 @@
+<testsuite name="Test field related pointcuts" package="suits.pointcuts.field">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutfield001" description="simple get pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":beforeget:before:field", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        			Test.res.append(":beforeget");
+        			Test.res.append(b.field);
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+				// This here should be ClsB!!
+				before():  get (public String ClsB_Impl.*) {
+					Test.res.append(":before");
+    			}
+        	}
+			
+			public cclass ClsB {
+				public String field = ":field";
+			}
+        </code>
+    </compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutfield002" description="simple get pointcut with target and this">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":beforeget:before:before2:field", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        			Test.res.append(":beforeget");
+        			Test.res.append(b.field);
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+				// This here should be ClsB!!
+				before():  get (public String ClsB_Impl.*) {
+					Test.res.append(":before");
+    			}
+    			before():  get (public String ClsB_Impl.*) &amp;&amp; target(ClsB) &amp;&amp; this(ClsB) {
+					Test.res.append(":before2");
+    			}
+        	}
+			
+			public cclass ClsB {
+				public String field = ":field";
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutfield003" description="simple set pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:field:before:anotherfield", res.toString());
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        			Test.res.append(b.field);
+        			b.m();
+        			Test.res.append(b.field);
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+				// This here should be ClsB!!
+				before():  set (public String ClsB_Impl.*) {
+					Test.res.append(":before");
+    			}
+    			
+        	}
+			
+			public cclass ClsB {
+				public String field = ":field";
+				
+				public void m() {
+					this.field = ":anotherfield";
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutfield004" description="simple set pointcut with this and target">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:before2:field:before:before2:anotherfield", res.toString());
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        			Test.res.append(b.field);
+        			b.m();
+        			Test.res.append(b.field);
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+				// This here should be ClsB!!
+				before():  set (public String ClsB_Impl.*) {
+					Test.res.append(":before");
+    			}
+    			before():  set (public String ClsB_Impl.*)  &amp;&amp; target(ClsB) &amp;&amp; this(ClsB) {
+					Test.res.append(":before2");
+    			}
+        	}
+			
+			public cclass ClsB {
+				public String field = ":field";
+				
+				public void m() {
+					this.field = ":anotherfield";
+				}
+			}
+        </code>
+    </compile-run>
+</testsuite>

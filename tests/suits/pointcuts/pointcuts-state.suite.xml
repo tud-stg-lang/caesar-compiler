@@ -1,0 +1,254 @@
+<testsuite name="Test state based pointcuts" package="suits.pointcuts.state">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate001" description="'this' with type">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:before2:m", res.toString());			
+		</test>
+        <code>
+        	public cclass Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): call (void ClsB.m()) &amp;&amp; this(Main) {
+					Test.res.append(":before");
+				}
+				before(): execution (void ClsB.m()) &amp;&amp; this(ClsB) {
+					Test.res.append(":before2");
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate002" description="'this' with id">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:before2:m", res.toString());			
+		</test>
+        <code>
+        	public cclass Main {
+        		public String name = ":before";
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(Main m): call (void ClsB.m()) &amp;&amp; this(m) {
+					Test.res.append(m.name);
+				}
+				before(ClsB b): execution (void ClsB.m()) &amp;&amp; this(b) {
+					Test.res.append(b.name);
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public String name = ":before2";
+				
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate003" description="'target' with type">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:before2:m", res.toString());			
+		</test>
+        <code>
+        	public cclass Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): call (void ClsB.m()) &amp;&amp; target(ClsB) {
+					Test.res.append(":before");
+				}
+				before(): execution (void ClsB.m()) &amp;&amp; target(ClsB) {
+					Test.res.append(":before2");
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate004" description="'target' with id">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before2:before2:m", res.toString());			
+		</test>
+        <code>
+        	public cclass Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(ClsB b): call (void ClsB.m()) &amp;&amp; target(b) {
+					Test.res.append(b.name);
+				}
+				before(ClsB b): execution (void ClsB.m()) &amp;&amp; target(b) {
+					Test.res.append(b.name);
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public String name = ":before2";
+				
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate005" description="'args' with type">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public cclass Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m(b);
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): call (void ClsB.m(*)) &amp;&amp; args(ClsB) {
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public void m(ClsB b) {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate006" description="'args' with id">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public cclass Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m(b);
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(ClsB b): call (void ClsB.m(*)) &amp;&amp; args(b) {
+					Test.res.append(b.name);
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public String name = ":before";
+				
+				public void m(ClsB b) {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate007" description="'args' with '..'">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public cclass Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m(10, "ignore", b);
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): call (void ClsB.m(..)) &amp;&amp;  args(int, .., ClsB) {
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public String name = ":before";
+				
+				public void m(int i, String ignore, ClsB b) {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+</testsuite>

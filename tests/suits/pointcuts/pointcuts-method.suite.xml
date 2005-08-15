@@ -1,0 +1,145 @@
+<testsuite name="Test method related pointcuts" package="suits.pointcuts.method">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod001" description="simple call pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): call (void ClsB.m()) {
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod002" description="simple call pointcut with this and target">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): call (void ClsB.m()) &amp;&amp; this(Main) &amp;&amp; target(ClsB) {
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod003" description="simple execution pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): execution (void ClsB.m()) {
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+    
+        <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod004" description="simple execution pointcut with this and target">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:before3:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): execution (void ClsB.m()) &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
+					Test.res.append(":before");
+				}
+				// This is not supposed to work ("this" is not Main)
+				before(): execution (void ClsB.m()) &amp;&amp; this(Main) &amp;&amp; target(ClsB) {
+					Test.res.append(":before2");
+				}
+				before(ClsB b): execution (void ClsB.m()) &amp;&amp; this(b) &amp;&amp; target(ClsB) {
+					Test.res.append(":before3");
+				}
+				// This is not supposed to work ("this" is not Main)
+				before(Main m): execution (void ClsB.m()) &amp;&amp; this(m) &amp;&amp; target(ClsB) {
+					Test.res.append(":before4");
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+</testsuite>

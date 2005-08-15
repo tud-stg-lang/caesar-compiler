@@ -1,0 +1,297 @@
+<testsuite name="Test object construction related pointcuts" package="suits.pointcuts.constructor">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor001" description="call constructor pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:constructing", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+
+				// Should be:
+				//before():  call (public ClsB.new()) {
+				// These 2 work now
+				//before():  call (public ClsB_Impl.new(*)) {
+				before():  call (public * ClsB.$constructor()) {
+					Test.res.append(":before");
+    			}
+        	}
+			
+			public cclass ClsB {
+				public ClsB() {
+					Test.res.append(":constructing");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor002" description="call constructor pointcut with this and target">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:constructing", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+
+				// Should be:
+				//before():  call (public ClsB.new()) &amp;&amp; this(Main) &amp;&amp; target(ClsB) {
+				// Doesn't work with target
+				//before():  call (public ClsB_Impl.new(*)) &amp;&amp; this(Main) &amp;&amp; target(ClsB_Impl) {
+				
+				// Only this works now
+				before():  call (public * ClsB.$constructor()) &amp;&amp; this(Main) &amp;&amp; target(ClsB) {
+					Test.res.append(":before");
+    			}
+        	}
+			
+			public cclass ClsB {
+				public ClsB() {
+					Test.res.append(":constructing");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor003" description="execution constructor pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:constructing", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+
+				// Should be:
+				//before():  execution (public ClsB.new()) {
+				// These 3 work now
+				//before():  execution (public ClsB_Impl.new(*)) {
+				//before():  execution (public * ClsB_Impl.$constructor()) {
+				before():  execution (public * ClsB.$constructor()) {
+					Test.res.append(":before");
+    			}
+        	}
+			
+			public cclass ClsB {
+				public ClsB() {
+					Test.res.append(":constructing");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor004" description="execution constructor pointcut with this and target">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:constructing", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+
+				// Should be:
+				//before():  execution (public ClsB.new()) &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
+				// These 4 work now
+				//before():  execution (public ClsB_Impl.new(..))  &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
+				//before():  execution (public ClsB+.new(..))  &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
+				//before():  execution (public * ClsB_Impl.$constructor()) &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
+				before():  execution (public * ClsB.$constructor()) &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
+					Test.res.append(":before");
+    			}
+        	}
+			
+			public cclass ClsB {
+				public ClsB() {
+					Test.res.append(":constructing");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor005" description="initialization pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:constructing", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+
+				before():  initialization (public ClsB.new()) {
+					Test.res.append(":before");
+    			}
+        	}
+			
+			public cclass ClsB {
+				public ClsB() {
+					Test.res.append(":constructing");
+				}
+			}
+        </code>
+    </compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor006" description="preinitialization pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:constructing", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+				// Should be:
+				//before():  preinitialization (public ClsB.new()) {
+				before():  preinitialization (public ClsB_Impl.new(..)) {
+					Test.res.append(":before");
+    			}
+        	}
+			
+			public cclass ClsB {
+				public ClsB() {
+					Test.res.append(":constructing");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor007" description="staticinitialization pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:constructing", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+				// Should be:
+				//before():  staticinitialization (ClsB) {
+				before():  staticinitialization (ClsB_Impl) {
+					Test.res.append(":before");
+    			}
+        	}
+			
+			public cclass ClsB {
+				public ClsB() {
+					Test.res.append(":constructing");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor008" description="initialization pointcuts order">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":call:staticinitialization:preinitialization:initialization:execution:constructing",
+				 res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+	        	//before():  call (public ClsB.new()) {
+        		before():  call (public ClsB_Impl.new(..)) {
+					Test.res.append(":call");
+    			}
+    			//before():  execution (public ClsB.new()) {
+        		before():  execution (public ClsB_Impl.new(..)) {
+					Test.res.append(":execution");
+    			}
+        		before():  initialization (public ClsB.new()) {
+					Test.res.append(":initialization");
+    			}
+        		//before():  preinitialization (public ClsB.new()) {
+				before():  preinitialization (public ClsB_Impl.new(..)) {
+					Test.res.append(":preinitialization");
+    			}
+				//before():  staticinitialization (ClsB) {
+				before():  staticinitialization (ClsB_Impl) {
+					Test.res.append(":staticinitialization");
+    			}
+        	}
+			
+			public cclass ClsB {
+				public ClsB() {
+					Test.res.append(":constructing");
+				}
+			}
+        </code>
+    </compile-run>
+</testsuite>

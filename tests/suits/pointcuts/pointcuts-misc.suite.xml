@@ -1,0 +1,84 @@
+<testsuite name="Test misc pointcuts" package="suits.pointcuts.misc">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmisc001" description="exception handling pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":m:print:handler", res.toString());			
+		</test>
+        <code>
+        	public cclass Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			try {
+	        			b.m();
+	        		} catch (MyException e) {
+	        			Test.res.append(":handler");
+	        		}
+        		}
+        	}
+        	
+        	public class MyException extends Exception {
+        		public void print() {
+        			Test.res.append(":print");
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+
+				before(MyException e): handler(MyException) &amp;&amp; args(e) {
+	  				e.print();
+      			}
+        	}
+			
+			public cclass ClsB {
+
+				public void m() throws MyException {
+					Test.res.append(":m");
+					throw new MyException();
+				}
+			}
+        </code>
+    </compile-run>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmisc002" description="adviceexecution pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        	
+        		before(): call (void ClsB.m()) &amp;&amp; ! adviceexecution()  {
+					Test.res.append(":before");
+					//new ClsB().m(); It is not working!
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+
+      
+</testsuite>
