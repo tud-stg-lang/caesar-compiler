@@ -1,0 +1,49 @@
+<testsuite name="Anonymous classes in VC" package="suits.vc.anonym">
+
+	<common-code-base>		
+		interface IfcA {
+			public void foo();
+		}				
+	</common-code-base>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcanonym001" description="Test simple anonymous class">
+		<test>			
+			new AAA().m();
+		</test>
+        <code>
+        	public cclass AAA {
+        		public void m() {
+        			IfcA a = new IfcA() {
+        				public void foo() {        					
+        				}
+        			};
+        			a.foo();
+        		}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcanonym002" description="Test anonymous class in mixin copy">
+		<test>			
+			new CCC().m();
+		</test>
+        <code>
+        	public cclass AAA {
+        		public void m() {
+        			IfcA a = new IfcA() {
+        				public void foo() {        					
+        				}
+        			};
+        			a.foo();
+        		}
+			}
+			public cclass BBB {
+        	}
+        	public cclass CCC extends AAA &amp; BBB {
+        	}
+        </code>
+    </compile-run>
+    	    
+</testsuite>
