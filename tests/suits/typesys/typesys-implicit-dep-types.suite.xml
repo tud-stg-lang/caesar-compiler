@@ -98,6 +98,32 @@
 			}
         </code>
     </compile>  	
-	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="implicit005" description="Check dependent type of super expression.">
+        <code>
+			public cclass GL {
+				public cclass G {
+					public N createN() {
+						return new N().init();
+					}
+				}
+				public cclass N {
+					public N init() {return this;}
+				}
+			}
+			public cclass GL2 extends GL {
+				public cclass G {
+					public N createN() {
+					    N n;
+					    n = super.createN();
+					    return n;
+					}
+				}
+				public cclass N {
+				}
+			}
+        </code>
+    </compile>  
 
 </testsuite>
