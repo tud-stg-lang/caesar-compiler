@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JClassDeclaration.java,v 1.27 2005-06-17 11:09:49 gasiunas Exp $
+ * $Id: JClassDeclaration.java,v 1.28 2005-09-08 16:28:11 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -357,7 +357,7 @@ public class JClassDeclaration extends JTypeDeclaration {
             throw cue.addPosition(getTokenReference());
         }
 
-        self = null;
+        //self = null;
     }
 
 /*
