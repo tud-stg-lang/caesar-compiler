@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjSourceClass.java,v 1.18 2005-07-28 13:06:20 gasiunas Exp $
+ * $Id: CCjSourceClass.java,v 1.19 2005-09-08 16:27:36 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -674,12 +674,12 @@ public class CCjSourceClass extends CSourceClass
 		for (int i = 0; i < parameters.length; i++) {
 		    
 			if (! parameters[i].isGenerated()) {
+				CTypeContext context = pointcutDecl.getOriginalClass().getTypeContext();
 			    try {
-			        CType type = parameters[i].getType().checkType(
-                            pointcutDecl.getOriginalClass().getTypeContext());
+			        CType type = parameters[i].getType().checkType(context);
 			        parameterSignatures.add(type.getSignature());
 			    } catch (UnpositionedError e) {
-			        e.printStackTrace();
+			    	context.reportTrouble(e.addPosition(pointcutDecl.getTokenReference()));
 			    }
 			}
 		}
