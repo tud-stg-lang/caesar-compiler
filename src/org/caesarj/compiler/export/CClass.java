@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClass.java,v 1.38 2005-06-20 15:37:38 gasiunas Exp $
+ * $Id: CClass.java,v 1.39 2005-09-13 16:07:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -374,9 +374,9 @@ public abstract class CClass extends CMember
 		CField[] result;
 
 		result = new CField[fields.size()];
-		for (Enumeration enum = fields.elements(); enum.hasMoreElements();)
+		for (Enumeration en = fields.elements(); en.hasMoreElements();)
 		{
-			CSourceField field = (CSourceField) enum.nextElement();
+			CSourceField field = (CSourceField) en.nextElement();
 
 			result[field.getPosition()] = field;
 		}

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: InstructionHandle.java,v 1.4 2005-05-12 10:38:34 meffert Exp $
+ * $Id: InstructionHandle.java,v 1.5 2005-09-13 16:07:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.optimize;
@@ -88,8 +88,8 @@ public class InstructionHandle extends AbstractInstructionAccessor implements Cl
    */
   public void addLineNumberInfo(Vector lineNumberInfo) {
     if (lineNumbers != null) {
-      for (Enumeration enum = lineNumbers.elements(); enum.hasMoreElements(); ) {
-	int	line = ((Integer)enum.nextElement()).intValue();
+      for (Enumeration en = lineNumbers.elements(); en.hasMoreElements(); ) {
+	int	line = ((Integer)en.nextElement()).intValue();
 
 	lineNumberInfo.addElement(new LineNumberInfo((short)line, this));
       }

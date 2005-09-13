@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: InstructionIO.java,v 1.4 2005-01-24 16:52:57 aracic Exp $
+ * $Id: InstructionIO.java,v 1.5 2005-09-13 16:07:07 gasiunas Exp $
  */
 
 package org.caesarj.classfile;
@@ -526,8 +526,8 @@ public class InstructionIO implements ClassfileConstants2 {
 	}
       };
 
-    for (Enumeration enum = forwards.elements(); enum.hasMoreElements(); ) {
-      AccessorContainer		insn = (AccessorContainer)enum.nextElement();
+    for (Enumeration en = forwards.elements(); en.hasMoreElements(); ) {
+      AccessorContainer		insn = (AccessorContainer)en.nextElement();
 
       try {
 	insn.transformAccessors(transformer);

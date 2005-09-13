@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CMethod.java,v 1.16 2005-06-20 11:19:03 gasiunas Exp $
+ * $Id: CMethod.java,v 1.17 2005-09-13 16:07:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -211,12 +211,12 @@ public abstract class CMethod extends CMember {
      */
     public void setThrowables(Hashtable throwables) {
         if (throwables != null) {
-            Enumeration enum = throwables.elements();
+            Enumeration en = throwables.elements();
             int count = 0;
 
             exceptions = new CReferenceType[throwables.size()];
-            while (enum.hasMoreElements()) {
-                exceptions[count++] = ((CThrowableInfo) enum.nextElement())
+            while (en.hasMoreElements()) {
+                exceptions[count++] = ((CThrowableInfo) en.nextElement())
                     .getThrowable();
             }
         }

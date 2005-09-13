@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CSourceClass.java,v 1.12 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CSourceClass.java,v 1.13 2005-09-13 16:07:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -160,11 +160,11 @@ public class CSourceClass extends CClass {
             }
 
             if (outers != null) {
-                Enumeration enum = outers.keys();
+                Enumeration en = outers.keys();
 
-                while (enum.hasMoreElements()) {
+                while (en.hasMoreElements()) {
                     result[pos++] =
-                        ((JLocalVariable)enum.nextElement()).getType();
+                        ((JLocalVariable)en.nextElement()).getType();
                 }
             }
 
@@ -190,10 +190,10 @@ public class CSourceClass extends CClass {
         if (superClassType != null
             && (superClass = superClassType.getCClass()) instanceof CSourceClass
             && (superOuters = ((CSourceClass)superClass).outers) != null) {
-            Enumeration enum = superOuters.keys();
+            Enumeration en = superOuters.keys();
 
-            while (enum.hasMoreElements()) {
-                JLocalVariable var = (JLocalVariable)enum.nextElement();
+            while (en.hasMoreElements()) {
+                JLocalVariable var = (JLocalVariable)en.nextElement();
                 OuterVarField varField = ((OuterVarField)superOuters.get(var));
 
                 if (outers == null || outers.get(var) == null) {
@@ -215,10 +215,10 @@ public class CSourceClass extends CClass {
                 continue;
             }
 
-            Enumeration enum = sourceClass.outers.keys();
+            Enumeration en = sourceClass.outers.keys();
 
-            while (enum.hasMoreElements()) {
-                JLocalVariable var = (JLocalVariable)enum.nextElement();
+            while (en.hasMoreElements()) {
+                JLocalVariable var = (JLocalVariable)en.nextElement();
                 OuterVarField varField =
                     ((OuterVarField) (sourceClass.outers.get(var)));
 
@@ -291,10 +291,10 @@ public class CSourceClass extends CClass {
         GenerationContext context,
         int length) {
         if (outers != null) {
-            Enumeration enum = outers.keys();
+            Enumeration en = outers.keys();
 
-            while (enum.hasMoreElements()) {
-                JLocalVariable var = (JLocalVariable)enum.nextElement();
+            while (en.hasMoreElements()) {
+                JLocalVariable var = (JLocalVariable)en.nextElement();
                 CSourceClass owner = (CSourceClass)getOwner();
                 Hashtable ownerOuters = owner.outers;
                 OuterVarField varField;
@@ -447,13 +447,13 @@ public class CSourceClass extends CClass {
         }
 
         if (outers != null) {
-            Enumeration enum = outers.keys();
+            Enumeration en = outers.keys();
 
-            while (enum.hasMoreElements()) {
+            while (en.hasMoreElements()) {
                 JLocalVariable ovar;
                 JGeneratedLocalVariable var;
 
-                ovar = (JLocalVariable)enum.nextElement();
+                ovar = (JLocalVariable)en.nextElement();
                 var =
                     new JGeneratedLocalVariable(
                         null,

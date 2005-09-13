@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTryCatchStatement.java,v 1.3 2005-01-24 16:52:59 aracic Exp $
+ * $Id: JTryCatchStatement.java,v 1.4 2005-09-13 16:07:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -159,10 +159,10 @@ public class JTryCatchStatement extends JStatement {
      */
     boolean[]	catchReachable = new boolean[catchClauses.length];
     boolean[]	catchJLSReachable = new boolean[catchClauses.length];
-    Enumeration	enum = tryContext.getThrowables().elements();
+    Enumeration	en = tryContext.getThrowables().elements();
 
-    while (enum.hasMoreElements()) {
-      CThrowableInfo	info = (CThrowableInfo)enum.nextElement();
+    while (en.hasMoreElements()) {
+      CThrowableInfo	info = (CThrowableInfo)en.nextElement();
       CReferenceType	type = info.getThrowable();
       boolean		consumed = false;
 

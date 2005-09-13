@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CBinaryClass.java,v 1.10 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CBinaryClass.java,v 1.11 2005-09-13 16:07:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -149,10 +149,10 @@ public class CBinaryClass extends CClass {
       methods[i].checkTypes(self);
     }
 
-    Enumeration         enum  =  fields.elements();
+    Enumeration         en  =  fields.elements();
 
-    while (enum.hasMoreElements()){
-      ((CBinaryField) enum.nextElement()).checkTypes(self);
+    while (en.hasMoreElements()){
+      ((CBinaryField) en.nextElement()).checkTypes(self);
     }
 
     CReferenceType[]        interfaces =  getInterfaces();

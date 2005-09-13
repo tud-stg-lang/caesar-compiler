@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ClassPath.java,v 1.4 2005-01-24 16:52:57 aracic Exp $
+ * $Id: ClassPath.java,v 1.5 2005-09-13 16:07:07 gasiunas Exp $
  */
 
 package org.caesarj.classfile;
@@ -75,7 +75,6 @@ public class ClassPath {
 
     if (extdirs != null) {
       Vector		container = new Vector();
-      ClassDirectory	dir;
       ClassDirectory[]  tmp;
       File              extDirectory = new File(extdirs);
       
@@ -240,8 +239,6 @@ public class ClassPath {
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------
-
-  private static ClassPath	self = null;
 
   private ClassDirectory[]	dirs;	// list of directories in class path
 }
