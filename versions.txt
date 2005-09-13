@@ -1,3 +1,9 @@
+VC_M24 - 13.09.2005
+- Bug fixing
+	- Name for generated method "$getWrappee()"
+	- Resolving copied pointcuts
+- Compiles on Java 5
+
 VC_M23 - 28.07.2005
 - Constructors with parameters and super calls.
 	- Final field initialization supported.
