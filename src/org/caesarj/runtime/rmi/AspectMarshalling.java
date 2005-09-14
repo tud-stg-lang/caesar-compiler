@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectMarshalling.java,v 1.4 2005-03-31 10:43:20 gasiunas Exp $
+ * $Id: AspectMarshalling.java,v 1.5 2005-09-14 08:29:52 gasiunas Exp $
  */
 
 package org.caesarj.runtime.rmi;
@@ -116,7 +116,7 @@ public class AspectMarshalling implements Serializable
 				String regName = (String)obj;
 				Class cls = Class.forName(regName);
 				Method mth = cls.getMethod("aspectOf", new Class[0]);
-				AspectRegistryIfc reg = (AspectRegistryIfc)mth.invoke(null, null);
+				AspectRegistryIfc reg = (AspectRegistryIfc)mth.invoke(null, (Object[])null);
 				
 				/* clear the set of deployed aspects on the current thread */
 				AspectThreadMapper threadMapper = findThreadMapper(reg);

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectRegistryServer.java,v 1.2 2005-01-24 16:52:59 aracic Exp $
+ * $Id: AspectRegistryServer.java,v 1.3 2005-09-14 08:29:52 gasiunas Exp $
  */
 
 package org.caesarj.runtime.rmi;
@@ -48,7 +48,7 @@ public class AspectRegistryServer implements AspectRegistryServerIfc {
 			
 			Class cls = Class.forName(regClassName);
 			Method mth = cls.getMethod("aspectOf", new Class[0]);
-			AspectRegistryIfc reg = (AspectRegistryIfc)mth.invoke(null, null);
+			AspectRegistryIfc reg = (AspectRegistryIfc)mth.invoke(null, (Object[])null);
 			
 			_depl.$deployOn(reg, aspObj);
 		}
@@ -67,7 +67,7 @@ public class AspectRegistryServer implements AspectRegistryServerIfc {
 			
 			Class cls = Class.forName(regClassName);
 			Method mth = cls.getMethod("aspectOf", new Class[0]);
-			AspectRegistryIfc reg = (AspectRegistryIfc)mth.invoke(null, null);
+			AspectRegistryIfc reg = (AspectRegistryIfc)mth.invoke(null, (Object[])null);
 			
 			_depl.$undeployFrom(reg, aspObj);
 		}
