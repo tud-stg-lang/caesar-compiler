@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: KjcMessages.java,v 1.5 2005-07-20 11:12:04 gasiunas Exp $
+ * $Id: KjcMessages.java,v 1.6 2005-09-16 14:34:28 gasiunas Exp $
  */
 
 package org.caesarj.compiler.constants;
@@ -64,12 +64,12 @@ public interface KjcMessages extends org.caesarj.util.Messages {
   MessageDescription	UNINITIALIZED_FINAL_FIELD = new MessageDescription("Final field \"{0}\" may have not been initialized", "JLS 8.3.1.2", 0);
   MessageDescription	UNINITIALIZED_FIELD_USED = new MessageDescription("Blank final Field \"{0}\" may have not been explicitely initialized before use", "JLS 16, 8.3.1.2, 4.5.4", 0);
   MessageDescription	USE_BEFORE_DEF = new MessageDescription("Illegal forward reference. Define the field \"{0}\" before using it.", "JLS 8.3.2.3", 0);
-  MessageDescription	METHOD_ABSTRACT_NATIVE = new MessageDescription("An abstract method can not be native, synchronized, fp-strict, private, final, or static", "JLS 8.4.3.4", 0);
-  MessageDescription	METHOD_ABSTRACT_SYNCHRONIZED = new MessageDescription("An abstract method can not be native, synchronized, fp-strict, private, final, or static", "JLS 8.4", 0);
-  MessageDescription	METHOD_ABSTRACT_STRICT = new MessageDescription("An abstract method can not be native, synchronized, fp-strict, private, final, or static", "JLS 8.4.3", 0);
-  MessageDescription	METHOD_ABSTRACT_FINAL = new MessageDescription("An abstract method can not be native, synchronized, fp-strict, private, final, or static", "JLS 8.4.3.1", 0);
-  MessageDescription	METHOD_ABSTRACT_PRIVATE = new MessageDescription("An abstract method can not be native, synchronized, fp-strict, private, final, or static", "JLS 8.4.3.1", 0);
-  MessageDescription	METHOD_ABSTRACT_STATIC = new MessageDescription("An abstract method can not be native, synchronized, fp-strict, private, final, or static.", "JLS 8.4.3.1", 0);
+  MessageDescription	METHOD_ABSTRACT_NATIVE = new MessageDescription("An abstract method can not be native.", "JLS 8.4.3.4", 0);
+  MessageDescription	METHOD_ABSTRACT_SYNCHRONIZED = new MessageDescription("An abstract method can not be synchronized.", "JLS 8.4", 0);
+  MessageDescription	METHOD_ABSTRACT_STRICT = new MessageDescription("An abstract method can not be fp-strict.", "JLS 8.4.3", 0);
+  MessageDescription	METHOD_ABSTRACT_FINAL = new MessageDescription("An abstract method can not be final.", "JLS 8.4.3.1", 0);
+  MessageDescription	METHOD_ABSTRACT_PRIVATE = new MessageDescription("An abstract method can not private.", "JLS 8.4.3.1", 0);
+  MessageDescription	METHOD_ABSTRACT_STATIC = new MessageDescription("An abstract method can not be static.", "JLS 8.4.3.1", 0);
   MessageDescription	METHOD_NATIVE_STRICT = new MessageDescription("A native method can not be fp-strict.", "JLS 8.4", 0);
   MessageDescription	CLASS_AMBIGUOUS = new MessageDescription("Class \"{0}\" is ambiguous, it is inherited from several super classes or interfaces", "JLS 8.5", 0);
   MessageDescription	CYCLE_IN_CONSTRUCTOR_CALL = new MessageDescription("Constructor invokes itself (directly or indirectly)", "JLS 8.8.5", 0);
