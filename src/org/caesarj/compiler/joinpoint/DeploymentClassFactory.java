@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.48 2005-07-28 15:00:54 gasiunas Exp $
+ * $Id: DeploymentClassFactory.java,v 1.49 2005-09-16 14:35:25 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -318,7 +318,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 		JMethodDeclaration decl =
 			new CjMethodDeclaration(
     			advice.getTokenReference(),
-				ACC_PUBLIC | ACC_SYNCHRONIZED | ACC_ABSTRACT,
+				ACC_PUBLIC | ACC_ABSTRACT,
 				advice.getReturnType(),
 				advice.getAdviceMethodIdent() + PROCEED_METHOD,
 				advice.getProceedParameters(),
