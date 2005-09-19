@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarConstants.java,v 1.17 2005-08-03 11:00:38 gasiunas Exp $
+ * $Id: CaesarConstants.java,v 1.18 2005-09-19 08:41:34 thiago Exp $
  */
 
 package org.caesarj.compiler.constants;
@@ -30,7 +30,7 @@ package org.caesarj.compiler.constants;
 /**
  * Several constants used in Caesar.
  * 
- * @author Jürgen Hallpap
+ * @author Jï¿½rgen Hallpap
  */
 public interface CaesarConstants extends Constants {
 	
@@ -145,6 +145,8 @@ public interface CaesarConstants extends Constants {
 	public static final String REGISTRY_EXTENSION = "$Registry";
 	
 	public static final String MULTI_INST_CLOSURE_EXTENSION = "$MultiInstClosure";
+	
+	public static final String IMPLEMENTATION_EXTENSION = "_Impl";
 	
 	// Constants for Advice-Attributes taken from ...aspectj.advice
 	public static final int ExtraArgument = 1;
