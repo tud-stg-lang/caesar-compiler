@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.104 2005-06-29 07:47:32 thiago Exp $
+ * $Id: Main.java,v 1.105 2005-09-19 08:39:50 thiago Exp $
  */
 
 package org.caesarj.compiler;
@@ -39,6 +39,7 @@ import org.caesarj.compiler.asm.CaesarJAsmManager;
 import org.caesarj.compiler.asm.StructureModelDump;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarMessageHandler;
+import org.caesarj.compiler.aspectj.CaesarPointcutScope;
 import org.caesarj.compiler.aspectj.CaesarWeaver;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.cclass.CClassPreparation;
@@ -46,6 +47,7 @@ import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.constants.KjcMessages;
+import org.caesarj.compiler.context.CClassContextResetVisitor;
 import org.caesarj.compiler.contructors.ConstructorTransformVisitor;
 import org.caesarj.compiler.joincollab.JoinCollaborations;
 import org.caesarj.compiler.joinpoint.GenerateDeploymentSupport;
@@ -68,7 +70,7 @@ import org.caesarj.util.UnpositionedError;
 /**
  * The entry point of the Caesar compiler.
  * 
- * @author Jürgen Hallpap
+ * @author Jï¿½rgen Hallpap
  * @author Ivica Aracic
  */
 public class Main extends MainSuper implements Constants {
@@ -455,12 +457,23 @@ public class Main extends MainSuper implements Constants {
      * - generation of bridge methods
      *   Notion of bridge methods not yet clear
      *   Probably related to support for Generics a la GJ
+     *   
+     * - reset the "self" context from JTypeDeclarations
      */
     protected void checkAllBodies(JCompilationUnit[] tree) {
         Log.verbose("checkAllBodies");
         for (int count = 0; count < tree.length; count++) {
             checkBody(tree[count]);
         }
+        
+        Log.verbose("resetContext");
+        // Reset CContext from declarations (this was done by Kopi and we make it later now)
+        CClassContextResetVisitor resetVisitor = new CClassContextResetVisitor();
+        for (int i = 0; i < tree.length; i++) {            
+            tree[i].accept(resetVisitor);
+        }
+        // Reset PointcutScope map (in case the Compiler is used for more than one compilation)
+        CaesarPointcutScope.resetRegister();
     }
     
     /**
