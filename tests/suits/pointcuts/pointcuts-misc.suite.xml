@@ -48,6 +48,7 @@
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile-run  id="pointcutmisc002" description="adviceexecution pointcut">
     	<test>
+    	// THIS TEST IS NOT WORKING! 
     		Main m = new Main();
     		m.run();
     		

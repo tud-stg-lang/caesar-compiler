@@ -20,10 +20,10 @@
         	public deployed cclass ClsA {
 
 				// Should be:
-				//before():  call (public ClsB.new()) {
-				// These 2 work now
+				before():  call (public ClsB.new()) {
 				//before():  call (public ClsB_Impl.new(*)) {
-				before():  call (public * ClsB.$constructor()) {
+				// this does not work, because method calls are translated
+				//before():  call (public * ClsB.$constructor()) {
 					Test.res.append(":before");
     			}
         	}
@@ -56,12 +56,13 @@
         	public deployed cclass ClsA {
 
 				// Should be:
-				//before():  call (public ClsB.new()) &amp;&amp; this(Main) &amp;&amp; target(ClsB) {
+				before():  call (public ClsB.new()) &amp;&amp; this(Main) &amp;&amp; target(ClsB) {
 				// Doesn't work with target
 				//before():  call (public ClsB_Impl.new(*)) &amp;&amp; this(Main) &amp;&amp; target(ClsB_Impl) {
 				
 				// Only this works now
-				before():  call (public * ClsB.$constructor()) &amp;&amp; this(Main) &amp;&amp; target(ClsB) {
+				//before():  call (public * ClsB.$constructor()) &amp;&amp; this(Main) &amp;&amp; target(ClsB) {
+				//before():  call (public ClsB_Impl.new(*)) &amp;&amp; this(Main) { //&amp;&amp; target(ClsB_Impl) {
 					Test.res.append(":before");
     			}
         	}
@@ -94,11 +95,11 @@
         	public deployed cclass ClsA {
 
 				// Should be:
-				//before():  execution (public ClsB.new()) {
+				before():  execution (public ClsB.new()) {
 				// These 3 work now
 				//before():  execution (public ClsB_Impl.new(*)) {
 				//before():  execution (public * ClsB_Impl.$constructor()) {
-				before():  execution (public * ClsB.$constructor()) {
+				//before():  execution (public * ClsB.$constructor()) {
 					Test.res.append(":before");
     			}
         	}
@@ -131,12 +132,12 @@
         	public deployed cclass ClsA {
 
 				// Should be:
-				//before():  execution (public ClsB.new()) &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
+				before():  execution (public ClsB.new()) &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
 				// These 4 work now
 				//before():  execution (public ClsB_Impl.new(..))  &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
 				//before():  execution (public ClsB+.new(..))  &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
 				//before():  execution (public * ClsB_Impl.$constructor()) &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
-				before():  execution (public * ClsB.$constructor()) &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
+				//before():  execution (public * ClsB.$constructor()) &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
 					Test.res.append(":before");
     			}
         	}
@@ -199,9 +200,9 @@
         	}
         	
         	public deployed cclass ClsA {
-				// Should be:
-				//before():  preinitialization (public ClsB.new()) {
-				before():  preinitialization (public ClsB_Impl.new(..)) {
+				// Should be: (FIXED)
+				before():  preinitialization (public ClsB.new(..)) {
+				//before():  preinitialization (public ClsB_Impl.new(..)) {
 					Test.res.append(":before");
     			}
         	}
@@ -232,9 +233,9 @@
         	}
         	
         	public deployed cclass ClsA {
-				// Should be:
-				//before():  staticinitialization (ClsB) {
-				before():  staticinitialization (ClsB_Impl) {
+				// Should be: (FIXED)
+				before():  staticinitialization (ClsB) {
+				//before():  staticinitialization (ClsB_Impl) {
 					Test.res.append(":before");
     			}
         	}
@@ -254,40 +255,48 @@
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":call:staticinitialization:preinitialization:initialization:execution:constructing",
-				 res.toString());			
+			assertEquals(":staticinitialization:preinitialization:initialization:call:execution:constructing", res.toString());
+			//assertEquals(":call:staticinitialization:preinitialization:initialization:execution:constructing", res.toString());			
 		</test>
         <code>
         	public class Main {
         		
         		public void run() {
-        			ClsB b = new ClsB();
+        			ClsB b = new ClsB("s");
         		}
         	}
         	
         	public deployed cclass ClsA {
-	        	//before():  call (public ClsB.new()) {
-        		before():  call (public ClsB_Impl.new(..)) {
+	        	before():  call (public ClsB.new(String)) {
+        		//before():  call (public ClsB.new(..)) {
+        		//before():  call (public ClsB_Impl.new(..)) {
 					Test.res.append(":call");
     			}
-    			//before():  execution (public ClsB.new()) {
-        		before():  execution (public ClsB_Impl.new(..)) {
+    			before():  execution (public ClsB.new(String)) {
+    			//before():  execution (public ClsB.new(..)) {
+        		//before():  execution (public ClsB_Impl.new(..)) {
 					Test.res.append(":execution");
     			}
-        		before():  initialization (public ClsB.new()) {
+        		before():  initialization (public ClsB.new(String)) {
 					Test.res.append(":initialization");
     			}
-        		//before():  preinitialization (public ClsB.new()) {
-				before():  preinitialization (public ClsB_Impl.new(..)) {
+        		before():  preinitialization (public ClsB.new(..)) {
+        		//before():  preinitialization (public ClsB.new(..)) {
+				//before():  preinitialization (public ClsB_Impl.new(..)) {
 					Test.res.append(":preinitialization");
     			}
-				//before():  staticinitialization (ClsB) {
-				before():  staticinitialization (ClsB_Impl) {
+				before():  staticinitialization (ClsB) {
+				//before():  staticinitialization (ClsB_Impl) {
 					Test.res.append(":staticinitialization");
     			}
         	}
 			
 			public cclass ClsB {
+			
+				public ClsB(String s) {
+					Test.res.append(":constructing");
+				}
+				
 				public ClsB() {
 					Test.res.append(":constructing");
 				}

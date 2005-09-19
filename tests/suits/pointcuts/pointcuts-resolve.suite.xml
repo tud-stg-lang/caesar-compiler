@@ -208,7 +208,7 @@
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run id="pointcutresolve008" description="referencing pointcuts in diferent classes">
+    <compile-run id="pointcutresolve008" description="referencing pointcuts in different classes">
 		<test>
 			ClsA cls = new ClsA();
 			deploy(cls) {
@@ -245,7 +245,7 @@
     </compile-run>
     
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run id="pointcutresolve009" description="referencing pointcuts in diferent classes with arguments">
+    <compile-run id="pointcutresolve009" description="referencing pointcuts in different classes with arguments">
 		<test>
 			ClsA cls = new ClsA();
 			deploy(cls) {

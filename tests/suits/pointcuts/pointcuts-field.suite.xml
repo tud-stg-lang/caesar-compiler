@@ -20,8 +20,9 @@
         	}
         	
         	public deployed cclass ClsA {
-				// This here should be ClsB!!
-				before():  get (public String ClsB_Impl.*) {
+				// This here should be ClsB!! (FIXED)
+				before():  get (public String ClsB.*) {
+				//before():  get (public String ClsB_Impl.*) {
 					Test.res.append(":before");
     			}
         	}
@@ -52,11 +53,14 @@
         	}
         	
         	public deployed cclass ClsA {
-				// This here should be ClsB!!
-				before():  get (public String ClsB_Impl.*) {
+				// This here should be ClsB!! (FIXED)
+				before():  get (public String ClsB.*) {
+				//before():  get (public String ClsB_Impl.*) {
 					Test.res.append(":before");
     			}
-    			before():  get (public String ClsB_Impl.*) &amp;&amp; target(ClsB) &amp;&amp; this(ClsB) {
+    			// (FIXED)
+    			before():  get (public String ClsB.*) &amp;&amp; target(ClsB) &amp;&amp; this(ClsB) {
+    			//before():  get (public String ClsB_Impl.*) &amp;&amp; target(ClsB) &amp;&amp; this(ClsB) {
 					Test.res.append(":before2");
     			}
         	}
@@ -89,7 +93,8 @@
         	
         	public deployed cclass ClsA {
 				// This here should be ClsB!!
-				before():  set (public String ClsB_Impl.*) {
+				before():  set (public String ClsB.*) {
+				//before():  set (public String ClsB_Impl.*) {
 					Test.res.append(":before");
     			}
     			
@@ -126,11 +131,14 @@
         	}
         	
         	public deployed cclass ClsA {
-				// This here should be ClsB!!
-				before():  set (public String ClsB_Impl.*) {
+				// This here should be ClsB!! (FIXED)
+				before():  set (public String ClsB.*) {
+				//before():  set (public String ClsB_Impl.*) {
 					Test.res.append(":before");
     			}
-    			before():  set (public String ClsB_Impl.*)  &amp;&amp; target(ClsB) &amp;&amp; this(ClsB) {
+    			// (FIXED)
+    			before():  set (public String ClsB.*)  &amp;&amp; target(ClsB) &amp;&amp; this(ClsB) {
+    			//before():  set (public String ClsB_Impl.*)  &amp;&amp; target(ClsB) &amp;&amp; this(ClsB) {
 					Test.res.append(":before2");
     			}
         	}

@@ -21,6 +21,7 @@
         	public deployed cclass ClsA {
         		before(): call (void ClsB.m()) {
 					Test.res.append(":before");
+					System.out.println(thisJoinPoint.getTarget());
 				}
         	}
 			

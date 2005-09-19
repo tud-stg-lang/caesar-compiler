@@ -1,4 +1,85 @@
 <testsuite name="Test control flow based pointcuts" package="suits.pointcuts.controlflow">
 
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutcontrolflow001" description="cflow">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m:before:m2", res.toString());			
+		</test>
+        <code>
+        	public cclass Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		
+        		pointcut bla() : call(* ClsB.m(..));
+        		
+        		before(): call(* ClsB.*(..)) &amp;&amp; cflow(bla()) {
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsB {
 
+				public void m() {
+					Test.res.append(":m");
+					this.m2();
+				}
+				
+				public void m2() {
+					Test.res.append(":m2");
+				}
+			}
+        </code>
+    </compile-run>
+
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutcontrolflow002" description="cflowbelow">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":m:before:m2", res.toString());			
+		</test>
+        <code>
+        	public cclass Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		
+        		pointcut bla() : call(* ClsB.m(..));
+        		
+        		before(): call(* ClsB.*(..)) &amp;&amp; cflowbelow(bla()) {
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+					this.m2();
+				}
+				
+				public void m2() {
+					Test.res.append(":m2");
+				}
+			}
+        </code>
+    </compile-run>
 </testsuite>
