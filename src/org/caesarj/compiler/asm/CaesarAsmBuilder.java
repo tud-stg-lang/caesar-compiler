@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarAsmBuilder.java,v 1.12 2005-07-28 15:01:15 gasiunas Exp $
+ * $Id: CaesarAsmBuilder.java,v 1.13 2005-09-19 08:40:40 thiago Exp $
  */
 
 package org.caesarj.compiler.asm;
@@ -69,6 +69,7 @@ import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.ast.visitor.VisitorSupport;
+import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.util.TokenReference;
 
@@ -554,7 +555,7 @@ public class CaesarAsmBuilder {
 		/* show class name for generated contructors */
 		if (self instanceof CjInitMethodDeclaration) {
 			displayIdent = self.getMethod().getOwner().getIdent();
-			displayIdent = displayIdent.replaceAll("_Impl", "");
+			displayIdent = displayIdent.replaceAll(CaesarConstants.IMPLEMENTATION_EXTENSION, "");
 			displayRettype = displayIdent;
 		}
 		
