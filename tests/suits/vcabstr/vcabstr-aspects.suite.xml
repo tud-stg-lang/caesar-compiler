@@ -86,4 +86,44 @@
         </code>
     </compile-run>	
     
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="abstrasp003" description="Test around advice in an abstract class">
+		<test>
+			new TestA().test();
+			System.out.println(TestA.result.toString());
+			assertEquals(TestA.result.toString(), ":around call foo:foo:foo");
+		</test>
+        <code>
+        	public class TestA {
+        		public static StringBuffer result = new StringBuffer();
+        	   	public void test() {
+					deploy(new OuterB()) {
+						foo();
+					}			
+					foo();
+				}			
+				public void foo() {
+					result.append(":foo");
+				}
+			}
+        	abstract public cclass OuterA {
+        	    abstract public void log();
+    	    	pointcut callFoo() : cflow(call(* TestA.test())) &amp;&amp; call(* TestA.foo());
+				Object around() : callFoo() {
+					log();
+					proceed();
+					return null;
+				}			
+			}
+			abstract public cclass OuterC {
+			}
+			public cclass OuterB extends OuterC &amp; OuterA {
+				public void log() {
+					TestA.result.append(":around call foo");
+				}
+			}
+			
+        </code>
+    </compile-run>	
+    
 </testsuite>
