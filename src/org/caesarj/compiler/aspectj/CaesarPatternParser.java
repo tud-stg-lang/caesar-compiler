@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarPatternParser.java,v 1.5 2005-09-19 08:44:54 thiago Exp $
+ * $Id: CaesarPatternParser.java,v 1.6 2005-09-19 08:55:57 thiago Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -29,7 +29,6 @@ import org.aspectj.weaver.patterns.IToken;
 import org.aspectj.weaver.patterns.ITokenSource;
 import org.aspectj.weaver.patterns.ParserException;
 import org.aspectj.weaver.patterns.PatternParser;
-import org.aspectj.weaver.patterns.PatternParserWrapper;
 
 /**
  * @author Karl Klose
