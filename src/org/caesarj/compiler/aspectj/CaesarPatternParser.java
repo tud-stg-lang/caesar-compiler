@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarPatternParser.java,v 1.4 2005-03-10 12:32:09 gasiunas Exp $
+ * $Id: CaesarPatternParser.java,v 1.5 2005-09-19 08:44:54 thiago Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -29,6 +29,7 @@ import org.aspectj.weaver.patterns.IToken;
 import org.aspectj.weaver.patterns.ITokenSource;
 import org.aspectj.weaver.patterns.ParserException;
 import org.aspectj.weaver.patterns.PatternParser;
+import org.aspectj.weaver.patterns.PatternParserWrapper;
 
 /**
  * @author Karl Klose
@@ -57,7 +58,7 @@ public class CaesarPatternParser {
 	public CaesarPatternParser( String input, CaesarSourceContext context )
 	{
 		tokenSource = CaesarTokenSource.createTokenSource(input,context);
-		patternParser = new PatternParser(tokenSource);			
+		patternParser = new CaesarWrapperPatternParser(tokenSource);
 	}
 // Interface
 	public CaesarDeclare parseDeclare() {
