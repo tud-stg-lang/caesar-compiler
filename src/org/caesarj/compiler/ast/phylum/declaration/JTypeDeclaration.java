@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclaration.java,v 1.48 2005-07-20 10:33:15 gasiunas Exp $
+ * $Id: JTypeDeclaration.java,v 1.49 2005-09-19 08:41:13 thiago Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -812,6 +812,10 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     
     public String toString() {
         return ident;
+    }
+    
+    public void clearContext() {
+    	this.self = null;
     }
     
     // ----------------------------------------------------------------------
