@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CSourceMethod.java,v 1.8 2005-05-31 09:03:28 meffert Exp $
+ * $Id: CSourceMethod.java,v 1.9 2005-09-20 10:24:51 meffert Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -34,6 +34,7 @@ import org.caesarj.classfile.LocalVariableScope;
 import org.caesarj.classfile.MethodInfo;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
+import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
@@ -41,6 +42,8 @@ import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.SimpleStringBuffer;
+
+import org.caesarj.util.TokenReference;
 
 /**
  * This class represents an exported member of a class (fields)
@@ -276,7 +279,13 @@ public class CSourceMethod extends CMethod {
     LocalVariableScope scope = new LocalVariableScope();
     code.pushLocalVariableScope(scope);
     
-    // TODO [mef] : add "this" to local variable info
+    // add "this" to local variable info
+    if(!isStatic()){
+	    JFormalParameter paramThis = new JFormalParameter(TokenReference.NO_REF,JLocalVariable.DES_PARAMETER,this.getOwnerType(),"this",false);
+	    paramThis.setPosition(0);
+	    code.addLocalVarInfo(null, paramThis);
+    }
+    
     JFormalParameter[] params = this.getFormalParameters();
 	for(int i = 0; i < params.length; i++){
 		code.addLocalVarInfo(null, params[i]);
