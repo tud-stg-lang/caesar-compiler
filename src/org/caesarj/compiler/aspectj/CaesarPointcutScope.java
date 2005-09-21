@@ -117,7 +117,7 @@ public class CaesarPointcutScope extends CaesarScope {
 					//name += CaesarConstants.IMPLEMENTATION_EXTENSION;
 				}
 				if (Shadow.MethodExecution.equals(kp.getKind())) {
-					name = convertToImplName(name);
+					//name = convertToImplName(name);
 				}
 				if (Shadow.FieldGet.equals(kp.getKind())) {
 					name = convertToImplName(name);
@@ -126,10 +126,10 @@ public class CaesarPointcutScope extends CaesarScope {
 					name = convertToImplName(name);
 				}
 				if (Shadow.ConstructorCall.equals(kp.getKind())) {
-					name = convertToImplName(name);
+					System.out.println("!!Warning!!Constructors must be translated");
 				}
 				if (Shadow.ConstructorExecution.equals(kp.getKind())) {
-					name = convertToImplName(name);
+					System.out.println("!!Warning!!Constructors must be translated");
 				}
 				if (Shadow.PreInitialization.equals(kp.getKind())) {
 					name = convertToImplName(name);
