@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassPreparation.java,v 1.40 2005-07-29 15:13:47 gasiunas Exp $
+ * $Id: CClassPreparation.java,v 1.41 2005-09-21 15:15:57 thiago Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -375,7 +375,7 @@ public class CClassPreparation implements CaesarConstants {
         ClassReader classReader = environment.getClassReader();
         
         CCompilationUnitContext context =
-            new CCompilationUnitContext(compilerBase, environment, cu.getExport());
+            new CCompilationUnitContext(compilerBase, environment, cu);
         
         Collection typesToGenerate = caesarTypeSystem.getJavaTypeGraph().getTypesToGenerate();        
         
@@ -487,7 +487,7 @@ public class CClassPreparation implements CaesarConstants {
         ClassReader classReader = environment.getClassReader();
         
         CCompilationUnitContext context =
-            new CCompilationUnitContext(compilerBase, environment, cu.getExport());
+            new CCompilationUnitContext(compilerBase, environment, cu);
         
         Collection typesToGenerate = caesarTypeSystem.getJavaTypeGraph().getTypesToGenerate();        
         

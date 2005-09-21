@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjClassDeclaration.java,v 1.41 2005-07-29 15:13:47 gasiunas Exp $
+ * $Id: CjClassDeclaration.java,v 1.42 2005-09-21 15:15:57 thiago Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -37,6 +37,7 @@ import org.caesarj.compiler.aspectj.CaesarDeclareScope;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
+import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.expression.JAssignmentExpression;
 import org.caesarj.compiler.ast.phylum.expression.JExpression;
@@ -56,6 +57,7 @@ import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CTypeContext;
+import org.caesarj.compiler.context.CjExternClassContext;
 import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CCjAdvice;
 import org.caesarj.compiler.export.CCjSourceClass;
@@ -698,16 +700,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
         super.checkTypeBody(context);
     }
 
-    /**
-     * Constructs the class context.
-     */
-    protected CClassContext constructContext(CContext context) {
-        return new FjClassContext(
-            context,
-            context.getEnvironment(),
-            sourceClass,
-            this);
-    }
+   
 
     /**
      * @return An int with all modifiers allowed for classes.
@@ -748,4 +741,39 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
     		}
     	}    	
     }
+    
+    /**
+     * Stores original compilation unit of externalized virtual classes
+     */
+    protected JCompilationUnit originalCompUnit = null;
+    
+    public JCompilationUnit getOriginalCompUnit() {
+        return originalCompUnit;
+    }
+    
+    public void setOriginalCompUnit(JCompilationUnit cu) {
+    	originalCompUnit = cu;
+    }
+    
+    /**
+     * Constructs the class context.
+     */
+    protected CClassContext constructContext(CContext context) {
+    	if (originalCompUnit == null) {
+	        return new FjClassContext(
+	                context,
+	                context.getEnvironment(),
+	                sourceClass,
+	                this);
+    	}
+    	else {
+    		return new CjExternClassContext(
+    	            context,
+    	            context.getEnvironment(),
+    	            sourceClass,
+    	            this,
+					originalCompUnit.getExport());
+    	}
+    }
+    
 }

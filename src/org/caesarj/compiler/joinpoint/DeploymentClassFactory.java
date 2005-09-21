@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.49 2005-09-16 14:35:25 gasiunas Exp $
+ * $Id: DeploymentClassFactory.java,v 1.50 2005-09-21 15:15:57 thiago Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -86,7 +86,7 @@ import org.caesarj.util.Utils;
 /**
  * This factory creates the support classes for dynamic deployment.
  * 
- * @author Jürgen Hallpap
+ * @author Jï¿½rgen Hallpap
  */
 public class DeploymentClassFactory implements CaesarConstants {
 
@@ -908,6 +908,9 @@ public class DeploymentClassFactory implements CaesarConstants {
 				null,
 				null);
 
+		if (advice.getOriginalClass() != null) {
+			closureDecl.setOriginalCompUnit(advice.getOriginalClass().getCompilationUnit());
+		}
 		return closureDecl;
 	}
 

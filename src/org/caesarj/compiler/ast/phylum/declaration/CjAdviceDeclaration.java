@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjAdviceDeclaration.java,v 1.15 2005-07-28 11:44:20 gasiunas Exp $
+ * $Id: CjAdviceDeclaration.java,v 1.16 2005-09-21 15:15:57 thiago Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -50,7 +50,7 @@ import org.caesarj.util.UnpositionedError;
 /**
  * Represents an AdviceDeclaration in the Source Code.
  * 
- * @author Jürgen Hallpap
+ * @author Jï¿½rgen Hallpap
  */
 public class CjAdviceDeclaration
     extends CjMethodDeclaration
@@ -366,5 +366,9 @@ public class CjAdviceDeclaration
     
     public void deactivate() {
     	active = false;
+    }
+    
+    public CjVirtualClassDeclaration getOriginalClass() {
+    	return originalClass;
     }
 }

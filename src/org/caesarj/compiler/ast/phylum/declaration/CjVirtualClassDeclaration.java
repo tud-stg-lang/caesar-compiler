@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjVirtualClassDeclaration.java,v 1.30 2005-07-20 10:05:10 gasiunas Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.31 2005-09-21 15:15:57 thiago Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -31,15 +31,12 @@ import java.util.Iterator;
 import org.caesarj.compiler.aspectj.CaesarDeclare;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
-import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.constants.CaesarMessages;
-import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.context.CjExternClassContext;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CMethod;
@@ -116,38 +113,8 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
 
     public String getOriginalIdent() {
         return originalIdent;
-    }      
-    
-    /**
-     * Stores original compilation unit of externalized virtual classes
-     */
-    protected JCompilationUnit originalCompUnit = null;
-    
-    public JCompilationUnit getOriginalCompUnit() {
-        return originalCompUnit;
-    }
-    
-    public void setOriginalCompUnit(JCompilationUnit cu) {
-    	originalCompUnit = cu;
     }
 
-    /**
-     * Constructs the class context.
-     */
-    protected CClassContext constructContext(CContext context) {
-    	if (originalCompUnit == null) {
-	        return super.constructContext(context);
-    	}
-    	else {
-    		return new CjExternClassContext(
-    	            context,
-    	            context.getEnvironment(),
-    	            sourceClass,
-    	            this,
-					originalCompUnit.getExport());
-    	}
-    }
-    
     protected CSourceClass createSourceClass(CClass owner, String prefix) {
         return new CCjSourceClass(
             owner,

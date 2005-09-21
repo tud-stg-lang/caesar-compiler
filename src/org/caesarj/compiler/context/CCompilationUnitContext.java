@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCompilationUnitContext.java,v 1.10 2005-07-28 11:46:45 gasiunas Exp $
+ * $Id: CCompilationUnitContext.java,v 1.11 2005-09-21 15:15:57 thiago Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -29,6 +29,7 @@ import java.util.Vector;
 
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
+import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CCompilationUnit;
 import org.caesarj.compiler.export.CField;
@@ -67,7 +68,7 @@ public class CCompilationUnitContext extends CContext {
 	public CCompilationUnitContext(
 		CompilerBase compiler,
 		KjcEnvironment environment,
-		CCompilationUnit cunit,
+		JCompilationUnit cunit,
 		Vector classes) {
 		super(null, environment);
 		this.compiler = compiler;
@@ -81,7 +82,7 @@ public class CCompilationUnitContext extends CContext {
   //Walter: the visibility was changed from package protected to public
 	public CCompilationUnitContext(CompilerBase compiler,
 		KjcEnvironment environment,
-		CCompilationUnit cunit) {
+		JCompilationUnit cunit) {
 		this(compiler, environment, cunit, null);
 	}
 
@@ -115,7 +116,7 @@ public class CCompilationUnitContext extends CContext {
 	 */
 	public CClass lookupClass(CClass caller, String name)
 		throws UnpositionedError {
-		return cunit.lookupClass(caller, name);
+		return cunit.getExport().lookupClass(caller, name);
 	}
 
 	// ----------------------------------------------------------------------
@@ -190,6 +191,10 @@ public class CCompilationUnitContext extends CContext {
 	 * @return CCompilationUnit
 	 */
 	public CCompilationUnit getCunit() {
+		return cunit.getExport();
+	}
+	
+	public JCompilationUnit getCunitDecl() {
 		return cunit;
 	}
 	
@@ -206,6 +211,5 @@ public class CCompilationUnitContext extends CContext {
 	private /*final*/
 	Vector classes;
 	private /*final*/
-	CCompilationUnit cunit;
-
+	JCompilationUnit cunit;
 }

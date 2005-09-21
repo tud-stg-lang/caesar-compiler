@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JCompilationUnit.java,v 1.15 2005-07-20 11:12:04 gasiunas Exp $
+ * $Id: JCompilationUnit.java,v 1.16 2005-09-21 15:15:57 thiago Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -127,7 +127,7 @@ public class JCompilationUnit extends JPhylum {
 				importedClasses,
 				importedPackages,
 				allLoadedClasses);
-		context = new CCompilationUnitContext(compiler, environment, export);
+		context = new CCompilationUnitContext(compiler, environment, this);
 
 		for (int i = 0; i < importedClasses.length; i++) {
 			JClassImport ic = importedClasses[i];
@@ -236,7 +236,7 @@ public class JCompilationUnit extends JPhylum {
 	
 	public void joinInner(CompilerBase compiler) throws PositionedError {
 		CCompilationUnitContext context;
-		context = new CCompilationUnitContext(compiler, environment, export);
+		context = new CCompilationUnitContext(compiler, environment, this);
 		
 		for (int i = 0; i < typeDeclarations.length; i++) {
 			typeDeclarations[i].join(context, true);
@@ -246,7 +246,7 @@ public class JCompilationUnit extends JPhylum {
     // IVICA
     public void createImplicitCaesarTypes(CompilerBase compiler) throws PositionedError {
         CCompilationUnitContext context =
-            new CCompilationUnitContext(compiler, environment, export);
+            new CCompilationUnitContext(compiler, environment, this);
         
         for (int i = 0; i < typeDeclarations.length; i++) {
             typeDeclarations[i].createImplicitCaesarTypes(context);
@@ -256,7 +256,7 @@ public class JCompilationUnit extends JPhylum {
     // IVICA
     public void adjustSuperTypes(CompilerBase compiler) throws PositionedError {
         CCompilationUnitContext context =
-            new CCompilationUnitContext(compiler, environment, export);
+            new CCompilationUnitContext(compiler, environment, this);
         
         for (int i = 0; i < typeDeclarations.length; i++) {
             typeDeclarations[i].adjustSuperType(context);
@@ -270,7 +270,7 @@ public class JCompilationUnit extends JPhylum {
     public void checkInterface(CompilerBase compiler) throws PositionedError {
         CCompilationUnitContext context;
 
-        context = new CCompilationUnitContext(compiler, environment, export);
+        context = new CCompilationUnitContext(compiler, environment, this);
 
         for (int i = 0; i < typeDeclarations.length; i++) {
             typeDeclarations[i].checkInterface(context);
@@ -280,7 +280,7 @@ public class JCompilationUnit extends JPhylum {
     public void checkDependentTypes(CompilerBase compiler) throws PositionedError {
         CCompilationUnitContext context;
 
-        context = new CCompilationUnitContext(compiler, environment, export);
+        context = new CCompilationUnitContext(compiler, environment, this);
 
         for (int i = 0; i < typeDeclarations.length; i++) {
             typeDeclarations[i].checkDependentTypes(context);
@@ -290,7 +290,7 @@ public class JCompilationUnit extends JPhylum {
     public void checkVirtualClassMethodSignatures(CompilerBase compiler) throws PositionedError {
         CCompilationUnitContext context;
 
-        context = new CCompilationUnitContext(compiler, environment, export);
+        context = new CCompilationUnitContext(compiler, environment, this);
 
         for (int i = 0; i < typeDeclarations.length; i++) {
             typeDeclarations[i].checkVirtualClassMethodSignatures(context);
@@ -300,7 +300,7 @@ public class JCompilationUnit extends JPhylum {
     public void completeCClassInterfaces(CompilerBase compiler) throws PositionedError {
         CCompilationUnitContext context;
 
-        context = new CCompilationUnitContext(compiler, environment, export);
+        context = new CCompilationUnitContext(compiler, environment, this);
 
         for (int i = 0; i < typeDeclarations.length; i++) {
             typeDeclarations[i].completeCClassInterfaces(context);
@@ -348,7 +348,7 @@ public class JCompilationUnit extends JPhylum {
 	public void checkInitializers(CompilerBase compiler, Vector classes)
 		throws PositionedError {
 		CCompilationUnitContext context =
-			new CCompilationUnitContext(compiler, environment, export, classes);
+			new CCompilationUnitContext(compiler, environment, this, classes);
 
 		for (int i = 0; i < typeDeclarations.length; i++) {
 			typeDeclarations[i].checkInitializers(context);
@@ -366,7 +366,7 @@ public class JCompilationUnit extends JPhylum {
 	public void checkBody(CompilerBase compiler, Vector classes)
 		throws PositionedError {
 		CCompilationUnitContext context =
-			new CCompilationUnitContext(compiler, environment, export, classes);
+			new CCompilationUnitContext(compiler, environment, this, classes);
 
 		for (int i = 0; i < typeDeclarations.length; i++) {
 			typeDeclarations[i].checkTypeBody(context);
@@ -414,7 +414,7 @@ public class JCompilationUnit extends JPhylum {
 	 * @return CCompilationUnitContext
 	 */
 	public CCompilationUnitContext createContext(CompilerBase compiler) {
-		return new CCompilationUnitContext(compiler, environment, export);
+		return new CCompilationUnitContext(compiler, environment, this);
 	}
 
 	// ----------------------------------------------------------------------

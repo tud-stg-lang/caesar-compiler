@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclaration.java,v 1.49 2005-09-19 08:41:13 thiago Exp $
+ * $Id: JTypeDeclaration.java,v 1.50 2005-09-21 15:15:57 thiago Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -34,6 +34,7 @@ import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
+import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
@@ -816,6 +817,10 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     
     public void clearContext() {
     	this.self = null;
+    }
+    
+    public JCompilationUnit getCompilationUnit() {
+    	return this.self.getCompilationUnitContext().getCunitDecl();
     }
     
     // ----------------------------------------------------------------------
