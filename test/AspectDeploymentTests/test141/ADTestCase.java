@@ -21,7 +21,7 @@ public class ADTestCase extends TestCase
 	public static StringBuffer result = new StringBuffer();
 
 	public String expectedResult =
-		":before testC:around testA:before testB:around testA:test";
+		":before testC:before testB:around testA:around testA:test";
 
 	public void test()
 	{

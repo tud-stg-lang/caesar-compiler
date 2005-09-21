@@ -6,9 +6,12 @@ import java.util.List;
 
 abstract public cclass AspectA
 {
-	void around(List lst) : call(* test(List)) && args(lst) {
+	pointcut myPt(List lst) : call(* test(List)) && args(lst);
+	
+	void around(List lst) : myPt(lst) {
 		ADTestCase.result.append(":around testA");
 		proceed(lst);
+		List l = lst;
 	}	
 }
 
