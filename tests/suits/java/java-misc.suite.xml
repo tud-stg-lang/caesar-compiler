@@ -158,5 +158,16 @@
 			}
 		</code>
     </compile-run>		
+    
+    !-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="javamisc009" description="Test bytecode generation">
+        <code>
+        	public class ClassA {
+				private void m(String a) {
+				    while (null == a) { }				   
+				}
+			}
+		</code>
+    </compile>	
 
 </testsuite>
