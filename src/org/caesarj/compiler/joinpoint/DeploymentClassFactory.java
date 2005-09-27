@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.50 2005-09-21 15:15:57 thiago Exp $
+ * $Id: DeploymentClassFactory.java,v 1.51 2005-09-27 13:43:53 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -196,7 +196,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * Creates an advice method for the aspect interface.
 	 */
 	private CjMethodDeclaration createInterfaceAdviceMethod(CjAdviceDeclaration advice) {
-		return new CjMethodDeclaration(
+		CjMethodDeclaration meth = new CjMethodDeclaration(
 			where,
 			ACC_PUBLIC | ACC_ABSTRACT,
 			advice.getReturnType(),
@@ -205,8 +205,9 @@ public class DeploymentClassFactory implements CaesarConstants {
 			advice.getExceptions(),
 			null,
 			null,
-			null);
-
+			null);		
+		meth.setGenerated();
+		return meth;
 	}
 
 	/**
@@ -306,7 +307,6 @@ public class DeploymentClassFactory implements CaesarConstants {
 						advice.getBody(),
 						null,
 						null);
-		decl.setGenerated();
 		return decl;
 	}
 	
@@ -395,7 +395,6 @@ public class DeploymentClassFactory implements CaesarConstants {
 	    
 	    gen.writeMethod(body);
 	    JMethodDeclaration decl = gen.endMethod("getAspectRegistry");
-	    decl.setGenerated();
 	    return decl;
 	}	
 
@@ -661,6 +660,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	     
 		JStatement[] body = gen.endBlock("simple-advice");
 		advice.setBody(new JBlock(where, body, null));
+		advice.setGenerated();
 		return advice;
 	}
 	
@@ -728,6 +728,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	     
 		JStatement[] body = gen.endBlock("around-advice");
 		advice.setBody(new JBlock(where, body, null));
+		advice.setGenerated();
 		return advice;
 	}
 	
@@ -1009,7 +1010,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 				new JConstructorCall(where, false, JExpression.EMPTY),
 				(JStatement[]) statements.toArray(new JStatement[0]));
 
-		return new JConstructorDeclaration(
+		JConstructorDeclaration constrDecl = new JConstructorDeclaration(
 			where,
 			ACC_PUBLIC,
 			(advice.getIdent() + MULTI_INST_CLOSURE_EXTENSION).intern(),
@@ -1019,6 +1020,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 			null,
 			null,
 			typeFactory);
+		constrDecl.setGenerated();
+		return constrDecl;
 	}
 
 	/**

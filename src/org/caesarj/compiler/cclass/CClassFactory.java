@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassFactory.java,v 1.33 2005-07-29 15:13:47 gasiunas Exp $
+ * $Id: CClassFactory.java,v 1.34 2005-09-27 13:43:53 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -175,7 +175,7 @@ public class CClassFactory implements CaesarConstants {
     }
 
 	private JMethodDeclaration createInterfaceMethod(JMethodDeclaration m) {
-		return new CjMethodDeclaration(
+		CjMethodDeclaration meth = new CjMethodDeclaration(
 			where,
 			ACC_PUBLIC | ACC_ABSTRACT,
 			m.getReturnType(),
@@ -185,7 +185,8 @@ public class CClassFactory implements CaesarConstants {
 			null,
 			null,
 			null);
-
+		meth.setGenerated();
+		return meth;
 	}
     
 	public void modifyCaesarClass(TypeFactory factory) {    	

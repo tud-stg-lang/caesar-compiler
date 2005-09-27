@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassPreparation.java,v 1.41 2005-09-21 15:15:57 thiago Exp $
+ * $Id: CClassPreparation.java,v 1.42 2005-09-27 13:43:53 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -276,7 +276,6 @@ public class CClassPreparation implements CaesarConstants {
         );
         
         JMethodDeclaration wrapperConstr = gen.endMethod(wrapperClassName+"-"+wrapperClassIdent);
-        wrapperConstr.setGenerated();
         decl.addMethod( wrapperConstr );        
         
         

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjAdvice.java,v 1.8 2005-07-27 15:36:14 gasiunas Exp $
+ * $Id: CCjAdvice.java,v 1.9 2005-09-27 13:43:53 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -92,6 +92,7 @@ public class CCjAdvice extends CSourceMethod {
 		JBlock body,
 		CaesarPointcut pointcut,
 		CaesarAdviceKind kind,
+		boolean synthetic,
 		int extraArgumentFlags) {
 		super(
 			owner,
@@ -102,7 +103,7 @@ public class CCjAdvice extends CSourceMethod {
 			paramTypes,
 			exceptions,
 			false,
-			false,
+			synthetic,
 			body);
 
 		this.pointcut = pointcut;

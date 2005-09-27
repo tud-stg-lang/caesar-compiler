@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjMixinInterfaceDeclaration.java,v 1.17 2005-06-20 11:19:03 gasiunas Exp $
+ * $Id: CjMixinInterfaceDeclaration.java,v 1.18 2005-09-27 13:43:53 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -325,8 +325,8 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
             			methods[i].getParameters(),
             			method.getParameters(),
             			method.getExceptions(),
-            			false,
-            			false,
+            			method.isDeprecated(),
+            			method.isSynthetic(),
             			null
                     )
                 );

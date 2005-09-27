@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: StaticDeploymentPreparation.java,v 1.9 2005-07-28 15:00:54 gasiunas Exp $
+ * $Id: StaticDeploymentPreparation.java,v 1.10 2005-09-27 13:43:53 gasiunas Exp $
  */
 package org.caesarj.compiler.joinpoint;
 
@@ -225,7 +225,6 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 		
 		gen.writeMethod(body);	     
 		JMethodDeclaration decl = gen.endMethod("aspectof");
-		decl.setGenerated();
 		return decl;
 	}
 
