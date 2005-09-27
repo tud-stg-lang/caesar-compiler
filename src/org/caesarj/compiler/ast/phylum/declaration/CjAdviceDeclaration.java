@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjAdviceDeclaration.java,v 1.16 2005-09-21 15:15:57 thiago Exp $
+ * $Id: CjAdviceDeclaration.java,v 1.17 2005-09-27 13:42:00 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -237,6 +237,7 @@ public class CjAdviceDeclaration
                 body,
                 pointcut,
                 kind,
+                isGenerated(),
                 extraArgumentFlags);
 
         setInterface(adviceMethod);
