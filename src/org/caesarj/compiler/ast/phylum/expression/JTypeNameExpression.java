@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeNameExpression.java,v 1.8 2005-07-28 11:49:02 gasiunas Exp $
+ * $Id: JTypeNameExpression.java,v 1.9 2005-09-27 13:43:03 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -110,24 +110,36 @@ public class JTypeNameExpression extends JExpression {
     try {
       type = (CReferenceType)type.checkType(context);
       
-      // calc family
-      // CRITICAL: commented out, this has caused errors with statements like System.out.println()
-      // the reason is, that binary fields do not know in which context they have been resolved
-      int k = 0;
-      CContext ctx = context.getBlockContext();
-      while(!(ctx instanceof CCompilationUnitContext)) {
-          ctx = ctx.getParentContext();
-          k++;
-      }
-      family = new ContextExpression(null, k, null);
-      thisAsFamily = new ClassAccess(true, family, type.getQualifiedName(), type);
-      
     } catch (UnpositionedError e) {
       throw e.addPosition(getTokenReference());
     }
+    
+    calcExpressionFamily(context);
 
     return this;
   }
+  
+  public void calcExpressionFamily(CExpressionContext context) throws PositionedError {
+	  try {
+	      type = (CReferenceType)type.checkType(context);
+	      
+	      // calc family
+	      // CRITICAL: commented out, this has caused errors with statements like System.out.println()
+	      // the reason is, that binary fields do not know in which context they have been resolved
+	      int k = 0;
+	      CContext ctx = context.getBlockContext();
+	      while(!(ctx instanceof CCompilationUnitContext)) {
+	          ctx = ctx.getParentContext();
+	          k++;
+	      }
+	      family = new ContextExpression(null, k, null);
+	      thisAsFamily = new ClassAccess(true, family, type.getQualifiedName(), type);
+	      
+	    } catch (UnpositionedError e) {
+	    	throw e.addPosition(getTokenReference());
+	    }
+  }
+  
   /**
    * Return true iff the node is itself a Expression 
    * (not only a part like JTypeName)

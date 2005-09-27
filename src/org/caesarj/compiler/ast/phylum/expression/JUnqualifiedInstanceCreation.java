@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JUnqualifiedInstanceCreation.java,v 1.11 2005-03-03 13:58:52 aracic Exp $
+ * $Id: JUnqualifiedInstanceCreation.java,v 1.12 2005-09-27 13:43:03 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -236,7 +236,13 @@ public class JUnqualifiedInstanceCreation extends JExpression {
         }
         
         // IVICA setup family
-        if( type.getCClass().isMixin() && !context.getMethodContext().getMethodDeclaration().getMethod().isCaesarFactoryMethod()) {
+        calcExpressionFamily(context);
+
+        return this;
+    }
+    
+    public void calcExpressionFamily(CExpressionContext context) throws PositionedError {
+    	if( type.getCClass().isMixin() && !context.getMethodContext().getMethodDeclaration().getMethod().isCaesarFactoryMethod()) {
 	        try {
 	            family = type.getPath();
 	            thisAsFamily = new Dummy( type.getPath() );
@@ -245,8 +251,6 @@ public class JUnqualifiedInstanceCreation extends JExpression {
                 throw e.addPosition(getTokenReference());
             }
     	}
-
-        return this;
     }
 
     private boolean inCorrectOuter(CClass local, CClass outer) {

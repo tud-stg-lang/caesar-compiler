@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JNullLiteral.java,v 1.4 2005-02-09 16:54:01 aracic Exp $
+ * $Id: JNullLiteral.java,v 1.5 2005-09-27 13:43:03 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression.literal;
@@ -94,8 +94,12 @@ public class JNullLiteral extends JLiteral {
    * @exception	PositionedError	the analysis detected an error
    */
   public JExpression analyse(CExpressionContext context) {
-      family = Path.NULL;
-    return this;
+	  calcExpressionFamily(context);
+      return this;
+  }
+  
+  public void calcExpressionFamily(CExpressionContext context) {
+	  family = Path.NULL;
   }
 
   // ----------------------------------------------------------------------

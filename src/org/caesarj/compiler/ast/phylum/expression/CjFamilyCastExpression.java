@@ -51,7 +51,7 @@ public class CjFamilyCastExpression extends JExpression {
      *                the analysis detected an error
      */
     public JExpression analyse(CExpressionContext context) throws PositionedError {
-    	return new CjFamilyCastExpression(getTokenReference(), expr.analyse(context), family, thisAsFamily);
+    	return new CjFamilyCastExpression(getTokenReference(), expr.analyse(context), getFamily(), getThisAsFamily());
     }
     
     /**

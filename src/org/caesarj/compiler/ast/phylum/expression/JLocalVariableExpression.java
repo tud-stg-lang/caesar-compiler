@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JLocalVariableExpression.java,v 1.11 2005-07-21 08:43:53 aracic Exp $
+ * $Id: JLocalVariableExpression.java,v 1.12 2005-09-27 13:43:03 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -177,7 +177,48 @@ public class JLocalVariableExpression extends JExpression {
         throws PositionedError {
 
         // IVICA: store family information
-        try {
+        calcFamilyType(context);
+        
+        // IVICA: insert cast
+        if(!context.isLeftSide()) {
+	        CType castType = 
+	            CastUtils.instance().castFrom(
+	                context, variable.getType(), context.getClassContext().getCClass());
+	        
+	        if(castType != null) {
+	            return new CjCastExpression(
+	                getTokenReference(),
+	                this,
+	                castType
+	            );
+	        }
+        }
+            
+        
+        if (!context.isLeftSide() || !context.discardValue()) {
+            variable.setUsed();
+        }
+        if (context.isLeftSide()) {
+            variable.setAssigned(getTokenReference(), context.getBodyContext());
+        }
+
+        check(
+            context,
+            CVariableInfo.isInitialized(context.getBodyContext()
+                .getVariableInfo(variable.getIndex()))
+                || (context.isLeftSide() && context.discardValue()),
+            KjcMessages.UNINITIALIZED_LOCAL_VARIABLE,
+            variable.getIdent());
+
+        if (variable.isConstant() && !context.isLeftSide()) {
+            return variable.getValue();
+        }
+        
+        return this;
+    }
+    
+    public void calcFamilyType(CContext context) throws PositionedError {
+    	try {
             CType type = variable.getType();            
 	        if(type.isReference()) {
                 
@@ -228,46 +269,7 @@ public class JLocalVariableExpression extends JExpression {
         catch (UnpositionedError e) {
             throw e.addPosition(getTokenReference());
         }
-        
-        
-        
-        // IVICA: insert cast
-        if(!context.isLeftSide()) {
-	        CType castType = 
-	            CastUtils.instance().castFrom(
-	                context, variable.getType(), context.getClassContext().getCClass());
-	        
-	        if(castType != null) {
-	            return new CjCastExpression(
-	                getTokenReference(),
-	                this,
-	                castType
-	            );
-	        }
-        }
-            
-        
-        if (!context.isLeftSide() || !context.discardValue()) {
-            variable.setUsed();
-        }
-        if (context.isLeftSide()) {
-            variable.setAssigned(getTokenReference(), context.getBodyContext());
-        }
-
-        check(
-            context,
-            CVariableInfo.isInitialized(context.getBodyContext()
-                .getVariableInfo(variable.getIndex()))
-                || (context.isLeftSide() && context.discardValue()),
-            KjcMessages.UNINITIALIZED_LOCAL_VARIABLE,
-            variable.getIdent());
-
-        if (variable.isConstant() && !context.isLeftSide()) {
-            return variable.getValue();
-        }
-        
-        return this;
-    }    
+    }
 
     // ----------------------------------------------------------------------
     // CODE GENERATION

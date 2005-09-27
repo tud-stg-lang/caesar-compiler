@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JCastExpression.java,v 1.11 2005-07-25 12:43:52 gasiunas Exp $
+ * $Id: JCastExpression.java,v 1.12 2005-09-27 13:43:03 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -86,6 +86,41 @@ public class JCastExpression extends JExpression {
     public void setType(CType type) {
         dest = type;
     }
+    
+    private JExpression famExpr = null;
+    
+    public JExpression getFamilyExpression(CExpressionContext context) throws PositionedError {
+    	if (famExpr != null)
+    		return famExpr;
+    	
+    	famExpr = ((CDependentType)dest).getFamily();
+    	
+        if(famExpr == null) {
+        	famExpr = 
+                new JThisExpression(
+                	getTokenReference(),
+                    new JTypeNameExpression(getTokenReference(), dest.getCClass().getOwnerType())
+                ).analyse(context);
+        }
+        return famExpr;
+    }
+    
+    public void calcExpressionFamily(CExpressionContext context) throws PositionedError {
+    	if(dest.isDependentType()) {
+    		// set the family of this cast expression
+                
+            family = getFamilyExpression(context).getThisAsFamily();
+            thisAsFamily = family.clonePath();
+            thisAsFamily = new Dummy(thisAsFamily);
+            
+            // preserve identity
+            // thisAsFamily = expr.getThisAsFamily().clonePath();
+        }
+        else {
+        	family = expr.getFamily().clonePath();
+        	thisAsFamily = expr.getThisAsFamily().clonePath();
+        }
+    }
 
     /**
      * Analyses the expression (semantically).
@@ -123,40 +158,18 @@ public class JCastExpression extends JExpression {
             }
         }
         
+        calcExpressionFamily(context);
+        
         if(dest.isDependentType()) {
-//          set the family of this cast expression
-            JExpression famExpr = ((CDependentType)dest).getFamily();
-            
-            TokenReference where = getTokenReference();
-            
-            if(famExpr == null) {
-            	famExpr = 
-	                new JThisExpression(
-	                    where,
-	                    new JTypeNameExpression(where, dest.getCClass().getOwnerType())
-	                ).analyse(context);
-            }
-                
-            family = famExpr.getThisAsFamily();
-            thisAsFamily = family.clonePath();
-            thisAsFamily = new Dummy(thisAsFamily);
-            
-            // preserve identity
-            // thisAsFamily = expr.getThisAsFamily().clonePath();
-                        
-            // put the expr into a cast call
-            JMethodCallExpression castCall = new JMethodCallExpression(
-                where,
-                new JTypeNameExpression(where, new CClassNameType(CaesarConstants.CAESAR_CAST_SUPPORT)),
-                "cast",
-                new JExpression[] { famExpr, expr }
-            );
-         
-            expr = castCall.analyse(context);
-        }
-        else {
-        	family = expr.getFamily().clonePath();
-        	thisAsFamily = expr.getThisAsFamily().clonePath();
+        	// put the expr into a cast call
+        	JMethodCallExpression castCall = new JMethodCallExpression(
+        		getTokenReference(),
+	            new JTypeNameExpression(getTokenReference(), new CClassNameType(CaesarConstants.CAESAR_CAST_SUPPORT)),
+	            "cast",
+	            new JExpression[] { getFamilyExpression(context), expr }
+	        );
+        	
+        	expr = castCall.analyse(context);
         }
 
         check(

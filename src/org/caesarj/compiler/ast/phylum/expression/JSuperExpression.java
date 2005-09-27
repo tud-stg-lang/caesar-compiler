@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JSuperExpression.java,v 1.5 2005-02-21 15:18:33 aracic Exp $
+ * $Id: JSuperExpression.java,v 1.6 2005-09-27 13:43:03 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -32,10 +32,14 @@ import org.caesarj.compiler.context.CConstructorContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.family.FieldAccess;
+import org.caesarj.compiler.family.Path;
+import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
+import org.caesarj.util.UnpositionedError;
 
 /**
  * A 'super' expression
@@ -138,13 +142,16 @@ public class JSuperExpression extends JExpression {
           !context.getMethodContext().getCMethod().isStatic(), 
           KjcMessages.BAD_SUPER_STATIC);
     
+    calcExpressionFamily(context);
     
-    // IVICA store family: JSuperExpression is same as JThisExpression
-    JExpression thisExpr = new JThisExpression(getTokenReference()).analyse(context);
-    family = thisExpr.getFamily();
-    thisAsFamily = thisExpr.getThisAsFamily();
-
     return this;
+  }
+  
+  protected void calcExpressionFamily(CExpressionContext context) throws PositionedError {
+	  // IVICA store family: JSuperExpression is same as JThisExpression
+	  JExpression thisExpr = new JThisExpression(getTokenReference()).analyse(context);
+	  family = thisExpr.getFamily();
+	  thisAsFamily = thisExpr.getThisAsFamily();
   }
 
   /**

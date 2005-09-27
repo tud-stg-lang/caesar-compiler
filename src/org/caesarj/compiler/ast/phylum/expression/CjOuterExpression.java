@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjOuterExpression.java,v 1.3 2005-02-17 17:40:54 aracic Exp $
+ * $Id: CjOuterExpression.java,v 1.4 2005-09-27 13:43:03 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -75,7 +75,13 @@ public class CjOuterExpression extends JExpression {
         
         transformation.analyse(context);
         
-        // set family
+        calcExpressionFamily(context);
+        
+        return this;
+    }
+    
+    public void calcExpressionFamily(CExpressionContext context) throws PositionedError {
+    	// set family
         int k = getOuterSteps();
         
         // getOuterSteps is relative to the method context - 1
@@ -88,9 +94,6 @@ public class CjOuterExpression extends JExpression {
         
         thisAsFamily = new ContextExpression(null, k, (CReferenceType)getType(context.getTypeFactory()));
         family = new ContextExpression(null, k+1, (CReferenceType)getType(context.getTypeFactory()));
-        
-        
-        return this;
     }
     
     public void genCode(GenerationContext context, boolean discardValue) {
