@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AstGenerator.java,v 1.7 2005-03-29 09:45:08 gasiunas Exp $
+ * $Id: AstGenerator.java,v 1.8 2005-09-27 13:41:38 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -66,6 +66,7 @@ public class AstGenerator {
     
     public JMethodDeclaration endMethod(String name) {
         JMethodDeclaration res = createMethodDeclaration(name, methodBuffer.toString());
+        res.setGenerated();
         methodBuffer = new StringBuffer();
         return res;
     }
