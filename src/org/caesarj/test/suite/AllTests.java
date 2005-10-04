@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AllTests.java,v 1.5 2005-07-21 13:14:23 aracic Exp $
+ * $Id: AllTests.java,v 1.6 2005-10-04 08:24:48 klose Exp $
  */
 
 package org.caesarj.test.suite;
@@ -61,9 +61,13 @@ public class AllTests {
 		File testLogFile = 
 		    new File(TestProperties.instance().getLogFileName());
 		
-		testLogFile.createNewFile();
+        try{
+            testLogFile.createNewFile();
+        } catch(Exception e){
+            System.err.println("Waring: Could not create new test log file: "+ e);
+        }
 		
-		TestLog testLog = new TestLog( testLogFile );
+        TestLog testLog = new TestLog( testLogFile );
 		
 		for (Iterator it = testSuits.iterator(); it.hasNext();) {
             File f = (File) it.next();
