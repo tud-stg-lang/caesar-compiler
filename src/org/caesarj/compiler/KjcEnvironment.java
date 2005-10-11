@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: KjcEnvironment.java,v 1.10 2005-01-24 16:52:58 aracic Exp $
+ * $Id: KjcEnvironment.java,v 1.11 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -47,6 +47,11 @@ public class KjcEnvironment {
 		this.typeFactory = typeFactory;
 		this.options = options;
         this.caesarTypeSystem = new CaesarTypeSystem();
+        this.compBase = compilerBase;
+	}
+	
+	public CompilerBase getCompiler() {
+		return compBase;
 	}
 
 	public ClassReader getClassReader() {
@@ -96,6 +101,7 @@ public class KjcEnvironment {
     private final TypeFactory typeFactory;
 	private final KjcOptions options;
 	private final AstGenerator astGenerator;
+	private final CompilerBase compBase;
 
 	public final static int SOURCE_1_1 = 101;
 	public final static int SOURCE_1_2 = 102;

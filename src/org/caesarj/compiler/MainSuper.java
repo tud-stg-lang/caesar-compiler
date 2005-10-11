@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: MainSuper.java,v 1.21 2005-07-28 11:46:31 gasiunas Exp $
+ * $Id: MainSuper.java,v 1.22 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -28,6 +28,7 @@ package org.caesarj.compiler;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import org.caesarj.classfile.ClassFileFormatException;
@@ -129,30 +130,29 @@ public abstract class MainSuper extends CompilerBase {
      *
      * @param	destination	the directory where to write classfiles
      */
-    public void genCode(TypeFactory factory) {
-        CSourceClass[] classes = getClasses();
+    public void genCode(TypeFactory factory, JCompilationUnit cus[]) {
+    	ArrayList<CSourceClass> classes = new ArrayList<CSourceClass>(100);
+    	
+    	for (JCompilationUnit cu : cus) {
+    		classes.addAll(cu.getContext().getSourceClasses());
+    	}    	                
+        
         BytecodeOptimizer optimizer = new BytecodeOptimizer(options.optimize);
 
-        this.classes.setSize(0);
-
         try {
-            for (int count = 0; count < classes.length; count++) {
-                long lastTime = System.currentTimeMillis();
-
+            for (CSourceClass clazz : classes) {
                 // IVICA
                 // removed: classes[count].genCode(optimizer, options.destination, factory);
                 ClassInfo classInfo = 
-                    classes[count].genClassInfo(optimizer, options.destination, factory);
+                    clazz.genClassInfo(optimizer, options.destination, factory);
                 
                 classInfo.write(options.destination);
                 byte[] codeBuf = classInfo.getByteArray();
                 
-                byteCodeMap.addSourceClass(classes[count], codeBuf);                
+                byteCodeMap.addSourceClass(clazz, codeBuf);                
                 // IVICA:END
                 
-                //Log.verbose("class file generated: "+classes[count].getQualifiedName());
-                
-                classes[count] = null;
+                //Log.verbose("class file generated: "+classes[count].getQualifiedName());                
             }
         }
         catch (PositionedError e) {
@@ -224,7 +224,7 @@ public abstract class MainSuper extends CompilerBase {
      */
     protected void checkInitializers(JCompilationUnit cunit) {
         try {
-            cunit.checkInitializers(this, classes);
+            cunit.checkInitializers(this);
         }
         catch (PositionedError e) {
             reportTrouble(e);
@@ -238,7 +238,7 @@ public abstract class MainSuper extends CompilerBase {
      */
     protected void checkBody(JCompilationUnit cunit) {
         try {
-            cunit.checkBody(this, classes);
+            cunit.checkBody(this);
             //Log.verbose("body checked: "+cunit.getFileName());
         }
         catch (PositionedError e) {            
@@ -251,8 +251,6 @@ public abstract class MainSuper extends CompilerBase {
      * @param	cunit		the compilation unit
      */
     protected void checkCondition(JCompilationUnit cunit) {
-        long lastTime = System.currentTimeMillis();
-
         try {
             cunit.analyseConditions();
         }
@@ -338,16 +336,6 @@ public abstract class MainSuper extends CompilerBase {
     	return false;
     }
 
-    /**
-     * Returns the classes to generate
-     */
-    public CSourceClass[] getClasses() {
-        return (CSourceClass[])org.caesarj.util.Utils.toArray(
-            classes,
-            CSourceClass.class);
-    }
-
-
     // ----------------------------------------------------------------------
     // PROTECTED DATA MEMBERS
     // ----------------------------------------------------------------------
@@ -361,9 +349,6 @@ public abstract class MainSuper extends CompilerBase {
     // it must be initialized to null otherwise the filter option is not used
     private WarningFilter filter = null;
 
-    // all generated classes
-    protected Vector classes = new Vector(100);
-    
     // VAIDAS byteCodeMap
     protected ByteCodeMap byteCodeMap = null;
 }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JClassDeclaration.java,v 1.28 2005-09-08 16:28:11 gasiunas Exp $
+ * $Id: JClassDeclaration.java,v 1.29 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -98,11 +98,6 @@ public class JClassDeclaration extends JTypeDeclaration {
             context.getTypeFactory().createReferenceType(
                 TypeFactory.RFT_OBJECT);
 
-        // construct the CClassContext; should be the first thing!
-        if (self == null) {
-            self = constructContext(context);
-        }
-
         if (superClass == null) {
             if (sourceClass.getQualifiedName() == JAV_OBJECT) {
                 // java/lang/Object
@@ -115,7 +110,7 @@ public class JClassDeclaration extends JTypeDeclaration {
         }
         else {
             try {
-                superClass = (CReferenceType)superClass.checkType(self);
+                superClass = (CReferenceType)superClass.checkType(getContext());
             }
             catch (UnpositionedError e) {
                 throw e.addPosition(getTokenReference());
@@ -248,7 +243,7 @@ public class JClassDeclaration extends JTypeDeclaration {
         instanceInit =
             constructInitializers(false, false, context.getTypeFactory());
         if (instanceInit != null) {
-            instanceInit.checkInterface(self);
+            instanceInit.checkInterface(getContext());
         }
 
         if (getCClass().getSuperClass() != null) {
@@ -281,7 +276,7 @@ public class JClassDeclaration extends JTypeDeclaration {
         // A parameterized type may not inherit directly or indirectly form 
         // java.lang.Throwable
     	check(
-                self,
+    			getContext(),
                 true,
                 KjcMessages.GENERIC_THROWABLE);
     	
@@ -292,11 +287,8 @@ public class JClassDeclaration extends JTypeDeclaration {
             addOuterThis(context);
         }
         try {
-            CVariableInfo instanceInfo = null;
-            CVariableInfo[] constructorsInfo;
-
             if (instanceInit != null) {
-                instanceInit.checkInitializer(self);
+                instanceInit.checkInitializer(getContext());
             }
 
             for (int i = fields.length - 1; i >= 0; i--) {
@@ -305,7 +297,7 @@ public class JClassDeclaration extends JTypeDeclaration {
 
             for (int i = 0; i < inners.length; i++) {
                 try {
-                    inners[i].checkTypeBody(self);
+                    inners[i].checkTypeBody(getContext());
                 }
                 catch (CBlockError e) {
                     context.reportTrouble(e);
@@ -313,13 +305,13 @@ public class JClassDeclaration extends JTypeDeclaration {
             }
 
             // First we compile constructors
-            constructorsInfo = compileConstructors(context);
+            compileConstructors(context);
 
             // Now we compile methods
             for (int i = methods.length - 1; i >= 0; i--) {
                 try {
                     if (!(methods[i] instanceof JConstructorDeclaration)) {
-                        methods[i].checkBody1(self);
+                        methods[i].checkBody1(getContext());
                     }
                 }
                 catch (CBlockError e) {
@@ -349,7 +341,7 @@ public class JClassDeclaration extends JTypeDeclaration {
                 }
             }
 
-            self.close(this, null, null, null);
+            getContext().close(this, null, null, null);
             super.checkTypeBody(context);
 
         }
@@ -387,21 +379,16 @@ public class JClassDeclaration extends JTypeDeclaration {
      * @exception   PositionedError an error with reference to the source file
      */
     public void checkInitializers(CContext context) throws PositionedError {        
-        //Walter start:
-        //self = new CClassContext(context, context.getEnvironment(), sourceClass, this);
-        self = constructContext(context);
-        //Walter end
-
         if (assertMethod != null) {
-            getCClass().addMethod(assertMethod.checkInterface(self));
-            assertMethod.checkBody1(self);
+            getCClass().addMethod(assertMethod.checkInterface(getContext()));
+            assertMethod.checkBody1(getContext());
         }
 
-        compileStaticInitializer(self);
+        compileStaticInitializer(getContext());
 
         // Check inners
         for (int i = inners.length - 1; i >= 0; i--) {
-            inners[i].checkInitializers(self);
+            inners[i].checkInitializers(getContext());
         }
 
         super.checkInitializers(context);
@@ -445,7 +432,7 @@ public class JClassDeclaration extends JTypeDeclaration {
             }
 
             // mark all static fields initialized
-            self.markAllFieldToInitialized(true);
+            getContext().markAllFieldToInitialized(true);
         }
     }
 
@@ -583,7 +570,7 @@ public class JClassDeclaration extends JTypeDeclaration {
         variableInfos = new CVariableInfo[constructors.length];
         for (int i = 0; i < constructors.length; i++) {
             try {
-                constructors[i].checkBody1(self);
+                constructors[i].checkBody1(getContext());
             }
             catch (CBlockError e) {
                 context.reportTrouble(e);
@@ -593,7 +580,7 @@ public class JClassDeclaration extends JTypeDeclaration {
         // ------------------------------------------------------------------
         // mark all instance fields initialized
 
-        self.markAllFieldToInitialized(false);
+        getContext().markAllFieldToInitialized(false);
 
         // ------------------------------------------------------------------
         // check for cycles in constructor calls

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.105 2005-09-19 08:39:50 thiago Exp $
+ * $Id: Main.java,v 1.106 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -32,7 +32,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import org.caesarj.compiler.asm.CaesarAsmBuilder;
 import org.caesarj.compiler.asm.CaesarJAsmManager;
@@ -76,8 +75,7 @@ import org.caesarj.util.UnpositionedError;
 public class Main extends MainSuper implements Constants {
 
     private CaesarMessageHandler messageHandler;
-    private Set errorMessages;
-
+    
     // The used weaver. An instance is created when it's needed in generateAndWeaveCode
     private CaesarWeaver weaver;
 
@@ -277,7 +275,7 @@ public class Main extends MainSuper implements Constants {
                 
         byteCodeMap = new ByteCodeMap(options.destination);
         // KOPI step - generate byte code 
-        genCode(environment.getTypeFactory());
+        genCode(environment.getTypeFactory(), tree);
          
         // CJ VC
         genMixinCopies(environment);
@@ -554,7 +552,7 @@ public class Main extends MainSuper implements Constants {
         //Join generated deployment support declarations 
         for (int i = 0; i < tree.length; i++) {
             JCompilationUnit cu = tree[i];
-            JoinDeploymentSupport.prepareForDynamicDeployment(this, cu);
+            JoinDeploymentSupport.prepareForDynamicDeployment(cu);
         }
         
         Log.verbose("prepare static class deployment");
@@ -569,7 +567,7 @@ public class Main extends MainSuper implements Constants {
         // Prepare the pointcut declarations
         for (int i = 0; i < tree.length; i++) {
             JCompilationUnit cu = tree[i];
-            PointcutSupport.preparePointcutDeclarations(this, cu);
+            PointcutSupport.preparePointcutDeclarations(cu);
         }       
     }
     
@@ -715,8 +713,7 @@ public class Main extends MainSuper implements Constants {
         //create the Caesar parser
         CaesarParser parser;
         JCompilationUnit unit;
-        long lastTime = System.currentTimeMillis();
-
+        
         parser = new CaesarParser(this, buffer, environment);
 
         try {
@@ -760,10 +757,6 @@ public class Main extends MainSuper implements Constants {
      * @param factory
      */
     public void weaveGeneratedCode(KjcEnvironment env) {
-        String filename;
-
-        this.classes.setSize(0);
-
         weaver = new CaesarWeaver(options.destination);
         
         for(Iterator it=byteCodeMap.iterator(); it.hasNext(); ) {

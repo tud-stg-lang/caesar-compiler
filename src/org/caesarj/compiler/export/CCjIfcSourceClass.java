@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjIfcSourceClass.java,v 1.5 2005-07-20 10:10:01 gasiunas Exp $
+ * $Id: CCjIfcSourceClass.java,v 1.6 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -52,6 +52,7 @@ public class CCjIfcSourceClass extends CCjSourceClass
 		String qualifiedName,
 		boolean deprecated,
 		boolean synthetic,
+		CCompilationUnit cunit, 
 		CjMixinInterfaceDeclaration decl)
 	{
 		super(
@@ -63,6 +64,7 @@ public class CCjIfcSourceClass extends CCjSourceClass
 			deprecated,
 			synthetic,
 			false,
+			cunit,
 			decl,			
 			null);
 		_mixinIfcDecl = decl;

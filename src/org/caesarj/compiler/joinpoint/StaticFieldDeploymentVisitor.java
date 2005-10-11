@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: StaticFieldDeploymentVisitor.java,v 1.1 2005-03-30 14:24:35 gasiunas Exp $
+ * $Id: StaticFieldDeploymentVisitor.java,v 1.2 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -111,7 +111,7 @@ public class StaticFieldDeploymentVisitor implements IVisitor, CaesarConstants  
 						field));
     	CjClassDeclaration regClass = null;
     	try {
-    		CTypeContext context = classDecl.getTypeContext();
+    		CTypeContext context = classDecl.getContext();
     		CType type = field.getVariable().getType().checkType(context);
     		CClass cclass = type.getCClass();
     		regClass = statDeplPrep.findRegistryClass(cclass.getQualifiedName());

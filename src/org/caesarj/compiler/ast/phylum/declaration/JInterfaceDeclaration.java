@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JInterfaceDeclaration.java,v 1.7 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JInterfaceDeclaration.java,v 1.8 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -197,18 +197,13 @@ public class JInterfaceDeclaration extends JTypeDeclaration {
 	 * @exception	PositionedError	an error with reference to the source file
 	 */
 	public void checkInitializers(CContext context) throws PositionedError {
-		//    CInterfaceContext self = new CInterfaceContext(context, context.getEnvironment(), sourceClass, this);
-		//Walter start
-		//self = new CInterfaceContext(context, context.getEnvironment(), sourceClass, this);
-		self = constructContext(context);
-		//Walter end 
 		if (statInit != null) {
-			statInit.checkInitializer(self);
+			statInit.checkInitializer(getContext());
 		}
 
 		// Check inners
 		for (int i = inners.length - 1; i >= 0; i--) {
-			inners[i].checkInitializers(self);
+			inners[i].checkInitializers(getContext());
 		}
 
 		super.checkInitializers(context);
@@ -226,7 +221,7 @@ public class JInterfaceDeclaration extends JTypeDeclaration {
 
 		for (int i = 0; i < inners.length; i++) {
 			try {
-				inners[i].checkTypeBody(self);
+				inners[i].checkTypeBody(getContext());
 			}
 			catch (CBlockError e) {
 				context.reportTrouble(e);
@@ -235,7 +230,7 @@ public class JInterfaceDeclaration extends JTypeDeclaration {
 
 		for (int i = methods.length - 1; i >= 0; i--) {
 			try {
-				methods[i].checkBody1(self);
+				methods[i].checkBody1(getContext());
 			}
 			catch (PositionedError ce) {
 				context.reportTrouble(ce);
@@ -244,7 +239,7 @@ public class JInterfaceDeclaration extends JTypeDeclaration {
 
 		super.checkTypeBody(context);
 		try {
-			self.close(this, null, null, null);
+			getContext().close(this, null, null, null);
 		}
 		catch (UnpositionedError cue) {
 			throw cue.addPosition(getTokenReference());

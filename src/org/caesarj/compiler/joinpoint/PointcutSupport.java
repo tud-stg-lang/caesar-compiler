@@ -45,9 +45,8 @@ public class PointcutSupport {
      * @param compiler
      * @param cu
      */
-    public static void preparePointcutDeclarations(CompilerBase compiler, JCompilationUnit cu) {
+    public static void preparePointcutDeclarations(JCompilationUnit cu) {
         JTypeDeclaration typeDeclarations[] = cu.getInners();
-		CContext ownerCtx = cu.createContext(compiler);
 		
 		for (int i = 0; i < typeDeclarations.length; i++) {
 			if (typeDeclarations[i] instanceof CjVirtualClassDeclaration) {

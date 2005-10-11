@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjVirtualClassDeclaration.java,v 1.31 2005-09-21 15:15:57 thiago Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.32 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -39,6 +39,7 @@ import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CCompilationUnit;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.export.CSourceClass;
@@ -115,7 +116,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         return originalIdent;
     }
 
-    protected CSourceClass createSourceClass(CClass owner, String prefix) {
+    protected CSourceClass createSourceClass(CClass owner, CCompilationUnit cunit, String prefix) {
         return new CCjSourceClass(
             owner,
             getTokenReference(),
@@ -125,6 +126,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
             isDeprecated(),
             false,
 			true,
+			cunit,
             this,
             perClause);
     }
@@ -142,9 +144,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     		CContext context, String ident, boolean bAbstract) 
     	throws PositionedError {
     	// generate here
-    	String implPrefix = getCClass().getQualifiedName() + "$";
-    	String ifcPrefix = getMixinIfcDeclaration().getCClass().getQualifiedName() + "$";
-        CjMixinInterfaceDeclaration ifcDecl = 
+    	CjMixinInterfaceDeclaration ifcDecl = 
             new CjMixinInterfaceDeclaration(
                 getTokenReference(),
                 ACC_PUBLIC,
@@ -157,11 +157,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
                 new JPhylum[0]
             ); 
         
-        ifcDecl.generateInterface(
-            context.getClassReader(), 
-            getMixinIfcDeclaration().getCClass(), 
-            ifcPrefix
-        );
+        getMixinIfcDeclaration().addInners(new JTypeDeclaration[] {ifcDecl });
         
         /* determine if the class is abstract */
         int abstractModifier = bAbstract ? ACC_ABSTRACT : 0;
@@ -184,11 +180,8 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
                 false
             );
         
-        implDecl.generateInterface(
-            context.getClassReader(),   
-            this.getCClass(), 
-            implPrefix
-        );
+        // add inners
+        addInners(new JTypeDeclaration[] {implDecl });
         
         implDecl.getCClass().close(
             implDecl.getInterfaces(),
@@ -201,10 +194,6 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         
         implDecl.getCClass().setImplicit(true);
         ifcDecl.getCClass().setImplicit(true);
-        
-        // add inners
-        addInners(new JTypeDeclaration[] {implDecl });
-        getMixinIfcDeclaration().addInners(new JTypeDeclaration[] {ifcDecl });
         
         return implDecl;
     }

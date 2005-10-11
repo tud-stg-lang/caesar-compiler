@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjDeploymentSupportClassDeclaration.java,v 1.8 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CjDeploymentSupportClassDeclaration.java,v 1.9 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -40,43 +40,6 @@ import org.caesarj.util.TokenReference;
  * @author Jürgen Hallpap
  */
 public class CjDeploymentSupportClassDeclaration extends CjClassDeclaration {
-
-    private CjClassDeclaration crosscuttingClass;
-
-    private String postfix;
-
-    public CjDeploymentSupportClassDeclaration(
-        TokenReference where,
-        int modifiers,
-        String ident,
-        CReferenceType superClass,
-        CReferenceType[] interfaces,
-        JFieldDeclaration[] fields,
-        JMethodDeclaration[] methods,
-        JTypeDeclaration[] inners,
-        JPhylum[] initializers,
-        JavadocComment javadoc,
-        JavaStyleComment[] comment,
-        CjClassDeclaration crosscuttingClass,
-        String postfix) {
-        this(
-            where,
-            modifiers,
-            ident,
-            superClass,
-            interfaces,
-            fields,
-            methods,
-            inners,
-            initializers,
-            javadoc,
-            comment,
-            CjPointcutDeclaration.EMPTY,
-            CjAdviceDeclaration.EMPTY,
-            null,
-            crosscuttingClass,
-            postfix);
-    }
 
     public CjDeploymentSupportClassDeclaration(
         TokenReference where,
@@ -111,9 +74,6 @@ public class CjDeploymentSupportClassDeclaration extends CjClassDeclaration {
             pointcuts,
             advices,
             declares);
-
-        this.crosscuttingClass = crosscuttingClass;
-        this.postfix = postfix;
     }
 
     

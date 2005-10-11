@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjMixinSourceClass.java,v 1.5 2005-07-20 10:10:17 gasiunas Exp $
+ * $Id: CCjMixinSourceClass.java,v 1.6 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -52,6 +52,7 @@ public class CCjMixinSourceClass extends CCjSourceClass
 		String qualifiedName,
 		boolean deprecated,
 		boolean synthetic,
+		CCompilationUnit cunit, 
 		JTypeDeclaration decl,
 		CCjSourceClass originClass)
 	{
@@ -64,6 +65,7 @@ public class CCjMixinSourceClass extends CCjSourceClass
 			deprecated,
 			synthetic,
 			false,
+			cunit,
 			decl,			
 			null);
 		

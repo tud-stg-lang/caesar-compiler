@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCompilationUnitContext.java,v 1.11 2005-09-21 15:15:57 thiago Exp $
+ * $Id: CCompilationUnitContext.java,v 1.12 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -68,22 +68,10 @@ public class CCompilationUnitContext extends CContext {
 	public CCompilationUnitContext(
 		CompilerBase compiler,
 		KjcEnvironment environment,
-		JCompilationUnit cunit,
-		Vector classes) {
+		CCompilationUnit cunit) {
 		super(null, environment);
 		this.compiler = compiler;
-		this.cunit = cunit;
-		this.classes = classes;
-	}
-
-	/**
-	 * Constructs a compilation unit context.
-	 */
-  //Walter: the visibility was changed from package protected to public
-	public CCompilationUnitContext(CompilerBase compiler,
-		KjcEnvironment environment,
-		JCompilationUnit cunit) {
-		this(compiler, environment, cunit, null);
+		this.cunit = cunit;		
 	}
 
 	// ----------------------------------------------------------------------
@@ -116,7 +104,7 @@ public class CCompilationUnitContext extends CContext {
 	 */
 	public CClass lookupClass(CClass caller, String name)
 		throws UnpositionedError {
-		return cunit.getExport().lookupClass(caller, name);
+		return cunit.lookupClass(caller, name);
 	}
 
 	// ----------------------------------------------------------------------
@@ -180,36 +168,37 @@ public class CCompilationUnitContext extends CContext {
 	// ----------------------------------------------------------------------
 
 	/**
-	 * Adds a class to generate
-	 */
-	public void addSourceClass(CSourceClass clazz) {
-		classes.addElement(clazz);
-	}
-
-	/**
 	 * Returns the cunit.
 	 * @return CCompilationUnit
 	 */
 	public CCompilationUnit getCunit() {
-		return cunit.getExport();
+		return cunit;
 	}
 	
 	public JCompilationUnit getCunitDecl() {
-		return cunit;
+		return cunit.getCompUnitDecl();
 	}
 	
 	public String toString() {
 	    return "CU-ctx";
 	}
 	
+	/**
+	 * Adds a class to generate.
+	 */
+	public void addSourceClass(CSourceClass clazz) {
+		allSourceClasses.add(clazz);
+	}
+	
+	public Vector<CSourceClass> getSourceClasses() {
+		return allSourceClasses;
+	}
+		
 	// ----------------------------------------------------------------------
 	// DATA MEMBERS
 	// ----------------------------------------------------------------------
 
-	private /*final*/
-	CompilerBase compiler;
-	private /*final*/
-	Vector classes;
-	private /*final*/
-	JCompilationUnit cunit;
+	private final CompilerBase compiler;
+	private final CCompilationUnit cunit;
+	private final Vector<CSourceClass> allSourceClasses = new Vector<CSourceClass>();
 }

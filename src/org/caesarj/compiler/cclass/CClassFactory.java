@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassFactory.java,v 1.34 2005-09-27 13:43:53 gasiunas Exp $
+ * $Id: CClassFactory.java,v 1.35 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -29,10 +29,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.CjMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjMixinInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
@@ -64,23 +62,14 @@ public class CClassFactory implements CaesarConstants {
 	private String prefix;
     CClass interfaceOwner;
 
-	private KjcEnvironment environment;
-	private TypeFactory typeFactory;
-
-	private TokenReference where;
-
 	/**
 	 * Constructor for CaesarDeploymentUtils.
 	 */
 	public CClassFactory(
-		CjVirtualClassDeclaration caesarClass,
-		KjcEnvironment environment
-    ) {
+		CjVirtualClassDeclaration caesarClass
+	) {
 		this.caesarClass = caesarClass;
-		this.where = caesarClass.getTokenReference();
-		this.typeFactory = environment.getTypeFactory();
-		this.environment = environment;
-
+	
 		initState();
 	}
 
@@ -140,10 +129,6 @@ public class CClassFactory implements CaesarConstants {
 				new JTypeDeclaration[0],
 				new JPhylum[0]);                  
 
-        cclassInterface._generateInterface(
-            environment.getClassReader(), interfaceOwner, prefix
-        );
-
         // link this two AST elements
         caesarClass.setMixinIfcDeclaration(cclassInterface);
         cclassInterface.setCorrespondingClassDeclaration(caesarClass);
@@ -151,44 +136,7 @@ public class CClassFactory implements CaesarConstants {
         
 		return cclassInterface;
 	}
-        
-    private String getPrefix(String qualifiedName) {
-        String res = "";
-
-        int i = qualifiedName.lastIndexOf('$');
-        
-        if(i < 0) {
-            i = qualifiedName.lastIndexOf('/'); 
-        }
-        
-        if(i >= 0) {
-            res = qualifiedName.substring(0, i+1);
-        }
-        
-		return res;
-	}
-
-	public void addCaesarClassInterfaceInners() {        
-		caesarClass.getMixinIfcDeclaration().generateInterfaceInners(
-            environment.getClassReader(),            
-            prefix);            
-    }
-
-	private JMethodDeclaration createInterfaceMethod(JMethodDeclaration m) {
-		CjMethodDeclaration meth = new CjMethodDeclaration(
-			where,
-			ACC_PUBLIC | ACC_ABSTRACT,
-			m.getReturnType(),
-			m.getIdent(),
-			m.getParameters(),
-			m.getExceptions(),
-			null,
-			null,
-			null);
-		meth.setGenerated();
-		return meth;
-	}
-    
+   
 	public void modifyCaesarClass(TypeFactory factory) {    	
 		caesarClass.setInterfaces(CReferenceType.EMPTY);
 		caesarClass.setSuperClass(null);				
@@ -228,43 +176,7 @@ public class CClassFactory implements CaesarConstants {
                 	    null, null
                 	);
                 decl.setGenerated();                
-                accessors.add(decl);  
-                  
-                /*
-                accessors.add(
-                	new JMethodDeclaration(
-                	    where,
-                	    CModifier.ACC_PUBLIC,
-                	    new CVoidType(),
-                	    CaesarConstants.SETTER_PREFIX+f.getVariable().getIdent(),
-                	    new JFormalParameter[] {
-                	        new JFormalParameter(
-                	            where,
-                	            JFormalParameter.DES_PARAMETER,
-                	            f.getType(factory),
-                	            "_arg_",
-                	            false)
-                	    },
-                	    CReferenceType.EMPTY,
-                	    new JBlock(
-                	        where, 
-                	        new JStatement[]{
-                	            new JExpressionStatement(
-                	                where,
-	                	            new JAssignmentExpression(
-	                	                where,                	                
-	                	                new JNameExpression(where, f.getVariable().getIdent()),
-	                	                new JNameExpression(where, "_arg_")
-	            	                ),
-	            	                null
-        	                	)
-            	            }, 
-                	        null
-            	        ),
-                	    null, null
-                	)
-                );
-                */ 
+                accessors.add(decl);
             }
         }
 		

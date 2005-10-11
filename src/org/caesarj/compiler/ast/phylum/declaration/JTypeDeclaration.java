@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclaration.java,v 1.50 2005-09-21 15:15:57 thiago Exp $
+ * $Id: JTypeDeclaration.java,v 1.51 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -46,6 +46,7 @@ import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CMethodContext;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CCompilationUnit;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceField;
@@ -54,6 +55,7 @@ import org.caesarj.compiler.types.CDependentNameType;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.util.CWarning;
+import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -105,27 +107,29 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     }
 
     // CTODO think about this one
-    protected CSourceClass createSourceClass(CClass owner, String prefix) {
+    protected CSourceClass createSourceClass(CClass owner, CCompilationUnit cunit, String prefix) {
         return new CSourceClass(
-            owner,
+            owner,            
             getTokenReference(),
             modifiers,
             ident,
             prefix + ident,
             isDeprecated(),
             false,
+            cunit,
             this);
     }
-
+    
     /**
      * Defines an intermediate external representation of this class to use internally
-     *parameters[i]
+     * parameters[i]
      */
     public void generateInterface(
         ClassReader classReader,
+        CCompilationUnit cunit,
         CClass owner,
         String prefix) {
-        sourceClass = createSourceClass(owner, prefix);
+        sourceClass = createSourceClass(owner, cunit, prefix);
 
         setInterface(sourceClass);
 
@@ -133,13 +137,23 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         for (int i = 0; i < inners.length; i++) {
             inners[i].generateInterface(
                 classReader,
-                sourceClass,
+                sourceClass,                
                 sourceClass.getQualifiedName() + "$");
             innerClasses[i] = inners[i].getCClass().getAbstractType();
         }
 
         sourceClass.setInnerClasses(innerClasses); // prevent interface
         uniqueSourceClass = classReader.addSourceClass(sourceClass);
+    }
+    
+    final public void generateInterface(
+        ClassReader classReader,
+        CClass owner,
+        String prefix) {
+    	if (owner == null) {
+    		throw new InconsistencyException("The owner of the class is not specified");
+    	}
+    	generateInterface(classReader, null, owner, prefix);
     }
 
     public void addInners(JTypeDeclaration newDecls[]) {
@@ -151,7 +165,11 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         if (isExported()) {
 	        CReferenceType[] newInnerRefs = new CReferenceType[newDecls.length];
 	        for(int i=0; i<newInnerRefs.length; i++) {
-	            newInnerRefs[i] = newDecls[i].getCClass().getAbstractType();
+	        	newDecls[i].generateInterface(
+	        			getContext().getClassReader(),
+	                    sourceClass,                
+	                    sourceClass.getQualifiedName() + "$");
+	        	newInnerRefs[i] = newDecls[i].getCClass().getAbstractType();
 	        }
 	        
 	        getCClass().addInnerClass(newInnerRefs);
@@ -699,9 +717,9 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
      * @exception PositionedError Error catched as soon as possible (for subclasses)
      */
     public void checkTypeBody(CContext context) throws PositionedError {
+    	
+    	context.addSourceClass(sourceClass);
         
-        context.addSourceClass(sourceClass);
-
         // this has been moved from checkInterfaces to here
         // reason: dependent types in signatures are resolved after the checkInterface step
         for (int i = 0; i < methods.length; i++) {            
@@ -755,14 +773,14 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     // PROTECTED UTILITIES
     // ----------------------------------------------------------------------
 
+    /**
+     * Returns inner type declarations. The array is cloned to prevent modifications 
+     */
     public JTypeDeclaration[] getInners() {
-        return inners;
+    	JTypeDeclaration[] innersCopy = new JTypeDeclaration[inners.length];
+		System.arraycopy(inners, 0, innersCopy, 0, inners.length);
+        return innersCopy;
     }
-
-    public void setInners(JTypeDeclaration[] inners) {
-        this.inners = inners;
-    }
-
 
     public CClass getOwner() {
         return getCClass().getOwner();
@@ -794,8 +812,8 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     public String getIdent() {return ident;}
 
     public void recurse(IVisitor s) {
-        for (int i = 0; i < inners.length; i++) {
-            inners[i].accept(s);
+        for (JTypeDeclaration inner: getInners()) {
+            inner.accept(s);
         }
         for (int i = 0; i < fields.length; i++) {
             fields[i].accept(s);
@@ -813,6 +831,20 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     
     public String toString() {
         return ident;
+    }
+    
+    /**
+     * @return	the interface
+     */
+    public CSourceClass getCClass() {
+    	return (CSourceClass)super.getCClass();
+    }
+    
+    public CClassContext getContext() {
+    	if (self == null) {
+    		self = constructContext(this.getCClass().getOwnerContext());
+    	}
+    	return self;
     }
     
     public void clearContext() {
@@ -847,8 +879,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     // Definitive data
     protected CSourceClass sourceClass;
     // andreeas start
-    //private	boolean			uniqueSourceClass = true;
-    protected boolean uniqueSourceClass = true;
+    private boolean uniqueSourceClass = true;
     //andreas end
-    protected CClassContext self;
+    private CClassContext self;
 }

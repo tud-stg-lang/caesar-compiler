@@ -20,14 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JClassFieldDeclarator.java,v 1.3 2005-01-24 16:52:58 aracic Exp $
+ * $Id: JClassFieldDeclarator.java,v 1.4 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
 
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.visitor.IVisitor;
-import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.CSimpleBodyContext;
@@ -113,7 +112,6 @@ public class JClassFieldDeclarator extends JStatement {
    * @param	code		the code list
    */
   public void genCode(GenerationContext context) {
-    CodeSequence        code = context.getCodeSequence();
     TypeFactory         factory = context.getTypeFactory();
 
     if (decl.getField().getConstantValue(factory) == null) {

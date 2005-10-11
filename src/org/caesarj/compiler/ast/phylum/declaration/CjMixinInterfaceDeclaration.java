@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjMixinInterfaceDeclaration.java,v 1.18 2005-09-27 13:43:53 gasiunas Exp $
+ * $Id: CjMixinInterfaceDeclaration.java,v 1.19 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.constants.CaesarConstants;
@@ -41,7 +40,9 @@ import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.CjExternClassContext;
 import org.caesarj.compiler.export.CCjIfcSourceClass;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CCompilationUnit;
 import org.caesarj.compiler.export.CMethod;
+import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
@@ -150,11 +151,11 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
 	    
 	    try {	        
 		    for (int i = 0; i < extendedTypes.length; i++) {
-	            extendedTypes[i] = (CReferenceType)extendedTypes[i].checkType(self); 
+	            extendedTypes[i] = (CReferenceType)extendedTypes[i].checkType(getContext()); 
 	        }
 		    
 		    for (int i = 0; i < implementedTypes.length; i++) {
-	            implementedTypes[i] = (CReferenceType)implementedTypes[i].checkType(self); 
+	            implementedTypes[i] = (CReferenceType)implementedTypes[i].checkType(getContext()); 
 	        }
 	    }
 	    catch (UnpositionedError e) {
@@ -312,7 +313,7 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
         			null,
         			null);
                 
-                decl.checkInterface(self);
+                decl.checkInterface(getContext());
                 
                 interfaceMethodDecls.add(decl);
                 
@@ -345,45 +346,9 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
         }
     }
     
-    // IVICA generateInterface method has been splited into
-    // generating sourceClass and addding inners to sourceClass as needed by CClassFactory
-	public void _generateInterface(
-		ClassReader classReader,
-		CClass owner,
-		String prefix
-    ) {
-	    sourceClass = 
-            new CCjIfcSourceClass(
-                owner, 
-                getTokenReference(), 
-                modifiers, 
-                ident, 
-                prefix + ident, 
-                isDeprecated(), 
-                false, 
-                this
-            ); 
-	    setInterface(sourceClass);		   
-	}
-    
-    public void generateInterfaceInners(
-        ClassReader classReader,
-        String prefix
-    ) {
-        CReferenceType[]    innerClasses = new CReferenceType[inners.length];
-        for (int i = 0; i < inners.length; i++) {
-          //inners[i].generateInterface(classReader, sourceClass, sourceClass.getQualifiedName() + "$");
-          innerClasses[i] = inners[i].getCClass().getAbstractType();
-        }
-
-        sourceClass.setInnerClasses(innerClasses);
-        uniqueSourceClass = classReader.addSourceClass(sourceClass);
-    }
-
 	protected int getAllowedModifiers()	{
 		return 	super.getAllowedModifiers() | ACC_MIXIN_INTERFACE;
 	}	
-
     
     // IVICA added reference to corresponding CjClassDeclaration    
     public void setCorrespondingClassDeclaration(CjVirtualClassDeclaration caesarClassDeclaration)  {
@@ -405,6 +370,22 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
     
     public void setOriginalCompUnit(JCompilationUnit cu) {
     	originalCompUnit = cu;
+    }
+    
+    /**
+     * Create export class for mixin interface
+     */
+    protected CSourceClass createSourceClass(CClass owner, CCompilationUnit cunit, String prefix) {
+        return new CCjIfcSourceClass(
+            owner,            
+            getTokenReference(),
+            modifiers,
+            ident,
+            prefix + ident,
+            isDeprecated(),
+            false,
+            cunit,
+            this);
     }
 
     /**

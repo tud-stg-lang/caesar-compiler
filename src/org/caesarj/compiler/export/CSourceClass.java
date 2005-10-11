@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CSourceClass.java,v 1.13 2005-09-13 16:07:07 gasiunas Exp $
+ * $Id: CSourceClass.java,v 1.14 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -51,6 +51,7 @@ import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.AdditionalGenerationContext;
+import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.context.GenerationContext;
 import org.caesarj.compiler.optimize.BytecodeOptimizer;
 import org.caesarj.compiler.types.CReferenceType;
@@ -82,6 +83,7 @@ public class CSourceClass extends CClass {
         String qualifiedName,
         boolean deprecated,
         boolean synthetic,
+        CCompilationUnit cunit,
         JTypeDeclaration decl) {
         super(
             owner,
@@ -93,6 +95,7 @@ public class CSourceClass extends CClass {
             deprecated,
             synthetic);
         this.decl = decl;
+        this.cunit = cunit;
     }
 
     /**
@@ -682,6 +685,20 @@ public class CSourceClass extends CClass {
             this.clazz = clazz;
         }
     }
+    
+    // IVICA: get typedeclaration of this source class
+    public JTypeDeclaration getTypeDeclaration() {
+        return decl;
+    }
+    
+    public CContext getOwnerContext() {
+    	if (owner != null) {
+    		return ((CSourceClass)owner).getTypeDeclaration().getContext();
+    	}
+    	else {
+    		return cunit.getCompUnitDecl().getContext();
+    	}
+    }
 
     // ----------------------------------------------------------------------
     // DATA MEMBERS
@@ -692,4 +709,5 @@ public class CSourceClass extends CClass {
     private Hashtable outers;
     private int syntheticFieldCount;
     protected JTypeDeclaration decl;
+    protected CCompilationUnit cunit;
 }

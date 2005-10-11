@@ -20,12 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassPreparation.java,v 1.42 2005-09-27 13:43:53 gasiunas Exp $
+ * $Id: CClassPreparation.java,v 1.43 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -33,11 +32,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.caesarj.compiler.AstGenerator;
-import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
-import org.caesarj.compiler.ast.phylum.declaration.CjInterfaceDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
@@ -52,7 +49,6 @@ import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarConstants;
-import org.caesarj.compiler.context.CCompilationUnitContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CCjMixinSourceClass;
 import org.caesarj.compiler.export.CCjSourceClass;
@@ -105,7 +101,6 @@ public class CClassPreparation implements CaesarConstants {
 		KjcEnvironment environment,
 		InnerAccessor innerAccessor
     ) {
-        List newTypeDeclarations = new ArrayList();
         JTypeDeclaration typeDeclarations[] = innerAccessor.getInners();
         
         for (int i = 0; i < typeDeclarations.length; i++) {
@@ -115,45 +110,33 @@ public class CClassPreparation implements CaesarConstants {
                     (CjVirtualClassDeclaration) typeDeclarations[i];
 
                 CClassFactory factory =
-                    new CClassFactory(caesarClass, environment);
+                    new CClassFactory(caesarClass);
 
                 // create class interface                           
                 JTypeDeclaration cclassIfcDecl = 
-                	factory.createCaesarClassInterface();               
+                	factory.createCaesarClassInterface();
+                
+                innerAccessor.addInners(
+                        new JTypeDeclaration[] { cclassIfcDecl }); 
         
                 // add implements cclass interface and rename supertype to *_Impl  
                 factory.modifyCaesarClass(environment.getTypeFactory());
                 
-                newTypeDeclarations.add(cclassIfcDecl);
-
                 if (caesarClass.getInners().length > 0) {
                     //consider nested types
                     prepareCaesarClass(
                         environment, new ClassDeclarationInnerAccessor(caesarClass));
-                }
-                
-                // this has to be called after inner types have been handled
-                // (for creating cclass interface inner source class exports)
-                factory.addCaesarClassInterfaceInners();
+                }   
             }
-        }
-
-
-        innerAccessor.addInners(
-            (JTypeDeclaration[]) newTypeDeclarations.toArray(
-                new JTypeDeclaration[0]));             
-	}
-         
+        }       
+	}    
     
 	public void generateFactoryMethod(
         KjcEnvironment environment,
 	    JavaTypeNode inner,
 	    CjVirtualClassDeclaration decl
     ) {
-	    TypeFactory typeFactory = environment.getTypeFactory();
-        ClassReader classReader = environment.getClassReader();
-        
-        CClass innerClass = inner.getCClass();
+	    CClass innerClass = inner.getCClass();
                                     
         if ((decl.getModifiers() & ACC_ABSTRACT) == 0) {
         	/* create concrete factory method inside concrete collaboration */
@@ -226,11 +209,7 @@ public class CClassPreparation implements CaesarConstants {
 	    JavaTypeNode inner,
 	    CjVirtualClassDeclaration decl
     ) {
-	    TypeFactory typeFactory = environment.getTypeFactory();
-        
-        CjVirtualClassDeclaration innerDecl = inner.getDeclaration();
-        CjInterfaceDeclaration innerIfcDecl = innerDecl.getMixinIfcDeclaration();
-        
+	    CjVirtualClassDeclaration innerDecl = inner.getDeclaration();
         TokenReference where = decl.getTokenReference();
                 
         String wrapperClassIdent = inner.getMixin().getQualifiedName().getIdent();
@@ -370,19 +349,13 @@ public class CClassPreparation implements CaesarConstants {
         JCompilationUnit cu
     ) {
         CaesarTypeSystem caesarTypeSystem = environment.getCaesarTypeSystem(); 
-        TypeFactory typeFactory = environment.getTypeFactory();
-        ClassReader classReader = environment.getClassReader();
-        
-        CCompilationUnitContext context =
-            new CCompilationUnitContext(compilerBase, environment, cu);
-        
         Collection typesToGenerate = caesarTypeSystem.getJavaTypeGraph().getTypesToGenerate();        
         
         for (Iterator it = typesToGenerate.iterator(); it.hasNext();) {
             JavaTypeNode item = (JavaTypeNode) it.next();
                         
             item.setCClass(
-                createMixinCloneCClass(item, context)
+                createMixinCloneCClass(item, cu.getContext())
             );            
         }
     }
@@ -427,6 +400,7 @@ public class CClassPreparation implements CaesarConstants {
                 node.getQualifiedName().toString(),
                 false, // deprecated?
                 false, // synthetic?
+                null,
                 null, // CTODO: declaration unit is null?
 				mixinClass
             );
@@ -482,18 +456,12 @@ public class CClassPreparation implements CaesarConstants {
         JCompilationUnit cu
     ) {
         CaesarTypeSystem caesarTypeSystem = environment.getCaesarTypeSystem(); 
-        TypeFactory typeFactory = environment.getTypeFactory();
-        ClassReader classReader = environment.getClassReader();
-        
-        CCompilationUnitContext context =
-            new CCompilationUnitContext(compilerBase, environment, cu);
-        
         Collection typesToGenerate = caesarTypeSystem.getJavaTypeGraph().getTypesToGenerate();        
         
         for (Iterator it = typesToGenerate.iterator(); it.hasNext();) {
             JavaTypeNode item = (JavaTypeNode) it.next();
                         
-            completeMixinCloneCClass(item, context);        
+            completeMixinCloneCClass(item, cu.getContext());        
         }
     }
     
@@ -619,7 +587,7 @@ public class CClassPreparation implements CaesarConstants {
 		}
 
         public void addInners(JTypeDeclaration[] inners) {
-            cd.getMixinIfcDeclaration().setInners(inners);
+            cd.getMixinIfcDeclaration().addInners(inners);
         }
     }
     
@@ -636,18 +604,7 @@ public class CClassPreparation implements CaesarConstants {
         }
 
         public void addInners(JTypeDeclaration[] inners) {
-            JTypeDeclaration cuInners[] = cu.getInners(); 
-            JTypeDeclaration newInners[] = new JTypeDeclaration[cuInners.length + inners.length];
-            
-            for(int i=0; i<cuInners.length; i++)
-                newInners[i] = cuInners[i];
-            
-            for(int i=0; i<inners.length; i++)
-                newInners[cuInners.length+i] = inners[i];
-            
-            cu.setInners(newInners);
+        	cu.addInners(inners);
         }
     }
-
-
 }

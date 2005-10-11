@@ -20,12 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjClassDeclaration.java,v 1.42 2005-09-21 15:15:57 thiago Exp $
+ * $Id: CjClassDeclaration.java,v 1.43 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -56,12 +55,12 @@ import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CContext;
-import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.context.CjExternClassContext;
 import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CCjAdvice;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CCompilationUnit;
 import org.caesarj.compiler.export.CMethod;
 import org.caesarj.compiler.export.CModifier;
 import org.caesarj.compiler.export.CSourceClass;
@@ -405,7 +404,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
     /** The declared pointcuts */
     protected CjPointcutDeclaration[] pointcuts;
 
-    protected CSourceClass createSourceClass(CClass owner, String prefix) {
+    protected CSourceClass createSourceClass(CClass owner, CCompilationUnit cunit, String prefix) {
         return new CCjSourceClass(
             owner,
             getTokenReference(),
@@ -415,24 +414,11 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
             isDeprecated(),
             false,
 			false,
+			cunit,
             this,
             perClause);
     }
 
-    public void append(JTypeDeclaration type) {
-        JTypeDeclaration[] newInners =
-            (JTypeDeclaration[])Array.newInstance(
-                JTypeDeclaration.class,
-                inners.length + 1);
-        System.arraycopy(inners, 0, newInners, 0, inners.length);
-        newInners[inners.length] = type;
-        setInners(newInners);
-    }
-
-    public CTypeContext getTypeContext() {
-        return self;
-    } 
-    
     /**
      * Resolves the binding and providing references. Of course it calls the
      * super implementation of the method also.
@@ -474,7 +460,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
 
         //ckeckInterface of the pointcuts
         for (int j = 0; j < pointcuts.length; j++) {
-            pointcuts[j].checkInterface(self);
+            pointcuts[j].checkInterface(getContext());
         }
 
         /*
@@ -493,14 +479,14 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
             */
 
             // FJADD
-            CSourceField field = fields[i].checkInterface(self);
+            CSourceField field = fields[i].checkInterface(getContext());
 
             field.setPosition(i);
 
             hashField.put(field.getIdent(), field);
         }
         if (generatedFields > 0) {
-            CSourceField field = outerThis.checkInterface(self);
+            CSourceField field = outerThis.checkInterface(getContext());
 
             field.setPosition(hashField.size());
 
@@ -561,7 +547,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
 
         //ckeckInterface of the advices
         for (int j = 0; j < advices.length; j++) {
-            advices[j].checkInterface(self);
+            advices[j].checkInterface(getContext());
             //during the following compiler passes
             //the advices should be treated like methods
             getCjSourceClass().addMethod((CCjAdvice)advices[j].getMethod());
@@ -693,7 +679,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
         
         if (advices != null) {
             for (int i = 0; i < advices.length; i++) {
-                advices[i].checkBody1(self);
+                advices[i].checkBody1(getContext());
             }
         }
 

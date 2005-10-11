@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjSourceClass.java,v 1.19 2005-09-08 16:27:36 gasiunas Exp $
+ * $Id: CCjSourceClass.java,v 1.20 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -88,6 +88,7 @@ public class CCjSourceClass extends CSourceClass
 		boolean deprecated,
 		boolean synthetic,
 		boolean virtual,
+		CCompilationUnit cunit, 
 		JTypeDeclaration decl)
 	{
 		this(
@@ -99,6 +100,7 @@ public class CCjSourceClass extends CSourceClass
 			deprecated,
 			synthetic,
 			virtual,
+			cunit,
 			decl,
 			null);
 	}
@@ -112,6 +114,7 @@ public class CCjSourceClass extends CSourceClass
 		boolean deprecated,
 		boolean synthetic,
 		boolean virtual,
+		CCompilationUnit cunit,
 		JTypeDeclaration decl,
 		CaesarPointcut perClause)
 	{
@@ -123,6 +126,7 @@ public class CCjSourceClass extends CSourceClass
 			qualifiedName,
 			deprecated,
 			synthetic,
+			cunit,
 			decl);
 
 		this.virtual = virtual;
@@ -304,12 +308,7 @@ public class CCjSourceClass extends CSourceClass
 		return declares;
 	}
     
-    // IVICA: get typedeclaration of this source class
-    public JTypeDeclaration getTypeDeclaration() {
-        return decl;
-    }
-
-	/**
+    /**
 	 * Sets the perClause.
 	 * @param perClause The perClause to set
 	 */
@@ -674,7 +673,7 @@ public class CCjSourceClass extends CSourceClass
 		for (int i = 0; i < parameters.length; i++) {
 		    
 			if (! parameters[i].isGenerated()) {
-				CTypeContext context = pointcutDecl.getOriginalClass().getTypeContext();
+				CTypeContext context = pointcutDecl.getOriginalClass().getContext();
 			    try {
 			        CType type = parameters[i].getType().checkType(context);
 			        parameterSignatures.add(type.getSignature());

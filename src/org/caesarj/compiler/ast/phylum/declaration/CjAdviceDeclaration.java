@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjAdviceDeclaration.java,v 1.17 2005-09-27 13:42:00 gasiunas Exp $
+ * $Id: CjAdviceDeclaration.java,v 1.18 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -198,10 +198,9 @@ public class CjAdviceDeclaration
         // It there's an original class, use it to resolve the parameters types
         CBinaryTypeContext typeContext = null;
         CClassContext c = null;
-        if (this.originalClass != null && this.originalClass.self != null) {            
-            c = 
-                originalClass.constructContext(
-                        originalClass.self.getCompilationUnitContext());
+        if (this.originalClass != null) {            
+            c = originalClass.constructContext(
+                        originalClass.getContext().getCompilationUnitContext());
             
             typeContext =
                 new CBinaryTypeContext(
@@ -308,10 +307,10 @@ public class CjAdviceDeclaration
         
         // Create an advice context, using the class where the advice was declared.
         CClassContext adviceContext = context;
-        if (this.originalClass != null && this.originalClass.self != null) {            
+        if (this.originalClass != null) {            
             adviceContext = 
                 originalClass.constructContext(
-                        originalClass.self.getCompilationUnitContext());
+                        originalClass.getContext().getCompilationUnitContext());
         }
         
         // Check the body using a regular context

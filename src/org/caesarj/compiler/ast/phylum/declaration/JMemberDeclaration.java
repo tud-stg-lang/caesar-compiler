@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMemberDeclaration.java,v 1.6 2005-05-12 09:29:35 meffert Exp $
+ * $Id: JMemberDeclaration.java,v 1.7 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -32,6 +32,7 @@ import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CField;
 import org.caesarj.compiler.export.CMember;
 import org.caesarj.compiler.export.CMethod;
+import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.TokenReference;
 
 
@@ -112,8 +113,8 @@ public abstract class JMemberDeclaration extends JPhylum {
    * @return	the interface
    */
   public CClass getCClass() {
-  	if(export == null){
-  		return null; 
+  	if (export == null){
+  		throw new InconsistencyException("The member is not exported");
   	}
     return export.getCClass();
   }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCompilationUnit.java,v 1.4 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CCompilationUnit.java,v 1.5 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -30,6 +30,7 @@ import java.util.Hashtable;
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JClassImport;
+import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.JPackageImport;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.types.TypeFactory;
@@ -52,12 +53,14 @@ public class CCompilationUnit {
 		String packageName,
 		JClassImport[] importedClasses,
 		JPackageImport[] importedPackages,
+		JCompilationUnit cunitDecl,
 		Hashtable loadedClasses) {
 		this.packageName = packageName;
 		this.importedClasses = importedClasses;
 		this.importedPackages = importedPackages;
 		this.loadedClasses = loadedClasses;
 		this.environment = environment;
+		this.cunitDecl = cunitDecl;
 	}
 
 	// ----------------------------------------------------------------------
@@ -184,6 +187,13 @@ public class CCompilationUnit {
 	public JPackageImport[] getImportedPackages() {
 		return importedPackages;
 	}
+	
+	/**
+	 * Returns corresponding compilation unit declaration 
+	 */
+	public JCompilationUnit getCompUnitDecl() {
+		return cunitDecl;
+	}
 
 	// ----------------------------------------------------------------------
 	// DATA MEMBERS
@@ -196,5 +206,5 @@ public class CCompilationUnit {
 
 	private final Hashtable loadedClasses;
 	private final KjcEnvironment environment;
-
+	private final JCompilationUnit cunitDecl;
 }

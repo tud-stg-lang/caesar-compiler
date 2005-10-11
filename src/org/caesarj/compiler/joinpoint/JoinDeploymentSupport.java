@@ -20,16 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JoinDeploymentSupport.java,v 1.2 2005-03-30 07:24:06 gasiunas Exp $
+ * $Id: JoinDeploymentSupport.java,v 1.3 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
@@ -51,28 +46,25 @@ public class JoinDeploymentSupport implements CaesarConstants {
 	/**
 	 * Generates for every nested crosscutting class the corresponding deployment support classes.
 	 */
-	public static void prepareForDynamicDeployment(CompilerBase compiler, JCompilationUnit cu) {
-		List newTypeDeclarations = new ArrayList();
-		JTypeDeclaration typeDeclarations[] = cu.getInners();
-		CContext ownerCtx = cu.createContext(compiler);
+	public static void prepareForDynamicDeployment(JCompilationUnit cu) {
+		boolean bNewDelarations = false;
+		CContext ownerCtx = cu.getContext();
 		
-		for (int i = 0; i < typeDeclarations.length; i++) {
+		for (JTypeDeclaration typeDecl : cu.getInners()) {
 			
-			newTypeDeclarations.add(typeDeclarations[i]);
-
-			if (typeDeclarations[i] instanceof CjVirtualClassDeclaration) {
+			if (typeDecl instanceof CjVirtualClassDeclaration) {
 
 				CjVirtualClassDeclaration caesarClass =
-					(CjVirtualClassDeclaration) typeDeclarations[i];
+					(CjVirtualClassDeclaration)typeDecl;
 				
 				if (caesarClass.getRegistryClass() != null) {
 					
 					// add the deployment support classes to the enclosing class
 					CjInterfaceDeclaration aspectIfc = caesarClass.getAspectInterface();
-					newTypeDeclarations.add(aspectIfc);
-					
 					CjClassDeclaration registryCls = caesarClass.getRegistryClass();
-					newTypeDeclarations.add(registryCls);
+					
+					cu.addInners(new JTypeDeclaration[] { aspectIfc, registryCls});
+					bNewDelarations = true;
 					
 					// join the modified and new classes
 					try {
@@ -91,37 +83,31 @@ public class JoinDeploymentSupport implements CaesarConstants {
 				}
 			}
 		}
-		if (newTypeDeclarations.size() > typeDeclarations.length) {
-			cu.setInners((JTypeDeclaration[]) newTypeDeclarations.toArray(new JTypeDeclaration[0]));
+		if (bNewDelarations) {
 			rejoinMixinInterfaces(cu.getInners(), ownerCtx);
 		}
 	}
 	
 	private static void prepareForDynamicDeployment(CjClassDeclaration cd, KjcEnvironment environment)
 	{
-	    List newInners = new LinkedList();
-	    CContext ownerCtx = (CContext)cd.getTypeContext();
+	    boolean bNewInners = false;
+	    CContext ownerCtx = (CContext)cd.getContext();
 	    
-		for (int i = 0; i < cd.getInners().length; i++)
+	    for (JTypeDeclaration inner : cd.getInners())
 		{
-			if (cd.getInners()[i] instanceof CjVirtualClassDeclaration)
+			if (inner instanceof CjVirtualClassDeclaration)
 			{
 				//create support classes for each crosscutting inner class
 				CjVirtualClassDeclaration innerCaesarClass =
-					(CjVirtualClassDeclaration) cd.getInners()[i];
+					(CjVirtualClassDeclaration)inner;
 				if (innerCaesarClass.getRegistryClass() != null)
 				{
-					DeploymentClassFactory utils =
-						new DeploymentClassFactory(
-							innerCaesarClass,
-							environment);
-
 					//add the deployment support classes to the enclosing class
 					CjInterfaceDeclaration aspectIfc = innerCaesarClass.getAspectInterface();
-					newInners.add(aspectIfc);
-					
 					CjClassDeclaration registryCls = innerCaesarClass.getRegistryClass();
-					newInners.add(registryCls);
+					
+					cd.addInners(new JTypeDeclaration[] { aspectIfc, registryCls });
+					bNewInners = true;
 										
 					//join the modified and new classes
 					try {
@@ -148,11 +134,7 @@ public class JoinDeploymentSupport implements CaesarConstants {
 			}
 		}
 
-		if (newInners.size() > 0)
-		{
-			// add new declarations as inners to cd
-			// note that addInners will update the export object in cd
-			cd.addInners((JTypeDeclaration[])newInners.toArray(new JTypeDeclaration[0]));
+		if (bNewInners)	{
 			rejoinMixinInterfaces(cd.getInners(), ownerCtx);
 		}
 	}

@@ -20,12 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjInterfaceDeclaration.java,v 1.17 2005-07-20 10:05:27 gasiunas Exp $
+ * $Id: CjInterfaceDeclaration.java,v 1.18 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
 
-import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
@@ -34,7 +33,9 @@ import org.caesarj.compiler.context.CBodyContext;
 import org.caesarj.compiler.context.CContext;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CCompilationUnit;
 import org.caesarj.compiler.export.CModifier;
+import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
@@ -112,24 +113,19 @@ public class CjInterfaceDeclaration extends JInterfaceDeclaration {
 			setModifiers(modifiers | ACC_STATIC | ACC_PUBLIC);
 		}
 	}
-
-
-    public void generateInterface(
-        ClassReader classReader,
-        CClass owner,
-        String prefix
-    ) {
-    	sourceClass = new CCjSourceClass(owner, getTokenReference(), modifiers, ident, prefix + ident, isDeprecated(), false, false, this);
-        setInterface(sourceClass);     
-        
-        CReferenceType[]    innerClasses = new CReferenceType[inners.length];
-        for (int i = 0; i < inners.length; i++) {
-          inners[i].generateInterface(classReader, sourceClass, sourceClass.getQualifiedName() + "$");
-          innerClasses[i] = inners[i].getCClass().getAbstractType();
-        }
-
-        sourceClass.setInnerClasses(innerClasses);
-        uniqueSourceClass = classReader.addSourceClass(sourceClass);    
+	
+	protected CSourceClass createSourceClass(CClass owner, CCompilationUnit cunit, String prefix) {
+        return new CCjSourceClass(
+        		owner, 
+        		getTokenReference(), 
+        		modifiers, 
+        		ident, 
+        		prefix + ident, 
+        		isDeprecated(), 
+        		false, 
+        		false,
+        		cunit,
+        		this);
     }
 
 	/**

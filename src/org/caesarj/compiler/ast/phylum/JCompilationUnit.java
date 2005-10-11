@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JCompilationUnit.java,v 1.16 2005-09-21 15:15:57 thiago Exp $
+ * $Id: JCompilationUnit.java,v 1.17 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -69,6 +69,9 @@ public class JCompilationUnit extends JPhylum {
 		this.importedPackages = importedPackages;
 		this.importedClasses = importedClasses;
 		this.typeDeclarations = typeDeclarations;
+		if (!packageName.isCollaboration()) {
+			generateInterfaces();
+		}
 	}
 
 	// ----------------------------------------------------------------------
@@ -112,7 +115,6 @@ public class JCompilationUnit extends JPhylum {
 	 * the same pass.
 	 */
 	public void joinOuter(CompilerBase compiler) throws PositionedError {
-		CCompilationUnitContext context;
 		
 		if (packageName == JPackageName.UNNAMED) {
 			throw new PositionedError(
@@ -120,15 +122,7 @@ public class JCompilationUnit extends JPhylum {
 					KjcMessages.PACKAGE_IS_MISSING);
 		}
 
-		export =
-			new CCompilationUnit(
-				environment,
-				packageName.getName(),
-				importedClasses,
-				importedPackages,
-				allLoadedClasses);
-		context = new CCompilationUnitContext(compiler, environment, this);
-
+		
 		for (int i = 0; i < importedClasses.length; i++) {
 			JClassImport ic = importedClasses[i];
 
@@ -230,36 +224,27 @@ public class JCompilationUnit extends JPhylum {
 			}
 		}
 		for (int i = 0; i < typeDeclarations.length; i++) {
-			typeDeclarations[i].join(context, false);
+			typeDeclarations[i].join(getContext(), false);
 		}
 	}
 	
 	public void joinInner(CompilerBase compiler) throws PositionedError {
-		CCompilationUnitContext context;
-		context = new CCompilationUnitContext(compiler, environment, this);
-		
 		for (int i = 0; i < typeDeclarations.length; i++) {
-			typeDeclarations[i].join(context, true);
+			typeDeclarations[i].join(getContext(), true);
 		}
 	}
 	
     // IVICA
     public void createImplicitCaesarTypes(CompilerBase compiler) throws PositionedError {
-        CCompilationUnitContext context =
-            new CCompilationUnitContext(compiler, environment, this);
-        
-        for (int i = 0; i < typeDeclarations.length; i++) {
-            typeDeclarations[i].createImplicitCaesarTypes(context);
+       for (int i = 0; i < typeDeclarations.length; i++) {
+            typeDeclarations[i].createImplicitCaesarTypes(getContext());
         }
     }
 
     // IVICA
     public void adjustSuperTypes(CompilerBase compiler) throws PositionedError {
-        CCompilationUnitContext context =
-            new CCompilationUnitContext(compiler, environment, this);
-        
         for (int i = 0; i < typeDeclarations.length; i++) {
-            typeDeclarations[i].adjustSuperType(context);
+            typeDeclarations[i].adjustSuperType(getContext());
         }
     }
 
@@ -268,42 +253,26 @@ public class JCompilationUnit extends JPhylum {
 	 * @exception	PositionedError	an error with reference to the source file
 	 */
     public void checkInterface(CompilerBase compiler) throws PositionedError {
-        CCompilationUnitContext context;
-
-        context = new CCompilationUnitContext(compiler, environment, this);
-
         for (int i = 0; i < typeDeclarations.length; i++) {
-            typeDeclarations[i].checkInterface(context);
+            typeDeclarations[i].checkInterface(getContext());
         }
     }
 
     public void checkDependentTypes(CompilerBase compiler) throws PositionedError {
-        CCompilationUnitContext context;
-
-        context = new CCompilationUnitContext(compiler, environment, this);
-
         for (int i = 0; i < typeDeclarations.length; i++) {
-            typeDeclarations[i].checkDependentTypes(context);
+            typeDeclarations[i].checkDependentTypes(getContext());
         }
     }
 
     public void checkVirtualClassMethodSignatures(CompilerBase compiler) throws PositionedError {
-        CCompilationUnitContext context;
-
-        context = new CCompilationUnitContext(compiler, environment, this);
-
         for (int i = 0; i < typeDeclarations.length; i++) {
-            typeDeclarations[i].checkVirtualClassMethodSignatures(context);
+            typeDeclarations[i].checkVirtualClassMethodSignatures(getContext());
         }
     }
     
     public void completeCClassInterfaces(CompilerBase compiler) throws PositionedError {
-        CCompilationUnitContext context;
-
-        context = new CCompilationUnitContext(compiler, environment, this);
-
         for (int i = 0; i < typeDeclarations.length; i++) {
-            typeDeclarations[i].completeCClassInterfaces(context);
+            typeDeclarations[i].completeCClassInterfaces(getContext());
         }
     }
 
@@ -345,13 +314,10 @@ public class JCompilationUnit extends JPhylum {
 	 * @return	true iff sub tree is correct enought to check code
 	 * @exception	PositionedError	an error with reference to the source file
 	 */
-	public void checkInitializers(CompilerBase compiler, Vector classes)
+	public void checkInitializers(CompilerBase compiler)
 		throws PositionedError {
-		CCompilationUnitContext context =
-			new CCompilationUnitContext(compiler, environment, this, classes);
-
 		for (int i = 0; i < typeDeclarations.length; i++) {
-			typeDeclarations[i].checkInitializers(context);
+			typeDeclarations[i].checkInitializers(getContext());
 		}
 	}
 
@@ -363,13 +329,10 @@ public class JCompilationUnit extends JPhylum {
 	 * Check expression and evaluate and alter context
 	 * @exception	PositionedError Error catched as soon as possible
 	 */
-	public void checkBody(CompilerBase compiler, Vector classes)
+	public void checkBody(CompilerBase compiler)
 		throws PositionedError {
-		CCompilationUnitContext context =
-			new CCompilationUnitContext(compiler, environment, this, classes);
-
 		for (int i = 0; i < typeDeclarations.length; i++) {
-			typeDeclarations[i].checkTypeBody(context);
+			typeDeclarations[i].checkTypeBody(getContext());
 		}
 
 		// Check for unused class imports
@@ -406,6 +369,16 @@ public class JCompilationUnit extends JPhylum {
 	 * Walter
 	 */
 	public CCompilationUnit getExport() {
+		if (export == null) {
+			export =
+				new CCompilationUnit(
+					environment,
+					packageName.getName(),
+					importedClasses,
+					importedPackages,
+					this,
+					allLoadedClasses);
+		}
 		return export;
 	}
 	
@@ -413,8 +386,11 @@ public class JCompilationUnit extends JPhylum {
 	 * Creates compilation unit context
 	 * @return CCompilationUnitContext
 	 */
-	public CCompilationUnitContext createContext(CompilerBase compiler) {
-		return new CCompilationUnitContext(compiler, environment, this);
+	public CCompilationUnitContext getContext() {
+		if (context == null) {
+			context = new CCompilationUnitContext(environment.getCompiler(), environment, getExport());
+		}
+		return context;
 	}
 
 	// ----------------------------------------------------------------------
@@ -449,6 +425,57 @@ public class JCompilationUnit extends JPhylum {
 	public CjVirtualClassDeclaration getCollaboration() {
 	    return this.collaboration;
 	}
+	
+	/**
+	 * Returns all top level type declarations in the compilation unit. 
+	 * A copy of the array is returned.
+	 */
+	public JTypeDeclaration[] getInners() {
+		JTypeDeclaration[] innersCopy = new JTypeDeclaration[typeDeclarations.length];
+		System.arraycopy(typeDeclarations, 0, innersCopy, 0, typeDeclarations.length);
+        return innersCopy;
+	}
+	
+	public void generateInterfaces() {
+		/* export inners */
+        for(int i=0; i<typeDeclarations.length; i++) {
+        	typeDeclarations[i].generateInterface(
+	        		environment.getClassReader(),
+	                getExport(),
+	                null,
+	                getPackageName().getName() + '/');
+	    }
+    }
+	
+	public void addInners(JTypeDeclaration newDecls[]) {
+        JTypeDeclaration newInners[] = new JTypeDeclaration[typeDeclarations.length + newDecls.length];
+        System.arraycopy(typeDeclarations, 0, newInners, 0, typeDeclarations.length);
+        System.arraycopy(newDecls, 0, newInners, typeDeclarations.length, newDecls.length);
+        typeDeclarations = newInners;
+        
+        /* export inners */
+        for(int i=0; i<newDecls.length; i++) {
+        	newDecls[i].generateInterface(
+	        		environment.getClassReader(),
+	                getExport(),
+	                null,
+	                getPackageName().getName() + '/');
+	    }
+    }
+
+	public JTypeDeclaration[] getOriginalInners() {
+	    return origTypeDeclarations;
+	}
+	
+	/**
+	 * When inners have been copied, store them in the origTypeDeclarations
+	 * and set the typeDeclarations to the empty array
+	 *
+	 */
+	public void fireInnersCopied() {
+	    this.origTypeDeclarations = this.typeDeclarations;
+	    this.typeDeclarations = new JTypeDeclaration[0];
+	}
 	  
 	// ----------------------------------------------------------------------
 	// DATA MEMBERS
@@ -466,50 +493,6 @@ public class JCompilationUnit extends JPhylum {
 	private Hashtable allLoadedClasses = new Hashtable();
 	// $$$ DEFAULT VALUE IS OKAY ???
 	private CCompilationUnit export;
+	private CCompilationUnitContext context;
 	private KjcEnvironment environment;
-	public void append(JTypeDeclaration decl) {
-		JTypeDeclaration[] newTypeDeclarations =
-			new JTypeDeclaration[typeDeclarations.length + 1];
-		for (int i = 0; i < typeDeclarations.length; i++) {
-			newTypeDeclarations[i] = typeDeclarations[i];
-		}
-		newTypeDeclarations[typeDeclarations.length] = decl;
-		typeDeclarations = newTypeDeclarations;
-	}
-
-	/**
-	 * Replaces the first parameter for the second in the compilation unit.
-	 * @param decl
-	 * @param newDecl
-	 */
-	public void replace(JTypeDeclaration decl, JTypeDeclaration newDecl) {
-		for (int i = 0; i < typeDeclarations.length; i++) {
-			if (typeDeclarations[i] == decl) {
-				typeDeclarations[i] = newDecl;
-				return;
-			}
-		}
-	}
-
-	public JTypeDeclaration[] getInners() {
-		return typeDeclarations;
-	}
-
-	public void setInners(JTypeDeclaration[] newInners) {
-		typeDeclarations = newInners;
-	}
-
-	public JTypeDeclaration[] getOriginalInners() {
-	    return origTypeDeclarations;
-	}
-	
-	/**
-	 * When inners have been copied, store them in the origTypeDeclarations
-	 * and set the typeDeclarations to the empty array
-	 *
-	 */
-	public void fireInnersCopied() {
-	    this.origTypeDeclarations = this.typeDeclarations;
-	    this.typeDeclarations = new JTypeDeclaration[0];
-	}
 }

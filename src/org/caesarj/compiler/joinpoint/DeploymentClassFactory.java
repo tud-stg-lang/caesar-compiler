@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.51 2005-09-27 13:43:53 gasiunas Exp $
+ * $Id: DeploymentClassFactory.java,v 1.52 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -181,13 +181,6 @@ public class DeploymentClassFactory implements CaesarConstants {
 				new JPhylum[0],
 				null,
 				null);
-
-		/* generate export information for the new interface */
-		CClass owner = aspectClass.getOwner();
-		aspectInterface.generateInterface(
-			environment.getClassReader(),
-			owner,
-			owner == null ? packagePrefix : owner.getQualifiedName() + '$');
 
 		return aspectInterface;
 	}
@@ -522,13 +515,6 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		singletonAspect.setPerClause(
 				CaesarPointcut.createPerSingleton());
-		
-		/* generate export information for the new class */
-		CClass owner = aspectClass.getOwner();
-		singletonAspect.generateInterface(
-			environment.getClassReader(),
-			owner,
-			owner == null ? packagePrefix : owner.getQualifiedName() + '$');
 		
 		if (!aspectClassMethods.isEmpty()) {
 			updateAspectClassMethods(aspectClassMethods);

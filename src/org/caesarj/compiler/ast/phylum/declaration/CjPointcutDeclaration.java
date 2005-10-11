@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjPointcutDeclaration.java,v 1.9 2005-07-27 15:36:14 gasiunas Exp $
+ * $Id: CjPointcutDeclaration.java,v 1.10 2005-10-11 14:59:55 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -109,12 +109,10 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 	public CSourceMethod checkInterface(CClassContext context)
 		throws PositionedError {
 
-		FjClassContext caesarContext = (FjClassContext) context;
-
-        // If there's an original class, use it to resolve the parameter types
+		// If there's an original class, use it to resolve the parameter types
 		CTypeContext typeContext = null;
 		if (this.originalClass != null) {
-		    typeContext = originalClass.getTypeContext();
+		    typeContext = originalClass.getContext();
 		} else {
 		    typeContext = new CBinaryTypeContext(
 				context.getClassReader(),
@@ -124,8 +122,7 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 		}
 		
 		CType[] parameterTypes = new CType[parameters.length];
-		String[] parameterNames = new String[parameters.length];
-
+		
 		for (int i = 0; i < parameterTypes.length; i++) {
 			parameterTypes[i] = parameters[i].checkInterface(typeContext);
 		}
@@ -176,10 +173,10 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 
         // If there's an original class, use its context to resolve the pointcut
 		FjClassContext classContext = (FjClassContext) context;
-        if (this.originalClass != null && this.originalClass.self != null) {            
+        if (this.originalClass != null) {            
             classContext = (FjClassContext)
                 originalClass.constructContext(
-                        originalClass.self.getCompilationUnitContext());
+                        originalClass.getContext().getCompilationUnitContext());
         }
         
         classContext.setBindings(
