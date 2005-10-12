@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.52 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: DeploymentClassFactory.java,v 1.53 2005-10-12 07:58:18 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -131,8 +131,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 	 * Initialize generated names
 	 */
 	private void initNames() {
-		String packageName = aspectClass.getCClass().getPackage();
-		String qualifiedAspectClassName = aspectClass.getCClass().getQualifiedName();
+		String packageName = aspectClass.getSourceClass().getPackage();
+		String qualifiedAspectClassName = aspectClass.getSourceClass().getQualifiedName();
 		
 		srcAspectClassName = Utils.getClassSourceName(qualifiedAspectClassName);
 		
@@ -783,7 +783,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	private void createAdviceMethodName(CjAdviceDeclaration adviceDeclaration) {
 		String ident =
 			CaesarNameMangler.adviceName(
-				aspectClass.getCClass().getQualifiedName(),
+				aspectClass.getSourceClass().getQualifiedName(),
 				adviceDeclaration.getKind(),
 				adviceDeclaration.getTokenReference().getLine());
 		adviceDeclaration.setIdent(ident);

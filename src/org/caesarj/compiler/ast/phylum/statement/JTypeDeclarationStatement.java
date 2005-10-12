@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclarationStatement.java,v 1.4 2005-02-16 16:32:57 aracic Exp $
+ * $Id: JTypeDeclarationStatement.java,v 1.5 2005-10-12 07:58:18 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -69,10 +69,10 @@ public class JTypeDeclarationStatement extends JStatement {
     String	prefix = owner.getQualifiedName() + "$" + context.getClassContext().getNextSyntheticIndex()+ "$" ;
 
     decl.generateInterface(context.getClassReader(), owner, prefix);
-    decl.getCClass().setLocal(true);
+    decl.getSourceClass().setLocal(true);
 
     try {
-      context.getBlockContext().addClass(decl.getCClass());
+      context.getBlockContext().addClass(decl.getSourceClass());
     } catch (UnpositionedError cue) {
       throw cue.addPosition(getTokenReference());
     }
@@ -80,9 +80,9 @@ public class JTypeDeclarationStatement extends JStatement {
     decl.join(context);
     decl.checkInterface(context);
     if (context.isStaticContext()) {
-      decl.getCClass().setModifiers(decl.getCClass().getModifiers() | ACC_STATIC);
+      decl.getSourceClass().setModifiers(decl.getSourceClass().getModifiers() | ACC_STATIC);
     } else {
-      if (!decl.getCClass().isStatic()) {
+      if (!decl.getSourceClass().isStatic()) {
         decl.addOuterThis(context);
       }
     }

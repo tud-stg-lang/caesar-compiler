@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjClassDeclaration.java,v 1.43 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: CjClassDeclaration.java,v 1.44 2005-10-12 07:58:18 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -287,7 +287,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
         super.join(context, recurse);
         
         // IVICA: top-level class may not use the wraps clause
-        if(!getCClass().isNested()) {
+        if(!getSourceClass().isNested()) {
 	        check(
 	            context,
 	            wrappee == null,
@@ -438,7 +438,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
         	}
         	
         	// abstract classes cannot be statically deployed
-        	if (getCClass().isAbstract()) {
+        	if (getSourceClass().isAbstract()) {
             	context.reportTrouble(
     	            new PositionedError(
     	                getTokenReference(),
@@ -467,7 +467,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
          * IVICA
          * the following block was originally in initFamilies Method 
          */
-        int generatedFields = getCClass().hasOuterThis() ? 1 : 0;
+        int generatedFields = getSourceClass().hasOuterThis() ? 1 : 0;
 
         //Initializes the families of the fields.
         Hashtable hashField =
@@ -539,9 +539,9 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
         if (instanceInit != null)
             methodList[i++] = instanceInit.getMethod();
 
-        sourceClass.close(
+        getSourceClass().close(
             interfaces,
-            sourceClass.getSuperType(),
+            getSourceClass().getSuperType(),
             hashField,
             methodList);
 
@@ -550,12 +550,12 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
             advices[j].checkInterface(getContext());
             //during the following compiler passes
             //the advices should be treated like methods
-            getCjSourceClass().addMethod((CCjAdvice)advices[j].getMethod());
+            getSourceClass().addMethod((CCjAdvice)advices[j].getMethod());
         }
     }
     
     public CCjSourceClass getCjSourceClass() {
-        return (CCjSourceClass)sourceClass;
+        return (CCjSourceClass)getSourceClass();
     }
 
     public boolean isPrivileged() {
@@ -637,7 +637,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
                 declares[j].resolve(
                     new CaesarDeclareScope(
                         (FjClassContext)constructContext(context),
-                        getCjSourceClass()));
+                        getSourceClass()));
             }
 
             getCjSourceClass().setDeclares(declares);
@@ -749,14 +749,14 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
 	        return new FjClassContext(
 	                context,
 	                context.getEnvironment(),
-	                sourceClass,
+	                getSourceClass(),
 	                this);
     	}
     	else {
     		return new CjExternClassContext(
     	            context,
     	            context.getEnvironment(),
-    	            sourceClass,
+    	            getSourceClass(),
     	            this,
 					originalCompUnit.getExport());
     	}

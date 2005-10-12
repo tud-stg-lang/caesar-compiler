@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclaration.java,v 1.51 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: JTypeDeclaration.java,v 1.52 2005-10-12 07:58:18 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -139,7 +139,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
                 classReader,
                 sourceClass,                
                 sourceClass.getQualifiedName() + "$");
-            innerClasses[i] = inners[i].getCClass().getAbstractType();
+            innerClasses[i] = inners[i].getSourceClass().getAbstractType();
         }
 
         sourceClass.setInnerClasses(innerClasses); // prevent interface
@@ -167,12 +167,12 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
 	        for(int i=0; i<newInnerRefs.length; i++) {
 	        	newDecls[i].generateInterface(
 	        			getContext().getClassReader(),
-	                    sourceClass,                
-	                    sourceClass.getQualifiedName() + "$");
-	        	newInnerRefs[i] = newDecls[i].getCClass().getAbstractType();
+	                    getSourceClass(),                
+	                    getSourceClass().getQualifiedName() + "$");
+	        	newInnerRefs[i] = newDecls[i].getSourceClass().getAbstractType();
 	        }
 	        
-	        getCClass().addInnerClass(newInnerRefs);
+	        getSourceClass().addInnerClass(newInnerRefs);
         }
     }
     
@@ -215,8 +215,8 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
      */
     public void setModifiers(int modifiers) {
         this.modifiers = modifiers;
-        if (sourceClass != null) {
-            sourceClass.setModifiers(modifiers);
+        if (getSourceClass() != null) {
+        	getSourceClass().setModifiers(modifiers);
         }
     }
 
@@ -231,7 +231,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
      * @return	true iff this type is nested
      */
     public boolean isNested() {
-        return getCClass().isNested();
+        return getSourceClass().isNested();
     }
 
     public JFieldDeclaration[] getFields() {
@@ -268,7 +268,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         return new CClassContext(
             context,
             context.getEnvironment(),
-            sourceClass,
+            getSourceClass(),
             this);
     }
 
@@ -279,10 +279,6 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
      * the same pass.
      */
     public void join(CContext context, boolean recurse) throws PositionedError {
-        if (self == null) {
-            self = constructContext(context);
-        }
-
         //Walter: this method call was inserted instead of resolve 
         //the interfaces here.
         resolveInterfaces(context);
@@ -290,7 +286,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         // Check inners
         if (recurse) {
 	        for (int i = inners.length - 1; i >= 0; i--) {
-	            inners[i].join(self, true);
+	            inners[i].join(getContext(), true);
 	        }
         }
     }
@@ -308,7 +304,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     protected void resolveInterfaces(CContext context) throws PositionedError {
         for (int i = 0; i < interfaces.length; i++) {
             try {
-                interfaces[i] = (CReferenceType)interfaces[i].checkType(self);
+                interfaces[i] = (CReferenceType)interfaces[i].checkType(getContext());
             }
             catch (UnpositionedError e) {
                 throw e.addPosition(getTokenReference());
@@ -316,7 +312,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
 
             CClass clazz = interfaces[i].getCClass();
 
-            if( !(getCClass().isMixin() || getCClass().isMixinInterface()) ) {
+            if( !(getSourceClass().isMixin() || getSourceClass().isMixinInterface()) ) {
 	            check(
 	                context,
 	                !clazz.isMixinInterface(),
@@ -331,17 +327,17 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
                 interfaces[i].getQualifiedName());
             check(
                 context,
-                clazz.isAccessible(sourceClass),
+                clazz.isAccessible(getSourceClass()),
                 KjcMessages.SUPERINTERFACE_NOT_ACCESSIBLE,
                 interfaces[i].getQualifiedName());
             check(
                 context,
-                !(sourceClass.getQualifiedName() == JAV_OBJECT),
+                !(getSourceClass().getQualifiedName() == JAV_OBJECT),
                 KjcMessages.CIRCULAR_INTERFACE,
                 interfaces[i].getQualifiedName());
         }
 
-        sourceClass.setInterfaces(interfaces);
+        getSourceClass().setInterfaces(interfaces);
     }
 
         
@@ -380,14 +376,14 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         CMethod[] methodList;
         Hashtable hashMethod;
 
-        sourceClass.setSuperClass(superClass); //FIX
+        getSourceClass().setSuperClass(superClass); //FIX
 
         if (!uniqueSourceClass) {
             context.reportTrouble(
                 new PositionedError(
                     getTokenReference(),
                     KjcMessages.DUPLICATE_TYPE_NAME,
-                    sourceClass.getQualifiedName()));
+                    getSourceClass().getQualifiedName()));
         }
 
         /*		
@@ -409,11 +405,11 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         */
         // If the class is an inner class, add field for this-reference.
         // Add fields of this class
-        int generatedFields = getCClass().hasOuterThis() ? 1 : 0;
+        int generatedFields = getSourceClass().hasOuterThis() ? 1 : 0;
 
         hashField = new Hashtable(fields.length + generatedFields + 1);
         for (int i = fields.length - 1; i >= 0; i--) {
-            CSourceField field = fields[i].checkInterface(self);
+            CSourceField field = fields[i].checkInterface(getContext());
 
             field.setPosition(i);
             check(
@@ -423,7 +419,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
                 field.getIdent());
         }
         if (generatedFields > 0) {
-            CSourceField field = outerThis.checkInterface(self);
+            CSourceField field = outerThis.checkInterface(getContext());
 
             field.setPosition(hashField.size());
             check(
@@ -448,7 +444,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
 
         methodList = new CMethod[methods.length + generatedMethods];        
         for (int i = 0; i < methods.length; i++) {
-            methodList[i] = methods[i].checkInterface(self);
+            methodList[i] = methods[i].checkInterface(getContext());
             
             // IVICA: this has been moved to checkBody pass
             // see there why it is so
@@ -466,33 +462,33 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         int count = methods.length;
 
         if (defaultConstructor != null) {
-            methodList[count] = defaultConstructor.checkInterface(self);
+            methodList[count] = defaultConstructor.checkInterface(getContext());
             count++;
         }
         if (statInit != null) {
             if (!statInit.isDummy()) {
-                methodList[count] = statInit.checkInterface(self);
+                methodList[count] = statInit.checkInterface(getContext());
                 count++;
             }
             else {
-                statInit.checkInterface(self);
+                statInit.checkInterface(getContext());
             }
         }
         if (instanceInit != null) {
             if (!instanceInit.isDummy()) {
-                methodList[count] = instanceInit.checkInterface(self);
+                methodList[count] = instanceInit.checkInterface(getContext());
                 count++;
             }
             else {
-                instanceInit.checkInterface(self);
+                instanceInit.checkInterface(getContext());
             }
         }
 
         // Check inners
         for (int i = inners.length - 1; i >= 0; i--) {
-            inners[i].checkInterface(self);
+            inners[i].checkInterface(getContext());
         }
-        sourceClass.close(this.interfaces, superClass, hashField, methodList);
+        getSourceClass().close(this.interfaces, superClass, hashField, methodList);
     }
     
     
@@ -504,7 +500,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
             try {
                 if(t instanceof CClassNameType) {
                     CClassNameType nt = (CClassNameType)t;
-                    t = new CDependentNameType(nt.getQualifiedName()).checkType(self);
+                    t = new CDependentNameType(nt.getQualifiedName()).checkType(getContext());
                     
                     fields[i].getField().setType(t);
                     fields[i].getVariable().setType(t);
@@ -521,9 +517,9 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
             try {
                 if(t instanceof CClassNameType) {
                     // create a method context to analyse the dep.-type in 
-                    KjcEnvironment env = self.getEnvironment();
+                    KjcEnvironment env = getContext().getEnvironment();
                     CContext methodContext = new CMethodContext(
-                            					((CClassContext)self), 
+                            					getContext(), 
                             					env,
                             					methods[i] );
                     CClassNameType nt = (CClassNameType)t;
@@ -538,9 +534,9 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
                 for (int j = 0; j < formalParams.length; j++) {                    
                     if(formalParams[j].getType() instanceof CClassNameType) {
                         // create a method context to analyse the dep.-type in 
-                        KjcEnvironment env = self.getEnvironment();
+                        KjcEnvironment env = getContext().getEnvironment();
                         CContext methodContext = new CMethodContext(
-                                					((CClassContext)self), 
+                        							getContext(), 
                                 					env,
                                 					methods[i] );
                         t = formalParams[j].getType();
@@ -564,7 +560,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         
         // Check inners        
         for (int i = inners.length - 1; i >= 0; i--) {
-            inners[i].checkDependentTypes(self);
+            inners[i].checkDependentTypes(getContext());
         }               
     }
 
@@ -575,10 +571,10 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
      */
     public void checkInitializers(CContext context) throws PositionedError {
         
-        if (getCClass().getSuperClass() != null) {
+        if (getSourceClass().getSuperClass() != null) {
             check(
                 context,
-                !getCClass().getSuperClass().dependsOn(getCClass()),
+                !getSourceClass().getSuperClass().dependsOn(getSourceClass()),
                 KjcMessages.CLASS_CIRCULARITY,
                 ident);
         }
@@ -598,7 +594,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         for (int i = 0; i < interfaces.length; i++) {
             CClass parent;
 
-            parent = sourceClass.getSuperClass();
+            parent = getSourceClass().getSuperClass();
             if (parent != null
                 && parent.descendsFrom(interfaces[i].getCClass())) {
                 context.reportTrouble(
@@ -672,7 +668,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     public void addOuterThis(CContext context) throws PositionedError {
         try {
 	        if (outerThis == null) {
-	            sourceClass.setHasOuterThis(true);                       
+	        	getSourceClass().setHasOuterThis(true);                       
 	                        
 	            CType ownerType = //getOwner().getAbstractType(); 
 	                new CClassNameType(getOwner().getQualifiedName()).checkType(context);
@@ -692,9 +688,9 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
 	                    null,
 	                    null);
 	            outerThis.setGenerated(); //[mef]
-	            ((CSourceClass)getCClass()).addField(
+	            ((CSourceClass)getSourceClass()).addField(
 	                new CSourceField(
-	                    getCClass(),
+	                    getSourceClass(),
 	                    ACC_PRIVATE | ACC_FINAL,
 	                    JAV_OUTER_THIS,
 	                    //getOwner().getCorrespondingCClass().getAbstractType(),
@@ -718,7 +714,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
      */
     public void checkTypeBody(CContext context) throws PositionedError {
     	
-    	context.addSourceClass(sourceClass);
+    	context.addSourceClass(getSourceClass());
         
         // this has been moved from checkInterfaces to here
         // reason: dependent types in signatures are resolved after the checkInterface step
@@ -735,15 +731,15 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         for (int i = 0; i < interfaces.length; i++) {
             check(
                 context,
-                !interfaces[i].getCClass().dependsOn(sourceClass),
+                !interfaces[i].getCClass().dependsOn(getSourceClass()),
                 KjcMessages.CIRCULAR_INTERFACE,
                 interfaces[i].getQualifiedName());
         }
-        if (sourceClass.getOwner() != null) {
+        if (getSourceClass().getOwner() != null) {
             check(
                 context,
-                sourceClass.getOwner().canDeclareStatic()
-                    || !sourceClass.isStatic(),
+                getSourceClass().getOwner().canDeclareStatic()
+                    || !getSourceClass().isStatic(),
                 KjcMessages.INNER_DECL_STATIC_MEMBER);
         }
     }
@@ -783,7 +779,7 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     }
 
     public CClass getOwner() {
-        return getCClass().getOwner();
+        return getSourceClass().getOwner();
     }
 
     
@@ -833,16 +829,9 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
         return ident;
     }
     
-    /**
-     * @return	the interface
-     */
-    public CSourceClass getCClass() {
-    	return (CSourceClass)super.getCClass();
-    }
-    
-    public CClassContext getContext() {
+    final public CClassContext getContext() {
     	if (self == null) {
-    		self = constructContext(this.getCClass().getOwnerContext());
+    		self = constructContext(this.getSourceClass().getOwnerContext());
     	}
     	return self;
     }
@@ -852,7 +841,14 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     }
     
     public JCompilationUnit getCompilationUnit() {
-    	return this.self.getCompilationUnitContext().getCunitDecl();
+    	return getContext().getCompilationUnitContext().getCunitDecl();
+    }
+    
+    final public CSourceClass getSourceClass() {
+    	if (sourceClass == null) {
+    		throw new InconsistencyException("Class is not exported");
+    	}
+        return sourceClass;
     }
     
     // ----------------------------------------------------------------------

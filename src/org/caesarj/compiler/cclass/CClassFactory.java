@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassFactory.java,v 1.35 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: CClassFactory.java,v 1.36 2005-10-12 07:58:18 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -80,14 +80,14 @@ public class CClassFactory implements CaesarConstants {
             CjVirtualClassDeclaration ownerClassDeclaration = 
                 (CjVirtualClassDeclaration)caesarClassOwner.getTypeDeclaration();
             interfaceOwner = 
-                ownerClassDeclaration.getMixinIfcDeclaration().getCClass();
+                ownerClassDeclaration.getMixinIfcDeclaration().getSourceClass();
         }
 
         if(interfaceOwner != null) {
             prefix = interfaceOwner.getQualifiedName()+'$';
         }
         else {
-            prefix = caesarClass.getCClass().getPackage();
+            prefix = caesarClass.getSourceClass().getPackage();
             if(prefix.length() > 0) {
                 prefix += '/';
             }
@@ -140,8 +140,8 @@ public class CClassFactory implements CaesarConstants {
 	public void modifyCaesarClass(TypeFactory factory) {    	
 		caesarClass.setInterfaces(CReferenceType.EMPTY);
 		caesarClass.setSuperClass(null);				
-		caesarClass.getCClass().setInterfaces(CReferenceType.EMPTY);
-		caesarClass.getCClass().setSuperClass(null);
+		caesarClass.getSourceClass().setInterfaces(CReferenceType.EMPTY);
+		caesarClass.getSourceClass().setSuperClass(null);
 		
 		List accessors = new LinkedList();
 		JFieldDeclaration fields[] = caesarClass.getFields();

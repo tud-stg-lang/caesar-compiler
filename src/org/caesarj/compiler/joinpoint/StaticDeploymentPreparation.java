@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: StaticDeploymentPreparation.java,v 1.10 2005-09-27 13:43:53 gasiunas Exp $
+ * $Id: StaticDeploymentPreparation.java,v 1.11 2005-10-12 07:58:18 gasiunas Exp $
  */
 package org.caesarj.compiler.joinpoint;
 
@@ -165,11 +165,11 @@ public class StaticDeploymentPreparation implements CaesarConstants {
                 new JExpression[] {new JNameExpression(where, fieldName)});
         
         JExpression instantiation = new CjUnqualifiedInstanceCreation(where,
-        		new CClassNameType(classDeclaration.getMixinIfcDeclaration().getCClass().getQualifiedName()), 
+        		new CClassNameType(classDeclaration.getMixinIfcDeclaration().getSourceClass().getQualifiedName()), 
 				JExpression.EMPTY);
         
         instantiation = new CjCastExpression(where, instantiation, 
-        		new CClassNameType(classDeclaration.getCClass().getQualifiedName()));	
+        		new CClassNameType(classDeclaration.getSourceClass().getQualifiedName()));	
         
         JExpression assignment = new JAssignmentExpression(where,
         		new JNameExpression(where, fieldName),
@@ -189,7 +189,7 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 	 * @param toClass		class to be loaded
 	 */
 	public void insertClassTouchBlock(CjClassDeclaration fromClass, CjClassDeclaration toClass) {
-		String srcClassName = Utils.getClassSourceName(toClass.getCClass().getQualifiedName());
+		String srcClassName = Utils.getClassSourceName(toClass.getSourceClass().getQualifiedName());
 		
 	    AstGenerator gen = environment.getAstGenerator();
 	    		
@@ -262,7 +262,7 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 		
 		cd.addMethod(createAspectOfMethod(cd.getIdent()));
 		
-		CjClassDeclaration regClass = findRegistryClass(cd.getMixinIfcDeclaration().getCClass().getQualifiedName());
+		CjClassDeclaration regClass = findRegistryClass(cd.getMixinIfcDeclaration().getSourceClass().getQualifiedName());
 		if (regClass == null) {
 			compiler.reportTrouble(
 	            new PositionedError(

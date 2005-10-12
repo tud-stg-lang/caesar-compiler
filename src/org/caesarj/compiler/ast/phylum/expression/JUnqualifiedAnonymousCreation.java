@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JUnqualifiedAnonymousCreation.java,v 1.9 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: JUnqualifiedAnonymousCreation.java,v 1.10 2005-10-12 07:58:17 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -164,7 +164,7 @@ public class JUnqualifiedAnonymousCreation extends JExpression {
         // But, why not analyse the constructor later ? Perhaps
         // to be able to signal an error ?
 
-        decl.getCClass().setSuperClass(superClass);
+        decl.getSourceClass().setSuperClass(superClass);
 
         // add implicit constructor
         JConstructorDeclaration cstr;
@@ -174,7 +174,7 @@ public class JUnqualifiedAnonymousCreation extends JExpression {
             superCstr =
                 superClass.getCClass().lookupMethod(
                     context,
-                    decl.getCClass(),
+                    decl.getSourceClass(),
                     null,
                     JAV_CONSTRUCTOR,
                     argsType);
@@ -217,7 +217,7 @@ public class JUnqualifiedAnonymousCreation extends JExpression {
             new JConstructorDeclaration(
                 getTokenReference(),
                 ACC_PUBLIC,
-                decl.getCClass().getIdent(),
+                decl.getSourceClass().getIdent(),
                 fparams,
                 throwables,
                 new JConstructorBlock(
@@ -232,8 +232,8 @@ public class JUnqualifiedAnonymousCreation extends JExpression {
         decl.checkInterface(context.getClassContext());
 
         if (context.isStaticContext()) {
-            decl.getCClass().setModifiers(
-                decl.getCClass().getModifiers() | ACC_STATIC);
+            decl.getSourceClass().setModifiers(
+                decl.getSourceClass().getModifiers() | ACC_STATIC);
         }
         else {
             decl.addOuterThis(context);
@@ -244,7 +244,7 @@ public class JUnqualifiedAnonymousCreation extends JExpression {
 
         context.getClassContext().getTypeDeclaration().addLocalTypeDeclaration(
             decl);
-        type = decl.getCClass().getAbstractType(); // !!! FIXIFGEN
+        type = decl.getSourceClass().getAbstractType(); // !!! FIXIFGEN
         owner.addInnerClass(type);
 
         //!!! review and create test cases

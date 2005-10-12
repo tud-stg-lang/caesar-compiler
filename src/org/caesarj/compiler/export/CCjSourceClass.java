@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjSourceClass.java,v 1.20 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: CCjSourceClass.java,v 1.21 2005-10-12 07:58:18 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -685,7 +685,7 @@ public class CCjSourceClass extends CSourceClass
 		
 		TypeX parameterTypes[] = TypeX.forSignatures((String[]) parameterSignatures.toArray(new String[0]));
 		
-		TypeX declaringType = TypeX.forName(registry.getCClass().getQualifiedName());
+		TypeX declaringType = TypeX.forName(registry.getSourceClass().getQualifiedName());
 
 	    ResolvedPointcutDefinition resolvedPointcutDeclaration = new ResolvedPointcutDefinition (
             declaringType,

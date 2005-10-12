@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JThisExpression.java,v 1.12 2005-03-06 13:47:35 aracic Exp $
+ * $Id: JThisExpression.java,v 1.13 2005-10-12 07:58:17 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -175,7 +175,7 @@ public class JThisExpression extends JExpression {
 			while (!clazz.descendsFrom(self) || first || callInnerSuper) {
 				check(
 					context,
-					!classContext.getTypeDeclaration().getCClass().isStatic(),
+					!classContext.getTypeDeclaration().getSourceClass().isStatic(),
 					KjcMessages.THIS_INVALID_OUTER);
 				//	classContext.getTypeDeclaration().addOuterThis();
 				classContext =

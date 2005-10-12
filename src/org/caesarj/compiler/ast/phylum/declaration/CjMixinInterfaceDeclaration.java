@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjMixinInterfaceDeclaration.java,v 1.19 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: CjMixinInterfaceDeclaration.java,v 1.20 2005-10-12 07:58:17 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -133,7 +133,7 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
             (String[])incrementFor.toArray(new String[incrementFor.size()]),
             (String[])superClasses.toArray(new String[superClasses.size()]),
             (String[])superIfcs.toArray(new String[superIfcs.size()]),
-            getCorrespondingClassDeclaration().getCClass().getQualifiedName()
+            getCorrespondingClassDeclaration().getSourceClass().getQualifiedName()
         );
         
         return addInfo;
@@ -170,7 +170,7 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
                 CaesarMessages.CCLASS_EXTENDS_FROM_CCLASS);
 	        
 	        // check that a top-level class extends from another top-level class
-	        if(!getCClass().isNested()) {
+	        if(!getSourceClass().isNested()) {
 	            check(
 	                context,
 	                !extendedTypes[i].getCClass().isNested(),
@@ -180,7 +180,7 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
 	        // check circularities
 	        check(
                 context,
-                !extendedTypes[i].getCClass().descendsFrom(getCClass()),
+                !extendedTypes[i].getCClass().descendsFrom(getSourceClass()),
                 KjcMessages.CLASS_CIRCULARITY,
                 ident);
 	    }
@@ -225,14 +225,14 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
         try {
             JavaQualifiedName qualifiedName =
                 new JavaQualifiedName(
-                    getCClass().getQualifiedName()
+                		getSourceClass().getQualifiedName()
                 );
             
             CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
             CaesarTypeNode typeNode = typeSystem.getCaesarTypeGraph().getType(qualifiedName);
 
             // IVICA this is not the best place for this 
-            getCClass().setAdditionalTypeInformation(
+            getSourceClass().setAdditionalTypeInformation(
                 constructAdditionalTypeInformation(typeNode));
             
             if(typeNode.inheritsFromCaesarObject()) {
@@ -272,7 +272,7 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
 	            addMixinInterfaces((CReferenceType[])ifcList.toArray(new CReferenceType[ifcList.size()]));	            
             }
             
-            getCClass().setInterfaces(this.interfaces);
+            getSourceClass().setInterfaces(this.interfaces);
             
             for(int i=0; i<inners.length; i++) {
                 inners[i].adjustSuperType(context);
@@ -319,7 +319,7 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
                 
                 interfaceMethods.add(
                     new CSourceMethod(
-                        this.getCClass(),
+                        this.getSourceClass(),
                         ACC_PUBLIC | ACC_ABSTRACT,
                         method.getIdent(),
             			method.getReturnType(),
@@ -334,7 +334,7 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
             }
         }
         
-        getCClass().setMethods(
+        getSourceClass().setMethods(
             (CSourceMethod[])interfaceMethods.toArray(new CSourceMethod[interfaceMethods.size()])
         );
         
@@ -399,7 +399,7 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
     		return new CjExternClassContext(
     	            context,
     	            context.getEnvironment(),
-    	            sourceClass,
+    	            getSourceClass(),
     	            this,
 					originalCompUnit.getExport());
     	}

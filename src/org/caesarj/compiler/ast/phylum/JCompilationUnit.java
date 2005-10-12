@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JCompilationUnit.java,v 1.17 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: JCompilationUnit.java,v 1.18 2005-10-12 07:58:18 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -206,7 +206,7 @@ public class JCompilationUnit extends JPhylum {
 
 		// check uniquness of classes
 		for (int i = 0; i < typeDeclarations.length; i++) {
-			CClass object = typeDeclarations[i].getCClass();
+			CClass object = typeDeclarations[i].getSourceClass();
 
 			Object clazz = allLoadedClasses.get(object.getIdent());
 

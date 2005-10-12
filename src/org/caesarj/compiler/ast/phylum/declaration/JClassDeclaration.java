@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JClassDeclaration.java,v 1.29 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: JClassDeclaration.java,v 1.30 2005-10-12 07:58:17 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -99,7 +99,7 @@ public class JClassDeclaration extends JTypeDeclaration {
                 TypeFactory.RFT_OBJECT);
 
         if (superClass == null) {
-            if (sourceClass.getQualifiedName() == JAV_OBJECT) {
+            if (getSourceClass().getQualifiedName() == JAV_OBJECT) {
                 // java/lang/Object
                 // superClass = null;
                 // superClass1 = null;
@@ -123,7 +123,7 @@ public class JClassDeclaration extends JTypeDeclaration {
 
             check(
                 context,
-                clazz.isAccessible(getCClass()),
+                clazz.isAccessible(getSourceClass()),
                 KjcMessages.CLASS_ACCESSPARENT,
                 superClass.getQualifiedName());
             check(
@@ -137,7 +137,7 @@ public class JClassDeclaration extends JTypeDeclaration {
                 KjcMessages.CLASS_EXTENDS_INTERFACE,
                 superClass.getQualifiedName());
         }
-        sourceClass.setSuperClass(superClass);
+        getSourceClass().setSuperClass(superClass);
 
         super.join(context, recurse);
     }
@@ -196,9 +196,9 @@ public class JClassDeclaration extends JTypeDeclaration {
         if (isNested() && getOwner().getCClass().isInterface()) {
             setModifiers(modifiers | ACC_STATIC | ACC_PUBLIC);
         }
-        if (getCClass().isNested()
+        if (getSourceClass().isNested()
             && getOwner().getCClass().isClass()
-            && !getCClass().isStatic()
+            && !getSourceClass().isStatic()
             && context.isStaticContext()) {
             setModifiers(modifiers | ACC_STATIC);
         }
@@ -214,7 +214,7 @@ public class JClassDeclaration extends JTypeDeclaration {
     public void checkInterface(final CContext context) throws PositionedError {                
         // CTODO resolve call moved here in order common java classes can be found in crosscutting classes
         // register type at CaesarBcelWorld!!!
-        CaesarBcelWorld.getInstance().resolve(getCClass());
+        CaesarBcelWorld.getInstance().resolve(getSourceClass());
 
         checkModifiers(context);
 
@@ -246,10 +246,10 @@ public class JClassDeclaration extends JTypeDeclaration {
             instanceInit.checkInterface(getContext());
         }
 
-        if (getCClass().getSuperClass() != null) {
+        if (getSourceClass().getSuperClass() != null) {
             check(
                 context,
-                !getCClass().getSuperClass().descendsFrom(getCClass()),
+                !getSourceClass().getSuperClass().descendsFrom(getSourceClass()),
                 KjcMessages.CLASS_CIRCULARITY,
                 ident);
         }
@@ -258,7 +258,7 @@ public class JClassDeclaration extends JTypeDeclaration {
 
         // add outer this to innner types
         for (int k = 0; k < inners.length; k++) {
-            if (!inners[k].getCClass().isStatic()) {
+            if (!inners[k].getSourceClass().isStatic()) {
                 inners[k].addOuterThis(context);
             }
         }
@@ -280,9 +280,9 @@ public class JClassDeclaration extends JTypeDeclaration {
                 true,
                 KjcMessages.GENERIC_THROWABLE);
     	
-        if (getCClass().isNested()
+        if (getSourceClass().isNested()
             && getOwner().getCClass().isClass()
-            && !getCClass().isStatic()
+            && !getSourceClass().isStatic()
             && !context.isStaticContext()) {
             addOuterThis(context);
         }
@@ -380,7 +380,7 @@ public class JClassDeclaration extends JTypeDeclaration {
      */
     public void checkInitializers(CContext context) throws PositionedError {        
         if (assertMethod != null) {
-            getCClass().addMethod(assertMethod.checkInterface(getContext()));
+            getSourceClass().addMethod(assertMethod.checkInterface(getContext()));
             assertMethod.checkBody1(getContext());
         }
 
@@ -441,7 +441,7 @@ public class JClassDeclaration extends JTypeDeclaration {
      */
     protected JConstructorDeclaration constructDefaultConstructor(KjcEnvironment environment) {
         int modifier;
-        CClass owner = getCClass();
+        CClass owner = getSourceClass();
         TypeFactory factory = environment.getTypeFactory();
 
         if (owner.isPublic()) {

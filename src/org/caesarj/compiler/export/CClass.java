@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClass.java,v 1.40 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: CClass.java,v 1.41 2005-10-12 07:58:18 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -232,7 +232,7 @@ public abstract class CClass extends CMember
 			decl.checkInitializers(context);
 			decl.checkTypeBody(context);
 
-			assertionStatusClass = decl.getCClass();
+			assertionStatusClass = decl.getSourceClass();
 		}
 
 		return assertionStatusClass;
@@ -1565,6 +1565,26 @@ public abstract class CClass extends CMember
         return depth;
     }
     
+    public void setAdditionalTypeInformation(AdditionalCaesarTypeInformation additionalTypeInfo) {
+	    this.additionalTypeInfo = additionalTypeInfo;
+	}
+	
+	public AdditionalCaesarTypeInformation getAdditionalTypeInformation() {
+	    return additionalTypeInfo;
+	}
+	
+    public void setOwner(CClass owner) {
+        this.owner = owner;
+    }
+    
+    public boolean isImplicit() {
+        return implicit;
+    }
+    
+    public void setImplicit(boolean implicit) {
+        this.implicit = implicit;
+    }
+    
 	// ----------------------------------------------------------------------
 	// DATA MEMBERS
 	// ----------------------------------------------------------------------
@@ -1592,26 +1612,5 @@ public abstract class CClass extends CMember
 	
 	private int depth = 0;
 	
-	private AdditionalCaesarTypeInformation additionalTypeInfo = null;
-	
-	public void setAdditionalTypeInformation(AdditionalCaesarTypeInformation additionalTypeInfo) {
-	    this.additionalTypeInfo = additionalTypeInfo;
-	}
-	
-	public AdditionalCaesarTypeInformation getAdditionalTypeInformation() {
-	    return additionalTypeInfo;
-	}
-	
-
-    public void setOwner(CClass owner) {
-        this.owner = owner;
-    }
-    
-    public boolean isImplicit() {
-        return implicit;
-    }
-    
-    public void setImplicit(boolean implicit) {
-        this.implicit = implicit;
-    }
+	private AdditionalCaesarTypeInformation additionalTypeInfo = null;	
 }

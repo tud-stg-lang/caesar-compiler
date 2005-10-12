@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjVirtualClassDeclaration.java,v 1.32 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.33 2005-10-12 07:58:17 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -169,7 +169,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
                 ident + "_Impl",
                 CReferenceType.EMPTY,
                 null, // wrappee
-                new CReferenceType[]{ifcDecl.getCClass().getAbstractType()}, // CTODO ifcs
+                new CReferenceType[]{ifcDecl.getSourceClass().getAbstractType()}, // CTODO ifcs
                 new JFieldDeclaration[0],
 				new JMethodDeclaration[0],
                 new JTypeDeclaration[0],
@@ -183,7 +183,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         // add inners
         addInners(new JTypeDeclaration[] {implDecl });
         
-        implDecl.getCClass().close(
+        implDecl.getSourceClass().close(
             implDecl.getInterfaces(),
             new Hashtable(),
             CMethod.EMPTY
@@ -192,8 +192,8 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         implDecl.setMixinIfcDeclaration(ifcDecl);
         ifcDecl.setCorrespondingClassDeclaration(implDecl);
         
-        implDecl.getCClass().setImplicit(true);
-        ifcDecl.getCClass().setImplicit(true);
+        implDecl.getSourceClass().setImplicit(true);
+        ifcDecl.getSourceClass().setImplicit(true);
         
         return implDecl;
     }
@@ -204,7 +204,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     public void createImplicitCaesarTypes(CContext context) throws PositionedError {
         JavaQualifiedName qualifiedName =
             new JavaQualifiedName(
-                getMixinIfcDeclaration().getCClass().getQualifiedName()
+                getMixinIfcDeclaration().getSourceClass().getQualifiedName()
             );
         
         CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
@@ -212,7 +212,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         CaesarTypeNode typeNode = typeSystem.getCaesarTypeGraph().getType(qualifiedName);
         JavaTypeNode javaTypeNode = typeSystem.getJavaTypeGraph().getJavaTypeNode(typeNode);
         
-        javaTypeNode.setCClass(getCClass());
+        javaTypeNode.setCClass(getSourceClass());
         javaTypeNode.setDeclaration(this);
         
         // recurse in original inners
@@ -243,7 +243,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         try {
             JavaQualifiedName qualifiedName =
                 new JavaQualifiedName(
-                    getMixinIfcDeclaration().getCClass().getQualifiedName()
+                    getMixinIfcDeclaration().getSourceClass().getQualifiedName()
                 );
             
             CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
@@ -265,14 +265,14 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
             
             CReferenceType ifcs[] =
                 new CReferenceType[]{
-                    getMixinIfcDeclaration().getCClass().getAbstractType()
+                    getMixinIfcDeclaration().getSourceClass().getAbstractType()
                 };
             
             setInterfaces(ifcs);            
             setSuperClass(superTypeRef);
             
-            getCClass().setSuperClass(superTypeRef);            
-            getCClass().setInterfaces(ifcs);
+            getSourceClass().setSuperClass(superTypeRef);            
+            getSourceClass().setInterfaces(ifcs);
             
             for(int i=0; i<inners.length; i++) {
                 inners[i].adjustSuperType(context);
@@ -310,9 +310,9 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     public void checkInterface(CContext context) throws PositionedError {
     	// if an inner class, set to static
     	// we are manually managing the outer references
-        if(getCClass().isNested()) {
+        if(getSourceClass().isNested()) {
             this.modifiers |= ACC_STATIC;
-            getCClass().setModifiers(this.modifiers);
+            getSourceClass().setModifiers(this.modifiers);
         }
         
         checkAbstractInners(context);    	
@@ -328,7 +328,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     protected void checkAbstractInners(CContext context) throws PositionedError {
     	JavaQualifiedName qualifiedName =
             new JavaQualifiedName(
-                getMixinIfcDeclaration().getCClass().getQualifiedName()
+                getMixinIfcDeclaration().getSourceClass().getQualifiedName()
             );
     	
     	CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
@@ -540,7 +540,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         CjClassDeclaration registry = this.getRegistryClass();
         if (registry != null) {
 
-            CCjSourceClass registryCrosscuttingClass = (CCjSourceClass) registry.getCClass();
+            CCjSourceClass registryCrosscuttingClass = (CCjSourceClass) registry.getSourceClass();
             CjPointcutDeclaration[] pointcuts = registry.getPointcuts();
 	        for (int j = 0; j < pointcuts.length; j++) {
 	            registryCrosscuttingClass.addDeclaredPointcut(this, pointcuts[j]);

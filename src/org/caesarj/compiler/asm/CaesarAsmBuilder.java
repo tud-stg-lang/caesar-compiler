@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarAsmBuilder.java,v 1.13 2005-09-19 08:40:40 thiago Exp $
+ * $Id: CaesarAsmBuilder.java,v 1.14 2005-10-12 07:58:18 gasiunas Exp $
  */
 
 package org.caesarj.compiler.asm;
@@ -448,7 +448,7 @@ public class CaesarAsmBuilder {
 	public boolean visit(CjVirtualClassDeclaration self) {
 		
 		// do not show implicit classes
-		if (self.getCClass().isImplicit())
+		if (self.getSourceClass().isImplicit())
 			return false;
 	    
 		// If class is an Aspect, kind = aspect instead of virtual_class
@@ -477,7 +477,7 @@ public class CaesarAsmBuilder {
 	}
 
 	public void endVisit(CjVirtualClassDeclaration self) {
-		if (!self.getCClass().isImplicit()) {
+		if (!self.getSourceClass().isImplicit()) {
 			this.asmStack.pop();
 		}
 	}

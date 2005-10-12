@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JMemberDeclaration.java,v 1.7 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: JMemberDeclaration.java,v 1.8 2005-10-12 07:58:17 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -108,17 +108,6 @@ public abstract class JMemberDeclaration extends JPhylum {
   public CMethod getMethod() {
     return export.getMethod();
   }
-
-  /**
-   * @return	the interface
-   */
-  public CClass getCClass() {
-  	if (export == null){
-  		throw new InconsistencyException("The member is not exported");
-  	}
-    return export.getCClass();
-  }
-
 
   // ----------------------------------------------------------------------
   // PROTECTED ACCESSORS
