@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassPreparation.java,v 1.43 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: CClassPreparation.java,v 1.44 2005-10-13 14:05:24 aracic Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -246,8 +246,9 @@ public class CClassPreparation implements CaesarConstants {
                 wrapperClassIdent+" res = ("+wrapperClassIdent+")"+wrapperMapName+".get(w);",
                 "if (res != null) " +
 				"    return res;" +
-                "res = new "+wrapperClassIdent+"();",
+                "res = "+CaesarConstants.FACTORY_METHOD_PREFIX+wrapperClassIdent+"();",
                 "res.$initWrappee(w);",
+                "res.$constructor();",
                 wrapperMapName+".put(w, res);",
                 "return res;",
                 "}"
