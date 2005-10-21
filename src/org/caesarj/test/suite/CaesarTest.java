@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,10 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTest.java,v 1.3 2005-07-21 13:14:23 aracic Exp $
+ * $Id: CaesarTest.java,v 1.4 2005-10-21 19:17:27 thiago Exp $
  */
 
 package org.caesarj.test.suite;
+
+import java.io.File;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -76,7 +78,7 @@ public abstract class CaesarTest extends TestCase {
         
         String 	prefix = testSuite.getOutputPath(),
 				folder, name; 
-        String[] comps = prefix.split("\\\\");
+        String[] comps = prefix.split("\\" + File.separator);
         int last = comps.length-1;
         
         String testFileName = "/caesar-compiler/tests/src/"+comps[last-1]+"/"+comps[last]+"."+id+".java";
