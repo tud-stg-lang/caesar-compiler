@@ -1,0 +1,57 @@
+<testsuite name="Test matching of synthetic constructs" package="suits.pointcuts.synthetic">
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutsynthetic001" description="internal calls">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before2:ClsB.m", res.toString());			
+
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+					ClsA a = new ClsA("bla");
+					a = new ClsA();
+					ClsA.ClsB b = a.new ClsB();
+					
+					b.m();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+        		// Matches nothing!
+        		before(): call (* ClsA.*(..)) {
+					Test.res.append(":before1");
+					System.out.println(thisJoinPoint);
+				}
+				
+				// Matches b.m()
+				/*
+        		before(): call (* ClsA.ClsB.*(..)) {
+					Test.res.append(":before2");
+					System.out.println(thisJoinPoint);
+				}*/
+        	}
+
+			public cclass ClsA {
+			
+				public ClsA() {
+				}
+				public ClsA(String s) {
+				}
+				public cclass ClsB {
+					public void m() {
+						Test.res.append(":ClsB.m");
+					}
+				}
+			}
+			
+        </code>
+    </compile-run>
+</testsuite>

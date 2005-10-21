@@ -7,7 +7,7 @@
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":before:m:m", res.toString());			
+			assertEquals(":before:m:m:beforeGet:true", res.toString());			
 		</test>
         <code>
         	public cclass Main {
@@ -15,20 +15,27 @@
         		public void run() {
         			ClsB b = new ClsB();
         			b.m();
+        			if (ClsB.var) {
+	        			Test.res.append(":true");
+        			}
         		}
         	}
         	
         	public deployed cclass ClsA {
-        	
-        		// Should be (FIXED)
+
         		before(): call(* ClsB.m(..)) &amp;&amp; within(Main) {
-        		//before(): call(* ClsB.m(..)) &amp;&amp; within(Main_Impl) {
 					Test.res.append(":before");
 					new ClsB().m();
+				}
+				before() : get(boolean ClsB.*) &amp;&amp; within(Main) {
+					Test.res.append(":beforeGet");
+					System.out.println(thisJoinPoint.getThis() + " - " + thisJoinPoint.getStaticPart());
 				}
         	}
 			
 			public cclass ClsB {
+
+				public static boolean var = true;
 
 				public void m() {
 					Test.res.append(":m");

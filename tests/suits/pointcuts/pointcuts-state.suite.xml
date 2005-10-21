@@ -1,7 +1,1543 @@
 <testsuite name="Test state based pointcuts" package="suits.pointcuts.state">
 
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutstate001" description="'this' with type">
+    <compile-run  id="pointcutstate001" description="simple cclass with this using type">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.run();
+        			// this must NOT match here
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(): call (void ClsB.m()) &amp;&amp; this(ClsA){
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsA {
+				
+				public void run() {
+					ClsB b = new ClsB();
+					b.m();
+				}
+			}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+   
+   <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate002" description="simple cclass with this using id">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:theClsA:m:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.run();
+        			// this must NOT match here
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(ClsA c): call (void ClsB.m()) &amp;&amp; this(c){
+					Test.res.append(":before" + c.name);
+				}
+        	}
+			
+			public cclass ClsA {
+				
+				public String name = ":theClsA";
+				public void run() {
+					ClsB b = new ClsB();
+					b.m();
+				}
+			}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate003" description="cclass with subtypes with this using type">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m:m:before:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.run();
+        			// this must NOT match here
+        			ClsB b = new ClsB();
+        			b.m();
+        			// this must match
+        			ClsC c = new ClsC();
+        			c.run();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(): call (void ClsB.m()) &amp;&amp; this(ClsA){
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsA {
+			
+				public void run() {
+					ClsB b = new ClsB();
+					b.m();
+				}
+			}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+			
+			public cclass ClsC extends ClsA {
+				public void run() {
+					ClsB b = new ClsB();
+					b.m();
+				}
+			}
+			
+        </code>
+    </compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate004" description="cclass with subtypes with this using id">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:theClsA:m:m:before:theClsC:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.run();
+        			// this must NOT match here
+        			ClsB b = new ClsB();
+        			b.m();
+        			ClsC c = new ClsC();
+        			c.run();
+        			
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(ClsA c): call (void ClsB.m()) &amp;&amp; this(c){
+					Test.res.append(":before" + c.name);
+				}
+        	}
+			
+			public cclass ClsA {
+				public String name = ":theClsA";
+
+				public void run() {
+					ClsB b = new ClsB();
+					b.m();
+				}
+			}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+			
+			public cclass ClsC extends ClsA {
+				public String name = ":theClsC";
+				public void run() {
+					ClsB b = new ClsB();
+					b.m();
+				}
+			}
+			
+        </code>
+    </compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate005" description="cclass with nested classes, with this using type">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m:m:m:before:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			ClsA.Internal ai = a.new Internal();
+        			ai.run();
+        			// this must NOT match here
+        			ClsB b = new ClsB();
+        			b.m();
+        			// this must NOT match
+        			ClsC c = new ClsC();
+        			c.run();
+        			// this must match
+        			ClsC.Internal ci = c.new Internal();
+        			ci.run();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(): call (void ClsB.m()) &amp;&amp; this(ClsA.Internal){
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsA {
+				public cclass Internal {
+
+					public void run() {
+						ClsB b = new ClsB();
+						b.m();
+					}
+				}
+			}
+			
+			public cclass ClsB {
+				public void m() {
+					Test.res.append(":m");
+				}			
+			}
+			
+			public cclass ClsC extends ClsA {
+				public void run() {
+					ClsB b = new ClsB();
+					b.m();
+				}
+			}
+			
+        </code>
+    </compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate006" description="cclass with nested classes, with this using id">
+    
+       <test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:theInternalClsA:m:m:m:before:theInternalClsC:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			ClsA.Internal ai = a.new Internal();
+        			ai.run();
+        			// this must NOT match here
+        			ClsB b = new ClsB();
+        			b.m();
+        			// this must NOT match
+        			ClsC c = new ClsC();
+        			c.run();
+        			// this must match
+        			ClsC.Internal ci = c.new Internal();
+        			ci.run();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(ClsA.Internal c): call (void ClsB.m()) &amp;&amp; this(c){
+					Test.res.append(":before" + c.name);
+				}
+        	}
+			
+			public cclass ClsA {
+
+				public cclass Internal {
+
+					public String name = ":theInternalClsA";
+				
+					public void run() {
+						ClsB b = new ClsB();
+						b.m();
+					}
+				}
+			}
+			
+			public cclass ClsB {
+				public void m() {
+					Test.res.append(":m");
+				}			
+			}
+			
+			public cclass ClsC extends ClsA {
+				public cclass Internal {
+
+					public String name = ":theInternalClsC";
+				
+					public void run() {
+						ClsB b = new ClsB();
+						b.m();
+					}
+				}
+				public void run() {
+					ClsB b = new ClsB();
+					b.m();
+				}
+			}
+        </code>
+    </compile-run>
+        
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate007" description="mixins with this using type">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:a:main:before:a", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			ClsA.Internal ai = a.new Internal();
+        			ai.run();
+        			// this must NOT match here
+        			Target t = new Target();
+        			t.m(":main");
+        			// this must match
+        			ClsC c = new ClsC();
+        			ClsC.Internal ci = c.new Internal();
+        			ci.run();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(): call (void Target.m(String)) &amp;&amp; this(ClsA.Internal){
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass Target {
+				public void m(String s) {
+					Test.res.append(s);
+				}			
+			}
+			
+			public cclass Super {
+				public cclass Internal {}
+			} 
+			
+			public cclass ClsA extends Super {
+				public cclass Internal {
+
+					public void run() {
+						Target t = new Target();
+						t.m(":a");
+					}
+				}
+			}
+			
+			public cclass ClsB extends Super {
+				public cclass Internal {
+
+					public void run() {
+						Target t = new Target();
+						t.m(":b");
+					}
+				}
+			}
+			
+			public cclass ClsC extends ClsA  &amp; ClsB {
+			}
+			
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate008" description="mixins with this using type">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":a:main:before:theInternalClsA:b:before:theInternalClsA:a", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			ClsA.Internal ai = a.new Internal();
+        			ai.run();
+        			// this must NOT match here
+        			Target t = new Target();
+        			t.m(":main");
+        			// this must match
+        			ClsC c = new ClsC();
+        			ClsC.Internal ci = c.new Internal();
+        			ci.run();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(ClsB.Internal c): call (void Target.m(String)) &amp;&amp; this(c){
+					Test.res.append(":before" + c.name);
+				}
+        	}
+			
+			public cclass Target {
+				public void m(String s) {
+					Test.res.append(s);
+				}			
+			}
+			
+			public cclass Super {
+				public cclass Internal {
+					public void run() {}
+				}
+			} 
+			
+			public cclass ClsA extends Super {
+				public cclass Internal {
+					public String name = ":theInternalClsA";
+					public void run() {
+						super.run();
+						Target t = new Target();
+						t.m(":a");
+					}
+				}
+			}
+			
+			public cclass ClsB extends Super {
+				public cclass Internal {
+					public String name = ":theInternalClsB";
+					public void run() {
+						super.run();	
+						Target t = new Target();
+						t.m(":b");
+					}
+				}
+			}
+			
+			public cclass ClsC extends ClsA  &amp; ClsB {
+			}
+			
+        </code>
+    </compile-run>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate011" description="simple cclass with target using type">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:a:b", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.run();
+        			// target must NOT match here
+        			ClsB b = new ClsB();
+        			b.run();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(): call (void *.run()) &amp;&amp; target(ClsA){
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsA {
+				
+				public void run() {
+					Test.res.append(":a");
+				}
+			}
+			
+			public cclass ClsB {
+
+				public void run() {
+					Test.res.append(":b");
+				}
+			}
+        </code>
+    </compile-run>
+   
+   <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate012" description="simple cclass with target using id">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:theClsA:a:b", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.run();
+        			// target must NOT match here
+        			ClsB b = new ClsB();
+        			b.run();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(ClsA c): call (void *.run()) &amp;&amp; target(c){
+					Test.res.append(":before" + c.name);
+				}
+        	}
+			
+			public cclass ClsA {
+				public String name = ":theClsA";
+				public void run() {
+					Test.res.append(":a");
+				}
+			}
+			
+			public cclass ClsB {
+				public String name = ":theClsB";
+				public void run() {
+					Test.res.append(":b");
+				}
+			}
+		</code>
+	</compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate013" description="cclass with subtypes with target using type">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:a:b:before:c", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.run();
+        			// this must NOT match here
+        			ClsB b = new ClsB();
+        			b.run();
+        			// this must match
+        			ClsC c = new ClsC();
+        			c.run();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(): call (void *.run()) &amp;&amp; target(ClsA){
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsA {
+				public void run() {
+					Test.res.append(":a");
+				}
+			}
+			
+			public cclass ClsB {
+				public void run() {
+					Test.res.append(":b");
+				}
+			}
+			public cclass ClsC extends ClsA {
+				public void run() {
+					Test.res.append(":c");
+				}
+			}
+			
+        </code>
+    </compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate014" description="cclass with subtypes with target using id">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:theClsA:a:b:before:theClsC:c", res.toString());			
+		</test>
+
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.run();
+        			// this must NOT match here
+        			ClsB b = new ClsB();
+        			b.run();
+        			// this must match
+        			ClsC c = new ClsC();
+        			c.run();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(ClsA c): call (void *.run()) &amp;&amp; target(c){
+					Test.res.append(":before" + c.name);
+				}
+        	}
+			
+			public cclass ClsA {
+				public String name = ":theClsA";
+				public void run() {
+					Test.res.append(":a");
+				}
+			}
+			
+			public cclass ClsB {
+				public String name = ":theClsB";
+				public void run() {
+					Test.res.append(":b");
+				}
+			}
+			public cclass ClsC extends ClsA {
+				public String name = ":theClsC";
+				public void run() {
+					Test.res.append(":c");
+				}
+			}
+			
+        </code>
+    </compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate015" description="cclass with nested classes, with target using type">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":a:before:ia:b:ib:c:before:ic", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.run();
+        			ClsA.Internal ai = a.new Internal();
+        			ai.run();
+        			
+        			ClsB b = new ClsB();
+        			b.run();
+        			ClsB.Internal bi = b.new Internal();
+        			bi.run();
+        			
+        			ClsC c = new ClsC();
+        			c.run();
+        			ClsC.Internal ci = c.new Internal();
+        			ci.run();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(): call (void *.run()) &amp;&amp; target(ClsA.Internal){
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsA {
+				public void run() {
+					Test.res.append(":a");
+				}
+				
+				public cclass Internal {
+					public void run() {
+						Test.res.append(":ia");
+					}
+				}
+			}
+			
+			public cclass ClsB {
+				public void run() {
+					Test.res.append(":b");
+				}
+				public cclass Internal {
+					public void run() {
+						Test.res.append(":ib");
+					}
+				}
+			}
+			
+			public cclass ClsC extends ClsA {
+				public void run() {
+					Test.res.append(":c");
+				}
+				public cclass Internal {
+					public void run() {
+						Test.res.append(":ic");
+					}
+				}
+			}
+        </code>
+    </compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate016" description="cclass with nested classes, with target using id">
+    
+       <test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":a:before:theIA:ia:b:ib:c:before:theIC:ic", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.run();
+        			ClsA.Internal ai = a.new Internal();
+        			ai.run();
+        			
+        			ClsB b = new ClsB();
+        			b.run();
+        			ClsB.Internal bi = b.new Internal();
+        			bi.run();
+        			
+        			ClsC c = new ClsC();
+        			c.run();
+        			ClsC.Internal ci = c.new Internal();
+        			ci.run();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(ClsA.Internal c): call (void *.run()) &amp;&amp; target(c){
+					Test.res.append(":before" + c.name);
+				}
+        	}
+			
+			public cclass ClsA {
+				public void run() {
+					Test.res.append(":a");
+				}
+				
+				public cclass Internal {
+					public String name = ":theIA";
+					public void run() {
+						Test.res.append(":ia");
+					}
+				}
+			}
+			
+			public cclass ClsB {
+				public void run() {
+					Test.res.append(":b");
+				}
+				public cclass Internal {
+					public String name = ":theIB";
+					public void run() {
+						Test.res.append(":ib");
+					}
+				}
+			}
+			
+			public cclass ClsC extends ClsA {
+				public void run() {
+					Test.res.append(":c");
+				}
+				public cclass Internal {
+					public String name = ":theIC";
+					public void run() {
+						Test.res.append(":ic");
+					}
+				}
+			}
+        </code>
+    </compile-run>
+        
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate017" description="mixins with target using type">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before2:s:is:before2:a:before:ia:before2:b:ib:before2:a:before:ia", 
+				res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			Super s = new Super();
+        			s.run();
+        			Super.Internal si = s.new Internal();
+        			si.run();
+        			
+        			ClsA a = new ClsA();
+        			a.run();
+        			ClsA.Internal ai = a.new Internal();
+        			ai.run();
+        			
+        			ClsB b = new ClsB();
+        			b.run();
+        			ClsB.Internal bi = b.new Internal();
+        			bi.run();
+        			
+        			ClsC c = new ClsC();
+        			c.run();
+        			ClsC.Internal ci = c.new Internal();
+        			ci.run();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		// Matches ClsA.Internal and ClsC.Internal
+        		before(): call (void *.run()) &amp;&amp; target(ClsA.Internal){
+					Test.res.append(":before");
+				}
+				// Matches Super, ClsA, ClsB and ClsC
+				before(): call (void *.run()) &amp;&amp; target(Super){
+					Test.res.append(":before2");
+				}
+        	}
+			
+			public cclass Super {
+				public void run() {
+					Test.res.append(":s");
+				}
+				
+				public cclass Internal {
+					public void run() {
+						Test.res.append(":is");
+					}
+				}
+			} 
+			
+			public cclass ClsA extends Super {
+				public void run() {
+					Test.res.append(":a");
+				}
+				
+				public cclass Internal {
+					public void run() {
+						Test.res.append(":ia");
+					}
+				}
+			}
+			
+			public cclass ClsB extends Super {
+				public void run() {
+					Test.res.append(":b");
+				}
+				public cclass Internal {
+					public void run() {
+						Test.res.append(":ib");
+					}
+				}
+			}
+			
+			public cclass ClsC extends ClsA &amp; ClsB {
+			}
+			
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate018" description="mixins with target using type">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before2:theSuper:s:is" +
+				":before2:theA:a:before:theIA:ia" +
+				":before2:theB:b:ib" +
+				":before2:theA:a:before:theIA:ia" +
+				":before2:theB:b:before:theIB:ib", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			Super s = new Super();
+        			s.run();
+        			Super.Internal si = s.new Internal();
+        			si.run();
+        			
+        			ClsA a = new ClsA();
+        			a.run();
+        			ClsA.Internal ai = a.new Internal();
+        			ai.run();
+        			
+        			ClsB b = new ClsB();
+        			b.run();
+        			ClsB.Internal bi = b.new Internal();
+        			bi.run();
+        			
+        			ClsC c = new ClsC();
+        			c.run();
+        			ClsC.Internal ci = c.new Internal();
+        			ci.run();
+        			
+        			ClsD d = new ClsD();
+        			d.run();
+        			ClsD.Internal di = d.new Internal();
+        			di.run();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		// Matches ClsA.Internal and ClsC.Internal
+        		before(ClsA.Internal c): call (void *.run()) &amp;&amp; target(c){
+					Test.res.append(":before" + c.name);
+				}
+				// Matches Super, ClsA, ClsB and ClsC
+				before(Super s): call (void *.run()) &amp;&amp; target(s){
+					Test.res.append(":before2" + s.name);
+				}
+        	}
+			
+			public cclass Super {
+			
+				public String name = ":theSuper";
+				public void run() {
+					Test.res.append(":s");
+				}
+				
+				public cclass Internal {
+					public String name = ":theISuper";
+					public void run() {
+						Test.res.append(":is");
+					}
+				}
+			} 
+			
+			public cclass ClsA extends Super {
+				public String name = ":theA";
+				public void run() {
+					Test.res.append(":a");
+				}
+				
+				public cclass Internal {
+					public String name = ":theIA";
+					public void run() {
+						Test.res.append(":ia");
+					}
+				}
+			}
+			
+			public cclass ClsB extends Super {
+				public String name = ":theB";
+				public void run() {
+					Test.res.append(":b");
+				}
+				public cclass Internal {
+					public String name = ":theIB";
+					public void run() {
+						Test.res.append(":ib");
+					}
+				}
+			}
+			
+			public cclass ClsC extends ClsA &amp; ClsB {
+			}
+			public cclass ClsD extends ClsB &amp; ClsA {
+			}
+        </code>
+    </compile-run>    
+    
+    
+    
+    
+    
+    
+   
+   
+   <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate021" description="simple cclass with args">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before:before2:theClsA:run:theClsA" +
+				":run:theClsB", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			ClsB b = new ClsB();
+        			Target t = new Target();
+        			t.run(a);
+        			t.run(b);
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(): call (void *.run(..)) &amp;&amp; args(ClsA){
+					Test.res.append(":before");
+				}
+        		before(ClsA c): call (void *.run(..)) &amp;&amp; args(c){
+					Test.res.append(":before2" + c.name);
+				}
+        	}
+			
+			public cclass Target {
+			
+				public void run(ClsA c) {
+					Test.res.append(":run" + c.name);
+				}
+				
+				public void run(ClsB c) {
+					Test.res.append(":run" + c.name);
+				}
+			}
+			
+			public cclass ClsA {
+				public String name = ":theClsA";
+			}
+			
+			public cclass ClsB {
+				public String name = ":theClsB";
+			}
+		</code>
+	</compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate022" description="cclass with subtypes with args">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before:before2:theClsA:run:theClsA" +
+				":before:before2:theClsB:run:theClsB", res.toString());			
+		</test>
+
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			ClsB b = new ClsB();
+        			Target t = new Target();
+        			t.run(a);
+        			t.run(b);
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(): call (void *.run(..)) &amp;&amp; args(ClsA){
+					Test.res.append(":before");
+				}
+        		before(ClsA c): call (void *.run(..)) &amp;&amp; args(c){
+					Test.res.append(":before2" + c.name);
+				}
+        	}
+			
+			public cclass Target {
+			
+				public void run(ClsA c) {
+					Test.res.append(":run" + c.name);
+				}
+			}
+			
+			public cclass ClsA {
+				public String name = ":theClsA";
+			}
+			
+			public cclass ClsB extends ClsA {
+				public String name = ":theClsB";
+			}			
+        </code>
+    </compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate023" description="cclass with nested classes with args">
+    
+       <test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before:run-theA:before-theIA:run-theIA" +
+				":run-theB:run-theIB" +
+				":before:run-theC:before-theIC:run-theIC", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();      			
+        			ClsA.Internal ai = a.new Internal();
+        			ClsB b = new ClsB();
+        			ClsB.Internal bi = b.new Internal();
+        			ClsC c = new ClsC();
+        			ClsC.Internal ci = c.new Internal();
+        			
+        			Target t = new Target();
+					t.run(a);
+					t.run(ai);
+					t.run(b);
+					t.run(bi);
+					t.run(c);
+					t.run(ci);
+        		}
+        	}
+        				
+			public cclass Target {
+			
+				public void run(ClsA c) {
+					Test.res.append(":run-" + c.name);
+				}
+				public void run(ClsA.Internal c) {
+					Test.res.append(":run-" + c.name);
+				}
+				public void run(ClsB c) {
+					Test.res.append(":run-" + c.name);
+				}
+				public void run(ClsB.Internal c) {
+					Test.res.append(":run-" + c.name);
+				}
+			}
+			
+        	public deployed cclass Aspect {
+        		before(): call (void *.run(..)) &amp;&amp; args(ClsA){
+					Test.res.append(":before");
+				}
+        		before(ClsA.Internal c): call (void *.run(..)) &amp;&amp; args(c){
+					Test.res.append(":before-" + c.name);
+				}
+        	}
+			
+			public cclass ClsA {
+				public String name = "theA";
+				public cclass Internal {
+					public String name = "theIA";
+				}
+			}
+			
+			public cclass ClsB {
+				public String name = "theB";
+				public cclass Internal {
+					public String name = "theIB";
+				}
+			}
+			
+			public cclass ClsC extends ClsA {
+				public String name = "theC";
+				public cclass Internal {
+					public String name = "theIC";
+				}
+			}
+        </code>
+    </compile-run>
+        
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate024" description="mixins with args">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":run-theSuper:run-theISuper" +
+				":before:run-theA:before-theIA:run-theIA" +
+				":run-theB:run-theIB" +
+				":before:beforeC:run-theA:before-theIA:run-theIA" +
+				":before:run-theB:before-theIB:run-theIB", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			Super s = new Super();
+        			Super.Internal si = s.new Internal();
+        			ClsA a = new ClsA();      			
+        			ClsA.Internal ai = a.new Internal();
+        			ClsB b = new ClsB();
+        			ClsB.Internal bi = b.new Internal();
+        			ClsC c = new ClsC();
+        			ClsC.Internal ci = c.new Internal();
+        			ClsD d = new ClsD();
+        			ClsD.Internal di = d.new Internal();
+        			
+        			Target t = new Target();
+        			t.run(s);
+        			t.run(si);
+					t.run(a);
+					t.run(ai);
+					t.run(b);
+					t.run(bi);
+					t.run(c);
+					t.run(ci);
+					t.run(d);
+					t.run(di);
+        		}
+        	}
+        				
+			public cclass Target {
+			
+				public void run(Super c) {
+					Test.res.append(":run-" + c.name);
+				}
+				public void run(Super.Internal c) {
+					Test.res.append(":run-" + c.name);
+				}
+				public void run(ClsB c) {
+					Test.res.append(":run-" + c.name);
+				}
+				public void run(ClsB.Internal c) {
+					Test.res.append(":run-" + c.name);
+				}
+			}
+			
+        	public deployed cclass Aspect {
+        		before(): call (void *.run(..)) &amp;&amp; args(ClsA){
+					Test.res.append(":before");
+				}
+        		before(ClsA.Internal c): call (void *.run(..)) &amp;&amp; args(c){
+					Test.res.append(":before-" + c.name);
+				}
+				before(): call (void *.run(..)) &amp;&amp; args(ClsC){
+					Test.res.append(":beforeC");
+				}
+        	}
+        	
+			public cclass Super {
+			
+				public String name = "theSuper";
+				public cclass Internal {
+					public String name = "theISuper";
+				}
+			} 			
+			public cclass ClsA extends Super {
+				public String name = "theA";
+				public cclass Internal {
+					public String name = "theIA";
+				}
+			}
+			
+			public cclass ClsB extends Super {
+				public String name = "theB";
+				public cclass Internal {
+					public String name = "theIB";
+				}
+			}
+			
+			public cclass ClsC extends ClsA &amp; ClsB {
+			}
+			public cclass ClsD extends ClsB &amp; ClsA {
+			}
+        </code>
+    </compile-run>    
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate025" description="args with * wildcard">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before:run-theSuper" +
+				":before:run-theISuper" +
+				":before:run-theA" +
+				":before:run-theIA" +
+				":before:run-theB" +
+				":before:run-theIB" +
+				":before:run-theA" +
+				":before:run-theIA" +
+				":before:run-theB" +
+				":before:run-theIB", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			Super s = new Super();
+        			Super.Internal si = s.new Internal();
+        			ClsA a = new ClsA();      			
+        			ClsA.Internal ai = a.new Internal();
+        			ClsB b = new ClsB();
+        			ClsB.Internal bi = b.new Internal();
+        			ClsC c = new ClsC();
+        			ClsC.Internal ci = c.new Internal();
+        			ClsD d = new ClsD();
+        			ClsD.Internal di = d.new Internal();
+        			
+        			Target t = new Target();
+        			t.run(s);
+        			t.run(si);
+					t.run(a);
+					t.run(ai);
+					t.run(b);
+					t.run(bi);
+					t.run(c);
+					t.run(ci);
+					t.run(d);
+					t.run(di);
+        		}
+        	}
+        				
+			public cclass Target {
+			
+				public void run(Super c) {
+					Test.res.append(":run-" + c.name);
+				}
+				public void run(Super.Internal c) {
+					Test.res.append(":run-" + c.name);
+				}
+				public void run(ClsB c) {
+					Test.res.append(":run-" + c.name);
+				}
+				public void run(ClsB.Internal c) {
+					Test.res.append(":run-" + c.name);
+				}
+			}
+			
+        	public deployed cclass Aspect {
+        		before(): call (void *.run(..)) &amp;&amp; args(*){
+					Test.res.append(":before");
+				}
+        	}
+        	
+			public cclass Super {
+			
+				public String name = "theSuper";
+				public cclass Internal {
+					public String name = "theISuper";
+				}
+			} 			
+			public cclass ClsA extends Super {
+				public String name = "theA";
+				public cclass Internal {
+					public String name = "theIA";
+				}
+			}
+			
+			public cclass ClsB extends Super {
+				public String name = "theB";
+				public cclass Internal {
+					public String name = "theIB";
+				}
+			}
+			
+			public cclass ClsC extends ClsA &amp; ClsB {
+			}
+			public cclass ClsD extends ClsB &amp; ClsA {
+			}
+        </code>
+    </compile-run> 
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate026" description="args with .. wildcard">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":run-theSuper:run-theISuper" +
+				":run-theA:run-theIA" +
+				":run-theB:run-theIB" +
+				":run-theA:run-theIA" +
+				":run-theB:run-theIB" +
+				":runI-theISuper" +
+				":runIS-theISuper" +
+				":before-theIB:runIS-theIB" +
+				":runSI-theB", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			Super s = new Super();
+        			Super.Internal si = s.new Internal();
+        			ClsA a = new ClsA();      			
+        			ClsA.Internal ai = a.new Internal();
+        			ClsB b = new ClsB();
+        			ClsB.Internal bi = b.new Internal();
+        			ClsC c = new ClsC();
+        			ClsC.Internal ci = c.new Internal();
+        			ClsD d = new ClsD();
+        			ClsD.Internal di = d.new Internal();
+        			
+        			Target t = new Target();
+        			t.run(s);
+        			t.run(si);
+					t.run(a);
+					t.run(ai);
+					t.run(b);
+					t.run(bi);
+					t.run(c);
+					t.run(ci);
+					t.run(d);
+					t.run(di);
+					t.run(si, 0);
+					t.run(si, 0, s);
+					t.run(di, 0, s);
+					t.run(d, 0, si);
+        		}
+        	}
+        				
+			public cclass Target {
+			
+				public void run(Super c) {
+					Test.res.append(":run-" + c.name);
+				}
+				public void run(Super.Internal c) {
+					Test.res.append(":run-" + c.name);
+				}
+				public void run(Super.Internal c, int i) {
+					Test.res.append(":runI-" + c.name);
+				}
+				public void run(Super.Internal c, int i, Super s) {
+					Test.res.append(":runIS-" + c.name);
+				}
+				public void run(Super c, int i, Super.Internal s) {
+					Test.res.append(":runSI-" + c.name);
+				}
+				public void run(ClsB c) {
+					Test.res.append(":run-" + c.name);
+				}
+				public void run(ClsB.Internal c) {
+					Test.res.append(":run-" + c.name);
+				}
+			}
+			
+        	public deployed cclass Aspect {
+
+        		before(ClsA.Internal c): call (void *.run(..)) &amp;&amp; args(c, .., Super){
+					Test.res.append(":before-" + c.name);
+				}
+			}
+        	
+			public cclass Super {
+			
+				public String name = "theSuper";
+				public cclass Internal {
+					public String name = "theISuper";
+				}
+			} 			
+			public cclass ClsA extends Super {
+				public String name = "theA";
+				public cclass Internal {
+					public String name = "theIA";
+				}
+			}
+			
+			public cclass ClsB extends Super {
+				public String name = "theB";
+				public cclass Internal {
+					public String name = "theIB";
+				}
+			}
+			
+			public cclass ClsC extends ClsA &amp; ClsB {
+			}
+			public cclass ClsD extends ClsB &amp; ClsA {
+			}
+        </code>
+    </compile-run>    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate101" description="'this' with type">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -37,7 +1573,7 @@
     </compile-run>
 
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutstate002" description="'this' with id">
+    <compile-run  id="pointcutstate102" description="'this' with id">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -76,7 +1612,7 @@
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutstate003" description="'target' with type">
+    <compile-run  id="pointcutstate103" description="'target' with type">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -112,7 +1648,7 @@
     </compile-run>
 
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutstate004" description="'target' with id">
+    <compile-run  id="pointcutstate104" description="'target' with id">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -150,7 +1686,7 @@
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutstate005" description="'args' with type">
+    <compile-run  id="pointcutstate105" description="'args' with type">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -183,7 +1719,7 @@
     </compile-run>
 
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutstate006" description="'args' with id">
+    <compile-run  id="pointcutstate106" description="'args' with id">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -218,7 +1754,7 @@
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutstate007" description="'args' with '..'">
+    <compile-run  id="pointcutstate107" description="'args' with '..'">
     	<test>
     		Main m = new Main();
     		m.run();

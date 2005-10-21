@@ -1,40 +1,403 @@
 <testsuite name="Test field related pointcuts" package="suits.pointcuts.field">
 
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutfield001" description="simple get pointcut">
+    <compile-run  id="pointcutfield001" description="simple get/set pointcut">
     	<test>
     		Main m = new Main();
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":beforeget:before:field", res.toString());			
+			assertEquals(":beforeSet:willGet:beforeGet:field:willSet:beforeSet", res.toString());			
 		</test>
         <code>
         	public class Main {
         		
         		public void run() {
         			ClsB b = new ClsB();
-        			Test.res.append(":beforeget");
+        			Test.res.append(":willGet");
         			Test.res.append(b.field);
+        			Test.res.append(":willSet");
+        			b.setField(":nothing");
         		}
         	}
         	
-        	public deployed cclass ClsA {
-				// This here should be ClsB!! (FIXED)
+        	public deployed cclass Aspect {
+				
 				before():  get (public String ClsB.*) {
-				//before():  get (public String ClsB_Impl.*) {
-					Test.res.append(":before");
+					Test.res.append(":beforeGet");
+    			}
+    			// will match the initialization and the b.setField()
+    			before():  set (public String ClsB.*) {
+					Test.res.append(":beforeSet");
     			}
         	}
 			
 			public cclass ClsB {
 				public String field = ":field";
+				
+				public void setField(String f) {
+					this.field = f;
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutfield002" description="get/set pointcut with subtypes">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":beforeSet:beforeSet:willGet:beforeGet:field:willSet" +
+				":beforeSet:willGet2:field2:willSet2:beforeSet", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsC c = new ClsC();
+        			Test.res.append(":willGet");
+        			Test.res.append(c.field);
+        			Test.res.append(":willSet");
+        			c.setField(":nothing");
+
+        			Test.res.append(":willGet2");
+        			Test.res.append(c.field2);
+        			Test.res.append(":willSet2");
+        			c.setField2(":nothing");
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+				
+				before():  get (public String ClsB.field) {
+					Test.res.append(":beforeGet");
+    			}
+    			// Matches nothing
+    			before():  get (public String ClsC.field) {
+					Test.res.append(":beforeGetWrong");
+    			}
+    			// will match the initializations, c.setField() and c.setField2()
+    			before():  set (public String ClsB+.field*) {
+					Test.res.append(":beforeSet");
+    			}
+        	}
+			
+			public cclass ClsB {
+				public String field = ":field";
+				
+				public void setField(String f) {
+					this.field = f;
+				}
+			}
+			
+			public cclass ClsC extends ClsB {
+				public String field2 = ":field2";
+				
+				public void setField2(String f) {
+					this.field2 = f;
+				}
 			}
         </code>
     </compile-run>
     
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutfield002" description="simple get pointcut with target and this">
+    <compile-run  id="pointcutfield003" description="get/set pointcut with nested classes">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":beforeSet:field:beforeGet:field:beforeSet:nothing" +
+				":beforeSet:ifield:beforeGetInternal:ifield:beforeSet:inothing", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsA a = new ClsA();
+        			Test.res.append(a.field);
+        			a.setField(":nothing");
+        			
+        			ClsA.Internal i = a.new Internal();
+        			Test.res.append(i.ifield);
+        			i.setField(":inothing");
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+				
+				before():  get (public String ClsA+.*) {
+					Test.res.append(":beforeGet");
+    			}
+    			// will match the initialization and a.setField()
+    			before(String newval):  set (public String ClsA.*) &amp;&amp; args(newval) {
+					Test.res.append(":beforeSet" + newval);
+    			}
+    			
+    			before():  get (public String ClsA.Internal.*) {
+					Test.res.append(":beforeGetInternal");
+    			}
+    			before(String newval):  set (public String ClsA.Internal.*) &amp;&amp; args(newval) {
+					Test.res.append(":beforeSet" + newval);
+    			}
+        	}
+			
+			public cclass ClsA {
+			
+				public String field = ":field";
+			
+				public void setField(String f) {
+					this.field = f;
+				}
+				
+				public cclass Internal {
+	
+					public String ifield = ":ifield";
+				
+					public void setField(String f) {
+						this.ifield = f;
+					}
+				}	
+			}
+			
+        </code>
+    </compile-run>
+    
+   	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutfield004" description="get/set pointcut with mixins">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":beforeSet:field:beforeGet:field:beforeSet:nothing" +
+				":beforeSet:ifield:beforeGetInternal:ifield:beforeSet:inothing", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsC c = new ClsC();
+        			Test.res.append(c.field);
+        			c.setField(":nothing");
+        			
+        			ClsC.Internal i = c.new Internal();
+        			Test.res.append(i.ifield);
+        			i.setField(":inothing");
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+				
+				// Note that ClsA+ doesn't work, while ClsB+ works
+				before():  get (public String ClsA+.*) {
+					Test.res.append(":beforeGet");
+    			}
+    			// will match the initialization and a.setField()
+    			before(String newval):  set (public String ClsC.*) &amp;&amp; args(newval) {
+					Test.res.append(":beforeSet" + newval);
+    			}
+    			
+    			before():  get (public String ClsC.Internal.*) {
+					Test.res.append(":beforeGetInternal");
+    			}
+    			before(String newval):  set (public String ClsC.Internal.*) &amp;&amp; args(newval) {
+					Test.res.append(":beforeSet" + newval);
+    			}
+        	}
+			
+			public cclass Super {
+				public cclass Internal {}
+			} 
+			
+			public cclass ClsA extends Super {
+			
+				public String field = ":field";
+			
+				public void setField(String f) {
+					this.field = f;
+				}
+				
+				public cclass Internal {
+	
+					public String ifield = ":ifield";
+				
+					public void setField(String f) {
+						this.ifield = f;
+					}
+				}	
+			}
+
+			public cclass ClsB extends Super {
+				
+				public cclass Internal {
+	
+					public String ifield = ":ifield";
+				
+					public void setField(String f) {
+						this.ifield = f;
+					}
+				}	
+			}
+			
+			public cclass ClsC extends ClsA &amp; ClsB {
+			}
+			
+        </code>
+    </compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutfield005" description="get/set pointcut with * wildcards">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":beforeSet:willGet:beforeGet:field:willSet:beforeSet", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        			Test.res.append(":willGet");
+        			Test.res.append(b.field);
+        			Test.res.append(":willSet");
+        			b.setField(":nothing");
+        			
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+				
+				before():  get (public String Cls*.*) {
+					Test.res.append(":beforeGet");
+    			}
+    			// will match the initialization and the b.setField()
+    			before():  set (public String Cls*.*) {
+					Test.res.append(":beforeSet");
+    			}
+    			
+        	}
+			
+			public cclass ClsB {
+				public String field = ":field";
+				
+				public void setField(String f) {
+					this.field = f;
+				}
+			}
+			
+        </code>
+    </compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutfield006" description="get/set pointcut with .. wildcards">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":beforeSet:willGet:beforeGet:field:willSet:beforeSet", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        			Test.res.append(":willGet");
+        			Test.res.append(b.field);
+        			Test.res.append(":willSet");
+        			b.setField(":nothing");
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+				
+				before():  get (public String suits.pointcuts.field.ppointcutfield006..*) {
+					Test.res.append(":beforeGet");
+    			}
+    			// will match the initialization and the b.setField()
+    			before():  set (public String suits.pointcuts.field.ppointcutfield006..*) {
+					Test.res.append(":beforeSet");
+    			}
+    			
+        	}
+			
+			public cclass ClsB {
+				public String field = ":field";
+				
+				public void setField(String f) {
+					this.field = f;
+				}
+			}
+			
+        </code>
+    </compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutfield007" description="simple static get/set pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":beforeSet:willGet:beforeGet:field:willSet:beforeSet", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        			Test.res.append(":willGet");
+        			Test.res.append(b.field);
+        			Test.res.append(":willSet");
+        			b.setField(":nothing");
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+				
+				before():  get (public static String ClsB.*) {
+					Test.res.append(":beforeGet");
+    			}
+    			// will match the initialization and the b.setField()
+    			before():  set (public static String ClsB.*) {
+					Test.res.append(":beforeSet");
+    			}
+    			
+        	}
+			
+			public cclass ClsB {
+				public static String field = ":field";
+				// this must NOT match, because is not static
+				public String field2 = ":field2";
+				
+				public void setField(String f) {
+					ClsB.field = f;
+					this.field2 = f;
+				}
+			}
+			
+        </code>
+    </compile-run>
+    
+    
+     
+    
+    
+    
+    
+    
+    
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutfield102" description="simple get pointcut with target and this">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -72,7 +435,7 @@
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutfield003" description="simple set pointcut">
+    <compile-run  id="pointcutfield103" description="simple set pointcut">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -111,7 +474,7 @@
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutfield004" description="simple set pointcut with this and target">
+    <compile-run  id="pointcutfield104" description="simple set pointcut with this and target">
     	<test>
     		Main m = new Main();
     		m.run();

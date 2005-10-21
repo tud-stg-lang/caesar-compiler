@@ -1,306 +1,743 @@
 <testsuite name="Test object construction related pointcuts" package="suits.pointcuts.constructor">
 
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutconstructor001" description="call constructor pointcut">
+    <compile-run  id="pointcutconstructor001" description="simple call constructor pointcut">
     	<test>
     		Main m = new Main();
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":before:constructing", res.toString());			
+			assertEquals(":before:constructing:beforeString:aString:constructingString", res.toString());			
 		</test>
         <code>
         	public class Main {
         		
         		public void run() {
-        			ClsB b = new ClsB();
+        			ClsA a = new ClsA();
+        			a = new ClsA("aString");
         		}
         	}
         	
-        	public deployed cclass ClsA {
+        	public deployed cclass Aspect {
 
-				// Should be:
-				before():  call (public ClsB.new()) {
-				//before():  call (public ClsB_Impl.new(*)) {
-				// this does not work, because method calls are translated
-				//before():  call (public * ClsB.$constructor()) {
+				before():  call (public ClsA.new()) {
 					Test.res.append(":before");
+    			}
+    			before(String s):  call (public ClsA.new(String)) &amp;&amp; args(s)  {
+					Test.res.append(":beforeString:" + s);
     			}
         	}
 			
-			public cclass ClsB {
-				public ClsB() {
+			public cclass ClsA {
+				public ClsA() {
 					Test.res.append(":constructing");
 				}
-			}
-        </code>
-    </compile-run>
-    
-    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutconstructor002" description="call constructor pointcut with this and target">
-    	<test>
-    		Main m = new Main();
-    		m.run();
-    		
-			System.out.println("result: "+ res.toString());
-			assertEquals(":before:constructing", res.toString());			
-		</test>
-        <code>
-        	public class Main {
-        		
-        		public void run() {
-        			ClsB b = new ClsB();
-        		}
-        	}
-        	
-        	public deployed cclass ClsA {
-
-				// Should be:
-				before():  call (public ClsB.new()) &amp;&amp; this(Main) &amp;&amp; target(ClsB) {
-				// Doesn't work with target
-				//before():  call (public ClsB_Impl.new(*)) &amp;&amp; this(Main) &amp;&amp; target(ClsB_Impl) {
 				
-				// Only this works now
-				//before():  call (public * ClsB.$constructor()) &amp;&amp; this(Main) &amp;&amp; target(ClsB) {
-				//before():  call (public ClsB_Impl.new(*)) &amp;&amp; this(Main) { //&amp;&amp; target(ClsB_Impl) {
-					Test.res.append(":before");
-    			}
-        	}
-			
-			public cclass ClsB {
-				public ClsB() {
-					Test.res.append(":constructing");
+				public ClsA(String s) {
+					Test.res.append(":constructingString");
 				}
 			}
         </code>
     </compile-run>
-    
-    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutconstructor003" description="execution constructor pointcut">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor002" description="call constructor pointcut with subtypes">
     	<test>
     		Main m = new Main();
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":before:constructing", res.toString());			
+			assertEquals(
+				":before:constructingA:after" +
+				":beforeString:aString:constructingAString:afterString:aString" +
+				":before:constructingA:constructingB:after" +
+				":beforeString:bString:constructingA:constructingBString:afterString:bString", res.toString());
+						
 		</test>
         <code>
         	public class Main {
         		
         		public void run() {
+        			ClsA a = new ClsA();
+        			a = new ClsA("aString");
+        			
         			ClsB b = new ClsB();
+        			b = new ClsB("bString");
         		}
         	}
         	
-        	public deployed cclass ClsA {
+        	public deployed cclass Aspect {
 
-				// Should be:
-				before():  execution (public ClsB.new()) {
-				// These 3 work now
-				//before():  execution (public ClsB_Impl.new(*)) {
-				//before():  execution (public * ClsB_Impl.$constructor()) {
-				//before():  execution (public * ClsB.$constructor()) {
+				// Matches new ClsA() and ClsB()
+				before():  call (public ClsA.new()) {
 					Test.res.append(":before");
+    			}
+    			
+    			// Matches new ClsA("aString") and ClsB("bString")
+    			before(String s):  call (public ClsA.new(String)) &amp;&amp; args(s)  {
+					Test.res.append(":beforeString:" + s);
+    			}
+    			// Matches new ClsA() and ClsB()
+				after():  call (public ClsA.new()) {
+					Test.res.append(":after");
+    			}
+    			// Matches new ClsA("aString") and ClsB("bString")
+    			after(String s):  call (public ClsA.new(String)) &amp;&amp; args(s)  {
+					Test.res.append(":afterString:" + s);
     			}
         	}
 			
-			public cclass ClsB {
-				public ClsB() {
-					Test.res.append(":constructing");
+			public cclass ClsA {
+				public ClsA() {
+					Test.res.append(":constructingA");
+				}
+				
+				public ClsA(String s) {
+					Test.res.append(":constructingAString");
 				}
 			}
+			
+			public cclass ClsB extends ClsA {
+				public ClsB() {
+					Test.res.append(":constructingB");
+				}
+				
+				public ClsB(String s) {
+					Test.res.append(":constructingBString");
+				}
+			}
+			
         </code>
     </compile-run>
-    
-    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutconstructor004" description="execution constructor pointcut with this and target">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor003" description="call constructor pointcut with nested classes">
     	<test>
     		Main m = new Main();
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":before:constructing", res.toString());			
+			assertEquals(
+				":before:constA|" +
+				":beforeInternal:constAInternal|" +
+				":before:constA:constB|" +
+				":beforeInternal:constAInternal:constBInternal", res.toString());			
 		</test>
         <code>
         	public class Main {
         		
         		public void run() {
+        			ClsA a = new ClsA();
+        			Test.res.append("|");
+        			ClsA.Internal ia = a.new Internal();
+        			Test.res.append("|");
+        			
         			ClsB b = new ClsB();
+        			Test.res.append("|");
+        			ClsB.Internal ib = b.new Internal();
         		}
         	}
         	
-        	public deployed cclass ClsA {
+        	public deployed cclass Aspect {
 
-				// Should be:
-				before():  execution (public ClsB.new()) &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
-				// These 4 work now
-				//before():  execution (public ClsB_Impl.new(..))  &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
-				//before():  execution (public ClsB+.new(..))  &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
-				//before():  execution (public * ClsB_Impl.$constructor()) &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
-				//before():  execution (public * ClsB.$constructor()) &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
+				// Matches new ClsA() and ClsB()
+				before():  call (public ClsA.new()) {
 					Test.res.append(":before");
     			}
+    			// Matches new ClsA.Internal() and ClsB.Internal()
+				before():  call (public ClsA.Internal.new()) {
+					Test.res.append(":beforeInternal");
+    			}
+    			
         	}
 			
-			public cclass ClsB {
+			public cclass ClsA {
+				public ClsA() {
+					Test.res.append(":constA");
+				}
+				
+				public cclass Internal {
+					
+					public Internal() {
+						Test.res.append(":constAInternal");
+					}
+				}
+			}
+			
+			public cclass ClsB extends ClsA {
 				public ClsB() {
-					Test.res.append(":constructing");
+					Test.res.append(":constB");
+				}
+				
+				public cclass Internal {
+					
+					public Internal() {
+						Test.res.append(":constBInternal");
+					}
 				}
 			}
         </code>
     </compile-run>
-    
-    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutconstructor005" description="initialization pointcut">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor004" description="call constructor pointcut with mixins">
     	<test>
     		Main m = new Main();
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":before:constructing", res.toString());			
+			assertEquals(
+				":before:constA|" +
+				":beforeInternal:constAInternal|" +
+				":constB|" +
+				":constBInternal|" +
+				":before:constA:constB|" +
+				":beforeInternal:constAInternal:constBInternal", res.toString());			
 		</test>
         <code>
         	public class Main {
         		
         		public void run() {
+        			ClsA a = new ClsA();
+        			Test.res.append("|");
+        			ClsA.Internal ia = a.new Internal();
+        			Test.res.append("|");
+        			
         			ClsB b = new ClsB();
+        			Test.res.append("|");
+        			ClsB.Internal ib = b.new Internal();
+        			Test.res.append("|");
+        			
+        			ClsC c = new ClsC();
+        			Test.res.append("|");
+        			ClsC.Internal ic = c.new Internal();
         		}
         	}
         	
-        	public deployed cclass ClsA {
+        	public deployed cclass Aspect {
 
-				before():  initialization (public ClsB.new()) {
+				// Matches new ClsA() and ClsC()
+				before():  call (public ClsA.new()) {
 					Test.res.append(":before");
+    			}
+    			// Matches new ClsA.Internal() and ClsC.Internal()
+				before():  call (public ClsA.Internal.new()) {
+					Test.res.append(":beforeInternal");
     			}
         	}
 			
-			public cclass ClsB {
+			public cclass Super {
+				public cclass Internal { }
+			}
+			
+			public cclass ClsA extends Super {
+				public ClsA() {
+					Test.res.append(":constA");
+				}
+				
+				public cclass Internal {
+					
+					public Internal() {
+						Test.res.append(":constAInternal");
+					}
+				}
+			}
+			
+			public cclass ClsB extends Super {
 				public ClsB() {
+					Test.res.append(":constB");
+				}
+				
+				public cclass Internal {
+					
+					public Internal() {
+						Test.res.append(":constBInternal");
+					}
+				}
+			}
+			public cclass ClsC extends ClsB &amp; ClsA {
+			}
+        </code>
+    </compile-run>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor005" description="call constructor pointcut with * wildcards">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:constructing:beforeString:aString:constructingString", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a = new ClsA("aString");
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+				before():  call (public Cls*.new()) {
+					Test.res.append(":before");
+    			}
+    			before(String s):  call (public Cls*.new(String)) &amp;&amp; args(s)  {
+					Test.res.append(":beforeString:" + s);
+    			}
+        	}
+			
+			public cclass ClsA {
+				public ClsA() {
 					Test.res.append(":constructing");
+				}
+				
+				public ClsA(String s) {
+					Test.res.append(":constructingString");
 				}
 			}
         </code>
     </compile-run>
     
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutconstructor006" description="preinitialization pointcut">
+    <compile-run  id="pointcutconstructor006" description="call constructor pointcut with .. wildcards">
     	<test>
     		Main m = new Main();
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":before:constructing", res.toString());			
+			assertEquals(
+				":before:constructingA|" +
+				":beforeString:aString:constructingAString|" +
+				":before:constructingA:constructingB|" +
+				":beforeString:bString:constructingA:constructingBString", res.toString());			
 		</test>
         <code>
         	public class Main {
         		
         		public void run() {
+        			ClsA a = new ClsA();
+        			Test.res.append("|");
+        			a = new ClsA("aString");
+        			Test.res.append("|");
+        			
         			ClsB b = new ClsB();
+        			Test.res.append("|");
+        			b = new ClsB("bString");
         		}
         	}
         	
-        	public deployed cclass ClsA {
-				// Should be: (FIXED)
-				before():  preinitialization (public ClsB.new(..)) {
-				//before():  preinitialization (public ClsB_Impl.new(..)) {
+        	public deployed cclass Aspect {
+
+				before():  call (public suits.pointcuts.constructor.ppointcutconstructor006..new()) {
 					Test.res.append(":before");
     			}
+    			before(String s):  
+    				call (public suits.pointcuts.constructor.ppointcutconstructor006..new(String)) &amp;&amp; args(s)  {
+					Test.res.append(":beforeString:" + s);
+    			}
         	}
 			
-			public cclass ClsB {
-				public ClsB() {
-					Test.res.append(":constructing");
+			public cclass ClsA {
+				public ClsA() {
+					Test.res.append(":constructingA");
+				}
+				
+				public ClsA(String s) {
+					Test.res.append(":constructingAString");
 				}
 			}
-        </code>
-    </compile-run>
-    
-    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutconstructor007" description="staticinitialization pointcut">
-    	<test>
-    		Main m = new Main();
-    		m.run();
-    		
-			System.out.println("result: "+ res.toString());
-			assertEquals(":before:constructing", res.toString());			
-		</test>
-        <code>
-        	public class Main {
-        		
-        		public void run() {
-        			ClsB b = new ClsB();
-        		}
-        	}
-        	
-        	public deployed cclass ClsA {
-				// Should be: (FIXED)
-				before():  staticinitialization (ClsB) {
-				//before():  staticinitialization (ClsB_Impl) {
-					Test.res.append(":before");
-    			}
-        	}
-			
-			public cclass ClsB {
+			public cclass ClsB extends ClsA {
 				public ClsB() {
-					Test.res.append(":constructing");
+					Test.res.append(":constructingB");
 				}
-			}
-        </code>
-    </compile-run>
-    
-    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutconstructor008" description="initialization pointcuts order">
-    	<test>
-    		Main m = new Main();
-    		m.run();
-    		
-			System.out.println("result: "+ res.toString());
-			assertEquals(":staticinitialization:preinitialization:initialization:call:execution:constructing", res.toString());
-			//assertEquals(":call:staticinitialization:preinitialization:initialization:execution:constructing", res.toString());			
-		</test>
-        <code>
-        	public class Main {
-        		
-        		public void run() {
-        			ClsB b = new ClsB("s");
-        		}
-        	}
-        	
-        	public deployed cclass ClsA {
-	        	before():  call (public ClsB.new(String)) {
-        		//before():  call (public ClsB.new(..)) {
-        		//before():  call (public ClsB_Impl.new(..)) {
-					Test.res.append(":call");
-    			}
-    			before():  execution (public ClsB.new(String)) {
-    			//before():  execution (public ClsB.new(..)) {
-        		//before():  execution (public ClsB_Impl.new(..)) {
-					Test.res.append(":execution");
-    			}
-        		before():  initialization (public ClsB.new(String)) {
-					Test.res.append(":initialization");
-    			}
-        		before():  preinitialization (public ClsB.new(..)) {
-        		//before():  preinitialization (public ClsB.new(..)) {
-				//before():  preinitialization (public ClsB_Impl.new(..)) {
-					Test.res.append(":preinitialization");
-    			}
-				before():  staticinitialization (ClsB) {
-				//before():  staticinitialization (ClsB_Impl) {
-					Test.res.append(":staticinitialization");
-    			}
-        	}
-			
-			public cclass ClsB {
-			
+				
 				public ClsB(String s) {
+					Test.res.append(":constructingBString");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    
+    
+    
+    	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor011" description="simple execution constructor pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:constructing:beforeString:aString:constructingString", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a = new ClsA("aString");
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+				before():  execution (public ClsA.new()) {
+					Test.res.append(":before");
+    			}
+    			before(String s):  execution (public ClsA.new(String)) &amp;&amp; args(s)  {
+					Test.res.append(":beforeString:" + s);
+    			}
+        	}
+			
+			public cclass ClsA {
+				public ClsA() {
 					Test.res.append(":constructing");
 				}
 				
-				public ClsB() {
-					Test.res.append(":constructing");
+				public ClsA(String s) {
+					Test.res.append(":constructingString");
 				}
 			}
         </code>
     </compile-run>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor012" description="execution constructor pointcut with subtypes">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before:constructingA|" +
+				":beforeString:aString:constructingAString|" +
+				":before:before:constructingA:constructingB|" +
+				":beforeString:bString:before:constructingA:constructingBString", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsA a = new ClsA();
+        			Test.res.append("|");
+        			a = new ClsA("aString");
+        			Test.res.append("|");
+        			
+        			ClsB b = new ClsB();
+        			Test.res.append("|");
+        			b = new ClsB("bString");
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+				// Matches new ClsA() and ClsB()
+				before():  execution (public ClsA.new()) {
+					Test.res.append(":before");
+    			}
+    			// Matches new ClsA("aString") and ClsB("bString")
+    			before(String s):  execution (public ClsA.new(String)) &amp;&amp; args(s)  {
+					Test.res.append(":beforeString:" + s);
+    			}
+        	}
+			
+			public cclass ClsA {
+				public ClsA() {
+					Test.res.append(":constructingA");
+				}
+				
+				public ClsA(String s) {
+					Test.res.append(":constructingAString");
+				}
+			}
+			
+			public cclass ClsB extends ClsA {
+				public ClsB() {
+					Test.res.append(":constructingB");
+				}
+				
+				public ClsB(String s) {
+					Test.res.append(":constructingBString");
+				}
+			}
+			
+        </code>
+    </compile-run>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor013" description="execution constructor pointcut with nested classes">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before:constA|" +
+				":beforeInternal:constAInternal|" +
+				":before:before:constA:constB|" +
+				":beforeInternal:beforeInternal:constAInternal:constBInternal", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsA a = new ClsA();
+        			Test.res.append("|");
+        			ClsA.Internal ia = a.new Internal();
+        			Test.res.append("|");
+        			
+        			ClsB b = new ClsB();
+        			Test.res.append("|");
+        			ClsB.Internal ib = b.new Internal();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+				// Matches new ClsA() and ClsB()
+				before():  execution (public ClsA.new()) {
+					Test.res.append(":before");
+    			}
+    			// Matches new ClsA.Internal() and ClsB.Internal()
+				before():  execution (public ClsA.Internal.new()) {
+					Test.res.append(":beforeInternal");
+    			}
+    			
+        	}
+			
+			public cclass ClsA {
+				public ClsA() {
+					Test.res.append(":constA");
+				}
+				
+				public cclass Internal {
+					
+					public Internal() {
+						Test.res.append(":constAInternal");
+					}
+				}
+			}
+			
+			public cclass ClsB extends ClsA {
+				public ClsB() {
+					Test.res.append(":constB");
+				}
+				
+				public cclass Internal {
+					
+					public Internal() {
+						Test.res.append(":constBInternal");
+					}
+				}
+			}
+        </code>
+    </compile-run>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor014" description="execution constructor pointcut with mixins">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before:constA|" +
+				":beforeInternal:constAInternal|" +
+				":constB|" +
+				":constBInternal|" +
+				":before:before:before:constA:constB|" +
+				":beforeInternal:beforeInternal:beforeInternal:constAInternal:constBInternal", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsA a = new ClsA();
+        			Test.res.append("|");
+        			ClsA.Internal ia = a.new Internal();
+        			Test.res.append("|");
+        			
+        			ClsB b = new ClsB();
+        			Test.res.append("|");
+        			ClsB.Internal ib = b.new Internal();
+        			Test.res.append("|");
+        			
+        			ClsC c = new ClsC();
+        			Test.res.append("|");
+        			ClsC.Internal ic = c.new Internal();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+				// Matches new ClsA() and ClsC()
+				before():  execution (public ClsA.new()) {
+					Test.res.append(":before");
+    			}
+    			// Matches new ClsA.Internal() and ClsC.Internal()
+				before():  execution (public ClsA.Internal.new()) {
+					Test.res.append(":beforeInternal");
+    			}
+        	}
+			
+			public cclass Super {
+				public cclass Internal { }
+			}
+			
+			public cclass ClsA extends Super {
+				public ClsA() {
+					Test.res.append(":constA");
+				}
+				
+				public cclass Internal {
+					
+					public Internal() {
+						Test.res.append(":constAInternal");
+					}
+				}
+			}
+			
+			public cclass ClsB extends Super {
+				public ClsB() {
+					Test.res.append(":constB");
+				}
+				
+				public cclass Internal {
+					
+					public Internal() {
+						Test.res.append(":constBInternal");
+					}
+				}
+			}
+			public cclass ClsC extends ClsB &amp; ClsA {
+			}
+        </code>
+    </compile-run>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor015" description="execution constructor pointcut with * wildcards">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before:constructingA|" +
+				":beforeString:aString:constructingAString|" +
+				":before:before:constructingA:constructingB|" +
+				":beforeString:bString:before:constructingA:constructingBString", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsA a = new ClsA();
+        			Test.res.append("|");
+        			a = new ClsA("aString");
+        			Test.res.append("|");
+        			
+        			ClsB b = new ClsB();
+        			Test.res.append("|");
+        			b = new ClsB("bString");
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+				// Matches new ClsA() and ClsB()
+				before():  execution (public Cls*.new()) {
+					Test.res.append(":before");
+    			}
+    			// Matches new ClsA("aString") and ClsB("bString")
+    			before(String s):  execution (public Cls*.new(String)) &amp;&amp; args(s)  {
+					Test.res.append(":beforeString:" + s);
+    			}
+        	}
+			
+			public cclass ClsA {
+				public ClsA() {
+					Test.res.append(":constructingA");
+				}
+				
+				public ClsA(String s) {
+					Test.res.append(":constructingAString");
+				}
+			}
+			
+			public cclass ClsB extends ClsA {
+				public ClsB() {
+					Test.res.append(":constructingB");
+				}
+				
+				public ClsB(String s) {
+					Test.res.append(":constructingBString");
+				}
+			}
+        </code>
+    </compile-run>
+    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor016" description="execution constructor pointcut with .. wildcards">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before:constructingA|" +
+				":beforeString:aString:constructingAString|" +
+				":before:before:constructingA:constructingB|" +
+				":beforeString:bString:before:constructingA:constructingBString", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsA a = new ClsA();
+        			Test.res.append("|");
+        			a = new ClsA("aString");
+        			Test.res.append("|");
+        			
+        			ClsB b = new ClsB();
+        			Test.res.append("|");
+        			b = new ClsB("bString");
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+				// Matches new ClsA() and ClsB()
+				before():  execution (public suits.pointcuts.constructor.ppointcutconstructor016..new()) {
+					Test.res.append(":before");
+    			}
+    			// Matches new ClsA("aString") and ClsB("bString")
+    			before(String s):  execution (public suits.pointcuts.constructor.ppointcutconstructor016..new(String)) &amp;&amp; args(s)  {
+					Test.res.append(":beforeString:" + s);
+    			}
+        	}
+			
+			public cclass ClsA {
+				public ClsA() {
+					Test.res.append(":constructingA");
+				}
+				
+				public ClsA(String s) {
+					Test.res.append(":constructingAString");
+				}
+			}
+			
+			public cclass ClsB extends ClsA {
+				public ClsB() {
+					Test.res.append(":constructingB");
+				}
+				
+				public ClsB(String s) {
+					Test.res.append(":constructingBString");
+				}
+			}
+        </code>
+    </compile-run>
+
 </testsuite>

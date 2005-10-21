@@ -21,7 +21,291 @@
         	public deployed cclass ClsA {
         		before(): call (void ClsB.m()) {
 					Test.res.append(":before");
-					System.out.println(thisJoinPoint.getTarget());
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+   
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod002" description="call pointcut with subtypes">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before1:ClsA.a:before2:ClsA.b:before1:ClsA.a:before2:ClsB.b:before3:ClsB.c" +
+				":before1:before4:ClsC.a:before2:ClsB.b:before3:ClsC.c:before5:ClsC.d", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.a();
+        			a.b();
+        			ClsB b = new ClsB();
+        			b.a();
+        			b.b();
+        			b.c();
+        			ClsC c = new ClsC();
+        			c.a();
+        			c.b();
+        			c.c();
+        			c.d();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		// Matches a.a(), b.a() and c.a()
+        		before(): call (void ClsA.a()) {
+					Test.res.append(":before1");
+				}
+				// Matches a.b(), b.b() and c.b()
+				before(): call (void ClsA.b()) {
+					Test.res.append(":before2");
+				}
+				// Matches b.c() and c.c()
+				before(): call (void ClsB.c()) {
+					Test.res.append(":before3");
+				}
+				// Matches c.a()
+				before(): call (void ClsC.a()) {
+					Test.res.append(":before4");
+				}
+				// Matches c.d()
+				before(): call (void ClsC.d()) {
+					Test.res.append(":before5");
+				}
+        	}
+			
+			public cclass ClsA {
+			
+				public void a() {
+					Test.res.append(":ClsA.a");
+				}
+				public void b() {
+					Test.res.append(":ClsA.b");
+				}
+			}
+			
+			public cclass ClsB extends ClsA {
+
+				public void b() {
+					Test.res.append(":ClsB.b");
+				}
+				public void c() {
+					Test.res.append(":ClsB.c");
+				}
+			}
+			
+			public cclass ClsC extends ClsB {
+
+				public void a() {
+					Test.res.append(":ClsC.a");
+				}
+				public void c() {
+					Test.res.append(":ClsC.c");
+				}
+				public void d() {
+					Test.res.append(":ClsC.d");
+				}
+			}
+        </code>
+    </compile-run>
+
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod003" description="call pointcut with nested classes">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before1:before2:ClsA.a:before3:ClsC.c", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+					ClsC c = new ClsC();
+					c.m();
+					
+					ClsC.Internal i = c.new Internal();
+					i.c();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+        		// Matches c.m()
+        		before(): call (void ClsA.m()) {
+					Test.res.append(":before1");
+				}
+				// Matches new Internal().a();
+        		before(): call (void ClsA.Internal.a()) {
+					Test.res.append(":before2");
+				}
+				// Matches i.c();
+        		before(): call (void ClsC.Internal.c()) {
+					Test.res.append(":before3");
+				}
+        	}
+
+			public cclass ClsC extends ClsA {
+			
+				public cclass Internal {
+					public void c() {
+						Test.res.append(":ClsC.c");
+					}
+				}
+			}
+			
+			public cclass ClsA {
+				
+				public void m() {
+					new Internal().a();
+				}
+				
+				public cclass Internal {
+					public void a() {
+						Test.res.append(":ClsA.a");
+					}
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod004" description="call pointcut with mixins">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before4:before5:before6:before7:ClsA.a:before3:before6:before7:ClsB.b" +
+				":before6:before7:ClsC.c:before6:before7:before8:IntA.a:before8:IntB.b", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+					ClsC c = new ClsC();
+					c.a();
+					c.b();
+					c.c();
+					c.mix();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+        		// Matches nothing!
+        		before(): call (void ClsA.c()) {
+					Test.res.append(":before1");
+				}
+				// Matches nothing!
+        		before(): call (void ClsA.b()) {
+					Test.res.append(":before2");
+				}
+				// Matches c.b()
+        		before(): call (void ClsB.b()) {
+					Test.res.append(":before3");
+				}
+				// Matches c.a()
+        		before(): call (void ClsA.a()) {
+					Test.res.append(":before4");
+				}
+				// Matches c.a()
+        		before(): call (void ClsA.*()) {
+					Test.res.append(":before5");
+				}
+				// Matches c.a(), c.b(), c.c() and c.mix()
+        		before(): call (void ClsC.*()) {
+					Test.res.append(":before6");
+				}
+				// Matches c.a(), c.b(), c.c() and c.mix()
+        		before(): call (void ClsA+.*()) {
+					Test.res.append(":before7");
+				}
+				// Matches i.internal_a() and i.internal_b()
+        		before(): call (void ClsC.Internal.*()) {
+					Test.res.append(":before8");
+				}
+        	}
+
+			public cclass Super {
+				public cclass Internal {}
+			} 
+			
+			public cclass ClsA extends Super {
+
+				public void a() {
+					Test.res.append(":ClsA.a");
+				}
+				
+				public cclass Internal {
+					public void internal_a() {
+						Test.res.append(":IntA.a");
+					}
+				}
+			}
+			
+			public cclass ClsB extends Super {
+
+				public void b() {
+					Test.res.append(":ClsB.b");
+				}
+				
+				public cclass Internal {
+					public void internal_b() {
+						Test.res.append(":IntB.b");
+					}
+				}
+			}
+			
+			public cclass ClsC extends ClsB &amp; ClsA {
+				public void c() {
+					Test.res.append(":ClsC.c");
+				}
+				public void mix() {
+					Internal i = new Internal();
+					i.internal_a();
+					i.internal_b();
+				}
+			}
+        </code>
+    </compile-run>
+
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod005" description="call pointcut with * wildcards">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): call (void Cls*.m()) {
+					Test.res.append(":before");
 				}
         	}
 			
@@ -35,7 +319,475 @@
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutmethod002" description="simple call pointcut with this and target">
+    <compile-run  id="pointcutmethod006" description="call pointcut with .. wildcards">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): call (void suits.pointcuts.method.ppointcutmethod006..m()) {
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+			
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod007" description="simple static call pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsB.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): call (static void ClsB.m()) {
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public static void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+   
+   
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod011" description="simple execution pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): execution (void ClsB.m()) {
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+   
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod012" description="execution pointcut with subtypes">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before1:ClsA.a:before2:ClsA.b:before1:ClsA.a:before2:ClsB.b:before3:ClsB.c" +
+				":before1:before4:ClsC.a:before2:ClsB.b:before3:ClsC.c:before5:ClsC.d", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.a();
+        			a.b();
+        			ClsB b = new ClsB();
+        			b.a();
+        			b.b();
+        			b.c();
+        			ClsC c = new ClsC();
+        			c.a();
+        			c.b();
+        			c.c();
+        			c.d();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		// Matches a.a(), b.a() and c.a()
+        		before(): execution (void ClsA.a()) {
+					Test.res.append(":before1");
+				}
+				// Matches a.b(), b.b() and c.b()
+				before(): execution (void ClsA.b()) {
+					Test.res.append(":before2");
+				}
+				// Matches b.c() and c.c()
+				before(): execution (void ClsB.c()) {
+					Test.res.append(":before3");
+				}
+				// Matches c.a()
+				before(): execution (void ClsC.a()) {
+					Test.res.append(":before4");
+				}
+				// Matches c.d()
+				before(): execution (void ClsC.d()) {
+					Test.res.append(":before5");
+				}
+        	}
+			
+			public cclass ClsA {
+			
+				public void a() {
+					Test.res.append(":ClsA.a");
+				}
+				public void b() {
+					Test.res.append(":ClsA.b");
+				}
+			}
+			
+			public cclass ClsB extends ClsA {
+
+				public void b() {
+					Test.res.append(":ClsB.b");
+				}
+				public void c() {
+					Test.res.append(":ClsB.c");
+				}
+			}
+			
+			public cclass ClsC extends ClsB {
+
+				public void a() {
+					Test.res.append(":ClsC.a");
+				}
+				public void c() {
+					Test.res.append(":ClsC.c");
+				}
+				public void d() {
+					Test.res.append(":ClsC.d");
+				}
+			}
+        </code>
+    </compile-run>
+
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod013" description="execution pointcut with nested classes">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before1:before2:ClsA.a:before3:ClsC.c", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+					ClsC c = new ClsC();
+					c.m();
+					
+					ClsC.Internal i = c.new Internal();
+					i.c();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+        		// Matches c.m()
+        		before(): execution (void ClsA.m()) {
+					Test.res.append(":before1");
+				}
+				// Matches new Internal().a();
+        		before(): execution (void ClsA.Internal.a()) {
+					Test.res.append(":before2");
+				}
+				// Matches i.c();
+        		before(): execution (void ClsC.Internal.c()) {
+					Test.res.append(":before3");
+				}
+        	}
+
+			public cclass ClsC extends ClsA {
+			
+				public cclass Internal {
+					public void c() {
+						Test.res.append(":ClsC.c");
+					}
+				}
+			}
+			
+			public cclass ClsA {
+				
+				public void m() {
+					new Internal().a();
+				}
+				
+				public cclass Internal {
+					public void a() {
+						Test.res.append(":ClsA.a");
+					}
+				}
+			
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod014" description="execution pointcut with mixins">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before4:before5:before7:ClsA.a:before3:before7:ClsB.b" +
+				":before6:before7:ClsC.c:before6:before7:IntA.a:before8:IntC.b", res.toString());
+						
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+					ClsC c = new ClsC();
+					c.a();
+					c.b();
+					c.c();
+					c.mix();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+        		// Matches nothing!
+        		before(): execution (void ClsA.c()) {
+					Test.res.append(":before1");
+				}
+				// Matches nothing!
+        		before(): execution (void ClsA.b()) {
+					Test.res.append(":before2");
+				}
+				// Matches c.b()
+        		before(): execution (void ClsB.b()) {
+					Test.res.append(":before3");
+				}
+				// Matches c.a()
+        		before(): execution (void ClsA.a()) {
+					Test.res.append(":before4");
+				}
+				// Matches c.a()
+        		before(): execution (void ClsA.*()) {
+					Test.res.append(":before5");
+				}
+				// Matches c.c() and c.mix()
+        		before(): execution (void ClsC.*()) {
+					Test.res.append(":before6");
+				}
+				// Matches c.a(), c.b(), c.c() and c.mix()
+        		before(): execution (void ClsA+.*()) {
+					Test.res.append(":before7");
+				}
+				// Matches i.internal_b() (inside ClsC!)
+        		before(): execution (void ClsC.Internal.*()) {
+					Test.res.append(":before8");
+				}
+				
+        	}
+
+			public cclass Super {
+				public cclass Internal {}
+			} 
+			
+			public cclass ClsA extends Super {
+
+				public void a() {
+					Test.res.append(":ClsA.a");
+				}
+				
+				public cclass Internal {
+					public void internal_a() {
+						Test.res.append(":IntA.a");
+					}
+				}
+			}
+			
+			public cclass ClsB extends Super {
+
+				public void b() {
+					Test.res.append(":ClsB.b");
+				}
+				
+				public cclass Internal {
+					public void internal_b() {
+						Test.res.append(":IntB.b");
+					}
+				}
+			}
+			
+			public cclass ClsC extends ClsB &amp; ClsA {
+			
+				public void c() {
+					Test.res.append(":ClsC.c");
+				}
+				public void mix() {
+					Internal i = new Internal();
+					i.internal_a();
+					i.internal_b();
+				}
+				public cclass Internal {
+					public void internal_b() {
+						Test.res.append(":IntC.b");
+					}
+				}
+			}
+        </code>
+    </compile-run>
+
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod015" description="execution pointcut with * wildcards">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): execution (void Cls*.m()) {
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod016" description="execution pointcut with .. wildcards">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): execution (void suits.pointcuts.method.ppointcutmethod016..m()) {
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+			
+        </code>
+    </compile-run>    
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod017" description="simple static execution pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsB.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): execution (static void ClsB.m()) {
+					Test.res.append(":before");
+				}
+        	}
+			
+			public cclass ClsB {
+
+				public static void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod102" description="simple call pointcut with this and target">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -67,41 +819,10 @@
         </code>
     </compile-run>
 
-    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutmethod003" description="simple execution pointcut">
-    	<test>
-    		Main m = new Main();
-    		m.run();
-    		
-			System.out.println("result: "+ res.toString());
-			assertEquals(":before:m", res.toString());			
-		</test>
-        <code>
-        	public class Main {
-        	
-        		public void run() {
-        			ClsB b = new ClsB();
-        			b.m();
-        		}
-        	}
-        	
-        	public deployed cclass ClsA {
-        		before(): execution (void ClsB.m()) {
-					Test.res.append(":before");
-				}
-        	}
-			
-			public cclass ClsB {
-
-				public void m() {
-					Test.res.append(":m");
-				}
-			}
-        </code>
-    </compile-run>
+ 
     
         <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutmethod004" description="simple execution pointcut with this and target">
+    <compile-run  id="pointcutmethod104" description="simple execution pointcut with this and target">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -143,4 +864,330 @@
 			}
         </code>
     </compile-run>
+    
+
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod106" description="call pointcut with inheritance and wildcards">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before1:before2:ClsA.a:before2:ClsA.b:before1:before2:ClsA.a:before2:ClsB.b:ClsB.c" +
+				":before1:before2:ClsC.a:before2:ClsB.b:ClsC.c:ClsC.d", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.a();
+        			a.b();
+        			ClsB b = new ClsB();
+        			b.a();
+        			b.b();
+        			b.c();
+        			ClsC c = new ClsC();
+        			c.a();
+        			c.b();
+        			c.c();
+        			c.d();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+        		// Matches a.a(), b.a() and c.a()
+        		before(): call (void ClsA+.a()) {
+					Test.res.append(":before1");
+				}
+				// Matches a.a(), a.b(), b.a(), b.b(). c.a() and c.b()
+				before(): call (void ClsA.*()) {
+					Test.res.append(":before2");
+				}
+        	}
+			
+			public cclass ClsA {
+			
+				public void a() {
+					Test.res.append(":ClsA.a");
+				}
+				public void b() {
+					Test.res.append(":ClsA.b");
+				}
+			}
+			
+			public cclass ClsB extends ClsA {
+
+				public void b() {
+					Test.res.append(":ClsB.b");
+				}
+				public void c() {
+					Test.res.append(":ClsB.c");
+				}
+			}
+			
+			public cclass ClsC extends ClsB {
+
+				public void a() {
+					Test.res.append(":ClsC.a");
+				}
+				public void c() {
+					Test.res.append(":ClsC.c");
+				}
+				public void d() {
+					Test.res.append(":ClsC.d");
+				}
+			}
+        </code>
+    </compile-run>
+    
+
+    
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod108" description="execution pointcut with inheritance">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before1:ClsA.a:before2:ClsA.b:before1:ClsA.a:before2:ClsB.b:before3:ClsB.c" +
+				":before1:before4:ClsC.a:before2:ClsB.b:before3:ClsC.c:before5:ClsC.d", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.a();
+        			a.b();
+        			ClsB b = new ClsB();
+        			b.a();
+        			b.b();
+        			b.c();
+        			ClsC c = new ClsC();
+        			c.a();
+        			c.b();
+        			c.c();
+        			c.d();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        	
+        		// Matches a.a(), b.a() and c.a()
+        		before(): execution (void ClsA.a()) {
+					Test.res.append(":before1");
+				}
+				// Matches a.b(), b.b() and c.b()
+				before(): execution (void ClsA.b()) {
+					Test.res.append(":before2");
+				}
+				// Matches b.c() and c.c()
+				before(): execution (void ClsB.c()) {
+					Test.res.append(":before3");
+				}
+				// Matches c.a()
+				before(): execution (void ClsC.a()) {
+					Test.res.append(":before4");
+				}
+				// Matches c.d()
+				before(): execution (void ClsC.d()) {
+					Test.res.append(":before5");
+				}
+				
+        	}
+			
+			public cclass ClsA {
+			
+				public void a() {
+					Test.res.append(":ClsA.a");
+				}
+				public void b() {
+					Test.res.append(":ClsA.b");
+				}
+			}
+			
+			public cclass ClsB extends ClsA {
+
+				public void b() {
+					Test.res.append(":ClsB.b");
+				}
+				public void c() {
+					Test.res.append(":ClsB.c");
+				}
+			}
+			
+			public cclass ClsC extends ClsB {
+
+				public void a() {
+					Test.res.append(":ClsC.a");
+				}
+				public void c() {
+					Test.res.append(":ClsC.c");
+				}
+				public void d() {
+					Test.res.append(":ClsC.d");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod109" description="call pointcut with inheritance and wildcards">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before1:before2:ClsA.a:before2:ClsA.b:before1:before2:ClsA.a:before2:ClsB.b:ClsB.c" +
+				":before1:before2:ClsC.a:before2:ClsB.b:ClsC.c:ClsC.d", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.a();
+        			a.b();
+        			ClsB b = new ClsB();
+        			b.a();
+        			b.b();
+        			b.c();
+        			ClsC c = new ClsC();
+        			c.a();
+        			c.b();
+        			c.c();
+        			c.d();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+        		// Matches a.a(), b.a() and c.a()
+        		before(): execution (void ClsA+.a()) {
+					Test.res.append(":before1");
+				}
+				// Matches a.a(), a.b(), b.a(), b.b(). c.a() and c.b()
+				before(): execution (void ClsA.*()) {
+					Test.res.append(":before2");
+				}
+        	}
+			
+			public cclass ClsA {
+			
+				public void a() {
+					Test.res.append(":ClsA.a");
+				}
+				public void b() {
+					Test.res.append(":ClsA.b");
+				}
+			}
+			
+			public cclass ClsB extends ClsA {
+
+				public void b() {
+					Test.res.append(":ClsB.b");
+				}
+				public void c() {
+					Test.res.append(":ClsB.c");
+				}
+			}
+			
+			public cclass ClsC extends ClsB {
+
+				public void a() {
+					Test.res.append(":ClsC.a");
+				}
+				public void c() {
+					Test.res.append(":ClsC.c");
+				}
+				public void d() {
+					Test.res.append(":ClsC.d");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod110" description="execution pointcut with mixins">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before4:before5:before7:ClsA.a:before3:before7:ClsB.b:before6:before7:ClsC.c", res.toString());			
+
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+					ClsC c = new ClsC();
+					c.a();
+					c.b();
+					c.c();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+        		// Matches nothing!
+        		before(): execution (void ClsA.c()) {
+					Test.res.append(":before1");
+				}
+				// Matches nothing!
+        		before(): execution (void ClsA.b()) {
+					Test.res.append(":before2");
+				}
+				// Matches c.b()
+        		before(): execution (void ClsB.b()) {
+					Test.res.append(":before3");
+				}
+				// Matches c.a()
+        		before(): execution (void ClsA.a()) {
+					Test.res.append(":before4");
+				}
+				// Matches c.a()
+        		before(): execution (void ClsA.*()) {
+					Test.res.append(":before5");
+				}
+				// Matches c.c()
+        		before(): execution (void ClsC.*()) {
+					Test.res.append(":before6");
+				}
+				// Matches c.a(), c.b() and c.c()
+        		before(): execution (void ClsA+.*()) {
+					Test.res.append(":before7");
+				}
+        	}
+
+			public cclass ClsC extends ClsB &amp; ClsA {
+				public void c() {
+					Test.res.append(":ClsC.c");
+				}
+			}
+			
+			public cclass ClsA {
+
+				public void a() {
+					Test.res.append(":ClsA.a");
+				}
+			}
+			
+			public cclass ClsB {
+
+				public void b() {
+					Test.res.append(":ClsB.b");
+				}
+			}
+        </code>
+    </compile-run>
+    
 </testsuite>
