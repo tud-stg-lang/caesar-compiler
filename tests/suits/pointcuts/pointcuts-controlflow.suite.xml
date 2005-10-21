@@ -7,30 +7,31 @@
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":before:m:before:m2", res.toString());			
+			assertEquals(":before:aString:before:m2:m2", res.toString());			
 		</test>
         <code>
         	public cclass Main {
         	
         		public void run() {
         			ClsB b = new ClsB();
-        			b.m();
+        			b.m("aString");
+        			b.m2();
         		}
         	}
         	
         	public deployed cclass ClsA {
         		
-        		pointcut bla() : call(* ClsB.m(..));
+        		pointcut ref(String s) : call(* ClsB.m(String)) &amp;&amp;  args(s);
         		
-        		before(): call(* ClsB.*(..)) &amp;&amp; cflow(bla()) {
+        		before(String s): call(* ClsB.*(..)) &amp;&amp; cflow(ref(s)) {
 					Test.res.append(":before");
 				}
         	}
 			
 			public cclass ClsB {
 
-				public void m() {
-					Test.res.append(":m");
+				public void m(String s) {
+					Test.res.append(":" + s);
 					this.m2();
 				}
 				
@@ -49,30 +50,31 @@
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":m:before:m2", res.toString());			
+			assertEquals(":aString:before:m2:m2", res.toString());			
 		</test>
         <code>
         	public cclass Main {
         	
         		public void run() {
         			ClsB b = new ClsB();
-        			b.m();
+        			b.m("aString");
+        			b.m2();
         		}
         	}
         	
         	public deployed cclass ClsA {
         		
-        		pointcut bla() : call(* ClsB.m(..));
+        		pointcut ref(String s) : call(* ClsB.m(String)) &amp;&amp;  args(s);
         		
-        		before(): call(* ClsB.*(..)) &amp;&amp; cflowbelow(bla()) {
+        		before(String s): call(* ClsB.*(..)) &amp;&amp; cflowbelow(ref(s)) {
 					Test.res.append(":before");
 				}
         	}
 			
 			public cclass ClsB {
 
-				public void m() {
-					Test.res.append(":m");
+				public void m(String s) {
+					Test.res.append(":" + s);
 					this.m2();
 				}
 				
