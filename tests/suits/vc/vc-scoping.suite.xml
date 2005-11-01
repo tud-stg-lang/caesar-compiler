@@ -53,7 +53,7 @@
     </compile-run>    
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="CCLASS_SUPER_NOT_FOUND"  id="vcscoping003" description="inheriting from non-existing class">
+    <compile-check-error error="CCLASS_UNKNOWN"  id="vcscoping003" description="inheriting from non-existing class">
         <code>
         	public cclass OuterA {
 				public cclass InnerB extends InnerA {

@@ -20,7 +20,7 @@
     </compile-check-error>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="CCLASS_SUPER_NOT_FOUND"  id="vcrel003" description="cclass inherit class">
+    <compile-check-error error="CCLASS_UNKNOWN"  id="vcrel003" description="cclass inherit class">
         <code>
         	public class ClassA {
 			}
@@ -53,7 +53,7 @@
     </compile-check-error>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="CCLASS_SUPER_NOT_FOUND"  id="vcrel006" description="inner extends outer">
+    <compile-check-error error="CANNOT_INHERIT_FROM_CCLASS"  id="vcrel006" description="inner extends outer">
         <code>
         	public cclass OuterA {
 				public cclass InnerA extends OuterA {
@@ -63,7 +63,7 @@
     </compile-check-error>
 
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="TOPLEVEL_CCLASS_EXTENDS_TOPLEVEL_CLASS"  id="vcrel007" description="outer extends inner">
+    <compile-check-error error="CCLASS_UNKNOWN"  id="vcrel007" description="outer extends inner">
         <code>
         	public cclass OuterA extends OuterA.InnerA {
 			
@@ -74,7 +74,7 @@
     </compile-check-error>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="CCLASS_EXTENDS_ONLY_IDENTIFIER_ALLOWED"  id="vcrel008" description="inner extends external class">
+    <compile-check-error error="CCLASS_UNKNOWN"  id="vcrel008" description="inner extends external class">
         <code>
         	public cclass OuterA {
 				public cclass InnerA {
@@ -88,7 +88,7 @@
     </compile-check-error>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="TOPLEVEL_CCLASS_EXTENDS_TOPLEVEL_CLASS"  id="vcrel009" description="outer cclass extends external inner cclass">
+    <compile-check-error error="CCLASS_UNKNOWN"  id="vcrel009" description="outer cclass extends external inner cclass">
         <code>
         	public cclass OuterA {
 				public cclass InnerA {
@@ -110,7 +110,7 @@
     </compile-check-error>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="CCLASS_EXTENDS_FROM_CCLASS"  id="vcrel011" description="class extends interface">
+    <compile-check-error error="CCLASS_UNKNOWN"  id="vcrel011" description="class extends interface">
         <code>
         	public interface IfcA {
 			}
@@ -130,7 +130,7 @@
     </compile-check-error>
             
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="CCLASS_EXTENDS_ONLY_IDENTIFIER_ALLOWED"  id="vcrel013" description="extending overrriden classes">
+    <compile-check-error error="CCLASS_UNKNOWN"  id="vcrel013" description="extending overrriden classes">
         <code>
         	public cclass OuterA {
 				public cclass InnerA {

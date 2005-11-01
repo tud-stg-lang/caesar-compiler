@@ -18,7 +18,7 @@
     </compile-check-error>
 
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="UNDEF_MESSAGE"  id="vcmixin002" description="inner inheritance cycle through different branches of mixin combination">
+    <compile-check-error error="CLASS_CIRCULARITY"  id="vcmixin002" description="inner inheritance cycle through different branches of mixin combination">
         <code>
         	public cclass OuterA {
 				public cclass InnerA {
@@ -44,7 +44,7 @@
     </compile-check-error>
 	
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="SUPERINTERFACE_WRONG_TYPE"  id="vcmixin003" description="mixing classes">
+    <compile-check-error error="CCLASS_UNKNOWN"  id="vcmixin003" description="mixing classes">
         <code>
         	public class ClassA {
 			}
@@ -68,7 +68,7 @@
     </compile-check-error>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="TOPLEVEL_CCLASS_EXTENDS_TOPLEVEL_CLASS"  id="vcmixin005" description="mixing outer with inner">
+    <compile-check-error error="CCLASS_UNKNOWN"  id="vcmixin005" description="mixing outer with inner">
         <code>
         	public cclass OuterA {
 				public cclass InnerA {
@@ -80,7 +80,7 @@
     </compile-check-error>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="CCLASS_EXTENDS_FROM_CCLASS"  id="vcmixin006" description="mixing interfaces">
+    <compile-check-error error="CCLASS_UNKNOWN"  id="vcmixin006" description="mixing interfaces">
         <code>
         	public interface IfcA {
 			}
