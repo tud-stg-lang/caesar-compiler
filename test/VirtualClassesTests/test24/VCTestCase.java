@@ -38,8 +38,8 @@ public cclass OuterA
 {
 	public cclass InnerA
 	{
-		InnerA _arr[] = null;
-		String _name = null;
+		protected InnerA _arr[] = null;
+		protected String _name = null;
 
 		public OuterA.InnerA init(String name)
 		{

@@ -23,7 +23,7 @@ public class VCTestCase extends TestCase
 		"A.A, C.A, B.A, A.C, C.C, B.C, A.B, C.B, A.D, C.D, B.D; " +			  					// D < B & C
 		"A.A, C.A, B.A, A.E; " +						  										// E < A
 		"A.A, C.A, B.A, A.E, A.C, C.C, B.C, A.B, C.B, A.D, C.D, B.D, A.F, B.F; " +				// F < D & A
-		"A.A, C.A, B.A, A.E, A.C, C.C, B.C, A.B, C.B, A.D, C.D, B.D, A.F, B.F, B.G; " + 		// G < C & F
+		"A.A, C.A, B.A, A.E, A.B, C.B, A.C, C.C, B.C, A.D, C.D, B.D, A.F, B.F, B.G; " + 		// G < C & F
 		"A.A, C.A, B.A, A.C, C.C, B.C, A.B, C.B, C.H; " +	  									// H < B & C
 		"A.A, C.A, B.A, A.E, A.C, C.C, B.C, A.B, C.B, A.D, C.D, B.D, A.F, B.F, D.I";			// I < F & D
 
