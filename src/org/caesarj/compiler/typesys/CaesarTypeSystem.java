@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTypeSystem.java,v 1.11 2005-03-10 10:42:58 gasiunas Exp $
+ * $Id: CaesarTypeSystem.java,v 1.12 2005-11-01 16:23:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys;
@@ -29,12 +29,12 @@ import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.Log;
 import org.caesarj.compiler.typesys.graph.CaesarTypeGraph;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
+import org.caesarj.compiler.typesys.input.InputTypeGraph;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.compiler.typesys.java.JavaTypeGraph;
-import org.caesarj.compiler.typesys.visitor.AddImplicitTypesAndRelationsVisitor;
+import org.caesarj.compiler.typesys.join.JoinedTypeGraph;
+import org.caesarj.compiler.typesys.join.JoinedTypeNode;
 import org.caesarj.compiler.typesys.visitor.DumpTypesVisitor;
-import org.caesarj.compiler.typesys.visitor.FurtherbindingVisitor;
-import org.caesarj.compiler.typesys.visitor.MixinListVisitor;
 
 /**
  * ...
@@ -43,7 +43,8 @@ import org.caesarj.compiler.typesys.visitor.MixinListVisitor;
  */
 public class CaesarTypeSystem {
     
-	private CaesarTypeGraph caesarTypeGraph = new CaesarTypeGraph();
+	private JoinedTypeGraph joinedTypeGraph;
+	private CaesarTypeGraph caesarTypeGraph;
 	private JavaTypeGraph javaTypeGraph = new JavaTypeGraph();
 
 	public CaesarTypeGraph getCaesarTypeGraph() {
@@ -54,14 +55,28 @@ public class CaesarTypeSystem {
 		return javaTypeGraph;
 	}
 	
+	public void generate(InputTypeGraph inputGraph, CompilerBase compiler) {
+		try {
+			joinedTypeGraph = new JoinedTypeGraph(inputGraph, compiler);
+			caesarTypeGraph = new CaesarTypeGraph(joinedTypeGraph);
+			
+			new DumpTypesVisitor(caesarTypeGraph).run();
+			
+			javaTypeGraph.generateFrom(caesarTypeGraph);
+			javaTypeGraph.debug();
+		}
+		catch (CaesarTypeSystemException e) {
+			// do nothing, because a corresponding compiler error is reported
+		}
+    }
+	
 	public String findInContextOf(String classQn, String contextClassQn) {
 	    String res = null;
 	    
-	    CaesarTypeGraph g = getCaesarTypeGraph();
-        CaesarTypeNode prefixN = caesarTypeGraph.getType(new JavaQualifiedName(classQn));
-        CaesarTypeNode contextN = caesarTypeGraph.getType(new JavaQualifiedName(contextClassQn));
+	    JoinedTypeNode prefixN = joinedTypeGraph.getNodeByName(new JavaQualifiedName(classQn));
+	    JoinedTypeNode contextN = joinedTypeGraph.getNodeByName(new JavaQualifiedName(contextClassQn));
         
-        CaesarTypeNode n = prefixN.getTypeInContextOf(contextN);
+	    JoinedTypeNode n = prefixN.getTypeInContextOf(contextN);
         
         if(n != null)
             res = n.getQualifiedName().toString();
@@ -72,29 +87,14 @@ public class CaesarTypeSystem {
         return res;
     }
 	
-	public void generate(CompilerBase compiler) {
-		DumpTypesVisitor dumpTypesVisitor = new DumpTypesVisitor(caesarTypeGraph);
-		
-		//dumpTypesVisitor.run();
-		
-		new AddImplicitTypesAndRelationsVisitor(caesarTypeGraph).run();
-		new FurtherbindingVisitor(caesarTypeGraph).run();
-		new MixinListVisitor(caesarTypeGraph, compiler).run();
-		
-		dumpTypesVisitor.run();
-		
-		javaTypeGraph.generateFrom(caesarTypeGraph);
-		javaTypeGraph.debug();
-    }
-
-    public boolean isIncrementOf(String qnFurtherbinding, String qnFurtherbound) {
+	public boolean isIncrementOf(String qnFurtherbinding, String qnFurtherbound) {
         CaesarTypeNode furtherbinding = 
             getCaesarTypeGraph().getType(new JavaQualifiedName(qnFurtherbinding));
         
         CaesarTypeNode furtherbound =
             getCaesarTypeGraph().getType(new JavaQualifiedName(qnFurtherbound));
         
-        if(furtherbinding!=null && furtherbound!=null) {
+        if (furtherbinding != null && furtherbound != null) {
             return furtherbinding.isIncrementFor(furtherbound);
         }            
         

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjVirtualClassDeclaration.java,v 1.33 2005-10-12 07:58:17 gasiunas Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.34 2005-11-01 16:23:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -46,8 +46,6 @@ import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
-import org.caesarj.compiler.typesys.graph.FurtherboundFurtherbindingRelation;
-import org.caesarj.compiler.typesys.graph.OuterInnerRelation;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.compiler.typesys.java.JavaTypeNode;
 import org.caesarj.util.InconsistencyException;
@@ -223,9 +221,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
         /*
          * add implicit subtypes
          */ 
-        for(Iterator it = typeNode.implicitInners(); it.hasNext(); ) {
-            CaesarTypeNode subNode = ((OuterInnerRelation)it.next()).getInnerNode();
-            
+        for(CaesarTypeNode subNode : typeNode.implicitInners()) {
             CjVirtualClassDeclaration implDecl = 
             	createInnerCaesarType(context, subNode.getQualifiedName().getIdent(), subNode.isAbstract());
             
@@ -334,21 +330,17 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     	CaesarTypeSystem typeSystem = context.getEnvironment().getCaesarTypeSystem();
         CaesarTypeNode typeNode = typeSystem.getCaesarTypeGraph().getType(qualifiedName);
     	
-    	for(Iterator it = typeNode.declaredInners(); it.hasNext(); ) {
-            CaesarTypeNode subNode = ((OuterInnerRelation)it.next()).getInnerNode();
+    	for(CaesarTypeNode subNode : typeNode.declaredInners()) {
             
             if (subNode.isAbstract()) {
-            	Iterator furtherbounds = subNode.incrementFor();
-                while (furtherbounds.hasNext()) {
-                	FurtherboundFurtherbindingRelation rel = (FurtherboundFurtherbindingRelation)furtherbounds.next();
-                	CaesarTypeNode furtherBound = rel.getFurtherboundNode();
-                	if (!furtherBound.isAbstract()) {
+            	for (CaesarTypeNode fb : subNode.directFurtherbounds()) {
+            		if (!fb.isAbstract()) {
             			throw new PositionedError(
             				subNode.getTypeDecl().getTokenReference(),
         					CaesarMessages.ABSTRACT_CANNOT_OVERRIDE_CONCRETE
         				);                		            		
                 	}
-                }
+            	}
             }                        
         }
     }

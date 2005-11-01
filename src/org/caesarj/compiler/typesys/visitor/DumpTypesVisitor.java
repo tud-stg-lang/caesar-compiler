@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DumpTypesVisitor.java,v 1.5 2005-01-24 16:52:59 aracic Exp $
+ * $Id: DumpTypesVisitor.java,v 1.6 2005-11-01 16:23:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.visitor;
@@ -32,7 +32,6 @@ import java.util.TreeSet;
 import org.caesarj.compiler.Log;
 import org.caesarj.compiler.typesys.graph.CaesarTypeGraph;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
-import org.caesarj.compiler.typesys.graph.OuterInnerRelation;
 
 /**
  * ...
@@ -61,14 +60,13 @@ public class DumpTypesVisitor implements ICaesarTypeVisitor {
 	
 	public void visitCaesarTypeNode(CaesarTypeNode n) {
 		s.add(n);
-		
-		for (Iterator it = n.inners(); it.hasNext();)
-			((OuterInnerRelation)it.next()).getInnerNode().accept(this);
+		for (CaesarTypeNode inner : n.inners())
+			inner.accept(this);
 	}
 	
 	public void run() {
-    	for (Iterator it = g.getTopClassRoot().iterator(); it.hasNext();) {
-    		((CaesarTypeNode)it.next()).accept(this);
+    	for (CaesarTypeNode n : g.topLevelTypes()) {
+    		n.accept(this);
 		}
 
     	StringBuffer sb = new StringBuffer();

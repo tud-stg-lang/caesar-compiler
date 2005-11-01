@@ -20,21 +20,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTypeNode.java,v 1.17 2005-06-17 11:12:00 gasiunas Exp $
+ * $Id: CaesarTypeNode.java,v 1.18 2005-11-01 16:23:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.graph;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.caesarj.classfile.ClassfileConstants2;
 import org.caesarj.compiler.ast.phylum.declaration.CjMixinInterfaceDeclaration;
-import org.caesarj.compiler.typesys.CaesarTypeSystemException;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
+import org.caesarj.compiler.typesys.join.JoinedTypeNode;
 import org.caesarj.compiler.typesys.visitor.ICaesarTypeVisitor;
-import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.TokenReference;
 
 /**
@@ -43,44 +42,21 @@ import org.caesarj.util.TokenReference;
  * @author Ivica Aracic
  */
 public class CaesarTypeNode {
+	protected JoinedTypeNode joinedNode = null;
 	
-	private List enclosingFor      = new LinkedList(); // of OuterInnerRelation
-	private List enclosedBy        = new LinkedList(); // of OuterInnerRelation
-	private List inheritsFrom  	   = new LinkedList(); // of SuperSubRelation
-	private List inheritedBy   	   = new LinkedList(); // of SuperSubRelation
-	private List furtherbindingFor = new LinkedList(); // of FurtherboundFurtherbindingRelation
-	private List furtherboundBy    = new LinkedList(); // of FurtherboundFurtherbindingRelation
+	protected JavaQualifiedName qualifiedName;
+	protected JavaQualifiedName qualifiedImplName;
 	
-	private Kind kind;
+	protected List<CaesarTypeNode> implicitInners = null;
+	protected List<CaesarTypeNode> implicitParents = null;
+	protected List<CaesarTypeNode> furtherbounds = null;
+	protected List<CaesarTypeNode> directFurtherbounds = null;
 	
-	private JavaQualifiedName qualifiedName;
-	private JavaQualifiedName qualifiedImplName;
+	protected CaesarTypeGraph g;
 	
-	// null for implicit types
-	private CjMixinInterfaceDeclaration typeDecl = null; 
+	protected int uniqueCopyNr = 0;
 	
-	private List mixinList = new LinkedList();
-	
-	private CaesarTypeGraph g;
-	
-	public static class Kind {
-		private int i;
-		private String desc;
-		private Kind(int i, String desc) {this.i=i; this.desc=desc;}
-		public boolean equals(Object other) {return ((Kind)other).i == i;}
-		public String toString() {return desc;}
-	}
-	
-	public static Kind DECLARED = new Kind(1, "DECLARED");
-	public static Kind IMPLICIT = new Kind(2, "IMPLICIT");
-		
-
 	public CaesarTypeNode(CaesarTypeGraph g, JavaQualifiedName qn) {
-		this(g, CaesarTypeNode.IMPLICIT, qn);
-	}
-	
-	public CaesarTypeNode(CaesarTypeGraph g, CaesarTypeNode.Kind kind, JavaQualifiedName qn) {
-		this.kind = kind;
 		this.qualifiedName = qn;
 		this.qualifiedImplName = qn.convertToImplName();
 		this.g = g;
@@ -98,8 +74,18 @@ public class CaesarTypeNode {
 		return qualifiedImplName;
 	}
 	
+	public JoinedTypeNode getJoinedNode() {
+		if (joinedNode == null) {
+			joinedNode = g.getJoinedNode(qualifiedName);
+		}
+		return joinedNode;
+	}
+	
 	public CjMixinInterfaceDeclaration getTypeDecl() {
-		return typeDecl;
+		if (getJoinedNode().getInputNode() == null) 
+			return null;
+		else
+			return getJoinedNode().getInputNode().getTypeDecl();
 	} 
 	
 	public TokenReference getTokenRef() {
@@ -113,57 +99,119 @@ public class CaesarTypeNode {
 			return null;
 		}
 	}
-
-	public List getMixinList() {
-		return mixinList;
+	
+	public List<CaesarTypeNode> getMixinList() {
+		return g.wrapList(getJoinedNode().getImplMixins());
+	}
+	
+	public List<CaesarTypeNode> getOwnMixins() {
+		return g.wrapList(getJoinedNode().getOwnMixins());
+	}
+	
+	public List<CaesarTypeNode> declaredInners() {
+		return g.wrapList(getJoinedNode().getDeclInners());
 	}
 
-	public Iterator declaredInners() {
-		return new ImplicitRelationFilter(enclosingFor.iterator(), true);
+	public List<CaesarTypeNode> declaredParents() {
+		return g.wrapList(getJoinedNode().getDeclParents());
+	}
+	
+	public List<CaesarTypeNode> inners() {
+		return g.wrapList(getJoinedNode().getAllInners());
+	}
+	
+	public List<CaesarTypeNode> parents() {
+		return g.wrapList(getJoinedNode().getAllParents());
+	}
+	
+	public List<CaesarTypeNode> furtherbounds() {
+		if (furtherbounds == null) {
+			furtherbounds = new ArrayList<CaesarTypeNode>(getOwnMixins().size()-1);
+			for (CaesarTypeNode tn : getOwnMixins()) {
+				if (tn != this) {
+					furtherbounds.add(tn);
+				}
+			}			
+		}
+		return furtherbounds;
+	}
+	
+	public List<CaesarTypeNode> directFurtherbounds() {
+		if (directFurtherbounds == null) {
+			directFurtherbounds = new ArrayList<CaesarTypeNode>();
+			for (CaesarTypeNode fb1 : furtherbounds()) {
+				boolean bAdd = true;
+				for (CaesarTypeNode fb2 : furtherbounds()) {
+					if (fb2.furtherbounds().contains(fb1)) {
+						bAdd = false;
+						break;
+					}					
+				}
+				if (bAdd) {
+					directFurtherbounds.add(fb1);
+				}
+			}
+		}
+		return directFurtherbounds;
 	}
 
-	public Iterator declaredParents() {
-		return new ImplicitRelationFilter(inheritsFrom.iterator(), true);
+	public List<CaesarTypeNode> implicitInners() {
+		if (implicitInners == null) {
+			implicitInners = new ArrayList<CaesarTypeNode>();
+			List<CaesarTypeNode> declLst = declaredInners();
+			for (CaesarTypeNode inner : inners()) {
+				if (!declLst.contains(inner)) {
+					implicitInners.add(inner);
+				}
+			}
+		}
+		return implicitInners;
 	}
-
-	public Iterator implicitInners() {
-		return new ImplicitRelationFilter(enclosingFor.iterator(), false);
+	
+	public List<CaesarTypeNode> implicitParents() {
+		if (implicitParents == null) {
+			implicitParents = new ArrayList<CaesarTypeNode>();
+			List<CaesarTypeNode> declLst = declaredParents();
+			for (CaesarTypeNode parent : parents()) {
+				if (!declLst.contains(parent)) {
+					implicitParents.add(parent);
+				}
+			}
+		}
+		return implicitParents;
 	}
-
-	public Iterator implicitParents() {
-		return new ImplicitRelationFilter(inheritsFrom.iterator(), false);
-	}
-
-	public Iterator inners() {
-		return enclosingFor.iterator();
-	}
-
+		
 	public boolean isFurtherbinding() {
-		return furtherbindingFor.size() > 0;
+		return getJoinedNode().getOwnMixins().size() > 1;
 	}
 
 	public boolean isImplicitType() {
-		return kind.equals(IMPLICIT);
+		return (getJoinedNode().getInputNode() == null);
 	}
 
 	public boolean isDeclaredType() {
-		return kind.equals(DECLARED);
+		return (getJoinedNode().getInputNode() != null);
+	}
+	
+	public boolean declaredConcrete() {
+		if (!isImplicitType()) 
+			return (getTypeDecl().getCorrespondingClassDeclaration().getModifiers() & ClassfileConstants2.ACC_ABSTRACT) == 0;
+		else
+			return false;
 	}
 	
 	public boolean isAbstract() {
-		/* determine if the class is abstract */
-		if (typeDecl != null) {
-			return (typeDecl.getCorrespondingClassDeclaration().getModifiers() & ClassfileConstants2.ACC_ABSTRACT) != 0;
+		if (!isImplicitType()) {
+			return !declaredConcrete();
 		}
 		else {
-			boolean isAbstr = true;
-			for (Iterator it = incrementFor(); it.hasNext();) {
-				FurtherboundFurtherbindingRelation rel = (FurtherboundFurtherbindingRelation)it.next();
-				if (!rel.getFurtherboundNode().isAbstract()) {
-					isAbstr = false;
-				}				
+			/* determine if the class is abstract */
+			for (CaesarTypeNode n : getOwnMixins()) {
+				if (n.declaredConcrete()) {
+					return false;
+				}
 			}
-			return isAbstr;
+			return true;
 		}
 	}
 	
@@ -179,245 +227,43 @@ public class CaesarTypeNode {
 		}
 	}
 
-	public Iterator parents() {
-		return inheritsFrom.iterator();
-	}
-	
-	public Iterator incrementFor() {
-	    return furtherbindingFor.iterator();
-	}
-	
-	public Kind getKind() {
-		return kind;
-	}
-
-	
-	public void setTypeDecl(CjMixinInterfaceDeclaration decl) {
-		typeDecl = decl;
-		this.kind = CaesarTypeNode.DECLARED;
-	} 
-	
-	public void addEnclosedBy(BidirectionalRelation relation) {	    
-		addToList(relation, enclosedBy);
-		if(enclosedBy.size() > 1)
-		    throw new InconsistencyException("multiple outers not supported yet");
-	}
-
-	public void addEnclosingFor(BidirectionalRelation relation) {
-		addToList(relation, enclosingFor);
-	}
-
-	public void addFurtherbindingFor(BidirectionalRelation relation) {
-		addToList(relation, furtherbindingFor);
-	}
-
-	public void addFurtherboundBy(BidirectionalRelation relation) {
-		addToList(relation, furtherboundBy);
-	}
-
-	public void addInheritedBy(BidirectionalRelation relation) {
-		addToList(relation, inheritedBy);
-	}
-
-	public void addInheritsFrom(BidirectionalRelation relation) {
-		addToList(relation, inheritsFrom);
-	}
-
-	private void addToList(BidirectionalRelation relation, List list) {
-		if(!list.contains(relation))
-			list.add(relation);
-	}
-
 	public CaesarTypeNode getOuter() {
-		if(enclosedBy.size() == 0) {
-			return null;
-		}
-		else if(enclosedBy.size() == 1) {
-			return ((OuterInnerRelation)enclosedBy.get(0)).getOuterNode();
-		}
-		else {
-			throw new InconsistencyException("multiple outers not supported yet");
-		}
+		return g.wrapJoinedNode(getJoinedNode().getOuter());		
 	}
 	
 	public CaesarTypeNode lookupInner(String ident) {
-		for (Iterator it = inners(); it.hasNext();) {
-			CaesarTypeNode inner = ((OuterInnerRelation)it.next()).getInnerNode();
-			if(inner.getQualifiedName().getIdent().equals(ident)) {
-				return inner;
-			}
-		}
-		
-		return null;
+		return g.wrapJoinedNode(getJoinedNode().findInner(ident));
 	}
 	
-	public CaesarTypeNode lookupDeclaredInner(String ident) {
-		for (Iterator it = declaredInners(); it.hasNext();) {
-			CaesarTypeNode inner = ((OuterInnerRelation)it.next()).getInnerNode();
-			if(inner.getQualifiedName().getIdent().equals(ident))
-				return inner;
-		}
-		
-		return null;
-	}
-	
-	public CaesarTypeNode getTopmostNode() throws CaesarTypeSystemException{
-        if(!isFurtherbinding()) {
-            return this;
-        }
-        else {
-            LinkedList topMostList = new LinkedList();
-
-            for(Iterator it=furtherbindingFor.iterator(); it.hasNext();) {
-                CaesarTypeNode item = ((FurtherboundFurtherbindingRelation)it.next()).getFurtherboundNode();
-                topMostList.add(item.getTopmostNode());
-            }
-                        
-            // check that they are all same
-            if(topMostList.size() > 1) {
-                boolean first = true;
-                CaesarTypeNode ref = null;
-                for (Iterator it = topMostList.iterator(); it.hasNext();) {
-                    CaesarTypeNode item = (CaesarTypeNode) it.next();
-                    
-                    if(first) {
-                        // get ref
-                        first = false;
-                        ref = item;
-                    }
-                    else {
-                        // compare with ref
-                        if(!ref.equals(item))
-                            throw new CaesarTypeSystemException();
-                    }
-                }                               
-            }
-            
-            return (CaesarTypeNode)topMostList.get(0);
-        }	    
-	}
-	
-	/**
-	 * returns the type of this Node in context of the node n.
-	 * B extends A ->
-	 * A.A in context of B is B.A
-	 */
-	public CaesarTypeNode getTypeInContextOf(CaesarTypeNode n) {
-	    
-	    // top level class, no redefinition possible
-	    if(enclosedBy.size() == 0 || n == null)
-	        return this;
-	    
-	    List l1 = new LinkedList();
-	    List l2 = new LinkedList();
-	    
-	    // generated lists
-	    genOuterList(l1);
-	    n.genOuterList(l2);
-	    
-	    CaesarTypeNode thisOuterChain[] = 
-	        (CaesarTypeNode[])l1.toArray(new CaesarTypeNode[l1.size()]);
-	    CaesarTypeNode contextOuterChain[] = 
-	        (CaesarTypeNode[])l2.toArray(new CaesarTypeNode[l2.size()]);
-	    
-	    // check subtype relations
-
-	    // s = max(thisOuterChain.length-1, contextOuterChain.length)
-	    int s = thisOuterChain.length - 2; 
-	    if(s > contextOuterChain.length - 1)
-	        s = contextOuterChain.length - 1;
-	    
-	    for(int j=s; j>=0; j--) {
-	        CaesarTypeNode t = contextOuterChain[j];
-	        	        
-	        for(int i=j+1; i<thisOuterChain.length; i++) {
-	            t = t.lookupInner(thisOuterChain[i].getQualifiedName().getIdent());
-	            if(t == null)
-	                break;
-	        }
-
-	        if(t != null) {
-	            if(t.isSubtypeOf(this))
-	                return t;
-            }
-        }
-	    
-	    return null;
-    }
-	
-	private void genOuterList(List l) {
-	    l.add(0, this);
-	    if(enclosedBy.size()>0) {	        
-	        getOuter().genOuterList(l);
-        }
-    }
-	
-	public boolean isSubtypeOf(CaesarTypeNode n) {
-	    if(this.qualifiedName.equals(n.getQualifiedName())) {
-	        return true;
-        }
-	    
-	    for (Iterator it = parents(); it.hasNext();) {
-            SuperSubRelation rel = (SuperSubRelation) it.next();
-            if(rel.getSuperNode().isSubtypeOf(n))
-                return true;
-        }
-	    
-	    return false;
-	    
-	    
-	    /*
-	    // would this here work?
-	    // more efficient method?
-	    boolean res = false;
-	    if(getMixinList().size() <= n.getMixinList().size()) {
-	        res = true;
-	        for (Iterator it = getMixinList().iterator(); it.hasNext() && res;) {                
-                if(!n.getMixinList().contains(it.next()))
-                    res = false;
-            }
-	    }
-	    return res;
-	    */
-    }
-	
-    public String toString() {
+	public String toString() {
         StringBuffer res = new StringBuffer();
         res.append(qualifiedName.getClassName());
         
-        if(isFurtherbinding())
+        if (isFurtherbinding())
         	res.append(" [f]");
-
-        res.append("\n\tkind:    "+kind);        
         
-        if(inheritsFrom.size() > 0) {
+        if (isImplicitType())
+        	res.append(" [i]");
+        
+        if (parents().size() > 0) {
             res.append("\n\textends: ");
-            for(Iterator it = inheritsFrom.iterator(); it.hasNext();) {
-            	SuperSubRelation rel = (SuperSubRelation)it.next();
-                res.append(rel.getSuperNode().getQualifiedName().getClassName());
-                if(rel.isImplicit())
+            for(CaesarTypeNode parent : parents()) {
+            	res.append(parent.getQualifiedName().getClassName());
+            	if (!declaredParents().contains(parent))
                 	res.append("[i]");
-                
-                if(it.hasNext())
-                    res.append(", ");
+                res.append(", ");
             }            
         }
 
-        if(enclosedBy.size() > 0) {
+        if (getOuter() != null) {
             res.append("\n\touter:   ");
-            for(Iterator it = enclosedBy.iterator(); it.hasNext();) {
-                res.append(((OuterInnerRelation)it.next()).getOuterNode().getQualifiedName().getClassName());
-                if(it.hasNext())
-                    res.append(", ");
-            }            
+            res.append(getOuter().getQualifiedName().getClassName());                                     
         }
         
         res.append("\n\tmixins:  [");
-        for (Iterator it = mixinList.iterator(); it.hasNext();) {
-            CaesarTypeNode item = (CaesarTypeNode) it.next();
-            res.append(item.getQualifiedName().getClassName());
-            if(it.hasNext())
-                res.append(", ");
+        for (CaesarTypeNode mixin : getMixinList()) {
+        	res.append(mixin.getQualifiedName().getClassName());
+            res.append(", ");
         }
         res.append(']');
 
@@ -425,25 +271,21 @@ public class CaesarTypeNode {
     }
 
     public boolean isIncrementFor(CaesarTypeNode furtherbound) {
-        if(this.equals(furtherbound))
-            return true;
-        
-        boolean res = false;
-        
-        for (Iterator it = incrementFor(); it.hasNext();) {
-            FurtherboundFurtherbindingRelation rel = (FurtherboundFurtherbindingRelation)it.next();
-            res = res || rel.getFurtherboundNode().isIncrementFor(furtherbound);
+        for (CaesarTypeNode fb : getOwnMixins()) {
+        	if (fb == furtherbound) {
+        		return true;
+        	}
         }
         
-        return res;
+        return false;
     }
 
     public boolean inheritsFromCaesarObject() {
-        return inheritsFrom.size() == 0;
+        return getJoinedNode().getAllParents().size() == 0;
     }
     
     public boolean isTopLevelClass() {
-        return enclosedBy.size() == 0;
+        return getOuter() == null;
     }
     
     /**
@@ -457,8 +299,8 @@ public class CaesarTypeNode {
 	private boolean needsAspectRegistry = false;
     
     public boolean declaredCrosscutting() {
-		if (typeDecl != null) {
-			return typeDecl.getCorrespondingClassDeclaration().isCrosscutting();
+		if (!isImplicitType()) {
+			return getTypeDecl().getCorrespondingClassDeclaration().isCrosscutting();
 		}
 		else {
 			return false;
@@ -492,5 +334,9 @@ public class CaesarTypeNode {
 	
 	public void setNeedsAspectRegistry() {
 		needsAspectRegistry = true;
+	}
+	
+	public int genUniqueCopyNr() {
+		return ++uniqueCopyNr;
 	}
 }

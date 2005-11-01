@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JavaTypeGraph.java,v 1.7 2005-05-12 10:36:01 meffert Exp $
+ * $Id: JavaTypeGraph.java,v 1.8 2005-11-01 16:23:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.java;
@@ -49,21 +49,19 @@ public class JavaTypeGraph {
     private HashMap caesar2javaMap = new HashMap();
     private HashMap nodes = new HashMap();
     
-    public JavaTypeGraph() {
-        CaesarTypeNode typeNode = 
+    public void generateFrom(CaesarTypeGraph completeGraph) {
+    	
+    	CaesarTypeNode typeNode = 
         	new CaesarTypeNode(
-    			null,
-				CaesarTypeNode.DECLARED,
+        		completeGraph,
 				new JavaQualifiedName("org/caesarj/runtime/CaesarObject")
 			);
         
         root = new JavaTypeNode(this, typeNode);
         root.setType(typeNode);
-    }
-    
-    public void generateFrom(CaesarTypeGraph completeGraph) {
-    	buildJavaTypeGraph(completeGraph);
-                       
+        
+        buildJavaTypeGraph(completeGraph);
+    	                       
         root.genOuterAndQualifiedNames();
         root.genOuterAndQNForGeneratedTypes(new HashSet());
     }  

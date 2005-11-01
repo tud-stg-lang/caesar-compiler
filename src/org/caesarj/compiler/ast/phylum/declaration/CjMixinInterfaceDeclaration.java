@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjMixinInterfaceDeclaration.java,v 1.20 2005-10-12 07:58:17 gasiunas Exp $
+ * $Id: CjMixinInterfaceDeclaration.java,v 1.21 2005-11-01 16:23:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -47,9 +47,6 @@ import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
-import org.caesarj.compiler.typesys.graph.FurtherboundFurtherbindingRelation;
-import org.caesarj.compiler.typesys.graph.OuterInnerRelation;
-import org.caesarj.compiler.typesys.graph.SuperSubRelation;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.runtime.AdditionalCaesarTypeInformation;
 import org.caesarj.util.PositionedError;
@@ -104,19 +101,16 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
             mixinList.add(item.getQualifiedName().toString());
         }
 	    
-	    for (Iterator it = n.inners(); it.hasNext();) {
-            OuterInnerRelation item = (OuterInnerRelation) it.next();
-            nestedClasses.add(item.getInnerNode().getQualifiedName().toString());
+	    for (CaesarTypeNode inner : n.inners()) {
+            nestedClasses.add(inner.getQualifiedName().toString());
         }
 	    
-	    for (Iterator it = n.incrementFor(); it.hasNext();) {
-	        FurtherboundFurtherbindingRelation item = (FurtherboundFurtherbindingRelation) it.next();
-            incrementFor.add(item.getFurtherboundNode().getQualifiedName().toString());
+	    for (CaesarTypeNode fb : n.directFurtherbounds()) {
+	        incrementFor.add(fb.getQualifiedName().toString());
         }
 	    
-	    for (Iterator it = n.parents(); it.hasNext();) {
-            SuperSubRelation item = (SuperSubRelation) it.next();
-            String parentName = item.getSuperNode().getQualifiedName().toString();
+	    for (CaesarTypeNode parent : n.parents()) {
+            String parentName = parent.getQualifiedName().toString();
             if(!incrementFor.contains(parentName))
                 superClasses.add(parentName);
         }
@@ -235,6 +229,8 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
             getSourceClass().setAdditionalTypeInformation(
                 constructAdditionalTypeInformation(typeNode));
             
+            List ifcList = new LinkedList();
+            
             if(typeNode.inheritsFromCaesarObject()) {
                 CReferenceType superTypeRef = 
                     context.getTypeFactory().createType(
@@ -249,14 +245,10 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
                     throw e.addPosition(getTokenReference());
                 }
                 
-                addMixinInterfaces(new CReferenceType[]{superTypeRef});
+                ifcList.add(superTypeRef);                
             }
             else {   
-	            List ifcList = new LinkedList();
-	            
-	            for (Iterator it = typeNode.implicitParents(); it.hasNext();) {
-	                CaesarTypeNode parentNode = ((SuperSubRelation)it.next()).getSuperNode();
-	                
+            	for (CaesarTypeNode parentNode : typeNode.implicitParents()) {
 	                CReferenceType superTypeRef = 
 	                    context.getTypeFactory().createType(
 	                		parentNode.getQualifiedName().toString(), 
@@ -266,11 +258,23 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
 	                superTypeRef = (CReferenceType)superTypeRef.checkType(context);
 	                
 	                ifcList.add(superTypeRef);
-	            }
-	            
-	            // add missing implicit relations 
-	            addMixinInterfaces((CReferenceType[])ifcList.toArray(new CReferenceType[ifcList.size()]));	            
+	            }	            
             }
+            
+            for (CaesarTypeNode furtherbound : typeNode.directFurtherbounds()) {
+                CReferenceType superTypeRef = 
+                    context.getTypeFactory().createType(
+                    	furtherbound.getQualifiedName().toString(), 
+						true
+					);
+                
+                superTypeRef = (CReferenceType)superTypeRef.checkType(context);
+                
+                ifcList.add(superTypeRef);
+            }
+            
+            // add missing implicit relations 
+            addMixinInterfaces((CReferenceType[])ifcList.toArray(new CReferenceType[ifcList.size()]));
             
             getSourceClass().setInterfaces(this.interfaces);
             

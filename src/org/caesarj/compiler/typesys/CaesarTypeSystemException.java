@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTypeSystemException.java,v 1.3 2005-01-24 16:53:03 aracic Exp $
+ * $Id: CaesarTypeSystemException.java,v 1.4 2005-11-01 16:23:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys;
@@ -31,7 +31,7 @@ package org.caesarj.compiler.typesys;
  * 
  * @author Ivica Aracic
  */
-public class CaesarTypeSystemException extends Exception {
+public class CaesarTypeSystemException extends RuntimeException {
     public CaesarTypeSystemException() {
         super();
     }

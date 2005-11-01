@@ -20,17 +20,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTypeGraph.java,v 1.5 2005-06-17 11:11:49 gasiunas Exp $
+ * $Id: CaesarTypeGraph.java,v 1.6 2005-11-01 16:23:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.graph;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.caesarj.compiler.typesys.input.InputTypeNode;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
+import org.caesarj.compiler.typesys.join.JoinedTypeGraph;
+import org.caesarj.compiler.typesys.join.JoinedTypeNode;
 
 /**
  * ...
@@ -39,18 +42,19 @@ import org.caesarj.compiler.typesys.java.JavaQualifiedName;
  */
 public class CaesarTypeGraph {
 	/** root of inner and inheritance hierarchy */
-    private Set topClassRoot    = new HashSet();
-    private Set inheritanceRoot = new HashSet();
-    private HashMap typeMap     = new HashMap();
+    private Map<JavaQualifiedName, CaesarTypeNode> typeMap = new HashMap<JavaQualifiedName, CaesarTypeNode>();
     
-    public CaesarTypeGraph() {
+    private JoinedTypeGraph joinedGraph;
+    
+    public CaesarTypeGraph(JoinedTypeGraph joinedGraph) {
+    	this.joinedGraph = joinedGraph;
     }
     
     public boolean hasType(String qualifiedName) {
         return typeMap.containsKey(qualifiedName);
     }
     
-    public CaesarTypeNode getTypeCreateIfNotExsistent(JavaQualifiedName qualifiedName) {
+    public CaesarTypeNode getOrCreateType(JavaQualifiedName qualifiedName) {
         CaesarTypeNode res = getType(qualifiedName);
         
         if (res == null) {
@@ -62,19 +66,49 @@ public class CaesarTypeGraph {
     }
     
     public CaesarTypeNode getType(JavaQualifiedName qualifiedName) {
-        CaesarTypeNode res = (CaesarTypeNode)typeMap.get(qualifiedName);
+        CaesarTypeNode res = typeMap.get(qualifiedName);
         return res;
     }
     
-    public Set getInheritanceRoot() {
-        return inheritanceRoot;
+    public JoinedTypeNode getJoinedNode(JavaQualifiedName qualifiedName) {
+        return joinedGraph.getNodeByName(qualifiedName);
     }
-
-    public Set getTopClassRoot() {
-        return topClassRoot;
-    }
+    
+    public List<CaesarTypeNode> topLevelTypes() {
+    	return wrapInputNodeList(joinedGraph.getInputGraph().topLevelTypes());	
+	}
       
     public Map getTypeMap() {
         return typeMap;
-    }    
+    }
+    
+    public List<CaesarTypeNode> wrapList(List<JoinedTypeNode> lst) {
+		List<CaesarTypeNode> newLst = new ArrayList<CaesarTypeNode>(lst.size());
+		for (JoinedTypeNode jn : lst) {
+			newLst.add(wrapJoinedNode(jn));
+		}
+		return newLst;
+	}
+    
+    public List<CaesarTypeNode> wrapInputNodeList(List<InputTypeNode> lst) {
+		List<CaesarTypeNode> newLst = new ArrayList<CaesarTypeNode>(lst.size());
+		for (InputTypeNode jn : lst) {
+			newLst.add(wrapInputNode(jn));
+		}
+		return newLst;
+	}
+	
+    public CaesarTypeNode wrapJoinedNode(JoinedTypeNode n) {
+		if (n == null) 
+			return null;
+		else
+			return getOrCreateType(n.getQualifiedName());
+	}
+    
+    public CaesarTypeNode wrapInputNode(InputTypeNode n) {
+		if (n == null) 
+			return null;
+		else
+			return getOrCreateType(n.getQualifiedName());
+	}
 }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JavaQualifiedName.java,v 1.4 2005-05-12 10:34:41 meffert Exp $
+ * $Id: JavaQualifiedName.java,v 1.5 2005-11-01 16:23:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.java;
@@ -96,6 +96,13 @@ public class JavaQualifiedName {
 
     public String getPrefix() {
         return prefix;
+    }
+    
+    public String getOuterQualifiedName() {
+    	if (outerPrefix.equals("")) {
+    		return "";
+    	}
+        return prefix.substring(0, prefix.length()-1);
     }
 
     public String toString() {

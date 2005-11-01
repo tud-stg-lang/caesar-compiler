@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.106 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: Main.java,v 1.107 2005-11-01 16:23:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -55,7 +55,7 @@ import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
 import org.caesarj.compiler.joinpoint.PointcutSupport;
 import org.caesarj.compiler.joinpoint.StaticDeploymentPreparation;
 import org.caesarj.compiler.joinpoint.StaticFieldDeploymentVisitor;
-import org.caesarj.compiler.typesys.graph.CaesarTypeGraphGenerator;
+import org.caesarj.compiler.typesys.input.InputTypeGraph;
 import org.caesarj.compiler.typesys.java.JavaTypeGraph;
 import org.caesarj.compiler.typesys.java.JavaTypeNode;
 import org.caesarj.mixer.ClassGenerator;
@@ -178,10 +178,6 @@ public class Main extends MainSuper implements Constants {
         
         // CJ Aspects: prepare the advices, which use joinpoint reflection
         prepareJoinpointReflection(tree);
-
-        // KOPI step - resolves outer inheritance hierarchy
-        joinOuter(tree);                  
-        if(errorFound) return false;
         
         // CJ VC 
         generateCaesarTypeSystem(environment, tree);
@@ -189,6 +185,10 @@ public class Main extends MainSuper implements Constants {
         
         // CJ VC
         createImplicitCaesarTypes(tree);
+        if(errorFound) return false;
+        
+        // KOPI step - resolves outer inheritance hierarchy
+        joinOuter(tree);                  
         if(errorFound) return false;
         
         // KOPI step - resolves inner inheritance hierarchy
@@ -478,14 +478,12 @@ public class Main extends MainSuper implements Constants {
      * generates dependency graph on source types
      */
     protected void generateCaesarTypeSystem(KjcEnvironment environment, JCompilationUnit[] tree) {
-        Log.verbose("generateCaesarTypeSystem");        
-        for (int i=0; i<tree.length; i++) {        	
-            CaesarTypeGraphGenerator.instance().generateGraph(
-        		environment.getCaesarTypeSystem().getCaesarTypeGraph(), tree[i]
-            );
+        Log.verbose("generateCaesarTypeSystem");
+        InputTypeGraph inputGraph = new InputTypeGraph();
+        for (JCompilationUnit cu : tree) {
+        	inputGraph.addCompilationUnit(cu);
         }
-        
-        environment.getCaesarTypeSystem().generate(this);
+        environment.getCaesarTypeSystem().generate(inputGraph, this);
     }
  
     /**
