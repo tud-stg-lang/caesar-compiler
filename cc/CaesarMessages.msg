@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.33 2005-06-17 15:35:22 gasiunas Exp $
+ * $Id: CaesarMessages.msg,v 1.34 2005-11-01 16:22:45 gasiunas Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -154,3 +154,8 @@ error	POINTCUT_SYNTAX_ERROR
 error	DECLARE_SYNTAX_ERROR
 		"Syntax error in declaration: {0}"
 		
+error	CCLASS_UNKNOWN
+		"Cannot find cclass \"{0}\" in this context"
+
+error	CANNOT_INHERIT_FROM_CCLASS
+		"Cannot inherit from cclass \"{0}\" in this context"		
