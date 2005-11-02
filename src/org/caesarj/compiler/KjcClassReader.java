@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: KjcClassReader.java,v 1.6 2005-04-20 19:34:21 gasiunas Exp $
+ * $Id: KjcClassReader.java,v 1.7 2005-11-02 15:46:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -44,11 +44,13 @@ import org.caesarj.util.UnpositionedError;
  * This class implements the conceptual directory structure for .class files
  */
 public class KjcClassReader extends org.caesarj.util.Utils implements ClassReader{
-
+	
+	
   public KjcClassReader(String classp, String extdirs, SignatureParser signatureParser) {
     classpath = new ClassPath(classp, extdirs);
-    this.signatureParser = signatureParser;
+    this.signatureParser = signatureParser;    
   }
+  
   // ----------------------------------------------------------------------
   // LOAD CLASS
   // ----------------------------------------------------------------------

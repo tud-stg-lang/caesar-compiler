@@ -20,10 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjExternClassContext.java,v 1.3 2005-06-03 08:24:47 klose Exp $
+ * $Id: CjExternClassContext.java,v 1.4 2005-11-02 15:46:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.context;
+
+import java.lang.ref.WeakReference;
 
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
@@ -39,7 +41,7 @@ import org.caesarj.util.UnpositionedError;
  */
 public class CjExternClassContext extends FjClassContext {
 	
-	CCompilationUnit origCu;
+	WeakReference<CCompilationUnit> origCu;
 
 	public CjExternClassContext(
 			CContext parent,
@@ -48,7 +50,7 @@ public class CjExternClassContext extends FjClassContext {
 			JTypeDeclaration decl,
 			CCompilationUnit origCu) {
 		super(parent, environment, clazz, decl);
-		this.origCu = origCu;
+		this.origCu = new WeakReference<CCompilationUnit>(origCu);
 	}
 	
 	public CClass lookupClass(CClass caller, String name) throws UnpositionedError {
@@ -56,7 +58,7 @@ public class CjExternClassContext extends FjClassContext {
 			return super.lookupClass(caller, name);			
 		}
 		catch (UnpositionedError e) {
-			return origCu.lookupClass(caller, name);
+			return origCu.get().lookupClass(caller, name);
 		}		
 	}
 }

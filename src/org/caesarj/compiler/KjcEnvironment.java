@@ -20,10 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: KjcEnvironment.java,v 1.11 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: KjcEnvironment.java,v 1.12 2005-11-02 15:46:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
+
+import java.lang.ref.WeakReference;
 
 import org.caesarj.compiler.types.SignatureParser;
 import org.caesarj.compiler.types.TypeFactory;
@@ -35,7 +37,7 @@ import org.caesarj.util.InconsistencyException;
  */
 
 public class KjcEnvironment {
-
+	
 	public KjcEnvironment(
         CompilerBase compilerBase,
 		ClassReader classReader,
@@ -47,11 +49,11 @@ public class KjcEnvironment {
 		this.typeFactory = typeFactory;
 		this.options = options;
         this.caesarTypeSystem = new CaesarTypeSystem();
-        this.compBase = compilerBase;
+        this.compBase = new WeakReference<CompilerBase>(compilerBase);        
 	}
 	
 	public CompilerBase getCompiler() {
-		return compBase;
+		return compBase.get();
 	}
 
 	public ClassReader getClassReader() {
@@ -95,13 +97,13 @@ public class KjcEnvironment {
 	public boolean isGenericEnabled() {
 		return options.generic;
 	}
-    
+	
 	private final ClassReader classReader;
     private final CaesarTypeSystem caesarTypeSystem;
     private final TypeFactory typeFactory;
 	private final KjcOptions options;
 	private final AstGenerator astGenerator;
-	private final CompilerBase compBase;
+	private final WeakReference<CompilerBase> compBase;
 
 	public final static int SOURCE_1_1 = 101;
 	public final static int SOURCE_1_2 = 102;

@@ -20,10 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CContext.java,v 1.12 2005-04-29 14:45:48 klose Exp $
+ * $Id: CContext.java,v 1.13 2005-11-02 15:46:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.context;
+
+import java.lang.ref.WeakReference;
 
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.KjcEnvironment;
@@ -68,7 +70,7 @@ public abstract class CContext extends org.caesarj.util.Utils implements CTypeCo
    */
   protected CContext(CContext parent, KjcEnvironment environment) {
     this.parent = parent;
-    this.environment = environment;
+    this.environment = new WeakReference<KjcEnvironment>(environment);
   }
 
   // ----------------------------------------------------------------------
@@ -182,21 +184,21 @@ public abstract class CContext extends org.caesarj.util.Utils implements CTypeCo
    * @return the environment
    */
   public KjcEnvironment getEnvironment() {
-    return environment;
+    return environment.get();
   }
 
   /**
    * @return the TypeFactory
    */
   public TypeFactory getTypeFactory() {
-    return environment.getTypeFactory();
+    return environment.get().getTypeFactory();
   }
 
   /**
    * @return the Object used to read class files.
    */
   public ClassReader getClassReader() {
-    return environment.getClassReader();
+    return environment.get().getClassReader();
   }
 
   // ----------------------------------------------------------------------
@@ -409,14 +411,15 @@ public abstract class CContext extends org.caesarj.util.Utils implements CTypeCo
       System.err.print("  ");
     }
   }
+  
+  public CBodyContext getBodyContext() {
+	  return parent.getBodyContext();
+  }
 
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------
 
   protected final CContext      parent;
-  private final KjcEnvironment  environment;
-public CBodyContext getBodyContext() {
-    return parent.getBodyContext();
-}
+  private final WeakReference<KjcEnvironment>  environment;
 }

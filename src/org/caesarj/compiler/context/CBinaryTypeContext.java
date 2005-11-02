@@ -20,10 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CBinaryTypeContext.java,v 1.3 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CBinaryTypeContext.java,v 1.4 2005-11-02 15:46:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.context;
+
+import java.lang.ref.WeakReference;
 
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.export.CClass;
@@ -59,8 +61,8 @@ public class CBinaryTypeContext implements CTypeContext{
                              CTypeContext parent, 
                              CMember owner, 
                              boolean parentLookup) {
-    this.classReader = classReader;
-    this.typeFactory = typeFactory;
+    this.classReader = new WeakReference<ClassReader>(classReader);
+    this.typeFactory = new WeakReference<TypeFactory>(typeFactory);
     this.parent = parent;
     this.owner = owner;
     this.parentLookup = parentLookup;
@@ -70,14 +72,14 @@ public class CBinaryTypeContext implements CTypeContext{
    * @return the TypeFactory
    */
   public TypeFactory getTypeFactory() {
-    return typeFactory;
+    return typeFactory.get();
   }
 
   /**
    * @return the Object used to read class files.
    */
   public ClassReader getClassReader() {
-    return classReader;
+    return classReader.get();
   }
 
   /**
@@ -114,11 +116,11 @@ public class CBinaryTypeContext implements CTypeContext{
 
 
   public SignatureParser getSignatureParser() {
-    return classReader.getSignatureParser();
+    return classReader.get().getSignatureParser();
   }
 
-  private TypeFactory           typeFactory;
-  private ClassReader           classReader; 
+  private WeakReference<TypeFactory> typeFactory;
+  private WeakReference<ClassReader> classReader; 
   private CMember               owner;
   private CTypeContext          parent;
   private boolean               parentLookup;

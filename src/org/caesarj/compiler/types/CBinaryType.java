@@ -20,10 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CBinaryType.java,v 1.4 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CBinaryType.java,v 1.5 2005-11-02 15:42:58 gasiunas Exp $
  */
 
 package org.caesarj.compiler.types;
+
+import java.lang.ref.WeakReference;
 
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.context.CTypeContext;
@@ -49,8 +51,8 @@ public class CBinaryType extends CReferenceType {
         TypeFactory typeFactory) {
         super();
         this.qualifiedName = qualifiedName;
-        this.classReader = classReader;
-        this.typeFactory = typeFactory;
+        this.classReader = new WeakReference<ClassReader>(classReader);
+        this.typeFactory = new WeakReference<TypeFactory>(typeFactory);
     }
 
     /**
@@ -62,7 +64,7 @@ public class CBinaryType extends CReferenceType {
      */
     public CClass getCClass() {
         if (!isChecked()) {
-            setClass(classReader.loadClass(typeFactory, qualifiedName));
+            setClass(classReader.get().loadClass(typeFactory.get(), qualifiedName));
             qualifiedName = null;
             classReader = null;
             typeFactory = null;
@@ -90,7 +92,7 @@ public class CBinaryType extends CReferenceType {
 
     private String qualifiedName;
 
-    private ClassReader classReader;
+    private WeakReference<ClassReader> classReader;
 
-    private TypeFactory typeFactory;
+    private WeakReference<TypeFactory> typeFactory;
 }

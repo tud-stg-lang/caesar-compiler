@@ -20,13 +20,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CSourceClass.java,v 1.14 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: CSourceClass.java,v 1.15 2005-11-02 15:46:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -94,8 +95,8 @@ public class CSourceClass extends CClass {
             null,
             deprecated,
             synthetic);
-        this.decl = decl;
-        this.cunit = cunit;
+        this.decl = new WeakReference<JTypeDeclaration>(decl);
+        this.cunit = new WeakReference<CCompilationUnit>(cunit);
     }
 
     /**
@@ -479,7 +480,7 @@ public class CSourceClass extends CClass {
 
     public void analyseConditions() throws PositionedError {
         if (decl != null) {
-            JTypeDeclaration tmp = decl;
+            JTypeDeclaration tmp = decl.get();
 
             decl = null;
             tmp.analyseConditions();
@@ -688,7 +689,7 @@ public class CSourceClass extends CClass {
     
     // IVICA: get typedeclaration of this source class
     public JTypeDeclaration getTypeDeclaration() {
-        return decl;
+        return decl.get();
     }
     
     public CContext getOwnerContext() {
@@ -696,7 +697,7 @@ public class CSourceClass extends CClass {
     		return ((CSourceClass)owner).getTypeDeclaration().getContext();
     	}
     	else {
-    		return cunit.getCompUnitDecl().getContext();
+    		return cunit.get().getCompUnitDecl().getContext();
     	}
     }
 
@@ -708,6 +709,6 @@ public class CSourceClass extends CClass {
     private boolean assertionClass;
     private Hashtable outers;
     private int syntheticFieldCount;
-    protected JTypeDeclaration decl;
-    protected CCompilationUnit cunit;
+    protected WeakReference<JTypeDeclaration> decl;
+    protected WeakReference<CCompilationUnit> cunit;
 }

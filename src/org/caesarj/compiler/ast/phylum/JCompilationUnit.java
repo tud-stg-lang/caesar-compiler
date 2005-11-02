@@ -20,13 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JCompilationUnit.java,v 1.18 2005-10-12 07:58:18 gasiunas Exp $
+ * $Id: JCompilationUnit.java,v 1.19 2005-11-02 15:46:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
 
+import java.lang.ref.WeakReference;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.CompilerBase;
@@ -64,7 +64,7 @@ public class JCompilationUnit extends JPhylum {
 		JClassImport[] importedClasses,
 		JTypeDeclaration[] typeDeclarations) {
 		super(where);
-		this.environment = environment;
+		this.environment = new WeakReference<KjcEnvironment>(environment);
 		this.packageName = packageName;
 		this.importedPackages = importedPackages;
 		this.importedClasses = importedClasses;
@@ -135,8 +135,8 @@ public class JCompilationUnit extends JPhylum {
 			}
 
 			CClass impClass =
-				environment.getClassReader().loadClass(
-					environment.getTypeFactory(),
+				getEnvironment().getClassReader().loadClass(
+						getEnvironment().getTypeFactory(),
 					ic.getQualifiedName());
 
 			if (impClass == null || impClass == CClass.CLS_UNDEFINED) {
@@ -144,8 +144,8 @@ public class JCompilationUnit extends JPhylum {
 				impClass =
 					loadOuterClass(
 						compiler,
-						environment.getClassReader(),
-						environment.getTypeFactory(),
+						getEnvironment().getClassReader(),
+						getEnvironment().getTypeFactory(),
 						ic.getQualifiedName());
 
 				if (impClass == null || impClass == CClass.CLS_UNDEFINED) {
@@ -164,7 +164,7 @@ public class JCompilationUnit extends JPhylum {
 			// The named type must be accessible (JLS 6.6) or a compile-time error occurs.
 			if (!impClass
 				.isAccessible(
-					environment
+					getEnvironment()
 						.getTypeFactory()
 						.createReferenceType(TypeFactory.RFT_OBJECT)
 						.getCClass())
@@ -343,8 +343,8 @@ public class JCompilationUnit extends JPhylum {
 		for (int i = 0; i < importedPackages.length; i++) {
 			importedPackages[i].analyse(
 				compiler,
-				environment.getClassReader(),
-				environment.getTypeFactory(),
+				getEnvironment().getClassReader(),
+				getEnvironment().getTypeFactory(),
 				packageName);
 		}
 	}
@@ -360,7 +360,7 @@ public class JCompilationUnit extends JPhylum {
 	 * @return KjcEnvironment
 	 */
 	public KjcEnvironment getEnvironment() {
-		return environment;
+		return environment.get();
 	}
 
 	/**
@@ -372,7 +372,7 @@ public class JCompilationUnit extends JPhylum {
 		if (export == null) {
 			export =
 				new CCompilationUnit(
-					environment,
+					getEnvironment(),
 					packageName.getName(),
 					importedClasses,
 					importedPackages,
@@ -388,7 +388,7 @@ public class JCompilationUnit extends JPhylum {
 	 */
 	public CCompilationUnitContext getContext() {
 		if (context == null) {
-			context = new CCompilationUnitContext(environment.getCompiler(), environment, getExport());
+			context = new CCompilationUnitContext(getEnvironment().getCompiler(), getEnvironment(), getExport());
 		}
 		return context;
 	}
@@ -440,7 +440,7 @@ public class JCompilationUnit extends JPhylum {
 		/* export inners */
         for(int i=0; i<typeDeclarations.length; i++) {
         	typeDeclarations[i].generateInterface(
-	        		environment.getClassReader(),
+        			getEnvironment().getClassReader(),
 	                getExport(),
 	                null,
 	                getPackageName().getName() + '/');
@@ -456,7 +456,7 @@ public class JCompilationUnit extends JPhylum {
         /* export inners */
         for(int i=0; i<newDecls.length; i++) {
         	newDecls[i].generateInterface(
-	        		environment.getClassReader(),
+        			getEnvironment().getClassReader(),
 	                getExport(),
 	                null,
 	                getPackageName().getName() + '/');
@@ -494,5 +494,5 @@ public class JCompilationUnit extends JPhylum {
 	// $$$ DEFAULT VALUE IS OKAY ???
 	private CCompilationUnit export;
 	private CCompilationUnitContext context;
-	private KjcEnvironment environment;
+	private WeakReference<KjcEnvironment> environment;
 }

@@ -20,12 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarByteCodeNavigator.java,v 1.5 2005-01-24 16:53:03 aracic Exp $
+ * $Id: CaesarByteCodeNavigator.java,v 1.6 2005-11-02 15:43:13 gasiunas Exp $
  */
 
 package org.caesarj.navigator;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.KjcClassReader;
@@ -43,22 +44,22 @@ import org.caesarj.compiler.types.TypeFactory;
  */
 public class CaesarByteCodeNavigator {
 
-    private ClassReader classReader;
-    private TypeFactory factory;
+    private WeakReference<ClassReader> classReader;
+    private WeakReference<TypeFactory> factory;
         
     /**
      * @param extDirs extra directories that should be appended to the classpath
      */
     public CaesarByteCodeNavigator(String extDirs) {
-        classReader = new KjcClassReader(null, extDirs, new KjcSignatureParser());
-        factory = new KjcTypeFactory(classReader);
+        classReader = new WeakReference<ClassReader>(new KjcClassReader(null, extDirs, new KjcSignatureParser()));
+        factory = new WeakReference<TypeFactory>(new KjcTypeFactory(classReader.get()));
     }
     
     /**
      * generates the export informations of a class from the classpath
      */
     public CClass load(String qn) {        
-        return classReader.loadClass(factory, qn);
+        return classReader.get().loadClass(factory.get(), qn);
     }
     
     /**

@@ -20,10 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: GenerationContext.java,v 1.2 2005-01-24 16:52:58 aracic Exp $
+ * $Id: GenerationContext.java,v 1.3 2005-11-02 15:46:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.context;
+
+import java.lang.ref.WeakReference;
 
 import org.caesarj.compiler.codegen.CodeSequence;
 import org.caesarj.compiler.types.TypeFactory;
@@ -41,7 +43,7 @@ public class GenerationContext {
    * @param	sequence        the CodeSequence
    */
   public GenerationContext(TypeFactory factory, CodeSequence sequence) {
-    this.factory        = factory;
+    this.factory        = new WeakReference<TypeFactory>(factory);
     this.sequence       = sequence;
   }
 
@@ -53,7 +55,7 @@ public class GenerationContext {
    * Return the TypeFactory member of this
    */
   public TypeFactory getTypeFactory() {
-    return factory;
+    return factory.get();
   }
 
   /**
@@ -68,7 +70,7 @@ public class GenerationContext {
   // MEMBERS
   // ----------------------------------------------------------------------
   
-  private TypeFactory   factory;
+  private WeakReference<TypeFactory>   factory;
   private CodeSequence  sequence;
   
 }

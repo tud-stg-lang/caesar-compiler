@@ -20,15 +20,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjIfcSourceClass.java,v 1.6 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: CCjIfcSourceClass.java,v 1.7 2005-11-02 15:46:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjMixinInterfaceDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
 import org.caesarj.compiler.context.CTypeContext;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.util.TokenReference;
@@ -42,7 +44,7 @@ import org.caesarj.util.UnpositionedError;
 public class CCjIfcSourceClass extends CCjSourceClass 
 {
 	// the class from which the mixin was generated
-	protected CjMixinInterfaceDeclaration _mixinIfcDecl;
+	protected WeakReference<CjMixinInterfaceDeclaration> _mixinIfcDecl;
 	
 	public CCjIfcSourceClass(
 		CClass owner,
@@ -67,15 +69,15 @@ public class CCjIfcSourceClass extends CCjSourceClass
 			cunit,
 			decl,			
 			null);
-		_mixinIfcDecl = decl;
+		_mixinIfcDecl = new WeakReference<CjMixinInterfaceDeclaration>(decl);
 	}
 	
 	public CCjSourceClass getImplClass() {
-		return _mixinIfcDecl.getCorrespondingClassDeclaration().getCjSourceClass();
+		return _mixinIfcDecl.get().getCorrespondingClassDeclaration().getCjSourceClass();
 	}
 
 	public CCjSourceClass getRegistryClass() {
-		CjClassDeclaration registry =  _mixinIfcDecl.getCorrespondingClassDeclaration().getRegistryClass();
+		CjClassDeclaration registry =  _mixinIfcDecl.get().getCorrespondingClassDeclaration().getRegistryClass();
 		if (registry != null)
 		    return registry.getCjSourceClass();
 		return null;

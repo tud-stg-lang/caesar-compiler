@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCompilationUnit.java,v 1.5 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: CCompilationUnit.java,v 1.6 2005-11-02 15:46:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
 
+import java.lang.ref.WeakReference;
 import java.util.Hashtable;
 
 import org.caesarj.compiler.ClassReader;
@@ -40,7 +41,7 @@ import org.caesarj.util.UnpositionedError;
  * This class represents a compilation unit
  */
 public class CCompilationUnit {
-
+	
 	// ----------------------------------------------------------------------
 	// CONSTRUCTORS
 	// ----------------------------------------------------------------------
@@ -59,10 +60,10 @@ public class CCompilationUnit {
 		this.importedClasses = importedClasses;
 		this.importedPackages = importedPackages;
 		this.loadedClasses = loadedClasses;
-		this.environment = environment;
+		this.environment = new WeakReference<KjcEnvironment>(environment);
 		this.cunitDecl = cunitDecl;
 	}
-
+	
 	// ----------------------------------------------------------------------
 	// ACCESSORS (LOOKUP)
 	// ----------------------------------------------------------------------
@@ -74,8 +75,8 @@ public class CCompilationUnit {
 	 */
 	public CClass lookupClass(CClass caller, String name)
 		throws UnpositionedError {
-		ClassReader classReader = environment.getClassReader();
-		TypeFactory typeFactory = environment.getTypeFactory();
+		ClassReader classReader = environment.get().getClassReader();
+		TypeFactory typeFactory = environment.get().getTypeFactory();
 		// $$$ USE A STRING BUFFER FOR IMPORT
 		if (name.lastIndexOf('/') == -1) {
 			// 6.5.4.1 Simple Type Names
@@ -164,7 +165,7 @@ public class CCompilationUnit {
 			return cl.getCClass();
 		} else {
 			// 6.5.4.2 Qualified Type Names: look directly at top
-			if (!environment.getClassReader().hasClassFile(name)) {
+			if (!environment.get().getClassReader().hasClassFile(name)) {
 				throw new UnpositionedError(KjcMessages.CLASS_UNKNOWN, name);
 			}
 
@@ -205,6 +206,6 @@ public class CCompilationUnit {
 	private final JPackageImport[] importedPackages;
 
 	private final Hashtable loadedClasses;
-	private final KjcEnvironment environment;
+	private final WeakReference<KjcEnvironment> environment;
 	private final JCompilationUnit cunitDecl;
 }

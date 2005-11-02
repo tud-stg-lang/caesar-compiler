@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCompilationUnitContext.java,v 1.12 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: CCompilationUnitContext.java,v 1.13 2005-11-02 15:46:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.context;
 
+import java.lang.ref.WeakReference;
 import java.util.Vector;
 
 import org.caesarj.compiler.CompilerBase;
@@ -70,7 +71,7 @@ public class CCompilationUnitContext extends CContext {
 		KjcEnvironment environment,
 		CCompilationUnit cunit) {
 		super(null, environment);
-		this.compiler = compiler;
+		this.compiler = new WeakReference<CompilerBase>(compiler);
 		this.cunit = cunit;		
 	}
 
@@ -160,7 +161,7 @@ public class CCompilationUnitContext extends CContext {
 	 * @param	trouble		the error to report
 	 */
 	public void reportTrouble(PositionedError trouble) {
-		compiler.reportTrouble(trouble);
+		compiler.get().reportTrouble(trouble);
 	}
 
 	// ----------------------------------------------------------------------
@@ -190,15 +191,17 @@ public class CCompilationUnitContext extends CContext {
 		allSourceClasses.add(clazz);
 	}
 	
-	public Vector<CSourceClass> getSourceClasses() {
-		return allSourceClasses;
+	public Vector<CSourceClass> getAndCleanSourceClasses() {
+		Vector<CSourceClass> classes = allSourceClasses;
+		allSourceClasses = null;
+		return classes;
 	}
 		
 	// ----------------------------------------------------------------------
 	// DATA MEMBERS
 	// ----------------------------------------------------------------------
 
-	private final CompilerBase compiler;
+	private final WeakReference<CompilerBase> compiler;
 	private final CCompilationUnit cunit;
-	private final Vector<CSourceClass> allSourceClasses = new Vector<CSourceClass>();
+	private Vector<CSourceClass> allSourceClasses = new Vector<CSourceClass>();
 }

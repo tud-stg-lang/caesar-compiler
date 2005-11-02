@@ -1,5 +1,6 @@
 package org.caesarj.compiler.typesys.join;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,14 +27,14 @@ public class JoinedTypeGraph {
 	protected InputTypeGraph inputGraph;
 	
 	/* reference to compiler (for error reporting) */
-	protected CompilerBase compiler;
+	protected WeakReference<CompilerBase> compiler;
 	
 	/**
 	 * Constructor
 	 */
 	public JoinedTypeGraph(InputTypeGraph inputGraph, CompilerBase compiler) {
 		this.inputGraph = inputGraph;
-		this.compiler = compiler;
+		this.compiler = new WeakReference<CompilerBase>(compiler);
 	}
 	
 	/**
@@ -47,7 +48,7 @@ public class JoinedTypeGraph {
 	 *	Get compiler 
 	 */
 	public CompilerBase getCompiler() {
-		return compiler;
+		return compiler.get();
 	}
 
 	/**
