@@ -262,40 +262,96 @@
 
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile-run  id="pointcutconstructor005" description="call constructor pointcut with * wildcards">
-    	<test>
+		<test>
     		Main m = new Main();
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":before:constructing:beforeString:aString:constructingString", res.toString());			
+			assertEquals(
+				":before:constA|" +
+				":beforeInternal:constAInternal|" +
+				":before:constB|" +
+				":constBInternal|" +
+				":beforeStringInternal-bstring:constBInternal|" +
+				":before:constA:constB|" +
+				":beforeInternal:constAInternal:constBInternal|" +
+				":beforeStringInternal-cstring:constAInternal:constBInternal", res.toString());
+				
+							
 		</test>
         <code>
         	public class Main {
         		
         		public void run() {
         			ClsA a = new ClsA();
-        			a = new ClsA("aString");
+        			Test.res.append("|");
+        			ClsA.Internal ia = a.new Internal();
+        			Test.res.append("|");
+        			
+        			ClsB b = new ClsB();
+        			Test.res.append("|");
+        			ClsB.Internal ib = b.new Internal();
+        			Test.res.append("|");
+        			ib = b.new Internal("bstring");
+        			Test.res.append("|");
+        			
+        			ClsC c = new ClsC();
+        			Test.res.append("|");
+        			ClsC.Internal ic = c.new Internal();
+        			Test.res.append("|");
+        			ic = c.new Internal("cstring");
         		}
         	}
         	
         	public deployed cclass Aspect {
 
+				// Matches new ClsA(), ClsB and ClsC()
 				before():  call (public Cls*.new()) {
 					Test.res.append(":before");
     			}
-    			before(String s):  call (public Cls*.new(String)) &amp;&amp; args(s)  {
-					Test.res.append(":beforeString:" + s);
+    			// Matches new ClsA.Internal() and ClsC.Internal()
+				before():  call (public ClsA.Intern*.new()) {
+					Test.res.append(":beforeInternal");
+    			}
+    			// Matches new ClsB.Internal(String) and ClsC.Internal(String)
+				before(String s):  call (public ClsB.Intern*.new(String)) &amp;&amp; args(s){
+					Test.res.append(":beforeStringInternal-" + s);
     			}
         	}
 			
-			public cclass ClsA {
+			public cclass Super {
+				public cclass Internal { }
+			}
+			
+			public cclass ClsA extends Super {
 				public ClsA() {
-					Test.res.append(":constructing");
+					Test.res.append(":constA");
 				}
 				
-				public ClsA(String s) {
-					Test.res.append(":constructingString");
+				public cclass Internal {
+					
+					public Internal() {
+						Test.res.append(":constAInternal");
+					}
 				}
+			}
+			
+			public cclass ClsB extends Super {
+				public ClsB() {
+					Test.res.append(":constB");
+				}
+				
+				public cclass Internal {
+					
+					public Internal() {
+						Test.res.append(":constBInternal");
+					}
+					public Internal(String s) {
+						Test.res.append(":constBInternal");
+					}
+				}
+			}
+			public cclass ClsC extends ClsB &amp; ClsA {
 			}
         </code>
     </compile-run>
@@ -330,7 +386,7 @@
         	
         	public deployed cclass Aspect {
 
-				before():  call (public suits.pointcuts.constructor.ppointcutconstructor006..new()) {
+				before():  call (public suits.pointcuts.constructor..ClsA.new()) {
 					Test.res.append(":before");
     			}
     			before(String s):  
@@ -548,7 +604,7 @@
 				":constB|" +
 				":constBInternal|" +
 				":before:before:before:constA:constB|" +
-				":beforeInternal:beforeInternal:beforeInternal:constAInternal:constBInternal", res.toString());			
+				":beforeInternal:beforeInternal:beforeInternal:constAInternal:constBInternal", res.toString());
 		</test>
         <code>
         	public class Main {
@@ -709,7 +765,7 @@
         	public deployed cclass Aspect {
 
 				// Matches new ClsA() and ClsB()
-				before():  execution (public suits.pointcuts.constructor.ppointcutconstructor016..new()) {
+				before():  execution (public suits.pointcuts.constructor..ClsA.new()) {
 					Test.res.append(":before");
     			}
     			// Matches new ClsA("aString") and ClsB("bString")

@@ -7,26 +7,35 @@
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":before:constructing", res.toString());			
+			assertEquals(":before:constructing:before:constructingString", res.toString());			
 		</test>
         <code>
         	public class Main {
         		
         		public void run() {
         			ClsB b = new ClsB();
+        			b = new ClsB("theString");
         		}
         	}
         	
         	public deployed cclass ClsA {
 
+				// Will match both
 				before():  initialization (public ClsB.new()) {
 					Test.res.append(":before");
+    			}
+    			// Will match nothing
+    			before(String s):  initialization (public ClsB.new(String)) &amp;&amp; args(s) {
+					Test.res.append(":beforeString-" + s);
     			}
         	}
 			
 			public cclass ClsB {
 				public ClsB() {
 					Test.res.append(":constructing");
+				}
+				public ClsB(String s) {
+					Test.res.append(":constructingString");
 				}
 			}
         </code>
@@ -171,10 +180,11 @@
 			assertEquals(
 				":before:after:constA|" +
 				":beforeInternal:afterInternal:constAInternal|" +
-				":before:after:constA:constB|" +
+				":constB|" +
 				":constBInternal|" +
 				":before:after:constA:constB|" +
-				":beforeInternal:afterInternal:constAInternal:constBInternal", res.toString());			
+				":beforeInternal:afterInternal:constAInternal:constBInternal", res.toString());
+				
 		</test>
         <code>
         	public class Main {
@@ -259,7 +269,7 @@
 			System.out.println("result: "+ res.toString());
 			assertEquals(
 				":before:after:constructing" +
-				":beforeString:aString:afterString:aString:constructingString", res.toString());			
+				":before:after:constructingString", res.toString());			
 		</test>
         <code>
         	public class Main {
@@ -271,17 +281,20 @@
         	}
         	
         	public deployed cclass Aspect {
-
+				// Will match both
 				before():  initialization (public Cls*.new()) {
 					Test.res.append(":before");
     			}
+    			// Will match nothing
     			before(String s):  initialization (public Cls*.new(String)) &amp;&amp; args(s)  {
 					Test.res.append(":beforeString:" + s);
     			}
+    			// Will match both
     			after():  initialization (public Cls*.new()) {
 					Test.res.append(":after");
     			}
-    			after(String s):  initialization (public Cls*.new(String)) &amp;&amp; args(s)  {
+    			// Will match nothing
+ 	  			after(String s):  initialization (public Cls*.new(String)) &amp;&amp; args(s)  {
 					Test.res.append(":afterString:" + s);
     			}
         	}
@@ -308,8 +321,8 @@
 			assertEquals(
 				":before:after:constructingA|" +
 				":before:after:constructingAString|" +
-				":before:after:before:after:constructingA:constructingB|" +
-				":before:after:before:after:constructingA:constructingBString", res.toString());			
+				":before:after:after:constructingA:constructingB|" +
+				":before:after:after:constructingA:constructingBString", res.toString());			
 		</test>
         <code>
         	public class Main {
@@ -328,7 +341,7 @@
         	
         	public deployed cclass Aspect {
 
-				before():  initialization (public suits.pointcuts.initialization.ppointcutinitialization006..new()) {
+				before():  initialization (public suits.pointcuts.initialization..ClsA_Impl.new()) {
 					Test.res.append(":before");
     			}
     			before(String s):  
@@ -376,26 +389,34 @@
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":before:constructing", res.toString());			
+			assertEquals(":before:constructing:before:constructingString", res.toString());			
 		</test>
         <code>
         	public class Main {
         		
         		public void run() {
         			ClsB b = new ClsB();
+        			b = new ClsB("aString");
         		}
         	}
         	
         	public deployed cclass ClsA {
-
+				// Matches both
 				before():  preinitialization (public ClsB.new()) {
 					Test.res.append(":before");
+    			}
+    			// Matches nothing
+    			before(String s):  preinitialization (public ClsB.new(String)) &amp;&amp; args(s) {
+					Test.res.append(":beforeString");
     			}
         	}
 			
 			public cclass ClsB {
 				public ClsB() {
 					Test.res.append(":constructing");
+				}
+				public ClsB(String s) {
+					Test.res.append(":constructingString");
 				}
 			}
         </code>
@@ -540,10 +561,11 @@
 			assertEquals(
 				":before:after:constA|" +
 				":beforeInternal:afterInternal:constAInternal|" +
-				":before:after:constA:constB|" +
+				":constB|" +
 				":constBInternal|" +
 				":before:after:constA:constB|" +
-				":beforeInternal:afterInternal:constAInternal:constBInternal", res.toString());			
+				":beforeInternal:afterInternal:constAInternal:constBInternal", res.toString());
+				
 		</test>
         <code>
         	public class Main {
@@ -628,7 +650,7 @@
 			System.out.println("result: "+ res.toString());
 			assertEquals(
 				":before:after:constructing" +
-				":beforeString:aString:afterString:aString:constructingString", res.toString());			
+				":before:after:constructingString", res.toString());			
 		</test>
         <code>
         	public class Main {
@@ -640,16 +662,19 @@
         	}
         	
         	public deployed cclass Aspect {
-
+				// Matches both
 				before():  preinitialization (public Cls*.new()) {
 					Test.res.append(":before");
     			}
+    			// Matches nothing
     			before(String s):  preinitialization (public Cls*.new(String)) &amp;&amp; args(s)  {
 					Test.res.append(":beforeString:" + s);
     			}
+    			// Matches both
     			after():  preinitialization (public Cls*.new()) {
 					Test.res.append(":after");
     			}
+    			// Matches nothing
     			after(String s):  preinitialization (public Cls*.new(String)) &amp;&amp; args(s)  {
 					Test.res.append(":afterString:" + s);
     			}
@@ -677,8 +702,8 @@
 			assertEquals(
 				":before:after:constructingA|" +
 				":before:after:constructingAString|" +
-				":before:after:before:after:constructingA:constructingB|" +
-				":before:after:before:after:constructingA:constructingBString", res.toString());			
+				":after:before:after:constructingA:constructingB|" +
+				":after:before:after:constructingA:constructingBString", res.toString());			
 		</test>
         <code>
         	public class Main {
@@ -697,7 +722,7 @@
         	
         	public deployed cclass Aspect {
 
-				before():  preinitialization (public suits.pointcuts.initialization.ppointcutinitialization016..new()) {
+				before():  preinitialization (public suits.pointcuts.initialization..ClsA_Impl.new()) {
 					Test.res.append(":before");
     			}
     			before(String s):  
@@ -894,10 +919,16 @@
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			// TODO -> this is wrong, because we are not matching the mixinB
 			assertEquals(
-				"::beforeSuper||:beforeSuper:beforeA|:beforeInternalA|:beforeSuper:beforeB|:afterInternalB|" +
-				":beforeSuper:beforeA:beforeSuper:beforeA|:beforeInternalA:beforeInternalA", res.toString());
+				":beforeSuper|" +
+				"|" +
+				":beforeSuper:beforeA|" +
+				":beforeInternalA|" +
+				":beforeSuper:beforeB|" +
+				":afterInternalB|" +
+				":beforeSuper:beforeA:beforeB:beforeSuper:beforeA:beforeB|" +
+				":beforeInternalA:afterInternalB:beforeInternalA:afterInternalB", res.toString());
+				
 		</test>
         <code>
         	public class Main {
@@ -995,7 +1026,7 @@
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":before:after", res.toString());			
+			assertEquals(":after:before:after", res.toString());					
 		</test>
         <code>
         	public class Main {
@@ -1006,10 +1037,11 @@
         	}
         	
         	public deployed cclass ClsA {
-
+				// will match only ClsB, because ClsA is not instantiated
 				before():  staticinitialization (Cls*) {
 					Test.res.append(":before");
     			}
+    			// will match both ClsB and this class (ClsA)
     			after():  staticinitialization (Cls*) {
 					Test.res.append(":after");
     			}
@@ -1040,10 +1072,10 @@
         	
         	public deployed cclass ClsA {
 
-				before():  staticinitialization (suits.pointcuts..ClsB) {
+				before():  staticinitialization (suits.pointcuts..ppointcutinitialization026.ClsB_Impl) {
 					Test.res.append(":before");
     			}
-    			after():  staticinitialization (suits.pointcuts.initialization..ClsB) {
+    			after():  staticinitialization (suits.pointcuts.initialization.ppointcutinitialization026.ClsB) {
 					Test.res.append(":after");
     			}
         	}

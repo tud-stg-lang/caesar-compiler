@@ -287,32 +287,96 @@
 
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile-run  id="pointcutmethod005" description="call pointcut with * wildcards">
-    	<test>
+        	<test>
     		Main m = new Main();
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":before:m", res.toString());			
+			assertEquals(
+				":before1:ClsA.a:before2:ClsC.mix" +
+				":before3:before4:IntA.a" +
+				":before1:ClsA.a:before2:ClsD.mix" +
+				":before4:IntA.a", res.toString());			
 		</test>
         <code>
         	public class Main {
         	
         		public void run() {
-        			ClsB b = new ClsB();
-        			b.m();
+					ClsC c = new ClsC();
+					c.a();
+					c.mix();
+					ClsC.Internal ci = c.new Internal();
+					ci.internal_a();
+					ClsD d = new ClsD();
+					d.a();
+					d.mix();
+					ClsD.Internal di = d.new Internal();
+					di.internal_a();
         		}
         	}
         	
-        	public deployed cclass ClsA {
-        		before(): call (void Cls*.m()) {
-					Test.res.append(":before");
+        	public deployed cclass Aspect {
+
+        		before(): call (void Cls*.a()) {
+					Test.res.append(":before1");
+				}
+				before(): call (void Cls*.mix()) {
+					Test.res.append(":before2");
+				}
+				// Matches only ClsC
+				before(): call (void ClsC.Intern*.*()) {
+					Test.res.append(":before3");
+				}
+				// Matches both
+				before(): call (void ClsB.Intern*+.*()) {
+					Test.res.append(":before4");
 				}
         	}
-			
-			public cclass ClsB {
 
-				public void m() {
-					Test.res.append(":m");
+			public cclass Super {
+				public cclass Internal {}
+			} 
+			
+			public cclass ClsA extends Super {
+
+				public void a() {
+					Test.res.append(":ClsA.a");
+				}
+				
+				public cclass Internal {
+					public void internal_a() {
+						Test.res.append(":IntA.a");
+					}
+				}
+			}
+			
+			public cclass ClsB extends Super {
+
+				public void b() {
+					Test.res.append(":ClsB.b");
+				}
+				
+				public cclass Internal {
+					public void internal_b() {
+						Test.res.append(":IntB.b");
+					}
+				}
+			}
+			
+			public cclass ClsC extends ClsB &amp; ClsA {
+				public void c() {
+					Test.res.append(":ClsC.c");
+				}
+				public void mix() {
+					Test.res.append(":ClsC.mix");
+				}
+			}
+			public cclass ClsD extends ClsA &amp; ClsB {
+				public void d() {
+					Test.res.append(":ClsD.d");
+				}
+				public void mix() {
+					Test.res.append(":ClsD.mix");
 				}
 			}
         </code>
@@ -320,69 +384,182 @@
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile-run  id="pointcutmethod006" description="call pointcut with .. wildcards">
-    	<test>
+        <test>
     		Main m = new Main();
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":before:m", res.toString());			
+			assertEquals(
+				":before1:ClsA.a:before2:ClsC.mix" +
+				":before3:before4:IntA.a" +
+				":before1:ClsA.a:before2:ClsD.mix" +
+				":before4:IntA.a", res.toString());			
 		</test>
         <code>
         	public class Main {
         	
         		public void run() {
-        			ClsB b = new ClsB();
-        			b.m();
+					ClsC c = new ClsC();
+					c.a();
+					c.mix();
+					ClsC.Internal ci = c.new Internal();
+					ci.internal_a();
+					ClsD d = new ClsD();
+					d.a();
+					d.mix();
+					ClsD.Internal di = d.new Internal();
+					di.internal_a();
         		}
         	}
         	
-        	public deployed cclass ClsA {
-        		before(): call (void suits.pointcuts.method.ppointcutmethod006..m()) {
-					Test.res.append(":before");
+        	public deployed cclass Aspect {
+
+        		before(): call (void suits.pointcuts.method.ppointcutmethod006..a()) {
+					Test.res.append(":before1");
+				}
+				before(): call (void suits.pointcuts.method..*.mix()) {
+					Test.res.append(":before2");
+				}
+				// Matches only ClsC
+				before(): call (void suits.pointcuts.method..ClsC.Intern*.*()) {
+					Test.res.append(":before3");
+				}
+				// Matches both
+				before(): call (void suits.pointcuts.method.ppointcutmethod006..Intern*+.*()) {
+					Test.res.append(":before4");
 				}
         	}
-			
-			public cclass ClsB {
 
-				public void m() {
-					Test.res.append(":m");
+			public cclass Super {
+				public cclass Internal {}
+			} 
+			
+			public cclass ClsA extends Super {
+
+				public void a() {
+					Test.res.append(":ClsA.a");
+				}
+				
+				public cclass Internal {
+					public void internal_a() {
+						Test.res.append(":IntA.a");
+					}
 				}
 			}
 			
+			public cclass ClsB extends Super {
+
+				public void b() {
+					Test.res.append(":ClsB.b");
+				}
+				
+				public cclass Internal {
+					public void internal_b() {
+						Test.res.append(":IntB.b");
+					}
+				}
+			}
+			
+			public cclass ClsC extends ClsB &amp; ClsA {
+				public void c() {
+					Test.res.append(":ClsC.c");
+				}
+				public void mix() {
+					Test.res.append(":ClsC.mix");
+				}
+			}
+			public cclass ClsD extends ClsA &amp; ClsB {
+				public void d() {
+					Test.res.append(":ClsD.d");
+				}
+				public void mix() {
+					Test.res.append(":ClsD.mix");
+				}
+			}
         </code>
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile-run  id="pointcutmethod007" description="simple static call pointcut">
-    	<test>
+        <test>
     		Main m = new Main();
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":before:m", res.toString());			
+			assertEquals(
+				":before1:ClsC.mix:" +
+				"before2:IntA.a:" +
+				"before1:ClsD.mix", res.toString());			
 		</test>
         <code>
         	public class Main {
         	
         		public void run() {
-        			ClsB.m();
+					ClsC.mix();
+					ClsC.Internal.internal_a();
+					ClsD.mix();
         		}
         	}
         	
-        	public deployed cclass ClsA {
-        		before(): call (static void ClsB.m()) {
-					Test.res.append(":before");
+        	public deployed cclass Aspect {
+
+				before(): call (static void Cls*.mix()) {
+					Test.res.append(":before1");
+				}
+				before(): call (static void ClsC.Internal.*()) {
+					Test.res.append(":before2");
 				}
         	}
-			
-			public cclass ClsB {
 
-				public static void m() {
-					Test.res.append(":m");
+			public cclass Super {
+				public cclass Internal {}
+			} 
+			
+			public cclass ClsA extends Super {
+
+				public void a() {
+					Test.res.append(":ClsA.a");
+				}
+				
+				public cclass Internal {
+					public static void internal_a() {
+						Test.res.append(":IntA.a");
+					}
+				}
+			}
+			
+			public cclass ClsB extends Super {
+
+				public void b() {
+					Test.res.append(":ClsB.b");
+				}
+				
+				public cclass Internal {
+					public static void internal_b() {
+						Test.res.append(":IntB.b");
+					}
+				}
+			}
+			
+			public cclass ClsC extends ClsB &amp; ClsA {
+				public void c() {
+					Test.res.append(":ClsC.c");
+				}
+				public static void mix() {
+					Test.res.append(":ClsC.mix");
+				}
+			}
+			public cclass ClsD extends ClsA &amp; ClsB {
+				public void d() {
+					Test.res.append(":ClsD.d");
+				}
+				public static void mix() {
+					Test.res.append(":ClsD.mix");
 				}
 			}
         </code>
     </compile-run>
+   
    
    
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
@@ -686,7 +863,7 @@
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":before:m", res.toString());			
+			assertEquals(":before:m:beforeI:i", res.toString());			
 		</test>
         <code>
         	public class Main {
@@ -694,12 +871,18 @@
         		public void run() {
         			ClsB b = new ClsB();
         			b.m();
+        			ClsB.Internal bi = b.new Internal();
+        			bi.m();
         		}
         	}
         	
         	public deployed cclass ClsA {
         		before(): execution (void Cls*.m()) {
 					Test.res.append(":before");
+				}
+				
+				before(): execution (void ClsB.Interna*.m()) {
+					Test.res.append(":beforeI");
 				}
         	}
 			
@@ -708,7 +891,14 @@
 				public void m() {
 					Test.res.append(":m");
 				}
+				
+				public cclass Internal {
+					public void m() {
+						Test.res.append(":i");
+					}
+				}
 			}
+
         </code>
     </compile-run>
     
@@ -748,35 +938,84 @@
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile-run  id="pointcutmethod017" description="simple static execution pointcut">
-    	<test>
+        <test>
     		Main m = new Main();
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":before:m", res.toString());			
+			assertEquals(
+				":before1:ClsC.mix:" +
+				"before2:IntA.a:" +
+				"before1:ClsD.mix", res.toString());			
 		</test>
         <code>
         	public class Main {
         	
         		public void run() {
-        			ClsB.m();
+					ClsC.mix();
+					ClsC.Internal.internal_a();
+					ClsD.mix();
         		}
         	}
         	
-        	public deployed cclass ClsA {
-        		before(): execution (static void ClsB.m()) {
-					Test.res.append(":before");
+        	public deployed cclass Aspect {
+
+				before(): execution (static void Cls*.mix()) {
+					Test.res.append(":before1");
+				}
+				before(): execution (static void ClsA.Internal.*()) {
+					Test.res.append(":before2");
 				}
         	}
-			
-			public cclass ClsB {
 
-				public static void m() {
-					Test.res.append(":m");
+			public cclass Super {
+				public cclass Internal {}
+			} 
+			
+			public cclass ClsA extends Super {
+
+				public void a() {
+					Test.res.append(":ClsA.a");
+				}
+				
+				public cclass Internal {
+					public static void internal_a() {
+						Test.res.append(":IntA.a");
+					}
+				}
+			}
+			
+			public cclass ClsB extends Super {
+
+				public void b() {
+					Test.res.append(":ClsB.b");
+				}
+				
+				public cclass Internal {
+					public static void internal_b() {
+						Test.res.append(":IntB.b");
+					}
+				}
+			}
+			
+			public cclass ClsC extends ClsB &amp; ClsA {
+				public void c() {
+					Test.res.append(":ClsC.c");
+				}
+				public static void mix() {
+					Test.res.append(":ClsC.mix");
+				}
+			}
+			public cclass ClsD extends ClsA &amp; ClsB {
+				public void d() {
+					Test.res.append(":ClsD.d");
+				}
+				public static void mix() {
+					Test.res.append(":ClsD.mix");
 				}
 			}
         </code>
-    </compile-run>   
+    </compile-run>
     
     
     

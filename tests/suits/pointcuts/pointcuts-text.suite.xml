@@ -127,10 +127,11 @@
     		
 			System.out.println("result: "+ res.toString());
 			assertEquals(
-				":beforeAll-A:A" +
-				":beforeAll-AI:before-AI:before+AI:AI" +
-				":before+BI:BI" +
-				":CI", res.toString());			
+				":beforeAll-A:beforeAll+A:A" +
+				":beforeAll-AI:beforeAll+AI:before-AI:before+AI:AI" +
+				":beforeAll+B:B" +
+				":beforeAll+BI:before+BI:BI" +
+				":C:CI", res.toString());			
 		</test>
         <code>
         	public cclass Main {
@@ -141,8 +142,10 @@
         			a.run();
         			a.new Internal().run();
         			ClsB b = new ClsB();
+        			b.run();
         			b.new Internal().run();
         			ClsC c = new ClsC();
+        			c.run();
         			c.new Internal().run();
         		}
         	}
@@ -151,6 +154,10 @@
         		// Matches all a.run() (including nested classes)
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) &amp;&amp; within(ClsA) {
 					Test.res.append(":beforeAll-" + s);
+				}
+				// Matches all a.run() and b.run() (including nested classes)
+        		before(String s): call(* Target.m(String)) &amp;&amp; args(s) &amp;&amp; within(ClsA+) {
+					Test.res.append(":beforeAll+" + s);
 				}
         		// Matches only a.new Internal.run()
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) &amp;&amp; within(ClsA.Internal) {
@@ -181,7 +188,9 @@
 				}
 			}
 			public cclass ClsB extends ClsA {
-			
+				public void run() {
+					new Target().m("B");
+				}
 				public cclass Internal {
 					public void run() {
 						new Target().m("BI");
@@ -189,7 +198,9 @@
 				}
 			}
 			public cclass ClsC {
-			
+				public void run() {
+					new Target().m("C");
+				}
 				public cclass Internal {
 					public void run() {
 						new Target().m("CI");
@@ -209,10 +220,12 @@
 			System.out.println("result: "+ res.toString());
 			assertEquals(
 				":S:SI" +
-				":A" +
-				":before-AI:before+AI:AI" +
-				":BI" +
-				":before+CI:CI", res.toString());			
+				":beforeAll-A:beforeAll+A:A" +
+				":beforeAll-AI:beforeAll+AI:before-AI:before+AI:AI" +
+				":B:BI" +
+				":beforeAll+C:C" +
+				":beforeAll+CI:before+CI:CI", res.toString());
+				
 		</test>
         <code>
         	public cclass Main {
@@ -226,19 +239,35 @@
         			a.run();
         			a.new Internal().run();
         			ClsB b = new ClsB();
+        			b.run();
         			b.new Internal().run();
         			ClsC c = new ClsC();
+        			c.run();
         			c.new Internal().run();
         		}
         	}
         	
         	public deployed cclass Aspect {
+        		// Matches all a.run() (including nested classes)
+        		before(String s): call(* Target.m(String)) &amp;&amp; args(s)
+        			 &amp;&amp; within(ClsA) {
+					
+					Test.res.append(":beforeAll-" + s);
+				}
+				// Matches all a.run() (including nested classes) and c.run()
+        		before(String s): call(* Target.m(String)) &amp;&amp; args(s) &amp;&amp; within(ClsA+) {
+					Test.res.append(":beforeAll+" + s);
+				}
         		// Matches only a.new Internal.run()
-        		before(String s): call(* Target.m(String)) &amp;&amp; args(s) &amp;&amp; within(ClsA.Internal) {
+        		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
+        			&amp;&amp; within(ClsA.Internal) {
+					
 					Test.res.append(":before-" + s);
 				}
 				// Matches a and c.new Internal.run()
-        		before(String s): call(* Target.m(String)) &amp;&amp; args(s) &amp;&amp; within(ClsA.Internal+) {
+        		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
+        			&amp;&amp; within(ClsA.Internal+) {
+					
 					Test.res.append(":before+" + s);
 				}
         	}
@@ -273,6 +302,9 @@
 			}
 			public cclass ClsB extends Super {
 			
+				public void run() {
+					new Target().m("B");
+				}
 				public cclass Internal {
 					public void run() {
 						new Target().m("BI");
@@ -287,7 +319,7 @@
 					public void run() {
 						new Target().m("CI");
 					}
-				}
+				} 
 			}
         </code>
     </compile-run>
@@ -300,37 +332,53 @@
     		
 			System.out.println("result: "+ res.toString());
 			assertEquals(
-				":beforeReg-A:A" +
-				":beforeReg-AI:before-AI:before+AI:AI" +
-				":beforeReg-BI:before+BI:BI" +
-				":beforeReg-CI:CI", res.toString());			
+				":S:SI" +
+				":beforeAll-A:beforeAll+A:A" +
+				":beforeAll-AI:beforeAll+AI:before-AI:before+AI:AI" +
+				":beforeAll-B:B" +
+				":beforeAll-BI:BI" +
+				":beforeAll-C:beforeAll+C:C" +
+				":beforeAll-CI:beforeAll+CI:before+CI:CI", res.toString());
 		</test>
         <code>
         	public cclass Main {
         	
         		public void run() {
         		
+        			Super s = new Super();
+        			s.run();
+        			s.new Internal().run();
         			ClsA a = new ClsA();
         			a.run();
         			a.new Internal().run();
         			ClsB b = new ClsB();
+        			b.run();
         			b.new Internal().run();
         			ClsC c = new ClsC();
+        			c.run();
         			c.new Internal().run();
         		}
         	}
         	
         	public deployed cclass Aspect {
-        		// Matches all a.run()
+        		// Matches all a.run() (including nested classes)
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) &amp;&amp; within(Cls*) {
-					Test.res.append(":beforeReg-" + s);
+					Test.res.append(":beforeAll-" + s);
+				}
+				// Matches all a.run() (including nested classes) and c.run()
+        		before(String s): call(* Target.m(String)) &amp;&amp; args(s) &amp;&amp; within(ClsA+) {
+					Test.res.append(":beforeAll+" + s);
 				}
         		// Matches only a.new Internal.run()
-        		before(String s): call(* Target.m(String)) &amp;&amp; args(s) &amp;&amp; within(ClsA.Intern*) {
+        		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
+        			&amp;&amp; within(ClsA.Intern*) {
+					
 					Test.res.append(":before-" + s);
 				}
-				// Matches a and b.new Internal.run()
-        		before(String s): call(* Target.m(String)) &amp;&amp; args(s) &amp;&amp; within(ClsA.Internal+) {
+				// Matches a and c.new Internal.run()
+        		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
+        			&amp;&amp; within(ClsA.Internal+) {
+					
 					Test.res.append(":before+" + s);
 				}
         	}
@@ -342,7 +390,17 @@
 				}
 			}
 			
-			public cclass ClsA {
+			public cclass Super {
+				public void run() {
+					new Target().m("S");
+				}
+				public cclass Internal {
+					public void run() {
+						new Target().m("SI");
+					}
+				}
+			}
+			public cclass ClsA extends Super {
 				
 				public void run() {
 					new Target().m("A");
@@ -353,24 +411,29 @@
 					}
 				}
 			}
-			public cclass ClsB extends ClsA {
+			public cclass ClsB extends Super {
 			
+				public void run() {
+					new Target().m("B");
+				}
 				public cclass Internal {
 					public void run() {
 						new Target().m("BI");
 					}
 				}
 			}
-			public cclass ClsC {
-			
+			public cclass ClsC extends ClsA &amp; ClsB {
+				public void run() {
+					new Target().m("C");
+				}
 				public cclass Internal {
 					public void run() {
 						new Target().m("CI");
 					}
-				}
+				} 
 			}
         </code>
-    </compile-run>
+	</compile-run>
     
    
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
@@ -404,7 +467,7 @@
         	public deployed cclass Aspect {
         		// Matches all a.run()
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
-        			&amp;&amp; within(suits.pointcuts.text..ClsA_Impl) {
+        			&amp;&amp; within(suits.pointcuts.text..ClsA) {
 					
 					Test.res.append(":beforeReg-" + s);
 				}
@@ -533,8 +596,8 @@
 			System.out.println("result: "+ res.toString());
 			assertEquals(
 				":before-A:before+A:A" +
-				":before+B:B" +
-				":C", res.toString());			
+				":before-B:before+B:B" +
+				":C", res.toString());
 		</test>
         <code>
         	public cclass Main {
@@ -551,7 +614,7 @@
         	}
         	
         	public deployed cclass Aspect {
-        		// Matches only a.run()
+        		// Matches both
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
         			&amp;&amp; withincode(* ClsA.run()) {
 					
@@ -601,10 +664,11 @@
     		
 			System.out.println("result: "+ res.toString());
 			assertEquals(
-				":beforeAll-A:A" +
-				":beforeAll-AI:before-AI:before+AI:AI" +
-				":before+BI:BI" +
-				":CI", res.toString());			
+			 	":beforeAll-A:A" +
+			 	":before-AI:before+AI:AI" +
+			 	":beforeAll-B:B" +
+			 	":before-BI:before+BI:BI" +
+			 	":C:CI", res.toString());
 		</test>
         <code>
         	public cclass Main {
@@ -615,20 +679,22 @@
         			a.run();
         			a.new Internal().run();
         			ClsB b = new ClsB();
+        			b.run();
         			b.new Internal().run();
         			ClsC c = new ClsC();
+        			c.run();
         			c.new Internal().run();
         		}
         	}
         	
         	public deployed cclass Aspect {
-        		// Matches all a.run() (including nested classes)
+        		// Matches all a.run()
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
         			&amp;&amp; withincode(* ClsA.run()) {
 					
 					Test.res.append(":beforeAll-" + s);
 				}
-        		// Matches only a.new Internal.run()
+        		// Matches a and b.new Internal.run()
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
         			&amp;&amp; withincode(* ClsA.Internal.run()) {
 					
@@ -661,7 +727,9 @@
 				}
 			}
 			public cclass ClsB extends ClsA {
-			
+				public void run() {
+					new Target().m("B");
+				}
 				public cclass Internal {
 					public void run() {
 						new Target().m("BI");
@@ -669,7 +737,9 @@
 				}
 			}
 			public cclass ClsC {
-			
+				public void run() {
+					new Target().m("C");
+				}
 				public cclass Internal {
 					public void run() {
 						new Target().m("CI");
@@ -689,10 +759,11 @@
 			System.out.println("result: "+ res.toString());
 			assertEquals(
 				":S:SI" +
-				":A" +
+				":beforeAll-A:beforeAll+A:A" +
 				":before-AI:before+AI:AI" +
-				":BI" +
-				":before+CI:CI", res.toString());			
+				":S:BI" +
+				":beforeAll-C:beforeAll+C:C" +
+				":before-CI:before+CI:CI", res.toString());	
 		</test>
         <code>
         	public cclass Main {
@@ -706,13 +777,27 @@
         			a.run();
         			a.new Internal().run();
         			ClsB b = new ClsB();
+        			b.run();
         			b.new Internal().run();
         			ClsC c = new ClsC();
+        			c.run();
         			c.new Internal().run();
         		}
         	}
         	
         	public deployed cclass Aspect {
+        	    
+        		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
+        			&amp;&amp; withincode(* suits.pointcuts.text.ppointcuttext014.ClsA.run()) {
+					
+					Test.res.append(":beforeAll-" + s);
+				}
+				
+        		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
+        			&amp;&amp; withincode(* ClsA+.run()) {
+					
+					Test.res.append(":beforeAll+" + s);
+				}
         		// Matches only a.new Internal.run()
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
         			&amp;&amp; withincode(void ClsA.Internal.run()) {
@@ -764,6 +849,7 @@
 				}
 			}
 			public cclass ClsC extends ClsA &amp; ClsB {
+			//public cclass ClsC extends ClsB &amp; ClsA {
 				public void run() {
 					new Target().m("C");
 				}
@@ -778,51 +864,72 @@
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile-run  id="pointcuttext015" description="* wildcard using withincode">
-    	<test>
+        	<test>
     		Main m = new Main();
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
 			assertEquals(
-				":beforeReg-A:A" +
-				":beforeReg-AI:before-AI:before+AI:AI" +
-				":beforeReg-BI:before+BI:BI" +
-				":beforeReg-CI:CI", res.toString());			
+				":S:SI" +
+				":beforeAll-A:beforeAll+A:A" +
+				":before-AI:before+AI:AI" +
+				":S:BI" +
+				":beforeAll-C:beforeAll+C:C" +
+				":before-CI:before+CI:CI" +
+				":beforeAll-D:D" +
+				":DI", res.toString());
+				
 		</test>
         <code>
         	public cclass Main {
         	
         		public void run() {
         		
+        			Super s = new Super();
+        			s.run();
+        			s.new Internal().run();
         			ClsA a = new ClsA();
         			a.run();
         			a.new Internal().run();
         			ClsB b = new ClsB();
+        			b.run();
         			b.new Internal().run();
         			ClsC c = new ClsC();
+        			c.run();
         			c.new Internal().run();
+        			ClsD d = new ClsD();
+        			d.run();
+        			d.new Internal().run();
         		}
         	}
         	
         	public deployed cclass Aspect {
-        		// Matches all a.run()
+        	    
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
-        			&amp;&amp; withincode(void Cls*.run()) {
+        			&amp;&amp; withincode(* Cls*.run()) {
 					
-					Test.res.append(":beforeReg-" + s);
+					Test.res.append(":beforeAll-" + s);
+				}
+				
+        		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
+        			&amp;&amp; withincode(* ClsA+.run()) {
+					
+					Test.res.append(":beforeAll+" + s);
 				}
         		// Matches only a.new Internal.run()
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
-        			&amp;&amp; withincode(void ClsA.Intern*.run()) {
+        			&amp;&amp; withincode(* suits.pointcuts.text.ppointcuttext015.ClsA.Intern*.run()) {
 					
 					Test.res.append(":before-" + s);
 				}
-				// Matches a and b.new Internal.run()
+				
+				// Matches a and c.new Internal.run()
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
         			&amp;&amp; withincode(void ClsA.Internal+.run()) {
 					
 					Test.res.append(":before+" + s);
 				}
+				
         	}
 			
 			public class Target {
@@ -832,7 +939,17 @@
 				}
 			}
 			
-			public cclass ClsA {
+			public cclass Super {
+				public void run() {
+					new Target().m("S");
+				}
+				public cclass Internal {
+					public void run() {
+						new Target().m("SI");
+					}
+				}
+			}
+			public cclass ClsA extends Super {
 				
 				public void run() {
 					new Target().m("A");
@@ -843,7 +960,7 @@
 					}
 				}
 			}
-			public cclass ClsB extends ClsA {
+			public cclass ClsB extends Super {
 			
 				public cclass Internal {
 					public void run() {
@@ -851,11 +968,23 @@
 					}
 				}
 			}
-			public cclass ClsC {
-			
+			public cclass ClsC extends ClsA &amp; ClsB {
+				public void run() {
+					new Target().m("C");
+				}
 				public cclass Internal {
 					public void run() {
 						new Target().m("CI");
+					}
+				}
+			}
+			public cclass ClsD {
+				public void run() {
+					new Target().m("D");
+				}
+				public cclass Internal {
+					public void run() {
+						new Target().m("DI");
 					}
 				}
 			}
@@ -865,48 +994,61 @@
    
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile-run  id="pointcuttext016" description=".. wildcard using withincode">
-    	<test>
+        	<test>
     		Main m = new Main();
     		m.run();
     		
 			System.out.println("result: "+ res.toString());
 			assertEquals(
-				":beforeReg-A:A" +
-				":beforeReg-AI:before-AI:before+AI:AI" +
-				":before+BI:BI" +
-				":CI", res.toString());			
+				":S:SI" +
+				":beforeAll-A:beforeAll+A:A" +
+				":before-AI:before+AI:AI" +
+				":S:BI" +
+				":beforeAll-C:beforeAll+C:C" +
+				":before-CI:before+CI:CI", res.toString());	
 		</test>
         <code>
         	public cclass Main {
         	
         		public void run() {
         		
+        			Super s = new Super();
+        			s.run();
+        			s.new Internal().run();
         			ClsA a = new ClsA();
         			a.run();
         			a.new Internal().run();
         			ClsB b = new ClsB();
+        			b.run();
         			b.new Internal().run();
         			ClsC c = new ClsC();
+        			c.run();
         			c.new Internal().run();
         		}
         	}
         	
         	public deployed cclass Aspect {
-        		// Matches all a.run()
+        	    
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
-        			&amp;&amp; withincode(* suits.pointcuts.text..ClsA_Impl.run()) {
+        			&amp;&amp; withincode(* suits.pointcuts.text.ppointcuttext016.ClsA.run()) {
 					
-					Test.res.append(":beforeReg-" + s);
+					Test.res.append(":beforeAll-" + s);
+				}
+				
+        		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
+        			&amp;&amp; withincode(* suits.pointcuts.text.ppointcuttext016.ClsA+.run()) {
+					
+					Test.res.append(":beforeAll+" + s);
 				}
         		// Matches only a.new Internal.run()
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
-        			&amp;&amp; withincode(* suits.pointcuts.text.ppointcuttext006.ClsA.Internal.run()) {
+        			&amp;&amp; withincode(void suits.pointcuts.text.ppointcuttext016.ClsA.Internal.run()) {
 					
 					Test.res.append(":before-" + s);
 				}
-				// Matches a and b.new Internal.run()
+				// Matches a and c.new Internal.run()
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
-        			&amp;&amp; withincode(* suits.pointcuts.text.ppointcuttext006.ClsA.Internal+.run()) {
+        			&amp;&amp; withincode(void suits.pointcuts.text.ppointcuttext016.ClsA.Internal+.run()) {
 					
 					Test.res.append(":before+" + s);
 				}
@@ -919,7 +1061,17 @@
 				}
 			}
 			
-			public cclass ClsA {
+			public cclass Super {
+				public void run() {
+					new Target().m("S");
+				}
+				public cclass Internal {
+					public void run() {
+						new Target().m("SI");
+					}
+				}
+			}
+			public cclass ClsA extends Super {
 				
 				public void run() {
 					new Target().m("A");
@@ -930,7 +1082,7 @@
 					}
 				}
 			}
-			public cclass ClsB extends ClsA {
+			public cclass ClsB extends Super {
 			
 				public cclass Internal {
 					public void run() {
@@ -938,8 +1090,10 @@
 					}
 				}
 			}
-			public cclass ClsC {
-			
+			public cclass ClsC extends ClsA &amp; ClsB {
+				public void run() {
+					new Target().m("C");
+				}
 				public cclass Internal {
 					public void run() {
 						new Target().m("CI");
@@ -1025,12 +1179,14 @@
     <compile-run  id="pointcuttext021" description="simple cclass using withincode in constructor">
     	<test>
     		Main m = new Main();
+    		m = new Main("string");
     		
 			System.out.println("result: "+ res.toString());
 			assertEquals(
 				":beginbefore:m:m2:endbefore:m:m2" +
 				":beforeGet:true" +
-				":m:m2", res.toString());			
+				":m:m2" +
+				":beginbeforestring:m:m2:endbeforestring:m:m2", res.toString());			
 		</test>
         <code>
         	public cclass Main {
@@ -1045,6 +1201,11 @@
         			this.m(a);
         		}
         		
+        		public Main(String s) {
+        			ClsA a = new ClsA();
+        			a.m();
+        		}
+        		
         		public void m(ClsA a) {
         			a.m();
         		}
@@ -1057,11 +1218,15 @@
 					new ClsA().m();
 					Test.res.append(":endbefore");
 				}
+				before(): call(* ClsA.m(..)) &amp;&amp; withincode(Main.new(String)) {
+					Test.res.append(":beginbeforestring");
+					new ClsA().m();
+					Test.res.append(":endbeforestring");
+				}
 				before() : get(boolean ClsA.*) &amp;&amp; withincode(Main.new()) {
 					Test.res.append(":beforeGet");
 					//System.out.println(thisJoinPoint.getThis() + " - " + thisJoinPoint.getStaticPart());
 				}
-        	
         	}
 			
 			public cclass ClsA {
@@ -1252,12 +1417,13 @@
 			assertEquals(
 				":S|" +
 				":SI|" +
-				":S:A|" +
+				":S:beforeReg-A:beforeReg+A:A|" +
 				":SI:before-AI:before+AI:AI|" +
 				":S|" +
 				":SI:BI|" +
-				":S:A:C|" +
-				":SI:BI:AI:before+CI:CI", res.toString());			
+				":S:beforeReg-A:beforeReg+A:A:beforeReg-C:beforeReg+C:C|" +
+				":SI:BI:before-AI:before+AI:AI:before-CI:before+CI:CI", res.toString());
+
 		</test>
         <code>
         	public cclass Main {
@@ -1283,13 +1449,25 @@
         	}
         	
         	public deployed cclass Aspect {
-        		// Matches only a.new Internal.run()
+        		
+        		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
+        			&amp;&amp; withincode(ClsA.new()) {
+					
+					Test.res.append(":beforeReg-" + s);
+				}
+				
+				before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
+        			&amp;&amp; withincode(ClsA+.new()) {
+					
+					Test.res.append(":beforeReg+" + s);
+				}
+				
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
         			&amp;&amp; withincode(ClsA.Internal.new()) {
 					
 					Test.res.append(":before-" + s);
 				}
-				// Matches a and c.new Internal.run()
+				
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
         			&amp;&amp; withincode(ClsA.Internal+.new()) {
 					
@@ -1354,39 +1532,58 @@
     		
 			System.out.println("result: "+ res.toString());
 			assertEquals(
-				":beforeReg-A:A" +
-				":beforeReg-AI:before-AI:before+AI:AI" +
-				":beforeReg-BI:before+BI:BI" +
-				":beforeReg-CI:CI", res.toString());			
+				":S|" +
+				":SI|" +
+				":S:beforeReg-A:beforeReg+A:A|" +
+				":SI:before-AI:before+AI:AI|" +
+				":S:beforeReg-B:B|" +
+				":SI:BI|" +
+				":S:beforeReg-B:B:beforeReg-A:beforeReg+A:A:beforeReg-C:beforeReg+C:C|" +
+				":SI:BI:before-AI:before+AI:AI:before-CI:before+CI:CI", res.toString());
 		</test>
         <code>
         	public cclass Main {
         	
         		public void run() {
         		
+        			Super s = new Super();
+        			Test.res.append("|");
+        			s.new Internal();
+        			Test.res.append("|");
         			ClsA a = new ClsA();
+        			Test.res.append("|");
         			a.new Internal();
+        			Test.res.append("|");
         			ClsB b = new ClsB();
+        			Test.res.append("|");
         			b.new Internal();
+        			Test.res.append("|");
         			ClsC c = new ClsC();
+        			Test.res.append("|");
         			c.new Internal();
         		}
         	}
         	
         	public deployed cclass Aspect {
-        		// Matches all a.run()
+        		
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
         			&amp;&amp; withincode(Cls*.new()) {
 					
 					Test.res.append(":beforeReg-" + s);
 				}
-        		// Matches only a.new Internal.run()
+				
+				before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
+        			&amp;&amp; withincode(ClsA+.new()) {
+					
+					Test.res.append(":beforeReg+" + s);
+				}
+				
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
         			&amp;&amp; withincode(ClsA.Intern*.new()) {
 					
 					Test.res.append(":before-" + s);
 				}
-				// Matches a and b.new Internal.run()
+				
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
         			&amp;&amp; withincode(ClsA.Internal+.new()) {
 					
@@ -1401,7 +1598,17 @@
 				}
 			}
 			
-			public cclass ClsA {
+			public cclass Super {
+				public Super() {
+					new Target().m("S");
+				}
+				public cclass Internal {
+					public Internal() {
+						new Target().m("SI");
+					}
+				}
+			}
+			public cclass ClsA extends Super {
 				
 				public ClsA() {
 					new Target().m("A");
@@ -1412,16 +1619,21 @@
 					}
 				}
 			}
-			public cclass ClsB extends ClsA {
+			public cclass ClsB extends Super {
 			
+				public ClsB() {
+					new Target().m("B");
+				}
 				public cclass Internal {
 					public Internal() {
 						new Target().m("BI");
 					}
 				}
 			}
-			public cclass ClsC {
-			
+			public cclass ClsC extends ClsA &amp; ClsB {
+				public ClsC() {
+					new Target().m("C");
+				}
 				public cclass Internal {
 					public Internal() {
 						new Target().m("CI");
@@ -1440,10 +1652,13 @@
     		
 			System.out.println("result: "+ res.toString());
 			assertEquals(
-				":beforeReg-A:A" +
-				":beforeReg-AI:before-AI:before+AI:AI" +
-				":before+BI:BI" +
-				":CI", res.toString());			
+				":beforeReg-A:before-A:A|" +
+				":before-AI:before+AI:AI|" +
+				":beforeReg-A:before-A:A|" +
+				":before-AI:before+AI:AI:before-BI:before+BI:BI|" +
+				"|" +
+				":before+CI:CI", res.toString());
+				
 		</test>
         <code>
         	public cclass Main {
@@ -1451,30 +1666,35 @@
         		public void run() {
         		
         			ClsA a = new ClsA();
+        			Test.res.append("|");
         			a.new Internal();
+        			Test.res.append("|");
         			ClsB b = new ClsB();
+        			Test.res.append("|");
         			b.new Internal();
+        			Test.res.append("|");
         			ClsC c = new ClsC();
+        			Test.res.append("|");
         			c.new Internal();
         		}
         	}
         	
         	public deployed cclass Aspect {
-        		// Matches all a.run()
+        		
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
-        			&amp;&amp; withincode(suits.pointcuts.text.ppointcuttext006.ClsA.new()) {
+        			&amp;&amp; withincode(suits.pointcuts.text..ClsA.new()) {
 					
 					Test.res.append(":beforeReg-" + s);
 				}
-        		// Matches only a.new Internal.run()
+        		
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
-        			&amp;&amp; withincode(suits.pointcuts.text.ppointcuttext006.ClsA.Internal.new()) {
+        			&amp;&amp; withincode(suits.pointcuts.text.ppointcuttext026.ClsA..new()) {
 					
 					Test.res.append(":before-" + s);
 				}
-				// Matches a and b.new Internal.run()
+				
         		before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
-        			&amp;&amp; withincode(suits.pointcuts.text.ppointcuttext006.ClsA.Internal+.new()) {
+        			&amp;&amp; withincode(suits.pointcuts.text.ppointcuttext026..Internal.new()) {
 					
 					Test.res.append(":before+" + s);
 				}
