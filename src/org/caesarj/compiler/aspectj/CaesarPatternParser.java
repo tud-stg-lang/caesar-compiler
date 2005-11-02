@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarPatternParser.java,v 1.6 2005-09-19 08:55:57 thiago Exp $
+ * $Id: CaesarPatternParser.java,v 1.7 2005-11-02 12:49:57 thiago Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -38,6 +38,8 @@ import org.aspectj.weaver.patterns.PatternParser;
 public class CaesarPatternParser {
 	public class CaesarParserException extends RuntimeException
 	{
+		private static final long serialVersionUID = 1L;
+		
 		private ParserException e;
 		public CaesarParserException( ParserException e)
 		{

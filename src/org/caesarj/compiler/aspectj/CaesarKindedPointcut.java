@@ -66,11 +66,19 @@ public class CaesarKindedPointcut extends Pointcut {
 	
 	protected Shadow.Kind kind;
 	protected SignaturePattern signature;
+	protected boolean wasConstructor = false;
 	
     public CaesarKindedPointcut(Shadow.Kind kind, SignaturePattern signature) {
     	//super(kind, signature);
 		this.kind = kind;
 		this.signature = signature;
+	}
+    
+    public CaesarKindedPointcut(Shadow.Kind kind, SignaturePattern signature, boolean wasConstructor) {
+    	//super(kind, signature);
+		this.kind = kind;
+		this.signature = signature;
+		this.wasConstructor = wasConstructor;
 	}
     
     public Shadow.Kind getKind() {
@@ -87,6 +95,14 @@ public class CaesarKindedPointcut extends Pointcut {
     
     public void setSignature(SignaturePattern signature) {
     	this.signature = signature;
+    }
+    
+    public void setWasConstructor(boolean wasConstructor) {
+    	this.wasConstructor = wasConstructor;
+    }
+    
+    public boolean wasConstructor() {
+    	return this.wasConstructor;
     }
     
     // ----------------------------------------------------------------------

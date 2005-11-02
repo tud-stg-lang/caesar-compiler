@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JavaTypeNode.java,v 1.5 2005-11-01 16:23:42 gasiunas Exp $
+ * $Id: JavaTypeNode.java,v 1.6 2005-11-02 12:50:37 thiago Exp $
  */
 
 package org.caesarj.compiler.typesys.java;
@@ -235,9 +235,17 @@ public class JavaTypeNode {
     
             String genHashCode = "" + mixin.genUniqueCopyNr();        
             
+            /*
+             * Thiago - changed mixin name generation to make it easier to match pointcuts
+             */
+            /*
             qualifiedName.append("Mixin_");
             qualifiedName.append(getMixin().getQualifiedName().convertToMixinClassName());
             qualifiedName.append('_');
+            qualifiedName.append(genHashCode);
+            */
+            qualifiedName.append(getMixin().getQualifiedName().convertToMixinClassName());
+            qualifiedName.append("_Impl_Mixin_");
             qualifiedName.append(genHashCode);
             
             this.qualifiedName = new JavaQualifiedName(qualifiedName.toString());

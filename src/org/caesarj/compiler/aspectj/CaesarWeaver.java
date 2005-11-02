@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarWeaver.java,v 1.8 2005-04-15 10:23:13 thiago Exp $
+ * $Id: CaesarWeaver.java,v 1.9 2005-11-02 12:49:57 thiago Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -56,11 +56,11 @@ public class CaesarWeaver {
     		
 // Attributes
 	// list of UnwovenClassFile objects to weave	
-	private List unwovenClasses;
+	private List<UnwovenClassFile> unwovenClasses;
 // Construction
 	public CaesarWeaver(String destination)
 	{
-		unwovenClasses  = new ArrayList();
+		unwovenClasses  = new ArrayList<UnwovenClassFile>();
 		this.destination = destination;
 	}
 // Functionality

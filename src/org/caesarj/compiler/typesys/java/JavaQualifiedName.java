@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JavaQualifiedName.java,v 1.5 2005-11-01 16:23:42 gasiunas Exp $
+ * $Id: JavaQualifiedName.java,v 1.6 2005-11-02 12:49:57 thiago Exp $
  */
 
 package org.caesarj.compiler.typesys.java;
@@ -123,7 +123,8 @@ public class JavaQualifiedName {
     }
 
 	public String convertToMixinClassName() {
-		return outerPrefix.replaceAll("\\$", "_")+ident;
+		return ident;
+		//return outerPrefix.replaceAll("\\$", "_")+ident;
 	}
 
 	public String getClassName() {

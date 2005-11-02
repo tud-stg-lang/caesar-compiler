@@ -23,14 +23,13 @@
  */
 package org.caesarj.compiler.aspectj;
 
-import java.util.Hashtable;
-
 import org.aspectj.weaver.patterns.ArgsPointcut;
 import org.aspectj.weaver.patterns.CflowPointcut;
 import org.aspectj.weaver.patterns.HandlerPointcut;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.ReferencePointcut;
 import org.aspectj.weaver.patterns.ThisOrTargetPointcut;
+import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.patterns.WithinPointcut;
 import org.aspectj.weaver.patterns.WithincodePointcut;
 
@@ -45,21 +44,20 @@ import org.aspectj.weaver.patterns.WithincodePointcut;
  */
 public class CaesarPointcutWrapper {
 
-	// Information types
-	public static final String INFO_TYPE_PATTERN = "typePattern";
-	public static final String INFO_DECLARING_TYPE = "declaringType";
-	public static final String INFO_EXCEPTION_TYPE = "exceptionType";
-	public static final String INFO_ON_TYPE_SYMBOLIC = "onTypeSymbolic";
-	
 	/**
 	 * The wrapped pointcut
 	 */
 	protected Pointcut wrappee = null;
 	
 	/**
-	 * Aditional information about the wrappee
+	 * Is not nul if this pointcut represents the mixin of a type
 	 */
-	protected Hashtable info = null;
+	protected TypePattern originalType = null;
+	
+	protected TypePattern typePattern = null;
+	protected TypePattern declaringType = null;
+	protected TypePattern exceptionType = null;
+	protected TypePattern onTypeSymbolic = null;
 	
 	/**
 	 * Constructs a wrapper for this wrappee
@@ -71,50 +69,19 @@ public class CaesarPointcutWrapper {
 	}
 	
 	/**
-	 * Gets the wrappee pointcut
+	 * Constructs a wrapper for this wrappee's mixins
 	 * 
-	 * @return
+	 * @param wrappee
 	 */
-	public Pointcut getWrappee() {
-		return wrappee;
-	}
-	
-	/**
-	 * Adds an information to the info table
-	 * 
-	 * @param key the key for the info
-	 * @param value the value for the info
-	 */
-	public void addInfo(String key, Object value) {
-		if (key == null || value == null) {
-			return;
-		}
-		if (info == null) {
-			info = new Hashtable();
-		}
-		info.put(key, value);
-	}
-	
-	/**
-	 * Gets the value for the info indicated by this key
-	 * 
-	 * @param key the key for the info
-	 * @return the info value or null if not found
-	 */
-	public Object getInfo(String key) {
-		if (info == null) {
-			info = new Hashtable();
-		}
-		if (! info.containsKey(key)) {
-			return null;
-		}
-		return info.get(key);
+	public CaesarPointcutWrapper(Pointcut wrappee, TypePattern originalType) {
+		this.wrappee = wrappee;
+		this.originalType = originalType;
 	}
 	
 	/**
 	 * Checks if the wrappee is a KindedPointcut
 	 * 
-	 * @return true if the wrapee is a KindedPointcut, false otherwise
+	 * @return true if the wrappee is a KindedPointcut, false otherwise
 	 */
 	public boolean isKinded() {
 		return wrappee != null && wrappee instanceof CaesarKindedPointcut;
@@ -123,7 +90,7 @@ public class CaesarPointcutWrapper {
 	/**
 	 * Checks if the wrappee is a WithinPointcut
 	 * 
-	 * @return true if the wrapee is a WithinPointcut, false otherwise
+	 * @return true if the wrappee is a WithinPointcut, false otherwise
 	 */
 	public boolean isWithin() {
 		return wrappee != null && wrappee instanceof WithinPointcut;
@@ -132,7 +99,7 @@ public class CaesarPointcutWrapper {
 	/**
 	 * Checks if the wrappee is a WithincodePointcut
 	 * 
-	 * @return true if the wrapee is a WithincodePointcut, false otherwise
+	 * @return true if the wrappee is a WithincodePointcut, false otherwise
 	 */
 	public boolean isWithincode() {
 		return wrappee != null && wrappee instanceof WithincodePointcut;
@@ -141,7 +108,7 @@ public class CaesarPointcutWrapper {
 	/**
 	 * Checks if the wrappee is a HandlerPointcut
 	 * 
-	 * @return true if the wrapee is a HandlerPointcut, false otherwise
+	 * @return true if the wrappee is a HandlerPointcut, false otherwise
 	 */
 	public boolean isHandler() {
 		return wrappee != null && wrappee instanceof HandlerPointcut;
@@ -150,7 +117,7 @@ public class CaesarPointcutWrapper {
 	/**
 	 * Checks if the wrappee is a ReferencePointcut
 	 * 
-	 * @return true if the wrapee is a ReferencePointcut, false otherwise
+	 * @return true if the wrappee is a ReferencePointcut, false otherwise
 	 */
 	public boolean isReference() {
 		return wrappee != null && wrappee instanceof ReferencePointcut;
@@ -159,7 +126,7 @@ public class CaesarPointcutWrapper {
 	/**
 	 * Checks if the wrappee is a ArgsPointcut
 	 * 
-	 * @return true if the wrapee is a ArgsPointcut, false otherwise
+	 * @return true if the wrappee is a ArgsPointcut, false otherwise
 	 */
 	public boolean isArgs() {
 		return wrappee != null && wrappee instanceof ArgsPointcut;
@@ -168,7 +135,7 @@ public class CaesarPointcutWrapper {
 	/**
 	 * Checks if the wrappee is a ThisOrTargetPointcut
 	 * 
-	 * @return true if the wrapee is a ThisOrTargetPointcut, false otherwise
+	 * @return true if the wrappee is a ThisOrTargetPointcut, false otherwise
 	 */
 	public boolean isThisOrTarget() {
 		return wrappee != null && wrappee instanceof ThisOrTargetPointcut;
@@ -177,9 +144,84 @@ public class CaesarPointcutWrapper {
 	/**
 	 * Checks if the wrappee is a CflowPointcut
 	 * 
-	 * @return true if the wrapee is a CflowPointcut, false otherwise
+	 * @return true if the wrappee is a CflowPointcut, false otherwise
 	 */
 	public boolean isCflow() {
 		return wrappee != null && wrappee instanceof CflowPointcut;
+	}
+	
+	/**
+	 * Checks if the pointcut should represent the DeclaringType's Mixin
+	 * 
+	 * @return true, if the pointcut should represent a mixin, false otherwise
+	 */
+	public boolean isMixin() {
+		return this.originalType != null;
+	}
+	
+	/**
+	 * Prints this pointcut's wrappee
+	 */
+	public String toString() {
+		if (this.isMixin()) {
+			return "Mixin: " + this.wrappee.toString();
+		} else {
+			return this.wrappee.toString();
+		}
+	}
+
+	// Getters and setters
+	
+	/**
+	 * Gets the wrappee pointcut
+	 * 
+	 * @return
+	 */
+	public Pointcut getWrappee() {
+		return wrappee;
+	}
+	
+	public TypePattern getDeclaringType() {
+		return declaringType;
+	}
+
+	public void setDeclaringType(TypePattern declaringType) {
+		this.declaringType = declaringType;
+	}
+
+	public TypePattern getExceptionType() {
+		return exceptionType;
+	}
+
+	public void setExceptionType(TypePattern exceptionType) {
+		this.exceptionType = exceptionType;
+	}
+
+	public TypePattern getOnTypeSymbolic() {
+		return onTypeSymbolic;
+	}
+
+	public void setOnTypeSymbolic(TypePattern onTypeSymbolic) {
+		this.onTypeSymbolic = onTypeSymbolic;
+	}
+
+	public TypePattern getTypePattern() {
+		return typePattern;
+	}
+
+	public void setTypePattern(TypePattern typePattern) {
+		this.typePattern = typePattern;
+	}
+	
+	public void setWrappee(Pointcut wrappee) {
+		this.wrappee = wrappee;
+	}
+
+	public TypePattern getOriginalType() {
+		return originalType;
+	}
+
+	public void setOriginalType(TypePattern originalType) {
+		this.originalType = originalType;
 	}
 }
