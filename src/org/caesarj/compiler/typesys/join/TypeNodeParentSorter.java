@@ -7,26 +7,51 @@ import java.util.Map;
 
 import org.caesarj.compiler.typesys.graphsorter.GraphSorter;
 
+/**
+ * Sorts the parent graph of a Caesar class, using a modified deep-first search
+ * 
+ * @author vaidas
+ *
+ */
 public class TypeNodeParentSorter extends GraphSorter {
 	
+	/* map from type node to internal graph node */
 	protected Map<JoinedTypeNode, NodeWrapper> wrapperMap = new HashMap<JoinedTypeNode, NodeWrapper>();
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param root 	node to be sorted
+	 */
 	public TypeNodeParentSorter(JoinedTypeNode root) {
 		setRoot(wrapTypeNode(root));
 	}
 	
+	/**
+	 * Adapts the graph of class parents to the graph of the sorting algorithm 
+	 */
 	protected class NodeWrapper extends Node {
+		/* corresponding type node */
 		protected JoinedTypeNode typeNode;
 				
+		/**
+		 * Constructor
+		 */
 		public NodeWrapper(JoinedTypeNode typeNode) {
 			this.typeNode = typeNode;			
 		}
 		
+		/**
+		 * Get corresponding type node 
+		 */
 		public JoinedTypeNode getTypeNode() {
 			return typeNode;
 		}
 		
-		public List<Node> calcTargets() {
+		/**
+		 * Return the parents of the type node as outgoing nodes of the sorting graph
+		 */
+		public List<Node> calcOutgoingNodes() {
 			List<Node> nodes = new ArrayList<Node>();
 			for (JoinedTypeNode parent : typeNode.getDirectParents()) {
 				nodes.add(wrapTypeNode(parent));
@@ -34,11 +59,17 @@ public class TypeNodeParentSorter extends GraphSorter {
 			return nodes;
 		}
 		
+		/**
+		 * Display as string, for debugging purposes
+		 */
 		public String toString() {
 			return typeNode.getQualifiedName().toString();
 		}
 	}
 	
+	/**
+	 *	Get the adapter node for the given type node 
+	 */
 	public NodeWrapper wrapTypeNode(JoinedTypeNode typeNode) {
 		NodeWrapper wrp = wrapperMap.get(typeNode);
 		if (wrp == null) {
@@ -48,6 +79,9 @@ public class TypeNodeParentSorter extends GraphSorter {
 		return wrp;
 	}
 	
+	/**
+	 *	Get the sorted list of the parents 
+	 */
 	public List<JoinedTypeNode> getSortedTypeNodes() {
 		List<JoinedTypeNode> typeNodes = new ArrayList<JoinedTypeNode>();
 		for (Node n : getSortedNodes()) {
