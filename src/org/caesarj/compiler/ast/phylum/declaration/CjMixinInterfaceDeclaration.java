@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjMixinInterfaceDeclaration.java,v 1.21 2005-11-01 16:23:42 gasiunas Exp $
+ * $Id: CjMixinInterfaceDeclaration.java,v 1.22 2005-11-02 15:44:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
 
+import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -155,30 +156,6 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
 	    catch (UnpositionedError e) {
             throw e.addPosition(getTokenReference());
         }
-	    
-	    for (int i = 0; i < extendedTypes.length; i++) {
-	        // check that all extended types are mixin interfaces
-            check(
-                context,
-                extendedTypes[i].getCClass().isMixinInterface(),
-                CaesarMessages.CCLASS_EXTENDS_FROM_CCLASS);
-	        
-	        // check that a top-level class extends from another top-level class
-	        if(!getSourceClass().isNested()) {
-	            check(
-	                context,
-	                !extendedTypes[i].getCClass().isNested(),
-	                CaesarMessages.TOPLEVEL_CCLASS_EXTENDS_TOPLEVEL_CLASS);
-	        }
-	        
-	        // check circularities
-	        check(
-                context,
-                !extendedTypes[i].getCClass().descendsFrom(getSourceClass()),
-                KjcMessages.CLASS_CIRCULARITY,
-                ident);
-	    }
-	    
 	    
 	    for (int i = 0; i < implementedTypes.length; i++) {
 	        // check that we do not have cclass-es in the implements clause of a cclass
