@@ -53,7 +53,7 @@
     </compile-check-error>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="CANNOT_INHERIT_FROM_CCLASS"  id="vcrel006" description="inner extends outer">
+    <compile-check-error error="CANNOT_INHERIT_FROM_OWN_OUTER"  id="vcrel006" description="inner extends outer">
         <code>
         	public cclass OuterA {
 				public cclass InnerA extends OuterA {
