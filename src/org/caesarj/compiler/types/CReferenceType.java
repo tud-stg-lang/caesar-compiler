@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CReferenceType.java,v 1.21 2005-07-25 12:45:55 gasiunas Exp $
+ * $Id: CReferenceType.java,v 1.22 2005-11-03 11:41:43 gasiunas Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -147,29 +147,8 @@ public class CReferenceType extends CType {
 	public CReferenceType(CClass clazz) {
 		super(TID_CLASS);
 		this.clazz = clazz;
-
-		if (!(this instanceof CArrayType)) {
-			allCReferenceType.put(clazz.getQualifiedName(), this);
-		}
 	}
-
-	public static CReferenceType lookup(String qualifiedName) {
-		if (qualifiedName.indexOf('/') >= 0) {
-			CReferenceType type =
-				(CReferenceType) allCReferenceType.get(qualifiedName);
-
-			if (type == null) {
-				type = new CClassNameType(qualifiedName, false);
-				allCReferenceType.put(qualifiedName, type);
-			}
-
-			return type;
-		}
-		else {
-			return new CClassNameType(qualifiedName, false);
-		}
-	}
-
+	
 	public boolean isChecked() {
 		return clazz != BAC_CLASS;
 	}
@@ -387,20 +366,11 @@ public class CReferenceType extends CType {
 	}
 	
 	// ----------------------------------------------------------------------
-	// INITIALIZERS METHODS
-	// ----------------------------------------------------------------------
-
-	public static void init(CompilerBase compiler) {
-		allCReferenceType = new Hashtable(2000);
-	}
-
-	// ----------------------------------------------------------------------
 	// DATA MEMBERS
 	// ----------------------------------------------------------------------
 
 	public static final CReferenceType[] EMPTY = new CReferenceType[0];	
 
-	private static Hashtable allCReferenceType = new Hashtable(2000);
 	private static final CClass BAC_CLASS = new CBadClass("<NOT YET DEFINED>");
 
 	private CClass clazz;

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: KjcTypeFactory.java,v 1.4 2005-01-24 16:52:58 aracic Exp $
+ * $Id: KjcTypeFactory.java,v 1.5 2005-11-03 11:43:09 gasiunas Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -57,8 +57,6 @@ public class KjcTypeFactory extends org.caesarj.util.Utils implements TypeFactor
   }
   
   public KjcTypeFactory (ClassReader reader) {
-    CReferenceType.init(null);
-
     context = new CBinaryTypeContext(reader, this);
     knownTypes = new Hashtable(100);
 
