@@ -20,10 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarBcelWorld.java,v 1.11 2005-04-20 19:32:34 gasiunas Exp $
+ * $Id: CaesarBcelWorld.java,v 1.12 2005-11-03 11:39:26 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
+
+import java.lang.ref.WeakReference;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.bridge.IMessageHandler;
@@ -93,7 +95,7 @@ public class CaesarBcelWorld /*extends BcelWorld */{
 	 */
 	private class BcelWorldAdapter extends BcelWorld{
 		
-		ClassReader classReader = null;
+		WeakReference<ClassReader> classReader = null;
 		
 		public BcelWorldAdapter(String classPath) {
 			super(classPath == null ? "" : classPath);
@@ -151,7 +153,7 @@ public class CaesarBcelWorld /*extends BcelWorld */{
 		}
 		
 		public void setClassReader(ClassReader reader) {
-			classReader = reader;
+			classReader = new WeakReference<ClassReader>(reader);
 		}
 		
 		/**
@@ -161,7 +163,7 @@ public class CaesarBcelWorld /*extends BcelWorld */{
 		public BcelObjectType addSourceObjectType(JavaClass jc) {
 			BcelObjectType objectType = super.addSourceObjectType(jc);
 			String qualifiedName = jc.getClassName().replace('.', '/');
-			CCjSourceClass sourceClass = classReader.findSourceClass(qualifiedName);
+			CCjSourceClass sourceClass = classReader.get().findSourceClass(qualifiedName);
 			if (sourceClass != null) {
 				String fileName = sourceClass.getSourceFile();
 				objectType.getResolvedTypeX().setSourceContext(new CaesarBcelSourceContext(objectType, fileName));
