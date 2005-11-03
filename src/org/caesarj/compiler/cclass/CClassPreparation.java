@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassPreparation.java,v 1.44 2005-10-13 14:05:24 aracic Exp $
+ * $Id: CClassPreparation.java,v 1.45 2005-11-03 11:40:39 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -73,16 +73,7 @@ import org.caesarj.util.Utils;
  * @author Ivica
  */
 public class CClassPreparation implements CaesarConstants {
-
-    private static CClassPreparation singleton = new CClassPreparation();
-    
-    public static CClassPreparation instance() {
-        return singleton; 
-    }
-    
-    private CClassPreparation() {
-    }
-
+        
     /**     
      * This step is done before joinAll step
      * 
