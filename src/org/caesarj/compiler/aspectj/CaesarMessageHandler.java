@@ -20,10 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarMessageHandler.java,v 1.8 2005-03-31 14:06:10 thiago Exp $
+ * $Id: CaesarMessageHandler.java,v 1.9 2005-11-03 11:40:10 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
+
+import java.lang.ref.WeakReference;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
@@ -46,7 +48,7 @@ import org.caesarj.util.TokenReference;
 public class CaesarMessageHandler implements IMessageHandler, CaesarConstants {
 
 	/** The compiler handles the message output.*/
-	private CompilerBase compiler;
+	private WeakReference<CompilerBase> compiler;
 
 	/**
 	 * Constructor for CaesarMessageHandler.
@@ -54,7 +56,7 @@ public class CaesarMessageHandler implements IMessageHandler, CaesarConstants {
 	public CaesarMessageHandler(CompilerBase compiler) {
 		super();
 
-		this.compiler = compiler;
+		this.compiler = new WeakReference<CompilerBase>(compiler);
 	}
 
 	/**
@@ -70,7 +72,7 @@ public class CaesarMessageHandler implements IMessageHandler, CaesarConstants {
 
 		if (message.getKind() == IMessage.WARNING) {
 
-			compiler.reportTrouble(
+			compiler.get().reportTrouble(
 				new CWarning(
 					new TokenReference(
 						location.getSourceFile().getPath(),
@@ -84,7 +86,7 @@ public class CaesarMessageHandler implements IMessageHandler, CaesarConstants {
 
 		if (location != null) {
 
-			compiler.reportTrouble(
+			compiler.get().reportTrouble(
 				new PositionedError(
 					new TokenReference(
 						location.getSourceFile().getPath(),
@@ -96,7 +98,7 @@ public class CaesarMessageHandler implements IMessageHandler, CaesarConstants {
 
 		} else {
 
-			compiler.reportTrouble(
+			compiler.get().reportTrouble(
 				new PositionedError(
 					TokenReference.NO_REF,
 					new Message(

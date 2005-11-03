@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarSourceType.java,v 1.12 2005-06-29 07:47:32 thiago Exp $
+ * $Id: CaesarSourceType.java,v 1.13 2005-11-03 11:40:10 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -61,9 +62,9 @@ public class CaesarSourceType extends ConcreteName implements Constants {
 
 	private Collection declares;
 
-	private CClass cclass;
+	private WeakReference<CClass> cclass;
 
-	private CaesarBcelWorld world = CaesarBcelWorld.getInstance();
+	private WeakReference<CaesarBcelWorld> world = new WeakReference<CaesarBcelWorld>(CaesarBcelWorld.getInstance());
 
 	/**
 	 * Constructor for CaesarSourceType.
@@ -76,7 +77,7 @@ public class CaesarSourceType extends ConcreteName implements Constants {
 		CClass cclass) {
 		super(resolvedTypeX, exposedToWeaver);
 
-		this.cclass = cclass;
+		this.cclass = new WeakReference<CClass>(cclass);
 	}
 
 	/**
@@ -98,7 +99,7 @@ public class CaesarSourceType extends ConcreteName implements Constants {
 	 * @see org.aspectj.weaver.ResolvedTypeX.ConcreteName#isInterface()
 	 */
 	public boolean isInterface() {
-		return cclass.isInterface();
+		return cclass.get().isInterface();
 	}
 
 	/**
@@ -176,7 +177,7 @@ public class CaesarSourceType extends ConcreteName implements Constants {
 	 * @see org.aspectj.weaver.ResolvedTypeX.ConcreteName#getModifiers()
 	 */
 	public int getModifiers() {
-		return cclass.getModifiers();
+		return cclass.get().getModifiers();
 	}
 
 	/**
@@ -205,14 +206,14 @@ public class CaesarSourceType extends ConcreteName implements Constants {
 	}
 
 	protected void fillDeclaredMembers() {
-		CReferenceType[] ifcs = cclass.getInterfaces();
+		CReferenceType[] ifcs = cclass.get().getInterfaces();
 		declaredInterfaces = new ResolvedTypeX[ifcs.length];
 		for (int i = 0; i < ifcs.length; i++) {
-			declaredInterfaces[i] = world.resolve(ifcs[i].getCClass());
+			declaredInterfaces[i] = world.get().resolve(ifcs[i].getCClass());
 		}
 
-		if (cclass.getSuperClass() != null) {
-			superClass = world.resolve(cclass.getSuperClass());
+		if (cclass.get().getSuperClass() != null) {
+			superClass = world.get().resolve(cclass.get().getSuperClass());
 		}
 
 		/*
@@ -228,15 +229,15 @@ public class CaesarSourceType extends ConcreteName implements Constants {
 	
 		// Get the declared pointcuts
 		List pointcuts = new ArrayList();
-		if (cclass instanceof CCjSourceClass) {
-			CCjSourceClass caesarClass = (CCjSourceClass) cclass;
+		if (cclass.get() instanceof CCjSourceClass) {
+			CCjSourceClass caesarClass = (CCjSourceClass) cclass.get();
 			pointcuts.addAll(caesarClass.getDeclaredPointcuts());
 		}
 		declaredPointcuts =
 			(ResolvedMember[]) pointcuts.toArray(
 				new ResolvedMember[pointcuts.size()]);
 
-		CMethod[] methods = cclass.getMethods();
+		CMethod[] methods = cclass.get().getMethods();
 		if (methods != null) {
 			declaredMethods = new ResolvedMember[methods.length];
 
@@ -258,8 +259,8 @@ public class CaesarSourceType extends ConcreteName implements Constants {
 		}
 
 		declares = new ArrayList();
-		if (cclass instanceof CCjSourceClass) {
-			CCjSourceClass caesarClass = (CCjSourceClass) cclass;
+		if (cclass.get() instanceof CCjSourceClass) {
+			CCjSourceClass caesarClass = (CCjSourceClass) cclass.get();
 			Declare[] decs = CaesarDeclare.wrappees(caesarClass.getDeclares());
 			for (int i = 0; i < decs.length; i++) {
 				declares.add(decs[i]);

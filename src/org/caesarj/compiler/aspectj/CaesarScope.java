@@ -20,12 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarScope.java,v 1.16 2005-07-27 15:36:14 gasiunas Exp $
+ * $Id: CaesarScope.java,v 1.17 2005-11-03 11:39:51 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
@@ -56,12 +57,12 @@ import org.caesarj.util.UnpositionedError;
  * @author Jürgen Hallpap
  */
 public class CaesarScope implements IScope, CaesarConstants {
-
+	
 	protected FjClassContext context;
 
 	protected CClass caller;
 
-	protected CaesarBcelWorld world;
+	protected WeakReference<CaesarBcelWorld> world;
 
 	protected IMessageHandler messageHandler;
 	
@@ -71,11 +72,11 @@ public class CaesarScope implements IScope, CaesarConstants {
 		super();
 
 		this.where = where;
-		this.world = CaesarBcelWorld.getInstance();
+		this.world = new WeakReference<CaesarBcelWorld>(CaesarBcelWorld.getInstance());
 		this.context = context;
 		this.caller = caller;
 
-		messageHandler = world.getMessageHandler();
+		messageHandler = world.get().getMessageHandler();		
 	}
 
 	/**
@@ -96,7 +97,7 @@ public class CaesarScope implements IScope, CaesarConstants {
 			return ResolvedTypeX.MISSING;
 		}
 		else {
-			return world.resolve(cclass);
+			return world.get().resolve(cclass);
 		}
 	}
 
@@ -153,7 +154,7 @@ public class CaesarScope implements IScope, CaesarConstants {
 	 * @return World
 	 */
 	public World getWorld() {
-		return world.getWorld();
+		return world.get().getWorld();
 	}
 
 	/**
@@ -285,7 +286,7 @@ public class CaesarScope implements IScope, CaesarConstants {
 	 * 
 	 */
 	public ResolvedTypeX getEnclosingType() {
-		return world.resolve(caller);
+		return world.get().resolve(caller);
 	}
 
 }

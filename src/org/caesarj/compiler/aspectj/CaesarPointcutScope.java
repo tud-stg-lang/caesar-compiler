@@ -211,7 +211,7 @@ public class CaesarPointcutScope extends CaesarScope {
 		} 
 		else 
 		{
-			return world.resolve(cclass);
+			return world.get().resolve(cclass);
 		}
 	}
     

@@ -20,10 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AdditionalGenerationContext.java,v 1.3 2005-01-24 16:52:58 aracic Exp $
+ * $Id: AdditionalGenerationContext.java,v 1.4 2005-11-03 11:41:05 gasiunas Exp $
  */
 
 package org.caesarj.compiler.context;
+
+import java.lang.ref.WeakReference;
 
 import org.caesarj.compiler.export.CClass;
 
@@ -38,7 +40,7 @@ import org.caesarj.compiler.export.CClass;
  */
 public class AdditionalGenerationContext {
 	
-	private CClass currentClass = null;
+	private WeakReference<CClass> currentClass = null;
 	
 	private static AdditionalGenerationContext singleton = new AdditionalGenerationContext();
 
@@ -51,10 +53,10 @@ public class AdditionalGenerationContext {
 	
 	
 	public CClass getCurrentClass() {
-		return currentClass;
+		return currentClass.get();
 	}
 
 	public void setCurrentClass(CClass currentClass) {
-		this.currentClass = currentClass;
+		this.currentClass = new WeakReference<CClass>(currentClass);
 	}
 }

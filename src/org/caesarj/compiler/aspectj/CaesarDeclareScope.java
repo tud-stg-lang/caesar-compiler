@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarDeclareScope.java,v 1.2 2005-07-27 15:36:14 gasiunas Exp $
+ * $Id: CaesarDeclareScope.java,v 1.3 2005-11-03 11:39:51 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -93,7 +93,7 @@ public class CaesarDeclareScope extends CaesarScope {
 			return ResolvedTypeX.MISSING;
 		} 
 		else {
-			return world.resolve(cclass);
+			return world.get().resolve(cclass);
 		}
 	}
 	
