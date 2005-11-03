@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CompileTest.java,v 1.5 2005-07-21 13:14:23 aracic Exp $
+ * $Id: CompileTest.java,v 1.6 2005-11-03 14:55:44 aracic Exp $
  */
 
 package org.caesarj.test.suite;
@@ -98,24 +98,37 @@ public class CompileTest extends CaesarTest {
         fos.close();
 
         // Compile test
-        String[] args = { "-v", "-d", "bin", f.getAbsolutePath() };
-        boolean ok = compiler.run(args);
+        String[] args = { "-v", "-d", "bin", f.getAbsolutePath() };               
+               
+        System.out.println("used memory: "+((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/(1024.0*1024.0)));
+        boolean ok = compiler.run(args);               
 
         pw.close();
 
-        if (ok)
-            compilerSuccess();
-        else {
-            PositionedError[] errors = compiler.getPositionedErrors();
-            compilerErrors = errors.length == 0 ? "" : errors[0].getMessage();
-            compilerFailed();
+        try {
+	        if (ok)
+	            compilerSuccess();
+	        else {
+	            PositionedError[] errors = compiler.getPositionedErrors();
+	            compilerErrors = errors.length == 0 ? "" : errors[0].getMessage();
+	            compilerFailed();
+	        }
+        }
+        catch(Exception e) {
+        	throw e;
+        }
+        finally {
+        	compiler = null;
+        	positionedErrorList.clear();
+        	unpositionedErrorList.clear();
+//        	System.gc();        	
         }
 
         //f.delete();
     }
 
     public void compilerFailed() {
-        failure("(" + getId() + ") Compiler failed: " + compilerErrors +": "
+    	failure("(" + getId() + ") Compiler failed: " + compilerErrors +": "
                 + getDescription());
     }
 
