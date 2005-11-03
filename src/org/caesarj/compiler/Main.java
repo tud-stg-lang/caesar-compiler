@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.107 2005-11-01 16:23:42 gasiunas Exp $
+ * $Id: Main.java,v 1.108 2005-11-03 11:39:04 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -350,7 +350,7 @@ public class Main extends MainSuper implements Constants {
     
     // generates factory methods and wrappee recycling    
     protected void generateSupportMembers(KjcEnvironment environment) {
-        CClassPreparation.instance().generateSupportMethods(
+    	new CClassPreparation().generateSupportMethods(
             this,
             environment
         );
@@ -395,7 +395,7 @@ public class Main extends MainSuper implements Constants {
      * - generate export information for missing mixin chain parts 
      */
     protected void createMixinCloneTypeInfo(KjcEnvironment environment, JCompilationUnit cu) {
-        CClassPreparation.instance().createMixinCloneTypeInfo(
+    	new CClassPreparation().createMixinCloneTypeInfo(
             this, environment, cu
         );
     }
@@ -404,7 +404,7 @@ public class Main extends MainSuper implements Constants {
      * - generate export information for missing mixin chain parts 
      */
     protected void completeMixinCloneTypeInfo(KjcEnvironment environment, JCompilationUnit cu) {
-        CClassPreparation.instance().completeMixinCloneTypeInfo(
+        new CClassPreparation().completeMixinCloneTypeInfo(
             this, environment, cu
         );
     }
@@ -593,7 +593,7 @@ public class Main extends MainSuper implements Constants {
         Log.verbose("prepareCaesarClasses");
         for (int i = 0; i < tree.length; i++) {
             JCompilationUnit cu = tree[i];
-            CClassPreparation.instance().prepareCaesarClass(environment, cu);
+            new CClassPreparation().prepareCaesarClass(environment, cu);
         }
     }
 
