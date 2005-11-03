@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CDependentNameType.java,v 1.20 2005-04-29 14:45:48 klose Exp $
+ * $Id: CDependentNameType.java,v 1.21 2005-11-03 15:06:21 klose Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -172,7 +172,8 @@ public class CDependentNameType extends CClassNameType
             PositionedError pe = (PositionedError)e;
             for (int i=0; i<passThrough.length; i++){
                 if (pe.hasDescription(passThrough[i])){
-                    throw new UnpositionedError(passThrough[i], pe.getMessageParameters() );
+                    throw new UnpositionedError(
+                            pe.getFormattedMessage());
                 }
             }            
         }

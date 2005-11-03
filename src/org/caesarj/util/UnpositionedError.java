@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: UnpositionedError.java,v 1.6 2005-01-24 16:52:58 aracic Exp $
+ * $Id: UnpositionedError.java,v 1.7 2005-11-03 15:06:21 klose Exp $
  */
 
 package org.caesarj.util;
@@ -120,5 +120,5 @@ public class UnpositionedError extends Throwable {
   // DATA MEMBERS
   // ----------------------------------------------------------------------
 
-  private /* javac bug final */ Message		message;
+  private final Message		message;
 }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Message.java,v 1.6 2005-01-24 16:52:58 aracic Exp $
+ * $Id: Message.java,v 1.7 2005-11-03 15:06:21 klose Exp $
  */
 
 package org.caesarj.util;
@@ -41,7 +41,7 @@ public class Message {
    */
   public Message(MessageDescription description, Object[] parameters) {
     this.description = description;
-    this.parameters	= parameters;
+    messageText = description.format(parameters);
   }
 
   /**
@@ -83,12 +83,12 @@ public class Message {
     return description;
   }
 
-  /**
-   * Returns the message description.
-   */
-  public Object[] getParams() {
-    return parameters;
-  }
+//  /**
+//   * Returns the message description.
+//   */
+//  public Object[] getParams() {
+//    return parameters;
+//  }
 
   /**
    * Returns the severity level
@@ -101,7 +101,7 @@ public class Message {
    * Returns the string explaining the error
    */
   public String getMessage() {
-    return this.description.format(this.parameters);
+    return messageText;
   }
 
   // ----------------------------------------------------------------------
@@ -109,5 +109,6 @@ public class Message {
   // ----------------------------------------------------------------------
 
   private final MessageDescription	description;
-  private final Object[]		parameters;
+  //private final Object[]		parameters;
+  private final String messageText; 
 }
