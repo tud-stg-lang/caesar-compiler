@@ -50,6 +50,7 @@ import org.aspectj.weaver.patterns.KindedPointcut;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.SignaturePattern;
 import org.aspectj.weaver.patterns.TypePattern;
+import org.caesarj.compiler.export.CClass;
 
 
 /**
@@ -104,7 +105,48 @@ public class CaesarKindedPointcut extends Pointcut {
     public boolean wasConstructor() {
     	return this.wasConstructor;
     }
-    
+
+    // ----------------------------------------------------------------------
+    // FROM HERE, CODE COPIED FROM ASPECTJ'S KindedPointcut AND CHANGED
+    // ----------------------------------------------------------------------
+
+	// XXX note: there is no namebinding in any kinded pointcut.
+	// still might want to do something for better error messages
+	// We want to do something here to make sure we don't sidestep the parameter
+	// list in capturing type identifiers.
+	public void resolveBindings(IScope scope, Bindings bindings) {
+		if (kind == Shadow.Initialization) {
+//			scope.getMessageHandler().handleMessage(
+//				MessageUtil.error(
+//					"initialization unimplemented in 1.1beta1",
+//					this.getSourceLocation()));
+		}
+		signature = signature.resolveBindings(scope, bindings);
+		
+		
+		if (kind == Shadow.ConstructorExecution) { 		// Bug fix 60936
+		  if (signature.getDeclaringType() != null) {
+			World world = scope.getWorld();
+			TypeX exactType = signature.getDeclaringType().getExactType();
+
+			// Ignore this check for caesar classes
+			if (scope instanceof CaesarPointcutScope) {
+				CaesarPointcutScope s = (CaesarPointcutScope) scope;
+				CClass cclass = s.lookupClass(exactType.getName());
+				if (cclass != null && cclass.getAbstractType().isCaesarReference()) {
+					return;
+				}
+			}
+			if (signature.getKind() == Member.CONSTRUCTOR &&
+				!exactType.equals(ResolvedTypeX.MISSING) &&
+				exactType.isInterface(world) &&
+				!signature.getDeclaringType().isIncludeSubtypes()) {
+					world.getLint().noInterfaceCtorJoinpoint.signal(exactType.toString(), getSourceLocation());
+				}
+		  }
+		}
+	}
+	
     // ----------------------------------------------------------------------
     // FROM HERE, CODE COPIED FROM ASPECTJ'S KindedPointcut 
     // ----------------------------------------------------------------------
@@ -240,34 +282,6 @@ public class CaesarKindedPointcut extends Pointcut {
 		KindedPointcut ret = new KindedPointcut(kind, sig);
 		ret.readLocation(context, s);
 		return ret;
-	}
-
-	// XXX note: there is no namebinding in any kinded pointcut.
-	// still might want to do something for better error messages
-	// We want to do something here to make sure we don't sidestep the parameter
-	// list in capturing type identifiers.
-	public void resolveBindings(IScope scope, Bindings bindings) {
-		if (kind == Shadow.Initialization) {
-//			scope.getMessageHandler().handleMessage(
-//				MessageUtil.error(
-//					"initialization unimplemented in 1.1beta1",
-//					this.getSourceLocation()));
-		}
-		signature = signature.resolveBindings(scope, bindings);
-		
-		
-		if (kind == Shadow.ConstructorExecution) { 		// Bug fix 60936
-		  if (signature.getDeclaringType() != null) {
-			World world = scope.getWorld();
-			TypeX exactType = signature.getDeclaringType().getExactType();
-			if (signature.getKind() == Member.CONSTRUCTOR &&
-				!exactType.equals(ResolvedTypeX.MISSING) &&
-				exactType.isInterface(world) &&
-				!signature.getDeclaringType().isIncludeSubtypes()) {
-					world.getLint().noInterfaceCtorJoinpoint.signal(exactType.toString(), getSourceLocation());
-				}
-		  }
-		}
 	}
 	
 	public void resolveBindingsFromRTTI() {

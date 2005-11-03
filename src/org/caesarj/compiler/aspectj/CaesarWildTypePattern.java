@@ -45,11 +45,11 @@ public class CaesarWildTypePattern extends WildTypePattern {
 		setLocation(namePatterns[0].getSourceContext(), namePatterns[0].getStart(), namePatterns[namePatterns.length-1].getEnd());
 	}
 
-	public CaesarWildTypePattern(List names, boolean includeSubtypes, int dim) {
+	public CaesarWildTypePattern(List<NamePattern> names, boolean includeSubtypes, int dim) {
 		this((NamePattern[]) names.toArray(new NamePattern[names.size()]), names, includeSubtypes, dim);
 	}
 	
-	public CaesarWildTypePattern(List names, boolean includeSubtypes, int dim, int endPos) {
+	public CaesarWildTypePattern(List<NamePattern> names, boolean includeSubtypes, int dim, int endPos) {
 		this(names, includeSubtypes, dim);
 		this.end = endPos;
 	}
@@ -65,10 +65,9 @@ public class CaesarWildTypePattern extends WildTypePattern {
 		
 		// If there is no pointcut scope, resolve with the super
 		if (! (scope instanceof CaesarPointcutScope)) {
-			return super.resolveBindings(scope, bindings, allowBinding, requireExactType);
+			return resolveBindingsOriginal(scope, bindings, allowBinding, requireExactType);
 		}
 		CaesarPointcutScope caesarScope = (CaesarPointcutScope) scope;
-		
 		
 		// if it is the star, return the "Any Type" pattern
 		if (isStar() && dim == 0) {

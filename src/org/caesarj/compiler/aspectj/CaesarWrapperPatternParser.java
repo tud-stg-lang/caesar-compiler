@@ -141,16 +141,44 @@ public class CaesarWrapperPatternParser extends PatternParser {
 			SignaturePattern sig = parseConstructorSignaturePattern();
 			eat(")");
 			
-			// Creates the wrapper 
+			// Creates the wrapper
+			CaesarKindedPointcut regular =  new CaesarKindedPointcut(
+					Shadow.Initialization, 
+					sig);
+			
+			return new CaesarPointcutWrapper(regular);
+			
+			/*
 			// Transform the object initialization to the constructor with Object. This will
-			// cause some different semantics than AspectJ			
-			sig = new SignaturePattern(Member.CONSTRUCTOR, sig.getModifiers(),
-                    sig.getReturnType(), sig.getDeclaringType(),
-                    sig.getName(), createObjectTypeList(),
-                    sig.getThrowsPattern());
+			// cause some different semantics than AspectJ	
 
-			CaesarKindedPointcut pointcut = new CaesarKindedPointcut(Shadow.Initialization, sig);
-			return new CaesarPointcutWrapper(pointcut);
+			CaesarCloner c = CaesarCloner.instance();
+			
+			SignaturePattern cclassSig = 
+				new SignaturePattern(Member.CONSTRUCTOR, sig.getModifiers(),
+                    c.clone(sig.getReturnType()), c.clone(sig.getDeclaringType()),
+                    c.clone(sig.getName()), createObjectTypeList(),
+                    c.clone(sig.getThrowsPattern()));
+			
+			CaesarKindedPointcut regular =  new CaesarKindedPointcut(
+					Shadow.Initialization, 
+					sig);
+			
+			CaesarKindedPointcut cclass =  new CaesarKindedPointcut(
+					Shadow.Initialization, 
+					cclassSig);
+			
+			registerPointcut(new CaesarPointcutWrapper(regular));
+			//registerPointcut(new CaesarPointcutWrapper(cclass));
+			
+			// Creates an orPointcut for both the regular java and cclass constructors
+			Pointcut orPointcut = new OrPointcut(
+					regular,
+					cclass);
+			
+			//return new CaesarPointcutWrapper(orPointcut); 
+			return new CaesarPointcutWrapper(regular);
+			 */
 			
 		} else  if (kind.equals("staticinitialization")) {
 			parseIdentifier(); eat("(");
@@ -184,13 +212,38 @@ public class CaesarWrapperPatternParser extends PatternParser {
 			
 			return new CaesarPointcutWrapper(orPointcut);
 
-			
 		} else  if (kind.equals("preinitialization")) {
 			parseIdentifier(); eat("(");
 			SignaturePattern sig = parseConstructorSignaturePattern();
 			eat(")");
 			
-			// Creates the wrapper 
+			CaesarCloner c = CaesarCloner.instance();
+			
+			SignaturePattern cclassSig = 
+				new SignaturePattern(Member.CONSTRUCTOR, sig.getModifiers(),
+                    c.clone(sig.getReturnType()), c.clone(sig.getDeclaringType()),
+                    c.clone(sig.getName()), createObjectTypeList(),
+                    c.clone(sig.getThrowsPattern()));
+			
+			CaesarKindedPointcut regular =  new CaesarKindedPointcut(
+					Shadow.PreInitialization, 
+					sig);
+			
+			CaesarKindedPointcut cclass =  new CaesarKindedPointcut(
+					Shadow.PreInitialization, 
+					cclassSig);
+			
+			registerPointcut(new CaesarPointcutWrapper(regular));
+			registerPointcut(new CaesarPointcutWrapper(cclass));
+			
+			// Creates an orPointcut for both the regular java and cclass constructors
+			Pointcut orPointcut = new OrPointcut(
+					regular,
+					cclass);
+			
+			return new CaesarPointcutWrapper(orPointcut); 
+			
+			/*
 			// Transform the object preinitialization to the constructor with Object. This will
 			// cause some different semantics than AspectJ
 			sig = new SignaturePattern(Member.CONSTRUCTOR, sig.getModifiers(),
@@ -200,7 +253,7 @@ public class CaesarWrapperPatternParser extends PatternParser {
 			
 			CaesarKindedPointcut pointcut = new CaesarKindedPointcut(Shadow.PreInitialization, sig);
 			return new CaesarPointcutWrapper(pointcut);
-			
+			*/
 		} else {
 			return parseReferencePointcut();
 		}
@@ -259,24 +312,41 @@ public class CaesarWrapperPatternParser extends PatternParser {
 				Shadow.ConstructorCall.equals(shadowKind) || 
 				Shadow.ConstructorExecution.equals(shadowKind)) {
 			
+			Shadow.Kind cclassShadowKind = null;
+			
 			// Transform the constructor call/execution to a method call/execution, 
 			// using $constructor and the same parameters
 			if (Shadow.ConstructorCall.equals(shadowKind)) {
-				shadowKind = Shadow.MethodCall;
+				cclassShadowKind = Shadow.MethodCall;
 			} else {
-				shadowKind = Shadow.MethodExecution;
+				cclassShadowKind = Shadow.MethodExecution;
 			}
 			
-			sig = new SignaturePattern(Member.METHOD, sig.getModifiers(),
-					createCaesarObjectPattern(), sig.getDeclaringType(),
-					new NamePattern("$constructor"), sig.getParameterTypes(),
-					sig.getThrowsPattern());
+			CaesarCloner c = CaesarCloner.instance();
 			
-			CaesarKindedPointcut p =  new CaesarKindedPointcut(
+			SignaturePattern cclassSig = 
+				new SignaturePattern(Member.METHOD, sig.getModifiers(),
+					createCaesarObjectPattern(), c.clone(sig.getDeclaringType()),
+					new NamePattern("$constructor"), c.clone(sig.getParameterTypes()),
+					c.clone(sig.getThrowsPattern()));
+			
+			CaesarKindedPointcut regular =  new CaesarKindedPointcut(
 					shadowKind, 
 					sig);
 			
-			return new CaesarPointcutWrapper(p);
+			CaesarKindedPointcut cclass =  new CaesarKindedPointcut(
+					cclassShadowKind, 
+					cclassSig);
+			
+			registerPointcut(new CaesarPointcutWrapper(regular));
+			registerPointcut(new CaesarPointcutWrapper(cclass));
+			
+			// Creates an orPointcut for both the regular java and cclass constructors
+			Pointcut orPointcut = new OrPointcut(
+					regular,
+					cclass);
+			
+			return new CaesarPointcutWrapper(orPointcut);
 		}
 		
 		if (Shadow.FieldGet.equals(shadowKind) || Shadow.FieldSet.equals(shadowKind)) {
@@ -386,26 +456,39 @@ public class CaesarWrapperPatternParser extends PatternParser {
 		eat("(");
 		SignaturePattern sig = parseMethodOrConstructorSignaturePattern();
 		eat(")");
-
-		if (Member.CONSTRUCTOR.equals(sig.getKind())) {
-			
-			// Transform the constructor withincode to a method withincode, 
-			// using $constructor and the same parameters
-			sig = new SignaturePattern(Member.METHOD, sig.getModifiers(),
-					createCaesarObjectPattern(), sig.getDeclaringType(),
-					new NamePattern("$constructor"), sig.getParameterTypes(),
-					sig.getThrowsPattern());
-		}
-
+		
 		// Gets the declaring type
 		TypePattern type = sig.getDeclaringType();
 		
 		// Creates the wrapper and register it
-		WithincodePointcut p = new WithincodePointcut(sig);
+		Pointcut p = new WithincodePointcut(sig);
 		CaesarPointcutWrapper wrapper = new CaesarPointcutWrapper(p);
 		wrapper.setDeclaringType(type);
 		registerPointcut(wrapper);
 		
+		if (Member.CONSTRUCTOR.equals(sig.getKind())) {
+			
+			// Transform the constructor withincode to a method withincode, 
+			// using $constructor and the same parameters (for cclasses)
+			CaesarCloner c = CaesarCloner.instance();
+			
+			sig = 
+				new SignaturePattern(Member.METHOD, sig.getModifiers(),
+					createCaesarObjectPattern(), c.clone(type),
+					new NamePattern("$constructor"), c.clone(sig.getParameterTypes()),
+                    c.clone(sig.getThrowsPattern()));
+			
+			WithincodePointcut cclass =  new WithincodePointcut(sig);
+			wrapper = new CaesarPointcutWrapper(cclass);
+			wrapper.setDeclaringType(sig.getDeclaringType());
+			registerPointcut(wrapper);
+			
+			// Creates an orPointcut for both the regular java and cclass constructors
+			p = new OrPointcut(
+					p,
+					cclass);
+		}
+
 		// Creates something like || withincode(* Classname_Impl_Mixin_*.m())
 		TypePattern mixinType = createMixinType(type);
 		SignaturePattern mixinSignature = createMixinSignature(sig, mixinType);
@@ -413,7 +496,7 @@ public class CaesarWrapperPatternParser extends PatternParser {
 		WithincodePointcut mixin = new WithincodePointcut(mixinSignature);
 
 		// Register the mixin
-		wrapper = new CaesarPointcutWrapper(mixin, sig.getDeclaringType());
+		wrapper = new CaesarPointcutWrapper(mixin, type);
 		wrapper.setDeclaringType(mixinType);
 		registerPointcut(wrapper);
 		
@@ -508,7 +591,7 @@ public class CaesarWrapperPatternParser extends PatternParser {
 	
 	
 	public TypePattern parseSingleTypePattern() {
-		List names = parseDottedNamePattern(); 
+		List<NamePattern> names = parseDottedNamePattern(); 
 //		new ArrayList();
 //		NamePattern p1 = parseNamePattern();
 //		names.add(p1);
@@ -533,6 +616,99 @@ public class CaesarWrapperPatternParser extends PatternParser {
 		if (names.size() == 1 && ((NamePattern)names.get(0)).isAny() && dim == 0) return TypePattern.ANY;
 		
 		return new CaesarWildTypePattern(names, includeSubtypes, dim, endPos);
+	}
+	
+	public List<NamePattern> parseDottedNamePattern() {
+		List<NamePattern> names = new ArrayList<NamePattern>();
+		StringBuffer buf = new StringBuffer();
+		IToken previous = null;
+		boolean justProcessedEllipsis = false; // Remember if we just dealt with an ellipsis (PR61536)
+		boolean justProcessedDot = false; 
+		boolean onADot = false;
+		while (true) {
+			IToken tok = null;
+			int startPos = tokenSource.peek().getStart();
+			String afterDot = null;
+			while (true) {
+				if (previous !=null && previous.getString().equals(".")) justProcessedDot = true;
+				tok = tokenSource.peek();
+				onADot = (tok.getString().equals("."));
+				if (previous != null) {
+					if (!isAdjacent(previous, tok)) break;
+				}
+				if (tok.getString() == "*" || tok.isIdentifier()) {
+					buf.append(tok.getString());
+				} else if (tok.getLiteralKind() != null) {
+					//System.err.println("literal kind: " + tok.getString());
+					String s = tok.getString();
+					int dot = s.indexOf('.');
+					if (dot != -1) {
+						buf.append(s.substring(0, dot));
+						afterDot = s.substring(dot+1);
+						previous = tokenSource.next();
+						break;
+					}
+					buf.append(s);  // ??? so-so
+				} else {
+					break;
+				}
+				previous = tokenSource.next();
+				//XXX need to handle floats and other fun stuff
+			}
+			int endPos = tokenSource.peek(-1).getEnd();
+			if (buf.length() == 0 && names.isEmpty()) {
+				throw new ParserException("expected name pattern", tok);
+			} 
+			
+			if (buf.length() == 0 && justProcessedEllipsis) {
+				throw new ParserException("name pattern cannot finish with ..", tok);
+			}
+			if (buf.length() == 0 && justProcessedDot && !onADot) {
+					throw new ParserException("name pattern cannot finish with .", tok);
+			}
+			
+			if (buf.length() == 0) {
+				names.add(NamePattern.ELLIPSIS);
+				justProcessedEllipsis = true;
+			} else {
+				checkLegalName(buf.toString(), previous);
+				NamePattern ret = new NamePattern(buf.toString());
+				ret.setLocation(sourceContext, startPos, endPos);
+				names.add(ret);
+				justProcessedEllipsis = false;
+			}
+			
+			if (afterDot == null) {
+				buf.setLength(0);
+				if (!maybeEat(".")) break;
+				else previous = tokenSource.peek(-1);
+			} else {
+				buf.setLength(0);
+				buf.append(afterDot);
+				afterDot = null;
+			}
+		}
+		//System.err.println("parsed: " + names);
+		return names;
+	}
+	
+	private boolean isAdjacent(IToken first, IToken second) {
+		return first.getEnd() == second.getStart()-1;
+	}
+	
+	private void checkLegalName(String s, IToken tok) {
+		char ch = s.charAt(0);
+		if (!(ch == '*' || Character.isJavaIdentifierStart(ch))) {
+			throw new ParserException("illegal identifier start (" + ch + ")", tok);
+		}
+		
+		for (int i=1, len=s.length(); i < len; i++) {
+			ch = s.charAt(i);
+			if (!(ch == '*' || Character.isJavaIdentifierPart(ch))) {
+				throw new ParserException("illegal identifier character (" + ch + ")", tok);
+			}
+		}
+		
 	}
 	
 	private boolean maybeEatNew(TypePattern returnType) {

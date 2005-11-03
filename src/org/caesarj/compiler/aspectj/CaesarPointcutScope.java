@@ -173,7 +173,7 @@ public class CaesarPointcutScope extends CaesarScope {
 						name = cclass.getImplQualifiedName();
 					}
 					if (Shadow.Initialization.equals(kp.getKind())) {
-						name = cclass.getImplQualifiedName();
+						//name = cclass.getImplQualifiedName();
 					}
 					// TODO - Still couldn't find a running example
 					if (Shadow.AdviceExecution.equals(kp.getKind())) {
