@@ -119,13 +119,14 @@
         <code>
 			public class A {
 				private Object o = "A string";
-
-				public Object foo(Object obj) {
+			
+				public Object foo(final Object obj) {
 			
 					return new Object() {
 						public String toString() {
-							if (obj == null)
-								return o.toString();
+							if (obj != null)
+								return obj.toString();
+							return o.toString();
 						}
 					};
 				}
