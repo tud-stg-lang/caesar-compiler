@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JavaTypeGraph.java,v 1.9 2005-11-02 09:48:57 gasiunas Exp $
+ * $Id: JavaTypeGraph.java,v 1.10 2005-11-04 10:54:30 meffert Exp $
  */
 
 package org.caesarj.compiler.typesys.java;
@@ -143,6 +143,28 @@ public class JavaTypeGraph {
     public Collection getAllTypes() {
         Collection res = new LinkedList();
         root.collectAllTypes(res);
+        return res;
+    }
+    
+    /**
+     * This method is used by the debugger.
+     * 
+     * @param mixin
+     * @return collection of mixin copies for the type node
+     */
+    public Collection findMixinCopies(CaesarTypeNode mixin) {        
+        Collection res = new LinkedList();
+        
+        // check first that passed node is not a mixin copy itself        
+        Collection typesToGen = getTypesToGenerate();
+        
+        for (Iterator it = typesToGen.iterator(); it.hasNext();) {
+            JavaTypeNode item = (JavaTypeNode) it.next();
+            // test against mixin of item.
+            if(item.getMixin() == mixin) 
+                res.add(item);
+        }        
+        
         return res;
     }
 }
