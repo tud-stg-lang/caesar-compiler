@@ -458,6 +458,47 @@
         </code>
     </compile-run>
     
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutfield008" description="simple get/set pointcut in regular java class">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":beforeSet:willGet:beforeGet:field:willSet:beforeSet", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        			Test.res.append(":willGet");
+        			Test.res.append(b.field);
+        			Test.res.append(":willSet");
+        			b.setField(":nothing");
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+				
+				before():  get (public String ClsB.*) {
+					Test.res.append(":beforeGet");
+    			}
+    			// will match the initialization and the b.setField()
+    			before():  set (public String ClsB.*) {
+					Test.res.append(":beforeSet");
+    			}
+        	}
+			
+			public class ClsB {
+				public String field = ":field";
+				
+				public void setField(String f) {
+					this.field = f;
+				}
+			}
+        </code>
+    </compile-run>
     
      
     

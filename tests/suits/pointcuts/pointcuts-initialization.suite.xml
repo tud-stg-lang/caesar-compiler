@@ -341,16 +341,18 @@
         	
         	public deployed cclass Aspect {
 
-				before():  initialization (public suits.pointcuts.initialization..ClsA_Impl.new()) {
+				before():  initialization (public suits.pointcuts.initialization..ClsA.new()) {
 					Test.res.append(":before");
     			}
     			before(String s):  
     				initialization (public suits.pointcuts.initialization.ppointcutinitialization006..new(String)) &amp;&amp; args(s)  {
 					Test.res.append(":beforeString:" + s);
     			}
-    			after():  initialization (public suits.pointcuts.initialization.ppointcutinitialization006..new()) {
+    			
+    			after():  initialization (public suits.pointcuts..ppointcutinitialization006.Cls*.new()) {
 					Test.res.append(":after");
     			}
+    			
     			after(String s):  
     				initialization (public suits.pointcuts.initialization.ppointcutinitialization006..new(String)) &amp;&amp; args(s)  {
 					Test.res.append(":afterString:" + s);
@@ -377,7 +379,63 @@
 			}
         </code>
     </compile-run>
-    
+
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutinitialization007" description="simple initialization pointcut in regular java class">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before:constructingB" +
+				":beforeString-bString:constructingBString" +
+				":before:constructingC" +
+				":before:constructingCString", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b = new ClsB("bString");
+        			ClsC c = new ClsC();
+        			c = new ClsC("cString");
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+				// Will match both for ClsC and the empty for ClsB
+				before():  initialization (public Cls*.new()) {
+					Test.res.append(":before");
+    			}
+    			
+    			// Will match nothing for C and the init with string for ClsB
+    			before(String s):  initialization (public Cls*.new(String)) &amp;&amp; args(s) {
+					Test.res.append(":beforeString-" + s);
+    			}
+    			
+        	}
+			
+			public class ClsB {
+				public ClsB() {
+					Test.res.append(":constructingB");
+				}
+				public ClsB(String s) {
+					Test.res.append(":constructingBString");
+				}
+			}
+			public cclass ClsC {
+				public ClsC() {
+					Test.res.append(":constructingC");
+				}
+				public ClsC(String s) {
+					Test.res.append(":constructingCString");
+				}
+			}
+        </code>
+    </compile-run>   
   
     
     
@@ -395,27 +453,27 @@
         	public class Main {
         		
         		public void run() {
-        			ClsB b = new ClsB();
-        			b = new ClsB("aString");
+        			ClsA a = new ClsA();
+        			a = new ClsA("aString");
         		}
         	}
         	
-        	public deployed cclass ClsA {
+        	public deployed cclass Aspect {
 				// Matches both
-				before():  preinitialization (public ClsB.new()) {
+				before():  preinitialization (public ClsA.new()) {
 					Test.res.append(":before");
     			}
     			// Matches nothing
-    			before(String s):  preinitialization (public ClsB.new(String)) &amp;&amp; args(s) {
+    			before(String s):  preinitialization (public ClsA.new(String)) &amp;&amp; args(s) {
 					Test.res.append(":beforeString");
     			}
         	}
 			
-			public cclass ClsB {
-				public ClsB() {
+			public cclass ClsA {
+				public ClsA() {
 					Test.res.append(":constructing");
 				}
-				public ClsB(String s) {
+				public ClsA(String s) {
 					Test.res.append(":constructingString");
 				}
 			}
@@ -722,14 +780,14 @@
         	
         	public deployed cclass Aspect {
 
-				before():  preinitialization (public suits.pointcuts.initialization..ClsA_Impl.new()) {
+				before():  preinitialization (public suits.pointcuts.initialization..ClsA.new()) {
 					Test.res.append(":before");
     			}
     			before(String s):  
     				preinitialization (public suits.pointcuts.initialization.ppointcutinitialization016..new(String)) &amp;&amp; args(s)  {
 					Test.res.append(":beforeString:" + s);
     			}
-    			after():  preinitialization (public suits.pointcuts.initialization.ppointcutinitialization016..new()) {
+    			after():  preinitialization (public suits.pointcuts..ppointcutinitialization016.Cls*.new()) {
 					Test.res.append(":after");
     			}
     			after(String s):  
@@ -759,7 +817,57 @@
         </code>
     </compile-run>    
     
-    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutinitialization017" description="simple preinitialization pointcut in regular java class">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before:constructingA" +
+				":beforeString:constructingAString" +
+				":before:constructingB" +
+				":before:constructingBString", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a = new ClsA("aString");
+        			ClsB b = new ClsB();
+        			b = new ClsB("bString");
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+				before():  preinitialization (public Cls*.new()) {
+					Test.res.append(":before");
+    			}
+    			before(String s):  preinitialization (public Cls*.new(String)) &amp;&amp; args(s) {
+					Test.res.append(":beforeString");
+    			}
+        	}
+			
+			public class ClsA {
+				public ClsA() {
+					Test.res.append(":constructingA");
+				}
+				public ClsA(String s) {
+					Test.res.append(":constructingAString");
+				}
+			}
+			public cclass ClsB {
+				public ClsB() {
+					Test.res.append(":constructingB");
+				}
+				public ClsB(String s) {
+					Test.res.append(":constructingBString");
+				}
+			}
+        </code>
+    </compile-run>
     
     
     
@@ -1087,6 +1195,42 @@
         </code>
     </compile-run>    
     
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutinitialization027" description="simple staticinitialization pointcut in regular java class">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:after:before:after", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+	        		int i = ClsA.theInt;
+        			i = ClsB.theInt;
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+				before():  staticinitialization (Cls*) {
+					Test.res.append(":before");
+    			}
+    			after():  staticinitialization (Cls*) {
+					Test.res.append(":after");
+    			}
+        	}
+			
+			public class ClsA {
+				public static int theInt = 2;
+			}
+			public cclass ClsB {
+				public static int theInt = 2;
+			}
+        </code>
+    </compile-run>
     
 
 
@@ -1129,7 +1273,7 @@
 
 
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutconstructor101" description="call constructor pointcut">
+    <compile-run  id="pointcutinitialization101" description="call constructor pointcut">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -1165,7 +1309,7 @@
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutconstructor102" description="call constructor pointcut with this and target">
+    <compile-run  id="pointcutinitialization102" description="call constructor pointcut with this and target">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -1204,7 +1348,7 @@
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutconstructor103" description="execution constructor pointcut">
+    <compile-run  id="pointcutinitialization103" description="execution constructor pointcut">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -1241,7 +1385,7 @@
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutconstructor104" description="execution constructor pointcut with this and target">
+    <compile-run  id="pointcutinitialization104" description="execution constructor pointcut with this and target">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -1261,11 +1405,6 @@
 
 				// Should be:
 				before():  execution (public ClsB.new()) &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
-				// These 4 work now
-				//before():  execution (public ClsB_Impl.new(..))  &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
-				//before():  execution (public ClsB+.new(..))  &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
-				//before():  execution (public * ClsB_Impl.$constructor()) &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
-				//before():  execution (public * ClsB.$constructor()) &amp;&amp; this(ClsB) &amp;&amp; target(ClsB) {
 					Test.res.append(":before");
     			}
         	}
@@ -1279,7 +1418,7 @@
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutconstructor105" description="initialization pointcut">
+    <compile-run  id="pointcutinitialization105" description="initialization pointcut">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -1311,7 +1450,7 @@
     </compile-run>
     
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutconstructor106" description="preinitialization pointcut">
+    <compile-run  id="pointcutinitialization106" description="preinitialization pointcut">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -1344,7 +1483,7 @@
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutconstructor107" description="staticinitialization pointcut">
+    <compile-run  id="pointcutinitialization107" description="staticinitialization pointcut">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -1377,7 +1516,7 @@
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutconstructor108" description="initialization pointcuts order">
+    <compile-run  id="pointcutinitialization108" description="initialization pointcuts order">
     	<test>
     		Main m = new Main();
     		m.run();
@@ -1396,25 +1535,18 @@
         	
         	public deployed cclass ClsA {
 	        	before():  call (public ClsB.new(String)) {
-        		//before():  call (public ClsB.new(..)) {
-        		//before():  call (public ClsB_Impl.new(..)) {
 					Test.res.append(":call");
     			}
     			before():  execution (public ClsB.new(String)) {
-    			//before():  execution (public ClsB.new(..)) {
-        		//before():  execution (public ClsB_Impl.new(..)) {
 					Test.res.append(":execution");
     			}
-        		before():  initialization (public ClsB.new(String)) {
+        		before():  initialization (public ClsB.new()) {
 					Test.res.append(":initialization");
     			}
         		before():  preinitialization (public ClsB.new(..)) {
-        		//before():  preinitialization (public ClsB.new(..)) {
-				//before():  preinitialization (public ClsB_Impl.new(..)) {
 					Test.res.append(":preinitialization");
     			}
 				before():  staticinitialization (ClsB) {
-				//before():  staticinitialization (ClsB_Impl) {
 					Test.res.append(":staticinitialization");
     			}
         	}

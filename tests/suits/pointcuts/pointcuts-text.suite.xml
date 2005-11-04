@@ -522,7 +522,58 @@
         </code>
     </compile-run>
     
-    
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcuttext007" description="simple cclass using within in regular java class">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":beginbefore:m:m2:endbefore:m:m2" +
+				":beforeGet:true", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        		
+        			ClsA a = new ClsA();
+        			a.m();
+        			if (ClsA.var) {
+        				Test.res.append(":true");
+        			}
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        	
+        		before(): call(* Cls*.m(..)) &amp;&amp; within(Main) {
+					Test.res.append(":beginbefore");
+					new ClsA().m();
+					Test.res.append(":endbefore");
+				}
+				before() : get(boolean ClsA.*) &amp;&amp; within(Main) {
+					Test.res.append(":beforeGet");
+				}
+        	
+        	}
+			
+			public class ClsA {
+
+				public static boolean var = true;
+
+				public void m() {
+					Test.res.append(":m");
+					this.m(":m2");
+				}
+				
+				public void m(String s) {
+					Test.res.append(s);
+				}
+			}
+        </code>
+    </compile-run>
     
     
 
@@ -1162,7 +1213,65 @@
         </code>
     </compile-run>
 
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcuttext018" description="simple cclass using withincode in regular java class">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":beginbefore:m:m2:endbefore:m:m2" +
+				":beforeGet:true" +
+				":m:m2", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        		
+        			ClsA a = new ClsA();
+        			a.m();
+        			if (ClsA.var) {
+        				Test.res.append(":true");
+        			}
+        			this.m(a);
+        		}
+        		
+        		public void m(ClsA a) {
+        			a.m();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        	
+        		before(): call(* ClsA.m(..)) &amp;&amp; withincode(* Main.run()) {
+					Test.res.append(":beginbefore");
+					new ClsA().m();
+					Test.res.append(":endbefore");
+				}
+				before() : get(boolean ClsA.*) &amp;&amp; withincode(void Main.run()) {
+					Test.res.append(":beforeGet");
+					//System.out.println(thisJoinPoint.getThis() + " - " + thisJoinPoint.getStaticPart());
+				}
+        	
+        	}
+			
+			public class ClsA {
 
+				public static boolean var = true;
+
+				public void m() {
+					Test.res.append(":m");
+					this.m(":m2");
+				}
+				
+				public void m(String s) {
+					Test.res.append(s);
+				}
+			}
+        </code>
+    </compile-run>
 
 
 
@@ -1737,7 +1846,76 @@
         </code>
     </compile-run>
 
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcuttext027"
+    	description="simple cclass using withincode in constructor in regular java class">
+    	<test>
+    		Main m = new Main();
+    		m = new Main("string");
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":beginbefore:m:m2:endbefore:m:m2" +
+				":beforeGet:true" +
+				":m:m2" +
+				":beginbeforestring:m:m2:endbeforestring:m:m2", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public Main() {
+        		
+        			ClsA a = new ClsA();
+        			a.m();
+        			if (ClsA.var) {
+        				Test.res.append(":true");
+        			}
+        			this.m(a);
+        		}
+        		
+        		public Main(String s) {
+        			ClsA a = new ClsA();
+        			a.m();
+        		}
+        		
+        		public void m(ClsA a) {
+        			a.m();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        	
+        		before(): call(* ClsA.m(..)) &amp;&amp; withincode(Main.new()) {
+					Test.res.append(":beginbefore");
+					new ClsA().m();
+					Test.res.append(":endbefore");
+				}
+				before(): call(* ClsA.m(..)) &amp;&amp; withincode(Main.new(String)) {
+					Test.res.append(":beginbeforestring");
+					new ClsA().m();
+					Test.res.append(":endbeforestring");
+				}
+				before() : get(boolean ClsA.*) &amp;&amp; withincode(Main.new()) {
+					Test.res.append(":beforeGet");
+					//System.out.println(thisJoinPoint.getThis() + " - " + thisJoinPoint.getStaticPart());
+				}
+        	}
+			
+			public class ClsA {
 
+				public static boolean var = true;
+
+				public void m() {
+					Test.res.append(":m");
+					this.m(":m2");
+				}
+				
+				public void m(String s) {
+					Test.res.append(s);
+				}
+			}
+        </code>
+    </compile-run>
 
 
 

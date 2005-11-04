@@ -560,6 +560,38 @@
         </code>
     </compile-run>
    
+   	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod008" description="simple call pointcut in regular java class">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): call (void ClsB.m()) {
+					Test.res.append(":before");
+				}
+        	}
+			
+			public class ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
    
    
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
@@ -1016,6 +1048,40 @@
 			}
         </code>
     </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmethod018" description="simple execution pointcut in regular java class">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass ClsA {
+        		before(): execution (void ClsB.m()) {
+					Test.res.append(":before");
+				}
+        	}
+			
+			public class ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+    
     
     
     

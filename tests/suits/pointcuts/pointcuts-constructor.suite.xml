@@ -416,10 +416,50 @@
         </code>
     </compile-run>
     
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor007" description="simple call constructor pointcut in regular java class">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:constructing:beforeString:aString:constructingString", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a = new ClsA("aString");
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+				before():  call (public ClsA.new()) {
+					Test.res.append(":before");
+    			}
+    			before(String s):  call (public ClsA.new(String)) &amp;&amp; args(s)  {
+					Test.res.append(":beforeString:" + s);
+    			}
+        	}
+			
+			public class ClsA {
+				public ClsA() {
+					Test.res.append(":constructing");
+				}
+				
+				public ClsA(String s) {
+					Test.res.append(":constructingString");
+				}
+			}
+        </code>
+    </compile-run>
     
     
     
-    	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile-run  id="pointcutconstructor011" description="simple execution constructor pointcut">
     	<test>
     		Main m = new Main();
@@ -789,6 +829,58 @@
 					Test.res.append(":constructingB");
 				}
 				
+				public ClsB(String s) {
+					Test.res.append(":constructingBString");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutconstructor017" description="simple execution constructor pointcut in regular java class">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before:constructing:beforeString:aString:constructingString" +
+				":before:constructingB:beforeString:bString:constructingBString", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        		
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a = new ClsA("aString");
+        			ClsB b = new ClsB();
+        			b = new ClsB("bString");
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+
+				before():  execution (public Cls*.new()) {
+					Test.res.append(":before");
+    			}
+    			before(String s):  execution (public Cls*.new(String)) &amp;&amp; args(s)  {
+					Test.res.append(":beforeString:" + s);
+    			}
+        	}
+			
+			public class ClsA {
+				public ClsA() {
+					Test.res.append(":constructing");
+				}
+				
+				public ClsA(String s) {
+					Test.res.append(":constructingString");
+				}
+			}
+			public cclass ClsB {
+				public ClsB() {
+					Test.res.append(":constructingB");
+				}
 				public ClsB(String s) {
 					Test.res.append(":constructingBString");
 				}

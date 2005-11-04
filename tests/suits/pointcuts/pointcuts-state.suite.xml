@@ -473,7 +473,50 @@
 			
         </code>
     </compile-run>
-    
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate009" description="simple cclass with this using type in regular java class">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m:m", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.run();
+        			// this must NOT match here
+        			ClsB b = new ClsB();
+        			b.m();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(): call (void ClsB.m()) &amp;&amp; this(ClsA){
+					Test.res.append(":before");
+				}
+        	}
+			
+			public class ClsA {
+				
+				public void run() {
+					ClsB b = new ClsB();
+					b.m();
+				}
+			}
+			
+			public class ClsB {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
     
     
     
@@ -1020,6 +1063,48 @@
         </code>
     </compile-run>    
     
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate019" description="simple cclass with target using type in regular java class">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:a:b", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			a.run();
+        			// target must NOT match here
+        			ClsB b = new ClsB();
+        			b.run();
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(): call (void *.run()) &amp;&amp; target(ClsA){
+					Test.res.append(":before");
+				}
+        	}
+			
+			public class ClsA {
+				
+				public void run() {
+					Test.res.append(":a");
+				}
+			}
+			
+			public class ClsB {
+
+				public void run() {
+					Test.res.append(":b");
+				}
+			}
+        </code>
+    </compile-run>
     
     
     
@@ -1518,7 +1603,60 @@
 			public cclass ClsD extends ClsB &amp; ClsA {
 			}
         </code>
-    </compile-run>    
+    </compile-run> 
+    
+   <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutstate027" description="simple cclass with args in regular java class">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":before:before2:theClsA:run:theClsA" +
+				":run:theClsB", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+        			ClsB b = new ClsB();
+        			Target t = new Target();
+        			t.run(a);
+        			t.run(b);
+        		}
+        	}
+        	
+        	public deployed cclass Aspect {
+        		before(): call (void *.run(..)) &amp;&amp; args(ClsA){
+					Test.res.append(":before");
+				}
+        		before(ClsA c): call (void *.run(..)) &amp;&amp; args(c){
+					Test.res.append(":before2" + c.name);
+				}
+        	}
+			
+			public class Target {
+			
+				public void run(ClsA c) {
+					Test.res.append(":run" + c.name);
+				}
+				
+				public void run(ClsB c) {
+					Test.res.append(":run" + c.name);
+				}
+			}
+			
+			public class ClsA {
+				public String name = ":theClsA";
+			}
+			
+			public class ClsB {
+				public String name = ":theClsB";
+			}
+		</code>
+	</compile-run>
     
     
     
