@@ -113,7 +113,26 @@
 			}
 		</code>
     </compile>
-    
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="accessor003" description="Check accessor methods in parameters.">
+        <code>
+			public class A {
+				private Object o = "A string";
+
+				public Object foo(Object obj) {
+			
+					return new Object() {
+						public String toString() {
+							if (obj == null)
+								return o.toString();
+						}
+					};
+				}
+			}
+		</code>
+    </compile>	
+        
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile id="tsifc001" description="Check assignment to interface.">
         <code>
