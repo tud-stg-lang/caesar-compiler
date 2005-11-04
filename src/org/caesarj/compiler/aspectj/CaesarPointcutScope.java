@@ -77,7 +77,7 @@ public class CaesarPointcutScope extends CaesarScope {
 	 * Resets the registrer
 	 */
 	public static void resetRegister() {
-		map = new IdentityHashMap<TypePattern, CaesarPointcutWrapper>();
+		map.clear();
 	}
 	
 	/**
