@@ -155,10 +155,14 @@ public class CaesarPointcutScope extends CaesarScope {
 						}
 					}
 					if (Shadow.FieldGet.equals(kp.getKind())) {
-						name = cclass.getImplQualifiedName();
+						if (! kp.getSignature().getDeclaringType().isIncludeSubtypes()) {
+							name = cclass.getImplQualifiedName();
+						}
 					}
 					if (Shadow.FieldSet.equals(kp.getKind())) {
-						name = cclass.getImplQualifiedName();
+						if (! kp.getSignature().getDeclaringType().isIncludeSubtypes()) {
+							name = cclass.getImplQualifiedName();
+						}
 					}
 					if (Shadow.ConstructorCall.equals(kp.getKind())) {
 						name = cclass.getImplQualifiedName();
