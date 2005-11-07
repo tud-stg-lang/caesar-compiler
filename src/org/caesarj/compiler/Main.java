@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.109 2005-11-07 15:41:58 gasiunas Exp $
+ * $Id: Main.java,v 1.110 2005-11-07 16:30:49 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -173,15 +173,15 @@ public class Main extends MainSuper implements Constants {
         new JoinCollaborations(environment, this).joinAll(tree);
         if(errorFound) return false;
         
-        // KOPI step - resolves imported classes in compilation units
-        prepareCUContexts(tree);                  
-        if(errorFound) return false;
-               
         // CJ VC: separate interface from implementation
         prepareCaesarClasses(environment, tree);
         
         // CJ Aspects: prepare the advices, which use joinpoint reflection
         prepareJoinpointReflection(tree);
+        
+        // KOPI step - resolves imported classes in compilation units
+        prepareCUContexts(tree);                  
+        if(errorFound) return false;
         
         // CJ VC 
         generateCaesarTypeSystem(environment, tree);
