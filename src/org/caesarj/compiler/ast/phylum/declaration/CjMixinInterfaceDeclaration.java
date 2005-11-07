@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjMixinInterfaceDeclaration.java,v 1.22 2005-11-02 15:44:42 gasiunas Exp $
+ * $Id: CjMixinInterfaceDeclaration.java,v 1.23 2005-11-07 15:41:57 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -140,9 +140,9 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
 	 *   that there are no cyclices in the type graph
 	 *   CTODO this step is repeated later on in checkInterfaces -> optimization needed
 	 */
-	public void join(CContext context, boolean recurse) throws PositionedError {
+	public void join(CContext context) throws PositionedError {
 		
-		super.join(context, recurse);
+		super.join(context);
 	    
 	    try {	        
 		    for (int i = 0; i < extendedTypes.length; i++) {

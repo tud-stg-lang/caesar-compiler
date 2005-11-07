@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.108 2005-11-03 11:39:04 gasiunas Exp $
+ * $Id: Main.java,v 1.109 2005-11-07 15:41:58 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -172,6 +172,10 @@ public class Main extends MainSuper implements Constants {
         // CJ general: collects externalized classes
         new JoinCollaborations(environment, this).joinAll(tree);
         if(errorFound) return false;
+        
+        // KOPI step - resolves imported classes in compilation units
+        prepareCUContexts(tree);                  
+        if(errorFound) return false;
                
         // CJ VC: separate interface from implementation
         prepareCaesarClasses(environment, tree);
@@ -186,13 +190,9 @@ public class Main extends MainSuper implements Constants {
         // CJ VC
         createImplicitCaesarTypes(tree);
         if(errorFound) return false;
-        
-        // KOPI step - resolves outer inheritance hierarchy
-        joinOuter(tree);                  
-        if(errorFound) return false;
-        
+                
         // KOPI step - resolves inner inheritance hierarchy
-        joinInner(tree);                  
+        join(tree);                  
         if(errorFound) return false;
         
         // need Caesar type system
@@ -638,19 +638,16 @@ public class Main extends MainSuper implements Constants {
      * - create CClass object for each imported class
      * - register loaded classes in CompilationUnit.allLoadedClasses
      * - add type declarations in compilation units in "allLoadedClasses"
-     * - resolve superclasses and create CClassOrInterface type for superclass
-     * - check conditions on superclasses like accessibility, superclass not final, superclass not interface
-     * - similarly for implemented interfaces: resolve, create CClassOrInterface type, check for "is interface", accessiblity, circularity
      */
 
-    protected void joinOuter(JCompilationUnit[] tree) {
+    protected void prepareCUContexts(JCompilationUnit[] tree) {
         Log.verbose("joinOuter");
         JCompilationUnit cunit;
 
         for (int i = 0; i < tree.length; i++) {
             cunit = tree[i];
             try {
-            	cunit.joinOuter(this);
+            	cunit.prepareCUContext(this);
             }
             catch (PositionedError e) {
             	reportTrouble(e);
@@ -660,14 +657,20 @@ public class Main extends MainSuper implements Constants {
             return;
     }
     
-    protected void joinInner(JCompilationUnit[] tree) {
+    /**
+     * In this phase the following things happen:
+     * - resolve superclasses and create CClassOrInterface type for superclass
+     * - check conditions on superclasses like accessibility, superclass not final, superclass not interface
+     * - similarly for implemented interfaces: resolve, create CClassOrInterface type, check for "is interface", accessiblity, circularity
+     */
+    protected void join(JCompilationUnit[] tree) {
         Log.verbose("joinInner");
         JCompilationUnit cunit;
 
         for (int i = 0; i < tree.length; i++) {
             cunit = tree[i];
             try {
-            	cunit.joinInner(this);
+            	cunit.join(this);
             }
             catch (PositionedError e) {
             	reportTrouble(e);

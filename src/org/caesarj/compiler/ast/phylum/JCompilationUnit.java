@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JCompilationUnit.java,v 1.19 2005-11-02 15:46:07 gasiunas Exp $
+ * $Id: JCompilationUnit.java,v 1.20 2005-11-07 15:41:58 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -107,22 +107,8 @@ public class JCompilationUnit extends JPhylum {
 	// ----------------------------------------------------------------------
 	// INTERFACE CHECKING
 	// ----------------------------------------------------------------------
-
-	/** 
-	 * In the pass the superclass of this class the interfaces must be set, 
-	 * so that they are  available for the next pass.
-	 * It is not possible to check the interface of methods, fields, ... in 
-	 * the same pass.
-	 */
-	public void joinOuter(CompilerBase compiler) throws PositionedError {
-		
-		if (packageName == JPackageName.UNNAMED) {
-			throw new PositionedError(
-					getTokenReference(),
-					KjcMessages.PACKAGE_IS_MISSING);
-		}
-
-		
+	
+	public void prepareCUContext(CompilerBase compiler) throws PositionedError {
 		for (int i = 0; i < importedClasses.length; i++) {
 			JClassImport ic = importedClasses[i];
 
@@ -223,14 +209,25 @@ public class JCompilationUnit extends JPhylum {
 				}
 			}
 		}
-		for (int i = 0; i < typeDeclarations.length; i++) {
-			typeDeclarations[i].join(getContext(), false);
-		}
+
 	}
-	
-	public void joinInner(CompilerBase compiler) throws PositionedError {
+
+	/** 
+	 * In the pass the superclass of this class the interfaces must be set, 
+	 * so that they are  available for the next pass.
+	 * It is not possible to check the interface of methods, fields, ... in 
+	 * the same pass.
+	 */
+	public void join(CompilerBase compiler) throws PositionedError {
+		
+		if (packageName == JPackageName.UNNAMED) {
+			throw new PositionedError(
+					getTokenReference(),
+					KjcMessages.PACKAGE_IS_MISSING);
+		}
+		
 		for (int i = 0; i < typeDeclarations.length; i++) {
-			typeDeclarations[i].join(getContext(), true);
+			typeDeclarations[i].join(getContext());
 		}
 	}
 	

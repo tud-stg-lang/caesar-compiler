@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjVirtualClassDeclaration.java,v 1.34 2005-11-01 16:23:42 gasiunas Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.35 2005-11-07 15:41:57 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -285,7 +285,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
     /**
      * - check that cclass modifier is always set to public
      */
-    public void join(CContext context, boolean recurse) throws PositionedError {
+    public void join(CContext context) throws PositionedError {
 
         if(!CModifier.contains(ACC_PUBLIC, modifiers)) {
 	        context.reportTrouble(
@@ -296,7 +296,7 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
             );
         }
              
-        super.join(context, recurse);        
+        super.join(context);        
     }
     
     /**

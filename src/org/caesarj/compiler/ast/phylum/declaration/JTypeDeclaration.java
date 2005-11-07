@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclaration.java,v 1.53 2005-11-07 10:03:03 gasiunas Exp $
+ * $Id: JTypeDeclaration.java,v 1.54 2005-11-07 15:41:57 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -278,21 +278,15 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
      * It is not possible to check the interface of methods, fields, ... in 
      * the same pass.
      */
-    public void join(CContext context, boolean recurse) throws PositionedError {
+    public void join(CContext context) throws PositionedError {
         //Walter: this method call was inserted instead of resolve 
         //the interfaces here.
         resolveInterfaces(context);
 
         // Check inners
-        if (recurse) {
-	        for (int i = inners.length - 1; i >= 0; i--) {
-	            inners[i].join(getContext(), true);
-	        }
-        }
-    }
-    
-    public final void join(CContext context) throws PositionedError {
-    	join(context, true);
+        for (int i = inners.length - 1; i >= 0; i--) {
+            inners[i].join(getContext());
+        }        
     }
 
     /**
