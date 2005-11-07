@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JavaTypeNode.java,v 1.6 2005-11-02 12:50:37 thiago Exp $
+ * $Id: JavaTypeNode.java,v 1.7 2005-11-07 09:26:50 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.java;
@@ -232,8 +232,11 @@ public class JavaTypeNode {
                 qualifiedName.append(mixin.getQualifiedName().getPackagePrefix());
             }
             
-    
-            String genHashCode = "" + mixin.genUniqueCopyNr();        
+            String genHashCode = 
+                NameGenerator.generateHashCode(
+                    parent.getQualifiedName().toString()+
+                    mixin.getQualifiedName().toString()
+                );
             
             /*
              * Thiago - changed mixin name generation to make it easier to match pointcuts

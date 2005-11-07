@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTypeNode.java,v 1.18 2005-11-01 16:23:42 gasiunas Exp $
+ * $Id: CaesarTypeNode.java,v 1.19 2005-11-07 09:26:50 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.graph;
@@ -53,8 +53,6 @@ public class CaesarTypeNode {
 	protected List<CaesarTypeNode> directFurtherbounds = null;
 	
 	protected CaesarTypeGraph g;
-	
-	protected int uniqueCopyNr = 0;
 	
 	public CaesarTypeNode(CaesarTypeGraph g, JavaQualifiedName qn) {
 		this.qualifiedName = qn;
@@ -334,9 +332,5 @@ public class CaesarTypeNode {
 	
 	public void setNeedsAspectRegistry() {
 		needsAspectRegistry = true;
-	}
-	
-	public int genUniqueCopyNr() {
-		return ++uniqueCopyNr;
-	}
+	}	
 }
