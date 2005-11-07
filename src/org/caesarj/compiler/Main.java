@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.110 2005-11-07 16:30:49 gasiunas Exp $
+ * $Id: Main.java,v 1.111 2005-11-07 20:28:52 thiago Exp $
  */
 
 package org.caesarj.compiler;
@@ -77,7 +77,7 @@ public class Main extends MainSuper implements Constants {
     private CaesarMessageHandler messageHandler;
     
     // The used weaver. An instance is created when it's needed in generateAndWeaveCode
-    private CaesarWeaver weaver;
+    protected CaesarWeaver weaver;
 
 	/**
      * This is the structure model constructed during compilation.
@@ -795,13 +795,7 @@ public class Main extends MainSuper implements Constants {
 
         try {            
             //perform weaving
-        	weaver.performWeaving(bcelWorld);
-
-            /*
-            for (int i = 0; i < weaver.fileCount(); i++) {
-                Log.verbose("weaver wrote class file: "+weaver.getFileName(i));
-            }
-            */
+        	performWeaving(bcelWorld);
             
             Log.verbose("...weaver finished");
             
@@ -818,6 +812,13 @@ public class Main extends MainSuper implements Constants {
             Log.verbose("...weaver failed");
             reportTrouble(e);
         }
+    }
+
+    protected void performWeaving(CaesarBcelWorld bcelWorld) 
+    	throws UnpositionedError, IOException, PositionedError {
+    	
+    	// Perform the weaving in the weaver
+    	weaver.performWeaving(bcelWorld);
     }
 
     public boolean noWeaveMode() {

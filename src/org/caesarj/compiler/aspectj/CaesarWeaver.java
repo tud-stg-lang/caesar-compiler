@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarWeaver.java,v 1.10 2005-11-07 19:18:24 thiago Exp $
+ * $Id: CaesarWeaver.java,v 1.11 2005-11-07 20:28:52 thiago Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -29,6 +29,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -36,7 +37,11 @@ import org.aspectj.bridge.AbortException;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
+import org.aspectj.weaver.WeaverMetrics;
+import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.BcelWeaver;
+import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.bcel.LazyClassGen;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.util.Message;
@@ -104,7 +109,7 @@ public class CaesarWeaver {
 
 		   
 		    // Changed for version 1.2.1 of aspectj weaver
-			BcelWeaver	weaver = new BcelWeaver(world.getWorld());
+			BcelWeaver weaver = new CaesarBcelWeaver(world.getWorld());
 			
 			for (int i = 0; i < unwovenClasses.size(); i++)
 				weaver.addClassFile((UnwovenClassFile) unwovenClasses.get(i));
@@ -120,15 +125,16 @@ public class CaesarWeaver {
 					return new IWeaveRequestor() {
 						public void acceptResult(UnwovenClassFile result) {
 
-						    String className = result.getClassName().replace('.', '/');
-							 try {
-								BufferedOutputStream os = FileUtil.makeOutputStream(new File(destination + "/" + className + ".class"));
-								os.write(result.getBytes());
-								os.close();
-							} catch(IOException ex) {
-							    ex.printStackTrace();
+							if (result != null) {
+							    String className = result.getClassName().replace('.', '/');
+								 try {
+									BufferedOutputStream os = FileUtil.makeOutputStream(new File(destination + "/" + className + ".class"));
+									os.write(result.getBytes());
+									os.close();
+								} catch(IOException ex) {
+								    ex.printStackTrace();
+								}
 							}
-							
 							if (listener != null) listener.acceptResult(result);
 						}
 						public void processingReweavableState() {
@@ -150,7 +156,7 @@ public class CaesarWeaver {
 				}
 			};
 			weaver.weave(provider);
-			
+
 		}
 		catch( AbortException e )
 		{
@@ -165,6 +171,90 @@ public class CaesarWeaver {
 			else {
 				throw new UnpositionedError(
 						new Message(CaesarMessages.WEAVER_ERROR, e.getMessage()));
+			}
+		}
+	}
+	
+	protected class CaesarBcelWeaver extends BcelWeaver {
+		
+		BcelWorld world = null;
+		
+		public CaesarBcelWeaver(BcelWorld world) {
+	        super(world);
+	        this.world = world;
+	    }
+	        
+	    public CaesarBcelWeaver() {
+	    	this(new BcelWorld());
+	    }
+	    
+	    public Collection weave(IClassFileProvider input) throws IOException {
+	    	Collection wovenClassNames = new ArrayList();
+	    	IWeaveRequestor requestor = input.getRequestor();
+
+	    	requestor.processingReweavableState();
+			prepareToProcessReweavableState();
+			// clear all state from files we'll be reweaving
+			for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
+			    UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+				String className = classFile.getClassName();
+			    BcelObjectType classType = getClassType(className);			            
+				processReweavableStateIfPresent(className, classType);
+			}
+									
+			requestor.addingTypeMungers();
+			//XXX this isn't quite the right place for this...
+			for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
+			    UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+			    String className = classFile.getClassName();
+			    addTypeMungers(className);
+			}
+
+			requestor.weavingAspects();
+			// first weave into aspects
+			for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
+			    UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+				String className = classFile.getClassName();
+			    BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(className));
+			    if (classType.isAspect()) {
+			        weaveAndNotify(classFile, classType,requestor);
+			        wovenClassNames.add(className);
+			    }
+			}
+
+			requestor.weavingClasses();
+			// then weave into non-aspects
+			for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
+			    UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+				String className = classFile.getClassName();
+			    BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(className));
+			    if (! classType.isAspect()) {
+			        weaveAndNotify(classFile, classType, requestor);
+			        wovenClassNames.add(className);
+			    }
+			}
+			
+			//addedClasses = new ArrayList();
+			//deletedTypenames = new ArrayList();
+			requestor.weaveCompleted();
+			
+	    	return wovenClassNames;
+	    }
+	    
+		private void weaveAndNotify(UnwovenClassFile classFile,
+				BcelObjectType classType, IWeaveRequestor requestor)
+				throws IOException {
+			LazyClassGen clazz = weaveWithoutDump(classFile, classType);
+			classType.finishedWith();
+			// clazz is null if the classfile was unchanged by weaving...
+			if (clazz != null) {
+				UnwovenClassFile[] newClasses = getClassFilesFor(clazz);
+				for (int i = 0; i < newClasses.length; i++) {
+					requestor.acceptResult(newClasses[i]);
+				}
+			} else {
+				requestor.acceptResult(null);
+				//requestor.acceptResult(classFile);
 			}
 		}
 	}
