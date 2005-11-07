@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarWeaver.java,v 1.9 2005-11-02 12:49:57 thiago Exp $
+ * $Id: CaesarWeaver.java,v 1.10 2005-11-07 19:18:24 thiago Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -78,7 +78,17 @@ public class CaesarWeaver {
 	{
 		unwovenClasses.add(new UnwovenClassFile(filename,bytes));
 	}
+	
+	public List<UnwovenClassFile> getUnwovenClasses() {
+		return this.unwovenClasses;
+	}
+	
 	public void	performWeaving(CaesarBcelWorld world) throws IOException, PositionedError, UnpositionedError
+	{
+		performWeaving(world, null);
+	}
+	
+	public void	performWeaving(CaesarBcelWorld world, final IWeaveRequestor listener) throws IOException, PositionedError, UnpositionedError
 	{
 		try{
 		    /*
@@ -99,6 +109,7 @@ public class CaesarWeaver {
 			for (int i = 0; i < unwovenClasses.size(); i++)
 				weaver.addClassFile((UnwovenClassFile) unwovenClasses.get(i));
 			weaver.prepareForWeave();
+			
 			IClassFileProvider provider = new IClassFileProvider() {
 
 				public Iterator getClassFileIterator() {
@@ -118,16 +129,22 @@ public class CaesarWeaver {
 							    ex.printStackTrace();
 							}
 							
+							if (listener != null) listener.acceptResult(result);
 						}
 						public void processingReweavableState() {
+							if (listener != null) listener.processingReweavableState();
 						}
 						public void addingTypeMungers() {
+							if (listener != null) listener.addingTypeMungers();
 						}
 						public void weavingAspects() {
+							if (listener != null) listener.weavingAspects();
 						}
 						public void weavingClasses() {
+							if (listener != null) listener.weavingClasses();
 						}
 						public void weaveCompleted() {
+							if (listener != null) listener.weaveCompleted();
 						}
 					};
 				}
