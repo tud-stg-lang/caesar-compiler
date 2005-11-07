@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JTypeDeclaration.java,v 1.52 2005-10-12 07:58:18 gasiunas Exp $
+ * $Id: JTypeDeclaration.java,v 1.53 2005-11-07 10:03:03 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -834,6 +834,16 @@ public abstract class JTypeDeclaration extends JMemberDeclaration {
     		self = constructContext(this.getSourceClass().getOwnerContext());
     	}
     	return self;
+    }
+    
+    /**
+     * Allows to override automatically determined parent context. 
+     * Needed for anonymous classes 
+     * 
+     * @param ctx
+     */
+    public void setContext(CContext parentCtx) {
+    	self = constructContext(parentCtx);    	
     }
     
     public void clearContext() {

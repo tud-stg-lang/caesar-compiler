@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JQualifiedAnonymousCreation.java,v 1.9 2005-10-12 07:58:17 gasiunas Exp $
+ * $Id: JQualifiedAnonymousCreation.java,v 1.10 2005-11-07 10:03:03 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -182,6 +182,7 @@ public class JQualifiedAnonymousCreation extends JExpression {
             owner.getQualifiedName()
                 + "$"
                 + context.getClassContext().getNextSyntheticIndex());
+        decl.setContext(context);
 
         CClass superCClass = type.getCClass();
 
