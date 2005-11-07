@@ -219,8 +219,37 @@ public class CaesarWildTypePattern extends WildTypePattern {
 		return new NamePattern(type.getClassName());
 	}
 	
-	
 	protected String getMixinPattern(CClass cclass) {
+
+        StringBuffer strBuf = new StringBuffer();
+        String qualifiedName = cclass.getQualifiedName();
+        String packagePrefix = "";
+        String type = qualifiedName;
+	        
+        int i = qualifiedName.lastIndexOf('/');
+	        
+        if(i >= 0) {
+            packagePrefix = qualifiedName.substring(0, i+1);
+            type = qualifiedName.substring(i+1, qualifiedName.length());
+        }
+	        
+        strBuf.append(packagePrefix);
+	        
+        StringBuffer mixinName = new StringBuffer();
+        StringTokenizer tok = new StringTokenizer(type, "$");
+        while(tok.hasMoreTokens()) {
+        	strBuf.append(tok.nextToken() + "_Impl*");
+
+            if(tok.hasMoreTokens())
+                strBuf.append('$');
+        }
+
+        strBuf.append("_Mixin*");
+        
+        return strBuf.toString();
+	}
+	
+	protected String getMixinPatternOld(CClass cclass) {
 
         StringBuffer strBuf = new StringBuffer();
         String qualifiedName = cclass.getQualifiedName();
