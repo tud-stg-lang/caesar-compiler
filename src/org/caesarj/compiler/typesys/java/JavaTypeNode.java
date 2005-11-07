@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JavaTypeNode.java,v 1.7 2005-11-07 09:26:50 gasiunas Exp $
+ * $Id: JavaTypeNode.java,v 1.8 2005-11-07 13:51:04 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.java;
@@ -201,7 +201,7 @@ public class JavaTypeNode {
              */ 
             if(mixin.getOuter() != null) {   
                 setOuter(compilationGraph.getJavaTypeNode(mixin.getOuter()));
-                setOuter(getMostSpecificOuter(getOuter()));
+                /*   setOuter(getMostSpecificOuter(getOuter()));
                 
                 Collection leafs = new LinkedList();
                 this.collectLeafs(leafs);
@@ -214,8 +214,8 @@ public class JavaTypeNode {
                         setOuter(nOuter);
                         break;
                     }
-                    nOuter = nOuter.getParent();
-                }
+                    nOuter = nOuter.getParent(); 
+                }*/
             }
             
             
