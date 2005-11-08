@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CSourceMethod.java,v 1.9 2005-09-20 10:24:51 meffert Exp $
+ * $Id: CSourceMethod.java,v 1.10 2005-11-08 10:35:56 meffert Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.CodeEnv;
 import org.caesarj.classfile.CodeInfo;
+import org.caesarj.classfile.LineNumberInfo;
 import org.caesarj.classfile.LocalVariableScope;
 import org.caesarj.classfile.MethodInfo;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
@@ -300,9 +301,19 @@ public class CSourceMethod extends CMethod {
 
     code.popLocalVariableScope(scope);
     
+    // do not generate linenumbertable for "synthetic" methods
+    LineNumberInfo[] lineNumbers = code.getLineNumbers();
+    if(isSynthetic() && lineNumbers.length > 0){
+    	// for synthetic methods generate a dummy linenumberentry to avoid 
+    	//  popup-error-message "missing linenumber information"
+    	LineNumberInfo tempLine = (code.getLineNumbers())[0];
+    	LineNumberInfo dummyLine = new LineNumberInfo((short)1, tempLine.getInstruction());
+    	lineNumbers = new LineNumberInfo[]{dummyLine};
+    }
+    
     CodeInfo            info = new CodeInfo(code.getInstructionArray(),
                                             code.getHandlers(),
-                                            code.getLineNumbers(),
+                                            lineNumbers,
                                             code.getLocalVariableInfos());
 
     code.release();
