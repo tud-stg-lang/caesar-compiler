@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjDeployStatement.java,v 1.7 2005-05-31 08:58:38 meffert Exp $
+ * $Id: CjDeployStatement.java,v 1.8 2005-11-08 10:16:39 meffert Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.statement;
@@ -149,11 +149,14 @@ public class CjDeployStatement extends JStatement implements CaesarConstants {
 	private JStatement createTryFinallyBlock(CBodyContext context) {
 		JStatement[] tryBody = { createDeployStatement(context), body };
 		JStatement[] finallyBody = { createUndeployStatement()};
-
+		
+		TokenReference where = getTokenReference();
+		//TokenReference where = TokenReference.NO_REF;
+		
 		return new JTryFinallyStatement(
-			getTokenReference(),
-			new JBlock(getTokenReference(), tryBody, null),
-			new JBlock(getTokenReference(), finallyBody, null),
+			where,
+			new JBlock(where, tryBody, null),
+			new JBlock(TokenReference.NO_REF, finallyBody, null),
 			null);
 	}
 
@@ -233,7 +236,8 @@ public class CjDeployStatement extends JStatement implements CaesarConstants {
 			return new JEmptyStatement(getTokenReference(), null);
 		}
 
-        TokenReference where = getTokenReference();
+        //TokenReference where = getTokenReference();
+		TokenReference where = TokenReference.NO_REF;
 
         JExpression prefix =
             new JTypeNameExpression(
@@ -245,7 +249,7 @@ public class CjDeployStatement extends JStatement implements CaesarConstants {
                 where,
                 prefix,
                 "undeployBlock",
-                new JExpression[] {new JNameExpression(getTokenReference(), deployVariableName)});
+                new JExpression[] {new JNameExpression(where, deployVariableName)});
                 
         return new JExpressionStatement(where, deployStatementCall, null);
 
