@@ -45,5 +45,28 @@
         	}
         </code>
     </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcanonym003" description="Test access to local vars">
+		<test>			
+			new AAA().m(42);
+		</test>
+        <code>
+        	public cclass AAA {
+
+ 				public int o = 1;
+
+        		public void m(int y) {
+        		    final int x=y+1;
+        			IfcA a = new IfcA() {
+        				public void foo() {
+        				   System.out.println(""+ (x+o));        					
+        				}
+        			};
+        			a.foo();
+        		}
+			}
+        </code>
+    </compile-run>
     	    
 </testsuite>
