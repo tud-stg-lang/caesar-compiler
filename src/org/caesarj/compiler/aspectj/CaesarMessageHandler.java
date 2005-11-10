@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarMessageHandler.java,v 1.9 2005-11-03 11:40:10 gasiunas Exp $
+ * $Id: CaesarMessageHandler.java,v 1.10 2005-11-10 14:34:53 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -114,7 +114,9 @@ public class CaesarMessageHandler implements IMessageHandler, CaesarConstants {
 	 * Tells whether the given message kind should be ignored by the handler.
 	 */
 	public boolean isIgnoring(Kind kind) {
-		return kind == IMessage.INFO;
+		return kind == IMessage.INFO ||
+			   kind == IMessage.WEAVEINFO ||
+			   kind == IMessage.DEBUG;
 	}
 
 }

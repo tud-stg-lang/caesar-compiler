@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.111 2005-11-07 20:28:52 thiago Exp $
+ * $Id: Main.java,v 1.112 2005-11-10 14:34:53 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -276,6 +276,8 @@ public class Main extends MainSuper implements Constants {
         byteCodeMap = new ByteCodeMap(options.destination);
         // KOPI step - generate byte code 
         genCode(environment.getTypeFactory(), tree);
+        
+        CodeSequence.endSession();
          
         // CJ VC
         genMixinCopies(environment);
@@ -288,9 +290,8 @@ public class Main extends MainSuper implements Constants {
               
         // CJ Aspect: Weaving
         if(!noWeaveMode())
-            weaveGeneratedCode(environment);               
-               
-        CodeSequence.endSession();
+            weaveGeneratedCode(environment); 
+        if(errorFound) return false;
         
         // CJ Aspect: structure model postprocessing
         if(Main.buildAsm){
@@ -541,32 +542,37 @@ public class Main extends MainSuper implements Constants {
         KjcEnvironment environment,
         JCompilationUnit[] tree) {
     	
-        Log.verbose("prepare dynamic deployment");
-        // Modify and generate support classes for dynamic deployment.
-        GenerateDeploymentSupport genDeplSupport = new GenerateDeploymentSupport(this, environment);
-        genDeplSupport.generateSupportClasses();
-        
-        Log.verbose("join deployment support classes");
-        //Join generated deployment support declarations 
-        for (int i = 0; i < tree.length; i++) {
-            JCompilationUnit cu = tree[i];
-            JoinDeploymentSupport.prepareForDynamicDeployment(cu);
-        }
-        
-        Log.verbose("prepare static class deployment");
-        // Prepare for static class deployment
-        StaticDeploymentPreparation statDeplPrep = new StaticDeploymentPreparation(this, environment);
-        for (int i = 0; i < tree.length; i++) {
-            JCompilationUnit cu = tree[i];
-            statDeplPrep.prepareForStaticDeployment(cu);
-        }
-        
-        Log.verbose("prepare pointcut declarations");
-        // Prepare the pointcut declarations
-        for (int i = 0; i < tree.length; i++) {
-            JCompilationUnit cu = tree[i];
-            PointcutSupport.preparePointcutDeclarations(cu);
-        }       
+    	try {
+	        Log.verbose("prepare dynamic deployment");
+	        // Modify and generate support classes for dynamic deployment.
+	        GenerateDeploymentSupport genDeplSupport = new GenerateDeploymentSupport(this, environment);
+	        genDeplSupport.generateSupportClasses();
+	        
+	        Log.verbose("join deployment support classes");
+	        //Join generated deployment support declarations 
+	        for (int i = 0; i < tree.length; i++) {
+	            JCompilationUnit cu = tree[i];
+	            JoinDeploymentSupport.prepareForDynamicDeployment(cu);
+	        }
+	        
+	        Log.verbose("prepare static class deployment");
+	        // Prepare for static class deployment
+	        StaticDeploymentPreparation statDeplPrep = new StaticDeploymentPreparation(this, environment);
+	        for (int i = 0; i < tree.length; i++) {
+	            JCompilationUnit cu = tree[i];
+	            statDeplPrep.prepareForStaticDeployment(cu);
+	        }
+	        
+	        Log.verbose("prepare pointcut declarations");
+	        // Prepare the pointcut declarations
+	        for (int i = 0; i < tree.length; i++) {
+	            JCompilationUnit cu = tree[i];
+	            PointcutSupport.preparePointcutDeclarations(cu);
+	        }
+    	}
+    	catch (PositionedError e) {
+    		reportTrouble(e);
+    	}
     }
     
     protected void transformConstructors(
@@ -782,6 +788,7 @@ public class Main extends MainSuper implements Constants {
     	/* Reset the world for the weaver, so that it does not see source files */
         CaesarBcelWorld bcelWorld = CaesarBcelWorld.createInstance();
         bcelWorld.setClassReader(env.getClassReader());
+        bcelWorld.setMessageHandler(messageHandler);
     	// Make sure the weaver is using a model
         if (asmManager != null) {
             bcelWorld.getWorld().setModel(asmManager.getHierarchy());
@@ -812,6 +819,9 @@ public class Main extends MainSuper implements Constants {
             Log.verbose("...weaver failed");
             reportTrouble(e);
         }
+        
+        /* deletes the singleton bcelworld */
+        CaesarBcelWorld.deleteInstance();
     }
 
     protected void performWeaving(CaesarBcelWorld bcelWorld) 
