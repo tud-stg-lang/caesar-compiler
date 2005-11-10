@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectRegistryServer.java,v 1.3 2005-09-14 08:29:52 gasiunas Exp $
+ * $Id: AspectRegistryServer.java,v 1.4 2005-11-10 14:36:08 gasiunas Exp $
  */
 
 package org.caesarj.runtime.rmi;
@@ -44,8 +44,6 @@ public class AspectRegistryServer implements AspectRegistryServerIfc {
 	 */
 	public void deployRemote(Object aspObj, String regClassName) {
 		try {
-			System.out.println("Deploying object on registry " + regClassName);
-			
 			Class cls = Class.forName(regClassName);
 			Method mth = cls.getMethod("aspectOf", new Class[0]);
 			AspectRegistryIfc reg = (AspectRegistryIfc)mth.invoke(null, (Object[])null);
@@ -63,8 +61,6 @@ public class AspectRegistryServer implements AspectRegistryServerIfc {
 	 */
 	public void undeployRemote(Object aspObj, String regClassName) {
 		try {
-			System.out.println("Undeploying object from registry " + regClassName);
-			
 			Class cls = Class.forName(regClassName);
 			Method mth = cls.getMethod("aspectOf", new Class[0]);
 			AspectRegistryIfc reg = (AspectRegistryIfc)mth.invoke(null, (Object[])null);
