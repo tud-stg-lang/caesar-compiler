@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JQualifiedAnonymousCreation.java,v 1.10 2005-11-07 10:03:03 gasiunas Exp $
+ * $Id: JQualifiedAnonymousCreation.java,v 1.11 2005-11-10 15:06:03 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -35,6 +35,7 @@ import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeLabel;
 import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
@@ -110,6 +111,11 @@ public class JQualifiedAnonymousCreation extends JExpression {
      */
     public JExpression analyse(CExpressionContext context)
         throws PositionedError {
+    	
+    	if (context.getClassContext().getCClass().isMixin()) {
+    		throw new PositionedError(getTokenReference(), CaesarMessages.ANONYMOUS_CLASS_IN_CCLASS);
+    	}
+    	
         TypeFactory factory = context.getTypeFactory();
 
         context = new CExpressionContext(context, context.getEnvironment());

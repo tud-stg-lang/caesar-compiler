@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JUnqualifiedAnonymousCreation.java,v 1.11 2005-11-07 10:03:03 gasiunas Exp $
+ * $Id: JUnqualifiedAnonymousCreation.java,v 1.12 2005-11-10 15:06:03 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -34,6 +34,7 @@ import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.ast.visitor.IVisitor;
 import org.caesarj.compiler.codegen.CodeSequence;
+import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.context.CExpressionContext;
 import org.caesarj.compiler.context.GenerationContext;
@@ -106,6 +107,11 @@ public class JUnqualifiedAnonymousCreation extends JExpression {
      */
     public JExpression analyse(CExpressionContext context)
         throws PositionedError {
+    	
+    	if (context.getClassContext().getCClass().isMixin()) {
+    		throw new PositionedError(getTokenReference(), CaesarMessages.ANONYMOUS_CLASS_IN_CCLASS);
+    	}
+    	
         TypeFactory factory = context.getTypeFactory();
         CType[] argsType;
         CClass owner = context.getClassContext().getCClass();
@@ -142,8 +148,6 @@ public class JUnqualifiedAnonymousCreation extends JExpression {
                 + "$"
                 + context.getClassContext().getNextSyntheticIndex());
         decl.setContext(context);
-
-        CClass superCClass = type.getCClass();
 
         if (type.getCClass().isInterface()) {
             superClass =

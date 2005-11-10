@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: CaesarMessages.msg,v 1.35 2005-11-02 09:50:59 gasiunas Exp $
+ * $Id: CaesarMessages.msg,v 1.36 2005-11-10 15:06:03 gasiunas Exp $
  */
 
 package org.caesarj.compiler.constants
@@ -161,4 +161,7 @@ error	CANNOT_INHERIT_FROM_CCLASS
 		"Cannot inherit from cclass \"{0}\" in this context"		
 		
 error	CANNOT_INHERIT_FROM_OWN_OUTER
-		"Class \"{0}\" inherits from its own enclosing class."	
+		"Class \"{0}\" inherits from its own enclosing class."
+		
+error   ANONYMOUS_CLASS_IN_CCLASS
+		"Anonymous classes cannot be used in a context of a cclass."	
