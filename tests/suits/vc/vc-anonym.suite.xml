@@ -54,13 +54,33 @@
         <code>
         	public cclass AAA {
 
- 				public int o = 1;
-
-        		public void m(int y) {
+ 				public void m(int y) {
         		    final int x=y+1;
         			IfcA a = new IfcA() {
         				public void foo() {
-        				   System.out.println(""+ (x+o));        					
+        				   System.out.println("" + x);        					
+        				}
+        			};
+        			a.foo();
+        		}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcanonym004" description="Test access to outer fields">
+		<test>			
+			new AAA().m();
+		</test>
+        <code>
+        	public cclass AAA {
+
+ 				public int o = 1;
+
+        		public void m() {
+        		    IfcA a = new IfcA() {
+        				public void foo() {
+        				   System.out.println("" + o);        					
         				}
         			};
         			a.foo();
