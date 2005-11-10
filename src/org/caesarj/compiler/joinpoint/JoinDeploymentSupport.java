@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JoinDeploymentSupport.java,v 1.3 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: JoinDeploymentSupport.java,v 1.4 2005-11-10 14:36:21 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -46,7 +46,7 @@ public class JoinDeploymentSupport implements CaesarConstants {
 	/**
 	 * Generates for every nested crosscutting class the corresponding deployment support classes.
 	 */
-	public static void prepareForDynamicDeployment(JCompilationUnit cu) {
+	public static void prepareForDynamicDeployment(JCompilationUnit cu)  throws PositionedError {
 		boolean bNewDelarations = false;
 		CContext ownerCtx = cu.getContext();
 		
@@ -67,14 +67,9 @@ public class JoinDeploymentSupport implements CaesarConstants {
 					bNewDelarations = true;
 					
 					// join the modified and new classes
-					try {
-						aspectIfc.join(ownerCtx);
-						registryCls.join(ownerCtx);	
-						caesarClass.getMixinIfcDeclaration().join(ownerCtx);
-					}
-					catch (PositionedError err) {
-						System.out.println(err.getMessage());
-					}
+					aspectIfc.join(ownerCtx);
+					registryCls.join(ownerCtx);	
+					caesarClass.getMixinIfcDeclaration().join(ownerCtx);
 				}
 				
 				if (caesarClass.getInners().length > 0) {
@@ -88,7 +83,7 @@ public class JoinDeploymentSupport implements CaesarConstants {
 		}
 	}
 	
-	private static void prepareForDynamicDeployment(CjClassDeclaration cd, KjcEnvironment environment)
+	private static void prepareForDynamicDeployment(CjClassDeclaration cd, KjcEnvironment environment)  throws PositionedError
 	{
 	    boolean bNewInners = false;
 	    CContext ownerCtx = (CContext)cd.getContext();
@@ -110,14 +105,9 @@ public class JoinDeploymentSupport implements CaesarConstants {
 					bNewInners = true;
 										
 					//join the modified and new classes
-					try {
-						aspectIfc.join(ownerCtx);
-						registryCls.join(ownerCtx);
-						innerCaesarClass.getMixinIfcDeclaration().join(ownerCtx);
-					}
-					catch (PositionedError err) {
-						System.out.println(err.getMessage());
-					}
+					aspectIfc.join(ownerCtx);
+					registryCls.join(ownerCtx);
+					innerCaesarClass.getMixinIfcDeclaration().join(ownerCtx);					
 				}
 
 				//handle the inners of the inners
@@ -145,17 +135,12 @@ public class JoinDeploymentSupport implements CaesarConstants {
 	 * @param decl			array of type declarations
 	 * @param ownerCtx		owner context
 	 */
-	private static void rejoinMixinInterfaces(JTypeDeclaration[] decl, CContext ownerCtx) {
+	private static void rejoinMixinInterfaces(JTypeDeclaration[] decl, CContext ownerCtx) throws PositionedError {
 		for (int i = 0; i < decl.length; i++) {
 			if (decl[i] instanceof CjVirtualClassDeclaration) {
 				CjVirtualClassDeclaration caesarClass =	(CjVirtualClassDeclaration)decl[i];
 				if (caesarClass.isCrosscutting()) {
-					try {
-						caesarClass.getMixinIfcDeclaration().join(ownerCtx);
-					}
-					catch (PositionedError err) {
-						System.out.println(err.getMessage());
-					}	
+					caesarClass.getMixinIfcDeclaration().join(ownerCtx);						
 				}
 			}
 		}
