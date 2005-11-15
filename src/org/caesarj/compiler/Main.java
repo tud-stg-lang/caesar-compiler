@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.112 2005-11-10 14:34:53 gasiunas Exp $
+ * $Id: Main.java,v 1.113 2005-11-15 16:52:23 klose Exp $
  */
 
 package org.caesarj.compiler;
@@ -376,7 +376,7 @@ public class Main extends MainSuper implements Constants {
                     item.getQualifiedName(),
                     item.getParent().getQualifiedName(),
                     item.getOuter() != null ? item.getOuter().getQualifiedName() : null, 
-                    environment.getCaesarTypeSystem()
+                    environment
                 );
             }
             catch (MixerException e) {

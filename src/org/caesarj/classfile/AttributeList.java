@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AttributeList.java,v 1.4 2005-01-24 16:52:57 aracic Exp $
+ * $Id: AttributeList.java,v 1.5 2005-11-15 16:52:23 klose Exp $
  */
 
 package org.caesarj.classfile;
@@ -115,7 +115,7 @@ import org.caesarj.util.Utils;
     int		count = in.readUnsignedShort();
 
     if (count > 0) {
-      Vector	attributes = new Vector();
+      Vector<Attribute>	attributes = new Vector<Attribute>();
 
       for (int i = 0; i < count; i += 1) {
 	if (noCode) {  
@@ -146,7 +146,7 @@ import org.caesarj.util.Utils;
   {
     int		count = in.readUnsignedShort();
 
-    Vector	attributes = new Vector(count);
+    Vector<Attribute>	attributes = new Vector<Attribute>(count);
     for (int i = 0; i < count; i += 1) {
       attributes.addElement(Attribute.readCodeInfoAttribute(in, cp, insns));
     }

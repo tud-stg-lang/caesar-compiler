@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ClassModifyingVisitor.java,v 1.16 2005-03-31 14:06:10 thiago Exp $
+ * $Id: ClassModifyingVisitor.java,v 1.17 2005-11-15 16:52:23 klose Exp $
  */
 
 package org.caesarj.mixer.intern;
 
+import java.util.Collection;
 import java.util.Vector;
 
 import org.aspectj.apache.bcel.Constants;
@@ -76,7 +77,27 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 	protected String 	oldSuperclassName;
 	protected String 	outerOfOldSuper; 
 	protected String 	outerOfNewSuper;
+
+    private Collection<String> anonymousInners = new Vector<String>();
 		
+    static class ClassStructure{
+        public final String 
+            className,
+            outerOfClassName,
+            superName,
+            outerOfSuper;
+            
+        public ClassStructure(final String className,
+                final String outerOfClassName, final String superName,
+                final String outerOfSuper) {
+            super();
+            this.className = className;
+            this.outerOfClassName = outerOfClassName;
+            this.superName = superName;
+            this.outerOfSuper = outerOfSuper;
+        }
+    }
+    
 	/**
 	 * Create a visitor to modify a class file
 	 * @param oldClassName	The original class name
@@ -102,7 +123,10 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 	}
 		
 	protected JavaClass transform(JavaClass clazz) throws MixerException {
-		oldOuterClassName =  Tools.getOuterClass(clazz,oldClassName);
+        // empty collection of anonymous inner classes
+        anonymousInners = new Vector<String>();
+
+        oldOuterClassName = Tools.getOuterClass(clazz,oldClassName);
 		oldSuperclassName = clazz.getSuperclassName();
 		
 		// create a copy as work base
@@ -126,7 +150,7 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 		
 		// Delete all inner class references 
 		Attribute[] atts = newClass.getAttributes();
-		Vector	v = new Vector();
+		Vector<Attribute>	v = new Vector<Attribute>();
 		for (int i = 0; i < atts.length; i++) {
 			Attribute attribute = atts[i];
 			if (attribute.getTag() == Constants.ATTR_INNER_CLASSES){
@@ -137,7 +161,7 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 			}
 			v.add( attribute );
 		}
-		atts = (Attribute[]) v.toArray(new Attribute[0]);
+		atts = v.toArray(new Attribute[v.size()]);
 		newClass.setAttributes(atts);
 		
 
@@ -159,7 +183,7 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 	 * @param clazz	The class to modify	
 	 * @return	The class with removed methods
 	 */
-	JavaClass removeFactoryMethods( JavaClass clazz ){
+	protected JavaClass removeFactoryMethods( JavaClass clazz ){
 		ClassGen gen = new ClassGen(clazz);
 		
 		Method[] methods = gen.getMethods();
@@ -177,7 +201,8 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 	 * Checks method references to super-constructors and outerclass methods
 	 * and modifies them to refer to the correct new outer classes. 
 	 */
-	void modifyMethodRefs( JavaClass clazz ){
+	protected  void modifyMethodRefs( JavaClass clazz ){
+   
 		ConstantPool cp = clazz.getConstantPool();
 		for (int i=1; i<cp.getLength(); i++){
 			Constant c = cp.getConstant(i);
@@ -239,9 +264,10 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 		// Change the type of the local variable this
 		if (variable.getName().equals("this") ){
 			int index = variable.getSignatureIndex();
-			variable.getConstantPool().setConstant(index, 
-					new ConstantUtf8( 
-							new ObjectType(newClassName).getSignature()));
+            ConstantPool cp = variable.getConstantPool();
+            Constant newSignature = new ConstantUtf8(
+                    new ObjectType(newClassName).getSignature()); 
+			cp.setConstant(index, newSignature );
 		} 
 		super.visitLocalVariable(variable);
 	}
@@ -250,51 +276,78 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 		// and of outer this
 		if (field.getName().startsWith("this$")){
 			int index = field.getSignatureIndex();
-			field.getConstantPool().setConstant(index,
-					new ConstantUtf8( 
-							new ObjectType(newOuterClassName).getSignature()));
+            ConstantPool cp = field.getConstantPool();
+            Constant newSignature = new ConstantUtf8( 
+                    new ObjectType(newOuterClassName).getSignature()); 
+            cp.setConstant(index, newSignature );
 		}
 		super.visitField(field);
 	}
 	
 	
-	public void visitMethod(Method obj) {
+	public void visitMethod(Method method) {
 		// we search for outer-class-access functions, which
 		// are static, have exactly one argument of this class' type and
 		// return an instance of the outer class' type
-		if (obj.getName().startsWith("access$")){
-			if (!obj.isStatic() ) return;
+		if (method.getName().startsWith("access$")){
+			if (!method.isStatic() ) return;
 			
-			String returnType = Type.getReturnType(obj.getSignature()).toString(); 
+			String returnType = Type.getReturnType(method.getSignature()).toString(); 
 			
 			if (!Tools.sameClass(returnType,oldOuterClassName)) return;
-			Type[]	argTypes = Type.getArgumentTypes(obj.getSignature());
+			Type[]	argTypes = Type.getArgumentTypes(method.getSignature());
 			if (argTypes.length != 1) return;
 			
 			// construct the new signature & use it to overwrite the old one
-			String newSignature = "(L"+newClassName+";)L"+newOuterClassName+";";// + " Just a little test";
-			
-			int index = obj.getSignatureIndex();
-			
-			obj.getConstantPool().setConstant(index, new ConstantUtf8(newSignature));
+			String   newSignature = "(L"+newClassName+";)L"+newOuterClassName+";";
+			int      index = method.getSignatureIndex();
+			method.getConstantPool().setConstant(index, new ConstantUtf8(newSignature));
 		}
 		// and we check for constructors 
-		else if (obj.getName().equals("<init>")){
-			Type[]	argTypes = Type.getArgumentTypes(obj.getSignature());
+		else if (method.getName().equals("<init>")){
+			Type[]	argTypes = Type.getArgumentTypes(method.getSignature());
 			if (argTypes.length != 1) return;
 			// modify the signature if neccessary
 			if (Tools.sameClass(argTypes[0].toString(),oldOuterClassName)){
-				// construct the new signature & use it to overwrite the old one
-				String newSignature = "(L"+newOuterClassName+";)V";
-				
-				int index = obj.getSignatureIndex();
-				
-				obj.getConstantPool().setConstant(index, new ConstantUtf8(newSignature));
+				// construct the new signature and use it to overwrite the old one
+				String  newSignature = "(L"+newOuterClassName+";)V";
+				int     index = method.getSignatureIndex();
+				method.getConstantPool().setConstant(index, new ConstantUtf8(newSignature));
 			}
-			// check code for super-cosntructor call and adjust its signature
-			Code code = obj.getCode();
-			
+			// KK Check code for super-cosntructor call and adjust its signature?
 		}
 	}
+	public void visitCode(Code obj) {
+        // TODO Auto-generated method stub
+        super.visitCode(obj);
+    }
+    
+    public void visitInnerClasses(InnerClasses obj) {
+        ConstantPool cp = obj.getConstantPool();
+        InnerClass[] innerClasses = obj.getInnerClasses();
+        for (int i = 0; i < innerClasses.length; i++) {
+            InnerClass inner = innerClasses[i];
+            String  innerName = Tools.loadName(inner.getInnerNameIndex(), cp),
+                    className = Tools.loadClassName(inner.getInnerClassIndex(), cp);
+            
+            if (innerName.equals("")){
+                String shortName = className.split("\\$")[1];
+                try{
+                    Integer.valueOf(shortName);
+                    anonymousInners .add(className);
+                } catch(NumberFormatException e){                  
+                }
+            }
+        }
+       // super.visitInnerClasses(obj);
+   }
 
+    
+    /**
+     * Returns the anonymous inner classes that where found while  
+     * transforming the last class.
+     */
+    public Collection<String> getAnonymousInnerClasses() {
+        return anonymousInners;
+    }
 }

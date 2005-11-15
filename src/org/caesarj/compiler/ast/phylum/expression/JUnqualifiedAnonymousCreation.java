@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JUnqualifiedAnonymousCreation.java,v 1.12 2005-11-10 15:06:03 gasiunas Exp $
+ * $Id: JUnqualifiedAnonymousCreation.java,v 1.13 2005-11-15 16:52:22 klose Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.expression;
@@ -109,7 +109,7 @@ public class JUnqualifiedAnonymousCreation extends JExpression {
         throws PositionedError {
     	
     	if (context.getClassContext().getCClass().isMixin()) {
-    		throw new PositionedError(getTokenReference(), CaesarMessages.ANONYMOUS_CLASS_IN_CCLASS);
+    	  // KK throw new PositionedError(getTokenReference(), CaesarMessages.ANONYMOUS_CLASS_IN_CCLASS);
     	}
     	
         TypeFactory factory = context.getTypeFactory();

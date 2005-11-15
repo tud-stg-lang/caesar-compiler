@@ -20,14 +20,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ClassGenerator.java,v 1.8 2005-01-24 16:53:02 aracic Exp $
+ * $Id: ClassGenerator.java,v 1.9 2005-11-15 16:52:23 klose Exp $
  */
 
 package org.caesarj.mixer;
 
-import org.caesarj.compiler.typesys.CaesarTypeSystem;
-import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.compiler.ByteCodeMap;
+import org.caesarj.compiler.KjcEnvironment;
+import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.mixer.intern.ClassModifier;
 
 public class ClassGenerator {
@@ -53,7 +53,7 @@ public class ClassGenerator {
 	    JavaQualifiedName newClassQN,
 	    JavaQualifiedName newSuperQN,
 		JavaQualifiedName newOuterQN,
-		CaesarTypeSystem	typeSystem
+        KjcEnvironment  env
 	) throws MixerException {    	
     	/*
     	System.out.println("Mixing "+newClassQN);
@@ -66,7 +66,7 @@ public class ClassGenerator {
             newClassQN.toString(), 
             newSuperQN == null? "" : newSuperQN.toString(), 
             newOuterQN == null? "" : newOuterQN.toString(),
-            typeSystem
+            env
         );		
     }
     
@@ -83,8 +83,8 @@ public class ClassGenerator {
 			String newClass, 
 			String newSuperclass, 
 			String newOuterClass,
-			CaesarTypeSystem typeSystem ) throws MixerException {
-		_modifier.modify(originalClass,newClass,newSuperclass,newOuterClass, typeSystem);
+            KjcEnvironment env) throws MixerException {
+		_modifier.modify(originalClass,newClass,newSuperclass,newOuterClass, env);
 	}
 	
 }

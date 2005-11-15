@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ClassPath.java,v 1.5 2005-09-13 16:07:07 gasiunas Exp $
+ * $Id: ClassPath.java,v 1.6 2005-11-15 16:52:23 klose Exp $
  */
 
 package org.caesarj.classfile;
@@ -74,7 +74,7 @@ public class ClassPath {
     }
 
     if (extdirs != null) {
-      Vector		container = new Vector();
+      Vector<ClassDirectory>		container = new Vector<ClassDirectory>();
       ClassDirectory[]  tmp;
       File              extDirectory = new File(extdirs);
       
@@ -111,7 +111,7 @@ public class ClassPath {
    * @param	classPath	the directory names defining the class path
    */
   private static ClassDirectory[] loadClassPath(String classPath) {
-    Vector		container = new Vector();
+    Vector<ClassDirectory>	container = new Vector<ClassDirectory>();
 
     // load specified class directories
     StringTokenizer	entries;
@@ -465,5 +465,5 @@ class Data {
 
   private InputStream	is;
   private byte[]	ba;
-  private static Stack	stack = new Stack();
+  private static Stack<byte[]>	stack = new Stack<byte[]>();
 }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ClassModifier.java,v 1.7 2005-03-31 14:06:10 thiago Exp $
+ * $Id: ClassModifier.java,v 1.8 2005-11-15 16:52:23 klose Exp $
  */
 
 package org.caesarj.mixer.intern;
@@ -34,8 +34,14 @@ import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.caesarj.compiler.ByteCodeMap;
+import org.caesarj.compiler.KjcEnvironment;
+import org.caesarj.compiler.export.CCjSourceClass;
+import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
+import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
+import org.caesarj.compiler.typesys.java.JavaTypeGraph;
 import org.caesarj.compiler.typesys.java.JavaTypeNode;
 import org.caesarj.mixer.MixerException;
 
@@ -69,7 +75,7 @@ public class ClassModifier
 			String newClassName, 
 			String newSuperclassName, 
 			String outerClassName,
-			CaesarTypeSystem typeSystem) throws MixerException
+            KjcEnvironment env) throws MixerException
 	{
 		JavaClass	clazz = null;
 		
@@ -87,33 +93,33 @@ public class ClassModifier
 		String oldSuperclassName = clazz.getSuperclassName().replace('.','/');
 		
 		// use the typesystem to calculate some missing information
-		JavaTypeNode	oldSuperClass = typeSystem.getJavaTypeGraph().getNode(new JavaQualifiedName(oldSuperclassName));
-		String outerOfOldSuper = null;
-		if (oldSuperClass != null && oldSuperClass.getOuter() != null)
-			outerOfOldSuper = oldSuperClass.getOuter().getQualifiedName().toString();
-		
-		JavaTypeNode	newSuperClass = typeSystem.getJavaTypeGraph().getNode(new JavaQualifiedName(newSuperclassName));
-		String outerOfNewSuper = null;
-		if (newSuperClass != null && newSuperClass.getOuter() != null)
-			outerOfNewSuper = newSuperClass.getOuter().getQualifiedName().toString();
-		
+        String outerOfOldSuper = null;
+        CCjSourceClass oldSuperClass = env.getClassReader().findSourceClass(oldSuperclassName);
+        if (oldSuperClass != null && oldSuperClass.getOwner() != null){
+            outerOfOldSuper = oldSuperClass.getOwner().getQualifiedName();
+        }
+        
+      String outerOfNewSuper = null;
+          CCjSourceClass newSuperClass = env.getClassReader().findSourceClass(newSuperclassName);
+          if (newSuperClass != null && newSuperClass.getOwner() != null){
+              outerOfNewSuper = newSuperClass.getOwner().getQualifiedName();
+          }
+        
 		// collect all outer classes for this mixin
-    	Vector	outerClasses = new Vector();
+    	Vector<String>	outerClasses = new Vector<String>();
     	
-    	JavaTypeNode mixinType = typeSystem.getJavaTypeGraph().getNode(new JavaQualifiedName(newClassName)),
-					outerType = mixinType.getOuter();
-    	while ( outerType != null){
-       	  outerClasses.add( outerType.getQualifiedName().getIdent() );  		
-		  outerType = outerType.getOuter();
-    	}
-    	String[] outers = (String[])outerClasses.toArray( new String[0]);
+            CClass mixinType = env.getClassReader().findSourceClass(newClassName),
+                           outerType = mixinType.getOwner();
+            while(outerType != null){
+                String identifier = new JavaQualifiedName(outerType.getQualifiedName()).getIdent();
+                outerClasses.add( identifier );
+                outerType = outerType.getOwner();
+            }
+        
+    	String[] outers = outerClasses.toArray( new String[outerClasses.size()]);
     	
-//    	System.out.println(
-//    			" outer of old super: "+outerOfOldSuper+
-//				"\n outer of new super: "+outerOfNewSuper);
-    			
     	// tranform class
-    	ClassModifyingVisitor visitor = 
+    	final ClassModifyingVisitor visitor = 
     		new ClassModifyingVisitor( 
 				className, 
 				newClassName, 
@@ -124,10 +130,32 @@ public class ClassModifier
 				outers );
 		
     	JavaClass newClass = visitor.transform(clazz);
-    	
+
     	// write tranformed class copy
     	writeClass(newClassName, newClass);
-	}
+
+    
+        CClass cc = env.getClassReader().findSourceClass(className);
+            
+        CReferenceType[] innerTypes = cc.getInnerClasses();
+        
+        // transform anonymous inner classes
+        for(int i=0; i<innerTypes.length; i++){
+            CReferenceType innerType = innerTypes[i];
+            CClass inner = innerType.getCClass();
+            if (inner.isAnonymous()){
+                String  innerClassName = inner.getQualifiedName(),
+                        newSuperName = inner.getSuperClass().getQualifiedName(),
+                        
+                        innerOuterName = className;
+                
+                String  ident = innerClassName.split("\\$")[1],
+                        newInnerName = newClassName + "$" + ident;
+                
+                // TODO reactivate: modify(innerClassName, newInnerName, newSuperName, className, typeSystem, env);                        
+            }
+        }
+    }
 	
 	/**
 	 * Write the class to file system 

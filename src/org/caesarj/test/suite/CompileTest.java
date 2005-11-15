@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CompileTest.java,v 1.6 2005-11-03 14:55:44 aracic Exp $
+ * $Id: CompileTest.java,v 1.7 2005-11-15 16:52:22 klose Exp $
  */
 
 package org.caesarj.test.suite;
@@ -82,6 +82,20 @@ public class CompileTest extends CaesarTest {
         return res;
     }
 
+    private String formatMemory(long bytes){
+        String unit = " byte";
+        float fBytes = bytes;
+        if (fBytes > 2*1024){
+            unit = " kB";
+            fBytes /= 1024;
+        } 
+        if (fBytes > 2*1024){
+            unit = " MB";
+            fBytes /= 1024;
+        }
+        return String.format("%f %s", new Object[]{fBytes, unit}); 
+    }
+    
     public void test() throws Throwable {
         // Create compiler
         File f = new File(getJavaFileName());
@@ -100,9 +114,17 @@ public class CompileTest extends CaesarTest {
         // Compile test
         String[] args = { "-v", "-d", "bin", f.getAbsolutePath() };               
                
-        System.out.println("used memory: "+((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/(1024.0*1024.0)));
+//        System.out.println("used memory: "+((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/(1024.0*1024.0)));
         boolean ok = compiler.run(args);               
 
+        long usedMem = Runtime.getRuntime().totalMemory()-
+            Runtime.getRuntime().freeMemory();
+        
+        System.out.println(
+                "Used memory: "+
+                formatMemory(usedMem)
+        );
+        
         pw.close();
 
         try {
@@ -123,7 +145,8 @@ public class CompileTest extends CaesarTest {
         	unpositionedErrorList.clear();
 //        	System.gc();        	
         }
-
+      
+        
         //f.delete();
     }
 

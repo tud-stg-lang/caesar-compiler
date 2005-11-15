@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: TestLog.java,v 1.1 2005-07-21 13:14:23 aracic Exp $
+ * $Id: TestLog.java,v 1.2 2005-11-15 16:52:22 klose Exp $
  */
 
 package org.caesarj.test.suite;
@@ -43,10 +43,12 @@ public class TestLog {
     }
     
     public void append(String line) throws IOException {
-        FileOutputStream out = new FileOutputStream(logFile, true);
-        out.write(line.getBytes());
-        out.write('\r');
-        out.write('\n');
-        out.close();
+        try{
+            FileOutputStream out = new FileOutputStream(logFile, true);
+            out.write(line.getBytes());
+            out.write('\r');
+            out.write('\n');
+            out.close();
+        } catch(Exception e){}
     }       
 }
