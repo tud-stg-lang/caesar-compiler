@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JavaTypeNode.java,v 1.8 2005-11-07 13:51:04 gasiunas Exp $
+ * $Id: JavaTypeNode.java,v 1.9 2005-11-15 11:11:48 klose Exp $
  */
 
 package org.caesarj.compiler.typesys.java;
@@ -58,8 +58,8 @@ public class JavaTypeNode {
     
     private JavaTypeNode outer = null;
     private JavaTypeNode parent = null;
-    private HashMap subNodes = new HashMap();
-    private List inners = new LinkedList();
+    private HashMap<String, JavaTypeNode> subNodes = new HashMap<String, JavaTypeNode>();
+    private List<JavaTypeNode> inners = new LinkedList<JavaTypeNode>();
     
     private CjVirtualClassDeclaration declaration = null;
     private CClass clazz = null;
@@ -190,7 +190,7 @@ public class JavaTypeNode {
         }
     }
 
-    public void genOuterAndQNForGeneratedTypes(Set visited) {
+    public void genOuterAndQNForGeneratedTypes(Set<JavaTypeNode> visited) {
         
         if(visited.contains(this))
             return;
@@ -305,7 +305,7 @@ public class JavaTypeNode {
         return parent == null;
     }
     
-    public void collectLeafs(Collection res) {
+    public void collectLeafs(Collection<JavaTypeNode> res) {
         if(isLeaf()) {
             res.add(this);
         }
@@ -317,7 +317,7 @@ public class JavaTypeNode {
         }
     }
     
-    public void collectGeneratedTypes(Collection res) {
+    public void collectGeneratedTypes(Collection<JavaTypeNode> res) {
         if(isToBeGeneratedInBytecode())
             res.add(this);
         
@@ -327,7 +327,7 @@ public class JavaTypeNode {
         }
     }
 
-    public void collectAllTypes(Collection res) {        
+    public void collectAllTypes(Collection<JavaTypeNode> res) {        
         res.add(this);
         
         for (Iterator it = subNodes.values().iterator(); it.hasNext();) {
@@ -366,7 +366,7 @@ public class JavaTypeNode {
         return declaration;
     }
 
-    public List getInners() {
+    public List<JavaTypeNode> getInners() {
         return inners;
     }
 }
