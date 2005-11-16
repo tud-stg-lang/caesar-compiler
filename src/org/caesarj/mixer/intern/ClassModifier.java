@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ClassModifier.java,v 1.8 2005-11-15 16:52:23 klose Exp $
+ * $Id: ClassModifier.java,v 1.9 2005-11-16 15:50:02 klose Exp $
  */
 
 package org.caesarj.mixer.intern;
@@ -70,6 +70,14 @@ public class ClassModifier
 		_classPath = new ClassPath(inputDir);
 	}
 	
+    private CClass lookupClass(KjcEnvironment env, String className){
+        CClass result = env.getClassReader().findSourceClass(className);
+        if(result==null){
+            return env.getClassReader().loadClass(env.getTypeFactory(), className);
+        }
+        return result;
+    }
+    
 	public void modify( 
 			String className, 
 			String newClassName, 
@@ -77,6 +85,11 @@ public class ClassModifier
 			String outerClassName,
             KjcEnvironment env) throws MixerException
 	{
+        
+        
+        
+        System.out.println("modify: "+className +" -> " + newClassName );
+                
 		JavaClass	clazz = null;
 		
 		// Load the class
@@ -94,22 +107,27 @@ public class ClassModifier
 		
 		// use the typesystem to calculate some missing information
         String outerOfOldSuper = null;
-        CCjSourceClass oldSuperClass = env.getClassReader().findSourceClass(oldSuperclassName);
+//        CCjSourceClass oldSuperClass = env.getClassReader().findSourceClass(oldSuperclassName);
+        CClass oldSuperClass = lookupClass(env, oldSuperclassName);
         if (oldSuperClass != null && oldSuperClass.getOwner() != null){
             outerOfOldSuper = oldSuperClass.getOwner().getQualifiedName();
         }
         
       String outerOfNewSuper = null;
-          CCjSourceClass newSuperClass = env.getClassReader().findSourceClass(newSuperclassName);
-          if (newSuperClass != null && newSuperClass.getOwner() != null){
-              outerOfNewSuper = newSuperClass.getOwner().getQualifiedName();
-          }
+//      CCjSourceClass newSuperClass = env.getClassReader().findSourceClass(newSuperclassName);
+      CClass newSuperClass = lookupClass(env, newSuperclassName);
+      if (newSuperClass != null && newSuperClass.getOwner() != null){
+          outerOfNewSuper = newSuperClass.getOwner().getQualifiedName();
+      }
         
 		// collect all outer classes for this mixin
     	Vector<String>	outerClasses = new Vector<String>();
     	
-            CClass mixinType = env.getClassReader().findSourceClass(newClassName),
-                           outerType = mixinType.getOwner();
+            CClass //mixinType =
+//                lookupClass(env, newClassName),
+//                    env.getClassReader().findSourceClass(newClassName),
+//                           outerType = mixinType.getOwner();
+                outerType = lookupClass( env, outerClassName );
             while(outerType != null){
                 String identifier = new JavaQualifiedName(outerType.getQualifiedName()).getIdent();
                 outerClasses.add( identifier );
@@ -135,7 +153,8 @@ public class ClassModifier
     	writeClass(newClassName, newClass);
 
     
-        CClass cc = env.getClassReader().findSourceClass(className);
+//        CClass cc = env.getClassReader().findSourceClass(className);
+        CClass cc = lookupClass(env, className);
             
         CReferenceType[] innerTypes = cc.getInnerClasses();
         
@@ -152,7 +171,7 @@ public class ClassModifier
                 String  ident = innerClassName.split("\\$")[1],
                         newInnerName = newClassName + "$" + ident;
                 
-                // TODO reactivate: modify(innerClassName, newInnerName, newSuperName, className, typeSystem, env);                        
+                modify(innerClassName, newInnerName, newSuperName, newClassName, env);                        
             }
         }
     }

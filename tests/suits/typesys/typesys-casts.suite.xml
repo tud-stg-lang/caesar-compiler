@@ -105,7 +105,7 @@
 		</code>
     </compile>
     
-    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= 
     <compile-run id="casts007" description="Cast in method parameter.">
     	<test>
     		try {
@@ -130,7 +130,7 @@
 				}			
 			}
 		</code>
-    </compile-run>
+    </compile-run>-->
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile-check-error id="casts008" error="ASSIGNMENT_BADTYPE" description="Check cast to implicit sibling class">		

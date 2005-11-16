@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Tools.java,v 1.7 2005-03-31 14:06:10 thiago Exp $
+ * $Id: Tools.java,v 1.8 2005-11-16 15:50:02 klose Exp $
  */
 
 package org.caesarj.mixer.intern;
@@ -106,6 +106,11 @@ public class Tools {
 	public static String getOuterClass( JavaClass clazz, String forName ){
 		String	ident = new JavaQualifiedName(forName).getIdent();
 		
+        if (forName.contains("$")){
+            int idx = forName.lastIndexOf('$');
+            return forName.substring(0, idx);
+        }
+        
 		InnerClass[] inners = getInnerClasses(clazz);
 		for (int i = 0; i < inners.length; i++) {
 			InnerClass inner = inners[i];

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ClassModifyingVisitor.java,v 1.17 2005-11-15 16:52:23 klose Exp $
+ * $Id: ClassModifyingVisitor.java,v 1.18 2005-11-16 15:50:02 klose Exp $
  */
 
 package org.caesarj.mixer.intern;
@@ -33,6 +33,7 @@ import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.aspectj.apache.bcel.classfile.Constant;
 import org.aspectj.apache.bcel.classfile.ConstantClass;
+import org.aspectj.apache.bcel.classfile.ConstantFieldref;
 import org.aspectj.apache.bcel.classfile.ConstantMethodref;
 import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
@@ -167,8 +168,11 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 
 		newClass = removeFactoryMethods(newClass);
 		
-		// Mixin classes must be abstract, because they do not implement factory methods
-		newClass.setAccessFlags(newClass.getAccessFlags() | Constants.ACC_ABSTRACT);
+		// Mixin classes must be abstract, because they do not implement factory methods,
+        // (if the class is final => it was a anonymous inner class)
+        if (!newClass.isFinal()){
+            newClass.setAccessFlags(newClass.getAccessFlags() | Constants.ACC_ABSTRACT);
+        }
 
 		// take a look at all methodrefs
 		modifyMethodRefs(newClass);
@@ -209,6 +213,16 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 			
 			if(c == null) continue;
 			
+//            if (c.getTag() == Constants.CONSTANT_Fieldref){
+//                ConstantFieldref fieldRef = (ConstantFieldref) c;
+//                int nameAndTypeIndex = fieldRef.getNameAndTypeIndex();
+//                ConstantNameAndType nat = ((ConstantNameAndType) cp.getConstant(nameAndTypeIndex));
+//                String signature = nat.getSignature(cp);
+//                if (signature.equals(oldOuterClassName)){
+//                    
+//                }
+//            }
+            
 			if (c.getTag() == Constants.CONSTANT_Methodref){
 				ConstantMethodref mr = (ConstantMethodref) c;
 				String targetClassName = mr.getClass(cp);
@@ -217,9 +231,45 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 				
 				ConstantNameAndType	nat = ((ConstantNameAndType) cp.getConstant(nameAndTypeIndex));
 			
+                String methodName = nat.getName(cp);
+                
+                // check for innerclass construction
+                if( Tools.isPrefix(oldClassName, targetClassName) ){
+                    String innerIdent = targetClassName.substring( oldClassName.length() +1 );
+                    String newInnerName = newClassName + "$" + innerIdent;
+                    
+                    try{
+                        Integer.parseInt(innerIdent);
+                    } catch( Exception e ){
+                        // not an anonymous inner
+                        continue;
+                    }
+                    
+                    // Change target class to new inner class
+                    int targetClassIndex = mr.getClassIndex();
+                    int targetNameIndex = ((ConstantClass)cp.getConstant(targetClassIndex)).getNameIndex();
+                    cp.setConstant(targetNameIndex, new ConstantUtf8(newInnerName));
+                    
+                    // Change argument class to new class
+                    Type[] args = Type.getArgumentTypes(nat.getSignature(cp));
+                    for (int j = 0; j < args.length; j++) {
+                        Type arg = args[j];
+                        String signature = arg.getSignature();
+                        String argumentType = arg.toString();
+                        if (Tools.sameClass(argumentType, oldClassName)){
+                            args[j] = Type.getType("L" + newClassName + ";");
+                        }
+                    }
+                    String signature = Type.getMethodSignature( 
+                                Type.getReturnType(nat.getSignature(cp)), 
+                                args);    
+                    int signatureIndex = nat.getSignatureIndex();
+                    cp.setConstant(signatureIndex, new ConstantUtf8(signature));
+                }
+                
 				// Check for superconstructor calls with otuer class parameter
 				if (Tools.sameClass(targetClassName, newSuperclassName)){
-					if (nat.getName(cp).equals("<init>")){		
+					if (methodName.equals("<init>")){		
 						Type[] args = Type.getArgumentTypes(nat.getSignature(cp));
 						if (args.length == 1){
 							String argumentType = args[0].toString();
@@ -245,6 +295,7 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 						}
 					}
 				}
+
 				// check whether its a call to our old outer class
 				if (Tools.isPrefix(targetClassName, oldOuterClassName)){
 					String newTargetClass = Tools.getNewOuterName(

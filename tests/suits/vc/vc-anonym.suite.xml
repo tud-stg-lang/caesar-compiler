@@ -7,7 +7,7 @@
 	</common-code-base>
 
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error id="vcanonym001" error="ANONYMOUS_CLASS_IN_CCLASS" description="Test simple anonymous class">
+    <compile-run id="vcanonym001" error="ANONYMOUS_CLASS_IN_CCLASS" description="Test simple anonymous class">
 		<test>			
 			new AAA().m();
 		</test>
@@ -22,15 +22,19 @@
         		}
 			}
         </code>
-    </compile-check-error>
+    </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error id="vcanonym002" error="ANONYMOUS_CLASS_IN_CCLASS" description="Test anonymous class in mixin copy">
+    <compile-run id="vcanonym002"  description="Test anonymous class in mixin copy">
 		<test>			
 			new CCC().m();
 		</test>
         <code>
         	public cclass AAA {
+        	
+        		public cclass Inner{
+        		}
+        	
         		public void m() {
         			IfcA a = new IfcA() {
         				public void foo() {        					
@@ -44,10 +48,10 @@
         	public cclass CCC extends AAA &amp; BBB {
         	}
         </code>
-    </compile-check-error>
+    </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error id="vcanonym003" error="ANONYMOUS_CLASS_IN_CCLASS" description="Test access to local vars">
+    <compile-run id="vcanonym003" error="ANONYMOUS_CLASS_IN_CCLASS" description="Test access to local vars">
 		<test>			
 			new AAA().m(42);
 		</test>
@@ -65,10 +69,10 @@
         		}
 			}
         </code>
-    </compile-check-error>
+    </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error id="vcanonym004" error="ANONYMOUS_CLASS_IN_CCLASS" description="Test access to outer fields">
+    <compile-run id="vcanonym004" error="ANONYMOUS_CLASS_IN_CCLASS" description="Test access to outer fields">
 		<test>			
 			new AAA().m();
 		</test>
@@ -87,6 +91,6 @@
         		}
 			}
         </code>
-    </compile-check-error>
+    </compile-run>
     	    
 </testsuite>
