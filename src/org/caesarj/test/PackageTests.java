@@ -35,4 +35,9 @@ public class PackageTests extends FjTestCase
 	public void testJavaTestCase_5() throws Throwable {
 		compileAndCheckErrors("pckgtest5", new String[] { "" });;
 	}
+	
+	/* Test two externalized classes with different imports */
+	public void testJavaTestCase_6() throws Throwable {
+		compileAndRun("pckgtest6", "PackageTestCase");
+	}
 }
