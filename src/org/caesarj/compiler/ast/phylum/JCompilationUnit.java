@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JCompilationUnit.java,v 1.20 2005-11-07 15:41:58 gasiunas Exp $
+ * $Id: JCompilationUnit.java,v 1.21 2005-11-16 17:38:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum;
@@ -115,7 +115,7 @@ public class JCompilationUnit extends JPhylum {
 			if (ic.getQualifiedName().indexOf('/') < 0) {
 				compiler.reportTrouble(
 					new PositionedError(
-						getTokenReference(),
+						ic.getTokenReference(),
 						KjcMessages.IMPORT_UNNAMED_PACKAGE,
 						ic.getQualifiedName()));
 			}
@@ -137,7 +137,7 @@ public class JCompilationUnit extends JPhylum {
 				if (impClass == null || impClass == CClass.CLS_UNDEFINED) {
 					compiler.reportTrouble(
 						new PositionedError(
-							getTokenReference(),
+							ic.getTokenReference(),
 							KjcMessages.CLASS_UNKNOWN,
 							ic.getQualifiedName()));
 					if (impClass == null) {
@@ -157,7 +157,7 @@ public class JCompilationUnit extends JPhylum {
 				&& !impClass.getPackage().equals(packageName.getName())) {
 				compiler.reportTrouble(
 					new PositionedError(
-						getTokenReference(),
+						ic.getTokenReference(),
 						KjcMessages.IMPORT_UNACCESSIBLE,
 						ic.getQualifiedName()));
 			}
@@ -173,14 +173,14 @@ public class JCompilationUnit extends JPhylum {
 				if (impClass.getCClass() != clazz) {
 					compiler.reportTrouble(
 						new PositionedError(
-							getTokenReference(),
+							ic.getTokenReference(),
 							KjcMessages.DUPLICATE_TYPE_NAME,
 							impClass.getIdent()));
 				}
 				else {
 					compiler.reportTrouble(
 						new CWarning(
-							getTokenReference(),
+							ic.getTokenReference(),
 							KjcMessages.DUPLICATE_CLASS_IMPORT,
 							ic.getQualifiedName()));
 				}
