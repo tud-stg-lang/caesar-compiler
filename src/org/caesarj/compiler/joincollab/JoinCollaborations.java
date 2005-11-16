@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JoinCollaborations.java,v 1.5 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: JoinCollaborations.java,v 1.6 2005-11-16 17:39:01 gasiunas Exp $
  */
 package org.caesarj.compiler.joincollab;
 
@@ -116,7 +116,7 @@ public class JoinCollaborations {
         	if (inners[i1] instanceof CjVirtualClassDeclaration) {
         		CjVirtualClassDeclaration nestedDecl = (CjVirtualClassDeclaration)inners[i1];
         		
-        		collabDecl.setOriginalCompUnit(cu);
+        		nestedDecl.setOriginalCompUnit(cu);
         		
         		JTypeDeclaration newIfc[] = { nestedDecl };
         		collabDecl.addInners(newIfc);
