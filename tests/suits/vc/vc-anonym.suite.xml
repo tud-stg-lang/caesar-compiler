@@ -7,7 +7,7 @@
 	</common-code-base>
 
 	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run id="vcanonym001" error="ANONYMOUS_CLASS_IN_CCLASS" description="Test simple anonymous class">
+    <compile-run id="vcanonym001" description="Test simple anonymous class">
 		<test>			
 			new AAA().m();
 		</test>
@@ -51,7 +51,7 @@
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run id="vcanonym003" error="ANONYMOUS_CLASS_IN_CCLASS" description="Test access to local vars">
+    <compile-run id="vcanonym003" description="Test access to local vars">
 		<test>			
 			new AAA().m(42);
 		</test>
@@ -72,7 +72,7 @@
     </compile-run>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run id="vcanonym004" error="ANONYMOUS_CLASS_IN_CCLASS" description="Test access to outer fields">
+    <compile-run id="vcanonym004" description="Test access to outer fields">
 		<test>			
 			new AAA().m();
 		</test>
@@ -90,6 +90,61 @@
         			a.foo();
         		}
 			}
+			public cclass BBB {
+        	}
+        	public cclass CCC extends AAA &amp; BBB {
+        	}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcanonym005" description="Test access to local vars in mixin copy">
+		<test>			
+			new CCC().m(42);
+		</test>
+        <code>
+        	public cclass AAA {
+
+ 				public void m(int y) {
+        		    final int x=y+1;
+        			IfcA a = new IfcA() {
+        				public void foo() {
+        				   System.out.println("" + x);        					
+        				}
+        			};
+        			a.foo();
+        		}
+			}
+			public cclass BBB {
+        	}
+        	public cclass CCC extends AAA &amp; BBB {
+        	}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcanonym006" description="Test access to outer fields in mixin copy">
+		<test>			
+			new CCC().m();
+		</test>
+        <code>
+        	public cclass AAA {
+
+ 				public int o = 1;
+
+        		public void m() {
+        		    IfcA a = new IfcA() {
+        				public void foo() {
+        				   System.out.println("" + o);        					
+        				}
+        			};
+        			a.foo();
+        		}
+			}
+			public cclass BBB {
+        	}
+        	public cclass CCC extends AAA &amp; BBB {
+        	}
         </code>
     </compile-run>
     	    
