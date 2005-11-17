@@ -1,3 +1,11 @@
+VC_M25 - 17.11.2005 
+- Caesar class names in poincuts are translated to Java class names
+- New mixin linearization algorithm
+- Weaver messages switched off
+- Memory leaks reduced by using weak references
+- Support for anonymous classes
+- Fixes for resolving of copied poincuts and advice
+
 VC_M24 - 13.09.2005
 - Bug fixing
 	- Name for generated method "$getWrappee()"
