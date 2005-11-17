@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ClassModifier.java,v 1.9 2005-11-16 15:50:02 klose Exp $
+ * $Id: ClassModifier.java,v 1.10 2005-11-17 15:40:31 klose Exp $
  */
 
 package org.caesarj.mixer.intern;
@@ -85,11 +85,6 @@ public class ClassModifier
 			String outerClassName,
             KjcEnvironment env) throws MixerException
 	{
-        
-        
-        
-        System.out.println("modify: "+className +" -> " + newClassName );
-                
 		JavaClass	clazz = null;
 		
 		// Load the class

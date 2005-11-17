@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ClassModifyingVisitor.java,v 1.20 2005-11-17 15:27:30 klose Exp $
+ * $Id: ClassModifyingVisitor.java,v 1.21 2005-11-17 15:42:06 klose Exp $
  */
 
 package org.caesarj.mixer.intern;
@@ -222,7 +222,6 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
                 
                 String targetClass = fieldRef.getClass(cp);
                 if(Tools.sameClass(targetClass, oldOuterClassName)){
-                    System.out.println("test");
                     int classIndex = fieldRef.getClassIndex();
                     ConstantClass cc = (ConstantClass)cp.getConstant(classIndex);
                     int nameIndex = cc.getNameIndex();
