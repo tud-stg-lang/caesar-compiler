@@ -280,4 +280,29 @@
 			}
         </code>
     </compile-run>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="pointcutresolve010" description="crosscutting method of sibling inner class">
+		<test>
+			final AspectA a = new AspectA();
+			a.InnerA aa = a.new InnerA();
+			a.InnerB ab = a.new InnerB();
+			deploy ab;
+			aa.execute();
+			undeploy ab;
+			assertEquals(":after", res.toString());
+		</test>
+        <code>
+			public cclass AspectA {
+				public cclass InnerA {
+					public void execute() { }		
+				}
+				public cclass InnerB {
+					after() : execution(* execute(..)) &amp;&amp; this(InnerA) { 
+						Test.res.append(":after");
+					}
+				}			
+			}
+        </code>
+    </compile-run>	
 </testsuite>
