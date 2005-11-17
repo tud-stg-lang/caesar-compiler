@@ -135,10 +135,37 @@
         		public void m() {
         		    IfcA a = new IfcA() {
         				public void foo() {
-        				   System.out.println("" + o);        					
+        					System.out.println("" + o);        					
         				}
         			};
         			a.foo();
+        		}
+			}
+			public cclass BBB {
+        	}
+        	public cclass CCC extends AAA &amp; BBB {
+        	}
+        </code>
+    </compile-run>
+    
+     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcanonym007" description="Test reference to enclosing class name">
+		<test>			
+			new CCC().m();
+		</test>
+        <code>
+        	public cclass AAA {
+				public void m() {
+        		    IfcA a = new IfcA() {
+        				public void foo() {
+        					System.out.println(new AAA().x());
+        				}
+        			};
+        			a.foo();
+        		}
+        		
+        		public String x() {
+        			return "X";
         		}
 			}
 			public cclass BBB {
