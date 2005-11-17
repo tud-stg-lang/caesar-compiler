@@ -158,13 +158,12 @@
 				public void m() {
         		    IfcA a = new IfcA() {
         				public void foo() {
-        					System.out.println(new AAA().x());
-        				}
-        			};
+        					System.out.println(new AAA().x()); 
+        					}
+       					};
         			a.foo();
         		}
-        		
-        		public String x() {
+    			public String x() {
         			return "X";
         		}
 			}
@@ -175,4 +174,57 @@
         </code>
     </compile-run>
     	    
+     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcanonym008" description="Test reference to enclosing class name 2">
+		<test>			
+			new CCC().m();
+		</test>
+        <code>
+        	public cclass AAA {
+				public void m() {
+					AAA aaaa = new AAA();
+        		    IfcA a = new IfcA() {
+        				public void foo() {
+        				}
+        			};
+        			a.foo();
+        		}
+			}
+			public cclass BBB {
+        	}
+        	public cclass CCC extends AAA &amp; BBB {
+        	}
+        </code>
+    </compile-run>
+     
+     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="vcanonym009" description="Test reference to other inner class name">
+		<test>			
+			new CCC().m();
+		</test>
+        <code>
+        	public cclass AAA {
+				public void m() {
+        		    IfcA a = new IfcA() {
+        				public void foo() {
+       					System.out.println(new Xxx().x());
+      				}
+      			};
+        			a.foo();
+//					new Xxx().x();
+        		}
+        		
+        		
+        		public cclass Xxx { 
+        			public String x() {
+	        			return "X";
+	        		}
+        		}
+			}
+			public cclass BBB {
+        	}
+        	public cclass CCC extends AAA &amp; BBB {
+        	}
+        </code>
+    </compile-run>
 </testsuite>

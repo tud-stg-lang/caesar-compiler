@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ClassModifyingVisitor.java,v 1.19 2005-11-17 12:18:23 klose Exp $
+ * $Id: ClassModifyingVisitor.java,v 1.20 2005-11-17 15:27:30 klose Exp $
  */
 
 package org.caesarj.mixer.intern;
@@ -49,6 +49,9 @@ import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.generic.ClassGen;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.verifier.VerificationResult;
+import org.aspectj.apache.bcel.verifier.Verifier;
+import org.aspectj.apache.bcel.verifier.VerifierFactory;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.mixer.MixerException;
 
@@ -177,6 +180,7 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 		// take a look at all methodrefs
 		modifyMethodAndFieldRefs(newClass);
 
+        
 		// return generated class
 		return newClass;	
 	}
@@ -287,14 +291,14 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 
 				// check whether its a call to our old outer class
 				if (Tools.isPrefix(targetClassName, oldOuterClassName)){
-					String newTargetClass = Tools.getNewOuterName(
-												oldClassName,
-												targetClassName,
-												outerClasses);
+//					String newTargetClass = Tools.getNewOuterName(
+//												oldClassName,
+//												targetClassName,
+//												outerClasses);
 					int classIndex = mr.getClassIndex();
 					ConstantClass cc = (ConstantClass)cp.getConstant(classIndex);
 					int nameIndex = cc.getNameIndex();
-					cp.setConstant(nameIndex, new ConstantUtf8(newTargetClass));
+					cp.setConstant(nameIndex, new ConstantUtf8(newOuterClassName));
 				}
 			}
 		}
