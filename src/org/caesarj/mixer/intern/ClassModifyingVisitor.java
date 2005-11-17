@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: ClassModifyingVisitor.java,v 1.18 2005-11-16 15:50:02 klose Exp $
+ * $Id: ClassModifyingVisitor.java,v 1.19 2005-11-17 12:18:23 klose Exp $
  */
 
 package org.caesarj.mixer.intern;
@@ -175,7 +175,7 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
         }
 
 		// take a look at all methodrefs
-		modifyMethodRefs(newClass);
+		modifyMethodAndFieldRefs(newClass);
 
 		// return generated class
 		return newClass;	
@@ -200,37 +200,38 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 		
 		return gen.getJavaClass();
 	}
-	
+    
 	/**
 	 * Checks method references to super-constructors and outerclass methods
 	 * and modifies them to refer to the correct new outer classes. 
 	 */
-	protected  void modifyMethodRefs( JavaClass clazz ){
+	protected  void modifyMethodAndFieldRefs( JavaClass clazz ){
    
 		ConstantPool cp = clazz.getConstantPool();
 		for (int i=1; i<cp.getLength(); i++){
 			Constant c = cp.getConstant(i);
 			
 			if(c == null) continue;
-			
-//            if (c.getTag() == Constants.CONSTANT_Fieldref){
-//                ConstantFieldref fieldRef = (ConstantFieldref) c;
-//                int nameAndTypeIndex = fieldRef.getNameAndTypeIndex();
-//                ConstantNameAndType nat = ((ConstantNameAndType) cp.getConstant(nameAndTypeIndex));
-//                String signature = nat.getSignature(cp);
-//                if (signature.equals(oldOuterClassName)){
-//                    
-//                }
-//            }
             
-			if (c.getTag() == Constants.CONSTANT_Methodref){
+            if (c.getTag() == Constants.CONSTANT_Fieldref){
+                ConstantFieldref fieldRef = (ConstantFieldref) c;
+                
+                String targetClass = fieldRef.getClass(cp);
+                if(Tools.sameClass(targetClass, oldOuterClassName)){
+                    System.out.println("test");
+                    int classIndex = fieldRef.getClassIndex();
+                    ConstantClass cc = (ConstantClass)cp.getConstant(classIndex);
+                    int nameIndex = cc.getNameIndex();
+                    cp.setConstant(nameIndex, new ConstantUtf8(newOuterClassName));
+                }
+                                                
+                
+            }else if (c.getTag() == Constants.CONSTANT_Methodref){
 				ConstantMethodref mr = (ConstantMethodref) c;
 				String targetClassName = mr.getClass(cp);
 
 				int nameAndTypeIndex = mr.getNameAndTypeIndex();
-				
 				ConstantNameAndType	nat = ((ConstantNameAndType) cp.getConstant(nameAndTypeIndex));
-			
                 String methodName = nat.getName(cp);
                 
                 // check for innerclass construction
@@ -241,7 +242,7 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
                     try{
                         Integer.parseInt(innerIdent);
                     } catch( Exception e ){
-                        // not an anonymous inner
+                        // not an anonymous inner class
                         continue;
                     }
                     
@@ -273,18 +274,6 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 						Type[] args = Type.getArgumentTypes(nat.getSignature(cp));
 						if (args.length == 1){
 							String argumentType = args[0].toString();
-/*							System.out.println(
-									"Call to method  :\t"+targetClassName+"."+nat.getSignature(cp)+
-									"\n Argument type  :\t"+ args[0].toString()+
-									"\n outerOfOldSuper:\t"+outerOfOldSuper+
-									"\n outerOfNewSuper:\t"+outerOfNewSuper+
-									"\n newClassName   :\t"+newClassName+
-									"\n oldClassName   :\t"+oldClassName+
-									"\n newOuterName   :\t"+newOuterClassName+
-									"\n oldouterName   :\t"+oldOuterClassName+
-									"\n newSuperName   :\t"+newSuperclassName+
-									"\n oldSuperName   :\t"+oldSuperclassName
-									);*/
 							// if parameter is of old super-outer-class type, set new signature
 							if (Tools.sameClass(argumentType, outerOfOldSuper)){
 								cp.setConstant( 
@@ -332,17 +321,16 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
                     new ObjectType(newOuterClassName).getSignature()); 
             cp.setConstant(index, newSignature );
 		}
+
 		super.visitField(field);
 	}
 	
-	
 	public void visitMethod(Method method) {
+        final ConstantPool cp = method.getConstantPool();
 		// we search for outer-class-access functions, which
 		// are static, have exactly one argument of this class' type and
 		// return an instance of the outer class' type
-		if (method.getName().startsWith("access$")){
-			if (!method.isStatic() ) return;
-			
+		if (method.isStatic() && method.getName().startsWith("access$")){
 			String returnType = Type.getReturnType(method.getSignature()).toString(); 
 			
 			if (!Tools.sameClass(returnType,oldOuterClassName)) return;
@@ -352,20 +340,22 @@ public class ClassModifyingVisitor extends EmptyVisitor  {
 			// construct the new signature & use it to overwrite the old one
 			String   newSignature = "(L"+newClassName+";)L"+newOuterClassName+";";
 			int      index = method.getSignatureIndex();
-			method.getConstantPool().setConstant(index, new ConstantUtf8(newSignature));
+			cp.setConstant(index, new ConstantUtf8(newSignature));
 		}
 		// and we check for constructors 
 		else if (method.getName().equals("<init>")){
 			Type[]	argTypes = Type.getArgumentTypes(method.getSignature());
-			if (argTypes.length != 1) return;
-			// modify the signature if neccessary
-			if (Tools.sameClass(argTypes[0].toString(),oldOuterClassName)){
-				// construct the new signature and use it to overwrite the old one
-				String  newSignature = "(L"+newOuterClassName+";)V";
-				int     index = method.getSignatureIndex();
-				method.getConstantPool().setConstant(index, new ConstantUtf8(newSignature));
-			}
-			// KK Check code for super-cosntructor call and adjust its signature?
+			for(int argIdx=0; argIdx<argTypes.length; argIdx++){
+    			// modify the signature if neccessary
+    			if (Tools.sameClass(argTypes[argIdx].toString(),oldOuterClassName)){
+    				// construct the new signature and use it to overwrite the old one
+                    argTypes[argIdx] = Type.getType( "L" + newOuterClassName + ";");
+    			}
+            }
+			// construct new signature
+            String signature = Type.getMethodSignature( method.getReturnType(), argTypes );
+            int signatureIndex = method.getSignatureIndex();
+            cp.setConstant(signatureIndex, new ConstantUtf8(signature));
 		}
 	}
 	public void visitCode(Code obj) {
