@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjPointcutDeclaration.java,v 1.10 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: CjPointcutDeclaration.java,v 1.11 2005-11-17 13:07:28 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -39,9 +39,11 @@ import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
 import org.caesarj.compiler.context.CTypeContext;
+import org.caesarj.compiler.context.CjExternClassContext;
 import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
@@ -110,16 +112,12 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 		throws PositionedError {
 
 		// If there's an original class, use it to resolve the parameter types
-		CTypeContext typeContext = null;
-		if (this.originalClass != null) {
-		    typeContext = originalClass.getContext();
-		} else {
-		    typeContext = new CBinaryTypeContext(
-				context.getClassReader(),
-				context.getTypeFactory(),
-				context,
+		CClassContext pointcutContext = getPointcutContext(context);
+		CTypeContext typeContext = new CBinaryTypeContext(
+				pointcutContext.getClassReader(),
+				pointcutContext.getTypeFactory(),
+				pointcutContext,
 				(modifiers & ACC_STATIC) == 0);
-		}
 		
 		CType[] parameterTypes = new CType[parameters.length];
 		
@@ -172,12 +170,7 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 		}
 
         // If there's an original class, use its context to resolve the pointcut
-		FjClassContext classContext = (FjClassContext) context;
-        if (this.originalClass != null) {            
-            classContext = (FjClassContext)
-                originalClass.constructContext(
-                        originalClass.getContext().getCompilationUnitContext());
-        }
+		FjClassContext classContext = (FjClassContext)getPointcutContext(context);
         
         classContext.setBindings(
 			(CaesarFormalBinding[]) formalBindings.toArray(new CaesarFormalBinding[0]));
@@ -223,5 +216,18 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
      */
     public void setOriginalClass(CjVirtualClassDeclaration originalClass) {
         this.originalClass = originalClass;
+    }
+    
+    protected CClassContext getPointcutContext(CClassContext currentContext) {
+    	if (originalClass == null) {
+        	return currentContext;
+        }
+        else {
+        	return new CjExternClassContext(currentContext.getParentContext(),
+        			currentContext.getEnvironment(),
+        			(CSourceClass)currentContext.getCClass(),
+        			currentContext.getTypeDeclaration(),
+        			originalClass.getContext().getCompilationUnitContext().getCunit());
+        }
     }
 }

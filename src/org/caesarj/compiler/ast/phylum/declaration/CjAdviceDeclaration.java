@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjAdviceDeclaration.java,v 1.18 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: CjAdviceDeclaration.java,v 1.19 2005-11-17 13:07:28 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -38,7 +38,9 @@ import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
+import org.caesarj.compiler.context.CjExternClassContext;
 import org.caesarj.compiler.export.CCjAdvice;
+import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CClassNameType;
 import org.caesarj.compiler.types.CReferenceType;
@@ -196,26 +198,13 @@ public class CjAdviceDeclaration
         }
 
         // It there's an original class, use it to resolve the parameters types
-        CBinaryTypeContext typeContext = null;
-        CClassContext c = null;
-        if (this.originalClass != null) {            
-            c = originalClass.constructContext(
-                        originalClass.getContext().getCompilationUnitContext());
-            
-            typeContext =
-                new CBinaryTypeContext(
-                        c.getClassReader(),
-                        c.getTypeFactory(),
-                        c,
-                    (modifiers & ACC_STATIC) == 0);
-        } else {
-            typeContext =
-                new CBinaryTypeContext(
-                    context.getClassReader(),
-                    context.getTypeFactory(),
-                    context,
-                    (modifiers & ACC_STATIC) == 0);
-        }
+        
+        CClassContext c = getAdviceContext(context);
+        CBinaryTypeContext typeContext =  new CBinaryTypeContext(
+                c.getClassReader(),
+                c.getTypeFactory(),
+                c,
+                (modifiers & ACC_STATIC) == 0);
         
         CType[] parameterTypes = new CType[parameters.length];
         String[] parameterNames = new String[parameters.length];
@@ -243,7 +232,7 @@ public class CjAdviceDeclaration
 
         return adviceMethod;
     }
-
+    
     public boolean isAroundAdvice() {
         return kind.equals(CaesarAdviceKind.Around);
     }
@@ -306,12 +295,7 @@ public class CjAdviceDeclaration
     public void checkBody1(CClassContext context) throws PositionedError {
         
         // Create an advice context, using the class where the advice was declared.
-        CClassContext adviceContext = context;
-        if (this.originalClass != null) {            
-            adviceContext = 
-                originalClass.constructContext(
-                        originalClass.getContext().getCompilationUnitContext());
-        }
+        CClassContext adviceContext = getAdviceContext(context);
         
         // Check the body using a regular context
         super.checkBody1(context);
@@ -370,5 +354,18 @@ public class CjAdviceDeclaration
     
     public CjVirtualClassDeclaration getOriginalClass() {
     	return originalClass;
+    }
+    
+    protected CClassContext getAdviceContext(CClassContext currentContext) {
+    	if (originalClass == null) {
+        	return currentContext;
+        }
+        else {
+        	return new CjExternClassContext(currentContext.getParentContext(),
+        			currentContext.getEnvironment(),
+        			(CSourceClass)currentContext.getCClass(),
+        			currentContext.getTypeDeclaration(),
+        			originalClass.getContext().getCompilationUnitContext().getCunit());
+        }
     }
 }
