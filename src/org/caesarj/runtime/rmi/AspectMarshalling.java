@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectMarshalling.java,v 1.5 2005-09-14 08:29:52 gasiunas Exp $
+ * $Id: AspectMarshalling.java,v 1.6 2005-11-18 10:04:24 gasiunas Exp $
  */
 
 package org.caesarj.runtime.rmi;
@@ -66,8 +66,6 @@ public class AspectMarshalling implements Serializable
 		while (iterator.hasNext()) 
 		{
 			AspectRegistryIfc currentRegistry = (AspectRegistryIfc) iterator.next();
-			
-			AspectContainerIfc cont = currentRegistry.$getAspectContainer();
 			AspectThreadMapper threadMapper = findThreadMapper(currentRegistry);
 			
 			if (threadMapper != null) 
@@ -140,6 +138,21 @@ public class AspectMarshalling implements Serializable
 		} 
 	}
 	
+	static public void undeployCurrentAspects() {
+		Set activeRegistries = (Set) AspectRegistryIfc.threadLocalRegistries.get();
+		Iterator iterator = activeRegistries.iterator();
+		Thread curThread = Thread.currentThread();
+				
+		while (iterator.hasNext()) 	{
+			AspectRegistryIfc currentRegistry = (AspectRegistryIfc) iterator.next();
+			AspectThreadMapper threadMapper = findThreadMapper(currentRegistry);
+			
+			if (threadMapper != null) {
+				threadMapper.undeployAllFromThread(curThread);
+			}
+		}
+	}
+	
 	/**
 	 * Find thread based aspect deployment container of the given registry
 	 * 
@@ -162,5 +175,5 @@ public class AspectMarshalling implements Serializable
 		}
 		
 		return threadMapper;
-	}
+	}	
 }

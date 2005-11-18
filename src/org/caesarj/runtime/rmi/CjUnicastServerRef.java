@@ -20,13 +20,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjUnicastServerRef.java,v 1.2 2005-01-24 16:52:59 aracic Exp $
+ * $Id: CjUnicastServerRef.java,v 1.3 2005-11-18 10:04:24 gasiunas Exp $
  */
 
 package org.caesarj.runtime.rmi;
 
 import java.io.IOException;
 import java.io.ObjectInput;
+import java.rmi.Remote;
+import java.rmi.server.RemoteCall;
 import java.rmi.server.RemoteRef;
 
 import sun.rmi.server.UnicastServerRef;
@@ -58,7 +60,12 @@ public class CjUnicastServerRef extends UnicastServerRef
     protected RemoteRef getClientRef()
     {
     	return new CjUnicastRef(ref);
-    }  
+    }
+    
+    public void dispatch(Remote target, RemoteCall call) throws IOException {
+    	super.dispatch(target, call);
+    	AspectMarshalling.undeployCurrentAspects();
+    }
 	
     /**
      * Unmarshal aspect deployment information
@@ -67,5 +74,14 @@ public class CjUnicastServerRef extends UnicastServerRef
     	throws IOException, ClassNotFoundException
 	{
 		AspectMarshalling.unmarshalAspects(in);
+	}
+	
+	/**
+     * Unmarshal aspect deployment information
+     */
+	protected void marshalCustomCallData(ObjectInput in)
+    	throws IOException, ClassNotFoundException
+	{
+		
 	}
 }
