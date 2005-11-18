@@ -433,7 +433,7 @@ public class CaesarWrapperPatternParser extends PatternParser {
 
 		// Register the mixin
 		wrapper = new CaesarPointcutWrapper(mixin, type);
-		wrapper.setDeclaringType(mixinType);
+		wrapper.setTypePattern(mixinType);
 		registerPointcut(wrapper);
 		
 		// Creates an orPointcut for both the type and the mixin
