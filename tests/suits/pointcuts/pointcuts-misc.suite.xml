@@ -81,5 +81,39 @@
         </code>
     </compile-run>
 
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutmisc003" description="if(true) pointcut">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":before:m", res.toString());			
+		</test>
+        <code>
+        	public cclass Main {
+        	
+        		public void run() {
+        			ClsA a = new ClsA();
+					a.m();
+        		}
+        	}
+        	
+   
+        	public deployed cclass Aspect {
+
+				before() : call(* ClsA.m()) &amp;&amp; if(true)  {
+	  				Test.res.append(":before");
+      			}
+        	}
+			
+			public cclass ClsA {
+
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
       
 </testsuite>
