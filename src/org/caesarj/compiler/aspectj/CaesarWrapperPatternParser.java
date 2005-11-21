@@ -35,6 +35,7 @@ import org.aspectj.weaver.patterns.CflowPointcut;
 import org.aspectj.weaver.patterns.HandlerPointcut;
 import org.aspectj.weaver.patterns.IToken;
 import org.aspectj.weaver.patterns.ITokenSource;
+import org.aspectj.weaver.patterns.IfPointcut;
 import org.aspectj.weaver.patterns.ModifiersPattern;
 import org.aspectj.weaver.patterns.NamePattern;
 import org.aspectj.weaver.patterns.NotPointcut;
@@ -97,7 +98,9 @@ public class CaesarWrapperPatternParser extends PatternParser {
 		
 		String kind = parseIdentifier();
 		tokenSource.setIndex(start);
-		if (kind.equals("execution") || kind.equals("call") || 
+		if (kind.equals("if")) {
+			return parseIfPointcut();
+		} else if (kind.equals("execution") || kind.equals("call") || 
 						kind.equals("get") || kind.equals("set")) {
 			return parseKindedPointcut();
 		} else if (kind.equals("args")) {
@@ -147,38 +150,6 @@ public class CaesarWrapperPatternParser extends PatternParser {
 					sig);
 			
 			return new CaesarPointcutWrapper(regular);
-			
-			/*
-			// Transform the object initialization to the constructor with Object. This will
-			// cause some different semantics than AspectJ	
-
-			CaesarCloner c = CaesarCloner.instance();
-			
-			SignaturePattern cclassSig = 
-				new SignaturePattern(Member.CONSTRUCTOR, sig.getModifiers(),
-                    c.clone(sig.getReturnType()), c.clone(sig.getDeclaringType()),
-                    c.clone(sig.getName()), createObjectTypeList(),
-                    c.clone(sig.getThrowsPattern()));
-			
-			CaesarKindedPointcut regular =  new CaesarKindedPointcut(
-					Shadow.Initialization, 
-					sig);
-			
-			CaesarKindedPointcut cclass =  new CaesarKindedPointcut(
-					Shadow.Initialization, 
-					cclassSig);
-			
-			registerPointcut(new CaesarPointcutWrapper(regular));
-			//registerPointcut(new CaesarPointcutWrapper(cclass));
-			
-			// Creates an orPointcut for both the regular java and cclass constructors
-			Pointcut orPointcut = new OrPointcut(
-					regular,
-					cclass);
-			
-			//return new CaesarPointcutWrapper(orPointcut); 
-			return new CaesarPointcutWrapper(regular);
-			 */
 			
 		} else  if (kind.equals("staticinitialization")) {
 			parseIdentifier(); eat("(");
@@ -243,17 +214,6 @@ public class CaesarWrapperPatternParser extends PatternParser {
 			
 			return new CaesarPointcutWrapper(orPointcut); 
 			
-			/*
-			// Transform the object preinitialization to the constructor with Object. This will
-			// cause some different semantics than AspectJ
-			sig = new SignaturePattern(Member.CONSTRUCTOR, sig.getModifiers(),
-                    sig.getReturnType(), sig.getDeclaringType(),
-                    sig.getName(), createObjectTypeList(),
-                    sig.getThrowsPattern());
-			
-			CaesarKindedPointcut pointcut = new CaesarKindedPointcut(Shadow.PreInitialization, sig);
-			return new CaesarPointcutWrapper(pointcut);
-			*/
 		} else {
 			return parseReferencePointcut();
 		}
@@ -519,6 +479,27 @@ public class CaesarWrapperPatternParser extends PatternParser {
 		CaesarPointcutWrapper wrapper = new CaesarPointcutWrapper(p);
 		return wrapper;
 		
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	private CaesarPointcutWrapper parseIfPointcut() {
+		String kind = parseIdentifier();
+		eat("(");
+		CaesarPointcutWrapper w = null;
+		if (maybeEatIdentifier("true")) {
+			w = new CaesarPointcutWrapper(IfPointcut.makeIfTruePointcut(Pointcut.SYMBOLIC));
+		}
+		if (maybeEatIdentifier("false")) {
+			w = new CaesarPointcutWrapper(IfPointcut.makeIfFalsePointcut(Pointcut.SYMBOLIC));
+		}
+		eat(")");
+		if (w == null)
+			throw new ParserException("If pointcuts currently accept only 'true' or 'false' as values", tokenSource.peek());
+		
+		return w;
 	}
 	
 	private SignaturePattern parseConstructorSignaturePattern() {
