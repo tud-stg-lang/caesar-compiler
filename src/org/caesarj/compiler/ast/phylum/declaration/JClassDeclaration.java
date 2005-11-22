@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JClassDeclaration.java,v 1.31 2005-11-07 15:41:57 gasiunas Exp $
+ * $Id: JClassDeclaration.java,v 1.32 2005-11-22 08:48:30 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -680,6 +680,13 @@ public class JClassDeclaration extends JTypeDeclaration {
             | ACC_STATIC
             | ACC_FINAL
             | ACC_STRICT;
+    }
+    
+    public void addClassBlock(JClassBlock initializerDeclaration) {
+        JPhylum[] newBody = new JPhylum[body.length + 1];
+        System.arraycopy(body, 0, newBody, 0, body.length);
+        newBody[body.length] = initializerDeclaration;
+        body = newBody;
     }
 
     private JMethodDeclaration assertMethod;

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjClassDeclaration.java,v 1.45 2005-11-07 15:41:57 gasiunas Exp $
+ * $Id: CjClassDeclaration.java,v 1.46 2005-11-22 08:48:30 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -43,7 +43,6 @@ import org.caesarj.compiler.ast.phylum.expression.JExpression;
 import org.caesarj.compiler.ast.phylum.expression.JNameExpression;
 import org.caesarj.compiler.ast.phylum.expression.literal.JNullLiteral;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
-import org.caesarj.compiler.ast.phylum.statement.JClassBlock;
 import org.caesarj.compiler.ast.phylum.statement.JExpressionListStatement;
 import org.caesarj.compiler.ast.phylum.statement.JReturnStatement;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
@@ -613,14 +612,7 @@ public class CjClassDeclaration extends JClassDeclaration implements CaesarConst
             (JMethodDeclaration[])Utils.toArray(
                 methods,
                 JMethodDeclaration.class);
-    }
-
-    public void addClassBlock(JClassBlock initializerDeclaration) {
-        JPhylum[] newBody = new JPhylum[body.length + 1];
-        System.arraycopy(body, 0, newBody, 0, body.length);
-        newBody[body.length] = initializerDeclaration;
-        body = newBody;
-    }
+    }    
 
     /**
      * checkTypeBody
