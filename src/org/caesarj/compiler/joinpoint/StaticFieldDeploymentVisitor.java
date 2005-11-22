@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: StaticFieldDeploymentVisitor.java,v 1.2 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: StaticFieldDeploymentVisitor.java,v 1.3 2005-11-22 08:48:02 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -29,7 +29,7 @@ import org.caesarj.compiler.CompilerBase;
 import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
-import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMemberDeclaration;
 import org.caesarj.compiler.ast.visitor.IVisitor;
@@ -56,11 +56,9 @@ public class StaticFieldDeploymentVisitor implements IVisitor, CaesarConstants  
 
 	private StaticDeploymentPreparation statDeplPrep;
 	private CompilerBase compiler; 
-	private KjcEnvironment environment;
 	private VisitorSupport visitor = new VisitorSupport(this);
 	
 	public StaticFieldDeploymentVisitor(CompilerBase compiler, KjcEnvironment environment) {
-		this.environment = environment;
 		this.compiler = compiler;
 		statDeplPrep = new StaticDeploymentPreparation(compiler, environment);
 	}
@@ -84,7 +82,7 @@ public class StaticFieldDeploymentVisitor implements IVisitor, CaesarConstants  
     }    
 
 	// except CjClassDeclaration
-    public boolean visit(CjVirtualClassDeclaration self) {
+    public boolean visit(JClassDeclaration self) {
     	/* find all deployed fields */
         for (int i = 0; i < self.getBody().length; i++) {
     		if (self.getBody()[i] instanceof JFieldDeclaration) {
@@ -103,7 +101,7 @@ public class StaticFieldDeploymentVisitor implements IVisitor, CaesarConstants  
      * @param classDecl	- class declaration
      * @param field		- field declaration
      */
-    private void prepareFieldDeployment(CjVirtualClassDeclaration classDecl, JFieldDeclaration field) {
+    private void prepareFieldDeployment(JClassDeclaration classDecl, JFieldDeclaration field) {
     	classDecl.addClassBlock(
 				statDeplPrep.createStaticFieldDeployBlock(
 						field.getTokenReference(),

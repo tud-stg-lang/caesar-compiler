@@ -20,13 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: StaticDeploymentPreparation.java,v 1.11 2005-10-12 07:58:18 gasiunas Exp $
+ * $Id: StaticDeploymentPreparation.java,v 1.12 2005-11-22 08:48:02 gasiunas Exp $
  */
 package org.caesarj.compiler.joinpoint;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.caesarj.compiler.AstGenerator;
 import org.caesarj.compiler.CompilerBase;
@@ -34,6 +32,7 @@ import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.CjVirtualClassDeclaration;
+import org.caesarj.compiler.ast.phylum.declaration.JClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JMethodDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JTypeDeclaration;
@@ -78,7 +77,6 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 	}
 	
 	public void prepareForStaticDeployment(JCompilationUnit cu) {
-		List newTypeDeclarations = new ArrayList();
 		JTypeDeclaration typeDeclarations[] = cu.getInners();
 		
 		for (int i = 0; i < typeDeclarations.length; i++) {
@@ -117,7 +115,7 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 	 */
 	public JClassBlock createStaticFieldDeployBlock(
 		TokenReference where,
-		CjClassDeclaration classDeclaration,
+		JClassDeclaration classDeclaration,
 		JFieldDeclaration fieldDeclaration) {
 
 		JExpression prefix =
@@ -188,7 +186,7 @@ public class StaticDeploymentPreparation implements CaesarConstants {
 	 * @param fromClass		class triggering loading
 	 * @param toClass		class to be loaded
 	 */
-	public void insertClassTouchBlock(CjClassDeclaration fromClass, CjClassDeclaration toClass) {
+	public void insertClassTouchBlock(CjClassDeclaration fromClass, JClassDeclaration toClass) {
 		String srcClassName = Utils.getClassSourceName(toClass.getSourceClass().getQualifiedName());
 		
 	    AstGenerator gen = environment.getAstGenerator();
