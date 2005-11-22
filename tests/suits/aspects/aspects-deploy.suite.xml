@@ -24,4 +24,46 @@
         </code>
     </compile-run>
     
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="deploy002" description="static field deployment in Java class">
+        <test>
+        	new Y().foo();
+        	assertEquals(":foo", res.toString());
+        </test>
+        <code>
+        	public cclass A {
+				after() : execution(* Y.foo(..)) {
+					Test.res.append(":foo");
+				}
+			}
+			public class Deployer {
+				private static deployed A a = new A();
+			}
+			public class Y {
+				public void foo() {}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="deploy003" description="static field deployment in cclass">
+        <test>
+        	new Y().foo();
+        	assertEquals(":foo", res.toString());
+        </test>
+        <code>
+        	public cclass A {
+				after() : execution(* Y.foo(..)) {
+					Test.res.append(":foo");
+				}
+			}
+			public cclass Deployer {
+				private static deployed A a = new A();
+			}
+			public class Y {
+				public void foo() {}
+			}
+        </code>
+    </compile-run>
+    
 </testsuite>
