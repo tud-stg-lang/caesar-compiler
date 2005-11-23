@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AttributeList.java,v 1.5 2005-11-15 16:52:23 klose Exp $
+ * $Id: AttributeList.java,v 1.6 2005-11-23 14:35:19 gasiunas Exp $
  */
 
 package org.caesarj.classfile;
@@ -205,7 +205,7 @@ import org.caesarj.util.Utils;
 	Attribute[]	temp = new Attribute[attributes.length - 1];
 
 	System.arraycopy(attributes, 0, temp, 0, i);
-	System.arraycopy(attributes, i + 1, temp, i, attributes.length - i);
+	System.arraycopy(attributes, i + 1, temp, i, attributes.length - i - 1);
 	attributes = temp;
 
 	return true;
