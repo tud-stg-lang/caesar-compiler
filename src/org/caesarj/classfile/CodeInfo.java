@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CodeInfo.java,v 1.5 2005-01-24 16:52:57 aracic Exp $
+ * $Id: CodeInfo.java,v 1.6 2005-11-23 14:36:12 gasiunas Exp $
  */
 
 package org.caesarj.classfile;
@@ -153,12 +153,18 @@ public class CodeInfo extends Attribute {
       }
     }
 
-    containers = getLocalVariables();
-    if (containers != null) {
-      for (int i = 0; i < containers.length; i++) {
-	containers[i].transformAccessors(transformer);
-      }
-    }
+    try {
+	    containers = getLocalVariables();
+	    if (containers != null) {
+	      for (int i = 0; i < containers.length; i++) {	  
+	    	  containers[i].transformAccessors(transformer);
+	      }
+	    }
+	 }
+     catch (BadAccessorException e) {
+    	 /* in case of error do not generate local variable table */
+    	 attributes.remove(ClassfileConstants2.ATT_LOCALVARIABLETABLE);
+	 }
   }
 
   /**
