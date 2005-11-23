@@ -1,3 +1,8 @@
+VC_M26 - 23.11.2005
+- Quick fix for bytecode generation problem for empty if and while statements
+- Fix of static field deployment
+- Fix of within poincut over mixin copies
+
 VC_M25 - 17.11.2005 
 - Caesar class names in poincuts are translated to Java class names
 - New mixin linearization algorithm
