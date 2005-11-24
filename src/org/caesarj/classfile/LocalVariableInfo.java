@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: LocalVariableInfo.java,v 1.3 2005-01-24 16:52:57 aracic Exp $
+ * $Id: LocalVariableInfo.java,v 1.4 2005-11-24 11:08:50 meffert Exp $
  */
 
 package org.caesarj.classfile;
@@ -28,6 +28,8 @@ package org.caesarj.classfile;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+
+import org.caesarj.compiler.optimize.InstructionHandle;
 
 /**
  * VMS 4.7.9: Local Variable Table Attribute.
@@ -91,6 +93,25 @@ public class LocalVariableInfo implements AccessorContainer {
     this.slot = (short)in.readUnsignedShort();
   }
 
+  public void checkVariableScope(InstructionHandle codeStart) {
+	  boolean startVerified = false;
+	  boolean endVerified = false;
+	  for (InstructionHandle handle = codeStart; handle != null; handle = handle.getNext()) {
+		  if(handle == this.getStart()){
+			  startVerified = true;
+		  }
+		  if(handle == this.getEnd()){
+			  endVerified = true;
+		  }
+	  }
+	  if(!startVerified){
+		  this.setStart(null);
+	  }
+	  if(!endVerified){
+		  this.setEnd(null);
+	  }
+  }
+  
   // --------------------------------------------------------------------
   // ACCESSORS
   // --------------------------------------------------------------------

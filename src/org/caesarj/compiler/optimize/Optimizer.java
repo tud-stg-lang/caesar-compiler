@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Optimizer.java,v 1.4 2005-05-31 09:05:15 meffert Exp $
+ * $Id: Optimizer.java,v 1.5 2005-11-24 11:08:50 meffert Exp $
  */
 
 package org.caesarj.compiler.optimize;
@@ -135,6 +135,7 @@ public class Optimizer implements AccessorContainer {
     // add local variable infos as accessors to their start and end instructions in order
     // to be notified by changes.
     for (int j = 0; localVariables != null && j < localVariables.length; j++){
+    	
     	((InstructionHandle)localVariables[j].getEnd()).addAccessor(localVariables[j]);
         ((InstructionHandle)localVariables[j].getStart()).addAccessor(localVariables[j]);
     }
@@ -292,6 +293,7 @@ public class Optimizer implements AccessorContainer {
   private LocalVariableInfo[] buildLocalVariableInfo(){
   	Vector tempLocalVars = new Vector();
   	for(int i = 0; localVariables != null && i < localVariables.length; i++){
+  		localVariables[i].checkVariableScope(this.codeStart);
   		// Only add informations for variables with valid start and end instructions.
   		if(localVariables[i].getStart() != null 
   				&& localVariables[i].getEnd() != null){

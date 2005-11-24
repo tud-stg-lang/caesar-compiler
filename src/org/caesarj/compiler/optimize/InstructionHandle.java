@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: InstructionHandle.java,v 1.5 2005-09-13 16:07:07 gasiunas Exp $
+ * $Id: InstructionHandle.java,v 1.6 2005-11-24 11:08:50 meffert Exp $
  */
 
 package org.caesarj.compiler.optimize;
@@ -380,36 +380,36 @@ public class InstructionHandle extends AbstractInstructionAccessor implements Cl
       ((Optimizer)container).setCodeStart(target);
     } else if (container instanceof LocalVariableInfo) {
     	// [mef] update localvarinfo
-    	LocalVariableInfo localVar = (LocalVariableInfo)container;
-    	if(localVar.getStart() == this){
-    		if(localVar.getStart() == localVar.getEnd()){
-    			// local variable is not used any more.
-    			localVar.setStart(null);
-    			localVar.setEnd(null);
-    			this.removeAccessor(localVar);
-    			this.removeAccessor(localVar);
-    		}else{
-    			// update start instruction
-    			localVar.setStart(target);
-    			this.removeAccessor(localVar);
-    			target.addAccessor(localVar);
-    		}
-    	}else if(localVar.getEnd() == this){
-    		if(localVar.getStart() == localVar.getEnd()){
-    			// local variable is not used any more.
-    			localVar.setStart(null);
-    			localVar.setEnd(null);
-    			this.removeAccessor(localVar);
-    			this.removeAccessor(localVar);
-    		}else{
-    			// update end instruction
-    			localVar.setEnd(target.prev);
-    			this.removeAccessor(localVar);
-    			if(target.prev != null){
-    				target.prev.addAccessor(localVar);
-    			}
-    		}
-    	}
+		LocalVariableInfo localVar = (LocalVariableInfo) container;
+		if (localVar.getStart() == this) {
+			// start instruction changed
+			if(target == localVar.getEnd()){
+				// localVar is not used any more
+				//((InstructionHandle)localVar.getStart()).removeAccessor(localVar);
+				//((InstructionHandle)localVar.getEnd()).removeAccessor(localVar);
+				localVar.setStart(null);
+				localVar.setEnd(null);
+			} else {
+				// update start instruction
+				//((InstructionHandle)localVar.getStart()).removeAccessor(localVar);
+				localVar.setStart(target);
+				target.addAccessor(localVar);
+			}
+		} else if (localVar.getEnd() == this) {
+			// end instruction changed
+			if(target == localVar.getStart()){
+				// localVar is not used any more
+				//((InstructionHandle)localVar.getStart()).removeAccessor(localVar);
+				//((InstructionHandle)localVar.getEnd()).removeAccessor(localVar);
+				localVar.setStart(null);
+				localVar.setEnd(null);
+			} else {
+				// update end instruction
+				//((InstructionHandle)localVar.getEnd()).removeAccessor(localVar);
+				localVar.setEnd(target);
+				target.addAccessor(localVar);
+			}
+		}
     }else {
       throw new InconsistencyException("" + container);
     }
