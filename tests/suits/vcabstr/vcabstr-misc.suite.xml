@@ -281,4 +281,44 @@
         </code>
     </compile-run>	
     
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="abstrmisc017" description="Deep concrete class in an abstract class">
+	    <test>			
+		    new BBB().new XXX().m();
+		</test>
+		<code>
+        	abstract public cclass AAA {
+        		public cclass XXX {
+        			public cclass MMM {
+        			}
+        			public void m() {
+        				new MMM();
+        			}
+        		}
+			}
+			public cclass BBB extends AAA {	}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="abstrmisc018" description="Deep concrete class in an abstract class">
+	    <test>			
+		    new BBB().new XXX().m();
+		</test>
+		<code>
+        	abstract public cclass AAA {
+        		abstract public cclass XXX {
+        			public cclass MMM {
+        			}
+        			public void m() {
+        				new MMM();
+        			}
+        		}
+			}
+			public cclass BBB extends AAA {	
+				public cclass XXX { }
+			}
+        </code>
+    </compile-run>
+    
 </testsuite>
