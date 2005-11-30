@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassPreparation.java,v 1.45 2005-11-03 11:40:39 gasiunas Exp $
+ * $Id: CClassPreparation.java,v 1.46 2005-11-30 13:44:21 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -129,7 +129,7 @@ public class CClassPreparation implements CaesarConstants {
     ) {
 	    CClass innerClass = inner.getCClass();
                                     
-        if ((decl.getModifiers() & ACC_ABSTRACT) == 0) {
+        if (!decl.getSourceClass().isAbstract()) {
         	/* create concrete factory method inside concrete collaboration */
         	JBlock creationBlock = new JBlock(
                 decl.getTokenReference(),
