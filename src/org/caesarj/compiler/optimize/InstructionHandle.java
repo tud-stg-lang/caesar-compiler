@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: InstructionHandle.java,v 1.6 2005-11-24 11:08:50 meffert Exp $
+ * $Id: InstructionHandle.java,v 1.7 2005-11-30 16:17:34 meffert Exp $
  */
 
 package org.caesarj.compiler.optimize;
@@ -217,9 +217,18 @@ public class InstructionHandle extends AbstractInstructionAccessor implements Cl
       if (next != null) {
 	next.prev = prev;
       }
-      for (int i = 0; accessors != null && i < accessors.size(); i++) {
-	changeTarget(((AccessorContainer)accessors.elementAt(i)), next);
+      
+      // create a local copy of the accessor array to garantee calling changeTarget with every element.
+      // this is necessary, because calling changeTarget(..) with a Optimizer as AccessorContainer will
+      // change the accessor vector (the Optimizer accessor will be removed).
+      if(accessors != null){
+	      Vector localCopy = new Vector(accessors);
+	      Enumeration e = localCopy.elements();
+	      while(e.hasMoreElements()){
+	    	  changeTarget(((AccessorContainer)e.nextElement()), next);
+	      }
       }
+      
       notifyTargetOnRemove();
     }
   }
