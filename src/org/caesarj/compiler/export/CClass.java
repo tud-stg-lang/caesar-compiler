@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClass.java,v 1.41 2005-10-12 07:58:18 gasiunas Exp $
+ * $Id: CClass.java,v 1.42 2005-12-02 09:59:21 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.caesarj.compiler.ast.phylum.JPhylum;
@@ -1099,104 +1100,112 @@ public abstract class CClass extends CMember
 	public CMethod[] getAbstractMethods(CTypeContext context, boolean test)
 		throws UnpositionedError
 	{
-		ArrayList container = new ArrayList();
-
-		// C explicitly contains a declaration of an abstract method.
-		for (int i = 0; i < methods.length; i++)
-		{
-			if (methods[i].isAbstract())
+		if (abstractMethodsCache == null) {
+			ArrayList<CMethod> container = new ArrayList<CMethod>();
+			
+			// C explicitly contains a declaration of an abstract method.
+			for (int i = 0; i < methods.length; i++)
 			{
-				container.add(methods[i]);
-			}
-		}
-
-		// Any of C's superclasses declares an abstract method that has
-		// not been implemented in C or any of its superclasses.
-		if (superClassType != null)
-		{
-			CMethod[] inherited;
-
-			inherited = getSuperClass().getAbstractMethods(context, false);
-			for (int i = 0; i < inherited.length; i++)
-			{
-				if (test)
+				if (methods[i].isAbstract())
 				{
-					if (!inherited[i].isAccessible(this) && (!isAbstract()))
-					{
-						throw new UnpositionedError(
-							KjcMessages.CLASS_CAN_NOT_IMPLEMENT,
-							new Object[] {
-								this,
-								inherited[i],
-								inherited[i].getOwner()});
-					}
-				}
-
-				if (getImplementingMethod(context, inherited[i], this, true)
-					== null)
-				{
-					container.add(inherited[i]);
+					container.add(methods[i]);
 				}
 			}
-		}
-
-		// A direct superinterface of C declares or inherits a method
-		// (which is therefore necessarily abstract) and C neither
-		// declares nor inherits a method that implements it.
-		ArrayList interfaceMethods = new ArrayList();
-
-		for (int i = 0; i < interfaces.length; i++)
-		{
-			CMethod[] inherited;
-
-			inherited =
-				interfaces[i].getCClass().getAbstractMethods(context, false);
-			for (int j = 0; j < inherited.length; j++)
+	
+			// A direct superinterface of C declares or inherits a method
+			// (which is therefore necessarily abstract) and C neither
+			// declares nor inherits a method that implements it.
+			ArrayList<CMethod> allInherited = new ArrayList<CMethod>();
+	
+			for (int i = 0; i < interfaces.length; i++)
 			{
-				CMethod implMethod =
-					getImplementingMethod(context, inherited[j], this, false);
-
-				if (implMethod == null)
-				{
-					container.add(inherited[j]);
-				}
-
+				CMethod[] inherited;
+				inherited =	interfaces[i].getCClass().getAbstractMethods(context, false);
+				
+				appendDifferentMethods(context, allInherited, inherited, test);
+			}
+			
+			// Any of C's superclasses declares an abstract method that has
+			// not been implemented in C or any of its superclasses.
+			if (superClassType != null)
+			{
+				CMethod[] inherited;
+	
+				inherited = getSuperClass().getAbstractMethods(context, false);
 				if (test)
 				{
-					if (implMethod != null)
-					{
-						// FIX 020206 lackner 
-						// parameter null is substitution in the generic case!!
-						implMethod.checkOverriding(context, inherited[j]);
-					}
-					else
-					{
-						// check it against other interface methods
-						Iterator en = interfaceMethods.iterator();
-
-						while (en.hasNext())
+					for (int i = 0; i < inherited.length; i++)
+					{	
+						if (!inherited[i].isAccessible(this) && (!isAbstract()))
 						{
-							CMethod iMethod = (CMethod) en.next();
-
-							if (iMethod.getIdent() == inherited[j].getIdent()
-								&& iMethod.hasSameSignature(
-									context,
-									inherited[j]))
-							{
-								iMethod.checkInheritence(
-									context,
-									inherited[j],
-									null);
-							}
-						}
-
+							throw new UnpositionedError(
+								KjcMessages.CLASS_CAN_NOT_IMPLEMENT,
+								new Object[] {
+									this,
+									inherited[i],
+									inherited[i].getOwner()});
+						}						
 					}
-					interfaceMethods.add(inherited[j]);
+				}
+				appendDifferentMethods(context, allInherited, inherited, false);
+			}
+			
+			// Filter out only methods that are not implemented in C
+			ArrayList<CMethod> allInheritedAbstract = new ArrayList<CMethod>();
+			
+			for (Iterator<CMethod> it = allInherited.iterator(); it.hasNext();) {
+				CMethod meth = it.next();
+				
+				CMethod implMethod = getImplementingMethod(context, meth, this, false);
+				if (implMethod == null)	{
+					allInheritedAbstract.add(meth);
+				}
+				else if (test)	{
+					// FIX 020206 lackner 
+					// parameter null is substitution in the generic case!!
+					implMethod.checkOverriding(context, meth);
 				}
 			}
+			
+			appendDifferentMethods(context, container, allInheritedAbstract, false);
+			abstractMethodsCache = (CMethod[])container.toArray(new CMethod[container.size()]);
 		}
-
-		return (CMethod[]) container.toArray(new CMethod[container.size()]);
+		return abstractMethodsCache;
+	}
+	
+	private void appendDifferentMethods(
+			CTypeContext context, List<CMethod> container, CMethod newMeths[], boolean test) 
+			throws UnpositionedError {
+		
+		List<CMethod> toAdd = new ArrayList<CMethod>();
+		for (int i1 = 0; i1 < newMeths.length; i1++) {
+			CMethod meth1 = newMeths[i1];
+			String ident1 = meth1.getIdent();
+			boolean bFound = false;
+			
+			for (Iterator<CMethod> it2 = container.iterator(); it2.hasNext();) {
+				CMethod meth2 = it2.next();
+				if (ident1 == meth2.getIdent() && meth1.hasSameSignature(context, meth2)) {
+					if (test) {
+						meth1.checkInheritence(context,	meth2, null);						
+					}
+					bFound = true;
+					break;
+				}				
+			}
+			if (!bFound) {
+				toAdd.add(meth1);
+			}
+		}
+		container.addAll(toAdd);
+	}
+	
+	private void appendDifferentMethods(
+			CTypeContext context, List<CMethod> container, List<CMethod> newMeths, boolean test) 
+			throws UnpositionedError {
+		
+		appendDifferentMethods(context, container, 
+				newMeths.toArray(new CMethod[newMeths.size()]), test);		
 	}
 
 	public void testInheritMethods(CTypeContext context)
@@ -1612,5 +1621,6 @@ public abstract class CClass extends CMember
 	
 	private int depth = 0;
 	
-	private AdditionalCaesarTypeInformation additionalTypeInfo = null;	
+	private AdditionalCaesarTypeInformation additionalTypeInfo = null;
+	protected CMethod[] abstractMethodsCache = null;
 }
