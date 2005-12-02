@@ -56,7 +56,7 @@
     </compile-check-error>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-check-error error="INTERFACES_DUPLICATE"  id="vcmixin004" description="repeated mixing">
+    <compile id="vcmixin004" description="repeated mixing">
         <code>
         	public cclass OuterA {
 				public cclass InnerA {
@@ -65,7 +65,7 @@
 				}
 			}
         </code>
-    </compile-check-error>
+    </compile>
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
     <compile-check-error error="CCLASS_UNKNOWN"  id="vcmixin005" description="mixing outer with inner">
