@@ -1,3 +1,16 @@
+VC_M27 - 02.12.2005
+- getAbstractMethods() in CClass is optimized. 
+    In previous version it took most of the compilation time in case of complex inheritance 
+    hierarchies.
+- Default $constructor() methods are not generated
+- Linearization algorithm changed 
+    Consider B <: A;  C;   D <: A;  E <: B & C & D
+    The previous algorithm computed E = [E, B, D, A, C]. 
+    The problem is that C is shifted after D, although there is no relationship between C and D
+    The modified algorithm computes E = [E, B, C, D, A].
+- Fixed generation of factory methods inside abstract virtual classes
+- Fixed the bytecode generation problem for empty if and while statements
+
 VC_M26 - 23.11.2005
 - Quick fix for bytecode generation problem for empty if and while statements
 - Fix of static field deployment
