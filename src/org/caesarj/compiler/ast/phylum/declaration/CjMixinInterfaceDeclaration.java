@@ -20,12 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjMixinInterfaceDeclaration.java,v 1.23 2005-11-07 15:41:57 gasiunas Exp $
+ * $Id: CjMixinInterfaceDeclaration.java,v 1.24 2005-12-02 10:00:06 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
 
-import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -110,7 +109,7 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
 	        incrementFor.add(fb.getQualifiedName().toString());
         }
 	    
-	    for (CaesarTypeNode parent : n.parents()) {
+	    for (CaesarTypeNode parent : n.directParents()) {
             String parentName = parent.getQualifiedName().toString();
             if(!incrementFor.contains(parentName))
                 superClasses.add(parentName);
@@ -180,16 +179,13 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
         implementedTypes = newInterfaces;
     }	
 	
-	private void addMixinInterfaces(CReferenceType[] newIfcs) {
-	    super.addInterface(newIfcs);
+	private void setMixinInterfaces(CReferenceType[] newIfcs) {
+	    extendedTypes = newIfcs;
+	    
+	    interfaces = new CReferenceType[implementedTypes.length + extendedTypes.length];
 
-        CReferenceType[] newInterfaces =
-            new CReferenceType[extendedTypes.length + newIfcs.length];
-
-        System.arraycopy(extendedTypes, 0, newInterfaces, 0, extendedTypes.length);
-        System.arraycopy(newIfcs, 0, newInterfaces, extendedTypes.length, newIfcs.length);
-
-        extendedTypes = newInterfaces;
+        System.arraycopy(implementedTypes, 0, interfaces, 0, implementedTypes.length);
+        System.arraycopy(extendedTypes, 0, interfaces, implementedTypes.length, extendedTypes.length);
 	}
 	
     public void adjustSuperType(CContext context) throws PositionedError {
@@ -225,7 +221,7 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
                 ifcList.add(superTypeRef);                
             }
             else {   
-            	for (CaesarTypeNode parentNode : typeNode.implicitParents()) {
+            	for (CaesarTypeNode parentNode : typeNode.directParents()) {
 	                CReferenceType superTypeRef = 
 	                    context.getTypeFactory().createType(
 	                		parentNode.getQualifiedName().toString(), 
@@ -251,7 +247,7 @@ public class CjMixinInterfaceDeclaration extends CjInterfaceDeclaration {
             }
             
             // add missing implicit relations 
-            addMixinInterfaces((CReferenceType[])ifcList.toArray(new CReferenceType[ifcList.size()]));
+            setMixinInterfaces((CReferenceType[])ifcList.toArray(new CReferenceType[ifcList.size()]));
             
             getSourceClass().setInterfaces(this.interfaces);
             
