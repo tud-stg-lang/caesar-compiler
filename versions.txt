@@ -4,12 +4,13 @@ VC_M27 - 02.12.2005
     hierarchies.
 - Default $constructor() methods are not generated
 - Linearization algorithm changed 
-    Consider B <: A;  C;   D <: A;  E <: B & C & D
+    Consider classes A;  B <: A;  C;   D <: A;  E <: B & C & D
     The previous algorithm computed E = [E, B, D, A, C]. 
     The problem is that C is shifted after D, although there is no relationship between C and D
     The modified algorithm computes E = [E, B, C, D, A].
 - Fixed generation of factory methods inside abstract virtual classes
 - Fixed the bytecode generation problem for empty if and while statements
+- The inheritance relationships to transitive parents of virtual classes are not generated
 
 VC_M26 - 23.11.2005
 - Quick fix for bytecode generation problem for empty if and while statements
