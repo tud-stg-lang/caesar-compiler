@@ -22,9 +22,9 @@ public class VCTestCase extends TestCase
 												"A.a, B.a, D.a; " +				// D < B
 												"A.a, C.a, B.a; " +				// E < B & C
 												"A.a, C.a, F.a; " + 			// F < A & C
-												"A.a, C.a, B.a, D.a; " +		// G < E & D
+												"A.a, B.a, D.a, C.a; " +		// G < E & D
 												"A.a, C.a, F.a, B.a, H.a; " +	// H < E & F
-												"A.a, C.a, F.a, B.a, D.a, H.a";	// I < G & H
+												"A.a, C.a, F.a, B.a, H.a, D.a";	// I < G & H
 
 	public void test() {
 

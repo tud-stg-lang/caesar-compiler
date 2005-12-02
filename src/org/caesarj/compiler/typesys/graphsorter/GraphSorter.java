@@ -3,6 +3,8 @@ package org.caesarj.compiler.typesys.graphsorter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.caesarj.util.InconsistencyException;
+
 /**
  * Linearizes (sorts) given acyclic graph using a modified deep-first search
  * 		- if cycle is detected, exception is thrown	
@@ -84,35 +86,56 @@ public class GraphSorter {
 		}
 		
 		/**
-		 *	Add itself to the sorted list at the correct order 
+		 *	Add itself to the sorted list 
 		 */
-		protected void add(List<Node> sortedLst) {
-			if (!added) {
-				added = true;
-				/* add incoming nodes first */
-				for (Node src: incoming) {
-					src.add(sortedLst);
+		protected void add(List<Node> sortedLst, List<Node> pendingLst) {
+			sortedLst.add(this);
+			added = true;			
+			/* try to add the pending nodes */
+			for (Node node: pendingLst) {
+				if (node.canBeAdded()) {
+					pendingLst.remove(node);
+					node.add(sortedLst, pendingLst);
+					break;
 				}
-				/* add itself */
-				sortedLst.add(this);				
+			}			
+		}
+		
+		/**
+		 *	Check if can add itself to the sorted list 
+		 */
+		protected boolean canBeAdded() {
+			/* can be added only if all incoming nodes are already added */
+			for (Node src: incoming) {
+				if (!src.added) {
+					return false;
+				}				
 			}
+			return true;
 		}
 		
 		/**
 		 * Sort the node, append to the given list
 		 */
-		public void sort(List<Node> sortedLst) {
+		public void sort(List<Node> sortedLst, List<Node> pendingLst) {
 			if (!sorted) {
 				/* called inside sorting process -> cycle */
 				if (sorting) {
 					throw new CycleFoundException();
 				}
 				sorting = true;
-				/* add itself to the list */
-				add(sortedLst);
+				/* try add itself to the list */
+				if (canBeAdded()) {
+					/* add itself */
+					add(sortedLst, pendingLst);			
+				}
+				else {
+					/* if cannot be added add itself to the pending list */
+					pendingLst.add(this);
+				}
 				/* recurse to the outgoing nodes */
 				for (Node target: getOutgoing()) {
-					target.sort(sortedLst);
+					target.sort(sortedLst, pendingLst);
 				}
 				sorted = true;
 			}
@@ -129,7 +152,11 @@ public class GraphSorter {
 			rootNode.buildInverse();
 			/* sort */
 			sortedNodes = new ArrayList<Node>();
-			rootNode.sort(sortedNodes);
+			List<Node> pendingNodes = new ArrayList<Node>();
+			rootNode.sort(sortedNodes, pendingNodes);
+			if (pendingNodes.size() != 0) {
+				throw new InconsistencyException("Failed to sort all nodes");
+			}
 		}
 		return sortedNodes;
 	}
