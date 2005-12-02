@@ -643,8 +643,8 @@
 				":beforeInternal:constAInternal|" +
 				":constB|" +
 				":constBInternal|" +
-				":before:before:before:constA:constB|" +
-				":beforeInternal:beforeInternal:beforeInternal:constAInternal:constBInternal", res.toString());
+				":before:before:constA:constB|" +
+				":beforeInternal:beforeInternal:constAInternal:constBInternal", res.toString());
 		</test>
         <code>
         	public class Main {
