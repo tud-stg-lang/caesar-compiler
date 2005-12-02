@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTypeNode.java,v 1.19 2005-11-07 09:26:50 gasiunas Exp $
+ * $Id: CaesarTypeNode.java,v 1.20 2005-12-02 09:56:32 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.graph;
@@ -51,6 +51,7 @@ public class CaesarTypeNode {
 	protected List<CaesarTypeNode> implicitParents = null;
 	protected List<CaesarTypeNode> furtherbounds = null;
 	protected List<CaesarTypeNode> directFurtherbounds = null;
+	protected List<CaesarTypeNode> directParents = null;
 	
 	protected CaesarTypeGraph g;
 	
@@ -118,7 +119,7 @@ public class CaesarTypeNode {
 		return g.wrapList(getJoinedNode().getAllInners());
 	}
 	
-	public List<CaesarTypeNode> parents() {
+	public List<CaesarTypeNode> allParents() {
 		return g.wrapList(getJoinedNode().getAllParents());
 	}
 	
@@ -132,6 +133,28 @@ public class CaesarTypeNode {
 			}			
 		}
 		return furtherbounds;
+	}
+	
+	/**
+	 * Determine parents that are not inherited transitively 
+	 */
+	public List<CaesarTypeNode> directParents() {
+		if (directParents == null) {
+			directParents = new ArrayList<CaesarTypeNode>();
+			for (CaesarTypeNode fb1 : allParents()) {
+				boolean bAdd = true;
+				for (CaesarTypeNode fb2 : allParents()) {
+					if (fb2.allParents().contains(fb1)) {
+						bAdd = false;
+						break;
+					}					
+				}
+				if (bAdd) {
+					directParents.add(fb1);
+				}
+			}
+		}
+		return directParents;
 	}
 	
 	public List<CaesarTypeNode> directFurtherbounds() {
@@ -170,7 +193,7 @@ public class CaesarTypeNode {
 		if (implicitParents == null) {
 			implicitParents = new ArrayList<CaesarTypeNode>();
 			List<CaesarTypeNode> declLst = declaredParents();
-			for (CaesarTypeNode parent : parents()) {
+			for (CaesarTypeNode parent : directParents()) {
 				if (!declLst.contains(parent)) {
 					implicitParents.add(parent);
 				}
@@ -243,9 +266,9 @@ public class CaesarTypeNode {
         if (isImplicitType())
         	res.append(" [i]");
         
-        if (parents().size() > 0) {
+        if (allParents().size() > 0) {
             res.append("\n\textends: ");
-            for(CaesarTypeNode parent : parents()) {
+            for(CaesarTypeNode parent : allParents()) {
             	res.append(parent.getQualifiedName().getClassName());
             	if (!declaredParents().contains(parent))
                 	res.append("[i]");
