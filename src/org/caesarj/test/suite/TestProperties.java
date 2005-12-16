@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: TestProperties.java,v 1.4 2005-07-21 13:14:23 aracic Exp $
+ * $Id: TestProperties.java,v 1.5 2005-12-16 16:29:43 klose Exp $
  */
 
 package org.caesarj.test.suite;
@@ -55,6 +55,10 @@ public class TestProperties {
     }
     
     private Properties props = new Properties();
+
+    private boolean keepLogs;
+
+    private boolean compareMode;
     
 
     private TestProperties() {
@@ -87,6 +91,14 @@ public class TestProperties {
             
             if(props.containsKey("ignoreUndefMsg"))
             	ignoreUndefMsg = getBoolValue("ignoreUndefMsg");
+            
+            if(props.containsKey("keepLogs")){
+                keepLogs = getBoolValue("keepLogs");
+            }
+            
+            if(props.containsKey("compareMode")){
+                compareMode = getBoolValue("compareMode");
+            }
         }
         catch (Exception e) {
             // do nothing, just continue with default values
@@ -132,5 +144,17 @@ public class TestProperties {
     
     public boolean ignoreUndefMessages() {
     	return ignoreUndefMsg;
+    }
+
+    public boolean getKeepLogs() {
+        return keepLogs;
+    }
+
+    public boolean isCompareMode() {
+        return compareMode;
+    }
+
+    public void setCompareMode(boolean b) {
+        compareMode = b;
     }
 }

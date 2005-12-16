@@ -20,12 +20,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AllTests.java,v 1.6 2005-10-04 08:24:48 klose Exp $
+ * $Id: AllTests.java,v 1.7 2005-12-16 16:29:43 klose Exp $
  */
 
 package org.caesarj.test.suite;
 
 import java.io.File;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,7 +44,6 @@ public class AllTests {
     
     public static Test suite() throws Exception {
         
-		TestSuite suite = new TestSuite("Caesar Test Suite");
 		
 		File workingDir = new File( TestProperties.instance().getWorkingDir() );
 		File genSrcDir = new File( TestProperties.instance().getGenSrcDir() );
@@ -58,16 +59,40 @@ public class AllTests {
 		    TestProperties.instance().getSuiteSearchPattern()
 	    );			
 		
-		File testLogFile = 
-		    new File(TestProperties.instance().getLogFileName());
+        final String logFileName = TestProperties.instance().getLogFileName(); 
+		File testLogFile = new File(logFileName);
 		
-        try{
-            testLogFile.createNewFile();
-        } catch(Exception e){
-            System.err.println("Waring: Could not create new test log file: "+ e);
+        String testTitle = "Caesar Test Suite";
+
+        CaesarTestrunLog lastRun=null, testLog=null;
+        
+        if (TestProperties.instance().isCompareMode()){
+            try{
+                lastRun = CaesarTestrunLog.loadFrom( testLogFile );
+                testTitle += ", compared to last run";
+                testLog = new CaesarTestrunLog( null );
+            } catch( Exception e ){
+                TestProperties.instance().setCompareMode(false);
+            }
+        } 
+
+        if(!TestProperties.instance().isCompareMode()){
+        
+            if (TestProperties.instance().getKeepLogs()){
+                createLogCopy(logFileName);
+            }
+            
+            try{
+                testLogFile.createNewFile();
+            } catch(Exception e){
+                System.err.println("Waring: Could not create new test log file: " + testLogFile +"\n"+ e);
+            }
+
+            testLog = new CaesarTestrunLog( testLogFile );
         }
-		
-        TestLog testLog = new TestLog( testLogFile );
+        
+        TestSuite suite = new TestSuite(testTitle);
+        
 		
 		for (Iterator it = testSuits.iterator(); it.hasNext();) {
             File f = (File) it.next();
@@ -78,6 +103,8 @@ public class AllTests {
             CaesarTestSuite s = 
                 CaesarTestSuite.parseXml(
                     testLog,
+                    TestProperties.instance().isCompareMode(),
+                    lastRun,
                     TestProperties.instance().getTestFilter(), 
                     f, 
                     outputPath);
@@ -89,6 +116,24 @@ public class AllTests {
 		
 		return suite;
 	}
+
+    private static void createLogCopy(final String logFileName) {
+        File logFile = new File(logFileName);
+        int lastDotIdx = logFileName.lastIndexOf('.');
+        String backupName;
+        Date date = Calendar.getInstance().getTime();
+        String dateString = String.format("%1$4tY%1$2tm%1$2td%1$tH%1$tM%1$tS%1$tL", date );
+        if(lastDotIdx > 0){
+            backupName = logFileName.substring(0,lastDotIdx) + " - "+ 
+                dateString+
+                logFileName.substring(lastDotIdx);
+        } else {
+            backupName = logFileName + "- "+ dateString;
+        }
+        if (!logFile.renameTo( new File(backupName) )){
+            System.err.println("Could not keep log");
+        }
+    }
     
     public static void main(String[] args) throws Exception {
         Test suite = suite();

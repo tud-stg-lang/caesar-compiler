@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CompileTest.java,v 1.7 2005-11-15 16:52:22 klose Exp $
+ * $Id: CompileTest.java,v 1.8 2005-12-16 16:29:43 klose Exp $
  */
 
 package org.caesarj.test.suite;
@@ -40,6 +40,7 @@ import org.caesarj.compiler.KjcEnvironment;
 import org.caesarj.compiler.KjcOptions;
 import org.caesarj.compiler.Main;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
+import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.types.KjcSignatureParser;
 import org.caesarj.compiler.types.KjcTypeFactory;
@@ -56,9 +57,9 @@ import org.caesarj.util.UnpositionedError;
  */
 public class CompileTest extends CaesarTest {
 
-    protected List positionedErrorList = new LinkedList();
+    protected List<PositionedError> positionedErrorList = new LinkedList<PositionedError>();
 
-    protected List unpositionedErrorList = new LinkedList();
+    protected List<UnpositionedError> unpositionedErrorList = new LinkedList<UnpositionedError>();
 
     protected String compilerErrors = "";
 
@@ -96,7 +97,7 @@ public class CompileTest extends CaesarTest {
         return String.format("%f %s", new Object[]{fBytes, unit}); 
     }
     
-    public void test() throws Throwable {
+    public void doTest() throws Throwable {
         // Create compiler
         File f = new File(getJavaFileName());
         f.getParentFile().mkdirs();
@@ -159,20 +160,20 @@ public class CompileTest extends CaesarTest {
     }
 
     class CompilerMock extends Main {
-        protected Vector allUnits;
+        protected Vector<JCompilationUnit> allUnits;
 
         protected ClassReaderMock classReader;
 
         public CompilerMock(String workingDir, PrintWriter p) {
             super(workingDir, p);
-            allUnits = new Vector();
+            allUnits = new Vector<JCompilationUnit>();
         }
 
         /**
          * Returns an array containing all PositionedErrors without CWarnings
          */
         public PositionedError[] getPositionedErrors() {
-            Vector errors = new Vector();
+            Vector<PositionedError> errors = new Vector<PositionedError>();
 
             for (Iterator iter = positionedErrorList.iterator(); iter.hasNext();) {
                 PositionedError element = (PositionedError) iter.next();
@@ -222,12 +223,12 @@ public class CompileTest extends CaesarTest {
         public ClassReaderMock(String classp, String extdirs,
                 SignatureParser signatureParser) {
             super(classp, extdirs, signatureParser);
-            allLoadedClasses = new Hashtable();
+            allLoadedClasses = new Hashtable<String, CClass>();
         }
 
-        Hashtable allLoadedClasses;
+        Hashtable<String, CClass> allLoadedClasses;
 
-        Hashtable getAllLoadedClasses() {
+        Hashtable<String, CClass> getAllLoadedClasses() {
             return allLoadedClasses;
         }
 

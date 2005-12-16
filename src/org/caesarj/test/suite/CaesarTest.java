@@ -20,14 +20,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTest.java,v 1.4 2005-10-21 19:17:27 thiago Exp $
+ * $Id: CaesarTest.java,v 1.5 2005-12-16 16:29:43 klose Exp $
  */
 
 package org.caesarj.test.suite;
 
 import java.io.File;
 
+import javax.security.auth.login.FailedLoginException;
+
 import junit.framework.Assert;
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 /**
@@ -68,14 +71,6 @@ public abstract class CaesarTest extends TestCase {
     }
     
     public void failure(String message) {
-        
-        try {
-            testSuite.getTestLog().append(testSuite.getName()+":"+id);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        
         String 	prefix = testSuite.getOutputPath(),
 				folder, name; 
         String[] comps = prefix.split("\\" + File.separator);
@@ -85,5 +80,34 @@ public abstract class CaesarTest extends TestCase {
         Assert.fail(message+" <caesartest file=\""+testFileName+"\" line=\"1\"/>");
     }
     
-    public abstract void test() throws Throwable; 
+    public abstract void doTest() throws Throwable;
+    
+    public void test() throws Throwable {
+        boolean success = true;
+        Throwable error = null;
+        try{
+            doTest();
+            testSuite.getTestLog().addResult(this, true, "");
+            success = true;
+        } catch( Throwable t ){
+            testSuite.getTestLog().addResult(this, false, t.getMessage());
+            success = false;
+            error = t;
+        }
+        
+        if( getTestSuite().isCompareMode()){
+            CaesarTestrunLog lastRun = getTestSuite().getLastRun();
+
+            if(lastRun.containsTest(id, getTestSuite().getName() )){
+                if( lastRun.getTestResult(id, getTestSuite().getName()) != success ){
+                    throw new AssertionFailedError("Test result differs from last run");
+                }
+            }
+        } else {
+            if (!success) {
+                throw error;
+            }
+        }
+        
+    }
 }

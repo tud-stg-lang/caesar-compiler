@@ -20,15 +20,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTestSuite.java,v 1.4 2005-07-21 13:14:23 aracic Exp $
+ * $Id: CaesarTestSuite.java,v 1.5 2005-12-16 16:29:43 klose Exp $
  */
 
 package org.caesarj.test.suite;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.jdom.Document;
@@ -46,9 +48,18 @@ public class CaesarTestSuite extends TestSuite {
     private String packagePrefix;
     private String outputPath;
     private File file;
-    private TestLog testLog;    
+    private CaesarTestrunLog testLog;
     
-    private CaesarTestSuite(TestLog testLog, File file, String name, String outputPath) {
+    CaesarTestrunLog lastRun;
+    
+    public CaesarTestrunLog getLastRun(){
+        return lastRun;
+    }
+    
+    private boolean compareMode = false;
+    //private Document lastRun;
+    
+    private CaesarTestSuite(CaesarTestrunLog testLog, File file, String name, String outputPath) {
         super(name);
         this.testLog = testLog;
         this.file = file;
@@ -63,7 +74,7 @@ public class CaesarTestSuite extends TestSuite {
     	return outputPath;
     }
     
-    public TestLog getTestLog() {
+    public CaesarTestrunLog getTestLog() {
         return testLog;
     }
         
@@ -71,8 +82,11 @@ public class CaesarTestSuite extends TestSuite {
         return packagePrefix;
     }
     
-    public static CaesarTestSuite parseXml(TestLog testLog, String idFilter, File file, String outputPath) throws Exception {
+    public static CaesarTestSuite parseXml(CaesarTestrunLog testLog, boolean compareMode, CaesarTestrunLog lastRun, String idFilter, File file, String outputPath) throws Exception {
         CaesarTestSuite res = new CaesarTestSuite(testLog, file, file.getName(), outputPath);
+        
+        res.compareMode = compareMode;
+        res.lastRun = lastRun;
         
         SAXBuilder builder = new SAXBuilder();
         Document doc = builder.build(file);
@@ -108,6 +122,12 @@ public class CaesarTestSuite extends TestSuite {
                 description = item.getAttributeValue("description");
                 codeBlock = item.getChildText("code") + commonCodeBase;
                 
+                if(lastRun != null){
+                    if (!lastRun.containsTest(id, res.getName())){
+                        continue;
+                    }
+                }
+                
                 if( !id.matches(idFilter) ) 
                     continue;
                 
@@ -137,5 +157,13 @@ public class CaesarTestSuite extends TestSuite {
         
         return res;
     }
-        
+
+    public void addTest(Test test) {
+        testLog.addTest(test);
+        super.addTest(test);
+    }
+
+    public boolean isCompareMode() {
+        return compareMode;
+    }
 }

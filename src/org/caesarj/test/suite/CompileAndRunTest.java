@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CompileAndRunTest.java,v 1.2 2005-07-21 13:14:23 aracic Exp $
+ * $Id: CompileAndRunTest.java,v 1.3 2005-12-16 16:29:43 klose Exp $
  */
 
 package org.caesarj.test.suite;
@@ -60,8 +60,8 @@ public class CompileAndRunTest extends CompileTest {
         return res;
     }
     
-    public void test() throws Throwable {
-        super.test();
+    public void doTest() throws Throwable {
+        super.doTest();
         
         // Execute the compiled test
         Object generatedTest = 
