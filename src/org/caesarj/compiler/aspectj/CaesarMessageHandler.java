@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarMessageHandler.java,v 1.10 2005-11-10 14:34:53 gasiunas Exp $
+ * $Id: CaesarMessageHandler.java,v 1.11 2006-01-13 12:04:24 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -71,16 +71,29 @@ public class CaesarMessageHandler implements IMessageHandler, CaesarConstants {
 		ISourceLocation location = message.getSourceLocation();
 
 		if (message.getKind() == IMessage.WARNING) {
+			
+			if (location != null) {
 
-			compiler.get().reportTrouble(
-				new CWarning(
-					new TokenReference(
-						location.getSourceFile().getPath(),
-						location.getSourceFile(),
-						location.getLine()),
-					new Message(
-						CaesarMessages.ASPECTJ_WARNING,
-						message.getMessage())));
+				compiler.get().reportTrouble(
+					new CWarning(
+						new TokenReference(
+							location.getSourceFile().getPath(),
+							location.getSourceFile(),
+							location.getLine()),
+						new Message(
+							CaesarMessages.ASPECTJ_WARNING,
+							message.getMessage())));
+			} else {
+
+				compiler.get().reportTrouble(
+					new CWarning(
+						TokenReference.NO_REF,
+						new Message(
+							CaesarMessages.ASPECTJ_WARNING,
+							message.getMessage())));
+
+			}
+			
 			return true;
 		}
 
