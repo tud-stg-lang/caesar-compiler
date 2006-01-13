@@ -1,0 +1,43 @@
+<testsuite name="Test per this deployment in Caesar" package="suits.aspects.perthis">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="aspperthis001" description="per this deployment test">
+		<test>
+			Model m1 = new Model();
+			Model m2 = new Model();
+			View v = new View();
+			DeploySupport.deployOnObject(v, m2);
+			m2.setA(2);
+			m1.setA(3);			
+			m2.setA(4);
+			DeploySupport.undeployFromObject(v, m2);
+			System.out.println(res.toString());
+			assertEquals(":model-0:model-2:model-2:model-4", res.toString());
+		</test>
+        <code>
+        	import org.caesarj.runtime.*;
+			
+        	public class Model {
+        		int a = 0;
+        		public int getA() {
+        		   return a;
+        		}
+        		public void setA(int a) {
+        		   this.a = a;
+        		}
+        		public String toString() {
+        			return ":model-" + a;
+        		}
+			}
+			public cclass View implements PerThisDeployable {
+				before(Model m): execution(* Model.set*(..)) &amp;&amp; this(m) {
+					Test.res.append(m.toString());
+				}
+				after(Model m): execution(* Model.set*(..)) &amp;&amp; this(m) {
+					Test.res.append(m.toString());
+				}
+			}
+        </code>
+    </compile-run>	
+	    
+</testsuite>
