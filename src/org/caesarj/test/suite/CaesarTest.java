@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarTest.java,v 1.5 2005-12-16 16:29:43 klose Exp $
+ * $Id: CaesarTest.java,v 1.6 2006-01-13 12:05:32 gasiunas Exp $
  */
 
 package org.caesarj.test.suite;
@@ -85,15 +85,10 @@ public abstract class CaesarTest extends TestCase {
     public void test() throws Throwable {
         boolean success = true;
         Throwable error = null;
-        try{
-            doTest();
-            testSuite.getTestLog().addResult(this, true, "");
-            success = true;
-        } catch( Throwable t ){
-            testSuite.getTestLog().addResult(this, false, t.getMessage());
-            success = false;
-            error = t;
-        }
+        
+        doTest();
+        testSuite.getTestLog().addResult(this, true, "");
+        success = true;
         
         if( getTestSuite().isCompareMode()){
             CaesarTestrunLog lastRun = getTestSuite().getLastRun();
