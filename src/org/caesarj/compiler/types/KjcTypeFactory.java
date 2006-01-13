@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: KjcTypeFactory.java,v 1.5 2005-11-03 11:43:09 gasiunas Exp $
+ * $Id: KjcTypeFactory.java,v 1.6 2006-01-13 12:06:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 
 import org.caesarj.compiler.ClassReader;
+import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.util.InconsistencyException;
@@ -85,6 +86,8 @@ public class KjcTypeFactory extends org.caesarj.util.Utils implements TypeFactor
     runtimeExceptionType = createType(JAV_RUNTIME_EXCEPTION, true);
 
     kopiRuntimeType = createType(KOPI_RUNTIME, true);
+    
+    perThisDeployableType = createType(CaesarConstants.PER_THIS_DEPLOYABLE_IFC, true);
 
     try {
       objectType = (CReferenceType)objectType.checkType(context);
@@ -96,6 +99,7 @@ public class KjcTypeFactory extends org.caesarj.util.Utils implements TypeFactor
       runtimeExceptionType = (CReferenceType)runtimeExceptionType.checkType(context);
 
       kopiRuntimeType = (CReferenceType)kopiRuntimeType.checkType(context);
+      perThisDeployableType = (CReferenceType)perThisDeployableType.checkType(context);
     } catch (UnpositionedError e){
       throw new InconsistencyException("Failure while loading standard types.");
     }
@@ -108,6 +112,7 @@ public class KjcTypeFactory extends org.caesarj.util.Utils implements TypeFactor
     addKnownTypes(JAV_ERROR, errorType);
     addKnownTypes(JAV_RUNTIME_EXCEPTION, runtimeExceptionType);
     addKnownTypes(KOPI_RUNTIME, kopiRuntimeType);
+    addKnownTypes(CaesarConstants.PER_THIS_DEPLOYABLE_IFC, perThisDeployableType);
   }
 
   // ----------------------------------------------------------------------
@@ -229,6 +234,8 @@ public class KjcTypeFactory extends org.caesarj.util.Utils implements TypeFactor
   private CReferenceType	runtimeExceptionType;
 
   private CReferenceType	kopiRuntimeType;
+  
+  private CReferenceType    perThisDeployableType;
 
   private final Hashtable       knownTypes;
 

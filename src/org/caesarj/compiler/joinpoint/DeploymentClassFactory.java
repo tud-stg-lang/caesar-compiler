@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploymentClassFactory.java,v 1.53 2005-10-12 07:58:18 gasiunas Exp $
+ * $Id: DeploymentClassFactory.java,v 1.54 2006-01-13 12:06:06 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -66,6 +66,7 @@ import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.ast.phylum.variable.JLocalVariable;
 import org.caesarj.compiler.ast.phylum.variable.JVariableDefinition;
 import org.caesarj.compiler.constants.CaesarConstants;
+import org.caesarj.compiler.constants.Constants;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.compiler.types.CArrayType;
 import org.caesarj.compiler.types.CBooleanType;
@@ -104,6 +105,9 @@ public class DeploymentClassFactory implements CaesarConstants {
 	private String srcAspectClassName;
 	private String srcSingletonAspectName;
 	private String srcAspectInterfaceName;
+	
+	/* options */
+	private boolean isPerThisDeployable;
 
 	private KjcEnvironment environment;
 	private TypeFactory typeFactory;
@@ -125,6 +129,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 		this.environment = environment;
 
 		initNames();
+		
+		this.isPerThisDeployable = aspectClass.isPerThisDeployable();
 	}
 
 	/**
@@ -419,29 +425,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 			}
 		}
 
-		/* create the deploy and undeploy method */
-		singletonAspectMethods.add(createSingletonGetAspectContainerMethod());
-		singletonAspectMethods.add(createSingletonSetAspectContainerMethod());
+		/* create setSingleAspect method */
 		singletonAspectMethods.add(createSingletonSetSingleAspectMethod());
-		
-		/* create the $aspectContainer field */
-		JVariableDefinition deployedInstancesVar =
-			new JVariableDefinition(
-				where,
-				ACC_PRIVATE,
-				JLocalVariable.DES_GENERATED,
-				new CClassNameType(ASPECT_CONTAINER_IFC),
-				ASPECT_CONTAINER_FIELD,
-				null);
-
-		JFieldDeclaration field = new JFieldDeclaration(
-									where,
-									deployedInstancesVar,
-									true,
-									null,
-									null);
-		field.setGenerated(); 
-		fields.add( field );
 		
 		/* create the $singleAspect field */
 		JVariableDefinition singleAspectVar =
@@ -453,15 +438,15 @@ public class DeploymentClassFactory implements CaesarConstants {
 				"$singleAspect",
 				null);
 
-		JFieldDeclaration field2 = new JFieldDeclaration(
+		JFieldDeclaration field = new JFieldDeclaration(
 									where,
 									singleAspectVar,
 									true,
 									null,
 									null);
 		field.setGenerated(); 
-		fields.add( field2 );
-
+		fields.add( field );
+				
 		singletonAspectMethods.add(createSingletonAjcClinitMethod());
 		singletonAspectMethods.add(createAspectOfMethod());
 		
@@ -480,10 +465,6 @@ public class DeploymentClassFactory implements CaesarConstants {
 		field.setGenerated();
 		fields.add(field);
 
-		// Implement the CaesarSingletonAspectIfc
-		CReferenceType[] interfaces =
-			{ typeFactory.createType(CAESAR_ASPECT_REGISTRY_IFC_CLASS, true)};
-
 		int modifiers = ACC_PUBLIC;
 		if (aspectClass.getOwner() != null) {
 			//the nested singletons need to be static
@@ -499,8 +480,8 @@ public class DeploymentClassFactory implements CaesarConstants {
 			aspectClass.getTokenReference(),
 			modifiers,
 			singletonAspectName,
-			null,
-			interfaces,
+			typeFactory.createType(CAESAR_ABSTRACT_ASPECT_REGISTRY_CLASS, true),
+			new CReferenceType[] {},
 			(JFieldDeclaration[]) fields.toArray(new JFieldDeclaration[0]),
 			(JMethodDeclaration[]) singletonAspectMethods.toArray(new JMethodDeclaration[0]),
 			(JTypeDeclaration[]) inners.toArray(new JTypeDeclaration[0]),
@@ -522,25 +503,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 
 		return singletonAspect;
 	}
-	
-	/**
-	 * Creates the $getAspectContainer(..) method for registry class.
-	 */
-	private JMethodDeclaration createSingletonGetAspectContainerMethod() {
 		
-		AstGenerator gen = environment.getAstGenerator();
-	    
-	    String[] body = new String[] {
-	    	"public " + SRC_ASPECT_CONTAINER_IFC + " $getAspectContainer()",
-			"{",
- 	      		"return $aspectContainer;",
-			"}"	
-	    };
-	    
-	    gen.writeMethod(body);
-	    return gen.endMethod("getAspectContainer");
-	}
-	
 	/**
 	 * Creates the $setSingleAspect() method for registry class.
 	 */
@@ -559,24 +522,6 @@ public class DeploymentClassFactory implements CaesarConstants {
 	    return gen.endMethod("getAspectContainer");
 	}
 	
-	/**
-	 * Creates the $setAspectContainer(..) method for registry class.
-	 */
-	private JMethodDeclaration createSingletonSetAspectContainerMethod() {
-		
-		AstGenerator gen = environment.getAstGenerator();
-	    
-	    String[] body = new String[] {
-	    	"public void $setAspectContainer(" + SRC_ASPECT_CONTAINER_IFC + " cont)",
-			"{",
- 	      		"$aspectContainer = cont;",
-			"}"	
-	    };
-	    
-	    gen.writeMethod(body);
-	    return gen.endMethod("setAspectContainer");
-	}
-
 	/**
 	 * Create class initialization block for registry class 
 	 */
@@ -628,6 +573,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 					"}",
 					"else",
 					"{",
+						isPerThisDeployable ? "this.$cj$joinpoint$this = cj$joinpoint$this;" : "",
 						"Object[] inst = $aspectContainer.$getInstances();",
 					    "if (inst != null)",
 						"{",
@@ -700,6 +646,7 @@ public class DeploymentClassFactory implements CaesarConstants {
 	    		SRC_AROUND_CLOSURE_CLASS + " $closure = aroundClosure;",
 				"if ($aspectContainer != null)",
 				"{",
+					isPerThisDeployable ? "this.$cj$joinpoint$this = cj$joinpoint$this;" : "",
 					"Object[] $inst = $aspectContainer.$getInstances();",
 					"if ($inst != null)",
 					"{",

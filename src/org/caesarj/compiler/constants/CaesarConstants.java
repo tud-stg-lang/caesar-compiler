@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarConstants.java,v 1.18 2005-09-19 08:41:34 thiago Exp $
+ * $Id: CaesarConstants.java,v 1.19 2006-01-13 12:06:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.constants;
@@ -73,6 +73,9 @@ public interface CaesarConstants extends Constants {
 
 	public static final String THIS_ENCLOSING_JOIN_POINT_STATIC_PART =
 		"thisEnclosingJoinPointStaticPart";
+	
+	public static final String JOINPOINT_THIS_PARAM =
+		"cj$joinpoint$this";
 
 	public static final String PROCEED_METHOD = "proceed";
 
@@ -107,6 +110,9 @@ public interface CaesarConstants extends Constants {
 
 	public static final String CAESAR_ASPECT_REGISTRY_IFC_CLASS =
 		"org/caesarj/runtime/aspects/AspectRegistryIfc";
+	
+	public static final String CAESAR_ABSTRACT_ASPECT_REGISTRY_CLASS =
+		"org/caesarj/runtime/aspects/AbstractAspectRegistry";
         
     public static final String CAESAR_DEPLOY_SUPPORT_CLASS =  
         "org/caesarj/runtime/DeploySupport";
@@ -125,6 +131,9 @@ public interface CaesarConstants extends Constants {
     
     public static final String ASPECT_CONTAINER_IFC =  
     	"org/caesarj/runtime/aspects/AspectContainerIfc";
+    
+    public static final String PER_THIS_DEPLOYABLE_IFC =
+    	"org/caesarj/runtime/PerThisDeployable";
 
     public static final String
     	WRAPPER_WRAPPEE_FIELD = "wrappee",
@@ -153,7 +162,8 @@ public interface CaesarConstants extends Constants {
 	public static final int ThisJoinPoint = 2;
 	public static final int ThisJoinPointStaticPart = 4;
 	public static final int ThisEnclosingJoinPointStaticPart = 8;
-	public static final int ParameterMask = 0xf;
+	public static final int JoinPointThis = 16;
+	public static final int ParameterMask = 0xff;
 
 
 }

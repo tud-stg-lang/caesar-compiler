@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: DeploySupport.java,v 1.6 2005-03-31 10:43:20 gasiunas Exp $
+ * $Id: DeploySupport.java,v 1.7 2006-01-13 12:06:07 gasiunas Exp $
  */
 
 package org.caesarj.runtime;
@@ -28,6 +28,7 @@ package org.caesarj.runtime;
 import org.caesarj.runtime.aspects.AspectLocalDeployer;
 import org.caesarj.runtime.aspects.AspectIfc;
 import org.caesarj.runtime.aspects.AspectOnThreadDeployer;
+import org.caesarj.runtime.perobject.AspectPerThisDeployer;
 
 /**
  * Support class for deploy statements
@@ -38,6 +39,7 @@ public class DeploySupport {
 	
 	private static AspectOnThreadDeployer threadDeployer = new AspectOnThreadDeployer();
 	private static AspectLocalDeployer localDeployer = new AspectLocalDeployer();
+	private static AspectPerThisDeployer perThisDeployer = new AspectPerThisDeployer();
     
     public static AspectIfc checkIfDeployable(Object obj) {
         if(obj instanceof AspectIfc)
@@ -87,6 +89,28 @@ public class DeploySupport {
     public static void undeployLocal(AspectIfc a) {
     	if(a != null) {
     		localDeployer.$undeployFrom(a.$getAspectRegistry(), a);            
+        }
+    }
+    
+    /**
+     * Deploy aspect on the local process
+     * 
+     * @param a		Aspect object
+     */
+    public static void deployOnObject(PerThisDeployable a, Object o) {
+    	if(a != null) {
+    		perThisDeployer.deployOnObject(a, o);
+        }
+    }
+    
+    /**
+     * Undeploy aspect from the local process
+     * 
+     * @param a		Aspect object
+     */
+    public static void undeployFromObject(PerThisDeployable a, Object o) {
+    	if(a != null) {
+    		perThisDeployer.undeployFromObject(a, o);            
         }
     }
 }

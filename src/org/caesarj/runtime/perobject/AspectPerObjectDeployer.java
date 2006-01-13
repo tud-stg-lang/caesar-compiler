@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectPerObjectDeployer.java,v 1.4 2005-03-31 10:43:20 gasiunas Exp $
+ * $Id: AspectPerObjectDeployer.java,v 1.5 2006-01-13 12:06:06 gasiunas Exp $
  */
 
 package org.caesarj.runtime.perobject;
@@ -90,7 +90,7 @@ public class AspectPerObjectDeployer extends BasicAspectDeployer {
 	 * 
 	 * @return 	New container object
 	 */
-	public AspectContainerIfc createContainer() {
+	public AspectContainerIfc createContainer(AspectRegistryIfc reg) {
 		return new AspectObjectMapper(getContId(), _keyDetect);
 	}
 	

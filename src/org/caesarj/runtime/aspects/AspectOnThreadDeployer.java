@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: AspectOnThreadDeployer.java,v 1.3 2005-01-24 16:52:59 aracic Exp $
+ * $Id: AspectOnThreadDeployer.java,v 1.4 2006-01-13 12:06:06 gasiunas Exp $
  */
 
 package org.caesarj.runtime.aspects;
@@ -49,7 +49,7 @@ public class AspectOnThreadDeployer extends BasicAspectDeployer {
 	 * 
 	 * @return 	New container object
 	 */
-	public AspectContainerIfc createContainer() {
+	public AspectContainerIfc createContainer(AspectRegistryIfc reg) {
 		return new AspectThreadMapper();
 	}
 	

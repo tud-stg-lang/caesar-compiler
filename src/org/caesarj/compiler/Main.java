@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.113 2005-11-15 16:52:23 klose Exp $
+ * $Id: Main.java,v 1.114 2006-01-13 12:06:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -52,6 +52,7 @@ import org.caesarj.compiler.joincollab.JoinCollaborations;
 import org.caesarj.compiler.joinpoint.GenerateDeploymentSupport;
 import org.caesarj.compiler.joinpoint.JoinDeploymentSupport;
 import org.caesarj.compiler.joinpoint.JoinPointReflectionVisitor;
+import org.caesarj.compiler.joinpoint.PerObjectDeploymentVisitor;
 import org.caesarj.compiler.joinpoint.PointcutSupport;
 import org.caesarj.compiler.joinpoint.StaticDeploymentPreparation;
 import org.caesarj.compiler.joinpoint.StaticFieldDeploymentVisitor;
@@ -543,6 +544,14 @@ public class Main extends MainSuper implements Constants {
         JCompilationUnit[] tree) {
     	
     	try {
+    		Log.verbose("prepare per object deployment");
+	        // Modify advices to intercept the executing object
+    		PerObjectDeploymentVisitor visitor = 
+                new PerObjectDeploymentVisitor();
+	        for (int i = 0; i < tree.length; i++) {
+	            tree[i].accept(visitor);
+	        }
+    		
 	        Log.verbose("prepare dynamic deployment");
 	        // Modify and generate support classes for dynamic deployment.
 	        GenerateDeploymentSupport genDeplSupport = new GenerateDeploymentSupport(this, environment);

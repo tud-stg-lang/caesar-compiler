@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: BasicAspectDeployer.java,v 1.4 2005-03-31 12:30:13 gasiunas Exp $
+ * $Id: BasicAspectDeployer.java,v 1.5 2006-01-13 12:06:06 gasiunas Exp $
  */
 
 package org.caesarj.runtime.aspects;
@@ -67,7 +67,7 @@ abstract public class BasicAspectDeployer implements AspectDeployerIfc {
 	 * 
 	 * @return 	New container object
 	 */
-	abstract public AspectContainerIfc createContainer();
+	abstract public AspectContainerIfc createContainer(AspectRegistryIfc reg);
 	
 	/**
 	 * Deploy object on the container
@@ -113,7 +113,7 @@ abstract public class BasicAspectDeployer implements AspectDeployerIfc {
 		
 		/* setup appropriate aspect container in the registry */
 		if (curCont == null) {
-			myCont = createContainer();
+			myCont = createContainer(reg);
 			reg.$setAspectContainer(myCont);
 			deployOnContainer(myCont, aspectObj, reg);
 			reg.$setSingleAspect(myCont.getSingleInstance());
@@ -127,13 +127,13 @@ abstract public class BasicAspectDeployer implements AspectDeployerIfc {
 				CompositeAspectContainer composite = (CompositeAspectContainer)curCont;
 				myCont = composite.findContainer(getContId());
 				if (myCont == null) {
-					myCont = createContainer();
+					myCont = createContainer(reg);
 					composite.getList().add(myCont);				
 				}
 			}
 			else {
 				CompositeAspectContainer composite = new CompositeAspectContainer();
-				myCont = createContainer();
+				myCont = createContainer(reg);
 				composite.getList().add(curCont);
 				composite.getList().add(myCont);
 				reg.$setAspectContainer(composite);

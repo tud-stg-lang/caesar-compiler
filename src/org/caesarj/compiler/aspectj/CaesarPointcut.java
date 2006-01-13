@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarPointcut.java,v 1.5 2005-03-29 09:44:18 gasiunas Exp $
+ * $Id: CaesarPointcut.java,v 1.6 2006-01-13 12:06:07 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -49,6 +49,10 @@ public class CaesarPointcut {
 	static public CaesarPointcut	makeMatchesNothing()
 	{
 		return new CaesarPointcut(Pointcut.makeMatchesNothing(Pointcut.SYMBOLIC));
+	}
+	
+	public void replacePointcut(Pointcut pcut) {
+		this.pointcut = pcut;
 	}
 	
 	public CaesarPointcut resolve(CaesarScope scope) {
