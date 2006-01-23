@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjVirtualClassDeclaration.java,v 1.36 2006-01-13 12:06:07 gasiunas Exp $
+ * $Id: CjVirtualClassDeclaration.java,v 1.37 2006-01-23 11:33:29 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -441,7 +441,8 @@ public class CjVirtualClassDeclaration extends CjClassDeclaration {
                     if (!orig.getParameters()[j].equals(other.getParameters()[j])) {
                         // check if the params are furtherbindings
                         
-                        if(orig.getParameters()[j].isClassType()) {                        
+                        if (orig.getParameters()[j].isClassType() &&
+                        		other.getParameters()[j].isClassType()) {                        
 	                        if(
 	                            !context.getEnvironment().getCaesarTypeSystem().
 	                            	isIncrementOf(
