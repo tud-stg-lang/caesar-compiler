@@ -1,0 +1,93 @@
+<testsuite name="Test advice weaving" package="suits.aspects.nesting">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="nestasp001" description="Test advices in nested aspects">
+		<test>
+			new TestA().test();
+			System.out.println(TestA.result.toString());
+			assertEquals(TestA.result.toString(), ":before call foo:before call foo:foo:foo");
+		</test>
+        <code>
+        	public class TestA {
+        		public static StringBuffer result = new StringBuffer();
+        	   	public void test() {
+        	   		OuterA a = new OuterA();
+					deploy(a) {
+						deploy (a.new AspectA()) {
+							foo();
+						}
+					}			
+					foo();
+				}			
+				public void foo() {
+					result.append(":foo");
+				}
+			}
+        	public cclass OuterA {
+        	    public void log() {
+					TestA.result.append(":before call foo");
+				}
+				
+        	    public cclass AspectA { 
+        			pointcut callFoo() : cflow(call(* TestA.test())) &amp;&amp; call(* TestA.foo());
+					before() : callFoo() {
+						log();
+					}
+				}
+				
+				pointcut callFoo() : cflow(call(* TestA.test())) &amp;&amp; call(* TestA.foo());
+				before() : callFoo() {
+					log();
+				}
+			}
+        </code>
+    </compile-run>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="nestasp002" description="Test around advices in nested aspects">
+		<test>
+			new TestA().test();
+			System.out.println(TestA.result.toString());
+			assertEquals(TestA.result.toString(), ":around call foo:around call foo:foo:foo");
+		</test>
+        <code>
+        	public class TestA {
+        		public static StringBuffer result = new StringBuffer();
+        	   	public void test() {
+        	   		OuterA a = new OuterA();
+					deploy(a) {
+						deploy (a.new AspectA()) {
+							foo();
+						}
+					}			
+					foo();
+				}			
+				public void foo() {
+					result.append(":foo");
+				}
+			}
+        	public cclass OuterA {
+        	    public void log() {
+					TestA.result.append(":around call foo");
+				}
+				
+        	    public cclass AspectA { 
+        			pointcut callFoo() : cflow(call(* TestA.test())) &amp;&amp; call(* TestA.foo());
+					Object around() : callFoo() {
+					log();
+					proceed();
+					return null;
+				}
+				}
+				
+				pointcut callFoo() : cflow(call(* TestA.test())) &amp;&amp; call(* TestA.foo());
+				Object around() : callFoo() {
+					log();
+					proceed();
+					return null;
+				}
+			}			
+        </code>
+    </compile-run>   
+    
+</testsuite>
