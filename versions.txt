@@ -1,3 +1,7 @@
+VC_M28 - 23.01.2006
+- perThis deployment implemented
+- bug fix for check of method overloading in cclass
+
 VC_M27 - 02.12.2005
 - getAbstractMethods() in CClass is optimized. 
     In previous version it took most of the compilation time in case of complex inheritance 
