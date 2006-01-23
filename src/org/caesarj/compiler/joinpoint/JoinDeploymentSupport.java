@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JoinDeploymentSupport.java,v 1.4 2005-11-10 14:36:21 gasiunas Exp $
+ * $Id: JoinDeploymentSupport.java,v 1.5 2006-01-23 18:52:08 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -69,7 +69,7 @@ public class JoinDeploymentSupport implements CaesarConstants {
 					// join the modified and new classes
 					aspectIfc.join(ownerCtx);
 					registryCls.join(ownerCtx);	
-					caesarClass.getMixinIfcDeclaration().join(ownerCtx);
+					//caesarClass.getMixinIfcDeclaration().join(ownerCtx);
 				}
 				
 				if (caesarClass.getInners().length > 0) {
@@ -107,7 +107,7 @@ public class JoinDeploymentSupport implements CaesarConstants {
 					//join the modified and new classes
 					aspectIfc.join(ownerCtx);
 					registryCls.join(ownerCtx);
-					innerCaesarClass.getMixinIfcDeclaration().join(ownerCtx);					
+					//innerCaesarClass.getMixinIfcDeclaration().join(ownerCtx);					
 				}
 
 				//handle the inners of the inners
