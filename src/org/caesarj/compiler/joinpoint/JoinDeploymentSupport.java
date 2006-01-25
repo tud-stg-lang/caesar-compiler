@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JoinDeploymentSupport.java,v 1.5 2006-01-23 18:52:08 gasiunas Exp $
+ * $Id: JoinDeploymentSupport.java,v 1.6 2006-01-25 09:41:52 gasiunas Exp $
  */
 
 package org.caesarj.compiler.joinpoint;
@@ -139,7 +139,7 @@ public class JoinDeploymentSupport implements CaesarConstants {
 		for (int i = 0; i < decl.length; i++) {
 			if (decl[i] instanceof CjVirtualClassDeclaration) {
 				CjVirtualClassDeclaration caesarClass =	(CjVirtualClassDeclaration)decl[i];
-				if (caesarClass.isCrosscutting()) {
+				if (caesarClass.getRegistryClass() != null) {
 					caesarClass.getMixinIfcDeclaration().join(ownerCtx);						
 				}
 			}
