@@ -74,10 +74,10 @@
         	    public cclass AspectA { 
         			pointcut callFoo() : cflow(call(* TestA.test())) &amp;&amp; call(* TestA.foo());
 					Object around() : callFoo() {
-					log();
-					proceed();
-					return null;
-				}
+						log();
+						proceed();
+						return null;
+					}
 				}
 				
 				pointcut callFoo() : cflow(call(* TestA.test())) &amp;&amp; call(* TestA.foo());
@@ -88,6 +88,6 @@
 				}
 			}			
         </code>
-    </compile-run>   
-    
+    </compile-run>
+     
 </testsuite>
