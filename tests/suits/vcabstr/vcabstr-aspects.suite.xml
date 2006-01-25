@@ -126,4 +126,38 @@
         </code>
     </compile-run>	
     
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="nestasp003" description="Test indirectly inherited advice">
+		<test>
+			new TestA().test();
+			System.out.println(TestA.result.toString());
+			assertEquals(TestA.result.toString(), ":before call foo:foo:foo");
+		</test>
+        <code>
+        	public class TestA {
+        		public static StringBuffer result = new StringBuffer();
+        	   	public void test() {
+        	   		OuterB a = new OuterB();
+					deploy(a) {
+						foo();
+					}			
+					foo();
+				}			
+				public void foo() {
+					result.append(":foo");
+				}
+			}
+        	abstract public cclass OuterA {
+        	    pointcut callFoo() : cflow(call(* TestA.test())) &amp;&amp; call(* TestA.foo());
+				before() : callFoo() {
+					TestA.result.append(":before call foo");
+				}				
+			}
+			public cclass OuterC { }
+			public cclass OuterB extends OuterC &amp; OuterA {
+        	    public cclass AspectA { }
+			}
+        </code>
+    </compile-run>   
+    
 </testsuite>
