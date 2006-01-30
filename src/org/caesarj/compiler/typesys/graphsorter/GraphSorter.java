@@ -26,7 +26,17 @@ public class GraphSorter {
 	 * Exception, thrown when cycle is found, recommended to be handled 
 	 */
 	@SuppressWarnings("serial")
-	public static class CycleFoundException extends RuntimeException { }
+	public static class CycleFoundException extends RuntimeException {
+		protected String nodeName;
+		
+		public CycleFoundException(String nodeName) {
+			this.nodeName = nodeName;
+		}
+		
+		public String getNodeName() {
+			return nodeName;
+		}
+	}
 	
 	/**
 	 *  The node of the graph. Must be connected to a concrete data model by
@@ -47,6 +57,11 @@ public class GraphSorter {
 		
 		/* sorting process of the node finished */
 		boolean sorted = false;
+				
+		/**
+		 *	The node name to be displayed in messages
+		 */
+		abstract public String getDisplayName();
 		
 		/**
 		 *	Compute the outgoing nodes 
@@ -121,7 +136,7 @@ public class GraphSorter {
 			if (!sorted) {
 				/* called inside sorting process -> cycle */
 				if (sorting) {
-					throw new CycleFoundException();
+					throw new CycleFoundException(getDisplayName());
 				}
 				sorting = true;
 				/* try add itself to the list */

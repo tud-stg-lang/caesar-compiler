@@ -296,7 +296,7 @@ public class JoinedTypeNode {
 				/* circular parent declarations detected */
 				graph.getCompiler().reportTrouble(
 						new PositionedError(getTokenRef(), KjcMessages.CLASS_CIRCULARITY,
-				                getQualifiedName().toString()));
+				                e.getNodeName()));
 				throw new CaesarTypeSystemException();
 			}
 			/* avoid inheritance from own outer classes */

@@ -49,6 +49,13 @@ public class TypeNodeParentSorter extends GraphSorter {
 		}
 		
 		/**
+		 *	The node name to be displayed in messages
+		 */
+		public String getDisplayName() {
+			return typeNode.getQualifiedName().toString();
+		}
+		
+		/**
 		 * Return the parents of the type node as outgoing nodes of the sorting graph
 		 */
 		public List<Node> calcOutgoingNodes() {
@@ -63,7 +70,7 @@ public class TypeNodeParentSorter extends GraphSorter {
 		 * Display as string, for debugging purposes
 		 */
 		public String toString() {
-			return typeNode.getQualifiedName().toString();
+			return getDisplayName();
 		}
 	}
 	
