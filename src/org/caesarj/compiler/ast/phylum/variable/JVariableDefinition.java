@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JVariableDefinition.java,v 1.21 2005-06-10 12:21:02 klose Exp $
+ * $Id: JVariableDefinition.java,v 1.22 2006-03-06 09:58:03 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.variable;
@@ -161,12 +161,14 @@ public class JVariableDefinition extends JLocalVariable {
                  * Classname-type, we mark it as a possible dependent type 
                  * and re-check it later.
                  */
-                if( type instanceof CClassNameType){
+                if (type instanceof CClassNameType) {
                     type = 
                         new CDependentNameType(((CClassNameType)type).getQualifiedName()) 
                     		.checkType(context);
                 }
-                
+                else {
+                	throw cue.addPosition(getTokenReference());
+                }                
             }
             catch (UnpositionedError cue2) {
 	            throw cue2.addPosition(getTokenReference());
