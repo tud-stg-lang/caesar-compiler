@@ -169,5 +169,16 @@
 			}
 		</code>
     </compile>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error id="javamisc010" error="CLASS_UNKNOWN" description="Check of base type of array fails">
+        <code>
+        	public class ClassA {
+				public void a() {
+				   EventListener[] list;
+				}
+			}
+		</code>		
+    </compile-check-error>	
 
 </testsuite>
