@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjPointcutDeclaration.java,v 1.11 2005-11-17 13:07:28 gasiunas Exp $
+ * $Id: CjPointcutDeclaration.java,v 1.12 2006-04-26 16:55:25 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -28,6 +28,9 @@ package org.caesarj.compiler.ast.phylum.declaration;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
+import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarFormalBinding;
 import org.caesarj.compiler.aspectj.CaesarMember;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
@@ -153,14 +156,12 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 
 			if (!formalParameters[i].isGenerated()) {
 
-				String	type = 
-					parameters[i].getType().getSignature();
-
-				parameterSignatures.add(type);
+				ResolvedTypeX typeX = CaesarBcelWorld.getInstance().resolve(parameters[i].getType());
+				parameterSignatures.add(typeX);
 
 				formalBindings.add(
 					new CaesarFormalBinding(
-						type,
+						typeX,
 						formalParameters[i].getIdent(),
 						i,
 						tokenReference.getLine(),
@@ -181,10 +182,10 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 
 		CaesarMember rpd =
 			CaesarMember.ResolvedPointcutDefinition(
-				context.getCClass().getQualifiedName(),
+				CaesarBcelWorld.getInstance().resolve(context.getCClass()),
 				modifiers,
 				getIdent(),
-				(String[]) parameterSignatures.toArray(new String[0]),
+				(ResolvedTypeX[]) parameterSignatures.toArray(new ResolvedTypeX[0]),
 				pointcut);
 
 		return rpd;

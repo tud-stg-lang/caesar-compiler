@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjAdvice.java,v 1.9 2005-09-27 13:43:53 gasiunas Exp $
+ * $Id: CCjAdvice.java,v 1.10 2006-04-26 16:55:25 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -33,6 +33,7 @@ import org.caesarj.classfile.ClassFileFormatException;
 import org.caesarj.classfile.MethodInfo;
 import org.caesarj.compiler.aspectj.AttributeAdapter;
 import org.caesarj.compiler.aspectj.CaesarAdviceKind;
+import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarFormalBinding;
 import org.caesarj.compiler.aspectj.CaesarPointcut;
 import org.caesarj.compiler.aspectj.CaesarPointcutScope;
@@ -147,7 +148,7 @@ public class CCjAdvice extends CSourceMethod {
 				
 				formalBindings.add(
 					new CaesarFormalBinding(
-						parameters[i].getSignature(),
+						CaesarBcelWorld.getInstance().resolve(parameters[i]),
 						formalParameters[i].getIdent(),
 						i,
 						orderNr,

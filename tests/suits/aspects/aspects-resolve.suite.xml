@@ -31,5 +31,25 @@
 			}
         </code>
     </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="aspresolve003" description="resolve bindings">
+    	<test>
+    	   ClsA a = new ClsA();
+    	   a.m();
+    	</test>
+        <code>
+        	public cclass ClsA {
+        		public void m() {
+        		}			    
+			}
+			public deployed cclass AspectA {
+				pointcut methM(ClsA a) : this(a) &amp;&amp; execution(* ClsA.m());
+				after(ClsA a) : methM(a) {
+					System.out.println("Msg");
+				}
+			}
+        </code>
+    </compile-run>
 
 </testsuite>

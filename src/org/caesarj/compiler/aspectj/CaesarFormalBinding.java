@@ -20,12 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarFormalBinding.java,v 1.3 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CaesarFormalBinding.java,v 1.4 2006-04-26 16:55:25 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
 
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.patterns.FormalBinding;
 
 /**
@@ -41,10 +41,10 @@ public class CaesarFormalBinding {
 		return binding;
 	}
 // Construction
-   public CaesarFormalBinding(String signature, String name, int index, int start, int end, String fileName) 
+   public CaesarFormalBinding(ResolvedTypeX type, String name, int index, int start, int end, String fileName) 
    {
  		binding = new FormalBinding(
-			TypeX.forSignature(signature),
+			type,
 			name,
 			index,
 			start,

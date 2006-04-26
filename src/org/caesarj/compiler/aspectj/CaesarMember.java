@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarMember.java,v 1.3 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CaesarMember.java,v 1.4 2006-04-26 16:55:25 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -29,6 +29,7 @@ import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
+import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 
 /** 
@@ -107,15 +108,13 @@ public class CaesarMember {
 	 * @return a Wrapper for the created ResolvedPointcutDefinition instance
 	 */
 	public static CaesarMember ResolvedPointcutDefinition(
-		String declaringName,
+		ResolvedTypeX declaringType,
 		int modifiers,
 		String name,
-		String[] parameterSignatures,
+		ResolvedTypeX[] parameterTypes,
 		CaesarPointcut pointcut)
 		{
 			// convert the signatures to types
-			TypeX parameterTypes[] = TypeX.forSignatures(parameterSignatures),
-					declaringType = TypeX.forName(declaringName);
 			return new CaesarMember( 
 				new ResolvedPointcutDefinition(
 					declaringType,

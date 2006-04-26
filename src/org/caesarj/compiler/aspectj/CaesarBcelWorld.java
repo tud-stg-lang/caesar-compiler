@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarBcelWorld.java,v 1.13 2005-11-10 14:34:28 gasiunas Exp $
+ * $Id: CaesarBcelWorld.java,v 1.14 2006-04-26 16:55:25 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -36,6 +36,7 @@ import org.aspectj.weaver.bcel.BcelWorld;
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
+import org.caesarj.compiler.types.CType;
 
 /**
  * CaesarBcelWorld.
@@ -94,6 +95,15 @@ public class CaesarBcelWorld /*extends BcelWorld */{
 	public ResolvedTypeX resolve(CClass cclass){
 		return theWorld.resolve(cclass);
 	}
+	
+	public ResolvedTypeX resolve(CType type){
+		if (type.isPrimitive()) {
+			return (ResolvedTypeX)TypeX.forSignature(type.getSignature());
+		}
+		else {
+			return theWorld.resolve(type.getCClass());
+		}
+	}
 
 	/**
 	 *  BcelWorldAdapter allows access to invisible fields of BcelWorld 
@@ -133,7 +143,6 @@ public class CaesarBcelWorld /*extends BcelWorld */{
 			return resolvedType;
 		}
 		
-
 		/**
 		 * Use declares to compare the precedence of two aspects
 		 */
