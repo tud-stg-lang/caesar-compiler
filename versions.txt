@@ -1,3 +1,6 @@
+VC_M30 - 26.04.2006
+- bug fix resolving poincut and advice bindings
+
 VC_M29 - 31.01.2006
 - bug fix joining aspect support classes
 - better error message for circular inheritance error
