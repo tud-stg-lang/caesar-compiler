@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarPointcut.java,v 1.6 2006-01-13 12:06:07 gasiunas Exp $
+ * $Id: CaesarPointcut.java,v 1.7 2006-05-04 13:54:54 thiago Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -70,5 +70,12 @@ public class CaesarPointcut {
 	public static CaesarPointcut createPerSingleton()
 	{
 		return new CaesarPointcut( new PerSingleton() );
+	}
+	
+	public String toString() {
+		if (pointcut != null) {
+			return pointcut.toString();
+		}
+		return "Unknown pointcut";
 	}
 }
