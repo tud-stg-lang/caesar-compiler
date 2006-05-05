@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CBinaryTypeContext.java,v 1.4 2005-11-02 15:46:07 gasiunas Exp $
+ * $Id: CBinaryTypeContext.java,v 1.5 2006-05-05 14:00:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -64,8 +64,6 @@ public class CBinaryTypeContext implements CTypeContext{
     this.classReader = new WeakReference<ClassReader>(classReader);
     this.typeFactory = new WeakReference<TypeFactory>(typeFactory);
     this.parent = parent;
-    this.owner = owner;
-    this.parentLookup = parentLookup;
   }
 
   /**
@@ -118,10 +116,12 @@ public class CBinaryTypeContext implements CTypeContext{
   public SignatureParser getSignatureParser() {
     return classReader.get().getSignatureParser();
   }
+  
+  public boolean allowsDependentTypes() {
+	  return true;
+  }
 
   private WeakReference<TypeFactory> typeFactory;
   private WeakReference<ClassReader> classReader; 
-  private CMember               owner;
   private CTypeContext          parent;
-  private boolean               parentLookup;
 }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjProceedDeclaration.java,v 1.7 2005-05-31 08:56:27 meffert Exp $
+ * $Id: CjProceedDeclaration.java,v 1.8 2006-05-05 14:00:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -28,10 +28,9 @@ package org.caesarj.compiler.ast.phylum.declaration;
 import org.caesarj.compiler.ast.JavaStyleComment;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
-import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
-import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.export.CCjProceed;
+import org.caesarj.compiler.export.CSourceMethod;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.util.PositionedError;
@@ -80,23 +79,18 @@ public class CjProceedDeclaration extends CjMethodDeclaration {
 		throws PositionedError {
 		
 		try {
+			context.setAllowsDependentTypes(false);
 
 			CType[] parameterTypes = new CType[parameters.length];
-			CBinaryTypeContext typeContext =
-				new CBinaryTypeContext(
-					context.getClassReader(),
-					context.getTypeFactory(),
-					context,
-					(modifiers & ACC_STATIC) == 0);
-
-			returnType = returnType.checkType(typeContext);
+			
+			returnType = returnType.checkType(context);
 			for (int i = 0; i < parameterTypes.length; i++) {
-				parameterTypes[i] = parameters[i].checkInterface(typeContext);
+				parameterTypes[i] = parameters[i].checkInterface(context);
 			}
 
 			for (int i = 0; i < exceptions.length; i++) {
 				exceptions[i] =
-					(CReferenceType) exceptions[i].checkType(typeContext);
+					(CReferenceType) exceptions[i].checkType(context);
 			}
 
 			setInterface(
@@ -112,7 +106,9 @@ public class CjProceedDeclaration extends CjMethodDeclaration {
 		} catch (UnpositionedError cue) {
 			throw cue.addPosition(getTokenReference());
 		}
-
+		finally {
+			context.setAllowsDependentTypes(true);
+		}
 	}
 
 	/**

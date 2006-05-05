@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassNameType.java,v 1.22 2005-03-06 14:10:45 aracic Exp $
+ * $Id: CClassNameType.java,v 1.23 2006-05-05 14:00:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.types;
@@ -124,6 +124,10 @@ public class CClassNameType extends CReferenceType
 	
 	public CType checkType(CTypeContext context) throws UnpositionedError {
 	    CType res = _checkType(context);
+	    
+	    if (!context.allowsDependentTypes()) {
+	    	return res;
+	    }
 	    
 	    // store the context in which this reference type has been resolved
 	    if(res instanceof CReferenceType && context instanceof CContext) {

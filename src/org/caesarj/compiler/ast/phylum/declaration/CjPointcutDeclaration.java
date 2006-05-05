@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjPointcutDeclaration.java,v 1.12 2006-04-26 16:55:25 gasiunas Exp $
+ * $Id: CjPointcutDeclaration.java,v 1.13 2006-05-05 14:00:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
 import org.caesarj.compiler.aspectj.CaesarBcelWorld;
 import org.caesarj.compiler.aspectj.CaesarFormalBinding;
 import org.caesarj.compiler.aspectj.CaesarMember;
@@ -39,10 +38,8 @@ import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.statement.JStatement;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
-import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
-import org.caesarj.compiler.context.CTypeContext;
-import org.caesarj.compiler.context.CjExternClassContext;
+import org.caesarj.compiler.context.CjDoubleClassContext;
 import org.caesarj.compiler.context.FjClassContext;
 import org.caesarj.compiler.export.CCjSourceClass;
 import org.caesarj.compiler.export.CClass;
@@ -113,34 +110,36 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
 	 */
 	public CSourceMethod checkInterface(CClassContext context)
 		throws PositionedError {
+		
+		try {
+			context.setAllowsDependentTypes(false);
+			
+			// If there's an original class, use it to resolve the parameter types
+			CClassContext pointcutContext = getPointcutContext(context);
+			
+			CType[] parameterTypes = new CType[parameters.length];
+			
+			for (int i = 0; i < parameterTypes.length; i++) {
+				parameterTypes[i] = parameters[i].checkInterface(pointcutContext);
+			}
 
-		// If there's an original class, use it to resolve the parameter types
-		CClassContext pointcutContext = getPointcutContext(context);
-		CTypeContext typeContext = new CBinaryTypeContext(
-				pointcutContext.getClassReader(),
-				pointcutContext.getTypeFactory(),
-				pointcutContext,
-				(modifiers & ACC_STATIC) == 0);
-		
-		CType[] parameterTypes = new CType[parameters.length];
-		
-		for (int i = 0; i < parameterTypes.length; i++) {
-			parameterTypes[i] = parameters[i].checkInterface(typeContext);
+			CCjSourceClass crosscuttingClass = (CCjSourceClass) context.getCClass();
+
+			CaesarMember rpd =
+				resolve(
+					context,
+					context.getCClass(),
+					parameters,
+					getTokenReference());
+
+			crosscuttingClass.addResolvedPointcut(rpd);
+			
+			checked=true;
+			return null;
 		}
-
-		CCjSourceClass crosscuttingClass = (CCjSourceClass) context.getCClass();
-
-		CaesarMember rpd =
-			resolve(
-				context,
-				context.getCClass(),
-				parameters,
-				getTokenReference());
-
-		crosscuttingClass.addResolvedPointcut(rpd);
-		
-		checked=true;
-		return null;
+		finally {
+			context.setAllowsDependentTypes(true);
+		}
 	}
 
 	public CaesarMember resolve(
@@ -224,11 +223,14 @@ public class CjPointcutDeclaration extends CjMethodDeclaration {
         	return currentContext;
         }
         else {
-        	return new CjExternClassContext(currentContext.getParentContext(),
+        	CClassContext 
+        		ctx = new CjDoubleClassContext(currentContext.getParentContext(),
         			currentContext.getEnvironment(),
         			(CSourceClass)currentContext.getCClass(),
         			currentContext.getTypeDeclaration(),
-        			originalClass.getContext().getCompilationUnitContext().getCunit());
+        			originalClass.getContext());
+        	ctx.setAllowsDependentTypes(false);
+        	return ctx;
         }
     }
 }

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.114 2006-01-13 12:06:07 gasiunas Exp $
+ * $Id: Main.java,v 1.115 2006-05-05 14:00:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -200,12 +200,16 @@ public class Main extends MainSuper implements Constants {
         // CJ Aspects: generate aspect deployment support classes and methods
         prepareAspectDeployment(environment, tree);
         if(errorFound) return false;
-        
+              
         // CJ VC 
         createMixinCloneTypeInfo(environment, tree[0]);
         
         // CJ VC
         adjustSuperTypes(tree);
+        if(errorFound) return false;
+        
+        // CJ Aspect
+        preparePointcutDeclarations(environment, tree);
         if(errorFound) return false;
   
         // CJ VC / Binding
@@ -571,17 +575,22 @@ public class Main extends MainSuper implements Constants {
 	            JCompilationUnit cu = tree[i];
 	            statDeplPrep.prepareForStaticDeployment(cu);
 	        }
-	        
-	        Log.verbose("prepare pointcut declarations");
-	        // Prepare the pointcut declarations
-	        for (int i = 0; i < tree.length; i++) {
-	            JCompilationUnit cu = tree[i];
-	            PointcutSupport.preparePointcutDeclarations(cu);
-	        }
     	}
     	catch (PositionedError e) {
     		reportTrouble(e);
     	}
+    }
+    
+    protected void preparePointcutDeclarations(
+        KjcEnvironment environment,
+        JCompilationUnit[] tree) {
+    	
+    	Log.verbose("prepare pointcut declarations");
+        // Prepare the pointcut declarations
+        for (int i = 0; i < tree.length; i++) {
+            JCompilationUnit cu = tree[i];
+            PointcutSupport.preparePointcutDeclarations(cu);
+        }    	
     }
     
     protected void transformConstructors(

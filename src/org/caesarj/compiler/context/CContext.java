@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CContext.java,v 1.13 2005-11-02 15:46:07 gasiunas Exp $
+ * $Id: CContext.java,v 1.14 2006-05-05 14:00:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -415,11 +415,26 @@ public abstract class CContext extends org.caesarj.util.Utils implements CTypeCo
   public CBodyContext getBodyContext() {
 	  return parent.getBodyContext();
   }
+  
+  public boolean allowsDependentTypes() {
+	  if (!bAllowsDependentTypes) {
+		  return false;
+	  }	  
+      if (parent != null) {
+    	  return parent.allowsDependentTypes();
+      }
+      return true;
+  }
+  
+  public void setAllowsDependentTypes(boolean bAllow) {
+	  bAllowsDependentTypes = bAllow;
+  }
 
   // ----------------------------------------------------------------------
   // DATA MEMBERS
   // ----------------------------------------------------------------------
 
   protected final CContext      parent;
+  protected boolean       bAllowsDependentTypes = true;
   private final WeakReference<KjcEnvironment>  environment;
 }

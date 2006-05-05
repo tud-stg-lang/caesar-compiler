@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CTypeContext.java,v 1.3 2005-01-24 16:52:58 aracic Exp $
+ * $Id: CTypeContext.java,v 1.4 2006-05-05 14:00:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.context;
@@ -64,4 +64,9 @@ public interface CTypeContext {
    * @param	trouble		the error to report
    */
   void reportTrouble(PositionedError trouble);
+  
+  /**
+   * Are dependent types allowed in this context?
+   */
+  public boolean allowsDependentTypes();
 }

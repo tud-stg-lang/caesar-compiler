@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjAdviceDeclaration.java,v 1.19 2005-11-17 13:07:28 gasiunas Exp $
+ * $Id: CjAdviceDeclaration.java,v 1.20 2006-05-05 14:00:42 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -36,9 +36,8 @@ import org.caesarj.compiler.ast.JavadocComment;
 import org.caesarj.compiler.ast.phylum.statement.JBlock;
 import org.caesarj.compiler.ast.phylum.variable.JFormalParameter;
 import org.caesarj.compiler.constants.CaesarConstants;
-import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.context.CClassContext;
-import org.caesarj.compiler.context.CjExternClassContext;
+import org.caesarj.compiler.context.CjDoubleClassContext;
 import org.caesarj.compiler.export.CCjAdvice;
 import org.caesarj.compiler.export.CSourceClass;
 import org.caesarj.compiler.export.CSourceMethod;
@@ -187,50 +186,52 @@ public class CjAdviceDeclaration
 
     public CSourceMethod checkInterface(CClassContext context)
         throws PositionedError {
+    	
+    	try {
+			context.setAllowsDependentTypes(false);
 
-        try {
-            if (returnType.isReference()) {
-                returnType = returnType.checkType(context);
-            }
-        }
-        catch (UnpositionedError e) {
-            // FJTODO what to do with exception
-        }
-
-        // It there's an original class, use it to resolve the parameters types
-        
-        CClassContext c = getAdviceContext(context);
-        CBinaryTypeContext typeContext =  new CBinaryTypeContext(
-                c.getClassReader(),
-                c.getTypeFactory(),
-                c,
-                (modifiers & ACC_STATIC) == 0);
-        
-        CType[] parameterTypes = new CType[parameters.length];
-        String[] parameterNames = new String[parameters.length];
-        for (int i = 0; i < parameters.length; i++) {
-            parameterTypes[i] = parameters[i].checkInterface(typeContext);
-            parameterNames[i] = parameters[i].getIdent();
-        }
-
-        CCjAdvice adviceMethod =
-            new CCjAdvice(
-                context.getCClass(),
-                ACC_PUBLIC,
-                ident,
-                returnType,
-				parameters,
-                parameterTypes,
-                exceptions,
-                body,
-                pointcut,
-                kind,
-                isGenerated(),
-                extraArgumentFlags);
-
-        setInterface(adviceMethod);
-
-        return adviceMethod;
+	        try {
+	            if (returnType.isReference()) {
+	                returnType = returnType.checkType(context);
+	            }
+	        }
+	        catch (UnpositionedError e) {
+	            // FJTODO what to do with exception
+	        }
+	
+	        // It there's an original class, use it to resolve the parameters types
+	        
+	        CClassContext c = getAdviceContext(context);
+	                
+	        CType[] parameterTypes = new CType[parameters.length];
+	        String[] parameterNames = new String[parameters.length];
+	        for (int i = 0; i < parameters.length; i++) {
+	            parameterTypes[i] = parameters[i].checkInterface(c);
+	            parameterNames[i] = parameters[i].getIdent();
+	        }
+	
+	        CCjAdvice adviceMethod =
+	            new CCjAdvice(
+	                context.getCClass(),
+	                ACC_PUBLIC,
+	                ident,
+	                returnType,
+					parameters,
+	                parameterTypes,
+	                exceptions,
+	                body,
+	                pointcut,
+	                kind,
+	                isGenerated(),
+	                extraArgumentFlags);
+	
+	        setInterface(adviceMethod);
+	
+	        return adviceMethod;
+    	}
+		finally {
+			context.setAllowsDependentTypes(true);
+		}
     }
     
     public boolean isAroundAdvice() {
@@ -293,23 +294,30 @@ public class CjAdviceDeclaration
      * @see org.caesarj.kjc.JMethodDeclaration#checkBody1(CClassContext)
      */
     public void checkBody1(CClassContext context) throws PositionedError {
-        
-        // Create an advice context, using the class where the advice was declared.
-        CClassContext adviceContext = getAdviceContext(context);
-        
-        // Check the body using a regular context
-        super.checkBody1(context);
+    	try {
+			context.setAllowsDependentTypes(false);
+			
+			// Create an advice context, using the class where the advice was declared.
+	        CClassContext adviceContext = getAdviceContext(context);
+	        
+	        // Check the body using a regular context
+	        super.checkBody1(context);
 
-        // create a method attribute for the advice
-        // this has to be done after the pointcut declarations are resolved
-        // Note that, if we don't have an originalClass, the adviceContext
-        // is the normal context of the body.
-        getCaesarAdvice().createAttribute(
-            adviceContext,
-            context.getCClass(),
-            parameters,
-            getTokenReference(),
-			orderNr);
+	        // create a method attribute for the advice
+	        // this has to be done after the pointcut declarations are resolved
+	        // Note that, if we don't have an originalClass, the adviceContext
+	        // is the normal context of the body.
+	        getCaesarAdvice().createAttribute(
+	            adviceContext,
+	            context.getCClass(),
+	            parameters,
+	            getTokenReference(),
+				orderNr);
+
+		}
+		finally {
+			context.setAllowsDependentTypes(true);
+		}
     }
 
     public CCjAdvice getCaesarAdvice() {
@@ -361,11 +369,11 @@ public class CjAdviceDeclaration
         	return currentContext;
         }
         else {
-        	return new CjExternClassContext(currentContext.getParentContext(),
+        	return new CjDoubleClassContext(currentContext.getParentContext(),
         			currentContext.getEnvironment(),
         			(CSourceClass)currentContext.getCClass(),
         			currentContext.getTypeDeclaration(),
-        			originalClass.getContext().getCompilationUnitContext().getCunit());
+        			originalClass.getContext());
         }
     }
 }
