@@ -6,7 +6,7 @@ import java.util.List;
 import org.caesarj.compiler.constants.CaesarMessages;
 import org.caesarj.compiler.constants.KjcMessages;
 import org.caesarj.compiler.typesys.CaesarTypeSystemException;
-import org.caesarj.compiler.typesys.graphsorter.GraphSorter;
+import org.caesarj.compiler.typesys.graphsorter.GraphSorter2;
 import org.caesarj.compiler.typesys.input.InputTypeNode;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
 import org.caesarj.util.PositionedError;
@@ -292,7 +292,7 @@ public class JoinedTypeNode {
 				/* remove self */
 				allParents.remove(0);
 			}
-			catch (GraphSorter.CycleFoundException e) {
+			catch (GraphSorter2.CycleFoundException e) {
 				/* circular parent declarations detected */
 				graph.getCompiler().reportTrouble(
 						new PositionedError(getTokenRef(), KjcMessages.CLASS_CIRCULARITY,

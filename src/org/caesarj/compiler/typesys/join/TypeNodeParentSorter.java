@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.caesarj.compiler.typesys.graphsorter.GraphSorter;
+import org.caesarj.compiler.typesys.graphsorter.GraphSorter2;
 
 /**
  * Sorts the parent graph of a Caesar class, using a modified deep-first search
@@ -13,7 +13,7 @@ import org.caesarj.compiler.typesys.graphsorter.GraphSorter;
  * @author vaidas
  *
  */
-public class TypeNodeParentSorter extends GraphSorter {
+public class TypeNodeParentSorter extends GraphSorter2 {
 	
 	/* map from type node to internal graph node */
 	protected Map<JoinedTypeNode, NodeWrapper> wrapperMap = new HashMap<JoinedTypeNode, NodeWrapper>();
