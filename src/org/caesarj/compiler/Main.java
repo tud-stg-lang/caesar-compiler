@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.115 2006-05-05 14:00:42 gasiunas Exp $
+ * $Id: Main.java,v 1.116 2006-05-06 10:00:12 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -371,6 +371,8 @@ public class Main extends MainSuper implements Constants {
         								options.destination, 
 										options.destination, 
 										byteCodeMap);
+        
+        //System.out.println("MIXIN COPIES: "+typesToGenerate.size());
         
         for (Iterator it = typesToGenerate.iterator(); it.hasNext();) {
             JavaTypeNode item = (JavaTypeNode) it.next();
