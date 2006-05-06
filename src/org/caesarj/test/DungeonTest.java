@@ -18,6 +18,8 @@ public class DungeonTest extends TestCase {
 //		Main main = new Main(null, new PrintWriter(System.out));
 		Main main = new Main(null, new PrintWriter(fos));
 		
+		Log.setErrorOutput(new PrintWriter(System.err));
+		
 		String args[] = {
 			"-d", "dungeon/bin", 
 			"-v", "-classpath",
