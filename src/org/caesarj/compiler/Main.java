@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.116 2006-05-06 10:00:12 aracic Exp $
+ * $Id: Main.java,v 1.117 2006-05-08 16:13:52 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -300,7 +300,6 @@ public class Main extends MainSuper implements Constants {
         
         // CJ Aspect: structure model postprocessing
         if(Main.buildAsm){
-
         	CaesarAsmBuilder.postBuild(asmManager);
         	if(Main.printAsm){
                 System.out.println("== model after weaving ===============");
@@ -372,11 +371,16 @@ public class Main extends MainSuper implements Constants {
 										options.destination, 
 										byteCodeMap);
         
-        //System.out.println("MIXIN COPIES: "+typesToGenerate.size());
+//        int generatedCounter = 0;        
         
         for (Iterator it = typesToGenerate.iterator(); it.hasNext();) {
             JavaTypeNode item = (JavaTypeNode) it.next();
+            
+            if(item.isPartOfANotNeededChain())
+            	continue;
 
+//            generatedCounter++;
+            
             try {
             	generator.generateClass(
                     item.getMixin().getQualifiedImplName(),
@@ -397,6 +401,8 @@ public class Main extends MainSuper implements Constants {
             }
         }
         
+//        System.out.println("MIXIN COPIES: "+typesToGenerate.size());
+//        System.out.println("GENERATED MIXIN COPIES: "+generatedCounter);
     }
 
     /**

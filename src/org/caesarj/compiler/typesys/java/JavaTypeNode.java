@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JavaTypeNode.java,v 1.9 2005-11-15 11:11:48 klose Exp $
+ * $Id: JavaTypeNode.java,v 1.10 2006-05-08 16:13:52 aracic Exp $
  */
 
 package org.caesarj.compiler.typesys.java;
@@ -50,8 +50,8 @@ public class JavaTypeNode {
     private int id;
     
     private JavaQualifiedName qualifiedName;
-    
-    private boolean toGenerate = false;
+       
+    boolean partOfANotNeededChain = false;
     
     private CaesarTypeNode type = null;
     private CaesarTypeNode mixin = null;
@@ -74,6 +74,10 @@ public class JavaTypeNode {
             this.id = currentId++;
         }
     }
+    
+    public boolean isPartOfANotNeededChain() {
+		return partOfANotNeededChain;
+	}
     
     public JavaTypeNode getSubNode(String subMixinName) {
         return (JavaTypeNode)subNodes.get(subMixinName);

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: MainSuper.java,v 1.24 2006-05-06 09:59:37 aracic Exp $
+ * $Id: MainSuper.java,v 1.25 2006-05-08 16:13:52 aracic Exp $
  */
 
 package org.caesarj.compiler;
@@ -139,39 +139,39 @@ public abstract class MainSuper extends CompilerBase {
         
         BytecodeOptimizer optimizer = new BytecodeOptimizer(options.optimize);
 
-        try {
-        	/*
-        	int 
-        		javaTypeCounter = 0,
-        		caesarTypeCounter = 0,
-        		abstractImplicitTypeCounter = 0,
-        		topLevelCClassCounter = 0,
-        		explicitCaesarTypeCounter = 0;
-        	*/
+        try {        	
+//        	int 
+//        		javaTypeCounter = 0,
+//        		caesarTypeCounter = 0,
+//        		abstractImplicitTypeCounter = 0,
+//        		topLevelCClassCounter = 0,
+//        		explicitCaesarTypeCounter = 0;        	
         	
             for (CSourceClass clazz : classes) {
             	
-            	/*
-            	if(clazz.isMixinInterface()) {
-            		caesarTypeCounter++;
-            		
-            		if(!clazz.isImplicit()) {
-                		explicitCaesarTypeCounter++;
-                		if(!clazz.isNested()) {
-                			topLevelCClassCounter++;
-                		}            			
-                	}
-            	}
-            	else if(!clazz.isMixin() && !clazz.isImplicit()) {
-            		javaTypeCounter++;
-            	}
+//            	if(clazz.isMixinInterface()) {
+//            		caesarTypeCounter++;
+//            		
+//            		if(!clazz.isImplicit()) {
+//                		explicitCaesarTypeCounter++;
+//                		if(!clazz.isNested()) {
+//                			topLevelCClassCounter++;
+//                		}            			
+//                	}
+//            	}
+//            	else if(!clazz.isMixin() && !clazz.isImplicit()) {
+//            		javaTypeCounter++;
+//            	}
             	
-            	if(clazz.isAbstract() && !clazz.isMixinInterface() && clazz.isImplicit()) {
-            		abstractImplicitTypeCounter++;
-                    continue;
-                }
-                */            
-            	
+            	if(!clazz.isMixinInterface() && clazz.isImplicit()) {
+            		if(
+        				clazz.isAbstract()
+        				|| (clazz.isNested() && clazz.getOwner().isAbstract())
+    				) {
+//	            		abstractImplicitTypeCounter++;
+	                    continue;
+            		}
+                }            	
             	
                 // IVICA
                 // removed: classes[count].genCode(optimizer, options.destination, factory);
@@ -187,13 +187,11 @@ public abstract class MainSuper extends CompilerBase {
                 //Log.verbose("class file generated: "+classes[count].getQualifiedName());                
             }
             
-            /*
-            System.out.println("JAVA TYPES              : "+javaTypeCounter);
-            System.out.println("CAESAR TYPES            : "+caesarTypeCounter);
-            System.out.println("IMPLICIT ABSTRACT TYPES : "+abstractImplicitTypeCounter);
-            System.out.println("EXPLICIT CAESAR TYPES   : "+explicitCaesarTypeCounter);
-            System.out.println("TOP-LEVEL CAESAR TYPES  : "+topLevelCClassCounter);
-            */
+//            System.out.println("JAVA TYPES              : "+javaTypeCounter);
+//            System.out.println("CAESAR TYPES            : "+caesarTypeCounter);
+//            System.out.println("IMPLICIT ABSTRACT TYPES : "+abstractImplicitTypeCounter);
+//            System.out.println("EXPLICIT CAESAR TYPES   : "+explicitCaesarTypeCounter);
+//            System.out.println("TOP-LEVEL CAESAR TYPES  : "+topLevelCClassCounter);            
         }
         catch (PositionedError e) {
             reportTrouble(e);

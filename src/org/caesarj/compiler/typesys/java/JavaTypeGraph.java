@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JavaTypeGraph.java,v 1.10 2005-11-04 10:54:30 meffert Exp $
+ * $Id: JavaTypeGraph.java,v 1.11 2006-05-08 16:13:52 aracic Exp $
  */
 
 package org.caesarj.compiler.typesys.java;
@@ -73,6 +73,18 @@ public class JavaTypeGraph {
         for (Iterator it = typeMap.entrySet().iterator(); it.hasNext();) {
             CaesarTypeNode t = (CaesarTypeNode) ((Map.Entry)it.next()).getValue();
             
+            // IVICA:
+            // check if we need to generate the mixin list for this type only
+            // in the case that this type is never instantiated and a 
+            // part of the mixin list only exists for this type, then
+            // this part of the mixin list will be marked and 
+            // later on not generated in genMixinCopies
+            boolean notNeededType =
+//            	t.isImplicitType() && 
+//            	(t.isAbstract() || (t.getOuter() != null && t.getOuter().isAbstract()));            	
+            	t.isAbstract() ||
+            	(t.getOuter() != null && t.getOuter().isAbstract());
+                        
             List mixinList = t.getMixinList();
             
             // sort list into compilation graph
@@ -88,8 +100,18 @@ public class JavaTypeGraph {
                 if(next == null) {
                     next = new JavaTypeNode(this, mixin);
                     current.addSubNode(next);
+                    
+                    // mark the part of this chain as not needed
+                    // since until this point it only exists for the 
+                    // not needed type
+                    if(notNeededType)
+                    	next.partOfANotNeededChain = true;
                 }
-                                
+                   
+                // mark the part of the chain as needed
+                if(!notNeededType)
+                	next.partOfANotNeededChain = false;
+                
                 current = next;
             }
             
