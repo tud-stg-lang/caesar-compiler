@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JavaTypeGraph.java,v 1.11 2006-05-08 16:13:52 aracic Exp $
+ * $Id: JavaTypeGraph.java,v 1.12 2006-05-11 07:31:49 aracic Exp $
  */
 
 package org.caesarj.compiler.typesys.java;
@@ -80,10 +80,10 @@ public class JavaTypeGraph {
             // this part of the mixin list will be marked and 
             // later on not generated in genMixinCopies
             boolean notNeededType =
-//            	t.isImplicitType() && 
-//            	(t.isAbstract() || (t.getOuter() != null && t.getOuter().isAbstract()));            	
-            	t.isAbstract() ||
-            	(t.getOuter() != null && t.getOuter().isAbstract());
+            	t.isImplicitType() && 
+            	(t.isAbstract() || (t.getOuter() != null && t.getOuter().isAbstract()));            	
+//            	t.isAbstract() ||
+//            	(t.getOuter() != null && t.getOuter().isAbstract());
                         
             List mixinList = t.getMixinList();
             
