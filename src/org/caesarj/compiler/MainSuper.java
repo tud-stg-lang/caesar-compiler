@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: MainSuper.java,v 1.25 2006-05-08 16:13:52 aracic Exp $
+ * $Id: MainSuper.java,v 1.26 2006-05-30 08:44:12 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -163,14 +163,10 @@ public abstract class MainSuper extends CompilerBase {
 //            		javaTypeCounter++;
 //            	}
             	
-            	if(!clazz.isMixinInterface() && clazz.isImplicit()) {
-            		if(
-        				clazz.isAbstract()
-        				|| (clazz.isNested() && clazz.getOwner().isAbstract())
-    				) {
-//	            		abstractImplicitTypeCounter++;
-	                    continue;
-            		}
+            	// Implicit abstract classes are not needed because they are never
+            	// instantiated and cannot be super classes of other classes
+            	if (!clazz.isMixinInterface() && clazz.isImplicit() && clazz.isAbstract()) {
+            		continue;
                 }            	
             	
                 // IVICA

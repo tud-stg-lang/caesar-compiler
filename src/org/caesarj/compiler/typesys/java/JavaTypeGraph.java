@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JavaTypeGraph.java,v 1.12 2006-05-11 07:31:49 aracic Exp $
+ * $Id: JavaTypeGraph.java,v 1.13 2006-05-30 08:44:12 gasiunas Exp $
  */
 
 package org.caesarj.compiler.typesys.java;
@@ -80,10 +80,7 @@ public class JavaTypeGraph {
             // this part of the mixin list will be marked and 
             // later on not generated in genMixinCopies
             boolean notNeededType =
-            	t.isImplicitType() && 
-            	(t.isAbstract() || (t.getOuter() != null && t.getOuter().isAbstract()));            	
-//            	t.isAbstract() ||
-//            	(t.getOuter() != null && t.getOuter().isAbstract());
+            	t.isImplicitType() && !t.canBeInstantiated();
                         
             List mixinList = t.getMixinList();
             
@@ -104,8 +101,7 @@ public class JavaTypeGraph {
                     // mark the part of this chain as not needed
                     // since until this point it only exists for the 
                     // not needed type
-                    if(notNeededType)
-                    	next.partOfANotNeededChain = true;
+                    next.partOfANotNeededChain = notNeededType;
                 }
                    
                 // mark the part of the chain as needed
@@ -118,6 +114,7 @@ public class JavaTypeGraph {
             if(t.isImplicitType()) {
                 // append as leaf
                 JavaTypeNode next = new JavaTypeNode(this, t);
+                next.partOfANotNeededChain = notNeededType;
                 next.setType(t);
                 current.addSubNode(next);
             }
