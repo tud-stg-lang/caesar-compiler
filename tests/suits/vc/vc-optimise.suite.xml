@@ -1,0 +1,146 @@
+<testsuite name="Optimization of virtual class generation" package="suits.vc.optim">
+
+	<compile-run description="Top level abstract class" id="vcoptim001">
+	    <test>
+			AAA a = new BBB();
+			a.m();
+		</test>
+		<code>
+			abstract public cclass AAA {
+			   public void m() { }
+			}
+			public cclass BBB extends AAA { }
+		</code>
+	</compile-run>
+		
+    <compile-run description="Abstract mixin copy" id="vcoptim002">
+	    <test>
+			AAA a = new CCC();
+			a.m();
+		</test>
+		<code>
+			abstract public cclass AAA {
+			   public void m() { }
+			}
+			abstract public cclass BBB {
+			}
+			public cclass CCC extends AAA &amp; BBB { }
+		</code>
+	</compile-run>
+	
+	<compile-run description="Abstract virtual classes" id="vcoptim003">
+	    <test>
+	        final XXX x = new XXX();
+			x.AAA a = x.new BBB();
+			a.m();
+		</test>
+		<code>
+		    public cclass XXX {
+				abstract public cclass AAA {
+				   public void m() { }
+				}
+				public cclass BBB extends AAA { }
+			}
+		</code>
+	</compile-run>
+	
+	<compile-run description="Abstract virtual classes" id="vcoptim004">
+	    <test>
+	        final XXX x = new XXX();
+	    	x.AAA a = x.new CCC();
+			a.m();
+		</test>
+		<code>
+		    public cclass XXX {
+				abstract public cclass AAA {
+				   public void m() { }
+				}
+				abstract public cclass BBB {
+				}
+				public cclass CCC extends AAA &amp; BBB { }
+			}
+		</code>
+	</compile-run>
+	
+	<compile-run description="Abstract virtual classes" id="vcoptim005">
+	    <test>
+	        final XXX x = new YYY();
+	    	x.AAA a = x.new CCC();
+			a.m();
+		</test>
+		<code>
+		    abstract public cclass XXX {
+				abstract public cclass AAA {
+				   public void m() { }
+				}
+				abstract public cclass BBB {
+				}
+				public cclass CCC extends AAA &amp; BBB { }
+			}
+			public cclass YYY extends XXX { }
+		</code>
+	</compile-run>
+	
+	<compile-run description="Abstract virtual classes" id="vcoptim006">
+	    <test>
+	        final YYY x = new YYY();
+	    	x.AAA a = x.new CCC();
+			a.m();
+		</test>
+		<code>
+		    abstract public cclass XXX {
+				abstract public cclass AAA {
+				   public void m() { }
+				}
+				abstract public cclass BBB {
+				}				
+			}
+			public cclass YYY extends XXX { 
+				public cclass CCC extends AAA &amp; BBB { }
+			}
+		</code>
+	</compile-run>
+	
+	<compile-run description="Abstract virtual classes" id="vcoptim007">
+	    <test>
+	        final YYY x = new YYY();
+	    	x.AAA a = x.new CCC();
+			a.m();
+		</test>
+		<code>
+		    abstract public cclass XXX {
+				abstract public cclass AAA {
+				   public void m() { }
+				}
+				abstract public cclass BBB {
+				}				
+			}
+			abstract public cclass ZZZ {
+			}
+			public cclass YYY extends XXX &amp; ZZZ { 
+				public cclass CCC extends AAA &amp; BBB { }
+			}
+		</code>
+	</compile-run>	
+	
+	<compile-run description="All abstract" id="vcoptim008">
+	    <test>
+	        final YYY x = new YYY();	    	
+		</test>
+		<code>
+		    abstract public cclass XXX {
+				abstract public cclass AAA {
+				   public void m() { }
+				}
+				abstract public cclass BBB {
+				}				
+			}
+			public cclass ZZZ extends XXX {
+			}
+			public cclass YYY extends XXX &amp; ZZZ { 
+				abstract public cclass CCC extends AAA &amp; BBB { }
+			}
+		</code>
+	</compile-run>	
+
+</testsuite>
