@@ -479,13 +479,13 @@
     </compile-run>    
     
     <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
-    <compile-run  id="pointcutinheritance009" description="super with context passing">
+    <compile-run  id="pointcutinheritance009" description="super to overriden pointcut">
     	<test>
    			new ClsC().m(1);
    			new ClsC().n(1);
     		
 			System.out.println("result: "+ res.toString());
-			assertEquals(":m:after:1:n", res.toString());			
+			assertEquals(":m:n:after:1", res.toString());			
 		</test>
         <code>
         	public cclass ClsA {
