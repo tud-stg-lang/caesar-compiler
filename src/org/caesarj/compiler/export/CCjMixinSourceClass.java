@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CCjMixinSourceClass.java,v 1.6 2005-10-11 14:59:55 gasiunas Exp $
+ * $Id: CCjMixinSourceClass.java,v 1.7 2006-05-31 13:23:43 thiago Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -117,5 +117,14 @@ public class CCjMixinSourceClass extends CCjSourceClass
 		}
 
 		return ret;
+	}
+
+	/**
+	 * Gets the original class (from which the mixin was generated)
+	 * 
+	 * @return
+	 */
+	public CCjSourceClass getOriginClass() {
+		return _originClass;
 	}
 }

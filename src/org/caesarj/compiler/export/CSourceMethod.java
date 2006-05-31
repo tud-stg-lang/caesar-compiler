@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CSourceMethod.java,v 1.10 2005-11-08 10:35:56 meffert Exp $
+ * $Id: CSourceMethod.java,v 1.11 2006-05-31 13:23:43 thiago Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -207,9 +207,20 @@ public class CSourceMethod extends CMethod {
                                             body != null ? genCode(factory): null, 
                                             isDeprecated(),
                                             isSynthetic());
-    methodInfo = optimizer.run(methodInfo);
+    try {
+    	methodInfo = optimizer.run(methodInfo);
     
-    return methodInfo;
+    	return methodInfo;
+	} catch (Exception e) {
+		String id = this.getQualifiedName();
+		if (id != null) {
+			id = id.replaceAll("\\/", ".");
+		}
+		throw new ClassFileFormatException(
+				"ClassFileException in method " + id + 
+				methodInfo.getSignature() + 
+				" : " + e);
+	}
   }
 
   /**

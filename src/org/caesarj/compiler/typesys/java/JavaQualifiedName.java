@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: JavaQualifiedName.java,v 1.6 2005-11-02 12:49:57 thiago Exp $
+ * $Id: JavaQualifiedName.java,v 1.7 2006-05-31 13:23:43 thiago Exp $
  */
 
 package org.caesarj.compiler.typesys.java;
@@ -75,6 +75,16 @@ public class JavaQualifiedName {
     // CTODO
     public JavaQualifiedName convertToIfcName() {
     	String newQualifiedName = qualifiedName.replaceAll("_Impl", "");
+        return new JavaQualifiedName(newQualifiedName);
+    }
+    
+    public JavaQualifiedName convertToBaseName() {
+    	String newQualifiedName = qualifiedName.replaceAll("\\$Registry", "");
+        return new JavaQualifiedName(newQualifiedName);
+    }
+    
+    public JavaQualifiedName convertToRegistryName() {
+    	String newQualifiedName = qualifiedName + "$Registry";
         return new JavaQualifiedName(newQualifiedName);
     }
     

@@ -100,6 +100,8 @@ public class CaesarWrapperPatternParser extends PatternParser {
 		tokenSource.setIndex(start);
 		if (kind.equals("if")) {
 			return parseIfPointcut();
+		} else if (kind.equals("super")) {
+			return parseSuperPointcut();
 		} else if (kind.equals("execution") || kind.equals("call") || 
 						kind.equals("get") || kind.equals("set")) {
 			return parseKindedPointcut();
@@ -500,6 +502,28 @@ public class CaesarWrapperPatternParser extends PatternParser {
 			throw new ParserException("If pointcuts currently accept only 'true' or 'false' as values", tokenSource.peek());
 		
 		return w;
+	}
+	
+	/**
+	 * When the token "super" is found in a pointcut, parse a super pointcut.
+	 * 
+	 * @return a wrapper to the super pointcut
+	 */
+	private CaesarPointcutWrapper parseSuperPointcut() {
+		String kind = parseIdentifier();
+		eat(".");
+		TypePattern onType = parseTypePattern();
+		NamePattern name = tryToExtractName(onType);
+		if (name == null) {
+    		throw new ParserException("Super pointcut must reference a named pointcut", tokenSource.peek());
+    	}
+		
+		TypePatternList arguments = parseArgumentsPattern();
+		
+		// Creates the wrapper 
+		CaesarSuperPointcut p = new CaesarSuperPointcut(name.maybeGetSimpleName(), arguments);
+		CaesarPointcutWrapper wrapper = new CaesarPointcutWrapper(p);
+		return wrapper;
 	}
 	
 	private SignaturePattern parseConstructorSignaturePattern() {

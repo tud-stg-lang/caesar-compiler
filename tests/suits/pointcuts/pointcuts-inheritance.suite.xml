@@ -1,0 +1,378 @@
+<testsuite name="Test inheritance of pointcuts" package="suits.pointcuts.inheritance">
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutinheritance001" description="simple inheritance">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":m:after", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsC c = new ClsC();
+        			c.m();
+        		}
+        	}
+        	
+        	public cclass ClsA {
+        	    pointcut superPointcut() : call (void ClsC.m());
+        	}
+			
+			public deployed cclass ClsB extends ClsA {
+
+				after() : super.superPointcut() {
+					Test.res.append(":after");
+				}
+			}
+			
+			public cclass ClsC {
+				public void m() {
+					Test.res.append(":m");
+				}
+			}
+        </code>
+    </compile-run>
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutinheritance002" description="simple inheritance with logic">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":c:after:d:after", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsC c = new ClsC();
+        			ClsD d = new ClsD();
+        			c.m();
+        			d.m();
+        		}
+        	}
+        	
+        	public cclass ClsA {
+        	    pointcut superPointcut() : call (void ClsC.m());
+        	}
+			
+			public deployed cclass ClsB extends ClsA {
+
+				after() : super.superPointcut() || call (void ClsD.m()) {
+					Test.res.append(":after");
+				}
+			}
+			
+			public cclass ClsC {
+				public void m() {
+					Test.res.append(":c");
+				}
+			}
+			public cclass ClsD {
+				public void m() {
+					Test.res.append(":d");
+				}
+			}
+        </code>
+    </compile-run>
+      
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutinheritance003" description="simple inheritance with logic and name">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":c:after:d:after", res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        			ClsC c = new ClsC();
+        			ClsD d = new ClsD();
+        			c.m();
+        			d.m();
+        		}
+        	}
+        	
+        	public cclass ClsA {
+        	    pointcut superPointcut() : call (void ClsC.m());
+        	}
+			
+			public deployed cclass ClsB extends ClsA {
+
+				pointcut superPointcut() : call (void ClsD.m());
+				
+				after() : super.superPointcut() || superPointcut() {
+					Test.res.append(":after");
+				}
+			}
+			
+			public cclass ClsC {
+				public void m() {
+					Test.res.append(":c");
+				}
+			}
+			public cclass ClsD {
+				public void m() {
+					Test.res.append(":d");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutinheritance004" description="simple inheritance with logic, name and mixins">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":deployA:A:afterA:B:C:D:E" +
+				":deployD:A:B:afterD:C:D:afterA:afterD:E" +
+				":deployE:A:B:C:afterE:D:E:afterA:afterE"
+				, res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        		
+        			ClsA a = new ClsA();
+        			ClsB b = new ClsB();
+        			ClsC c = new ClsC();
+        			ClsD d = new ClsD();
+        			ClsE e = new ClsE();
+        			TargetA ta = new TargetA();
+        			TargetB tb = new TargetB();
+        			TargetC tc = new TargetC();
+        			TargetD td = new TargetD();
+        			TargetE te = new TargetE();
+        			
+        			Test.res.append(":deployA");
+        			deploy(a) {
+        				ta.m();
+        				tb.m();
+        				tc.m();
+        				td.m();
+        				te.m();
+        			}
+        			Test.res.append(":deployD");
+        			deploy(d) {
+        				ta.m();
+        				tb.m();
+        				tc.m();
+        				td.m();
+        				te.m();
+        			}
+        			Test.res.append(":deployE");
+        			deploy(e) {
+        				ta.m();
+        				tb.m();
+        				tc.m();
+        				td.m();
+        				te.m();
+        			}
+        		}
+        	}
+        	
+        	public cclass ClsA {
+        	    pointcut change() : call (void TargetA.m());
+        	    
+        	    after() : change() {
+					Test.res.append(":afterA");
+				}
+        	}
+			
+			public cclass ClsB extends ClsA {
+				pointcut change() : call (void TargetB.m());
+			}
+			
+			public cclass ClsC extends ClsA {
+				pointcut change() : call (void TargetC.m());
+			}
+			
+			public cclass ClsD extends ClsB &amp; ClsC {
+				pointcut change() : call (void TargetD.m());
+			
+				after() : super.change() || change() {
+					Test.res.append(":afterD");
+				}
+			}
+			
+			public cclass ClsE extends ClsC &amp; ClsB {
+				pointcut change() : call (void TargetE.m());
+			
+				after() : super.change() || change() {
+					Test.res.append(":afterE");
+				}
+			}
+			
+			// Targets
+			public cclass TargetA {
+				public void m() {
+					Test.res.append(":A");
+				}
+			}
+			public cclass TargetB {
+				public void m() {
+					Test.res.append(":B");
+				}
+			}
+			public cclass TargetC {
+				public void m() {
+					Test.res.append(":C");
+				}
+			}
+			public cclass TargetD {
+				public void m() {
+					Test.res.append(":D");
+				}
+			}
+			public cclass TargetE {
+				public void m() {
+					Test.res.append(":E");
+				}
+			}
+        </code>
+    </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutinheritance005" description="simple inheritance with logic, name and nested mixins">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":deployA:A:afterA:B:C:D:E" +
+				":deployD:A:B:afterD:C:D:afterA:afterD:E" +
+				":deployE:A:B:C:afterE:D:E:afterA:afterE"
+				, res.toString());			
+		</test>
+        <code>
+        	public class Main {
+        	
+        		public void run() {
+        		
+        			ClsA a = new ClsA();
+        			ClsA.Inner ai = a.new Inner();
+        			ClsB b = new ClsB();
+        			ClsC c = new ClsC();
+        			ClsD d = new ClsD();
+        			ClsD.Inner di = d.new Inner();
+        			ClsE e = new ClsE();
+        			ClsE.Inner ei = e.new Inner();
+        			TargetA ta = new TargetA();
+        			TargetB tb = new TargetB();
+        			TargetC tc = new TargetC();
+        			TargetD td = new TargetD();
+        			TargetE te = new TargetE();
+        			
+        			Test.res.append(":deployA");
+        			deploy(ai) {
+        				ta.m();
+        				tb.m();
+        				tc.m();
+        				td.m();
+        				te.m();
+        			}
+        			Test.res.append(":deployD");
+        			deploy(di) {
+        				ta.m();
+        				tb.m();
+        				tc.m();
+        				td.m();
+        				te.m();
+        			}
+        			Test.res.append(":deployE");
+        			deploy(ei) {
+        				ta.m();
+        				tb.m();
+        				tc.m();
+        				td.m();
+        				te.m();
+        			}
+        		}
+        	}
+        	
+        	public cclass ClsA {
+        		public cclass Inner {
+	        	    pointcut change() : call (void TargetA.m());
+        	    
+    	    	    after() : change() {
+						Test.res.append(":afterA");
+					}
+				}
+        	}
+			
+			public cclass ClsB extends ClsA {
+				public cclass Inner {
+					pointcut change() : call (void TargetB.m());
+				}
+			}
+			
+			public cclass ClsC extends ClsA {
+				public cclass Inner {
+					pointcut change() : call (void TargetC.m());
+				}
+			}
+			
+			public cclass ClsD extends ClsB &amp; ClsC {
+			
+				public cclass Inner {
+					pointcut change() : call (void TargetD.m());
+			
+					after() : super.change() || change() {
+						Test.res.append(":afterD");
+					}
+				}
+			}
+			
+			public cclass ClsE extends ClsC &amp; ClsB {
+			
+				public cclass Inner {
+					pointcut change() : call (void TargetE.m());
+				
+					after() : super.change() || change() {
+						Test.res.append(":afterE");
+					}
+				}
+			}
+						
+			// Targets
+			public cclass TargetA {
+				public void m() {
+					Test.res.append(":A");
+				}
+			}
+			public cclass TargetB {
+				public void m() {
+					Test.res.append(":B");
+				}
+			}
+			public cclass TargetC {
+				public void m() {
+					Test.res.append(":C");
+				}
+			}
+			public cclass TargetD {
+				public void m() {
+					Test.res.append(":D");
+				}
+			}
+			public cclass TargetE {
+				public void m() {
+					Test.res.append(":E");
+				}
+			}
+        </code>
+    </compile-run>
+</testsuite>

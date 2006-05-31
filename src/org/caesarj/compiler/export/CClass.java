@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClass.java,v 1.42 2005-12-02 09:59:21 gasiunas Exp $
+ * $Id: CClass.java,v 1.43 2006-05-31 13:23:43 thiago Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -1465,6 +1465,14 @@ public abstract class CClass extends CMember
 	
 	public String convertToImplQn() {
 		return new JavaQualifiedName(getQualifiedName()).convertToImplName().toString();
+	}
+	
+	public String convertToBaseQn() {
+		return new JavaQualifiedName(getQualifiedName()).convertToBaseName().toString();
+	}
+	
+	public String convertToRegistryQn() {
+		return new JavaQualifiedName(getQualifiedName()).convertToRegistryName().toString();
 	}
 
 	/**

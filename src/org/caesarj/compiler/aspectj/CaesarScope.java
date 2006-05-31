@@ -2,7 +2,7 @@
  * This source file is part of CaesarJ 
  * For the latest info, see http://caesarj.org/
  * 
- * Copyright © 2003-2005 
+ * Copyright ï¿½ 2003-2005 
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
  * 
@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarScope.java,v 1.17 2005-11-03 11:39:51 gasiunas Exp $
+ * $Id: CaesarScope.java,v 1.18 2006-05-31 13:23:43 thiago Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -46,6 +46,7 @@ import org.caesarj.compiler.ast.phylum.JClassImport;
 import org.caesarj.compiler.ast.phylum.JPackageImport;
 import org.caesarj.compiler.constants.CaesarConstants;
 import org.caesarj.compiler.context.FjClassContext;
+import org.caesarj.compiler.export.CCjMixinSourceClass;
 import org.caesarj.compiler.export.CClass;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
@@ -54,7 +55,7 @@ import org.caesarj.util.UnpositionedError;
  * Provides access to the ClassContext.
  * Important for pointcut checking.
  * 
- * @author Jürgen Hallpap
+ * @author Jï¿½rgen Hallpap
  */
 public class CaesarScope implements IScope, CaesarConstants {
 	
@@ -288,5 +289,36 @@ public class CaesarScope implements IScope, CaesarConstants {
 	public ResolvedTypeX getEnclosingType() {
 		return world.get().resolve(caller);
 	}
+	
+	public CClass getCaller() {
+		return caller;
+	}
 
+	/**
+	 * Treats the caller class as a registry and returns the registry of the super class.
+	 * This is used for resolving super pointcuts.
+	 * For example, suppose we have a ClsB extends ClsA. If the caller is ClsB$Registry, this
+	 * method will navigate to ClsB, get the super class (ClsA) and get its registry, returning
+	 * ClsA$Registry
+	 * 
+	 * @return the type of the super registry or MISSING if it was not found
+	 */
+	public ResolvedTypeX getSuperRegisterType() {
+		try {
+			CClass base = context.lookupClass(caller, caller.convertToBaseQn());
+			if (base.isCrosscutting()) {
+				String registry = null;
+				if (base.getSuperClass() instanceof CCjMixinSourceClass) {
+					CCjMixinSourceClass mixin = (CCjMixinSourceClass) base.getSuperClass();
+					registry = mixin.getOriginClass().convertToRegistryQn();
+				} else {
+					registry = base.getSuperClass().convertToRegistryQn();
+				}
+				return world.get().resolve(context.lookupClass(caller, registry));
+			}
+			return ResolvedTypeX.MISSING;
+		} catch (UnpositionedError e) {
+			return ResolvedTypeX.MISSING;
+		}
+	}
 }

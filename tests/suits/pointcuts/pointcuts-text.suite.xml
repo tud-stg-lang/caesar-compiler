@@ -575,6 +575,60 @@
         </code>
     </compile-run>
     
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcuttext008" description="mixin using within, test 2">
+    	<test>
+    		Main m = new Main();
+    		m.run();
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(
+				":field:within:field:within:field:within:field:within", res.toString());
+				
+		</test>
+        <code>
+        	public cclass Main {
+        	
+        		public void run() {
+        		
+        			ClassA a = new ClassC();
+					a.m();
+					int f = a.f;
+					a.n();
+        		}
+        	}
+        	
+        	public deployed cclass AspectA {
+        		
+        		after() : get(* ClassA.*) || set(* ClassA.*) {
+					Test.res.append(":field");
+				}	
+				after() : (get(* ClassA.*) || set(* ClassA.*)) &amp;&amp; within(ClassA) {
+					Test.res.append(":within");
+				}
+			}
+			
+			public cclass ClassA {
+			
+				public int f;
+				
+				public ClassA() {
+					f = 0;
+				}	
+				public void m() {
+					f = 5;
+				}
+				public void n() {
+					m();
+				}
+			}
+			
+			public cclass ClassB { }
+			
+			public cclass ClassC extends ClassA &amp; ClassB { }
+
+        </code>
+    </compile-run>
     
 
 
@@ -923,12 +977,12 @@
 			assertEquals(
 				":S:SI" +
 				":beforeAll-A:beforeAll+A:A" +
-				":before-AI:before+AI:AI" +
-				":S:BI" +
+				":before-AI:before+AI:before-->AI:AI" +
+				":S:before-->BI:BI" +
 				":beforeAll-C:beforeAll+C:C" +
-				":before-CI:before+CI:CI" +
+				":before-CI:before+CI:before-->CI:CI" +
 				":beforeAll-D:D" +
-				":DI", res.toString());
+				":before-->DI:DI", res.toString());
 				
 		</test>
         <code>
@@ -981,6 +1035,11 @@
 					Test.res.append(":before+" + s);
 				}
 				
+				// Matches all .new Internal.run();
+				before(String s): call(* Target.m(String)) &amp;&amp; args(s) 
+        			&amp;&amp; withincode(void Cls*.Internal.run()) {
+					Test.res.append(":before-->" + s);
+				}
         	}
 			
 			public class Target {
