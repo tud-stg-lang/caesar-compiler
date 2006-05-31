@@ -375,4 +375,148 @@
 			}
         </code>
     </compile-run>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutinheritance006" description="polymorphic poincut reference">
+    	<test>
+    		ClsC c = new ClsC();
+   			c.m(5);
+   			c.n(4);
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":m:after:5:n:after:4", res.toString());			
+		</test>
+        <code>
+        	public cclass ClsA {
+        	    pointcut pcutA() : call (void ClsC.m(..));
+        	    pointcut pcutB(int a) : pcutA() &amp;&amp; args(a);
+        	    
+        	    after(int a) : pcutB(a) {
+					Test.res.append(":after:" + a);
+				}
+        	}
+			
+			public deployed cclass ClsB extends ClsA {
+			    pointcut pcutA() : super.pcutA() || call (void ClsC.n(..));
+		    }
+			
+			public cclass ClsC {
+				public void m(int a) {
+					Test.res.append(":m");
+				}
+				
+				public void n(int a) {
+					Test.res.append(":n");
+				}
+			}
+        </code>
+    </compile-run>   
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutinheritance007" description="super with context passing">
+    	<test>
+   			new ClsC().m(1);
+   			new ClsD().m(2);
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":m:m:after:2", res.toString());			
+		</test>
+        <code>
+        	public cclass ClsA {
+        	    pointcut pcutA(int a) : call (void ClsC.m(..)) &amp;&amp; args(a);
+        	    
+        	    after(int a) : pcutA(a) {
+					Test.res.append(":after:" + a);
+				}
+        	}
+			
+			public deployed cclass ClsB extends ClsA {
+			    pointcut pcutA(int a) : super.pcutA(a) &amp;&amp; target(ClsD);
+		    }
+			
+			public cclass ClsC {
+				public void m(int a) {
+					Test.res.append(":m");
+				}
+			}
+			
+			public cclass ClsD extends ClsC { }
+        </code>
+    </compile-run>    
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutinheritance008" description="super with context passing">
+    	<test>
+   			new ClsC().m(1);
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":m:after:1:after:1:2", res.toString());			
+		</test>
+        <code>
+        	public cclass ClsA {
+        	    pointcut pcutA(int a) : call (void ClsC.m(..)) &amp;&amp; args(a);
+        	    
+        	    after(int a) : pcutA(a) {
+					Test.res.append(":after:" + a);
+				}
+        	}
+			
+			public deployed cclass ClsB extends ClsA {
+			    pointcut pcutA(int a, ClsC x) : super.pcutA(a) &amp;&amp; target(x);
+			    
+			    after(int a, ClsC x) : pcutA(a, x) {
+					Test.res.append(":after:" + a + ":" + x.getId());
+				}
+		    }
+			
+			public cclass ClsC {
+			    public int getId() { return 2; }
+				public void m(int a) {
+					Test.res.append(":m");
+				}
+			}			
+        </code>
+    </compile-run>    
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run  id="pointcutinheritance009" description="super with context passing">
+    	<test>
+   			new ClsC().m(1);
+   			new ClsC().n(1);
+    		
+			System.out.println("result: "+ res.toString());
+			assertEquals(":m:after:1:n", res.toString());			
+		</test>
+        <code>
+        	public cclass ClsA {
+        	    pointcut pcutA(int a) : call (void ClsC.m(..)) &amp;&amp; args(a);
+        	    
+        	    after(int a) : pcutA(a) {
+					Test.res.append(":after:" + a);
+				}
+        	}
+        	
+        	public cclass ClsM extends ClsA {
+        	    pointcut pcutA(int a) : call (void ClsC.n(..)) &amp;&amp; args(a);
+        	}
+        	
+			public cclass ClsB extends ClsA {
+			    pointcut pcutA(int a) : super.pcutA(a);
+		    }
+		    
+		    public deployed cclass ClsN extends ClsB &amp; ClsM { }
+			
+			public cclass ClsC {
+			    public int getId() { return 2; }
+				public void m(int a) {
+					Test.res.append(":m");
+				}
+				public void n(int a) {
+					Test.res.append(":n");
+				}
+			}			
+        </code>
+    </compile-run> 
+    
+    
 </testsuite>
