@@ -1,3 +1,10 @@
+VC_M31 - 18.06.2006
+- Optimized generation of implicit virtual classes and mixin copies
+	- Abstract classes that can never be instantiated and have no instantiable subclasses
+	  are not generated
+	- Classes are linearized so that the mixins of the last direct super class are reused
+- References to super pointcuts are implemented
+
 VC_M30 - 26.04.2006
 - bug fix resolving poincut and advice bindings
 
