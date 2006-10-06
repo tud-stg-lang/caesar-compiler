@@ -321,4 +321,20 @@
         </code>
     </compile-run>
     
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="abstrmisc019" description="Independent overriding of abstract virtual class">
+		<code>
+           public cclass A {
+              public abstract cclass X { }
+           }
+           public cclass B extends A {
+              public cclass X { }
+           }
+           public cclass C extends A {
+              public cclass X { }
+           }
+           public cclass CB extends C &amp; B { }
+        </code>
+    </compile>    
+    
 </testsuite>
