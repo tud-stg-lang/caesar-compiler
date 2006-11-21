@@ -440,7 +440,7 @@ public class JoinedTypeNode {
 						if (parent == null) {
 							graph.getCompiler().reportTrouble(
 									new PositionedError(getTokenRef(), CaesarMessages.CANNOT_INHERIT_FROM_CCLASS,
-											parent.getQualifiedName()));
+											parentIdent));
 							throw new CaesarTypeSystemException();							
 						}
 					}
