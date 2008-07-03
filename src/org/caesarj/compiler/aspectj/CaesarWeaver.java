@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarWeaver.java,v 1.11 2005-11-07 20:28:52 thiago Exp $
+ * $Id: CaesarWeaver.java,v 1.12 2008-07-03 07:34:46 gasiunas Exp $
  */
 
 package org.caesarj.compiler.aspectj;
@@ -111,6 +111,7 @@ public class CaesarWeaver {
 		    // Changed for version 1.2.1 of aspectj weaver
 			BcelWeaver weaver = new CaesarBcelWeaver(world.getWorld());
 			
+			weaver.setReweavableMode(true, false);
 			for (int i = 0; i < unwovenClasses.size(); i++)
 				weaver.addClassFile((UnwovenClassFile) unwovenClasses.get(i));
 			weaver.prepareForWeave();
