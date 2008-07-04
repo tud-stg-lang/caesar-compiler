@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CaesarExtraAttributes.java,v 1.3 2005-01-24 16:52:57 aracic Exp $
+ * $Id: CaesarExtraAttributes.java,v 1.3.6.1 2008-07-04 07:59:25 gasiunas Exp $
  */
 
 package org.caesarj.classfile;
@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.caesarj.runtime.AdditionalCaesarTypeInformation;
+import org.caesarj.compiler.AdditionalCaesarTypeInformation;
 import org.caesarj.util.InconsistencyException;
 
 /**

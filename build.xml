@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<!-- 
+<!--
  Created on 07.01.2003, Karl Klose
  NOTE: <Java-SDK dir>/lib/tools.jar must be in the classpath of this script in order
  to find the java compiler. -->
 
 <project name="Caesar" default="dist" basedir=".">
  <description>
-  Buildfile for the CaesarJ project. 
+  Buildfile for the CaesarJ project.
   Generates scanner+parser and compiles the source.
  </description>
- 
+
  <!-- Define global properties -->
  <property name="bin" location="bin"/>
  <property name="tmpbin" location="tmpbin"/>
@@ -19,24 +19,23 @@
  <property name="scripts" location="scripts"></property>
  <property name="libs" location="lib"/>
  <property name="dist" location="dist"/>
- <property name="cjrmi-dist" location="../org.caesarj.ui"/>
 
  <!-- Create CaesarMessages.java -->
-	
+
 <target name="clean">
 	<delete dir="${bin}/org"/>
 	<delete file="${bin}/*.properties"/>
 </target>
-	
+
  <target name="compile.util" description="compile the util packagesource files">
-  <javac 	srcdir="src" 
+  <javac 	srcdir="src"
   			classpath="${libs}/java-getopt-1.0.9.jar;${libs}/cjbuildtools.jar"
   		 	destdir="bin" listfiles="true" failonerror="true">
   		<include name="org/caesarj/util/*.java"/>
   </javac>
  </target>
 
-	
+
 <target name="msggen" depends="compile.util" description="Generate CaesarMessages.java">
   <java fork="true" dir="${source}/compiler/constants"
   		classname="org.caesarj.tools.msggen.Main"
@@ -48,61 +47,60 @@
  </target>
 
  <!-- pack for distribution -->
- <target name="dist" depends="compile, rmic">
+ <target name="dist" depends="compile">
  	<delete dir="${dist}"/>
  	<delete dir="${tmpbin}"/>
  	<mkdir dir="${dist}"/>
  	<mkdir dir="${tmpbin}"/>
- 	
+
  	<jar basedir="${bin}" jarfile="${dist}/caesar-runtime.jar">
  		<include name="org/caesarj/runtime/**/*"/>
  	</jar>
 
- 	<unjar src="${libs}/java-getopt-1.0.9.jar" dest="${tmpbin}"/>    
+ 	<unjar src="${libs}/java-getopt-1.0.9.jar" dest="${tmpbin}"/>
  	<unjar src="${libs}/cjbuildtools.jar" dest="${tmpbin}"/>
- 	
+
  	<jar jarfile="${dist}/caesar-compiler.jar">
  		<fileset dir="${bin}" includes="**/*" excludes="org/caesarj/test/**"/>
- 		<fileset dir="${tmpbin}" includes="**/*" />		
+ 		<fileset dir="${tmpbin}" includes="**/*" />
  	</jar>
- 	
- 	<delete dir="${tmpbin}"/> 	
+
+ 	<delete dir="${tmpbin}"/>
  </target>
-	
+
  <target name="command-line-zip" depends="dist">
  	<mkdir dir="${dist}/zip"/>
  	<mkdir dir="${dist}/zip/bin"/>
  	<mkdir dir="${dist}/zip/lib"/>
- 	
+
  	<copy file="${scripts}/cj" todir="${dist}/zip/bin"/>
  	<copy file="${scripts}/cj.cmd" todir="${dist}/zip/bin"/>
  	<copy file="${scripts}/cjc" todir="${dist}/zip/bin"/>
  	<copy file="${scripts}/cjc.cmd" todir="${dist}/zip/bin"/>
- 	<copy file="${scripts}/cjrmic" todir="${dist}/zip/bin"/>
- 	<copy file="${scripts}/cjrmic.cmd" todir="${dist}/zip/bin"/>
- 	
+
  	<copy file="${libs}/aspectjrt.jar" todir="${dist}/zip/lib"/>
  	<copy file="${libs}/aspectjtools.jar" todir="${dist}/zip/lib"/>
  	<copy file="${libs}/aspectjrt.jar" todir="${dist}/zip/lib"/>
- 	<copy file="${cjrmi-dist}/cj-rmic.jar" todir="${dist}/zip/lib"/>
  	<copy file="${dist}/caesar-compiler.jar" todir="${dist}/zip/lib"/>
  	<copy file="${dist}/caesar-runtime.jar" todir="${dist}/zip/lib"/>
- 	
+
  	<zip destfile="${dist}/caesarj.zip" basedir="${dist}/zip"/>
- 	
- 	<delete dir="${dist}/zip"/> 	
+
+ 	<delete dir="${dist}/zip"/>
  </target>
 
- <!-- Generate stubs for remote runtime classes -->
- <target name="rmic" depends="compile">
-	<echo message="Compiling RMI classes..."/>
-	<rmic base="${bin}" 
-		classname="org.caesarj.runtime.rmi.AspectRegistryServer"/>
-    <echo message="RMI compilation completed!"></echo>
- </target> 
- 
+ <target name="compileruntime" depends="clean" description="compile the source files">
+  	<javac srcdir="src"
+  		 classpath="${packageBase}"
+  		 destdir="bin" listfiles="true" failonerror="true" debug="on"
+  		 target="1.4" source="1.4">
+  		<include name="org/caesarj/runtime/**"/>
+ 	</javac>
+  </target>
+
  <!-- Compile-only target -->
- <target name="compile" depends="clean, msggen, parser" description="compile the source files">
+ <target name="compile" depends="clean, msggen, parser, compileruntime"
+ 	description="compile the source files">
   <javac srcdir="src"
   		 classpath="${packageBase};
   				${libs}/aspectjtools.jar;
@@ -110,20 +108,20 @@
   				${libs}/bcel.jar;
   				${libs}/aspectjrt.jar;
   				${libs}/caesarruntime.jar;
-  				${libs}/junit.jar;
   				${libs}/cjbuildtools.jar"
   		 destdir="bin" listfiles="true" failonerror="true" debug="on">
   		<exclude name="org/caesarj/test/**"/>
+  		<exclude name="org/caesarj/runtime/**"/>
  	</javac>
  </target>
- 
+
  <!-- Target for generating the scanner -->
  <target name="scanner" description="Generate the scanner using JFlex">
 
   <!-- 1. TOKDEF: Translates Caesar.t into CaesarTokenTypes.java & .txt.
 		(The task is forced to set the working directory to the directory where
 		the output files should be placed because lexgen drops the output just
-		into the workling directory of the VM). -->  
+		into the workling directory of the VM). -->
   <echo message="1st step: TOKDEF"/>
   <java fork="true" failonerror="true"
   		classname="org.caesarj.tools.lexgen.Main"
@@ -139,38 +137,38 @@
         classpath="${bin};${libs}/cjbuildtools.jar;${libs}/java-getopt-1.0.9.jar">
    <arg value="${inputFiles}/Caesar.flex.in"/>
    <arg value="-o"/>
-   <arg value="${inputFiles}/Caesar.flex"/>  
-  </java>  
- 	
+   <arg value="${inputFiles}/Caesar.flex"/>
+  </java>
+
   <move file="CaesarTokenTypes.java" todir="${source}/compiler"/>
   <move file="CaesarFlexRules.txt" todir="${source}/compiler"/>
   <move file="CaesarTokenTypes.txt" todir="${source}/compiler"/>
-  
+
   <!-- 3. JFLEX: Creates CaesarScanner.java&FlexRules.txt from Caesar.flex -->
   <echo message="3rd step: JFLEX"/>
   <java fork="true" failonerror="true"
-  		classpath="lib/JFlex.jar" 
+  		classpath="lib/JFlex.jar"
  		classname="JFlex.Main">
   	<arg value="${inputFiles}/caesar.flex"/>
  	<arg value="-skel"/>
  	<arg value="${inputFiles}/skeleton.shared"/>
    	<arg value="-d"/>
   	<arg value="${source}/compiler"/>
-  </java>	
+  </java>
  </target>
- 
+
  <!-- Target for generating the parser -->
  <target name="parser" depends="scanner" description="Generating parser using ANTLR">
   <!--  Translate Caesar.g into CaesarParsar.
   		(The task is forced to set the working directory to the directory where
   		the ouput files should be placed because
   		ANTLR doesn't correctly handle a given output path)  -->
-  <java 
+  <java
   		fork="true" dir="${source}/compiler"
   		failonerror="true"
   		classname="org.caesarj.tools.antlr.compiler.Main"
  		classpath="${bin};${libs}/cjbuildtools.jar;${libs}/java-getopt-1.0.9.jar">
- 		 
+
    	<arg value="${inputFiles}/Caesar.g"/>
   </java>
 
@@ -179,6 +177,6 @@
   <delete file="${source}/compiler/CaesarFlexRules.txt"/>
   <delete file="${source}/compiler/CaesarTokenTypes.txt"/>
   <delete file="${source}/compiler/CaesarScanner.java~"/>
- </target> 
-	
+ </target>
+
 </project>

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClassPreparation.java,v 1.46 2005-11-30 13:44:21 gasiunas Exp $
+ * $Id: CClassPreparation.java,v 1.46.4.1 2008-07-04 07:59:25 gasiunas Exp $
  */
 
 package org.caesarj.compiler.cclass;
@@ -183,7 +183,7 @@ public class CClassPreparation implements CaesarConstants {
 	}
 	
 	/*
-	private WeakHashMap $W_wrapper_map = new WeakHashMap();
+	private Hashtable $W_wrapper_map = new Hashtable();
 	
 	private W W(Wrappee $w) {
 		W res = (W)$W_wrapper_map.get($w);
@@ -208,7 +208,7 @@ public class CClassPreparation implements CaesarConstants {
         String wrappeeClassName = Utils.getClassSourceName(innerDecl.getWrappee().getQualifiedName());        
         String wrapperMapName = "$"+wrapperClassIdent+"_wrapper_map";
         
-        // TODO map = new WeakHashMap() didn't work
+        // TODO map = new Hashtable() didn't work
         JFieldDeclaration mapDecl = 
         	new JFieldDeclaration(
                 decl.getTokenReference(),
@@ -216,7 +216,7 @@ public class CClassPreparation implements CaesarConstants {
                     where,
                     ACC_PRIVATE,
 					JLocalVariable.DES_GENERATED,
-                    new CClassNameType("java/util/WeakHashMap"),
+                    new CClassNameType("java/util/Hashtable"),
                     wrapperMapName,
                     null
                 ),
@@ -233,7 +233,7 @@ public class CClassPreparation implements CaesarConstants {
                 "synchronized public "+wrapperClassIdent+" "+wrapperClassIdent+"("+wrappeeClassName+" w) {",
                 "if (w == null)",
                 "    return null;",               
-                "if("+wrapperMapName+" == null) "+wrapperMapName+" = new java.util.WeakHashMap();",
+                "if("+wrapperMapName+" == null) "+wrapperMapName+" = new java.util.Hashtable();",
                 wrapperClassIdent+" res = ("+wrapperClassIdent+")"+wrapperMapName+".get(w);",
                 "if (res != null) " +
 				"    return res;" +
@@ -255,7 +255,7 @@ public class CClassPreparation implements CaesarConstants {
                 "synchronized public "+wrapperClassIdent+" get"+wrapperClassIdent+"("+wrappeeClassName+" w) {",
                 "if (w == null)",
                 "    return null;",               
-                "if("+wrapperMapName+" == null) "+wrapperMapName+" = new java.util.WeakHashMap();",
+                "if("+wrapperMapName+" == null) "+wrapperMapName+" = new java.util.Hashtable();",
                 wrapperClassIdent+" res = ("+wrapperClassIdent+")"+wrapperMapName+".get(w);",
                 "return res;",
                 "}"

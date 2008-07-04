@@ -1,11 +1,11 @@
 /*
- * This source file is part of CaesarJ 
+ * This source file is part of CaesarJ
  * For the latest info, see http://caesarj.org/
- * 
- * Copyright © 2003-2005 
+ *
+ * Copyright © 2003-2005
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -19,17 +19,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- * $Id: AdditionalCaesarTypeInformation.java,v 1.2 2005-01-24 16:52:59 aracic Exp $
+ *
+ * $Id: AdditionalCaesarTypeInformation.java,v 1.1.2.1 2008-07-04 07:59:24 gasiunas Exp $
  */
 
-package org.caesarj.runtime;
+package org.caesarj.compiler;
 
 import java.io.Serializable;
 
 /**
  * ...
- * 
+ *
  * @author Ivica Aracic
  */
 public class AdditionalCaesarTypeInformation implements Serializable {
@@ -41,7 +41,7 @@ public class AdditionalCaesarTypeInformation implements Serializable {
     private String[] superClasses;
     private String[] superInterfaces;
     private String implClassName;
-    
+
     public AdditionalCaesarTypeInformation(
         String qn,
         boolean implicit,
@@ -61,10 +61,10 @@ public class AdditionalCaesarTypeInformation implements Serializable {
         this.superInterfaces = superInterfaces;
         this.implClassName = implClassName;
     }
-    
+
     public String getQualifiedName() {
         return qn;
-    }    
+    }
     public String getImplClassName() {
         return implClassName;
     }
@@ -86,7 +86,7 @@ public class AdditionalCaesarTypeInformation implements Serializable {
     public String[] getSuperInterfaces() {
         return superInterfaces;
     }
-    
+
     public String toString() {
         StringBuffer res = new StringBuffer();
         res.append(qn+" "+(implicit?"IMPLICIT":"EXPLICIT"));
@@ -99,13 +99,13 @@ public class AdditionalCaesarTypeInformation implements Serializable {
         res.append('\n');
         return res.toString();
     }
-    
+
     private String arrayPrint(Object[] objs) {
         StringBuffer res = new StringBuffer();
         res.append("[");
         for (int i = 0; i < objs.length; i++) {
             if(i>0) res.append(", ");
-            res.append(objs[i]);            
+            res.append(objs[i]);
         }
         res.append("]");
         return res.toString();

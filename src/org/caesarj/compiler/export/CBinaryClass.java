@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CBinaryClass.java,v 1.11 2005-09-13 16:07:07 gasiunas Exp $
+ * $Id: CBinaryClass.java,v 1.11.4.1 2008-07-04 07:59:24 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -36,12 +36,12 @@ import org.caesarj.classfile.FieldInfo;
 import org.caesarj.classfile.GenericAttribute;
 import org.caesarj.classfile.InnerClassInfo;
 import org.caesarj.classfile.MethodInfo;
+import org.caesarj.compiler.AdditionalCaesarTypeInformation;
 import org.caesarj.compiler.ClassReader;
 import org.caesarj.compiler.context.CBinaryTypeContext;
 import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.SignatureParser;
 import org.caesarj.compiler.types.TypeFactory;
-import org.caesarj.runtime.AdditionalCaesarTypeInformation;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.UnpositionedError;
 

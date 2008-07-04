@@ -1,11 +1,11 @@
 /*
- * This source file is part of CaesarJ 
+ * This source file is part of CaesarJ
  * For the latest info, see http://caesarj.org/
- * 
- * Copyright © 2003-2005 
+ *
+ * Copyright © 2003-2005
  * Darmstadt University of Technology, Software Technology Group
  * Also see acknowledgements in readme.txt
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -19,8 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- * $Id: AspectRegistryIfc.java,v 1.3 2005-03-31 11:58:18 gasiunas Exp $
+ *
+ * $Id: AspectRegistryIfc.java,v 1.3.4.1 2008-07-04 07:59:24 gasiunas Exp $
  */
 
 package org.caesarj.runtime.aspects;
@@ -33,18 +33,11 @@ import java.util.HashSet;
  * Interface of aspect registry singletons
  */
 public interface AspectRegistryIfc {
-	
+
 	public AspectContainerIfc $getAspectContainer();
-	
+
 	public void $setAspectContainer(AspectContainerIfc cont);
-	
+
 	public void $setSingleAspect(Object aspObj);
-	
-	public static ThreadLocal threadLocalRegistries = new ThreadLocal() {
 
-		protected synchronized Object initialValue() {
-			return new HashSet();
-		}
-
-	};
 }

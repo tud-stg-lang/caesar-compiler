@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CClass.java,v 1.43 2006-05-31 13:23:43 thiago Exp $
+ * $Id: CClass.java,v 1.43.2.1 2008-07-04 07:59:24 gasiunas Exp $
  */
 
 package org.caesarj.compiler.export;
@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.caesarj.compiler.AdditionalCaesarTypeInformation;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.ast.phylum.declaration.CjClassDeclaration;
 import org.caesarj.compiler.ast.phylum.declaration.JFieldDeclaration;
@@ -47,7 +48,6 @@ import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.types.CType;
 import org.caesarj.compiler.types.TypeFactory;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
-import org.caesarj.runtime.AdditionalCaesarTypeInformation;
 import org.caesarj.util.InconsistencyException;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.SimpleStringBuffer;

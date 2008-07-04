@@ -2,15 +2,15 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/aspectjrt.jar"/>
-	<classpathentry sourcepath="lib/aspectjtools-src.jar" kind="lib" path="lib/aspectjtools.jar"/>
 	<classpathentry kind="lib" path="lib/java-getopt-1.0.9.jar"/>
 	<classpathentry kind="lib" path="lib/JFlex.jar"/>
 	<classpathentry kind="lib" path="test/AspectDeploymentTests"/>
 	<classpathentry kind="lib" path="test/CompileAndRunResultsWeaverTest"/>
 	<classpathentry kind="lib" path="test/UppercaseServer"/>
-	<classpathentry sourcepath="lib/cjbuildtools-source.zip" kind="lib" path="lib/cjbuildtools.jar"/>
+	<classpathentry kind="lib" path="lib/cjbuildtools.jar" sourcepath="lib/cjbuildtools-source.zip"/>
 	<classpathentry kind="lib" path="test/VirtualClassesTests"/>
+	<classpathentry kind="lib" path="lib/ajrt_j2me.jar"/>
+	<classpathentry kind="lib" path="lib/aspectjtools.jar"/>
 	<classpathentry kind="var" path="JUNIT_HOME/junit.jar"/>
 	<classpathentry kind="lib" path="test/StructureModelTests"/>
 	<classpathentry kind="lib" path="test/CompilerErrorsTests"/>

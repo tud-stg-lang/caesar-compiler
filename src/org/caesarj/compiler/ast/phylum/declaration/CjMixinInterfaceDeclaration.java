@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: CjMixinInterfaceDeclaration.java,v 1.24 2005-12-02 10:00:06 gasiunas Exp $
+ * $Id: CjMixinInterfaceDeclaration.java,v 1.24.4.1 2008-07-04 07:59:25 gasiunas Exp $
  */
 
 package org.caesarj.compiler.ast.phylum.declaration;
@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.caesarj.compiler.AdditionalCaesarTypeInformation;
 import org.caesarj.compiler.ast.phylum.JCompilationUnit;
 import org.caesarj.compiler.ast.phylum.JPhylum;
 import org.caesarj.compiler.constants.CaesarConstants;
@@ -48,7 +49,6 @@ import org.caesarj.compiler.types.CReferenceType;
 import org.caesarj.compiler.typesys.CaesarTypeSystem;
 import org.caesarj.compiler.typesys.graph.CaesarTypeNode;
 import org.caesarj.compiler.typesys.java.JavaQualifiedName;
-import org.caesarj.runtime.AdditionalCaesarTypeInformation;
 import org.caesarj.util.PositionedError;
 import org.caesarj.util.TokenReference;
 import org.caesarj.util.UnpositionedError;
