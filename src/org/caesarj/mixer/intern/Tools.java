@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Tools.java,v 1.8 2005-11-16 15:50:02 klose Exp $
+ * $Id: Tools.java,v 1.9 2008-08-01 08:16:22 gasiunas Exp $
  */
 
 package org.caesarj.mixer.intern;
@@ -162,7 +162,12 @@ public class Tools {
 	}
 	
 	public static boolean isPrefix( String pre, String s ){
-		return dottedClassName(s).startsWith(dottedClassName(pre));
+		String s1 = dottedClassName(s);
+		String pre1 = dottedClassName(pre);
+		if (!s1.startsWith(pre1)) {
+			return false;
+		}
+		return (s1.length() == pre1.length() || s1.charAt(pre1.length()) == '.');			
 	}
 	
 	/**
