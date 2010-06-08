@@ -39,5 +39,23 @@
 			}
         </code>
     </compile-run>	
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile id="aspperthis002" description="per this and joinpoint reflection">		
+        <code>
+            import org.caesarj.runtime.PerThisDeployable;
+            import org.aspectj.lang.Signature;
+            
+        	public cclass ErrorExample implements PerThisDeployable{
+				protected pointcut examplePointCut():
+					call (public void *.*(..));
+				
+				
+				after() : examplePointCut (){
+					System.out.println("The method " +  ((Signature)thisJoinPoint.getSignature()).getName() + " was called");
+				}				
+			}
+        </code>
+    </compile>	
 	    
 </testsuite>
