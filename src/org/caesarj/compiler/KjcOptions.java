@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: KjcOptions.java,v 1.6 2005-03-01 15:38:42 gasiunas Exp $
+ * $Id: KjcOptions.java,v 1.7 2010-10-21 14:40:44 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -51,6 +51,7 @@ public class KjcOptions extends org.caesarj.util.Options {
   public String extdirs = null;
   public String destination = null;
   public String classpath = null;
+  public String weaveinputpath = null;
   public String source = "1.2";
   public String assertion = "none";
   public boolean generic = false;
@@ -72,6 +73,8 @@ public class KjcOptions extends org.caesarj.util.Options {
       destination = getString(g, ""); return true;
     case 'C':
       classpath = getString(g, ""); return true;
+    case 'i':
+      weaveinputpath = getString(g, ""); return true;  
     case 'f':
       filter = getString(g, ""); return true;
     default:
@@ -90,13 +93,14 @@ public class KjcOptions extends org.caesarj.util.Options {
     total[parent.length + 4] = "  --extdirs, -t <String>: Define location of installed extensions";
     total[parent.length + 5] = "  --destination, -d <String>: Writes files to destination";
     total[parent.length + 6] = "  --classpath, -C <String>: Changes class path to classpath";
+    total[parent.length + 6] = "  --inpath, -i <String>: Path of classes to be woven";
     
     return total;
   }
 
 
   public String getShortOptions() {
-    return "ve:w:O:t:d:C:f:" + super.getShortOptions();
+    return "ve:w:O:t:d:C:f:i:" + super.getShortOptions();
   }
 
 
@@ -138,7 +142,8 @@ public class KjcOptions extends org.caesarj.util.Options {
     new LongOpt("optimize", LongOpt.REQUIRED_ARGUMENT, null, 'O'),
     new LongOpt("extdirs", LongOpt.REQUIRED_ARGUMENT, null, 't'),
     new LongOpt("destination", LongOpt.REQUIRED_ARGUMENT, null, 'd'),
-    new LongOpt("classpath", LongOpt.REQUIRED_ARGUMENT, null, 'C'),     
+    new LongOpt("classpath", LongOpt.REQUIRED_ARGUMENT, null, 'C'),
+    new LongOpt("inpath", LongOpt.REQUIRED_ARGUMENT, null, 'i'),
   };
 }
 

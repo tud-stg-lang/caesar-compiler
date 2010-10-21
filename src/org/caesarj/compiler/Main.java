@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
- * $Id: Main.java,v 1.117 2006-05-08 16:13:52 aracic Exp $
+ * $Id: Main.java,v 1.118 2010-10-21 14:40:44 gasiunas Exp $
  */
 
 package org.caesarj.compiler;
@@ -800,6 +800,8 @@ public class Main extends MainSuper implements Constants {
 
             weaver.addUnwovenClassFile(fileName, byteCodeBuf);
         }
+        
+        CollectClassFiles.collectAll(options.weaveinputpath, byteCodeMap);
 
         weaveClasses(env);
     }
