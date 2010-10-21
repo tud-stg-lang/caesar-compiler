@@ -1,14 +1,16 @@
 package org.caesarj.compiler;
 
-import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+
 
 public class CollectClassFiles {
 	
@@ -39,9 +41,10 @@ public class CollectClassFiles {
 		        ZipEntry entry = (ZipEntry)e.nextElement();
 
 		        if (entry.getName().endsWith(".class")) {
-		        	InputStream stream = zip.getInputStream(entry);
-		        	String str = stream.toString();
-		        	classes.addClassFile(entry.getName(), str.getBytes());		        	
+		        	InputStream input = zip.getInputStream(entry);
+		        	ByteArrayOutputStream output = new ByteArrayOutputStream();
+		        	copy(input, output);		        	
+		        	classes.addClassFile(entry.getName(), output.toByteArray());		        	
 		        }
 		    }
         } 
@@ -52,7 +55,15 @@ public class CollectClassFiles {
     		// ignore	    		
     	}
 	}
-	
+
+	private static void copy(InputStream in, OutputStream out) throws IOException {  
+		byte[] b = new byte[1024];  
+		int read;  
+		while ((read = in.read(b)) != -1) {  
+			out.write(b, 0, read);  
+		}  
+	} 
+
 	public static void traverseDir(File file, ByteCodeMap classes) {
 		// TODO
 	}
