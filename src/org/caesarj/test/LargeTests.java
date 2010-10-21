@@ -26,8 +26,11 @@ public class LargeTests extends TestCase {
 				"-v",
 				"-classpath",
 				"dist/caesar-runtime.jar" + File.pathSeparator
-						+ "large-tests/weavingtest/lib/base.jar", "-inpath",
-				"large-tests/weavingtest/lib/base.jar",
+				+ "large-tests/weavingtest/lib/base.jar" + File.pathSeparator
+				+ "large-tests/weavingtest/lib/base2", 
+				"-inpath",
+				"large-tests/weavingtest/lib/base.jar" + File.pathSeparator
+				+ "large-tests/weavingtest/lib/base2",
 				"@large-tests/weavingtest/weavingtest-filelist.txt" };
 
 		boolean res = main.run(args);

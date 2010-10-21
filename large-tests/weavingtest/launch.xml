@@ -7,8 +7,9 @@
 	<target name="launch">
 		<java classname="weaving.base.Main">
          <classpath>
-           <pathelement location="${projectdir}/bin"/>
-           <pathelement path="${projectdir}/lib/base.jar"/>
+            <pathelement location="${projectdir}/bin"/>
+            <pathelement path="${projectdir}/lib/base.jar"/>
+         	<pathelement path="${projectdir}/lib/base2"/>
          	<pathelement path="${caesardir}/caesar-runtime.jar"/>
          </classpath>
        </java>
