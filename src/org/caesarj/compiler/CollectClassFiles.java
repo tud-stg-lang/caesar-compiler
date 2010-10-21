@@ -2,6 +2,7 @@ package org.caesarj.compiler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -64,7 +65,25 @@ public class CollectClassFiles {
 		}  
 	} 
 
-	public static void traverseDir(File file, ByteCodeMap classes) {
-		// TODO
+	public static void traverseDir(File dir, ByteCodeMap classes) {
+		try {
+			for (File file : dir.listFiles())
+			{
+				if (file.isDirectory())
+				{
+					traverseDir(file, classes);
+				}
+				else if (file.getName().endsWith(".class"))
+				{
+					InputStream input = new FileInputStream(file);
+					ByteArrayOutputStream output = new ByteArrayOutputStream();
+					copy(input, output);		        	
+					classes.addClassFile(file.getName(), output.toByteArray());
+				}
+			}
+		}		
+		catch (IOException e) {
+			// ignore	    		
+		}
 	}
 }
