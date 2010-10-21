@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="launch" name="weavingtest">
+	<property name="projectdir" location="."/>
+	<property name="caesardir" location="../../dist"/>
+	<property name="javart" value="${java.home}\lib\rt.jar"/>
+	
+	<target name="launch">
+		<java classname="weaving.base.Main">
+         <classpath>
+           <pathelement location="${projectdir}/bin"/>
+           <pathelement path="${projectdir}/lib/base.jar"/>
+         	<pathelement path="${caesardir}/caesar-runtime.jar"/>
+         </classpath>
+       </java>
+	</target>		
+</project>
