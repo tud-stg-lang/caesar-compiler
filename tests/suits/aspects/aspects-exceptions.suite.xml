@@ -1,0 +1,148 @@
+<testsuite name="Test advice weaving" package="suits.aspects.exceptions">
+
+    <common-code-base>		
+		class FooException extends Exception {	}				
+	</common-code-base>
+    
+
+	<!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="exceptions001" description="compiling before advice throwing exception">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m(int i) throws FooException {        				        	   
+        		}			    
+
+				pointcut testCall(int i) : call(* m(int))  &amp;&amp; args(i);
+				
+				before(int i) throws FooException : testCall(i) {
+					throw new FooException();									
+				} 
+			}
+        </code>
+        <test>         
+           try {
+        	   ClsA a = new ClsA();
+        	   deploy a;
+        	   a.m(2);
+        	}
+        	catch(FooException e) {
+        		return;
+        	}
+        	fail("No exception catched");
+        </test>
+    </compile-run>  
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="exceptions002" description="compiling after advice throwing exception">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m(int i) throws FooException {        				        	   
+        		}			    
+
+				pointcut testCall(int i) : call(* m(int))  &amp;&amp; args(i);
+				
+				after(int i) throws FooException : testCall(i) {
+					throw new FooException();									
+				} 
+			}
+        </code>
+        <test>         
+           try {
+        	   ClsA a = new ClsA();
+        	   deploy a;
+        	   a.m(2);
+        	}
+        	catch(FooException e) {
+        		return;
+        	}
+        	fail("No exception catched");
+        </test>
+    </compile-run> 
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-run id="exceptions003" description="compiling around advice throwing exception">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m(int i) throws FooException {        				        	   
+        		}			    
+
+				pointcut testCall(int i) : call(* m(int))  &amp;&amp; args(i);
+				
+				void around(int i) throws FooException : testCall(i) {
+					proceed(i);
+					throw new FooException();									
+				} 
+			}
+        </code>
+        <test>         
+           try {
+        	   ClsA a = new ClsA();
+        	   deploy a;
+        	   a.m(2);
+        	}
+        	catch(FooException e) {
+        		return;
+        	}
+        	fail("No exception catched");
+        </test>
+    </compile-run> 
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error id="exceptions004" error="METHOD_UNCATCHED_EXCEPTION" description="throwing undeclared expression in before advice">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m(int i) throws FooException {        				        	   
+        		}			    
+
+				pointcut testCall(int i) : call(* m(int))  &amp;&amp; args(i);
+				
+				before(int i) : testCall(i) {
+					throw new FooException();									
+				} 
+			}
+        </code>        
+    </compile-check-error>
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error id="exceptions005" error="METHOD_UNCATCHED_EXCEPTION" description="calling method with undeclared exception in before advice">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m(int i) { }
+        		
+        		public void n() throws FooException { }			    
+
+				pointcut testCall(int i) : call(* m(int))  &amp;&amp; args(i);
+				
+				before() : testCall(i) {
+					n();									
+				} 
+			}
+        </code>        
+    </compile-check-error> 
+    
+    <!-- *=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~=*=~~= -->
+    <compile-check-error id="exceptions006" error="ASPECTJ_ERROR" description="throwing unhandled exception in before">
+        <code>
+        	public cclass ClsA 
+        	{
+        		public void m(int i) { }
+        		
+        		public void n() {
+        			m(2);        			        		
+        		}			    
+
+				pointcut testCall(int i) : call(* m(int))  &amp;&amp; args(i);
+				
+				before(int i) throws FooException : testCall(i) {
+				   throw new FooException();										
+				} 
+			}
+        </code>        
+    </compile-check-error>    
+    
+</testsuite>

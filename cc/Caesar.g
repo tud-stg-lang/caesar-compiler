@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * $Id: Caesar.g,v 1.62 2005-07-27 13:45:15 gasiunas Exp $
+ * $Id: Caesar.g,v 1.63 2011-11-03 16:06:01 gasiunas Exp $
  */
 
 /*
@@ -685,8 +685,9 @@ jCMember [ParseClassContext context]
 	  	|  	  	
   			//before advice declaration
   			"before"
-	  		LPAREN  parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN   	
- 			adviceDecl = jCjAdviceDeclaration[CaesarAdviceKind.Before, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, null]
+	  		LPAREN  parameters = jParameterDeclarationList[JLocalVariable.DES_PARAMETER] RPAREN
+	  		(throwsList = jThrowsClause[])?   	
+ 			adviceDecl = jCjAdviceDeclaration[CaesarAdviceKind.Before, modifiers, parameters, factory.getVoidType(), throwsList, null]
 			{ 	
 				context.addAdviceDeclaration(adviceDecl);
 			}  	 		  		 	 
@@ -706,8 +707,9 @@ jCMember [ParseClassContext context]
 	  			extraParam = jParameterDeclaration[JLocalVariable.DES_GENERATED] 
   				RPAREN)? 
   				{kind = CaesarAdviceKind.AfterThrowing;}
-			)?  	
- 			adviceDecl = jCjAdviceDeclaration[kind, modifiers, parameters, factory.getVoidType(), CReferenceType.EMPTY, extraParam]   
+			)?
+			(throwsList = jThrowsClause[])?   	
+ 			adviceDecl = jCjAdviceDeclaration[kind, modifiers, parameters, factory.getVoidType(), throwsList, extraParam]   
 			{ 
 				context.addAdviceDeclaration(adviceDecl);			
 			}  	 		  		 	 
