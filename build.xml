@@ -129,7 +129,7 @@
   		classname="org.caesarj.tools.lexgen.Main"
         classpath="${bin};${libs}/cjbuildtools.jar;${libs}/java-getopt-1.0.9.jar">
    <arg value="-ditf"/>
-   <arg value="${inputFiles}/caesar.t"/>
+   <arg value="${inputFiles}/Caesar.t"/>
   </java>
 
   <!-- 2. LEXINC: Creates the .flex file -->
@@ -151,7 +151,7 @@
   <java fork="true" failonerror="true"
   		classpath="lib/JFlex.jar" 
  		classname="JFlex.Main">
-  	<arg value="${inputFiles}/caesar.flex"/>
+  	<arg value="${inputFiles}/Caesar.flex"/>
  	<arg value="-skel"/>
  	<arg value="${inputFiles}/skeleton.shared"/>
    	<arg value="-d"/>
