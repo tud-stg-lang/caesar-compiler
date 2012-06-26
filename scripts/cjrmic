@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ "$CAESAR_HOME" = "" ]; then 
+if [ "$CAESAR_HOME" = "" ]; then
 	echo "please set CAESAR_HOME environment variable"
 	exit
 fi
