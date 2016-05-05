@@ -5,6 +5,6 @@ if [ "$CAESAR_HOME" = "" ]; then
 	exit
 fi
 
-export CAESAR_LIBS="$CAESAR_HOME/lib/caesar-compiler.jar:$CAESAR_HOME/lib/aspectjtools.jar"
+export CAESAR_LIBS="$CAESAR_HOME/dist/caesar-compiler.jar:$CAESAR_HOME/lib/aspectjtools.jar"
 
 java -classpath $CAESAR_LIBS org.caesarj.compiler.Main $*

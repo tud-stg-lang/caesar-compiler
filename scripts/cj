@@ -5,6 +5,6 @@ if [ "$CAESAR_HOME" = "" ]; then
 	exit
 fi
 
-export CAESAR_RUNTIME="$CAESAR_HOME/lib/caesar-runtime.jar:$CAESAR_HOME/lib/aspectjrt.jar"
+export CAESAR_RUNTIME="$CAESAR_HOME/dist/caesar-runtime.jar:$CAESAR_HOME/lib/aspectjrt.jar"
 
 java -classpath $CLASSPATH:$CAESAR_RUNTIME:. $*

@@ -1,10 +1,10 @@
 #!/bin/sh
 
-if [ "$CAESAR_HOME" = "" ]; then 
+if [ "$CAESAR_HOME" = "" ]; then
 	echo "please set CAESAR_HOME environment variable"
 	exit
 fi
 
-export CAESAR_LIBS="$CAESAR_HOME/lib/caesar-runtime.jar:$CAESAR_HOME/lib/cj-rmic.jar"
+export CAESAR_LIBS="$CAESAR_HOME/dist/caesar-runtime.jar:$CAESAR_HOME/lib/cj-rmic.jar"
 
 java -classpath $CAESAR_LIBS org.caesarj.rmi.Compiler $*
